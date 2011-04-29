@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.14 2010-04-01 07:27:55 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.15 2011-04-29 07:19:03 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,8 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 								kRegPulserStatus,
 								kRegTsSource,
 								kRegTsDivisor,
-								kRegThreshold
+								kRegThreshold,
+								kRegBlockXfer
 							};
 
 		enum EMrbAddressSource			{	kAddressBoard		=	0,
@@ -167,6 +168,12 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 											kTstampReset		=	BIT(1)
 										};
 
+		enum EMrbBlockXfer				{	kBlockXferOff		=	0,
+											kBlockXferOn		=	BIT(0),
+											kBlockXferNormal	=	BIT(1) | kBlockXferOn,
+											kBlockXferChained	=	BIT(2) | kBlockXferOn
+										};
+
 	public:
 
 		TMrbMesytec_Madc32() {};  													// default ctor
@@ -178,8 +185,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("madc32"); }; 	// module mnemonic
 
-		inline void SetBlockXfer(Bool_t Flag = kTRUE) { fBlockXfer = Flag; };
-		inline Bool_t BlockXferEnabled() { return(fBlockXfer); };
+		inline void SetBlockXfer(EMrbBlockXfer Mode = kBlockXferNormal) { fBlockXfer = Mode; };
+		inline EMrbBlockXfer GetBlockXfer() { return(fBlockXfer); };
+		inline Bool_t BlockXferEnabled() { return((fBlockXfer & kBlockXferOn) != 0); };
 
 		inline Bool_t SetThreshold(Int_t Thresh, Int_t Channel = -1) { return(this->Set(TMrbMesytec_Madc32::kRegThreshold, Thresh, Channel)); };
 		inline Int_t GetThreshold(Int_t Channel) { return(this->Get(TMrbMesytec_Madc32::kRegThreshold, Channel)); };
@@ -309,7 +317,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 		Bool_t fUpdateSettings;
 		Int_t fUpdateInterval;
-		Bool_t fBlockXfer;
+		EMrbBlockXfer fBlockXfer;
 		Bool_t fSlidingScaleOff;
 		Bool_t fSkipOutOfRange;
 		Bool_t fAdcOverride;

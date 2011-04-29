@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.29 2011-02-11 08:06:08 Marabou Exp $
+// Revision:       $Id: TMrbEvent.cxx,v 1.30 2011-04-29 07:19:03 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -29,6 +29,7 @@ namespace std {} using namespace std;
 #include "TMrbEvent.h"
 #include "TMrbSubevent.h"
 #include "TMrbModule.h"
+#include "TMrbModuleChannel.h"
 #include "TMrbCamacScaler.h"
 #include "TMrbVMEScaler.h"
 #include "TMrbNamedArray.h"
@@ -293,26 +294,26 @@ Bool_t TMrbEvent::Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtX
 //////////////////////////////////////////////////////////////////////////////
 
 	TObjArray * lofHistos = gMrbConfig->GetLofUserHistograms();
-	TMrbNamedX * hx = NULL;
-	if (lofHistos) TMrbNamedX * hx = (TMrbNamedX *) lofHistos->FindObject(HistoName);
-	if (hx == NULL) {
+	TMrbNamedX * histo = NULL;
+	if (lofHistos) histo = (TMrbNamedX *) lofHistos->FindObject(HistoName);
+	if (histo == NULL) {
 		gMrbLog->Err() << "Histogram not booked - " << HistoName << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
-	if ((hx->GetIndex() & TMrbConfig::kHistoTH2) == 0) {
+	if ((histo->GetIndex() & TMrbConfig::kHistoTH2) == 0) {
 		gMrbLog->Err() << "Not a 2-dim histogram - " << HistoName << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
-	TMrbNamedX * sx = (TMrbNamedX *) fLofSubevents.FindObject(SevtX);
+	TMrbSubevent * sx = (TMrbSubevent *) fLofSubevents.FindObject(SevtX);
 	if (sx == NULL) {
 		gMrbLog->Err() << "[Event " << this->GetName() << "]: Subevent not found - " << SevtX << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
 
-	TObjArray * lofParams = ((TMrbSubevent *) sx->GetAssignedObject())->GetLofParams();
+	TObjArray * lofParams = sx->GetLofParams();
 	TMrbModuleChannel * px = NULL;
 	if (sx) px = (TMrbModuleChannel *) lofParams->FindObject(ParamX);
 	if (px == NULL) {
@@ -321,20 +322,37 @@ Bool_t TMrbEvent::Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtX
 		return(kFALSE);
 	}
 
-	TMrbNamedX * sy = (TMrbNamedX *) fLofSubevents.FindObject(SevtY);
+	TMrbSubevent * sy = (TMrbSubevent *) fLofSubevents.FindObject(SevtY);
 	if (sy == NULL) {
 		gMrbLog->Err() << "[Event " << this->GetName() << "]: Subevent not found - " << SevtY << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
-	lofParams = ((TMrbSubevent *) sy->GetAssignedObject())->GetLofParams();
+
+	lofParams = sy->GetLofParams();
 	TMrbModuleChannel * py = NULL;
-	if (sy) py = (TMrbModuleChannel *) lofParams->FindObject(ParamX);
+	if (sy) py = (TMrbModuleChannel *) lofParams->FindObject(ParamY);
 	if (py == NULL) {
 		gMrbLog->Err() << "[Subevent " << SevtY << "]: Param not found - " << ParamX << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
+
+	Bool_t sxNeedsHB = sx->NeedsHitBuffer();
+	Bool_t syNeedsHB = sy->NeedsHitBuffer();
+	if (syNeedsHB != sxNeedsHB) {
+		gMrbLog->Err() << "Subevent " << SevtX << (sxNeedsHB ? "DOES" : "DOES NOT") << " use hitbuffer, " << SevtY << (syNeedsHB ? "DOES" : "DOES NOT") << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+
+	TObjArray x(3);
+	Int_t nx = (px->Parent()->GetSerial() << 16) | px->GetAddr();
+	Int_t ny = (py->Parent()->GetSerial() << 16) | py->GetAddr();
+	x[0] = histo;
+	x[1] = new TMrbNamedX(nx, sx->GetName(), sx->GetTitle());
+	x[2] = new TMrbNamedX(ny, sy->GetName(), sy->GetTitle());
+	fLof2dimHistos.AddNamedX(histo->GetIndex(), histo->GetName(), histo->GetTitle(), &x);
 
 	return(kTRUE);
 }
@@ -356,26 +374,26 @@ Bool_t TMrbEvent::Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtX
 //////////////////////////////////////////////////////////////////////////////
 
 	TObjArray * lofHistos = gMrbConfig->GetLofUserHistograms();
-	TMrbNamedX * hx = NULL;
-	if (lofHistos) TMrbNamedX * hx = (TMrbNamedX *) lofHistos->FindObject(HistoName);
-	if (hx == NULL) {
+	TMrbNamedX * histo = NULL;
+	if (lofHistos) histo = (TMrbNamedX *) lofHistos->FindObject(HistoName);
+	if (histo == NULL) {
 		gMrbLog->Err() << "Histogram not booked - " << HistoName << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
-	if ((hx->GetIndex() & TMrbConfig::kHistoTH2) == 0) {
+	if ((histo->GetIndex() & TMrbConfig::kHistoTH2) == 0) {
 		gMrbLog->Err() << "Not a 2-dim histogram - " << HistoName << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
-	TMrbNamedX * sx = (TMrbNamedX *) fLofSubevents.FindObject(SevtX);
+	TMrbSubevent * sx = (TMrbSubevent *) fLofSubevents.FindObject(SevtX);
 	if (sx == NULL) {
 		gMrbLog->Err() << "[Event " << this->GetName() << "]: Subevent not found - " << SevtX << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
 
-	TObjArray * lofParams = ((TMrbSubevent *) sx->GetAssignedObject())->GetLofParams();
+	TObjArray * lofParams = sx->GetLofParams();
 	if (ParamX >= lofParams->GetEntriesFast()) {
 		gMrbLog->Err() << "[Subevent " << SevtX << "]: Param out of range - " << ParamX << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
@@ -383,20 +401,36 @@ Bool_t TMrbEvent::Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtX
 	}
 	TMrbModuleChannel * px = (TMrbModuleChannel *) lofParams->At(ParamX);
 
-	TMrbNamedX * sy = (TMrbNamedX *) fLofSubevents.FindObject(SevtY);
+	TMrbSubevent * sy = (TMrbSubevent *) fLofSubevents.FindObject(SevtY);
 	if (sy == NULL) {
 		gMrbLog->Err() << "[Event " << this->GetName() << "]: Subevent not found - " << SevtY << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
 
-	lofParams = ((TMrbSubevent *) sy->GetAssignedObject())->GetLofParams();
+	lofParams = sy->GetLofParams();
 	if (ParamY >= lofParams->GetEntriesFast()) {
 		gMrbLog->Err() << "[Subevent " << SevtY << "]: Param out of range - " << ParamY << endl;
 		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
 		return(kFALSE);
 	}
 	TMrbModuleChannel * py = (TMrbModuleChannel *) lofParams->At(ParamY);
+
+	Bool_t sxNeedsHB = sx->NeedsHitBuffer();
+	Bool_t syNeedsHB = sy->NeedsHitBuffer();
+	if (syNeedsHB != sxNeedsHB) {
+		gMrbLog->Err() << "Subevent " << SevtX << (sxNeedsHB ? "DOES" : "DOES NOT") << " use hitbuffer, " << SevtY << (syNeedsHB ? "DOES" : "DOES NOT") << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+
+	TObjArray x(3);
+	Int_t nx = (px->Parent()->GetSerial() << 16) | ParamX;
+	Int_t ny = (py->Parent()->GetSerial() << 16) | ParamY;
+	x[0] = histo;
+	x[1] = new TMrbNamedX(nx, sx->GetName(), sx->GetTitle());
+	x[2] = new TMrbNamedX(ny, sy->GetName(), sy->GetTitle());
+	fLof2dimHistos.AddNamedX(histo->GetIndex(), histo->GetName(), histo->GetTitle(), &x);
 
 	return(kTRUE);
 }

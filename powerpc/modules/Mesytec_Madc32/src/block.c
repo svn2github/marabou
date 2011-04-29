@@ -28,18 +28,10 @@ static unsigned int vme_dma_map(unsigned int vaddr, int wsiz, int am, struct pdp
 }
 #endif
 
-
 #ifndef HAVE_BMA_MEM2LOC
 static unsigned long bma_mem2loc(unsigned long paddr)
 {
-#ifdef CPU_TYPE_RIO2
-	unsigned long p = paddr | 0x80000000;
-	printf("@@@ RIO2 paddr=%#x\n", p); getchar();
-	return p;
-#else
-	printf("@@@ NOT RIO2 paddr=%#x\n", paddr); getchar();
-	return paddr;
-#endif
+	return paddr | 0x80000000;
 }
 #endif
 
@@ -162,20 +154,17 @@ int bmaReadChain(struct s_bma * bma, int virtOff, unsigned long vmeAddr, unsigne
 	struct s_specific * spec = bma->specific;
 	int error;
 
-	printf("@@@ before bma_set_mode "); getchar();
 	error = bma_set_mode(BMA_DEFAULT_MODE, BMA_M_AmCode, addrMod);
 	if (error) {
 		bmaLogErr("bmaReadChain", "bma_set_mode", error);
 		return -1;
 	}
 
-	printf("@@@ before bma_chain_read "); getchar();
 	error = bma_chain_read(&spec->c1, &spec->elem, BMA_DEFAULT_MODE, (unsigned long) vmeAddr, bma_mem2loc(spec->bufDsc->paddr) + virtOff, size, &spec->c0);
 	if (error) {
 		bmaLogErr("bmaReadChain", "bma_chain_read", error);
 		return -1;
 	}
-	printf("@@@ after bma_chain_read %#lx %#lx %#lx", spec->bufDsc->paddr, bma_mem2loc(spec->bufDsc->paddr), virtOff); getchar();
 	return 0;
 }
 

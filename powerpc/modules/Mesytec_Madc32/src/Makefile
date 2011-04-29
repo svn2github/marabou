@@ -40,7 +40,7 @@ madc32:	madc32.o $(LIB_TARGETS)
 		$(CC) -o madc32 madc32.o \
 			-L ../../../lib/$(GSI_OS_VERSION) \
 			-L /lib/ces \
-			-lMadc32 -lUti -lvme -lbma -luio -lnetinet
+			-lMadc32 -lUti -llynx -lvme -lbma -luio -lnetinet
 
 clean:
 	rm -f *.o core core.* $(LIB_TARGETS)

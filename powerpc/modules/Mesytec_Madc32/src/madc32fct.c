@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.17 $
-//! $Date: 2011-04-05 07:09:28 $
+//! $Revision: 1.18 $
+//! $Date: 2011-04-29 07:19:03 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -32,6 +32,7 @@
 void catchBerr();
 
 char msg[256];
+static struct dmachain *bma_page;
 
 struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial)
 {
@@ -489,7 +490,7 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	mnUC[0] = toupper(mnUC[0]);
 
 	sprintf(res, "MADC32.%s.BlockXfer", mnUC);
-	s->blockTransOn = root_env_getval_b(res, FALSE);
+	s->blockXfer = root_env_getval_i(res, 0);
 
 	for (i = 0; i < NOF_CHANNELS; i++) {
 		sprintf(res, "MADC32.%s.Thresh.%d", mnUC, i);
@@ -757,20 +758,55 @@ void madc32_enable_bma(struct s_madc32 * s)
 /* use blocktransfer */
 /* buffersize (in 32bit words) : Memory     = 1026 * 4    */
 
-	if (s->blockTransOn) {
+	int bmaError;
+
+	if (s->blockXfer == MADC32_BLT_NORMAL) {
+		s->bltBufferSize = s->memorySize;
+		s->bltBuffer = calloc(s->memorySize, sizeof(uint32_t));
+
+		bmaError = bma_open();
+		if (bmaError != 0) {
+			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			s->blockXfer = MADC32_BLT_OFF;
+			bma_close();
+			return;
+		}
+
+		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_VMESize, BMA_M_Vsz32);
+		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_WordSize, BMA_M_WzD32);
+		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_AmCode, BMA_M_AmA32U);
+#ifdef CPU_TYPE_RIO3
+		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_VMEAdrInc, BMA_M_VaiFifo);
+#endif
+
+		bma_page = (struct dmachain *) malloc (sizeof(struct dmachain *) * 1000);
+		bmaError = vmtopm(getpid(), bma_page, (char *) s->bltBuffer, s->memorySize * sizeof(uint32_t));
+		if (bmaError != 0) {
+			sprintf(msg, "[%sreadout] %s: %s (%d) when calling vmtopm() - turning block xfer OFF", s->mpref, s->moduleName, sys_errlist[errno], errno);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			s->blockXfer = MADC32_BLT_OFF;
+			bma_close();
+			return;
+		}
+		s->bltDestination = (uint32_t) bma_page->address;
+
+		sprintf(msg, "[%senable_bma] %s: turning block xfer ON (mode=NORMAL, buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	} else if (s->blockXfer == MADC32_BLT_CHAINED) {
 		s->bltBufferSize = s->memorySize;
 		if ((s->bma = bmaAlloc(s->bltBufferSize)) == NULL) {
-			sprintf(msg, "[%senable_bma] %s: %s, turning BlockXfer OFF", s->mpref, s->moduleName,  sys_errlist[errno]);
+			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			s->blockTransOn = FALSE;
+			s->blockXfer = MADC32_BLT_OFF;
 			getchar();
 			return;
 		}
 		s->bltBuffer = (unsigned char *) s->bma->virtBase;
-		sprintf(msg, "[%senable_bma] %s: turning block xfer ON (buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
+		sprintf(msg, "[%senable_bma] %s: turning block xfer ON (mode=CHAINED, buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			getchar();
 	} else {
+		s->blockXfer = MADC32_BLT_OFF;
 		s->bma = NULL;
 		s->bltBufferSize = 0;
 		s->bltBuffer = NULL;
@@ -785,6 +821,7 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	uint32_t data;
 	int numData;
 	unsigned int i;
+	int bmaError;
 
 	dataStart = pointer;
 
@@ -797,34 +834,50 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 
 	numData = (int) madc32_getFifoLength(s);
 
-	if (s->blockTransOn) {
-		if (bmaResetChain(s->bma) < 0) {
-			sprintf(msg, "[%sreadout] %s: resetting block xfer chain failed", s->mpref, s->moduleName);
+	if (s->blockXfer == MADC32_BLT_NORMAL) {
+		bmaError = bma_read((unsigned long) s->vmeAddr + MADC32_DATA, s->bltDestination, numData, BMA_DEFAULT_MODE);
+		if (bmaError != 0) {
+			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data", s->mpref, s->moduleName, sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
 
-		if (bmaReadChain(s->bma, 0, s->vmeAddr + MADC32_DATA, numData, 0x0b) < 0) {
-			sprintf(msg, "[%sreadout] %s: block xfer failed while reading event data", s->mpref, s->moduleName);
-			f_ut_send_msg("sis_3300", msg, ERR__MSG_INFO, MASK__PRTT);
+		bmaError = bma_wait(BMA_DEFAULT_MODE);
+		if (bmaError != 0) {
+			sprintf(msg, "[%sreadout] %s: %s (%d) while waiting for block xfer", s->mpref, s->moduleName, sys_errlist[errno], errno);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
+		}
+		memcpy(pointer, s->bltBuffer, sizeof(uint32_t) * numData);
+		pointer += numData;
+	} else if (s->blockXfer == MADC32_BLT_CHAINED) {
+		if (bmaResetChain(s->bma) < 0) {
+		 sprintf(msg, "[%sreadout] %s: %s (%d) when resetting chain", s->mpref, s->moduleName, sys_errlist[errno], errno);
+		 f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		 return(0);
+		}
+
+		if (bmaReadChain(s->bma, 0, s->vmeAddr + MADC32_DATA, numData, 0x0b) < 0) {
+		  sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data", s->mpref, s->moduleName, sys_errlist[errno], errno);
+		  f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		  return(0);
 		}
 
 		if (bmaStartChain(s->bma) < 0) {
-			sprintf(msg, "[%sreadout] %s: starting block xfer chain failed", s->mpref, s->moduleName);
-			f_ut_send_msg("sis_3300", msg, ERR__MSG_INFO, MASK__PRTT);
-			return(0);
+		  sprintf(msg, "[%sreadout] %s: %s (%d) when starting chain", s->mpref, s->moduleName, sys_errlist[errno], errno);
+		  f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		  return(0);
 		}
 
 		if (bmaWaitChain(s->bma) < 0) {
-			sprintf(msg, "[%sreadout] %s: waiting for block xfer chain failed", s->mpref, s->moduleName);
-			f_ut_send_msg("sis_3300", msg, ERR__MSG_INFO, MASK__PRTT);
-			return(0);
+		  sprintf(msg, "[%sreadout] %s: %s (%d) while waiting for chained xfer", s->mpref, s->moduleName, sys_errlist[errno], errno);
+		  f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		  return(0);
 		}
-
 		memcpy(pointer, s->bltBuffer, sizeof(uint32_t) * numData);
 		pointer += numData;
 	} else {
+		s->blockXfer = MADC32_BLT_OFF;
 		for (i = 0; i < numData; i++) {
 			data = GET32(s->baseAddr, MADC32_DATA);
 			if (data == 0) {

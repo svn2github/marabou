@@ -5,9 +5,9 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::BookParams() {
 // Purpose:        Setup param lists for event %%EVT_NAME_LC%%
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Fills param tables for all subevents in event %%EVT_NAME_LC%%.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t err = kFALSE;
@@ -33,11 +33,11 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::BookHistograms() {
 // Purpose:        Book histograms for event %%EVT_NAME_LC%%
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Books histograms for all subevents in event %%EVT_NAME_LC%%.
 //                 If this is a multi-trigger event derived from single-bit
 //                 triggers booking is already done there.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t err = kFALSE;
@@ -53,7 +53,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::BookHistograms() {
 %UM% err |= this->$userMethod();
 %%EndOfCode%%
 %%INCLUDE_USER_BOOK_HISTOGRAMS%%
-		
+
 	return(!err);
 }
 
@@ -64,10 +64,10 @@ Int_t TUsrEvt%%EVT_NAME_UC%%::SetupLofSubevents() {
 // Purpose:        Setup list of subevents for event %%EVT_NAME_LC%%
 // Arguments:      --
 // Results:        Int_t NofSubevents    -- number of subevents
-// Exceptions:     
+// Exceptions:
 // Description:    Inserts subevents in a list which later on may be
-//                 accessed by subevent index 
-// Keywords:       
+//                 accessed by subevent index
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fLofSubevents.Clear();
@@ -86,10 +86,10 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::AllocHitBuffers() {
 // Purpose:        Allocate hit buffer for event %%EVT_NAME_LC%%
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Allocates hit buffers for subevents to store subevent data
-//                 (class TUsrHitBuffer / TClonesArray) 
-// Keywords:       
+//                 (class TUsrHitBuffer / TClonesArray)
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TUsrHitBuffer * hb;
@@ -130,13 +130,13 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::CreateTree() {
 // Purpose:        Create a tree for event %%EVT_NAME_LC%%
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a tree for event %%EVT_NAME_LC%%.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t autoSave;
-	
+
 	if (gMrbAnalyze->TreeToBeWritten()) {
 		if (verboseMode) {
 			cout	<< this->ClassName() << "::CreateTree(): Creating tree \"%%EVT_NAME_LC%%\""
@@ -148,7 +148,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::CreateTree() {
 		autoSave = gEnv->GetValue(gMrbAnalyze->GetResource("Event.%%EVT_NAME_UC%%.AutoSave"),
 //- 								arguments have to be on different lines!!
 								%%EVT_AUTOSAVE%%);
-				
+
 		fTreeOut->SetAutoSave(autoSave);
 
 //- add a branch for every subevent
@@ -168,10 +168,10 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::InitializeTree(TFile * RootFile) {
 // Purpose:        Initialize tree for event %%EVT_NAME_LC%%
 // Arguments:      TFile * RootFile  -- file containing tree data
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Initializes tree and branches for event %%EVT_NAME_LC%%.
 //                 Replay mode only.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TObject * obj;
@@ -207,9 +207,9 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 // Purpose:        Replay tree data for event %%EVT_NAME_LC%%
 // Arguments:      TMrbIOSpec * IOSpec  -- i/o specifications
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Reads in tree data for event %%EVT_NAME_LC%%.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t nofEntries, nofEvents, nofBytes, nbytes;
@@ -293,9 +293,9 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
 				}
 			}
-		
+
 		} else {
-			
+
 			if (startEvent > stopEvent) {
 				gMrbLog->Err()	<< "Event numbers out of order - start at "
 								<< startEvent << " ... stop at " << stopEvent << endl;
@@ -363,11 +363,11 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, MBSDataIO * B
 // Arguments:      const s_vehe * EventData   -- pointer to MBS event structure
 //                 MBSDataIO * BaseAddr -- pointer to MBS data base
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Decodes the event header,
 //                 then loops over subevents
 //                 and calls sevt-specific fill methods
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	UInt_t SevtType;
@@ -386,7 +386,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, MBSDataIO * B
 	fClockNsecs = 0;
 
 	fSubeventPattern = 0;							// reset sevt pattern
-	
+
 	this->Reset();									// clear data section
 
 	for (;;) {
@@ -439,7 +439,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, MBSDataIO * B
 				gDeadTime->Set(timeStamp, dtTotalEvents, dtAccuEvents, dtScalerContents);
 				if (gMrbAnalyze->TreeToBeWritten()) gDeadTime->GetTreeOut()->Fill();
 				continue;
-				
+
 			case kMrbSevtDummy: 					// dummy subevent created by MBS internally [111,111] (ROOT Id=888), wc = 0
 				if ((SevtData = NextSubeventData(BaseAddr, 100, kFALSE)) == NULL) return(kFALSE);
 				if (BaseAddr->sevt_wc != 0) {
@@ -473,10 +473,10 @@ Bool_t TUsrEvt$evtNameUC::Analyze() {
 //  			(Trigger $evtTrigger)
 // Arguments:		--
 // Results: 	kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    User's analysis function for trigger $evtTrigger
 //  			Any sorting, filtering, and analyzing goes here.
-// Keywords:	
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->FillHistograms(); 		// fill histograms
@@ -497,14 +497,15 @@ Bool_t TUsrEvt$evtNameUC::Analyze() {
 %B%//  			   (Trigger $evtTrigger)
 %B%// Arguments:	   --
 %B%// Results: 	   kTRUE/kFALSE
-%B%// Exceptions:     
+%B%// Exceptions:
 %B%// Description:    Fills histograms for event $evtNameLC,
 %B%//                 one for each parameter.
-%B%// Keywords:	   
+%B%// Keywords:
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
 %N%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
 %P%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
+%2D%	$sevtNameLC.Fill2dimHistograms();	// fill 2-dim histograms
 %E%	this->FillRateHistograms(); // fill rate histos for event $evtNameLC
 %E%
 %E%	return(kTRUE);
@@ -521,9 +522,9 @@ Bool_t TUsrEvt$evtNameUC::Analyze() {
 %B%//  			   (Trigger $evtTrigger)
 %B%// Arguments:	   --
 %B%// Results: 	   kTRUE/kFALSE
-%B%// Exceptions:     
+%B%// Exceptions:
 %B%// Description:    Fills rate histograms for event $evtNameLC
-%B%// Keywords:	   
+%B%// Keywords:
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
 %RN%	Int_t ts = this->GetTimeStamp() / $hScale;		// time stamp in $xScale
@@ -547,9 +548,9 @@ void TUsrEvt%%EVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 // Arguments:      Int_t InitValue  -- initialization value
 //                 Bool_t DataOnly  -- reset data only if kTRUE
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Resets all subevents assigned to this event.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%

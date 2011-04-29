@@ -20,8 +20,8 @@
 //! \details		Contains definitions to operate a Mesytec Madc32
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.14 $
-//! $Date: 2011-04-05 07:09:28 $
+//! $Revision: 1.15 $
+//! $Date: 2011-04-29 07:19:03 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
@@ -227,6 +227,10 @@
 #define MADC32_M_EOB						0x80000000
 #define MADC32_M_WC							0x00000FFF
 
+#define MADC32_BLT_OFF						0
+#define MADC32_BLT_NORMAL					1
+#define MADC32_BLT_CHAINED					2
+
 
 /*____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////
@@ -235,6 +239,11 @@
 
 
 #define NOF_CHANNELS	32
+
+struct dmachain {
+        void *address;
+        int count;
+};
 
 struct s_madc32 {
 	unsigned long vmeAddr;					/* phys addr given by module switches */
@@ -288,7 +297,8 @@ struct s_madc32 {
 	uint32_t bltBufferSize;
 	uint32_t bltBlockSize;
 	uint8_t * bltBuffer;
-	int blockTransOn;
+	uint32_t bltDestination;
+	int blockXfer;
 
 	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
 	uint32_t *evtp;

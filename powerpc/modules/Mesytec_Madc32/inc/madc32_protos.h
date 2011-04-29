@@ -6,10 +6,10 @@
 //! \file			madc32_protos.h
 //! \brief			Definitions for Mesytec Madc32 ADC
 //! \details		Prototypes for Mesytec Madc32
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.13 $
-//! $Date: 2010-10-04 10:09:01 $
+//! $Revision: 1.14 $
+//! $Date: 2011-04-29 07:19:03 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -158,5 +158,7 @@ bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile);
 
 void madc32_resetEventBuffer(struct s_madc32 * s);
 uint32_t * madc32_pushEvent(struct s_madc32 * s, uint32_t * pointer);
+
+extern int vmtopm (int, struct dmachain *, char *, long);
 
 #endif

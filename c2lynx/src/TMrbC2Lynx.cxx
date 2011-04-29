@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.15 2010-11-04 14:13:27 Marabou Exp $
-// Date:           $Date: 2010-11-04 14:13:27 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.16 2011-04-29 07:19:03 Marabou Exp $
+// Date:           $Date: 2011-04-29 07:19:03 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -100,12 +100,12 @@ TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Cha
 					this->MakeZombie();
 				} else {
 					fServerPath = Form("$MARABOU/powerpc/bin/%s/mrbLynxOsSrv", lynxVersion.Data());
-					gSystem->ExpandPathName(fServerPath);
 				}
 			} else {
 				fServerPath = Server;
 			}
 			if (!this->IsZombie()) {
+				gSystem->ExpandPathName(fServerPath);
 				fServerName = gSystem->BaseName(fServerPath.Data());
 				fLogFile = (LogFile == NULL || *LogFile == '\0') ? Form("%s/c2lynx.log", gSystem->WorkingDirectory()) : LogFile;
 
