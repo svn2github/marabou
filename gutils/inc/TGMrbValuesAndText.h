@@ -111,6 +111,8 @@ private:
    Bool_t            fCallClose;
    Int_t             fLastColorSelect;
 	Int_t             *fFileType;
+	TString				fStartDir;
+	Bool_t            fMustRestoreDir;
 //   Int_t             fFinis;
 public:
    TGMrbValuesAndText(const char *prompt, TString * text,
