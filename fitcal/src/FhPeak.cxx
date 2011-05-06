@@ -25,15 +25,15 @@ void FhPeak::PrintPeak(ostream & ostr) const {
 };
 void FhPeak::Print(Option_t * opt) const {
 	printf("%10.2f %10.2f %10.2f %10.2f %10.2f", 
-			 fContent, fMean, fMeanError, fWidth, fChi2oNdf);
+			 fMean, fWidth, fContent, fMeanError, fChi2oNdf);
 	//    cout << setw(12)<< fContent << setw(12)<< fMean 
 	//         << setw(12)<< fMeanError << setw(12)<< fChi2oNdf;
 	if (fUsed) cout << "  in use";
  	cout << endl;
 };
 void FhPeak::PrintHeadLine(){
-   cout << "       Mean" 
-	     << "      Sigma" << "   Content" << "  MeanError" <<  " Chi2 / Ndf";
+   cout << "      Mean" 
+	     << "      Sigma" << "    Content" << "  MeanError" <<  "   Chi2/Ndf";
    if (0) {
        cout << " Used";
    }

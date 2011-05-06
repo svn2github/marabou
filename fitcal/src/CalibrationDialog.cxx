@@ -30,7 +30,7 @@ using std::cout;
 using std::endl;
 
 static const Int_t kSc_Npeaks = 15;
-Char_t *Sc_Name[kSc_Npeaks] =
+const Char_t *Sc_Name[kSc_Npeaks] =
       {"152Eu",    "152Eu",     "152Eu",     "152Eu",
        "152Eu",    "152Eu",     "152Eu",     "88Y ",   "152Eu",
        "152Eu",    "152Eu",     "60Co",     "152Eu",
@@ -1280,9 +1280,6 @@ TList * CalibrationDialog::UpdatePeakList()
 //   Int_t npeaks = 0
 //   if ( fUpdatePeakListDone > 0 )
 //       return &fPeakList;
-   if ( fVerbose )
-      cout << "UpdatePeakList: # of functions: " <<
-   fSelHist->GetListOfFunctions()->GetSize() << endl;
    TIter next(fSelHist->GetListOfFunctions());
    TObject *obj;
    TF1 *f;
@@ -1355,11 +1352,11 @@ TList * CalibrationDialog::UpdatePeakList()
    FhPeak *p;
    fNpeaks = 0;
    while ( (p = (FhPeak*)next1()) ) {
-      if (fVerbose) {
+//      if (fVerbose) {
          if (fNpeaks == 0)
             p->PrintHeadLine();
          p->Print(" ");
-      }
+//      }
 	   fX [fNpeaks] = p->GetMean();
     	fXE[fNpeaks] = p->GetWidth();
 	   fY [fNpeaks] = 0;
@@ -1382,10 +1379,36 @@ TList * CalibrationDialog::UpdatePeakList()
 
 Int_t CalibrationDialog::FindNumberOfPeaks()
 {
-	Int_t npeaks = 0;
-	TIter next(fSelHist->GetListOfFunctions());
+	// check if funcs are deleted from canvas but still in  ListOfFunctions
+	TList temp;
 	TObject *obj;
 	TF1 *f;
+	TList *lof = fSelHist->GetListOfFunctions();
+//	cout <<" lof->GetSize()" <<lof->GetSize() << endl;
+	TList *lop = gPad->GetListOfPrimitives();
+	TIter next1(lof);
+	while ( (obj = next1()) ) {
+		if (obj->IsA() == TF1::Class()) {
+			f = (TF1*)obj;
+			const char* name = f->GetName();
+//			cout << "|" << name << "|" << endl;
+			if ( lop->FindObject(name) == NULL ) {
+				temp.Add(obj);
+			}
+		}
+	}
+	if ( temp.GetSize() > 0 ) {
+		TIter next2(&temp);
+		while ( (obj = next2()) ) {
+			lof->Remove(obj);
+			cout << "Remove: " << obj->GetName()<<endl;
+//			delete obj;
+		}
+	}
+//
+//	cout <<" lof->GetSize()" <<lof->GetSize() << endl;
+	Int_t npeaks = 0;
+	TIter next(lof);
 	TString pname;
 	while ( (obj = next()) ) {
 		if (obj->IsA() == TF1::Class()) {
