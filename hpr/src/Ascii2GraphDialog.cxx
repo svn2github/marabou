@@ -18,6 +18,7 @@
 #include "TGMrbValuesAndText.h"
 //#include "support.h"
 #include <fstream>
+extern TString gHprLocalEnv;
 //____________________________________________________________________________
 
 void ExecGausFitG(TGraph * graph, Int_t type)
@@ -146,7 +147,7 @@ Default is to construct a new canvas\n\
    valp[ind++] = &fCommandHead;
    valp[ind++] = &fCommandTail;
    valp[ind++] = &fCommand;
-   Int_t itemwidth = 360;
+   Int_t itemwidth = 380;
    ok = GetStringExt("Graphs parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());
@@ -161,7 +162,7 @@ Ascii2GraphDialog::~Ascii2GraphDialog()
 
 void Ascii2GraphDialog::Draw_The_Graph()
 {
-	TEnv env(".hprrc");
+	TEnv env(gHprLocalEnv);
 	fGraphLogX        = env.GetValue("GraphAttDialog.fGraphLogX", 0);
 	fGraphLogY        = env.GetValue("GraphAttDialog.fGraphLogY", 0);
 	fGraphLogZ        = env.GetValue("GraphAttDialog.fGraphLogZ", 0);
@@ -209,7 +210,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
       }
       
       gStyle->SetOptStat(0);
-      TH1D * gh = new TH1D(fGraphName, fGraphName, 100, xmin, xmax);
+		TH1F * gh = new TH1F(fGraphName, fGraphName, 100, xmin, xmax);
       gh->Draw();
       gh->SetMinimum(ymin);
       gh->SetMaximum(ymax);
@@ -354,8 +355,8 @@ void Ascii2GraphDialog::Draw_The_Graph()
 			drawopt+= "C";
       else if (fGraphSimpleLine) 
 			drawopt+= "L";
-		else if (fGraphBarChart)
-			drawopt+= "B";
+//		else if (fGraphBarChart)
+//			drawopt+= "B";
 		if (fGraphFill && TMath::Abs(fGraphLineWidth) < 100) {
 			drawopt+= "F";
 			if ( fGraphFillStyle == 0 )
@@ -427,7 +428,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 //            gPad->Modified();
 //            gPad->Update();
       }
-      TEnv env(".hprrc");
+      TEnv env(gHprLocalEnv);
       
 		TH1 * gh = graph->GetHistogram();
       if (fGraphXtitle.Length() > 0)
@@ -495,7 +496,7 @@ Int_t Ascii2GraphDialog::FindGraphs(TVirtualPad * ca, TList * logr, TList * pads
 
 void Ascii2GraphDialog::SaveDefaults()
 {
-   TEnv env(".hprrc");
+   TEnv env(gHprLocalEnv);
    env.SetValue("Ascii2GraphDialog.fEmptyPad"  	    , fEmptyPad        );
    env.SetValue("Ascii2GraphDialog.Graph_Simple"	 , fGraph_Simple    );
    env.SetValue("Ascii2GraphDialog.Graph_Error" 	 , fGraph_Error     );
@@ -504,6 +505,11 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.fGraphColSel1"   , fGraphColSel1    );
    env.SetValue("Ascii2GraphDialog.fGraphColSel2"   , fGraphColSel2    );
    env.SetValue("Ascii2GraphDialog.fGraphColSel3"   , fGraphColSel3    );
+	if ( !fGraphFileName.BeginsWith("/") ) {
+		fGraphFileName.Prepend("/");
+		fGraphFileName.Prepend(gSystem->pwd());
+		cout << "fGraphFileName: " << fGraphFileName << endl;
+	}
    env.SetValue("Ascii2GraphDialog.GraphFileName"   , fGraphFileName   );
    env.SetValue("Ascii2GraphDialog.GraphName"		 , fGraphName       );
    env.SetValue("Ascii2GraphDialog.GraphSelPad" 	 , fGraphSelPad     );
@@ -522,13 +528,14 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.fErrorMode"		 , fErrorMode       );
    env.SetValue("Ascii2GraphDialog.fErrorX"			 , fErrorX          );
    env.SetValue("Ascii2GraphDialog.fEndErrorSize"   , fEndErrorSize    );
+	env.SetValue("Ascii2GraphAttDialog.fGraphFill"   , fGraphFill       );
    env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 
 void Ascii2GraphDialog::RestoreDefaults()
 {
-   TEnv env(".hprrc");
+   TEnv env(gHprLocalEnv);
    fEmptyPad         = env.GetValue("Ascii2GraphDialog.fEmptyPad"  	   , 0);
    fGraph_Simple     = env.GetValue("Ascii2GraphDialog.Graph_Simple"  	, 0);
    fGraph_Error      = env.GetValue("Ascii2GraphDialog.Graph_Error"		, 1);
@@ -575,6 +582,7 @@ void Ascii2GraphDialog::RestoreDefaults()
 	fGraphMarkerColor = env.GetValue("GraphAttDialog.fMarkerColor",1);
 	fGraphFillStyle   = env.GetValue("GraphAttDialog.fFillStyle",  0);
 	fGraphFillColor   = env.GetValue("GraphAttDialog.fFillColor",  1);
+	fGraphFill        = env.GetValue("GraphAttDialog.fGraphFill",  0);
 }
 //_________________________________________________________________________
 

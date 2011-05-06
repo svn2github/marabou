@@ -321,7 +321,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fLogz = fCanvas->GetLogz();
 	fHasExtraAxis = kFALSE;
 	if ( !gStyle->GetCanvasPreferGL() )
-		TQObject::Connect("TPad", "Modified()",
+		TQObject::Connect((TPad*)fCanvas, "Modified()",
 						   "FitHist", this, "HandlePadModified()");
 	
 };
@@ -330,7 +330,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 void FitHist::HandlePadModified()
 {
 	if ( gDebug > 0 ) {
-		cout << "HandlePadModified: " << gPad 
+		cout << "FitHist::HandlePadModified: " << gPad 
 				<< " fCanvas: " << fCanvas 
 				<< " fLogy "  << fLogy << " fSelPad->GetLogy() " <<  fSelPad->GetLogy()
 				<<endl;
@@ -400,12 +400,13 @@ void FitHist::RecursiveRemove(TObject * obj)
 // destructor
 FitHist::~FitHist()
 {
-//    cout << " ~FitHist(): " << this << endl;
+	if ( gDebug > 0 )
+		cout << " ~FitHist()this : " << this<< " fCanvas " <<fCanvas << endl;
 //   cout<< "enter FitHist  dtor "<< GetName()<<endl;
    if (!fExpHist && gHpr && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
    gDirectory->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
-	TQObject::Disconnect("TPad", "Modified()");
+	TQObject::Disconnect((TPad*)fCanvas, "Modified()");
 							//   if ( fDialog != NULL ) fDialog->CloseDialog();
    if ( fFit1DimD ) fFit1DimD->CloseDialog();
    if ( fFit2DimD ) fFit2DimD->CloseDialog();
@@ -3440,12 +3441,21 @@ void FitHist::Draw1Dim()
    }
    if (GeneralAttDialog::fUseAttributeMacro) {
       ExecDefMacro();
-      fSelPad->Modified(kTRUE);
+//      fSelPad->Modified(kTRUE);
    }
    DrawDate();
-//  add extra axis (channels) at top
+	TPaveStats * st = (TPaveStats *)fCanvas->GetPrimitive("stats");
+	if ( st && GeneralAttDialog::fRememberLastSet ) {
+		TEnv env(".hprrc");
+		if ( env.Lookup("StatBox1D.fX1") ) {
+			st->SetX1NDC(env.GetValue("StatBox1D.fX1", 0.78));
+			st->SetX2NDC(env.GetValue("StatBox1D.fX2", 0.98));
+			st->SetY1NDC(env.GetValue("StatBox1D.fY1", 0.835));
+			st->SetY2NDC(env.GetValue("StatBox1D.fY2", 0.995));
+		}	
+	}
+	//  add extra axis (channels) at top
    if (fDrawAxisAtTop) {
-      TPaveStats * st = (TPaveStats *)fCanvas->GetPrimitive("stats");
       if (st) {
          st->SetY1NDC(st->GetY1NDC()-0.15);
          st->SetY2NDC(st->GetY2NDC()-0.15);
@@ -3573,13 +3583,18 @@ void FitHist::Draw2Dim()
       fCanvas->GetFrame()->SetFillColor(f2DimBackgroundColor);
    }
    DrawDate();
- //  if (fLiveStat2Dim) {
-       if (!fCanvas->GetAutoExec())
-          fCanvas->ToggleAutoExec();
-//   } else  {
-//       if (fCanvas->GetAutoExec())
- //         fCanvas->ToggleAutoExec();
-//   }
+	TPaveStats * st = (TPaveStats *)fCanvas->GetPrimitive("stats");
+	if ( st && GeneralAttDialog::fRememberLastSet ) {
+		TEnv env(".hprrc");
+		if ( env.Lookup("StatBox2D.fX1") ) {
+			st->SetX1NDC(env.GetValue("StatBox2D.fX1", 0.78));
+			st->SetX2NDC(env.GetValue("StatBox2D.fX2", 0.98));
+			st->SetY1NDC(env.GetValue("StatBox2D.fY1", 0.835));
+			st->SetY2NDC(env.GetValue("StatBox2D.fY2", 0.995));
+		}	
+	}
+	if (!fCanvas->GetAutoExec())
+		fCanvas->ToggleAutoExec();
    fCanvas->Update();
 }
 

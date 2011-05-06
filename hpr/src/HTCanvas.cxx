@@ -1,3 +1,5 @@
+#include "TEnv.h"
+#include "TPaveStats.h"
 #include "HTCanvas.h"
 #include "HandleMenus.h"
 
@@ -51,6 +53,14 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 	if ( gDebug > 0 )
 		cout << "ctor HTCanvas: " << this << " " << name
         << " Id " << GetRootCanvas()->GetId() << endl;
+	TTimer::SingleShot(50, "HTCanvas", this, "ConnectToModified()");
+}
+//______________________________________________________________________________________
+
+void HTCanvas::ConnectToModified() 
+{
+	TQObject::Connect((TPad*)this, "Modified()",
+		  "HTCanvas", this, "HandlePadModified()");
 };
 //______________________________________________________________________________________
 
@@ -58,7 +68,7 @@ HTCanvas::~HTCanvas()
 {
 	if ( gDebug > 0 )
 		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
-   Disconnect("TPad", "Modified()");
+   Disconnect((TPad*)this, "Modified()");
 	if (fHandleMenus) {
       delete fHandleMenus;
       fHandleMenus = 0;
@@ -92,8 +102,74 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 	}
 	GrCanvas::HandleInput(event, px, py);
 }
-
 //______________________________________________________________________________
+
+void HTCanvas::HandlePadModified()
+{
+	if ( TCanvas::fUpdating ) {
+		cout << "TCanvas::fUpdating" << endl;
+		return;
+	}
+	if ( gDebug > 0 ) 
+		cout << "HTCanvas::HandlePadModified() " << this << endl;
+	TTimer::SingleShot(50, "HTCanvas", this, "DoSaveLegendStats()");
+}	
+//______________________________________________________________________________
+
+void HTCanvas::DoSaveLegendStats()
+{
+	if ( gDebug > 0 ) 
+		cout << "HTCanvas::DoSaveLegendStats " << this << endl;
+	TPave * leg;
+	TString envn;
+	TList * lop = this->GetListOfPrimitives();
+	if ( lop == NULL ) {
+		cout << "HTCanvas:: lop == NULL " << endl;
+		return;
+	}
+	leg = (TPave*)lop->FindObject("Legend_SuperImposeGraph");
+	if ( TCanvas::fUpdating ) {
+		cout << "TCanvas::fUpdating" << endl;
+		return;
+	}
+	if (leg ) {
+		envn = "SuperImposeGraph.fLegend";
+	} else {
+		leg = (TPave*)this->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
+		if (leg ) {
+			envn = "SuperImposeHist.fLegend";	
+		} else {
+			TIter next(this->GetListOfPrimitives());
+			TObject *obj;
+			while ( obj = next() ) {
+				if ( obj->InheritsFrom("TH1") ) {
+					leg = (TPave*)((TH1*)obj)->GetListOfFunctions()->FindObject("stats");
+					if (leg ) {
+						envn = "StatBox";	
+						if ( ((TH1*)obj)->GetDimension() == 1 ) {
+							envn += "1D.f";
+						} else if ( ((TH1*)obj)->GetDimension() == 2 ) {
+							envn += "2D.f";
+						}
+					}
+				}
+			}
+		}
+	}
+	if ( leg ) {
+		TString res;
+		TEnv env(".hprrc");
+		res = envn + "X1";
+		env.SetValue(res, leg->GetX1NDC());
+		res = envn + "X2";
+		env.SetValue(res, leg->GetX2NDC());
+		res = envn + "Y1";
+		env.SetValue(res, leg->GetY1NDC());
+		res = envn + "Y2";
+		env.SetValue(res, leg->GetY2NDC());
+		env.SaveLevel(kEnvLocal);
+	}
+}
 //______________________________________________________________________________
 
 void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)

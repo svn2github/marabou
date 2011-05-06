@@ -79,6 +79,8 @@
 #include <cstdlib>
 
 HistPresent *gHpr;
+TString gHprWorkDir;
+TString gHprLocalEnv;
 static const char  *fHlistSuffix=".histlist";
 Int_t nHists;
 extern TH1 * gHpHist;
@@ -219,6 +221,8 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 //   TDirectory *fDirectory;
 //   TList *fFunctions;
 	gHpr = this;
+	gHprWorkDir = gSystem->pwd();
+	gHprLocalEnv = gHprWorkDir + "/.hprrc";
    fOpfac= 1.;
    fRebin = 2;
    fRMethod = 0;
@@ -534,7 +538,7 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
       fFileList=NULL;
    }
    const char *fname;
-   void* dirp=gSystem->OpenDirectory(".");
+   void* dirp=gSystem->OpenDirectory(gHprWorkDir);
    TRegexp endwithroot("\\.root$");
    TRegexp endwithmap("\\.map$");
    TRegexp endwithlist("\\.histlist$");
@@ -551,15 +555,15 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
          Long_t  id, flags, modtime;
          Long64_t size;
          gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
+         TString nam=fname;
 //          cout << fname << " " << modtime << endl;
          TString cmd = "gHpr->Show";
          if (sname.Index(endwithlist) >= 0) {
-            cmd = cmd + "List(\"\",\"" + fname + "\")";
+            cmd = cmd + "List(\"\",\"" + gHprWorkDir.Data() +"/" + fname + "\")";
          } else {
-            cmd = cmd + "Contents(\"" + fname + "\", \"\" )";
+            cmd = cmd + "Contents(\"" + gHprWorkDir.Data() +"/"+ fname + "\", \"\" )";
          }
 
-         TString nam=fname;
          TString tit;
          TString sel;
 
@@ -615,7 +619,7 @@ void HistPresent::ListMacros(const char *bp)
 //   }
    Bool_t first = kTRUE;
    const char *fname;
-   void* dirp=gSystem->OpenDirectory(".");
+   void* dirp=gSystem->OpenDirectory(gHprWorkDir);
    ifstream wstream;
    TString wline;
    TRegexp dotC = "\\.C$";
@@ -730,7 +734,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       GeneralAttDialog::fMaxListEntries = 1000;
    }
 //   TurnButtonGreen(&activeFile);
-   void* dirp=gSystem->OpenDirectory(".");
+   void* dirp=gSystem->OpenDirectory(gHprWorkDir);
    const char * fn;
    TString suffix(fHlistSuffix);
    suffix += "$";
@@ -2423,7 +2427,7 @@ void HistPresent::CutsFromASCII(TGWindow * win)
    const char helpText[] = "Read values of cuts (Window2D) from ASCII file";
    TRegexp endwithwdw2D("wdw2D$");
    TString fname = "xxx.wdw2D";
-   void* dirp=gSystem->OpenDirectory(".");
+   void* dirp=gSystem->OpenDirectory(gHprWorkDir);
    while (const char * name=gSystem->GetDirEntry(dirp)) {
       TString sname(name);
       if (sname.Index(endwithwdw2D) >= 0) fname = sname;
@@ -3775,7 +3779,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			TString nn(graph1d->GetName());
 			nn += "_hist_for_graph";
 			hh->SetName(nn);
-			graph1d->SetHistogram(hh);
+			graph1d->SetHistogram(((TH1F*)hh));
 			if ( xa ) {
 				TAxis * xan = graph1d->GetHistogram()->GetXaxis();
 				xan->SetTitle(tx);
@@ -3870,14 +3874,14 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	hymax = gPad->GetUymax(); 
 	if ( mode == 0 && (ymin < hymin || ymax > hymax) ) {
 		cout << "Warning: Graph: " << ymin << " " << ymax << 
-		" does not fit in Yrange " << hymin << " " << hymax  << endl;
+		" does not fit in Yrange: " << hymin << " " << hymax  << endl;
 	}
 	if ( xmin < hxmin || xmax > hxmax ) {
 		cout << "Warning: Graph: << " << xmin << " " << xmax << 
-		" does not fit in Xrange"<< hxmin << " " << hxmax << endl;
+		" does not fit in Xrange: "<< hxmin << " " << hxmax << endl;
 	}
 	// 
-	Double_t rightmax = 1.1*ymax;
+	Double_t rightmax = 1.1 * ymax;
 	Int_t        do_scale = 0;
 	Int_t      auto_scale = 0;
 	Int_t        new_axis = 0; 

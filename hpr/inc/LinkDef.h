@@ -32,6 +32,8 @@
 #pragma link C++ class HprStack;
 #pragma link C++ class HprGaxis;
 #pragma link C++ global gHpr;
+#pragma link C++ global gHprWorkDir;
+#pragma link C++ global gHprLocalEnv;
 #endif
 
 

@@ -26,6 +26,7 @@ private:
    Int_t    fSpectrum;        // Channel Contents only, no X values
    Int_t    f1Dim;            // X values to be filled
    Int_t    f1DimWithWeight;  // X, Weight
+   Int_t    f1DimWithErrors;  // X, Weight, Error
    Int_t    f2Dim;            // X, Y values to be filled
    Int_t    f2DimWithWeight;  // X,Y,  Weight
    Int_t    f3Dim;            // X, Y, Z values to be filled

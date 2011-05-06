@@ -26,6 +26,9 @@ HprGaxis::HprGaxis(TCanvas * canvas, Double_t xmin, Double_t ymin, Double_t xmax
 	fFrameY2 = fCanvas->GetFrame()->GetY2();
 	fLogx = fCanvas->GetLogx();
 	fLogy = fCanvas->GetLogy();
+	TQObject::Connect("TPad", "Modified()",
+							"HprGaxis", this, "HandlePadModified()");
+							
 };
 //__________________________________________________________________
 
@@ -37,7 +40,7 @@ void HprGaxis::ReDoAxis()
 		&& fFrameY1 == fCanvas->GetFrame()->GetY1() && fFrameY2 == fCanvas->GetFrame()->GetY2())
 		&& fCanvas->GetLogy() == fLogy &&  fCanvas->GetLogx() == fLogx ) {
 //		return;
-		TPave * leg;
+/*		TPave * leg;
 		TString envn;
 		leg = (TPave*)fCanvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeGraph");
 		if (leg ) {
@@ -60,7 +63,7 @@ void HprGaxis::ReDoAxis()
 			res = envn + "fLegendY2";
 			env.SetValue(res, leg->GetY2NDC());
 			env.SaveLevel(kEnvLocal);
-		}
+		}*/
 		return;
 	}
 	Double_t ledge = 0, uedge = 0;

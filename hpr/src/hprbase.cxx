@@ -418,7 +418,6 @@ HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where,
 			  << ledge << " uedge " << uedge << " ratio " << ratio << " offset " << offset
 			  << " axis_offset " << axis_offset << endl;
 	
-// 	naxis = new HprGaxis(x1, y1, x2, y2, ledge, uedge, 510, side.Data());
 	naxis = new HprGaxis(canvas, x1, y1, x2, y2, ledge, uedge, nd, side.Data());
 	naxis->SetWhere(where);
 	naxis->SetOffset(offset);
@@ -434,8 +433,6 @@ HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where,
 	naxis->Draw();
 	canvas->Modified(kTRUE);
 	canvas->Update();
-	TQObject::Connect("TPad", "Modified()",
-						   "HprGaxis", naxis, "HandlePadModified()");
 
 	return naxis;
 };

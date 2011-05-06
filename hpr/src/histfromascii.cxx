@@ -271,7 +271,10 @@ void EditFitMacroG(TGWindow * win)
       }
       tmpfile.close();
    }
-   TString EditCmd = "nedit ";
+   TString EditCmd = gSystem->Getenv("EDITOR");
+	if ( EditCmd.Length() == 0 )
+		EditCmd = "kate";
+	EditCmd += " ";
    EditCmd += name.Data();
    EditCmd += "&";
    gSystem->Exec(EditCmd.Data());

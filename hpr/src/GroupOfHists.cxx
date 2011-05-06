@@ -227,10 +227,15 @@ void GroupOfHists::BuildCanvas()
       }
 		TAxis * xa = hist->GetXaxis();
 		TAxis * ya = hist->GetYaxis();
-		ya->SetLabelSize(gStyle->GetLabelSize("Y") * fMagFac); // nb y det text size
+		TAxis * za = hist->GetZaxis();
 		xa->SetLabelSize(gStyle->GetLabelSize("X") * fMagFac);
+		ya->SetLabelSize(gStyle->GetLabelSize("Y") * fMagFac); // nb y det text size
 		xa->SetTitleSize(gStyle->GetTitleSize("X") * fMagFac);
 		ya->SetTitleSize(gStyle->GetTitleSize("Y") * fMagFac);
+		if (za && hist->GetDimension() > 1) {
+			za->SetLabelSize(gStyle->GetLabelSize("Z") * fMagFac);
+			za->SetTitleSize(gStyle->GetTitleSize("Z") * fMagFac);
+		}	
 		if (fNx > 1)xa->SetNdivisions(205);
 		if (fNy > 2)ya->SetNdivisions(205);
       hist->SetTitleSize(gStyle->GetTitleSize("C") * fMagFac);

@@ -40,6 +40,9 @@ public:
            TGraph * graph = 0, Int_t flag = 0);
    virtual ~HTCanvas();
    virtual void HandleInput(EEventType button, Int_t x, Int_t y);
+	void         HandlePadModified();
+	void         ConnectToModified();
+	void         DoSaveLegendStats();
    HistPresent  *GetHistPresent() {return fHistPresent;};
    FitHist      *GetFitHist() {return fFitHist;};
    void          SetHistPresent(HistPresent* hpr) {fHistPresent = hpr;};
