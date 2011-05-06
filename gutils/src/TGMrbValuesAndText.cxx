@@ -762,6 +762,8 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    fFlagButtons = new TList;
 //   fFinis = 0;
    SetBit(kMustCleanup);
+	fStartDir = gSystem->Getenv("PWD");
+	fMustRestoreDir = kFALSE;
    fEmitClose = kTRUE;
    fListBox = NULL;
    fLabels = new TList;
@@ -1514,7 +1516,23 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                    if (idCmd == kIdFileDialog || idCmd == kIdFileDialogCont) {
 //                      Int_t entryNr = idButton;
                       TString fn;
-                      TGFileInfo* fi = new TGFileInfo();
+							 TGFileInfo* fi = new TGFileInfo();
+							 TGTextEntry *te = fFileDialogContTextEntry[idButton];
+							 fn = te->GetText();
+//							 cout << "fFileDialogContTextEntry " << fn<< endl;
+							 if ( fn.BeginsWith("/") ) {
+								 TString bn = gSystem->BaseName(fn);
+								 Size_t bnl = bn.Length();
+								 if ( bnl > 0 ) {
+									 fn.Resize(fn.Length() - bnl);
+								 }
+								 cout << "fInidir " << fn<< endl;
+								 char * inidir = new char[fn.Length()+1];
+								 strncpy(inidir, fn.Data(), fn.Length());
+								 inidir[fn.Length()] = 0;
+								 fi->fIniDir = inidir;
+//								 fi->fIniDir = (char*)fn.Data();
+							 }
  //                     const char * filter[] = {"data files", "*", 0, 0};
                       fi->fFileTypes = filetypes;
                       fi->fFileTypeIdx = fFileType[idButton];
@@ -1522,12 +1540,10 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 							 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
   						    if (fi->fFilename) {
                          fn = fi->fFilename;
-
-                         TString pwd(gSystem->Getenv("PWD"));
-                         if (fn.BeginsWith(pwd.Data()))fn.Remove(0,pwd.Length()+1);
-//                         TGTextEntry *te = (TGTextEntry*)fEntries->At(entryNr);
-                         TGTextEntry *te = fFileDialogContTextEntry[idButton];
+//                         TString cwd(gSystem->pwd());
+//                         if (fn.BeginsWith(cwd.Data()))fn.Remove(0,cwd.Length()+1);
                          te->SetText(fn.Data());
+								 fMustRestoreDir = kTRUE;
                          gClient->NeedRedraw(te);
                          gClient->NeedRedraw(this);
                       }
@@ -2009,7 +2025,11 @@ void TGMrbValuesAndText::SaveList()
 TGMrbValuesAndText::~TGMrbValuesAndText()
 {
 // Cleanup dialog.
-//      cout << "enter dtor: TGMrbValuesAndText fFlagButtons " << fFlagButtons<< endl;
+//      cout << "enter dtor: TGMrbValuesAndText " << endl;
+		if ( fMustRestoreDir ) {
+			gSystem->cd(fStartDir);
+//			cout << gSystem->Getenv("PWD") << endl;
+		}
       if (fFlagButtons) delete fFlagButtons;
 		if ( fLabels->GetSize() <=0 ) return;
 		if (fFileType) delete [] fFileType;
