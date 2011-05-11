@@ -149,37 +149,48 @@ void Ascii2HistDialog::Read_Input()
    }
 
    TString line;
-	TString del(" ,\t");
+	TString del(" ,\t, \r");
 	TObjArray * oa;
+//	Int_t nn = 0;
 	while ( 1 ) {
 		line.ReadLine(infile);
+		// check for DOS format
+		if ( line.EndsWith("\r") ) {
+			line.Resize(line.Length() - 1);
+		}	
 		if (infile.eof()) break;
 		oa = line.Tokenize(del);
 		Int_t nent = oa->GetEntries();
+//		if (nn < 50) {
+//			cout << line << " " << nent << endl;
+//			nn++;
+//		}
+		if (nval == 1 && nent > 1 )
+			continue;
 		if (nent < nval) {
 			cout << "Not enough entries at: " << fNvalues+1 << endl;
 			ok = kFALSE;
-			break;
+			continue;
 		}
 		for (Int_t i = 0; i < nval; i++) {
 			TString val = ((TObjString*)oa->At(i))->String();
 			if (!val.IsFloat()) {
 				cout << "Illegal double: " << val << " at line: " << fNvalues+1 << endl;
 				ok = kFALSE;
-				break;
+				continue;
 			}
 			if      (i == 0) fXval.AddAt(val.Atof(), fNvalues);
 			else if (i == 1) fYval.AddAt(val.Atof(), fNvalues);
 			else if (i == 2) fZval.AddAt(val.Atof(), fNvalues);
 			else if (i == 3) fWval.AddAt(val.Atof(), fNvalues);
+			fNvalues++;
 		}
-		if (fNvalues >= fXval.GetSize()){
+		if (fNvalues >= fXval.GetSize() - 1){
 			fXval.Set(fNvalues+100);
 			fYval.Set(fNvalues+100);
 			fZval.Set(fNvalues+100);
 			fWval.Set(fNvalues+100);
 		}
-		fNvalues++;
 	}
 	infile.close();
 /*	
@@ -226,9 +237,11 @@ void Ascii2HistDialog::Read_Input()
 */
 	if ( !ok ) {
 		cout << "Illegal input data found" << endl;
-		return;
+//		return;
 	}
    cout << "entries " << fNvalues << endl;
+	if (fNvalues <= 0)
+		return;
    if (fSpectrum) {
       fNbinsX = fNvalues;
       fXlow = 0;
