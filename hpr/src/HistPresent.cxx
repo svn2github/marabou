@@ -1193,9 +1193,10 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
          delete obj;
       }
          ycanvas = 5 + 50 * fHistLists->GetSize();
+			fname = gSystem->BaseName(fname);
          TString cmd_title(fname);
          if (dir && strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
-         HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine,
+         HTCanvas *ccont = CommandPanel(cmd_title, fCmdLine,
                            WindowSizeDialog::fMainWidth + 10, ycanvas, this, WindowSizeDialog::fWinwidx_hlist);
          ccont->SetName("ContentList");
 //         cout << "HistPresent: CommandPanel: " <<ccont->GetName() << " " << ccont->GetTitle() << endl;
