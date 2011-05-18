@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.18 $
-//! $Date: 2011-04-29 07:19:03 $
+//! $Revision: 1.19 $
+//! $Date: 2011-05-18 11:04:49 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -778,7 +778,6 @@ void madc32_enable_bma(struct s_madc32 * s)
 		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_AmCode, BMA_M_AmA32U);
 #ifdef CPU_TYPE_RIO3
 		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_VMEAdrInc, BMA_M_VaiFifo);
-#endif
 
 		bma_page = (struct dmachain *) malloc (sizeof(struct dmachain *) * 1000);
 		bmaError = vmtopm(getpid(), bma_page, (char *) s->bltBuffer, s->memorySize * sizeof(uint32_t));
@@ -790,6 +789,9 @@ void madc32_enable_bma(struct s_madc32 * s)
 			return;
 		}
 		s->bltDestination = (uint32_t) bma_page->address;
+#else
+		s->bltDestination = (uint32_t) s->bltBuffer;
+#endif
 
 		sprintf(msg, "[%senable_bma] %s: turning block xfer ON (mode=NORMAL, buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);

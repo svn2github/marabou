@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEModule.cxx,v 1.12 2009-05-08 16:24:51 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbVMEModule.cxx,v 1.13 2011-05-18 11:04:49 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -54,7 +54,7 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	Bool_t verboseMode = gEnv->GetValue("TMrbConfig.VerboseMode", kFALSE);
 
 	if (!this->IsZombie()) {
@@ -80,7 +80,7 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 		fCrate = 0;
 		gMrbConfig->SetCrateType(0, TMrbConfig::kCrateVME); // mark vme crate active
 		fPosition = "C0.";
-		fPosition.AppendInteger(BaseAddr, 0, 16, kTRUE);
+		fPosition += Form("%#0lx", BaseAddr);
 
 		if (!this->IsZombie()) {
 			for (Int_t nch = 0; nch < NofChannels; nch++) { 		// create array of params

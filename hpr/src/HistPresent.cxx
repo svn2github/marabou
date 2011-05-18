@@ -3780,7 +3780,11 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			TString nn(graph1d->GetName());
 			nn += "_hist_for_graph";
 			hh->SetName(nn);
+<<<<<<< HistPresent.cxx
+			graph1d->SetHistogram((TH1F*)hh);
+=======
 			graph1d->SetHistogram(((TH1F*)hh));
+>>>>>>> 1.134
 			if ( xa ) {
 				TAxis * xan = graph1d->GetHistogram()->GetXaxis();
 				xan->SetTitle(tx);

@@ -8,8 +8,8 @@
 // Class:          TMrbVMEChannel    -- base class to describe a VME channel
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVMEChannel.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbVMEChannel.h,v 1.8 2011-05-18 11:04:49 Marabou Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -24,7 +24,6 @@ namespace std {} using namespace std;
 #include "Rtypes.h"
 #include "TSystem.h"
 
-#include "TMrbString.h"
 #include "TMrbModuleChannel.h"
 #include "TMrbVMEModule.h"
 
@@ -55,9 +54,9 @@ class TMrbVMEChannel : public TMrbModuleChannel {
 		inline void Print() { Print(cout, kFALSE, kFALSE, ""); };
 
 	protected:
-		TMrbString fPosition;							// crate & addr
+		TString fPosition;							// crate & addr
 
 	ClassDef(TMrbVMEChannel, 1) 	// [Config] Base class for channels of a VME module
-};	
+};
 
 #endif

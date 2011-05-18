@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbString.cxx,v 1.21 2007-11-20 08:14:51 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-11-20 08:14:51 $
+// Revision:       $Id: TMrbString.cxx,v 1.22 2011-05-18 11:04:49 Marabou Exp $
+// Date:           $Date: 2011-05-18 11:04:49 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -35,7 +35,7 @@ extern TMrbLogger * gMrbLog;			// access to message logger
 // Purpose:        Provide type conversion
 // Description:    Type conversion for strings
 //                 Based on original TString class.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 TMrbString::TMrbString() {
@@ -160,7 +160,7 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal,
 				}
 				break;
 		}
-		sprintf(s, f, IntVal); 
+		sprintf(s, f, IntVal);
 		this->Resize(0);
 		this->Insert(0, s);
 	}
@@ -219,11 +219,11 @@ Bool_t TMrbString::ToInteger(Int_t & IntVal, Int_t Base) {
 	} else {
 		idx = 0;
 	}
-	
-	IntVal = (Int_t) strtoul(&fData[idx], &endptr, Base);
+
+	IntVal = (Int_t) strtoul(this->Data() + idx, &endptr, Base);
 
 	if (*endptr != '\0') {
-		gMrbLog->Err() << "Not a legal integer - " << fData << endl;
+		gMrbLog->Err() << "Not a legal integer - " << this->Data() << endl;
 		gMrbLog->Flush("TMrbString", "ToInteger");
 		IntVal = 0;
 		return(kFALSE);
@@ -252,15 +252,15 @@ Bool_t TMrbString::SplitOffInteger(TString & Prefix, Int_t & IntVal, Int_t Base)
 
 	Int_t idx = this->CheckInteger(Base);
 	if (idx == -1) {
-		gMrbLog->Err() << "No trailing integer (base " << Base << ") - " << fData << endl;
+		gMrbLog->Err() << "No trailing integer (base " << Base << ") - " << this->Data() << endl;
 		gMrbLog->Flush("TMrbString", "SplitOffInteger");
-		Prefix = fData;
+		Prefix = this->Data();
 		return(kFALSE);
 	}
 
-	TMrbString s(&fData[idx]);
+	TMrbString s(this->Data() + idx);
 	if (!s.ToInteger(intVal, Base)) {
-		Prefix = fData;
+		Prefix = this->Data();
 		return(kFALSE);
 	}
 
@@ -323,7 +323,7 @@ TMrbString & TMrbString::FromDouble(Double_t DblVal, Int_t Width, Int_t Precisio
 		if (Width > 0)	sprintf(f, "%%%d.%df", Width, Precision);
 		else			sprintf(f, "%%.%df", Precision);
 	}
-	sprintf(s, f, DblVal); 
+	sprintf(s, f, DblVal);
 	this->Resize(0);
 	this->Insert(0, s);
     return(*this);
@@ -367,7 +367,7 @@ Bool_t TMrbString::ToDouble(Double_t & DblVal) {
 
 	Int_t idx = this->CheckDouble();
 	if (idx == -1) {
-		gMrbLog->Err() << "Not a legal double - " << fData << endl;
+		gMrbLog->Err() << "Not a legal double - " << this->Data() << endl;
 		gMrbLog->Flush("TMrbString", "ToDouble");
 		return(kFALSE);
 	}
@@ -376,16 +376,16 @@ Bool_t TMrbString::ToDouble(Double_t & DblVal) {
 	pf = pf.Strip(TString::kBoth);
 
 	if (idx == -1 || pf.Length() != 0) {
-		gMrbLog->Err() << "Not a legal double - " << fData << endl;
+		gMrbLog->Err() << "Not a legal double - " << this->Data() << endl;
 		gMrbLog->Flush("TMrbString", "ToDouble");
 		DblVal = 0.;
 		return(kFALSE);
 	}
 
-	DblVal = strtod(&fData[idx], &endptr);
+	DblVal = strtod(this->Data() + idx, &endptr);
 
 	if (*endptr != '\0') {
-		gMrbLog->Err() << "Not a legal double - " << fData << endl;
+		gMrbLog->Err() << "Not a legal double - " << this->Data() << endl;
 		gMrbLog->Flush("TMrbString", "ToDouble");
 		DblVal = 0.;
 		return(kFALSE);
@@ -411,15 +411,15 @@ Bool_t TMrbString::SplitOffDouble(TString & Prefix, Double_t DblVal) {
 
 	idx = this->CheckDouble();
 	if (idx == -1) {
-		gMrbLog->Err() << "No trailing double - " << fData << endl;
+		gMrbLog->Err() << "No trailing double - " << this->Data() << endl;
 		gMrbLog->Flush("TMrbString", "SplitOffDouble");
-		Prefix = fData;
+		Prefix = this->Data();
 		return(kFALSE);
 	}
 
-	TMrbString s = &fData[idx];
+	TMrbString s = this->Data() + idx;
 	if (!s.ToDouble(dblVal)) {
-		Prefix = fData;
+		Prefix = this->Data();
 		return(kFALSE);
 	}
 
@@ -565,7 +565,7 @@ void TMrbString::Expand(const Char_t Escape) {
 			this->Replace(n2, 1, "");
 			break;
 		}
-		this->ProcessEscapeSequence(fData[n2 + 1], replStr);
+		this->ProcessEscapeSequence(*(this->Data() + n2 + 1), replStr);
 		this->Replace(n2, 2, replStr);
 		n1 = n2 + 1;
 	}
@@ -605,7 +605,7 @@ Bool_t TMrbString::Encode(UInt_t & IntVal, TMrbLofNamedX * LofSubStrings, const 
 
 	Char_t * endptr;
 
-	IntVal = strtoul(fData, &endptr, 0);
+	IntVal = strtoul(this->Data(), &endptr, 0);
 	if (*endptr == '\0') return(kTRUE);
 
 	IntVal = 0;
@@ -620,7 +620,7 @@ Bool_t TMrbString::Encode(UInt_t & IntVal, TMrbLofNamedX * LofSubStrings, const 
 			IntVal |= nx->GetIndex();
 		}
 	}
-	return(isOk);	
+	return(isOk);
 }
 
 Bool_t TMrbString::Encode(UInt_t & IntVal, SMrbNamedXShort * LofSubStrings, const Char_t * Separator, UInt_t Mode) {
@@ -641,7 +641,7 @@ Bool_t TMrbString::Encode(UInt_t & IntVal, SMrbNamedXShort * LofSubStrings, cons
 
 	Char_t * endptr;
 
-	IntVal = strtoul(fData, &endptr, 0);
+	IntVal = strtoul(this->Data(), &endptr, 0);
 	if (*endptr == '\0') return(kTRUE);
 
 	TMrbLofNamedX lofSubStrings;
@@ -668,7 +668,7 @@ Bool_t TMrbString::Encode(UInt_t & IntVal, const Char_t * LofSubStrings, const C
 
 	Char_t * endptr;
 
-	IntVal = strtoul(fData, &endptr, 0);
+	IntVal = strtoul(this->Data(), &endptr, 0);
 	if (*endptr == '\0') return(kTRUE);
 
 	TMrbLofNamedX lofSubStrings;
@@ -764,13 +764,13 @@ Int_t TMrbString::CheckInteger(Int_t Base) const {
 		switch (Base) {
 			case 2:
 				for (Int_t i = this->Length() - 1; i >= 0; i--) {
-					Char_t code = fData[i];
+					Char_t code = *(this->Data() + i);
 					if (code == '0' && code == '1') idx = i; else break;
 				}
 				break;
 			case 8:
 				for (Int_t i = this->Length() - 1; i >= 0; i--) {
-					Char_t code = fData[i];
+					Char_t code = *(this->Data() + i);
 					if (code == '-') { idx = i; break; }
 					else if (code >= '0' && code <= '7') idx = i;
 					else break;
@@ -778,7 +778,7 @@ Int_t TMrbString::CheckInteger(Int_t Base) const {
 				break;
 			case 10:
 				for (Int_t i = this->Length() - 1; i >= 0; i--) {
-					Char_t code = fData[i];
+					Char_t code = *(this->Data() + i);
 					if (code == '-') { idx = i; break; }
 					else if (code >= '0' && code <= '9') idx = i;
 					else break;
@@ -786,7 +786,7 @@ Int_t TMrbString::CheckInteger(Int_t Base) const {
 				break;
 			case 16:
 				for (Int_t i = this->Length() - 1; i >= 0; i--) {
-					Char_t code = fData[i];
+					Char_t code = *(this->Data() + i);
 					if (code == '-') { idx = i; break; }
 					else if (	(code >= '0' && code <= '9')
 							||	(code >= 'a' && code <= 'f')
@@ -826,7 +826,7 @@ Int_t TMrbString::CheckDouble() const {
 
 		Bool_t dot = kFALSE;
 		for (Int_t i = lng - 1; i >= 0; i--) {
-			Char_t code = fData[i];
+			Char_t code = *(this->Data() + i);
 			if (code == '-') { idx = i; break; }
 			if (code >= '0' && code <= '9')	{
 				idx = i;
@@ -848,7 +848,7 @@ Bool_t TMrbString::CheckBase(Int_t Base, Char_t * Method) const {
 // Arguments:      Int_t Base             -- base value ([0], 2, 8, 10, 16)
 //                 Char_t * Method        -- calling method
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Test if numerical base value is ok.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

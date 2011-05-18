@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.23 2010-12-16 13:12:43 Marabou Exp $
+// Revision:       $Id: TMrbModule.h,v 1.24 2011-05-18 11:04:49 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -207,7 +207,7 @@ class TMrbModule : public TNamed {
 
 		Int_t fCrate;							// crate number
 
-		TMrbString fPosition;					// crate & addr
+		TString fPosition;					// crate & addr
 
 		Int_t fRange;							// number of data points
 		Int_t fXmin;							// xmin / xmax

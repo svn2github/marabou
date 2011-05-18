@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModuleRegister.cxx,v 1.6 2006-06-23 08:48:30 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbModuleRegister.cxx,v 1.7 2011-05-18 11:04:49 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -57,7 +57,7 @@ TMrbModuleRegister::TMrbModuleRegister(TMrbModule * Module, Int_t NofChannels, T
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	fParent = Module;
 	if (NofChannels == -1) NofChannels = fParent->GetNofChannels();
 	fNofChannels = NofChannels;
@@ -69,7 +69,7 @@ TMrbModuleRegister::TMrbModuleRegister(TMrbModule * Module, Int_t NofChannels, T
 	fUpperLimit = UpperLimit;
 
 	fAccessMode = AccessMode;
-	
+
 	Reset();
 
 	fLofBitNames = BitNames;
@@ -96,8 +96,8 @@ Bool_t TMrbModuleRegister::SetFromResource(Int_t Value) {
 
 	Int_t regValue;
 	TString res, resn, mname;
-	TMrbString rVal;
-	
+	TString rVal;
+
 	res = this->Parent()->ClassName();
 	res += ".";
 	resn = res;
@@ -110,11 +110,11 @@ Bool_t TMrbModuleRegister::SetFromResource(Int_t Value) {
 
 	rVal = gEnv->GetValue(res.Data(), "");
 	rVal = rVal.Strip(TString::kBoth);
-	if (rVal.Length() == 0) regValue = Value; else rVal.ToInteger(regValue);
+	if (rVal.Length() == 0) regValue = Value; else regValue = rVal.Atoi();
 
 	rVal = gEnv->GetValue(resn.Data(), "");
 	rVal = rVal.Strip(TString::kBoth);
-	if (rVal.Length() != 0) rVal.ToInteger(regValue);
+	if (rVal.Length() != 0) regValue = rVal.Atoi();
 
 	if (this->IsCommon())	return(this->Set(regValue));
 	else					return(this->Set(-1, regValue));
@@ -162,7 +162,7 @@ Bool_t TMrbModuleRegister::Set(Int_t Value) {
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
-	
+
 	if (this->IsCommon()) {
 		if (Value < fLowerLimit || Value > fUpperLimit) {
 			if (this->IsBoolean()) {
@@ -206,7 +206,7 @@ Bool_t TMrbModuleRegister::Set(Int_t Channel, Int_t Value) {
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
-	
+
 	if (this->IsPerChannel()) {
 		if (Value < fLowerLimit || Value > fUpperLimit) {
 			if (this->IsBoolean()) {
@@ -260,7 +260,7 @@ Bool_t TMrbModuleRegister::Set(const Char_t * Value) {
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
-	
+
 	if (this->IsCommon()) {
 		if (this->HasBitNames()) {
 			Int_t value;
@@ -312,7 +312,7 @@ Bool_t TMrbModuleRegister::Set(Int_t Channel, const Char_t * Value) {
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
-	
+
 	if (this->IsPerChannel()) {
 		if (this->HasBitNames()) {
 			Int_t value;
@@ -397,10 +397,10 @@ void TMrbModuleRegister::Print(ostream & OutStrm, const Char_t * Prefix) const {
 
 	Int_t i;
 	TString accessMode;
-	
+
 	accessMode = "";
 	if (this->IsReadOnly()) accessMode = "ReadOnly"; else if (this->IsWriteOnly()) accessMode = "WriteOnly";
-	
+
 	OutStrm << Prefix << "Register name  : "	<< this->GetName() << endl;
 	OutStrm << Prefix << "Parent module  : "	<< this->Parent()->GetName() << endl;
 	OutStrm << Prefix << "Type           : "	<< (this->Parent()->IsCamac() ? "CAMAC " : "VME ")

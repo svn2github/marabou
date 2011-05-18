@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.24 2011-04-29 07:19:03 Marabou Exp $
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.25 2011-05-18 11:04:49 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -172,14 +172,6 @@ const SMrbNamedXShort kMrbTsSource[] =
 			{	0,			 								NULL,			}
 		};
 
-const SMrbNamedXShort kMrbBlockXfer[] =
-		{
-			{	TMrbMesytec_Madc32::kBlockXferOff, 			"off"			},
-			{	TMrbMesytec_Madc32::kBlockXferNormal, 		"on"		},
-			{	TMrbMesytec_Madc32::kBlockXferChained, 		"on (chained)"	},
-			{	0,			 								NULL,			}
-		};
-
 TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAddr) :
 									TMrbVMEModule(ModuleName, "Mesytec_Madc32", BaseAddr,
 																0,
@@ -230,7 +222,7 @@ TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAdd
 				fNofShortsPerDatum = 1;
 				fNofDataBits = 13;
 				fBlockReadout = kTRUE;			// module has block readout
-				fBlockXfer = kBlockXferOff;
+				fBlockXfer = kFALSE;
 
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
 
@@ -527,21 +519,6 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	rp = new TMrbVMERegister(this, TMrbMesytec_Madc32::kNofChannels, kp, 0, 0, 0, 0, 0, (2 << 12) - 1);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
-
-	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegBlockXfer, "BlockXfer");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kBlockXferOff,
-													TMrbMesytec_Madc32::kBlockXferOff,
-													TMrbMesytec_Madc32::kBlockXferChained);
-	kp->AssignObject(rp);
-	fLofRegisters.AddNamedX(kp);
-	bNames = new TMrbLofNamedX();
-	bNames->SetName("BlockXfer");
-	bNames->AddNamedX(kMrbBlockXfer);
-	bNames->SetPatternMode(kTRUE);
-	rp->SetLofBitNames(bNames);
-	rp->SetPatternMode(kTRUE);
-
-
 }
 
 Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
@@ -588,7 +565,7 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	this->UpdateSettings(madcEnv->Get(moduleName.Data(), "UpdateSettings", kFALSE));
 	this->SetUpdateInterval(madcEnv->Get(moduleName.Data(), "UpdateInterval", 0));
 
-	this->SetBlockXfer((EMrbBlockXfer) madcEnv->Get(moduleName.Data(), "BlockXfer", kBlockXferOff));
+	this->SetBlockXfer(madcEnv->Get(moduleName.Data(), "BlockXfer", kFALSE));
 	this->SetAddressSource(madcEnv->Get(moduleName.Data(), "AddressSource", kAddressBoard));
 	this->SetAddressRegister(madcEnv->Get(moduleName.Data(), "AddressRegister", 0));
 	Int_t mid = madcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
@@ -715,7 +692,7 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$dataWidth", this->GetDataWidth());
 						tmpl.Substitute("$multiEvent", this->GetMultiEvent());
 						tmpl.Substitute("$markingType", this->GetMarkingType());
-						tmpl.Substitute("$blockXfer", (Int_t) this->GetBlockXfer());
+						tmpl.Substitute("$blockXfer", this->BlockXferEnabled() ? "TRUE" : "FALSE");
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%OperationMode%");
@@ -1013,7 +990,7 @@ void TMrbMesytec_Madc32::PrintSettings(ostream & Out) {
 	Out << " Data width          : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegDataWidth) << endl;
 	Out << " Single/multi event  : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegMultiEvent) << endl;
 	Out << " Marking type        : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegMarkingType) << endl;
-	Out << " Block tansfer       : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegBlockXfer) << endl;
+	Out << " Block tansfer       : "	<< (this->BlockXferEnabled() ? "off" : "on") << endl;
 	Out << " Bank operation      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegBankOperation) << endl;
 	Out << " ADC resolution      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAdcResolution) << endl;
 	Out << " Output format       : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegOutputFormat) << endl;

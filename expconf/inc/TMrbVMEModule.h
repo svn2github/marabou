@@ -8,8 +8,8 @@
 // Class:          TMrbVMEModule        -- base class for vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVMEModule.h,v 1.11 2011-02-15 09:12:08 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbVMEModule.h,v 1.12 2011-05-18 11:04:49 Marabou Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -24,7 +24,6 @@ namespace std {} using namespace std;
 #include "Rtypes.h"
 #include "TSystem.h"
 
-#include "TMrbString.h"
 #include "TMrbTemplate.h"
 #include "TMrbModule.h"
 
@@ -66,7 +65,7 @@ class TMrbVMEModule : public TMrbModule {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate readout code
 												TMrbTemplate & Template, const Char_t * Prefix = NULL);
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbSubevent * Subevent, Int_t Value = 0) { return(kFALSE); }; 
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbSubevent * Subevent, Int_t Value = 0) { return(kFALSE); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -80,6 +79,6 @@ class TMrbVMEModule : public TMrbModule {
 		Int_t fSegmentSize; 				// segment size
 
 	ClassDef(TMrbVMEModule, 1)		// [Config] Base class for VME modules
-};	
+};
 
 #endif

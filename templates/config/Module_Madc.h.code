@@ -7,9 +7,12 @@
 #define MADC_SH_SERIAL						16
 #define MADC_SH_RES 						11
 
+#define MADC_M_SIGNATURE					0xC0000000
 #define MADC_D_HDR							0x40000000
 #define MADC_D_DATA							0x00000000
 #define MADC_D_EOE							0xC0000000
+#define MADC_D_BOB							0x80000000
+#define MADC_D_EOB							0xdeadbeef
 
 #define MADC_D_XTS							0x04800000
 

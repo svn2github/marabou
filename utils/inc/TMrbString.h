@@ -8,8 +8,8 @@
 // Class:          TMrbString     -- a TString providing number conversion
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbString.h,v 1.12 2007-11-20 08:14:51 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbString.h,v 1.13 2011-05-18 11:04:49 Marabou Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -152,7 +152,7 @@ class TMrbString : public TString {
 
 		inline TMrbString & operator=(const TSubString & s) { TString tmp = s; *this = tmp; return(*this); };
 
-		inline const Char_t * Fill(Int_t n, const Char_t * Pattern = " ", Int_t Pos = 0) { if (n > 0) { for (; n--;) Insert(Pos, Pattern); } return(fData); };
+		inline const Char_t * Fill(Int_t n, const Char_t * Pattern = " ", Int_t Pos = 0) { if (n > 0) { for (; n--;) Insert(Pos, Pattern); } return(this->Data()); };
 
 		inline void SetBase(Int_t Base) { fBase = Base; };
 		inline void ResetBase() { fBase = TMrbString::kDefaultBase; };
@@ -164,7 +164,7 @@ class TMrbString : public TString {
 
 	protected:
 		Int_t fBase;
-		
+
 	ClassDef(TMrbString, 0) 	// [Utils] Strings with integer/float numbers
 };
 

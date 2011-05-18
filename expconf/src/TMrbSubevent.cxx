@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.44 2010-12-16 13:12:43 Marabou Exp $
+// Revision:       $Id: TMrbSubevent.cxx,v 1.45 2011-05-18 11:04:49 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -578,7 +578,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 	TString tf, tf1, tf2, tf3, tf4;
 	const Char_t * pcf;
 
-	TMrbString iniTag;
+	TString iniTag;
 
 	TMrbTemplate anaTmpl;
 
@@ -1616,7 +1616,7 @@ Bool_t TMrbSubevent::MakeConfigCode(ofstream & CfgStrm,	TMrbConfig::EMrbConfigTa
 					lofParams += param->GetName();
 					if (param->GetAddr() != chnNo + 1) {
 						lofParams += "=";
-						TMrbString xChn(param->GetAddr());
+						TString xChn(param->GetAddr());
 						lofParams += xChn;
 					}
 					chnNo = param->GetAddr();

@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.23 2010-09-01 08:52:50 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbSubevent.h,v 1.24 2011-05-18 11:04:49 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,6 @@ namespace std {} using namespace std;
 
 #include "TMrbLofNamedX.h"
 #include "TMrbTemplate.h"
-#include "TMrbString.h"
 #include "TMrbEvent.h"
 #include "TMrbModule.h"
 #include "TMrbCamacModule.h"

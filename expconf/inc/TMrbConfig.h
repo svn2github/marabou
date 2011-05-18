@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.99 2011-03-08 08:25:13 Marabou Exp $
+// Revision:       $Id: TMrbConfig.h,v 1.100 2011-05-18 11:04:49 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -957,7 +957,7 @@ class TMrbConfig : public TNamed {
 
 		Bool_t fUserMacroToBeCalled;		// call user macro
 		TString fUserMacro; 				// macro name
-		TMrbString fUserMacroCmd;				// ... command
+		TString fUserMacroCmd;				// ... command
 
 		TObjArray fLofOnceOnlyTags; 		// list of tags already processed
 		TObjArray fLofUserHistograms;		// list of user-defined histograms

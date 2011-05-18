@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.190 2011-03-08 08:25:13 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.191 2011-05-18 11:04:49 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +32,6 @@
 #include "TMrbLofNamedX.h"
 #include "TMrbVarWdwCommon.h"
 #include "TMrbLofUserVars.h"
-#include "TMrbString.h"
 #include "TMrbConfig.h"
 #include "TMrbEvent.h"
 #include "TMrbEvent_10_1.h"
@@ -867,7 +866,7 @@ Bool_t TMrbConfig::HandleMultipleTriggers(Int_t T1, Int_t T2, Int_t T3, Int_t T4
 			trg = i;
 			if (fTriggersToBeHandled[trg] == kTriggerPattern) {
 				TString evtName = Form("pattern%d", trg);
-				TString evtTitle = Form("multiple trigger ", trg);
+				TString evtTitle = Form("multiple trigger %d", trg);
 				multiEvt = new TMrbEvent_10_1(trg, evtName.Data(), evtTitle.Data());
 				trigMask = 1;
 				while (trg && trigMask < kNofTriggers) {
@@ -4304,7 +4303,7 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 									lofVars += var->GetName();
 									if (var->IsArray()) {
 										lofVars += "[";
-										TMrbString vSize(var->GetSize());
+										TString vSize(var->GetSize());
 										lofVars += vSize;
 										lofVars += "]";
 									}
@@ -4889,7 +4888,7 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 			gMrbLog->Out()  << "Initializing user macro \"" << fileSpec << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 		}
-		TMrbString cmd = fUserMacroCmd;
+		TString cmd = fUserMacroCmd;
 		cmd += "Init()";
 		gROOT->ProcessLine(cmd.Data());
 	}
@@ -4978,12 +4977,8 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t result;
-	TMrbString cmd;
-
 	if (fUserMacroToBeCalled) {
-		cmd = fUserMacroCmd;
-		cmd.SetBase(16);
+		TString cmd = fUserMacroCmd;
 		cmd += "((ofstream *) ";
 		cmd += Form("%#lx", (ULong_t) Strm);
 		cmd += ", (TMrbConfig *) ";
@@ -4993,9 +4988,9 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 		cmd += ", \"";
 		cmd += TagWord;
 		cmd += "\", (Bool_t *) ";
+		Bool_t result;
 		cmd += Form("%#lx", (ULong_t) &result);
 		cmd += ")";
-		cmd.ResetBase();
 		gROOT->ProcessLine(cmd.Data());
 		return(result);
 	} else {
@@ -5127,7 +5122,7 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 				gMrbLog->Out()  << "Using prototype file " << ptPath << endl;
 				gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
 			}
-			TMrbString line;
+			TString line;
 			UInt_t iclOpts = 0;
 			TMrbLofNamedX * lofMethods = new TMrbLofNamedX(userFile.Data());
 			Int_t lineNo = 0;
@@ -5138,18 +5133,20 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 					break;
 				}
 				lineNo++;
-				line.ReplaceWhiteSpace();
+				line.ReplaceAll("\t", " ");
+				TString lsav;
+				while (line.CompareTo(lsav) != 0) {
+					lsav = line;
+					line.ReplaceAll("  ", " ");
+				}
 				line.ReplaceAll(" ::", "::");
 				line.ReplaceAll(":: ", "::");
 				line.ReplaceAll(" (", "(");
 				if (line.Contains("(") && line.Contains(")")) {
 					TString method = "";
-					TObjArray splitted;
 					if (line.Contains("::")) {
-						splitted.Delete();
-						Int_t n = line.Split(splitted, " ");
-						for (Int_t i = 0; i < n; i++) {
-							method = ((TObjString *) splitted[i])->GetString();
+						Int_t n = 0;
+						while (line.Tokenize(method, n, " ")) {
 							if (method.Contains("::")) break;
 						}
 						method.Resize(method.Index("(", 0));
@@ -5268,10 +5265,8 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 							}
 						}
 					} else {
-						splitted.Delete();
-						Int_t n = line.Split(splitted, " ");
-						for (Int_t i = 0; i < n; i++) {
-							method = ((TObjString *) splitted[i])->GetString();
+						Int_t n = 0;
+						while (line.Tokenize(method, n, " ")) {
 							if (method.Contains("(")) break;
 						}
 						method.Resize(method.Index("("));
@@ -5932,7 +5927,7 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 						break;
 					case TMrbConfig::kXhitDataLength:
 						{
-							TMrbString dl = Xhit->GetIndex();
+							TString dl = Form("%d", Xhit->GetIndex());
 							outStrm << xHitTmpl.Encode(line, dl.Data()) << endl;
 						}
 						break;
@@ -6023,11 +6018,9 @@ void TMrbConfig::AddToTagList(const Char_t * CodeFile, Int_t TagIndex) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString tag;
-
-	tag = CodeFile;
+	TString tag = CodeFile;
 	tag += ":";
-	tag += TagIndex;
+	tag += Form("%d", TagIndex);
 	fLofOnceOnlyTags.Add(new TObjString(tag.Data()));
 }
 
@@ -6044,11 +6037,9 @@ Bool_t TMrbConfig::TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex) con
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString tag;
-
-	tag = CodeFile;
+	TString tag = CodeFile;
 	tag += ":";
-	tag += TagIndex;
+	tag += Form("%d", TagIndex);
 	return(fLofOnceOnlyTags.FindObject(tag.Data()) == NULL);
 }
 
@@ -6953,9 +6944,10 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 		return(kFALSE);
 	}
 
-	TMrbString argStr = Args;
-	TObjArray args;
-	Int_t nargs = argStr.Split(args, ",");
+	TString argStr = Args;
+	TObjArray * args = argStr.Tokenize(",");
+	Int_t nargs = args->GetEntriesFast();
+	delete args;
 	if ((histoType->GetIndex() & TMrbConfig::kHistoTH1) && (nargs != 3)) {
 		gMrbLog->Err() << "[" << HistoName << "] Illegal number of args (" << nargs << ") - not a TH1" << endl;
 		gMrbLog->Flush(this->ClassName(), "BookHistogram");

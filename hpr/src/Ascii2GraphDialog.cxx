@@ -210,7 +210,11 @@ void Ascii2GraphDialog::Draw_The_Graph()
       }
       
       gStyle->SetOptStat(0);
+<<<<<<< Ascii2GraphDialog.cxx
+      TH1F * gh = new TH1F(fGraphName, fGraphName, 100, xmin, xmax);
+=======
 		TH1F * gh = new TH1F(fGraphName, fGraphName, 100, xmin, xmax);
+>>>>>>> 1.19
       gh->Draw();
       gh->SetMinimum(ymin);
       gh->SetMaximum(ymax);

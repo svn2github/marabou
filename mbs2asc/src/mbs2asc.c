@@ -1613,7 +1613,7 @@ void usage() {
 	fprintf(stderr, "                             (there may be more than one option \"-t\" in case of multiple triggers)\n");
 	fprintf(stderr, "          -f <dgfFmt>        use DGF-4C format descriptor <dgfFmt> in case of format errors\n");
 	fprintf(stderr, "          -d <sevtType>      raw data file contains subevent dumps rather than original mbs data (extension .dmp)\n");
-	fprintf(stderr, "                             <sevtType> = \"dgf\" or \"caen\" (default: none)\n");
+	fprintf(stderr, "                             <sevtType> = \"dgf\", \"caen\" or \"madc\" (default: none)\n");
 	fprintf(stderr, "          -b                 turn on buffer dump: write buffer data to file in case of errors\n\n");
 	fprintf(stderr, "          -s <nbufs>         store <nbufs> last records for backtracing (default: 0)\n");
 	fprintf(stderr, "          -l <logFile>       write (error) messages to log file\n");

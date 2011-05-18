@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEChannel.cxx,v 1.7 2008-12-12 13:09:58 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbVMEChannel.cxx,v 1.8 2011-05-18 11:04:49 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -19,7 +19,6 @@ namespace std {} using namespace std;
 #include <iomanip>
 #include <fstream>
 
-#include "TMrbString.h"
 #include "TMrbConfig.h"
 #include "TMrbVMEModule.h"
 #include "TMrbVMEChannel.h"
@@ -44,7 +43,7 @@ TMrbVMEChannel::TMrbVMEChannel(TMrbVMEModule * Module, Int_t Channel) : TMrbModu
 	if (!this->IsZombie()) {
 		fOffset = 0;
 		fPosition = "C0.";
-		fPosition.AppendInteger(Module->GetBaseAddr(), 0, 16, kTRUE);
+		fPosition += Form("%#0lx", Module->GetBaseAddr());
 	}
 }
 
@@ -65,7 +64,7 @@ void TMrbVMEChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag,
 
 	TString parent;
 
-	TMrbString addr = fPosition;
+	TString addr = fPosition;
 	addr += " +";
 	addr += fOffset;
 

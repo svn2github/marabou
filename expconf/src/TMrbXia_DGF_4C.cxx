@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.30 2008-12-10 12:13:50 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.31 2011-05-18 11:04:49 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -58,9 +58,9 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 	TString mType;
 	TString xiaRelString;
 	TString dspFormat;
-	
+
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -94,7 +94,7 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 				gMrbLog->Flush(this->ClassName(), "", setblue);
 			}
 			printRelease = kFALSE;
-						
+
 			if (!this->ReadNameTable()) {
 				gMrbLog->Err() << ModuleName << ": No param names found" << endl;
 				gMrbLog->Flush(this->ClassName());
@@ -153,9 +153,9 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 
 	TString mnemoLC, mnemoUC;
 	TString moduleNameUC;
-	TString sPath, sSubdir, seg;	
+	TString sPath, sSubdir, seg;
 	TString pos;
-	
+
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
 						<< gMrbConfig->fLofModuleTags.FindByIndex(TagIndex)->GetName() << endl;
@@ -338,7 +338,7 @@ Bool_t TMrbXia_DGF_4C::CheckSubeventType(TMrbSubevent * Subevent) const {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXia_DGF_4C::CheckSubeventType
 // Purpose:        Check if calling subevent is applicable
-// Arguments:      
+// Arguments:
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Makes sure that a subevent of type [10,2x] (DGF)
@@ -397,7 +397,7 @@ Bool_t TMrbXia_DGF_4C::ReadNameTable() {
 		gMrbLog->Flush(this->ClassName(), "ReadNameTable");
 		return(kFALSE);
 	}
- 
+
 	paramFile = fileSpec;
 	param.open(paramFile, ios::in);
 	if (!param.good()) {
@@ -448,10 +448,10 @@ TMrbNamedX * TMrbXia_DGF_4C::FindParam(Int_t Channel, const Char_t * ParamName) 
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString paramName;
+	TString paramName;
 
 	paramName = ParamName;
-	paramName += Channel;
+	paramName += Form("%d", Channel);
 	return(this->FindParam(paramName.Data()));
 }
 
@@ -492,7 +492,7 @@ Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnaly
 	TString line;
 	TMrbTemplate anaTmpl;
 	TMrbNamedX * analyzeTag;
-	
+
 	TMrbNamedX * px;
 
 	mnemoLC = this->GetMnemonic();
@@ -563,12 +563,12 @@ Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnaly
 	}
 
 	if (fileSpec.IsNull()) return(kTRUE);
-	
+
 	if (verboseMode) {
 		gMrbLog->Out()  << "[" << moduleNameLC << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 	}
-	
+
 	anaTemplateFile = fileSpec;
 
 	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) return(kFALSE);
@@ -717,11 +717,11 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 	TString templatePath;
 	TString moduleNameUC;
 	TString iniTag;
-	TString seg;		
+	TString seg;
 	TString tf;
-	
+
 	TMrbTemplate rcTmpl;
-	
+
 	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetRcFileOptions() & TMrbConfig::kRcOptVerbose) != 0);
 
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
@@ -740,7 +740,7 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 		gMrbLog->Out()  << "[" << this->GetName() << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeRcFile");
 	}
-	
+
  	rcTemplateFile = fileSpec;
 
 	if (!rcTmpl.Open(rcTemplateFile, &gMrbConfig->fLofRcFileTags)) return(kFALSE);
@@ -749,7 +749,7 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 	moduleNameUC(0,1).ToUpper();
 
 	iniTag = (gMrbConfig->GetRcFileOptions() & TMrbConfig::kRcOptByName) ? "%NAM%" : "%NUM%";
-	
+
 	for (;;) {
 		rcFileTag = rcTmpl.Next(line);
 		if (rcTmpl.IsEof()) break;
