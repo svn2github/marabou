@@ -36,8 +36,8 @@
 						kSis3302KeyMcaMultiscanDisable,
 						/* header */
 						kSis3302HeaderMask	 		= 0x7FFF,
-						/* address range */
-						kSis3302AddressRangeReduced		= BIT(30),
+						/* address space indicator */
+						kSis3302AddressSpaceReduced		= BIT(30),
 						/* trigger mode */
 						kSis3302GateOff				= 0x0,
 						kSis3302GateIntern			= BIT(0),

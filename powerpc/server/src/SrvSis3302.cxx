@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.21 $
-//! $Date: 2011-05-20 12:21:03 $
+//! $Revision: 1.22 $
+//! $Date: 2011-05-20 13:51:17 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -751,11 +751,13 @@ Bool_t SrvSis3302::CheckAddressSpace(SrvVMEModule * Module, Bool_t PrintFlag) {
 	
 	if ((ident & 0xFFFF) >= 0x1410) {
 		if (!this->ReadControlStatus(Module, status)) return(kFALSE);
-		reduced = (status & kSis3302AddressRangeReduced) != 0;
+		reduced = (status & kSis3302AddressSpaceReduced) != 0;
 	} else {
 		reduced = kFALSE;
 	}
 	this->SetReduced(reduced);
+	if (reduced) Module->SetSegmentSize(kSis3302SegSizeReduced);
+	
 	if (PrintFlag) {
 		if (reduced) {
 			gMrbLog->Out()	<< "Using REDUCED address space (16MB)" << endl;
@@ -777,7 +779,7 @@ Bool_t SrvSis3302::CheckAddressSpace(SrvVMEModule * Module, Bool_t PrintFlag) {
 
 ULong_t SrvSis3302::CA(ULong_t Address) {
 	if (Address < 0x01000000 || !this->IsReduced()) return(Address);
-	return(((Address & 0xFFFF) >> 4) | (Address & 0xFFFF));
+	return(((Address & 0xFFFF0000) >> 4) | (Address & 0xFFFF));
 }
 
 //________________________________________________________________[C++ METHOD]

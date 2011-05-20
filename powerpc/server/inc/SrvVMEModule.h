@@ -9,8 +9,8 @@
 //! 				Module Vulom3 (GSI), mode "trigger box"
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2011-05-20 12:21:03 $
+//! $Revision: 1.4 $     
+//! $Date: 2011-05-20 13:51:17 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
@@ -78,6 +78,9 @@ class SrvVMEModule : public TNamed {
 		//! Get highest address mapped so far
 		//! \retval 	AddrHigh 	-- upper bound of mapping segment
 		inline UInt_t GetAddrHigh() const { return(fAddrHigh); };
+
+		//! Set segment size in bytes
+		inline void SetSegmentSize(Int_t SegSize) { fSegSize = SegSize; };
 
 		//! Get segment size in bytes
 		//! \retval 	SegSize 	-- segment size in bytes
