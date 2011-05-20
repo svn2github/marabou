@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.20 $
-//! $Date: 2011-03-08 08:25:14 $
+//! $Revision: 1.21 $
+//! $Date: 2011-05-20 12:21:03 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -62,6 +62,7 @@ SrvSis3302::SrvSis3302() : SrvVMEModule(	"Sis3302",							//!< type
 Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 
 	Int_t boardId, majorVersion, minorVersion;
+	
 	if (!this->GetModuleInfo(Module, boardId, majorVersion, minorVersion, kTRUE)) return(kFALSE);
 	if (boardId != 3302) {
 		gMrbLog->Err()	<< "[" << Module->GetName()
@@ -69,13 +70,26 @@ Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 		gMrbLog->Flush(this->ClassName(), "TryAccess");
 		return(kFALSE);
 	}
+	if (!this->CheckAddressSpace(Module, kTRUE)) return(kFALSE);
 
 	fTraceCollection = kFALSE;
 	fSampling = kSis3302KeyArmBank1Sampling;
 	fTraceNo = 0;
 	fDumpTrace = kFALSE;
 
+
 	return(kTRUE);
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Release module and unmap VME memory
+//! \param[in]		Module  -- module address
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::Release(SrvVMEModule * Module) {
+	return(Module->MapAddress(0xFFFFFFFF));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -84,7 +98,7 @@ Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 //! \param[in]		Module		-- module address
 //! \param[in]		Function	-- function
 //! \param[in,out]	Data		-- data
-//! \retval 		Hdr 		-- ptr to output message
+//! \return 		Hdr 		-- ptr to output message
 //////////////////////////////////////////////////////////////////////////////
 
 M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, M2L_MsgData * Data) {
@@ -110,12 +124,12 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 				return((M2L_MsgHdr *) m);
 			}
 		case kM2L_FCT_SIS_3302_SET_USER_LED:
-			{
-				Bool_t ledOn = (data[0] != 0);
-				if (!this->SetUserLED(Module, ledOn)) return(NULL);
-				data.Set(1); data[0] = ledOn ? 1 : 0;
-				break;
-			}
+		{
+			Bool_t ledOn = (data[0] != 0);
+			if (!this->SetUserLED(Module, ledOn)) return(NULL);
+			data.Set(1); data[0] = ledOn ? 1 : 0;
+			break;
+		}
 		case kM2L_FCT_SIS_3302_READ_DAC:
 			{
 				if (!this->ReadDac(Module, data, chanNo)) return(NULL);
@@ -641,7 +655,7 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 	}
 
 
-	return(this->FinishFunction(data));
+	if (Data != NULL) return(this->FinishFunction(data)); else return(NULL);
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -666,7 +680,7 @@ void SrvSis3302::SetupFunction(M2L_MsgData * Data, TArrayI & Array, Int_t & Chan
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Finishes 'exec function' call
 //! \param[in,out]	Array        -- array holding data
-//! \retval 		Msg       -- ptr to message (header)
+//! \return 		Msg          -- ptr to message (header)
 //////////////////////////////////////////////////////////////////////////////
 
 M2L_MsgHdr * SrvSis3302::FinishFunction(TArrayI & Array) {
@@ -684,20 +698,20 @@ M2L_MsgHdr * SrvSis3302::FinishFunction(TArrayI & Array) {
 //! \details		Reads (and outputs) module info
 //! \param[in]		Module			-- module address
 //! \param[out]		BoardId 		-- board id
-//! \param[out]		MajorVersion	-- firmware version (major)
-//! \param[out]		MinorVersion	-- firmware version (minor)
+//! \param[out]		MajorVersion		-- firmware version (major)
+//! \param[out]		MinorVersion		-- firmware version (minor)
 //! \param[in]		PrintFlag		-- output to gMrbLog if kTRUE
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
 Bool_t SrvSis3302::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t & MajorVersion, Int_t & MinorVersion, Bool_t PrintFlag) {
 
-	volatile ULong_t * firmWare = (volatile ULong_t *) Module->MapAddress(SIS3302_MODID);
+	volatile ULong_t * firmWare = (volatile ULong_t *) Module->MapAddress(this->CA(SIS3302_MODID));
 	if (firmWare == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	ULong_t ident = *firmWare;
-	if (this->CheckBusTrap(Module, SIS3302_MODID, "GetModuleInfo")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(SIS3302_MODID), "GetModuleInfo")) return(kFALSE);
 
 	Int_t b = (ident >> 16) & 0xFFFF;
 	BoardId = (b &0xF) + 10 * ((b >> 4) & 0xF) + 100 * ((b >> 8) & 0xF) + 1000 * ((b >> 12) & 0xF);
@@ -714,6 +728,56 @@ Bool_t SrvSis3302::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 		gMrbLog->Flush(this->ClassName(), "GetModuleInfo");
 	}
 	return(kTRUE);
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Checks if reduced address space
+//! \param[in]		Module			-- module address
+//! \param[in]		PrintFlag		-- output to gMrbLog if kTRUE
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::CheckAddressSpace(SrvVMEModule * Module, Bool_t PrintFlag) {
+	Int_t status;
+	Bool_t reduced;
+	volatile ULong_t * firmWare;
+	
+	firmWare = (volatile ULong_t *) Module->MapAddress(this->CA(SIS3302_MODID));
+	if (firmWare == NULL) return(kFALSE);
+	gSignalTrap = kFALSE;
+	ULong_t ident = *firmWare;
+	if (this->CheckBusTrap(Module, this->CA(SIS3302_MODID), "CheckAddressSpace")) return(kFALSE);
+	
+	if ((ident & 0xFFFF) >= 0x1410) {
+		if (!this->ReadControlStatus(Module, status)) return(kFALSE);
+		reduced = (status & kSis3302AddressRangeReduced) != 0;
+	} else {
+		reduced = kFALSE;
+	}
+	this->SetReduced(reduced);
+	if (PrintFlag) {
+		if (reduced) {
+			gMrbLog->Out()	<< "Using REDUCED address space (16MB)" << endl;
+		} else {
+			gMrbLog->Out()	<< "Using FULL address space (128MB)" << endl;
+		}
+		gMrbLog->Flush(this->ClassName(), "CheckAddressSpace");
+	}
+	return(kTRUE);
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Convert address according to jumper J80:RED
+//! \param[in]		Module			-- module address
+//! \param[in]		Address			-- addr in full addr space
+//! \return 		Address			-- addr, possibly reduced
+//////////////////////////////////////////////////////////////////////////////
+
+ULong_t SrvSis3302::CA(ULong_t Address) {
+	if (Address < 0x01000000 || !this->IsReduced()) return(Address);
+	return(((Address & 0xFFFF) >> 4) | (Address & 0xFFFF));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -763,9 +827,9 @@ Bool_t SrvSis3302::ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t Cha
 	}
 	Int_t wc = lastchan - firstchan + 1;
 
-	volatile Int_t * dacStatus = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_CONTROL_STATUS);
+	volatile Int_t * dacStatus = (volatile Int_t *) Module->MapAddress(this->CA(SIS3302_DAC_CONTROL_STATUS));
 	if (dacStatus == NULL) return(kFALSE);
-	volatile Int_t * dacData = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_DATA);
+	volatile Int_t * dacData = (volatile Int_t *) Module->MapAddress(this->CA(SIS3302_DAC_DATA));
 	if (dacData == NULL) return(kFALSE);
 
 	Int_t maxTimeout = 5000;
@@ -774,18 +838,18 @@ Bool_t SrvSis3302::ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t Cha
 	Int_t idx = 0;
 	for (Int_t chan = firstchan; chan <= lastchan; chan++, idx++) {
 		*dacStatus = kSis3302DacCmdLoadShiftReg + (chan << 4);
-		if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "ReadDac")) return(kFALSE);
+		if (this->CheckBusTrap(Module, this->CA(SIS3302_DAC_CONTROL_STATUS), "ReadDac")) return(kFALSE);
 		Int_t timeout = 0 ;
 		Int_t data;
 		do {
 			data = *dacStatus;
-			if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "ReadDac")) return(kFALSE);
+			if (this->CheckBusTrap(Module, this->CA(SIS3302_DAC_CONTROL_STATUS), "ReadDac")) return(kFALSE);
 			timeout++;
 		} while (((data & kSis3302DacBusy) == kSis3302DacBusy) && (timeout <  maxTimeout));
 		if (timeout >=  maxTimeout) return(kFALSE);
 
 		DacValues[idx] = (*dacData >> 16) & 0xFFFF;
-		if (this->CheckBusTrap(Module, SIS3302_DAC_DATA, "ReadDac")) return(kFALSE);
+		if (this->CheckBusTrap(Module, this->CA(SIS3302_DAC_DATA), "ReadDac")) return(kFALSE);
 	}
 	return(kTRUE);
 }
@@ -801,33 +865,33 @@ Bool_t SrvSis3302::ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t Cha
 
 Bool_t SrvSis3302::WriteDac(SrvVMEModule * Module, Int_t & DacValue, Int_t ChanNo) {
 
-	volatile Int_t * dacStatus = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_CONTROL_STATUS);
+	volatile Int_t * dacStatus = (volatile Int_t *) Module->MapAddress(this->CA(SIS3302_DAC_CONTROL_STATUS));
 	if (dacStatus == NULL) return(kFALSE);
-	volatile Int_t * dacData = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_DATA);
+	volatile Int_t * dacData = (volatile Int_t *) Module->MapAddress(this->CA(SIS3302_DAC_DATA));
 	if (dacData == NULL) return(kFALSE);
 
 	Int_t maxTimeout = 5000;
 	gSignalTrap = kFALSE;
 	*dacData = DacValue;
-	if (this->CheckBusTrap(Module, SIS3302_DAC_DATA, "WriteDac")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(SIS3302_DAC_DATA), "WriteDac")) return(kFALSE);
 
 	*dacStatus = kSis3302DacCmdLoadShiftReg + (ChanNo << 4);
-	if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(SIS3302_DAC_CONTROL_STATUS), "WriteDac")) return(kFALSE);
 	Int_t timeout = 0 ;
 	Int_t data;
 	do {
 		data = *dacStatus;
-		if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
+		if (this->CheckBusTrap(Module, this->CA(SIS3302_DAC_CONTROL_STATUS), "WriteDac")) return(kFALSE);
 		timeout++;
 	} while (((data & kSis3302DacBusy) == kSis3302DacBusy) && (timeout <  maxTimeout));
 	if (timeout >=  maxTimeout) return(kFALSE);
 
 	*dacStatus = kSis3302DacCmdLoad + (ChanNo << 4);
-	if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(SIS3302_DAC_CONTROL_STATUS), "WriteDac")) return(kFALSE);
 	timeout = 0 ;
 	do {
 		data = *dacStatus;
-		if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
+		if (this->CheckBusTrap(Module, this->CA(SIS3302_DAC_CONTROL_STATUS), "WriteDac")) return(kFALSE);
 		timeout++;
 	} while (((data & kSis3302DacBusy) == kSis3302DacBusy) && (timeout <  maxTimeout));
 	if (timeout >=  maxTimeout) return(kFALSE);
@@ -869,9 +933,9 @@ Bool_t SrvSis3302::WriteDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t Ch
 		return(kFALSE);
 	}
 
-	volatile Int_t * dacStatus = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_CONTROL_STATUS);
+	volatile Int_t * dacStatus = (volatile Int_t *) Module->MapAddress(this->CA(SIS3302_DAC_CONTROL_STATUS));
 	if (dacStatus == NULL) return(kFALSE);
-	volatile Int_t * dacData = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_DATA);
+	volatile Int_t * dacData = (volatile Int_t *) Module->MapAddress(this->CA(SIS3302_DAC_DATA));
 	if (dacData == NULL) return(kFALSE);
 
 	Int_t idx = 0;
@@ -891,22 +955,22 @@ Bool_t SrvSis3302::KeyAddr(SrvVMEModule * Module, Int_t Key) {
 
 	Int_t offset = 0;
 	switch (Key) {
-		case kSis3302KeyReset:							offset = SIS3302_KEY_RESET; break;
+		case kSis3302KeyReset:						offset = SIS3302_KEY_RESET; break;
 		case kSis3302KeyResetSampling:					offset = SIS3302_KEY_SAMPLE_LOGIC_RESET_404; break;
 		case kSis3302KeyDisarmSampling:					offset = SIS3302_KEY_DISARM; break;
-		case kSis3302KeyTrigger:						offset = SIS3302_KEY_TRIGGER; break;
+		case kSis3302KeyTrigger:					offset = SIS3302_KEY_TRIGGER; break;
 		case kSis3302KeyClearTimestamp: 				offset = SIS3302_KEY_TIMESTAMP_CLEAR; break;
 		case kSis3302KeyArmBank1Sampling:				offset = SIS3302_KEY_DISARM_AND_ARM_BANK1; break;
 		case kSis3302KeyArmBank2Sampling:				offset = SIS3302_KEY_DISARM_AND_ARM_BANK2; break;
 		case kSis3302KeyResetDDR2Logic:					offset = SIS3302_KEY_RESET_DDR2_LOGIC; break;
 		case kSis3302KeyMcaScanLNEPulse:				offset = SIS3302_KEY_MCA_SCAN_LNE_PULSE; break;
-		case kSis3302KeyMcaScanArm:						offset = SIS3302_KEY_MCA_SCAN_ARM; break;
+		case kSis3302KeyMcaScanArm:					offset = SIS3302_KEY_MCA_SCAN_ARM; break;
 		case kSis3302KeyMcaScanStart:					offset = SIS3302_KEY_MCA_SCAN_START; break;
 		case kSis3302KeyMcaScanDisable:					offset = SIS3302_KEY_MCA_SCAN_DISABLE; break;
-		case kSis3302KeyMcaMultiscanStartResetPulse:	offset = SIS3302_KEY_MCA_MULTISCAN_START_RESET_PULSE; break;
-		case kSis3302KeyMcaMultiscanArmScanArm:			offset = SIS3302_KEY_MCA_MULTISCAN_ARM_SCAN_ARM; break;
-		case kSis3302KeyMcaMultiscanArmScanEnable:		offset = SIS3302_KEY_MCA_MULTISCAN_ARM_SCAN_ENABLE; break;
-		case kSis3302KeyMcaMultiscanDisable:			offset = SIS3302_KEY_MCA_MULTISCAN_DISABLE; break;
+		case kSis3302KeyMcaMultiscanStartResetPulse:			offset = SIS3302_KEY_MCA_MULTISCAN_START_RESET_PULSE; break;
+		case kSis3302KeyMcaMultiscanArmScanArm:				offset = SIS3302_KEY_MCA_MULTISCAN_ARM_SCAN_ARM; break;
+		case kSis3302KeyMcaMultiscanArmScanEnable:			offset = SIS3302_KEY_MCA_MULTISCAN_ARM_SCAN_ENABLE; break;
+		case kSis3302KeyMcaMultiscanDisable:				offset = SIS3302_KEY_MCA_MULTISCAN_DISABLE; break;
 		default:
 			gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal key value - " << Key << endl;
 			gMrbLog->Flush(this->ClassName(), "KeyAddr");
@@ -933,7 +997,7 @@ Bool_t SrvSis3302::KeyAddr(SrvVMEModule * Module, Int_t Key) {
 
 Bool_t SrvSis3302::ReadControlStatus(SrvVMEModule * Module, Int_t & Bits) {
 
-	Int_t offset = SIS3302_CONTROL_STATUS;
+	Int_t offset = this->CA(SIS3302_CONTROL_STATUS);
 
 	volatile Int_t * ctrlStat = (volatile Int_t *) Module->MapAddress(offset);
 	if (ctrlStat == NULL) return(kFALSE);
@@ -953,7 +1017,7 @@ Bool_t SrvSis3302::ReadControlStatus(SrvVMEModule * Module, Int_t & Bits) {
 
 Bool_t SrvSis3302::WriteControlStatus(SrvVMEModule * Module, Int_t & Bits) {
 
-	Int_t offset = SIS3302_CONTROL_STATUS;
+	Int_t offset = this->CA(SIS3302_CONTROL_STATUS);
 
 	volatile Int_t * ctrlStat = (volatile Int_t *) Module->MapAddress(offset);
 	if (ctrlStat == NULL) return(kFALSE);
@@ -994,12 +1058,12 @@ Bool_t SrvSis3302::ReadEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t Ch
 		case 7: 	offset = SIS3302_EVENT_CONFIG_ADC78; break;
 	}
 
-	volatile Int_t * evtConf = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * evtConf = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (evtConf == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Bits = *evtConf;
-	return (!this->CheckBusTrap(Module, offset, "ReadEventConfig"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadEventConfig"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1023,7 +1087,7 @@ Bool_t SrvSis3302::WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t C
 	Int_t offset;
 	switch (ChanNo) {
 		case kSis3302AllChans:
-					offset = SIS3302_EVENT_CONFIG_ALL_ADC; break;
+				offset = SIS3302_EVENT_CONFIG_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_EVENT_CONFIG_ADC12; break;
 		case 2:
@@ -1034,12 +1098,12 @@ Bool_t SrvSis3302::WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t C
 		case 7: 	offset = SIS3302_EVENT_CONFIG_ADC78; break;
 	}
 
-	volatile Int_t * evtConf = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * evtConf = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (evtConf == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*evtConf = Bits;
-	if (this->CheckBusTrap(Module, offset, "WriteEventConfig")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteEventConfig")) return(kFALSE);
 	return(this->ReadEventConfig(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
 }
 
@@ -1073,12 +1137,12 @@ Bool_t SrvSis3302::ReadEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, 
 		case 7: 	offset = SIS3302_EVENT_EXTENDED_CONFIG_ADC78; break;
 	}
 
-	volatile Int_t * evtConf = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * evtConf = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (evtConf == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Bits = *evtConf;
-	return (!this->CheckBusTrap(Module, offset, "ReadEventExtendedConfig"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadEventExtendedConfig"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1102,7 +1166,7 @@ Bool_t SrvSis3302::WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits,
 	Int_t offset;
 	switch (ChanNo) {
 		case kSis3302AllChans:
-					offset = SIS3302_EVENT_EXTENDED_CONFIG_ALL; break;
+			offset = this->CA(SIS3302_EVENT_EXTENDED_CONFIG_ALL); break;
 		case 0:
 		case 1: 	offset = SIS3302_EVENT_EXTENDED_CONFIG_ADC12; break;
 		case 2:
@@ -1113,12 +1177,12 @@ Bool_t SrvSis3302::WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits,
 		case 7: 	offset = SIS3302_EVENT_EXTENDED_CONFIG_ADC78; break;
 	}
 
-	volatile Int_t * evtConf = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * evtConf = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (evtConf == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*evtConf = Bits;
-	if (this->CheckBusTrap(Module, offset, "WriteEventExtendedConfig")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteEventExtendedConfig")) return(kFALSE);
 	return(this->ReadEventConfig(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
 }
 
@@ -1581,12 +1645,12 @@ Bool_t SrvSis3302::ReadEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_
 		case 7: 	offset = SIS3302_END_ADDRESS_THRESHOLD_ADC78; break;
 	}
 
-	volatile Int_t * endAddr = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * endAddr = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (endAddr == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Thresh = *endAddr;
-	return (!this->CheckBusTrap(Module, offset, "ReadEndAddrThresh"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadEndAddrThresh"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1616,7 +1680,8 @@ Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int
 
 	Int_t offset;
 	switch (ChanNo) {
-		case kSis3302AllChans:	offset = SIS3302_END_ADDRESS_THRESHOLD_ALL_ADC; break;
+		case kSis3302AllChans:
+				offset = SIS3302_END_ADDRESS_THRESHOLD_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_END_ADDRESS_THRESHOLD_ADC12; break;
 		case 2:
@@ -1627,12 +1692,12 @@ Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int
 		case 7: 	offset = SIS3302_END_ADDRESS_THRESHOLD_ADC78; break;
 	}
 
-	volatile Int_t * endAddr = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * endAddr = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (endAddr == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*endAddr = Thresh;
-	if (this->CheckBusTrap(Module, offset, "WriteEndAddrThresh")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteEndAddrThresh")) return(kFALSE);
 	return(this->ReadEndAddrThresh(Module, Thresh, ChanNo == kSis3302AllChans ? 0 : ChanNo));
 }
 
@@ -1666,12 +1731,12 @@ Bool_t SrvSis3302::ReadPreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & 
 		case 7: 	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ADC78; break;
 	}
 
-	volatile Int_t * trigReg = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * trigReg = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (trigReg == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Bits = *trigReg;
-	return (!this->CheckBusTrap(Module, offset, "ReadPreTrigDelayAndGateLength"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadPreTrigDelayAndGateLength"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1694,7 +1759,8 @@ Bool_t SrvSis3302::WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t &
 
 	Int_t offset;
 	switch (ChanNo) {
-		case kSis3302AllChans:	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ALL_ADC; break;
+		case kSis3302AllChans:
+				offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ADC12; break;
 		case 2:
@@ -1705,12 +1771,12 @@ Bool_t SrvSis3302::WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t &
 		case 7: 	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ADC78; break;
 	}
 
-	volatile Int_t * trigReg = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * trigReg = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (trigReg == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*trigReg = Bits;
-	if (this->CheckBusTrap(Module, offset, "WritePreTrigDelayAndGateLength")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WritePreTrigDelayAndGateLength")) return(kFALSE);
 	return(this->ReadPreTrigDelayAndGateLength(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
 }
 
@@ -1871,12 +1937,12 @@ Bool_t SrvSis3302::ReadRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int
 		case 7: 	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ADC78; break;
 	}
 
-	volatile Int_t * rawData = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * rawData = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (rawData == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Bits = *rawData;
-	return (!this->CheckBusTrap(Module, offset, "ReadRawDataBufConfig"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadRawDataBufConfig"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1899,7 +1965,8 @@ Bool_t SrvSis3302::WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, In
 
 	Int_t offset;
 	switch (ChanNo) {
-		case kSis3302AllChans:	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ALL_ADC; break;
+		case kSis3302AllChans:
+			offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ADC12; break;
 		case 2:
@@ -1910,12 +1977,12 @@ Bool_t SrvSis3302::WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, In
 		case 7: 	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ADC78; break;
 	}
 
-	volatile Int_t * rawData = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * rawData = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (rawData == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*rawData = Bits;
-	if (this->CheckBusTrap(Module, offset, "WriteRawDataBufConfig")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteRawDataBufConfig")) return(kFALSE);
 	return(this->ReadRawDataBufConfig(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
 }
 
@@ -2087,7 +2154,7 @@ Bool_t SrvSis3302::ReadNextSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t
 		case 7: 	offset = SIS3302_ACTUAL_SAMPLE_ADDRESS_ADC8; break;
 	}
 
-	volatile Int_t * samplAddr = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * samplAddr = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (samplAddr == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	Addr = *samplAddr;
@@ -2124,12 +2191,12 @@ Bool_t SrvSis3302::ReadPrevBankSampleAddr(SrvVMEModule * Module, Int_t & Addr, I
 		case 7: 	offset = SIS3302_PREVIOUS_BANK_SAMPLE_ADDRESS_ADC8; break;
 	}
 
-	volatile Int_t * samplAddr = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * samplAddr = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (samplAddr == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Addr = *samplAddr;
-	return (!this->CheckBusTrap(Module, offset, "ReadPrevBankSampleAddr"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadPrevBankSampleAddr"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2162,13 +2229,13 @@ Bool_t SrvSis3302::ReadActualSample(SrvVMEModule * Module, Int_t & Data, Int_t C
 		case 7: 	offset = SIS3302_ACTUAL_SAMPLE_VALUE_ADC78; break;
 	}
 
-	volatile Int_t * actSample = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * actSample = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (actSample == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Data = *actSample;
 	if ((ChanNo & 1) == 0) Data >>= 16;
-	return(!this->CheckBusTrap(Module, offset, "ReadActualSample"));
+	return(!this->CheckBusTrap(Module, this->CA(offset), "ReadActualSample"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2201,12 +2268,12 @@ Bool_t SrvSis3302::ReadTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t C
 		case 7: 	offset = SIS3302_TRIGGER_SETUP_ADC8; break;
 	}
 
-	volatile Int_t * trigSetup = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * trigSetup = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (trigSetup == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Data = *trigSetup;
-	return (!this->CheckBusTrap(Module, offset, "ReadTriggerSetup"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadTriggerSetup"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2249,12 +2316,12 @@ Bool_t SrvSis3302::WriteTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t 
 		case 7: 	offset = SIS3302_TRIGGER_SETUP_ADC8; break;
 	}
 
-	volatile Int_t * trigSetup = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * trigSetup = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (trigSetup == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*trigSetup = Data;
-	if (this->CheckBusTrap(Module, offset, "WriteTriggerSetup")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteTriggerSetup")) return(kFALSE);
 	return(this->ReadTriggerSetup(Module, Data, ChanNo));
 }
 
@@ -2288,12 +2355,12 @@ Bool_t SrvSis3302::ReadTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data,
 		case 7: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC8; break;
 	}
 
-	volatile Int_t * trigSetup = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * trigSetup = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (trigSetup == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Data = *trigSetup;
-	return (!this->CheckBusTrap(Module, offset, "ReadTriggerExtendedSetup"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadTriggerExtendedSetup"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2336,12 +2403,12 @@ Bool_t SrvSis3302::WriteTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data
 		case 7: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC8; break;
 	}
 
-	volatile Int_t * trigSetup = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * trigSetup = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (trigSetup == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*trigSetup = Data;
-	if (this->CheckBusTrap(Module, offset, "WriteTriggerExtendedSetup")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteTriggerExtendedSetup")) return(kFALSE);
 	return(this->ReadTriggerExtendedSetup(Module, Data, ChanNo));
 }
 
@@ -2388,7 +2455,8 @@ Bool_t SrvSis3302::WriteTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, I
 	if (sumG > kSis3302TrigSumGMax || Peak < kSis3302TrigPeakMin || Peak > kSis3302TrigPeakMax || Gap < kSis3302TrigGapMin || Gap > kSis3302TrigGapMax) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Trigger peak time / gap time mismatch - "
 						<< Peak << " ... " << Gap
-						<< " (peak should be in [" << kSis3302TrigPeakMin << "," << kSis3302TrigPeakMax << "], gap should be in [" << kSis3302TrigGapMin << "," << kSis3302TrigGapMax << "], sumG=p+g <= " << kSis3302TrigSumGMax << endl;
+						<< " (peak should be in [" << kSis3302TrigPeakMin << "," << kSis3302TrigPeakMax << "], gap should be in [" << kSis3302TrigGapMin
+						<< "," << kSis3302TrigGapMax << "], sumG=p+g <= " << kSis3302TrigSumGMax << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteTriggerPeakAndGap");
 		return(kFALSE);
 	}
@@ -2659,12 +2727,12 @@ Bool_t SrvSis3302::ReadTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int
 		case 7: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC8; break;
 	}
 
-	volatile Int_t * trigThresh = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * trigThresh = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (trigThresh == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Data = *trigThresh;
-	return (!this->CheckBusTrap(Module, offset, "ReadTriggerThreshReg"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadTriggerThreshReg"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2707,12 +2775,12 @@ Bool_t SrvSis3302::WriteTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, In
 		case 7: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC8; break;
 	}
 
-	volatile Int_t * trigThresh = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * trigThresh = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (trigThresh == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*trigThresh = Data;
-	if (this->CheckBusTrap(Module, offset, "WriteTriggerThreshReg")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteTriggerThreshReg")) return(kFALSE);
 	return(this->ReadTriggerThreshReg(Module, Data, ChanNo));
 }
 
@@ -2893,12 +2961,12 @@ Bool_t SrvSis3302::ReadEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t Ch
 		case 7: 	offset = SIS3302_ENERGY_SETUP_GP_ADC78; break;
 	}
 
-	volatile Int_t * setup = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * setup = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (setup == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Data = *setup;
-	return (!this->CheckBusTrap(Module, offset, "ReadEnergySetup"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadEnergySetup"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2922,7 +2990,7 @@ Bool_t SrvSis3302::WriteEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t C
 	Int_t offset;
 	switch (ChanNo) {
 		case kSis3302AllChans:
-					offset = SIS3302_ENERGY_SETUP_GP_ALL_ADC; break;
+				offset = SIS3302_ENERGY_SETUP_GP_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_ENERGY_SETUP_GP_ADC12; break;
 		case 2:
@@ -2933,12 +3001,12 @@ Bool_t SrvSis3302::WriteEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t C
 		case 7: 	offset = SIS3302_ENERGY_SETUP_GP_ADC78; break;
 	}
 
-	volatile Int_t * setup = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * setup = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (setup == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*setup = Data;
-	if (this->CheckBusTrap(Module, offset, "WriteEnergySetup")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteEnergySetup")) return(kFALSE);
 	return(this->ReadEnergySetup(Module, Data, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
@@ -3099,12 +3167,12 @@ Bool_t SrvSis3302::ReadEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t 
 		case 7: 	offset = SIS3302_ENERGY_GATE_LENGTH_ADC78; break;
 	}
 
-	volatile Int_t * gateReg = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * gateReg = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (gateReg == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Data = *gateReg;
-	return (!this->CheckBusTrap(Module, offset, "ReadEnergyGateReg"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadEnergyGateReg"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3139,12 +3207,12 @@ Bool_t SrvSis3302::WriteEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t
 		case 7: 	offset = SIS3302_ENERGY_GATE_LENGTH_ADC78; break;
 	}
 
-	volatile Int_t * gateReg = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * gateReg = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (gateReg == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*gateReg = Data;
-	if (this->CheckBusTrap(Module, offset, "WriteEnergyGateReg")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteEnergyGateReg")) return(kFALSE);
 	return(this->ReadEnergyGateReg(Module, Data, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
@@ -3284,12 +3352,12 @@ Bool_t SrvSis3302::ReadEnergySampleLength(SrvVMEModule * Module, Int_t & SampleL
 		case 7: 	offset = SIS3302_ENERGY_SAMPLE_LENGTH_ADC78; break;
 	}
 
-	volatile Int_t * sample = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * sample = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (sample == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	SampleLength = *sample;
-	return (!this->CheckBusTrap(Module, offset, "ReadEnergySampleLength"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadEnergySampleLength"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3319,7 +3387,7 @@ Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & Sample
 	Int_t offset;
 	switch (ChanNo) {
 		case kSis3302AllChans:
-					offset = SIS3302_ENERGY_SAMPLE_LENGTH_ALL_ADC; break;
+				offset = SIS3302_ENERGY_SAMPLE_LENGTH_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_ENERGY_SAMPLE_LENGTH_ADC12; break;
 		case 2:
@@ -3329,12 +3397,12 @@ Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & Sample
 		case 6:
 		case 7: 	offset = SIS3302_ENERGY_SAMPLE_LENGTH_ADC78; break;
 	}
-	volatile Int_t * sample = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * sample = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (sample == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*sample = SampleLength;
-	if (this->CheckBusTrap(Module, offset, "WriteEnergySampleLength")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteEnergySampleLength")) return(kFALSE);
 	return(this->ReadEnergySampleLength(Module, SampleLength, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
@@ -3368,12 +3436,12 @@ Bool_t SrvSis3302::ReadTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t ChanN
 		case 7: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC8; break;
 	}
 
-	volatile Int_t * tauFactor = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * tauFactor = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (tauFactor == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Tau = *tauFactor;
-	return (!this->CheckBusTrap(Module, offset, "ReadTauFactor"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadTauFactor"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3423,12 +3491,12 @@ Bool_t SrvSis3302::WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t Chan
 		case 7: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC8; break;
 	}
 
-	volatile Int_t * tauFactor = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * tauFactor = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (tauFactor == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*tauFactor = Tau;
-	if (this->CheckBusTrap(Module, offset, "WriteTauFactor")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteTauFactor")) return(kFALSE);
 	return(this->ReadTauFactor(Module, Tau, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
@@ -3504,12 +3572,12 @@ Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int
 			}
 	}
 
-	volatile Int_t * sampleIndex = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * sampleIndex = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (sampleIndex == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	IndexValue = *sampleIndex;
-	return (!this->CheckBusTrap(Module, offset, "ReadStartIndex"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadStartIndex"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3561,7 +3629,7 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 			{
 				switch (ChanNo) {
 					case kSis3302AllChans:
-								offset = SIS3302_ENERGY_SAMPLE_START_INDEX1_ALL_ADC; break;
+							offset = SIS3302_ENERGY_SAMPLE_START_INDEX1_ALL_ADC; break;
 					case 0:
 					case 1: 	offset = SIS3302_ENERGY_SAMPLE_START_INDEX1_ADC12; break;
 					case 2:
@@ -3577,7 +3645,7 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 			{
 				switch (ChanNo) {
 					case kSis3302AllChans:
-								offset = SIS3302_ENERGY_SAMPLE_START_INDEX2_ALL_ADC; break;
+							offset = SIS3302_ENERGY_SAMPLE_START_INDEX2_ALL_ADC; break;
 					case 0:
 					case 1: 	offset = SIS3302_ENERGY_SAMPLE_START_INDEX2_ADC12; break;
 					case 2:
@@ -3593,7 +3661,7 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 			{
 				switch (ChanNo) {
 					case kSis3302AllChans:
-								offset = SIS3302_ENERGY_SAMPLE_START_INDEX3_ALL_ADC; break;
+							offset = SIS3302_ENERGY_SAMPLE_START_INDEX3_ALL_ADC; break;
 					case 0:
 					case 1: 	offset = SIS3302_ENERGY_SAMPLE_START_INDEX3_ADC12; break;
 					case 2:
@@ -3608,11 +3676,11 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 	}
 
 
-	volatile Int_t * sampleIndex = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * sampleIndex = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (sampleIndex == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	*sampleIndex = IndexValue;
-	if (this->CheckBusTrap(Module, offset, "WriteStartIndex")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteStartIndex")) return(kFALSE);
 	return(this->ReadStartIndex(Module, IndexValue, Index, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
@@ -3627,12 +3695,12 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 Bool_t SrvSis3302::ReadAcquisitionControl(SrvVMEModule * Module, Int_t & Data) {
 
 	Int_t offset = SIS3302_ACQUISITION_CONTROL;
-	volatile Int_t * ctrl = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * ctrl = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (ctrl == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Data = *ctrl;
-	return (!this->CheckBusTrap(Module, offset, "ReadAcquisitionControl"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadAcquisitionControl"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3646,12 +3714,12 @@ Bool_t SrvSis3302::ReadAcquisitionControl(SrvVMEModule * Module, Int_t & Data) {
 Bool_t SrvSis3302::WriteAcquisitionControl(SrvVMEModule * Module, Int_t & Data) {
 
 	Int_t offset = SIS3302_ACQUISITION_CONTROL;
-	volatile Int_t * ctrl = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * ctrl = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (ctrl == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*ctrl = Data;
-	return (!this->CheckBusTrap(Module, offset, "WriteAcquisitionControl"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "WriteAcquisitionControl"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3839,7 +3907,7 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 							<< setbase(16) <<  wordsPerEvent[chan] << " words, buffer size is 0x" << kSis3302MaxBufSize
 							<< setbase(10) << " bytes)" << endl;
 			gMrbLog->Flush(this->ClassName(), "StartTraceCollection");
-			nofWords = SIS3302_NEXT_ADC_OFFSET - 1;
+			nofWords = this->CA(SIS3302_NEXT_ADC_OFFSET) - 1;
 		}
 
 		nofEventsPerBuffer[chan] = nofWords / wordsPerEvent[chan];
@@ -4003,7 +4071,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 
 	Int_t startAddr = SIS3302_ADC1_OFFSET + ChanNo * SIS3302_NEXT_ADC_OFFSET + evtStart;
 
-	volatile Int_t * mappedAddr = (volatile Int_t *) Module->MapAddress(startAddr);
+	volatile Int_t * mappedAddr = (volatile Int_t *) Module->MapAddress(this->CA(startAddr));
 	if (mappedAddr == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
@@ -4150,12 +4218,12 @@ void SrvSis3302::SwitchSampling(SrvVMEModule * Module) {
 
 Bool_t SrvSis3302::SetPageRegister(SrvVMEModule * Module, Int_t PageNumber) {
 	Int_t offset = SIS3302_ADC_MEMORY_PAGE_REGISTER;
-	volatile Int_t * pageReg = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * pageReg = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (pageReg == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*pageReg = PageNumber;
-	return (!this->CheckBusTrap(Module, offset, "SetPageRegister"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "SetPageRegister"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -4205,7 +4273,7 @@ Bool_t SrvSis3302::RampDac(SrvVMEModule * Module, TArrayI & Data, Int_t ChanNo) 
 Bool_t SrvSis3302::ReadIRQConfiguration(SrvVMEModule * Module, Int_t & Vector, Int_t & Level, Bool_t & EnableFlag, Bool_t & RoakFlag) {
 
 	Int_t offset = SIS3302_IRQ_CONFIG;
-	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (irq == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
@@ -4215,7 +4283,7 @@ Bool_t SrvSis3302::ReadIRQConfiguration(SrvVMEModule * Module, Int_t & Vector, I
 	Level = irqBits & 0x7;
 	EnableFlag = ((irqBits & 0x8) != 0);
 	RoakFlag = ((irqBits & 0x10) != 0);
-	return (!this->CheckBusTrap(Module, offset, "ReadIRQConfiguration"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadIRQConfiguration"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -4231,7 +4299,7 @@ Bool_t SrvSis3302::ReadIRQConfiguration(SrvVMEModule * Module, Int_t & Vector, I
 Bool_t SrvSis3302::WriteIRWConfiguration(SrvVMEModule * Module, Int_t Vector, Int_t Level, Bool_t RoakMode) {
 
 	Int_t offset = SIS3302_IRQ_CONFIG;
-	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (irq == NULL) return(kFALSE);
 
 	UInt_t irqBits = Level & 0x7;
@@ -4240,7 +4308,7 @@ Bool_t SrvSis3302::WriteIRWConfiguration(SrvVMEModule * Module, Int_t Vector, In
 	irqBits |= Vector & 0xFF;
 	gSignalTrap = kFALSE;
 	*irq = irqBits;
-	return (!this->CheckBusTrap(Module, offset, "WriteIRWConfiguration"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "WriteIRWConfiguration"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -4261,12 +4329,12 @@ Bool_t SrvSis3302::EnableIRQSource(SrvVMEModule * Module, UInt_t IrqSource) {
 	}
 
 	Int_t offset = SIS3302_IRQ_CONTROL;
-	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (irq == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	UInt_t irqBits = *irq;
 	*irq = irqBits | (1 << IrqSource);
-	return (!this->CheckBusTrap(Module, offset, "EnableIRQSource"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "EnableIRQSource"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -4279,12 +4347,12 @@ Bool_t SrvSis3302::EnableIRQSource(SrvVMEModule * Module, UInt_t IrqSource) {
 Bool_t SrvSis3302::EnableIRQ(SrvVMEModule * Module) {
 
 	Int_t offset = SIS3302_IRQ_CONFIG;
-	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (irq == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	UInt_t irqBits = *irq;
 	*irq = irqBits | 0x800;
-	return (!this->CheckBusTrap(Module, offset, "EnableIRQ"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "EnableIRQ"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -4305,12 +4373,12 @@ Bool_t SrvSis3302::DisableIRQSource(SrvVMEModule * Module, UInt_t IrqSource) {
 	}
 
 	Int_t offset = SIS3302_IRQ_CONTROL;
-	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (irq == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	UInt_t irqBits = *irq;
 	*irq = irqBits & ~(0x10000 << IrqSource);
-	return (!this->CheckBusTrap(Module, offset, "DisableIRQSource"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "DisableIRQSource"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -4323,12 +4391,12 @@ Bool_t SrvSis3302::DisableIRQSource(SrvVMEModule * Module, UInt_t IrqSource) {
 Bool_t SrvSis3302::DisableIRQ(SrvVMEModule * Module) {
 
 	Int_t offset = SIS3302_IRQ_CONFIG;
-	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (irq == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	UInt_t irqBits = *irq;
 	*irq = irqBits & ~0x800;
-	return (!this->CheckBusTrap(Module, offset, "DisableIRQSource"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "DisableIRQSource"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -4342,11 +4410,11 @@ Bool_t SrvSis3302::DisableIRQ(SrvVMEModule * Module) {
 Bool_t SrvSis3302::ReadIRQSourceStatus(SrvVMEModule * Module, UInt_t & IrqStatus) {
 
 	Int_t offset = SIS3302_IRQ_CONTROL;
-	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (irq == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	IrqStatus = (*irq >> 24) & 0xFF;
-	return (this->CheckBusTrap(Module, offset, "ReadIRQSourceStatus"));
+	return (this->CheckBusTrap(Module, this->CA(offset), "ReadIRQSourceStatus"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -4360,9 +4428,9 @@ Bool_t SrvSis3302::ReadIRQSourceStatus(SrvVMEModule * Module, UInt_t & IrqStatus
 Bool_t SrvSis3302::ReadIRQEnableStatus(SrvVMEModule * Module, UInt_t & IrqStatus) {
 
 	Int_t offset = SIS3302_IRQ_CONTROL;
-	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (irq == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	IrqStatus = *irq & 0xFF;
-	return (this->CheckBusTrap(Module, offset, "ReadIRQEnableStatus"));
+	return (this->CheckBusTrap(Module, this->CA(offset), "ReadIRQEnableStatus"));
 }

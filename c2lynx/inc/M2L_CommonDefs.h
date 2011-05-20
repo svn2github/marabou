@@ -10,11 +10,7 @@
 // R. Lutter, Apr 2007                                                  //
 //                                                                      //
 // !!!! This header file will be used for C++ *AND* C as well           //
-<<<<<<< M2L_CommonDefs.h
 // !!!! Please use  C style comments only                               //
-=======
-// !!!! Please use C style comments only                                //
->>>>>>> 1.17
 ////////////////////////////////////////////////////////////////////////*/
 
 	enum ESis3302	{			/* DAC register */
@@ -40,6 +36,8 @@
 						kSis3302KeyMcaMultiscanDisable,
 						/* header */
 						kSis3302HeaderMask	 		= 0x7FFF,
+						/* address range */
+						kSis3302AddressRangeReduced		= BIT(30),
 						/* trigger mode */
 						kSis3302GateOff				= 0x0,
 						kSis3302GateIntern			= BIT(0),
@@ -104,6 +102,8 @@
 	enum			{	kSis3302EventMinMax 		= 2 };
 	enum			{	kSis3302EventTrailer 		= 2 };
 
+	enum			{	kSis3302SegSizeReduced		 	= 0x1000000 };
+	
 #ifdef	CPU_TYPE_RIO2
 	enum			{	kSis3302SegSize		 		= 0x4000000 };
 #endif

@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $
-//! $Date: 2010-12-27 09:02:14 $
+//! $Revision: 1.3 $
+//! $Date: 2011-05-20 12:21:03 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -29,6 +29,8 @@
 
 extern TMrbLogger * gMrbLog;				// message logger
 extern Bool_t gSignalTrap;
+
+extern TMrbLofNamedX * gLofVMEModules;			// list of actual modules
 
 static TMrbLogMessage * lastLogMsg = NULL;
 
@@ -178,6 +180,29 @@ void SrvSocket::Listen() {
 					this->Error(sock, gMrbLog);
 				}
 			} else if (hdr->fWhat == kM2L_MESS_BYE) {
+				TIterator * iter = gLofVMEModules->MakeIterator();
+				TMrbNamedX * module;
+				while (module = (TMrbNamedX *) iter->Next()) {
+					SrvVMEModule * vmeModule = (SrvVMEModule *) module->GetAssignedObject();
+					switch (vmeModule->GetID()) {
+						case SrvVMEModule::kModuleCaen785:
+						{
+							SrvCaen785 * proto = (SrvCaen785 *) vmeModule->GetPrototype();
+							continue;
+						}
+						case SrvVMEModule::kModuleSis3302:
+						{
+							SrvSis3302 * proto = (SrvSis3302 *) vmeModule->GetPrototype();
+							proto->Release(vmeModule);
+							continue;
+						}
+						case SrvVMEModule::kModuleVulomTB:
+						{
+							SrvVulomTB * proto = (SrvVulomTB *) vmeModule->GetPrototype();
+							continue;
+						}
+					}
+				}
 				if (sock == primaryClient) {
 					errCnt = 0;
 					gMrbLog->Out()	<< "Primary client has disconnected - shutting down server" << endl;

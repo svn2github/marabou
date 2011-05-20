@@ -34,7 +34,7 @@
 #define SIS3302_KEY_RESET                           0x400	  /* write only; D32 */
 #define SIS3302_KEY_SAMPLE_LOGIC_RESET_404          0x404	  /* write only; D32 */
 
-/* Key Addresses (MCA=0)) */
+/* Key Addresses (MCA=0) */
 #define SIS3302_KEY_SAMPLE_LOGIC_RESET_410          0x410	  /* write only; D32 */
 #define SIS3302_KEY_DISARM                         	0x414	  /* write only; D32 */
 #define SIS3302_KEY_TRIGGER                         0x418	  /* write only; D32 */
@@ -43,7 +43,7 @@
 #define SIS3302_KEY_DISARM_AND_ARM_BANK2           	0x424	  /* write only; D32 */
 #define SIS3302_KEY_RESET_DDR2_LOGIC                0x428	  /* write only; D32 */
 
-/* Key Addresses (MCA=1)) */
+/* Key Addresses (MCA=1) */
 #define SIS3302_KEY_MCA_SCAN_LNE_PULSE                    0x410	  /* GAMMA, 14xx */
 #define SIS3302_KEY_MCA_SCAN_ARM                          0x414	  /* GAMMA, 14xx */
 #define SIS3302_KEY_MCA_SCAN_START                        0x418	  /* GAMMA, 14xx */
@@ -95,7 +95,7 @@
 
 #define SIS3302_ENERGY_SETUP_GP_ADC12   						0x02000040      /* Gamma */
 #define SIS3302_ENERGY_GATE_LENGTH_ADC12						0x02000044      /* Gamma */
-#define SIS3302_ENERGY_SAMPLE_LENGTH_ADC12						0x02000048      /* Gamma */
+#define SIS3302_ENERGY_SAMPLE_LENGTH_ADC12						0x02000048     /* Gamma */
 #define SIS3302_ENERGY_SAMPLE_START_INDEX1_ADC12				0x0200004C      /* Gamma */
 
 #define SIS3302_ENERGY_SAMPLE_START_INDEX2_ADC12				0x02000050      /* Gamma */
@@ -104,7 +104,7 @@
 #define SIS3302_ENERGY_TAU_FACTOR_ADC2							0x0200005C      /* Gamma */
 
 #define SIS3302_MCA_ENERGY_TO_HISTO_ADC1                        0x02000060      /* GAMMA, 14xx */
-#define SIS3302_MCA_ENERGY_TO_HISTO_ADC2                        0x02000064      /* GAMMA, 14xx */
+#define SIS3302_MCA_ENERGY_TO_HISTO_ADC2			0x02000064      /* GAMMA, 14xx */
 #define SIS3302_MCA_ENERGY_TO_HISTO_ADC12                       0x02000068      /* GAMMA, 14xx */
 
 #define SIS3302_EVENT_EXTENDED_CONFIG_ADC12                     0x02000070      /* GAMMA, 14xx */
@@ -154,8 +154,8 @@
 #define SIS3302_MCA_ENERGY_TO_HISTO_ADC4                        0x02800064      /* GAMMA, 14xx */
 #define SIS3302_MCA_ENERGY_TO_HISTO_ADC34                       0x02800068      /* GAMMA, 14xx */
 
-#define SIS3302_EVENT_EXTENDED_CONFIG_ADC34                     0x02800070      /* GAMMA, 14xx */
-#define SIS3302_TRIGGER_SETUP_EXTENDED_ADC3                     0x02800078      /* GAMMA, 14xx */
+#define SIS3302_EVENT_EXTENDED_CONFIG_ADC34			0x02800070      /* GAMMA, 14xx */
+#define SIS3302_TRIGGER_SETUP_EXTENDED_ADC3			0x02800078      /* GAMMA, 14xx */
 #define SIS3302_TRIGGER_SETUP_EXTENDED_ADC4                     0x0280007C      /* GAMMA, 14xx */
 
 #define SIS3302_MCA_TRIG_START_COUNTER_ADC3                     0x02800080      /* GAMMA, 14xx */
@@ -202,7 +202,7 @@
 #define SIS3302_MCA_ENERGY_TO_HISTO_ADC56                       0x03000068      /* GAMMA, 14xx */
 
 #define SIS3302_EVENT_EXTENDED_CONFIG_ADC56                     0x03000070      /* GAMMA, 14xx */
-#define SIS3302_TRIGGER_SETUP_EXTENDED_ADC5                     0x03000078      /* GAMMA, 14xx */
+#define SIS3302_TRIGGER_SETUP_EXTENDED_ADC5			0x03000078      /* GAMMA, 14xx */
 #define SIS3302_TRIGGER_SETUP_EXTENDED_ADC6                     0x0300007C      /* GAMMA, 14xx */
 
 #define SIS3302_MCA_TRIG_START_COUNTER_ADC5                     0x03000080      /* GAMMA, 14xx */
@@ -290,7 +290,7 @@
 #define SIS3302_ACQ_ENABLE_LEMO_TIMESTAMPCLR        0x00000200 /* GAMMA, 091207 */
 
 
-/* gamma (from 3320 LLNL) */
+/* gamma (from 3320 LLNL */
 #define EVENT_CONF_ADC2_EXTERN_TRIGGER_ENABLE_BIT		0x800
 #define EVENT_CONF_ADC2_INTERN_TRIGGER_ENABLE_BIT		0x400
 #define EVENT_CONF_ADC2_INPUT_INVERT_BIT				0x100

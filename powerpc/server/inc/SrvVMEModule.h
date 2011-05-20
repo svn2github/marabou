@@ -9,8 +9,8 @@
 //! 				Module Vulom3 (GSI), mode "trigger box"
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2010-12-27 09:02:14 $
+//! $Revision: 1.3 $     
+//! $Date: 2011-05-20 12:21:03 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
@@ -116,7 +116,7 @@ class SrvVMEModule : public TNamed {
 		inline Bool_t IsPrototype() { return(fProto == NULL); };
 
 		//! Map addr bank
-		volatile Char_t * MapAddress(UInt_t Offset = 0x0);
+		volatile Char_t * MapAddress(UInt_t Offset = 0x0, Int_t SegSize = 0);
 
 		//! Append module to list
 		void Append();
@@ -141,6 +141,7 @@ class SrvVMEModule : public TNamed {
 		UInt_t fMappedAddr; 				//!< mapped vme address
 		UInt_t fAddrMod;					//!< address modifier
 		Int_t fSegSize; 	 				//!< segment size
+		Int_t fCurSegSize; 	 				//!< current segment size (may differ from fSegSize)
 		Int_t fNofChannels; 				//!< number of channels
 		Int_t fNofChannelsUsed; 			//!< number of channels used
 		Int_t fRange;		 				//!< resolution

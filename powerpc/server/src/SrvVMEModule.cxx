@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $
-//! $Date: 2010-12-27 09:02:14 $
+//! $Revision: 1.3 $
+//! $Date: 2011-05-20 12:21:03 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -58,6 +58,7 @@ SrvVMEModule::SrvVMEModule(const Char_t * ModuleType,	const Char_t * ModuleDescr
 		fProto = NULL;
 		fAddrMod = AddrMod;
 		fSegSize = SegSize;
+		fCurSegSize = 0;
 		fNofChannels = NofChannels;
 		fRange = Range;
 		fBaseAddr = 0;
@@ -113,7 +114,7 @@ SrvVMEModule::SrvVMEModule(const Char_t * ModuleName, const Char_t * ModuleType,
 				fAddrHigh = 0;
 				fMappedAddr = 0;
 
-				if (this->MapAddress() == NULL) this->MakeZombie();		// transform phys addr to vme addr
+				if (this->MapAddress(0, 0x10000) == NULL) this->MakeZombie();		// transform phys addr to vme addr
 			}
 		}
 	}
@@ -143,7 +144,7 @@ void SrvVMEModule::Append() {
 //! \retval 		MappedAddr		-- mapped address
 //////////////////////////////////////////////////////////////////////////////
 
-volatile Char_t * SrvVMEModule::MapAddress(UInt_t Offset) {
+volatile Char_t * SrvVMEModule::MapAddress(UInt_t Offset, Int_t SegSize) {
 
 	struct pdparam_master s_param; 			// vme segment params
 
@@ -151,8 +152,10 @@ volatile Char_t * SrvVMEModule::MapAddress(UInt_t Offset) {
  	s_param.rdpref = 0;
  	s_param.wrpost = 0;
  	s_param.swap = SINGLE_AUTO_SWAP;
- 	s_param.dum[0] = 0; 					// forces static mapping!
+ 	s_param.dum[0] = 0; 				// forces static mapping!
 
+	if (SegSize == 0) SegSize = fSegSize;		// actual segment size: if not explicitly given take default
+	
 	if (this->IsPrototype()) {
 		gMrbLog->Err()	<< "[" << this->GetName() << "]: Can't map a PROTOTYPE module - ignored"<< endl;
 		gMrbLog->Flush(this->ClassName(), "MapAddress");
@@ -160,42 +163,43 @@ volatile Char_t * SrvVMEModule::MapAddress(UInt_t Offset) {
 	}
 
 	Bool_t mapIt = kFALSE;
-	if (fAddrHigh == 0) {
+	if (fAddrHigh == 0 && Offset != 0xFFFFFFFF) {
 		mapIt = kTRUE;						// never done
-	} else if (Offset < fAddrLow || Offset > fAddrHigh) {
+	} else if (Offset == 0xFFFFFFFF || Offset < fAddrLow || Offset > fAddrHigh) {
 #if (PRINT_MAPPING != 0)
-		gMrbLog->Out()	<< "[Unmapping log addr=0x" << setbase(16) << fMappedAddr << ", size=0x" << fSegSize << "]" << setbase(10) << endl;
+		gMrbLog->Out()	<< "[Unmapping log addr=0x" << setbase(16) << fMappedAddr << ", size=0x" << fCurSegSize << "]" << setbase(10) << endl;
 		gMrbLog->Flush(this->ClassName(), "MapAddress");
 #endif
-		UInt_t addr = return_controller(fMappedAddr, fSegSize);
+		UInt_t addr = return_controller(fMappedAddr, fCurSegSize);
 		if (addr == 0xFFFFFFFF) {
 			gMrbLog->Err()	<< "[" << this->GetName() << "]: Can't unmap log addr 0x"
-							<< setbase(16) << fMappedAddr << " (seg size=0x" << fSegSize << ", addr mod=0x" << fAddrMod << ")" << endl;
+					<< setbase(16) << fMappedAddr << " (seg size=0x" << fCurSegSize << ", addr mod=0x" << fAddrMod << ")" << endl;
 			gMrbLog->Flush(this->ClassName(), "MapAddress");
 			return(NULL);
 		}
-		mapIt = kTRUE;
+		if (Offset != 0xFFFFFFFF) mapIt = kTRUE;
 	}
 
 	if (mapIt) {
-		UInt_t low = (Offset / fSegSize) * fSegSize;
-		UInt_t addr = find_controller(fBaseAddr + low, fSegSize, fAddrMod, 0, 0, &s_param);
+		UInt_t low = (Offset / SegSize) * SegSize;
+		UInt_t addr = find_controller(fBaseAddr + low, SegSize, fAddrMod, 0, 0, &s_param);
 		if (addr == 0xFFFFFFFF) {
 #if (PRINT_MAPPING != 0)
 			gMrbLog->Err()	<< "[Mapping offset=0x" << setbase(16) << Offset
 							<< " (phys addr=" << (fBaseAddr + Offset) << ") low=0x" << low
-							<< " high=0x" << (low + fSegSize - 1) << " to log addr=???" << "]"
+							<< " high=0x" << (low + SegSize - 1) << " to log addr=???" << "]"
 							<< setbase(10) << endl;
 			gMrbLog->Flush(this->ClassName(), "MapAddress");
 #endif
 			gMrbLog->Err()	<< "[" << this->GetName() << "]: Can't map phys addr 0x"
-							<< setbase(16) << (fBaseAddr + Offset) << " (size=0x" << fSegSize << ", addr mod=0x" << fAddrMod << ")" << endl;
+							<< setbase(16) << (fBaseAddr + Offset) << " (size=0x" << SegSize << ", addr mod=0x" << fAddrMod << ")" << endl;
 			gMrbLog->Flush(this->ClassName(), "MapAddress");
 			return(NULL);
 		}
 		fMappedAddr = addr;
 		fAddrLow = low;
-		fAddrHigh = low + fSegSize - 1;
+		fAddrHigh = low + SegSize - 1;
+		fCurSegSize = SegSize;
 #if (PRINT_MAPPING != 0)
 		gMrbLog->Out()	<< "[Mapping offset=0x" << setbase(16) << Offset
 						<< " (phys addr=" << (fBaseAddr + Offset) << ") low=0x" << fAddrLow

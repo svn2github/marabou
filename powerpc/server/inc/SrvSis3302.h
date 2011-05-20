@@ -8,7 +8,7 @@
 // Class:          Sis3302        -- flash adc SIS3302
 // Description:    Class definitions for M2L server
 // Author:         R. Lutter
-// Revision:       $Id: SrvSis3302.h,v 1.5 2010-12-03 08:18:17 Marabou Exp $
+// Revision:       $Id: SrvSis3302.h,v 1.6 2011-05-20 12:21:03 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -37,11 +37,18 @@ class SrvSis3302 : public SrvVMEModule {
 
 		//! Try to access this module
 		Bool_t TryAccess(SrvVMEModule * Module);
+		//! Release this module and free memory
+		Bool_t Release(SrvVMEModule * Module);
 		//! Dispatch to given function
-		M2L_MsgHdr * Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, M2L_MsgData * Data);
+		M2L_MsgHdr * Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, M2L_MsgData * Data = NULL);
 
 		//! Read module info: board id & version numbers
 		Bool_t GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t & MajorVersion, Int_t & MinorVersion, Bool_t PrintFlag = kTRUE);
+
+		//! Check if reduced address space
+		Bool_t CheckAddressSpace(SrvVMEModule * Module, Bool_t PrintFlag = kTRUE);
+		inline void SetReduced(Bool_t Flag = kTRUE) { fReducedAddrSpace = Flag; };
+		inline Bool_t IsReduced() { return(fReducedAddrSpace); };
 
 		//! Read dac values
 		Bool_t ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t ChanNo);
@@ -195,6 +202,8 @@ class SrvSis3302 : public SrvVMEModule {
 	protected:
 		void SetupFunction(M2L_MsgData * Data, TArrayI & Array, Int_t & ChanNo);
 		M2L_MsgHdr * FinishFunction(TArrayI & Array);
+		
+		ULong_t CA(ULong_t Address);
 
 		Bool_t ReadPreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
 		Bool_t WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo = kSis3302AllChans);
@@ -241,6 +250,7 @@ class SrvSis3302 : public SrvVMEModule {
 		Int_t fTraceNo;
 		Bool_t fTraceCollection;
 		Bool_t fDumpTrace;
+		Bool_t fReducedAddrSpace;
 		Int_t fNofTry;
 		UInt_t fSampling;
 

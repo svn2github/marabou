@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.16 2011-04-29 07:19:03 Marabou Exp $
-// Date:           $Date: 2011-04-29 07:19:03 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.17 2011-05-20 12:21:10 Marabou Exp $
+// Date:           $Date: 2011-05-20 12:21:10 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -21,6 +21,7 @@ namespace std {} using namespace std;
 
 #include "Rtypes.h"
 #include "TROOT.h"
+#include "TArrayI.h"
 #include "TSystem.h"
 #include "TEnv.h"
 #include "TObjString.h"
