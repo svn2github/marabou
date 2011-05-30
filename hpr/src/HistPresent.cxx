@@ -230,7 +230,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 	fSeqNumberGraph = 0;
    fPageNumber = 0;
    fNtupleSeqNr = 0;
-	
+
    WindowSizeDialog::fNwindows=   0;
    fDialogShowTree = NULL;
    fRootFile = NULL;
@@ -339,7 +339,7 @@ void HistPresent::RecursiveRemove(TObject * obj)
 {
 //   gROOT->GetListOfCleanups()->Remove(obj);
 //	cout << "HistPresent::RecursiveRemove for: " << obj ;
-	
+
    fCanvasClosing = kFALSE;
 //      fCloseWindowsButton->SetMethod("gHpr->CloseAllCanvases();");
 //      cout << "------> HistPresent: all canvases closed" << endl;
@@ -434,7 +434,7 @@ void HistPresent::ShowMain()
    b->SetToolTipText(
    "Show objects (hists, windows, functions currently in memory",hint_delay);
    y-=dy;
-	
+
    cmd="gHpr->HistsFromProof()";
    tit="Histos from Proof";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
@@ -872,7 +872,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 						SetSelected(fHfromM_aButton, kFALSE);
 				} else {
 					cout << setred << "Cant get stat, connection seems alive" << setblack << endl;
-				}	
+				}
          	return;
       	} else {
          	nstat = st->GetListOfEntries()->GetSize();
@@ -921,11 +921,11 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 				continue;
 			TString shn(stent->GetName());
 			if (shn.Contains(" ")) {
-//			   cout << setred << "Histogram name: \"" << shn 
+//			   cout << setred << "Histogram name: \"" << shn
 //				<< "\" contains spaces!!!" << endl;
 				static Int_t first_time = 1;
 				if (first_time) {
-					cout << setred << "Histogram name: \"" << shn 
+					cout << setred << "Histogram name: \"" << shn
 					<< "\" contains spaces!!!" << endl;
 					first_time = 0;
 					cout << "We strongly advise against using white space in names." << endl;
@@ -1211,9 +1211,9 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 
 Bool_t HistPresent::IsSelected(const char * name) {
 
-	if (fHistSelMask->Length() <=  0) 
+	if (fHistSelMask->Length() <=  0)
 		return kTRUE;
-	
+
 	TString tn(name);
 	if        (fHistSelOp == kHsOp_None) {
 		TRegexp re((const char *)*fHistSelMask, !GeneralAttDialog::fUseRegexp);
@@ -1297,7 +1297,7 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
 					SetSelected(fHfromM_aButton, kFALSE);
 			} else {
 				cout << setred << "Cant get stat, connection seems alive" << setblack << endl;
-			}	
+			}
          return;
       }
    } else if (sname.Index(rname) > 0) {
@@ -1656,7 +1656,7 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
 				SetSelected(fHfromM_aButton, kFALSE);
 		} else {
 			cout << setred << "Cant get stat, connection seems alive" << setblack << endl;
-		}	
+		}
        return;
    } else {
 //         st->Print();
@@ -1677,7 +1677,7 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
 					SetSelected(fHfromM_aButton, kFALSE);
 			} else {
 				cout << setred << "Cant get histogram, connection seems alive" << setblack << endl;
-			}	
+			}
          break;
       }
       f->cd();
@@ -2123,7 +2123,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
 					SetSelected(fHfromM_aButton, kFALSE);
 			} else {
 				cout << setred << "Cant get histogram, connection seems alive" << setblack << endl;
-			}	
+			}
 		} else {
 			if ( hsuffix != NULL ) {
 				TString hn(hist->GetName());
@@ -2896,7 +2896,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
 					SetSelected(fHfromM_aButton, kFALSE);
 			} else {
 				cout << setred << "Cant get histogram, connection seems alive" << setblack << endl;
-			}	
+			}
       } else {
          hist->SetUniqueID(0);
       }
@@ -3105,7 +3105,7 @@ void HistPresent::CloseAllCanvases()
 //		if (gDebug > 0 )
 //			cout << "CloseAllCanvases: " << htc << " " << htc->GetName()<< endl;
       TString cn(htc->GetName());
-      if ( cn == "cHPr" || cn == "FileList" 
+      if ( cn == "cHPr" || cn == "FileList"
 			|| cn == "ContentList"  || cn == "Windows"|| cn == "Cuts") continue;
 		htc->Disconnect("TPad", "Modified()");
       TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
@@ -3327,11 +3327,11 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       c->Draw();
 	   c->cd();
       Int_t ngr = FindGraphs(gPad, logr);
-      if (ngr > 0) 
+      if (ngr > 0)
 		   gStyle->SetOptStat(0);
-		if ( c->GetListOfExecs() ) 
+		if ( c->GetListOfExecs() )
 			c->GetListOfExecs()->Clear();
-      if (c->GetAutoExec()) 
+      if (c->GetAutoExec())
          c->ToggleAutoExec();
       if ( c->InheritsFrom("HTCanvas") ) {
 //	   	c->SetCanvasSize(c->GetOrigWw(), c->GetOrigWh());
@@ -3518,7 +3518,7 @@ void HistPresent::SelectdCache()
 		Int_t ind_dq = fname.Index("\"");
 		if ( ind_dq >= 0 ) {
 			Int_t ind_Add = fname.Index("Add(");
-			if ( ind_Add < 0 || ind_Add > ind_dq ) 
+			if ( ind_Add < 0 || ind_Add > ind_dq )
 				continue;
 			fname = fname(ind_dq + 1, fname.Length());
 			ind_dq = fname.Index("\"");
@@ -3528,7 +3528,7 @@ void HistPresent::SelectdCache()
 		}
 		TString cmd = "gHpr->Show";
 		cmd = cmd + "Contents(\"" + fname + "\", \"\" )";
-		
+
 		TString nam=fname;
 		TString tit;
 		TString sel;
@@ -3550,7 +3550,7 @@ void HistPresent::SelectdCache()
 		5, yoff, this, WindowSizeDialog::fWinwidx_hlist);
 		ccont->SetName("dCFileList");
 //         cout << "HistPresent: CommandPanel: " <<ccont->GetName() << " " << ccont->GetTitle() << endl;
-											 
+
 	if (fHistLists)fHistLists->Add(ccont);
 	fCmdLine->Delete();
 	delete fi;
@@ -3737,7 +3737,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 	cname.Prepend("C_");
 	cname += "_";
 	cname += fSeqNumberGraph++;
-	
+
 	if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
 		//		if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) {
 		WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
@@ -3749,7 +3749,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 	WindowSizeDialog::fNwindows++;
 	HTCanvas * cg = NULL;
 	TEnv env(".hprrc");
-	
+
 	//      graph->SetName(hname);
 	//      graph->SetTitle(htitle);
 	if ( graph2d ) {
@@ -3766,10 +3766,10 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			cout << "Use Predefined Hist " << hh<< endl;
 			TAxis *xa = graph1d->GetHistogram()->GetXaxis();
 			TAxis *ya = graph1d->GetHistogram()->GetYaxis();
-			
+
 			TString tx;
 			TString ty;
-			
+
 			if ( xa ) {
 				tx = xa->GetTitle();
 			}
@@ -3780,11 +3780,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			TString nn(graph1d->GetName());
 			nn += "_hist_for_graph";
 			hh->SetName(nn);
-<<<<<<< HistPresent.cxx
 			graph1d->SetHistogram((TH1F*)hh);
-=======
-			graph1d->SetHistogram(((TH1F*)hh));
->>>>>>> 1.134
 			if ( xa ) {
 				TAxis * xan = graph1d->GetHistogram()->GetXaxis();
 				xan->SetTitle(tx);
@@ -3800,7 +3796,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 		}
 		TString drawopt = env.GetValue("GraphAttDialog.fDrawOpt", "PA");
 		graph1d->Draw(drawopt);
-//		cout << "graph1d->Draw " << drawopt<< " " << graph1d->GetName()<< " " 
+//		cout << "graph1d->Draw " << drawopt<< " " << graph1d->GetName()<< " "
 //		<< graph1d->GetHistogram()->GetName()<< endl;
 		graph1d->SetLineStyle  (env.GetValue("GraphAttDialog.fLineStyle",  1));
 		graph1d->SetLineWidth  (env.GetValue("GraphAttDialog.fLineWidth",  1));
@@ -3876,34 +3872,34 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	hxmin = gPad->GetUxmin();
 	hxmax = gPad->GetUxmax();
 	hymin = gPad->GetUymin();
-	hymax = gPad->GetUymax(); 
+	hymax = gPad->GetUymax();
 	if ( mode == 0 && (ymin < hymin || ymax > hymax) ) {
-		cout << "Warning: Graph: " << ymin << " " << ymax << 
+		cout << "Warning: Graph: " << ymin << " " << ymax <<
 		" does not fit in Yrange: " << hymin << " " << hymax  << endl;
 	}
 	if ( xmin < hxmin || xmax > hxmax ) {
-		cout << "Warning: Graph: << " << xmin << " " << xmax << 
+		cout << "Warning: Graph: << " << xmin << " " << xmax <<
 		" does not fit in Xrange: "<< hxmin << " " << hxmax << endl;
 	}
-	// 
+	//
 	Double_t rightmax = 1.1 * ymax;
 	Int_t        do_scale = 0;
 	Int_t      auto_scale = 0;
-	Int_t        new_axis = 0; 
+	Int_t        new_axis = 0;
 	if ( mode == 1 ) {
 		do_scale = auto_scale = new_axis = 1;
 	}
 	Double_t  axis_offset = 0.;
 	Double_t label_offset = 0.01;
-	static Color_t    axis_color = 2; 
-	static Color_t lFColor   = axis_color; 
-	static Color_t lLColor   = axis_color; 
-	static Color_t lMColor   = axis_color; 
+	static Color_t    axis_color = 2;
+	static Color_t lFColor   = axis_color;
+	static Color_t lLColor   = axis_color;
+	static Color_t lMColor   = axis_color;
 	if ( GetNofGraphs(current)  == 1 ) {
-		axis_color = 2; 
-		lFColor   = axis_color; 
-		lLColor   = axis_color; 
-		lMColor   = axis_color; 
+		axis_color = 2;
+		lFColor   = axis_color;
+		lLColor   = axis_color;
+		lMColor   = axis_color;
 	}
 	TString lLineMode;
 	TString drawopt     = env.GetValue("GraphAttDialog.fDrawOpt", "PA");
@@ -3924,16 +3920,16 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	Size_t  lLWidth   = env.GetValue("GraphAttDialog.fLineWidth", 1);
 	Style_t lMStyle   = env.GetValue("GraphAttDialog.fMarkerStyle", 7);
 	Size_t  lMSize    = env.GetValue("GraphAttDialog.fMarkerSize",  1);
-	
-	Double_t new_scale = 1;   
+
+	Double_t new_scale = 1;
 	TString axis_title;
 	Int_t   lLegend      = env.GetValue("SuperImposeGraph.DrawLegend", 1);
 	Int_t   lIncrColors  = env.GetValue("SuperImposeGraph.AutoIncrColors", 1);
 	Int_t   lSkipDialog  = env.GetValue("SuperImposeGraph.SkipDialog", 0);
 
 	axis_title= gr->GetTitle();
-	void *valp[50];                    
-	Int_t ind = 0;                            
+	void *valp[50];
+	Int_t ind = 0;
 	TList *row_lab = new TList();
 	TRootCanvas * win = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
 	Bool_t ok = kTRUE;
@@ -3967,7 +3963,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	valp[ind++] = &lMSize;
 	row_lab->Add(new TObjString("ColorSelect+MarkColor"));
 	valp[ind++] = &lMColor;
-	
+
 	row_lab->Add(new TObjString("LineSSelect_LStyle"));
 	valp[ind++] = &lLStyle;
 	row_lab->Add(new TObjString("PlainShtVal+LineWidth"));
@@ -3980,7 +3976,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	valp[ind++] = &lLStyle;
 	row_lab->Add(new TObjString("ColorSelect+FillColor"));
 	valp[ind++] = &lFColor;
-	
+
 	Int_t itemwidth = 380;
 	ok = GetStringExt("Superimpose Graph", NULL, itemwidth, win,
 					NULL, NULL, row_lab, valp,
@@ -3997,7 +3993,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		grase = (TGraphAsymmErrors*)gr;
 	} else if ( gr->InheritsFrom("TGraphErrors") ) {
 		gre = (TGraphErrors*)gr;
-	}		
+	}
 	Double_t *x = gr->GetX();
 	Double_t *y = gr->GetY();
 	if ( do_scale != 0 ) {
@@ -4044,7 +4040,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	gr->SetLineColor(lLColor);
 	gr->SetLineStyle(lLStyle);
 	gr->SetLineWidth(lLWidth);
-	
+
 	gr->SetMarkerColor(lMColor);
 	gr->SetMarkerStyle(lMStyle);
 	gr->SetMarkerSize (lMSize );
@@ -4061,10 +4057,10 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		HprGaxis *axis = Hpr::DoAddAxis(current, hist, 2, ledge, uedge, axis_offset, axis_color);
 //		TString opt("+SL");
 //		TGaxis *axis = new TGaxis(
-//		gPad->GetUxmax()+axis_offset*(gPad->GetUxmax()-gPad->GetUxmin()), gPad->GetUymin(), 
+//		gPad->GetUxmax()+axis_offset*(gPad->GetUxmax()-gPad->GetUxmin()), gPad->GetUymin(),
 //		gPad->GetUxmax()+axis_offset*(gPad->GetUxmax()-gPad->GetUxmin()), gPad->GetUymax(),
 //		gPad->GetUymin() / new_scale ,gPad->GetUymax() / new_scale ,510, opt);
-		
+
 		TString ax_name("axis_");
 		ax_name += gr->GetTitle();
 		axis->SetName(ax_name);
@@ -4082,7 +4078,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 			axis->SetTitleFont( env.GetValue("SetHistOptDialog.fTitleFont", 62));
 			axis->SetTitleSize( env.GetValue("SetHistOptDialog.fTitleSize",0.03));
 			axis->SetTitleOffset( 1);
-			if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 0) == 1 ) 
+			if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 0) == 1 )
 				axis->CenterTitle();
 		}
 	}
@@ -4104,7 +4100,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		Double_t x2 = env.GetValue("SuperImposeGraph.fLegendX2", 0.3);
 		Double_t y1 = env.GetValue("SuperImposeGraph.fLegendY1", 0.8);
 		Double_t y2 = env.GetValue("SuperImposeGraph.fLegendY2", 0.95);
-		
+
 		leg = current->BuildLegend(x1, y1, x2,y2);
 		leg->SetName("Legend_SuperImposeGraph");
 		leg->SetFillColor (env.GetValue("HprLegend.fFillColor", 0));

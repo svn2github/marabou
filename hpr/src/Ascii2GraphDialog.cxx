@@ -208,13 +208,9 @@ void Ascii2GraphDialog::Draw_The_Graph()
          ymin = fYaxisMin;
          ymax = fYaxisMax;
       }
-      
+
       gStyle->SetOptStat(0);
-<<<<<<< Ascii2GraphDialog.cxx
       TH1F * gh = new TH1F(fGraphName, fGraphName, 100, xmin, xmax);
-=======
-		TH1F * gh = new TH1F(fGraphName, fGraphName, 100, xmin, xmax);
->>>>>>> 1.19
       gh->Draw();
       gh->SetMinimum(ymin);
       gh->SetMaximum(ymax);
@@ -357,7 +353,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
       if (fGraphPolyMarker) drawopt+= "P";
 		if (fGraphSmoothLine)
 			drawopt+= "C";
-      else if (fGraphSimpleLine) 
+      else if (fGraphSimpleLine)
 			drawopt+= "L";
 //		else if (fGraphBarChart)
 //			drawopt+= "B";
@@ -407,7 +403,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 				cg->SetLogx();
 			else
 				cg->SetLogx(kFALSE);
-			if ( fGraphLogY ) 
+			if ( fGraphLogY )
 				cg->SetLogy();
 			else
 				cg->SetLogy(kFALSE);
@@ -433,7 +429,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 //            gPad->Update();
       }
       TEnv env(gHprLocalEnv);
-      
+
 		TH1 * gh = graph->GetHistogram();
       if (fGraphXtitle.Length() > 0)
          gh->GetXaxis()->SetTitle(fGraphXtitle.Data());
@@ -445,7 +441,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 			gh->GetXaxis()->CenterTitle(kTRUE);
 		if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 1))
 			gh->GetYaxis()->CenterTitle(kTRUE);
-		
+
       graph->SetMarkerStyle(fGraphMarkerStyle);
       graph->SetMarkerColor(fGraphMarkerColor);
       graph->SetMarkerSize(fGraphMarkerSize);
