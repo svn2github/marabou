@@ -45,6 +45,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/GeneralAttDialog.h \
  					$(HPRDIRI)/GraphAttDialog.h \
 					$(HPRDIRI)/WindowSizeDialog.h \
+					$(HPRDIRI)/Rebin2DimDialog.h \
  					$(HPRDIRI)/AddFitMenus.h \
  					$(HPRDIRI)/HprStack.h \
  					$(HPRDIRI)/HprGaxis.h \

@@ -1695,7 +1695,7 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname, Bool_t store, Int_t
 			continue;
 //      cout << "AddEntry " << fClassName<< " " <<  obj->ClassName()<< endl;
 		TString tn(obj->ClassName());
-		if ( tn == *(fClassName[iseq]) ) {
+		if ( tn.BeginsWith(*(fClassName[iseq])) ) {
          TString s(obj->GetName());
          s += ";";
 			s+= key->GetCycle();

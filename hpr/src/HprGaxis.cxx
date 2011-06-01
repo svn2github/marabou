@@ -153,6 +153,6 @@ void HprGaxis::HandlePadModified()
 					" fCanvas->GetLogy(), fLogy " <<  fCanvas->GetLogy() << " " << fLogy <<endl;
 			cout << "GetX1(), fFrameX1: "<<fCanvas->GetFrame()->GetX1()<<" "<<fFrameX1 <<endl;
 		}
-		TTimer::SingleShot(200, "HprGaxis", this, "ReDoAxis()");
+		TTimer::SingleShot(50, "HprGaxis", this, "ReDoAxis()");
 	}
 }

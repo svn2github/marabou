@@ -41,6 +41,7 @@
 #include "GeneralAttDialog.h"
 #include "GraphAttDialog.h"
 #include "HprTh3Dialog.h"
+#include "Rebin2DimDialog.h"
 #include "hprbase.h"
 
 void EditFitMacroG(TGWindow * win);
@@ -137,6 +138,7 @@ enum ERootCanvasCommands {
    kFHMagnify,
    kFHSuperimpose,
    kFHTh3Dialog,
+   kFHRebinDimDialog,
    kFHSuperimposeGraph,
    kFHSuperimposeGraphScale,
 	kFHSetAxisGraphX,
@@ -793,7 +795,10 @@ again:
                   case kFHTh3Dialog:
                      new HprTh3Dialog((TH3*)fFitHist->GetSelHist());
                      break;
-                  case kFHSuperimpose:
+						case kFHRebinDimDialog:
+							new Rebin2DimDialog((TH2*)fFitHist->GetSelHist(), fRootCanvas);
+							break;
+						case kFHSuperimpose:
                      fFitHist->Superimpose(0);
                      break;
 						case kFHSuperimposeScale:
@@ -1498,6 +1503,7 @@ void HandleMenus::BuildMenus()
 				fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
 				if ( nDim == 2 ) {
 					fDisplayMenu->AddSeparator();
+					fDisplayMenu->AddEntry("Rebin/Clip",   kFHRebinDimDialog  );
 					fDisplayMenu->AddEntry("Set User Contours",   kFHUserCont);
 					fDisplayMenu->AddEntry("Use Selected Contours",   kFHUserContUse);
 					fDisplayMenu->AddEntry("Clear User Contours",   kFHUserContClear);
@@ -1512,8 +1518,8 @@ void HandleMenus::BuildMenus()
 				fDisplayMenu->AddSeparator();
          }
       	if ( nDim == 2 ) {
-            fDisplayMenu->AddEntry("ProjectX",    kFHProjectX   );
-      	   fDisplayMenu->AddEntry("ProjectY",    kFHProjectY   );
+				fDisplayMenu->AddEntry("ProjectX",    kFHProjectX   );
+				fDisplayMenu->AddEntry("ProjectY",    kFHProjectY   );
       	   fDisplayMenu->AddEntry("ProjectBoth", kFHProjectB   );
       	   fDisplayMenu->AddEntry("ProjectAlongFunction",    kFHProjectF   );
       	   fDisplayMenu->AddEntry("ProfileX",    kFHProfileX   );
