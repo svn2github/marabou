@@ -210,6 +210,7 @@ void Rebin2DimDialog::CloseDialog()
 
 void Rebin2DimDialog::CloseDown(Int_t wid)
 {
+	gROOT->GetListOfCleanups()->Remove(this);
 	//   cout << "CloseDown(" << wid<< ")" <<endl;
 //	fDialog = NULL;
 //	if (wid == -1)
