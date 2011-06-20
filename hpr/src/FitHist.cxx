@@ -118,7 +118,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fHname = hname;
 //   Int_t pp = fHname.Index(".");
 //   if(pp) fHname.Remove(0,pp+1);
-//   cout << "ctor: " << GetName() << " hname: " << fHname.Data()<< endl;
+   cout << "ctor: " << GetName() << " hname: " << fHname.Data()<< endl;
    fCutPanel = NULL;
 //   fDialog  = NULL;
    fSetRange = kFALSE;
@@ -130,6 +130,13 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fOrigUpX  = hist->GetXaxis()->GetXmax();
    fOrigLowY = hist->GetYaxis()->GetXmin();
    fOrigUpY =  hist->GetYaxis()->GetXmax();
+	fBinX_1 = fBinX_2 = fBinY_1 = fBinY_2 = 0;
+	fBinlx  = fBinux = fBinly = fBinuy = 0;    
+	fExplx  = fExpux = fExply = fExpuy = 0;    
+	fX_1    =   fX_2 =   fY_1 =   fY_2 = 0;    
+	fRangeLowX = fRangeUpX = fRangeLowY = fRangeUpY = 0;
+	fOrigLowX  = fOrigUpX  = fOrigLowY  = fOrigUpY  = 0;
+	fFrameX1   = fFrameX2  = fFrameY1   = fFrameY2  = 0;
    fBinX_1 = fBinX_2 = -1;
    fLogx = 0;
    fLogy = 0;
@@ -151,6 +158,13 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fProjHistX = NULL;
 	fProjHistY = NULL;
 	fTofLabels = NULL;
+	fMarkers = NULL;
+	fDialog = NULL;
+	fSerialRot = 0;
+	fFirstUse = 0;
+	fSetColors = kFALSE;
+	fSetLevels = kFALSE;
+	
    fSelInside = kTRUE;
    fDeleteCalFlag = kFALSE;
 
@@ -329,37 +343,43 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 
 void FitHist::HandlePadModified()
 {
+	TTimer::SingleShot(50, "FitHist", this, "DoSaveLimits()");
+}
+//_______________________________________________________________________________
+
+void FitHist::DoSaveLimits()
+{
 	if ( gDebug > 0 ) {
-		cout << "FitHist::HandlePadModified: " << gPad 
+		cout << "FitHist::DoSaveLimits: " << gPad 
 				<< " fCanvas: " << fCanvas 
-				<< " fLogy "  << fLogy << " fSelPad->GetLogy() " <<  fSelPad->GetLogy()
-				<<endl;
+				<< " gPad  "  << gPad << " fSelPad->GetLogy() " <<  fSelPad->GetLogy()
+				<< " fExpHist " << fExpHist<< endl;
 		cout << "x1, x2, y1, y2: "<<fCanvas->GetFrame()->GetX1()<<" "
 		<<fCanvas->GetFrame()->GetX2()<< " " <<fCanvas->GetFrame()->GetY1()<<" "
 		<<fCanvas->GetFrame()->GetY2()<<endl;
 //		fCanvas->Dump();
 	}
 //	gSystem->Sleep(1000);
-	if (gPad == fCanvas) {
+//	if (gPad == fCanvas) {
 		if ( fLogy != fSelPad->GetLogy() ){
 			fLogy = fSelPad->GetLogy();
 			if ( fSelHist->GetDimension() == 1 ) {
 				fCanvas->GetHandleMenus()->SetLog(fLogy);
 			}
-			return;
+//			return;
 		}
 		if ( fLogx != fSelPad->GetLogx() ){
 			fLogx = fSelPad->GetLogx();
 			if ( fSelHist->GetDimension() == 1 ) {
 			}
-			return;
+//			return;
 		}
 		if ( fSelHist->GetDimension() == 2) {
 			if ( fLogz != fSelPad->GetLogz() ){
 				fLogz = fSelPad->GetLogz();
 				fCanvas->GetHandleMenus()->SetLog(fLogz);
 			}
-			return;
+//			return;
 		}
 		fXtitle = fSelHist->GetXaxis()->GetTitle();
 		fYtitle = fSelHist->GetYaxis()->GetTitle();
@@ -380,7 +400,7 @@ void FitHist::HandlePadModified()
 				}
 			}
 		}
-	}
+//	}
 }
 //________________________________________________________________
 
@@ -1137,7 +1157,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		fCanvas->GetHandleMenus()->SetLog(fLogy);
       Draw1Dim();
    }
-//   fCanvas->Update();
+   fCanvas->cd();
 	fFrameX1 = fCanvas->GetFrame()->GetX1();
 	fFrameX2 = fCanvas->GetFrame()->GetX2();
 	fFrameY1 = fCanvas->GetFrame()->GetY1();
@@ -2033,7 +2053,7 @@ void FitHist::Superimpose(Int_t mode)
 	fCanvas->cd();
 	TString drawopt = horig->GetDrawOption();
 	if ( gDebug  > 0 )
-		cout << "hist " << hist << " drawopt  " << drawopt<< endl;
+		cout << "horig->GetDrawOption() " << hist << " drawopt  " << drawopt<< endl;
 	if ( lSkipDialog == 0 || nhists < 2 ) {
 		// Error modes 
 		static void *valp[50];                    
@@ -2173,8 +2193,9 @@ void FitHist::Superimpose(Int_t mode)
 			}
 		}
 	}
-	drawopt += "SAME";
-//   cout << "drawopt " << drawopt << endl;
+	if ( !drawopt.Contains("SAME") )
+		drawopt += "SAME";
+//   cout << "DrawCopy(drawopt) " << drawopt << endl;
 	hdisp->DrawCopy(drawopt.Data());
 	if ( new_axis != 0 && hist->GetDimension() == 1 ) {
 //		TString opt("+SL");->GetFrame()->GetX1()
@@ -3739,3 +3760,135 @@ void FitHist::SetLogy(Int_t state)
 	fCanvas->Modified();
 	fCanvas->Update();
 };
+//    Int_t   fBinX_1, fBinX_2, fBinY_1, fBinY_2;  // lower, upper bin selected
+//    Int_t   fBinlx, fBinux, fBinly, fBinuy;     // lower, upper bin in expanded
+//    Axis_t  fExplx, fExpux, fExply, fExpuy;     // lower, upper edge in expanded
+//    Axis_t  fX_1,   fX_2,   fY_1,   fY_2;     // lower, upper lim selected
+//    Axis_t  fRangeLowX, fRangeUpX, fRangeLowY, fRangeUpY;
+//    Axis_t  fOrigLowX, fOrigUpX, fOrigLowY, fOrigUpY;
+// 	Double_t fFrameX1, fFrameX2,fFrameY1,fFrameY2;
+//    Bool_t fSetRange;
+//    Bool_t fKeepParameters;
+//    Bool_t fCallMinos;
+//    Int_t  fOldMode;
+//    TH1    *fSelHist, *fOrigHist;          // pointer to the selected histogram
+//    TH1    *fCalHist;
+//    FitHist  *fCalFitHist;
+//    TF1      *fCalFunc;
+//    FitOneDimDialog *fFit1DimD;
+//    Fit2DimDialog *fFit2DimD;
+// //   HistPresent* hp;
+//    HTCanvas *fCanvas;
+//    TH1     *fExpHist, *fProjHistX, *fProjHistY;
+//    TString fHname;
+//    TString fCname;
+//    TString fCtitle;
+//    TString fEname;
+//    TString fCutname;
+// 
+//    TVirtualPad *fSelPad;          // pointer to the selected pad
+// 
+//    TList *fActiveFunctions;
+//    TList *fAllFunctions;
+//    TList *fActiveWindows;
+//    TList *fAllWindows;
+//    TList *fAllCuts;
+//    TList *fPeaks;
+//    TList *fActiveCuts;
+//    FhMarkerList *fMarkers;
+//    TObjArray *peaks;
+//    TList *fCmdLine;
+//    Int_t fExpInd;
+//    Int_t fSerialPx;
+//    Int_t fSerialPy;
+//    Int_t fSerialPf;
+//    Int_t fSerialRot;
+//    Int_t fFuncNumb;
+//    Int_t fCutNumber;
+// 	Int_t fProjectedBoth;
+//    Int_t wdw_numb;
+//    Int_t fColSuperimpose;
+//    void ExpandProject(Int_t);
+//    Int_t fLogx;
+//    Int_t fLogy;
+//    Int_t fLogz;
+//    Bool_t fSelInside;
+//    Int_t fUserContourLevels;
+//    Bool_t fSetLevels;
+//    Bool_t fSetColors;
+//    Bool_t fHasExtraAxis;
+// 
+//    Float_t fMax, fMin, fXmax, fXmin, fYmax, fYmin;
+//    TRootCanvas *mycanvas;
+// //   TPaveText *datebox;
+//    Int_t fDimension;
+//    Bool_t fCanvasIsAlive;
+//    TString fXtitle;
+//    TString fYtitle;
+// 	TString fZtitle;
+// 	TString fFitMacroName;
+//    TString fTemplateMacro;
+//    TString fFitSliceYMacroName;
+//    Int_t fFirstUse;
+//    Bool_t fDeleteCalFlag;
+//    HTCanvas * fCutPanel;
+//    TableOfLabels * fTofLabels;
+// 
+//    Int_t fFill1Dim;
+//    Color_t fFillColor;
+//    Color_t fLineColor;
+//    Float_t fLineWidth;
+//    Float_t fMarkerSize;
+// 	Int_t fDrawMarker;
+// 	Int_t fFillStyle;
+//    Int_t fShowContour;
+//    Int_t fShowDateBox;
+//    Int_t fShowStatBox;
+//    Int_t fOptStat;
+//    Int_t fUseTimeOfDisplay;
+//    Int_t fShowTitle;
+//    Int_t fShowFitBox;
+//    Int_t fLiveStat1Dim;
+//    Int_t fLiveStat2Dim;
+//    Int_t fLiveGauss;
+//    Int_t fLiveBG;
+// 	Int_t   fSmoothLine;
+// 	Int_t   fSimpleLine;
+// 	Int_t   fBarChart;
+// 	Int_t   fBarChart3D;
+// 	Int_t   fBarChartH;
+// 	Int_t   fPieChart;
+// 	Int_t   fText;
+// 	Int_t   fTextAngle;
+//    Int_t fShowZScale;
+//    Int_t fDrawAxisAtTop;
+//    TString fDrawOpt2Dim;
+//    Int_t fTitleCenterX;
+//    Int_t fTitleCenterY;
+//    Int_t fTitleCenterZ;
+//    TText * fDateText;
+//    Save2FileDialog *fDialog;
+//    Color_t fHistFillColor2Dim;
+// 	Color_t fHistFillStyle2Dim;
+// 	Color_t fHistLineColor2Dim;
+// 	Color_t fHistLineStyle2Dim;
+// 	Color_t fHistLineWidth2Dim;
+// 	Color_t fMarkerColor2Dim; 
+// 	Color_t f2DimBackgroundColor;
+//    Style_t fMarkerStyle2Dim;  
+//    Size_t  fMarkerSize2Dim; 
+//    TString fErrorMode;
+// 	Int_t   fOneDimLogX;
+// 	Int_t   fOneDimLogY;
+// 	Int_t   fTwoDimLogX;
+// 	Int_t   fTwoDimLogY;
+// 	Int_t   fTwoDimLogZ;
+// 	Int_t   fLabelsTopX;
+// 	Int_t   fLabelsRightY;
+// 	TString fDrawOpt3Dim;
+//    Color_t fHistFillColor3Dim;
+//    Color_t fHistLineColor3Dim;
+//    Color_t fMarkerColor3Dim; 
+// 	Color_t f3DimBackgroundColor;
+//    Style_t fMarkerStyle3Dim;  
+//    Size_t  fMarkerSize3Dim; 
