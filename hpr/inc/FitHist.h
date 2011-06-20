@@ -336,6 +336,7 @@ public:
    void FastFT();
 	void HandleLinLogChanged(TObject *obj);
 	void HandlePadModified();
+	void DoSaveLimits();
 	
 ClassDef(FitHist,0)      // A histogram presenter
 };
