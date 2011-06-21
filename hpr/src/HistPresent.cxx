@@ -2094,7 +2094,11 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
 //      cout << "Use hist in memory: " << hname << " Fn: " << fname << " Nn: " << newname << endl;
 	}
 //   if (hist) hist->Print();
-   if (hist && (fname == "Memory" || try_memory)) return hist;
+   if (hist && (fname == "Memory" || try_memory)) {
+		if (gDebug > 0) 
+			cout << "GetSelHistAt: " << fname << "|" << hname << "|" << dname << endl;
+		return hist;
+	}
    if (!(fname == "Memory")) {
 		TString hn(hname);
 		if ( hsuffix != NULL )
@@ -2814,6 +2818,12 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
    TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
    TH1* hist=0;
    TString shname = hname;
+	if (shname.Index(";") > 0) {
+		TString sind = shname(shname.Index(";")+1, 10);
+		if (sind.IsDigit() && sind.Atoi() == 1) {
+			shname.Resize(shname.Index(";"));
+		}
+	}
 //    shname = shname.Strip(TString::kBoth);
    if (strstr(fname,".root")) {
       TString newhname;
@@ -2827,7 +2837,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       }
 //      if (newhname.Index(";") > 1) newhname.Resize(newhname.Index(";"));
       const char * hn = (const char*)newhname;
-      TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
+//      TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
       TString FHname("F");
       FHname += hn;
       while (FHname.Index(notascii) >= 0) {
@@ -3018,10 +3028,16 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
    TString origname;
    if (hname) origname = hname;
    else       origname = hist->GetName();
+   if (origname.Index(";") > 1)origname.Resize(origname.Index(";"));
    TString FHname("F");
    FHname += hist->GetName();
-//   cout << "FHname " << FHname<< endl;
-   if (FHname.Index(";") > 1)FHname.Resize(FHname.Index(";"));
+   if (FHname.Index(";") > 1) {
+		TString sind = FHname(FHname.Index(";")+1, 10);
+		if (sind.IsDigit() && sind.Atoi() == 1) {
+			FHname.Resize(FHname.Index(";"));
+		}
+	}
+//   cout << "hist->GetName() " <<   hist->GetName()<<  " hname " << hname <<" origname " << origname << " FHname " << FHname<< endl;
    TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
    while (FHname.Index(notascii) >= 0) {
       FHname(notascii) = "_";

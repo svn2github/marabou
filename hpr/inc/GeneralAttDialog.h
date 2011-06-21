@@ -16,6 +16,7 @@ private:
 	Int_t        fGlobalStyleButton;
 
 public:
+	static Int_t fPrependFilenameName;
 	static Int_t fPrependFilename;
    static Int_t fForceStyle;
    static Int_t fShowPSFile;

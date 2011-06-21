@@ -14,7 +14,7 @@
 #include "Set2DimOptDialog.h"
 #include "SetColorModeDialog.h"
 #include "WindowSizeDialog.h"
-
+#include "GeneralAttDialog.h"
 
 ClassImp (GoHTimer)
 ClassImp (GroupOfHists)
@@ -146,6 +146,7 @@ void GroupOfHists::BuildCanvas()
 //   fCanvas->SetEditable(kTRUE);
    TEnv * lastset = 0;
    TString hname;
+   TString fname;
    fAnyFromSocket = kFALSE;
    TPad * firstpad = NULL;
    TH1* hist;
@@ -162,21 +163,62 @@ void GroupOfHists::BuildCanvas()
 //         cout << " Hist not found at: " << i << endl;
          continue;
       }
-      TString fname = ((TObjString *)fHList->At(i))->String();
-      if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
-      hname = hist->GetName();
- //     cout << "Bef chop: " << hname << endl;
+      TString temp = ((TObjString *)fHList->At(i))->String();
+      if (temp.Index("Socket") == 0) fAnyFromSocket = kTRUE;
+		Int_t slen;
+		Ssiz_t pos = 0;
+		Bool_t ok;
+		const Char_t * del = ",";
+		ok = temp.Tokenize(fname,pos, del);
+		if ( ok ) {
+			slen = fname.Length();
+			temp = temp(slen+1, temp.Length());
+		} else {
+			cout << "Cant get file name from: " << temp << endl;
+			return;
+		}
+		pos = 0;
+		if ( temp.Tokenize(hname,pos, del) ) {
+			slen = hname.Length();
+			temp = temp(slen+1, temp.Length());
+		} else {
+			cout << "Cant get hist name from: " << temp << endl;
+			return;
+		}
+//      hname = hist->GetName();
+		if (gDebug > 0)
+      cout << "Enter GroupOfHists::BuildCanvas: " << fname<< " "  << hname << endl;
 
 //      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
 //      if(last_us >0)hname.Remove(last_us);
-      TRegexp sem(";");
-      hname(sem) ="_";
+		if (hname.Index(";") > 1) {
+			TString sind = hname(hname.Index(";")+1, 10);
+			if (sind.IsDigit() && sind.Atoi() == 1) {
+				hname.Resize(hname.Index(";"));
+			}
+		}
+		if ( fname.Index("Socket") < 0 && fname.Index("Memory") < 0
+			&& GeneralAttDialog::fPrependFilenameName ) {
+			fname = gSystem->BaseName(fname);
+			if ( fname.EndsWith("root") )
+				fname.Resize(fname.Length() - 5);
+			hname.Prepend("_");
+			hname.Prepend(fname);
+		}
+		if ( gROOT->GetList()->FindObject(hname) ) {
+			hname += "_";
+			hname += i;
+		}
+//      TRegexp sem(";");
+//      hname(sem) ="_";
       hist->SetName(hname);
 //		cout << "Aft chop: " << hname << endl;
 		lastset = GetDefaults(hname);
-//      cout << "GetDefaults: "  << hname << " " << lastset << endl;
+		if (gDebug > 0)
+			cout << "GetDefaults: "  << hname << " " << lastset << endl;
       if (lastset) {
-//         lastset->Print();
+			if (gDebug > 0)
+				lastset->Print();
          if (lastset->Lookup("fRangeLowX") )
             hist->GetXaxis()->Set(hist->GetNbinsX(),
             lastset->GetValue("fRangeLowX", 0),

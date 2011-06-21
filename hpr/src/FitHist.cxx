@@ -118,7 +118,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fHname = hname;
 //   Int_t pp = fHname.Index(".");
 //   if(pp) fHname.Remove(0,pp+1);
-   cout << "ctor: " << GetName() << " hname: " << fHname.Data()<< endl;
+//    cout << "ctor: " << GetName() << " hname: " << fHname.Data()<< endl;
    fCutPanel = NULL;
 //   fDialog  = NULL;
    fSetRange = kFALSE;

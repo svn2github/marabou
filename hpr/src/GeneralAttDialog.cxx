@@ -15,22 +15,23 @@
 
 namespace std {} using namespace std;
 
-Int_t GeneralAttDialog::fPrependFilename;
-Int_t GeneralAttDialog::fForceStyle;
-Int_t GeneralAttDialog::fShowPSFile;
-Int_t GeneralAttDialog::fSuppressWarnings;
-Int_t GeneralAttDialog::fUseRegexp;
-Int_t GeneralAttDialog::fShowListsOnly;
-Int_t GeneralAttDialog::fRememberLastSet;
-Int_t GeneralAttDialog::fRememberZoom;
-Int_t GeneralAttDialog::fUseAttributeMacro;
-Int_t GeneralAttDialog::fMaxListEntries;
-Int_t GeneralAttDialog::fContentLowLimit;
-Int_t GeneralAttDialog::fVertAdjustLimit;
-Int_t GeneralAttDialog::fStackedReally;
-Int_t GeneralAttDialog::fStackedNostack;
-Int_t GeneralAttDialog::fStackedPads;
-TString GeneralAttDialog::fGlobalStyle;
+Int_t GeneralAttDialog::fPrependFilenameName = 1;
+Int_t GeneralAttDialog::fPrependFilename = 0;
+Int_t GeneralAttDialog::fForceStyle = 1;
+Int_t GeneralAttDialog::fShowPSFile = 0;
+Int_t GeneralAttDialog::fSuppressWarnings = 1;
+Int_t GeneralAttDialog::fUseRegexp = 0;
+Int_t GeneralAttDialog::fShowListsOnly = 0;
+Int_t GeneralAttDialog::fRememberLastSet = 1;
+Int_t GeneralAttDialog::fRememberZoom = 1;
+Int_t GeneralAttDialog::fUseAttributeMacro = 0;
+Int_t GeneralAttDialog::fMaxListEntries = 333;
+Int_t GeneralAttDialog::fContentLowLimit = 0;
+Int_t GeneralAttDialog::fVertAdjustLimit =0;
+Int_t GeneralAttDialog::fStackedReally = 1;
+Int_t GeneralAttDialog::fStackedNostack = 0;
+Int_t GeneralAttDialog::fStackedPads = 0;
+TString GeneralAttDialog::fGlobalStyle = "Plain";
 
 //_______________________________________________________________________
 
@@ -130,6 +131,8 @@ ____________________________________________________________\n\
    fRow_lab->Add(new TObjString(style_menu));
    fGlobalStyleButton = ind;
    fValp[ind++] = &fGlobalStyle;
+   fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo names"));
+   fValp[ind++] = &fPrependFilenameName;
    fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo titles"));
    fValp[ind++] = &fPrependFilename;
 	fRow_lab->Add(new TObjString("CheckButton_              Show histlists only"));
@@ -209,6 +212,7 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fStackedNostack", fStackedNostack);
    env.SetValue("GeneralAttDialog.fStackedPads"   , fStackedPads   );
 	env.SetValue("GeneralAttDialog.fPrependFilename", fPrependFilename);
+	env.SetValue("GeneralAttDialog.fPrependFilenameName", fPrependFilenameName);
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -237,6 +241,7 @@ void GeneralAttDialog::RestoreDefaults()
    fStackedNostack  = env.GetValue("GeneralAttDialog.fStackedNostack", 0);
    fStackedPads     = env.GetValue("GeneralAttDialog.fStackedPads"   , 0);
 	fPrependFilename = env.GetValue("GeneralAttDialog.fPrependFilename"   , 0);
+	fPrependFilenameName = env.GetValue("GeneralAttDialog.fPrependFilenameName", 1);
 }
 //______________________________________________________________________
 
