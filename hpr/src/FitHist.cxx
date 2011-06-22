@@ -1969,13 +1969,16 @@ void FitHist::Superimpose(Int_t mode)
       Hpr::WarnBox("No hist selected");
       return;
    }
+   hist->SetMinimum(-1111);
+   hist->SetMaximum(-1111);
+	
 //    cout << "hist->GetName() " << hist->GetName() << endl;
-   
    TEnv env(".hprrc");
 	static Int_t   lLegend      = env.GetValue("SuperImposeHist.DrawLegend", 1);
 	static Int_t   lIncrColors  = env.GetValue("SuperImposeHist.AutoIncrColors", 0);
 	static Int_t   lSkipDialog  = env.GetValue("SuperImposeHist.SkipDialog", 0);
 	static Int_t   lWarnDiffBin = env.GetValue("SuperImposeHist.WarnDiffBin", 1);
+//	static Int_t   lNoStatBox   = env.GetValue("SuperImposeHist.NoStatBox", 1);
 	
 	if (hist->GetDimension() != fSelHist->GetDimension()) {
 		Hpr::WarnBox("Dimensions of histograms differ");
@@ -2104,6 +2107,8 @@ void FitHist::Superimpose(Int_t mode)
 		valp[ind++] = &lSkipDialog;
 		row_lab->Add(new TObjString("CheckButton+WarnDiffBin"));
 		valp[ind++] = &lWarnDiffBin;
+//		row_lab->Add(new TObjString("CheckButton+NoStatBox"));
+//		valp[ind++] = &lNoStatBox;
 		
 		Int_t itemwidth = 380;
 		ok = GetStringExt("Superimpose Histogram", NULL, itemwidth, win,
@@ -2193,9 +2198,13 @@ void FitHist::Superimpose(Int_t mode)
 			}
 		}
 	}
+	if (hdisp->GetDimension() == 2) {
+		TRegexp zopt("Z");
+		drawopt(zopt)="";
+	}
 	if ( !drawopt.Contains("SAME") )
 		drawopt += "SAME";
-//   cout << "DrawCopy(drawopt) " << drawopt << endl;
+   cout << "DrawCopy(drawopt) " << drawopt << endl;
 	hdisp->DrawCopy(drawopt.Data());
 	if ( new_axis != 0 && hist->GetDimension() == 1 ) {
 //		TString opt("+SL");->GetFrame()->GetX1()
@@ -2263,7 +2272,12 @@ void FitHist::Superimpose(Int_t mode)
 		}
 		delete tmp;
 	}
-	
+/*	if ( lNoStatBox ) {
+		TPaveStats *ps = (TPaveStats*)hdisp->GetListOfFunctions()->FindObject("stats");
+		if (ps) {
+			delete ps;
+		}
+	}*/
 // remove "How to display a 1-dim histogram"
 /*	TGMenuBar * menubar = win->GetMenuBar();
 	TGPopupMenu *pu = menubar->GetPopup("Hpr-Options");
@@ -3642,6 +3656,7 @@ void FitHist::AddFunctionsToHist()
 
 void FitHist::SetLogz(Int_t state)
 {
+//	cout << "SetLogz(Int_t state) " << state<< endl;
    fLogz = state;
    if (gHpr && gHpr->fLogScaleMin > 0){
       if(state > 0)
