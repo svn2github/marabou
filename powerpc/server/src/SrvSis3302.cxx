@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.22 $
-//! $Date: 2011-05-20 13:51:17 $
+//! $Revision: 1.23 $
+//! $Date: 2011-07-26 08:41:50 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -62,6 +62,8 @@ SrvSis3302::SrvSis3302() : SrvVMEModule(	"Sis3302",							//!< type
 Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 
 	Int_t boardId, majorVersion, minorVersion;
+	UInt_t address;
+	Int_t addrSpace;
 	
 	if (!this->GetModuleInfo(Module, boardId, majorVersion, minorVersion, kTRUE)) return(kFALSE);
 	if (boardId != 3302) {
@@ -89,7 +91,7 @@ Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 //////////////////////////////////////////////////////////////////////////////
 
 Bool_t SrvSis3302::Release(SrvVMEModule * Module) {
-	return(Module->MapAddress(0xFFFFFFFF));
+	return(Module->MapAddress(0xFFFFFFFF) != NULL);
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -121,6 +123,14 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 				m->fSerial = -1;
 				m->fMajorVersion = swapIt(MajorVersion);
 				m->fMinorVersion = swapIt(MinorVersion);
+				return((M2L_MsgHdr *) m);
+			}
+		case kM2L_FCT_SIS_3302_GET_MODULE_ADDR:
+			{
+				if (!this->CheckAddressSpace(Module, kFALSE)) return(kFALSE);
+				M2L_VME_Return_Module_Addr * m = (M2L_VME_Return_Module_Addr *) allocMessage(sizeof(M2L_VME_Return_Module_Addr), 1, kM2L_MESS_VME_EXEC_FUNCTION);
+				m->fAddress = swapIt(Module->GetBaseAddr());
+				m->fAddrSpace = swapIt(this->IsReduced() ? 16 : 128);
 				return((M2L_MsgHdr *) m);
 			}
 		case kM2L_FCT_SIS_3302_SET_USER_LED:
@@ -641,10 +651,15 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 				break;
 			}
 		case kM2L_FCT_SIS_3302_RAMP_DAC:
-			{
-				if (!this->RampDac(Module, data, chanNo)) return(NULL);
-				break;
-			}
+		{
+			if (!this->RampDac(Module, data, chanNo)) return(NULL);
+			break;
+		}
+		case kM2L_FCT_SIS_3302_DUMP_REGISTERS:
+		{
+			if (!this->DumpRegisters(Module)) return(NULL);
+			break;
+		}
 		default:
 			{
 				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Function not implemented - "
@@ -772,7 +787,6 @@ Bool_t SrvSis3302::CheckAddressSpace(SrvVMEModule * Module, Bool_t PrintFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Convert address according to jumper J80:RED
-//! \param[in]		Module			-- module address
 //! \param[in]		Address			-- addr in full addr space
 //! \return 		Address			-- addr, possibly reduced
 //////////////////////////////////////////////////////////////////////////////
@@ -979,13 +993,13 @@ Bool_t SrvSis3302::KeyAddr(SrvVMEModule * Module, Int_t Key) {
 			return(kFALSE);
 	}
 
-	volatile Int_t * keyAddr = (Int_t *) Module->MapAddress(offset);
+	volatile Int_t * keyAddr = (Int_t *) Module->MapAddress(this->CA(offset));
 	if (keyAddr == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*keyAddr = 0;
 	if (Key == kSis3302KeyReset || Key == kSis3302KeyResetSampling) sleep(1);
-	if (this->CheckBusTrap(Module, offset, "KeyAddr")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "KeyAddr")) return(kFALSE);
 	return (kTRUE);
 }
 
@@ -999,14 +1013,14 @@ Bool_t SrvSis3302::KeyAddr(SrvVMEModule * Module, Int_t Key) {
 
 Bool_t SrvSis3302::ReadControlStatus(SrvVMEModule * Module, Int_t & Bits) {
 
-	Int_t offset = this->CA(SIS3302_CONTROL_STATUS);
+	Int_t offset = SIS3302_CONTROL_STATUS;
 
-	volatile Int_t * ctrlStat = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * ctrlStat = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (ctrlStat == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	Bits = *ctrlStat;
-	return (!this->CheckBusTrap(Module, offset, "ReadControlStatus"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadControlStatus"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1019,14 +1033,14 @@ Bool_t SrvSis3302::ReadControlStatus(SrvVMEModule * Module, Int_t & Bits) {
 
 Bool_t SrvSis3302::WriteControlStatus(SrvVMEModule * Module, Int_t & Bits) {
 
-	Int_t offset = this->CA(SIS3302_CONTROL_STATUS);
+	Int_t offset = SIS3302_CONTROL_STATUS;
 
-	volatile Int_t * ctrlStat = (volatile Int_t *) Module->MapAddress(offset);
+	volatile Int_t * ctrlStat = (volatile Int_t *) Module->MapAddress(this->CA(offset));
 	if (ctrlStat == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
 	*ctrlStat = Bits;
-	if (this->CheckBusTrap(Module, offset, "WriteControlStatus")) return(kFALSE);
+	if (this->CheckBusTrap(Module, this->CA(offset), "WriteControlStatus")) return(kFALSE);
 	return(this->ReadControlStatus(Module, Bits));
 }
 
@@ -1185,7 +1199,7 @@ Bool_t SrvSis3302::WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits,
 	gSignalTrap = kFALSE;
 	*evtConf = Bits;
 	if (this->CheckBusTrap(Module, this->CA(offset), "WriteEventExtendedConfig")) return(kFALSE);
-	return(this->ReadEventConfig(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
+	return(this->ReadEventExtendedConfig(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2160,7 +2174,7 @@ Bool_t SrvSis3302::ReadNextSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t
 	if (samplAddr == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	Addr = *samplAddr;
-	return (!this->CheckBusTrap(Module, offset, "ReadNextSampleAddr"));
+	return (!this->CheckBusTrap(Module, this->CA(offset), "ReadNextSampleAddr"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3923,6 +3937,7 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 	}
 
 	Int_t maxThresh = maxWords * 2;		// thresh has to be 16bit
+	
 	this->WriteEndAddrThresh(Module, maxThresh);
 	this->KeyResetSampling(Module);
 	this->KeyClearTimestamp(Module);
@@ -4075,7 +4090,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 
 	volatile Int_t * mappedAddr = (volatile Int_t *) Module->MapAddress(this->CA(startAddr));
 	if (mappedAddr == NULL) return(kFALSE);
-
+	
 	gSignalTrap = kFALSE;
 
 
@@ -4435,4 +4450,176 @@ Bool_t SrvSis3302::ReadIRQEnableStatus(SrvVMEModule * Module, UInt_t & IrqStatus
 	gSignalTrap = kFALSE;
 	IrqStatus = *irq & 0xFF;
 	return (this->CheckBusTrap(Module, this->CA(offset), "ReadIRQEnableStatus"));
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Dump registers
+//! \param[in]		Module		-- module address
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
+{
+
+	TString fileName;
+	if (File == NULL) {
+		fileName = Module->GetName();
+		fileName += ".dmp";
+	} else {
+		fileName = File;
+	}
+		
+	gMrbLog->Out() << "[" << Module->GetName() << "] Dumping registers to file " << fileName.Data() << " ..." << endl;
+	gMrbLog->Flush(this->ClassName(), "DumpRegisters");
+	
+	ofstream dmp;
+	dmp.open(fileName.Data(), ios::out);
+	if (!dmp.good()) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't open file - "
+				<< File << endl;
+		gMrbLog->Flush(this->ClassName(), "DumpRegisters");
+		return(kFALSE);
+	}
+
+	Int_t clockSource;
+	Int_t bits;
+	this->GetClockSource(Module, clockSource);
+	dmp << "Clock source                    : " <<  clockSource << endl;
+	this->GetLemoOutMode(Module, bits);
+	dmp << "Lemo OUT mode                   : " << bits << endl;
+	this->GetLemoInMode(Module, bits);
+	dmp << "Lemo IN mode                    : " << bits << endl;
+	this->GetLemoInEnableMask(Module, bits);
+	dmp << "Lemo IN ENABLE mask             : " << bits << endl;
+	dmp << endl;
+
+	TArrayI dacValues(kSis3302NofChans);
+	this->ReadDac(Module, dacValues, kSis3302AllChans);
+	for (Int_t chn = 0; chn < kSis3302NofChans; chn++) dmp << "DAC value chn" << chn << ": " << dacValues[chn] << endl;
+	dmp << endl;
+
+	Int_t chn = 0;
+	for (Int_t grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+		this->GetHeaderBits(Module, bits, chn);
+		dmp << "Header bits grp" << grp << "(" << (chn+1) << (chn+2) << "): " << setbase(16) << bits << endl;
+	}
+	dmp << endl;
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		this->GetTriggerMode(Module, bits, chn);
+		dmp << "Trigger mode chn" << chn << "                 : " << setbase(16) << bits << endl;
+		this->GetGateMode(Module, bits, chn);
+		dmp << "Gate mode    chn" << chn << "                 : " << setbase(16) << bits << endl;
+		this->GetNextNeighborTriggerMode(Module, bits, chn);
+		dmp << "Next neighbor trigger chn" << chn << "        : " << setbase(16) << bits << endl;
+		this->GetNextNeighborGateMode(Module, bits, chn);
+		dmp << "Next neighbor gate    chn" << chn << "        : " << setbase(16) << bits << endl;
+		this->GetPolarity(Module, bits, chn);
+		dmp << "Polarity              chn" << chn << "        : " << setbase(16) << bits << endl;
+		dmp << endl;
+	}
+
+	chn = 0;
+	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+		Int_t delay;
+		this->ReadPreTrigDelay(Module, delay, chn);
+		dmp << "Pretrigger delay    grp" << grp << "(" << (chn+1) << (chn+2) << "): " << delay << endl;
+		Int_t gate;
+		this->ReadTrigGateLength(Module, gate, chn);
+		dmp << "Trigger gate length grp" << grp << "(" << (chn+1) << (chn+2) << "): " << gate << endl;
+		dmp << endl;
+	}
+
+	chn = 0;
+	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+		Int_t sample;
+		this->ReadRawDataSampleLength(Module, sample, chn);
+		dmp << "Raw data sample length grp" << grp << "(" << (chn+1) << (chn+2) << "): " << sample << endl;
+		Int_t start;
+		this->ReadRawDataStartIndex(Module, start, chn);
+		dmp << "Raw data sample start  grp" << grp << "(" << (chn+1) << (chn+2) << "): " << start << endl;
+		dmp << endl;
+	}
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		Int_t peak, gap;
+		this->ReadTriggerPeakAndGap(Module, peak, gap, chn);
+		dmp << "Trigger peak time        chn" << chn << ": " << peak << endl;
+		dmp << "Trigger gap time         chn" << chn << ": " << gap << endl;
+		Int_t gate;
+		this->ReadTriggerInternalGate(Module, gate, chn);
+		dmp << "Internal trigger gate    chn" << chn << ": " << gate << endl;
+		Int_t delay;
+		this->ReadTriggerInternalDelay(Module, delay, chn);
+		dmp << "Internal trigger delay   chn" << chn << ": " << delay << endl;
+		Int_t pulse;
+		this->ReadTriggerPulseLength(Module, pulse, chn);
+		dmp << "Trigger pulse length     chn" << chn << ": " << pulse << endl;
+		Int_t decim;
+		this->GetTriggerDecimation(Module, decim, chn);
+		dmp << "Trigger decimation       chn" << chn << ": " << decim << endl;
+		dmp << endl;
+	}
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		Int_t thresh;
+		this->ReadTriggerThreshold(Module, thresh, chn);
+		dmp << "Trigger threshold        chn" << chn << ": " << thresh << endl;
+		Int_t trig;
+		this->GetTriggerGT(Module, trig, chn);
+		dmp << "Trigger GT               chn" << chn << ": " << trig << endl;
+		this->GetTriggerOut(Module, trig, chn);
+		dmp << "Trigger OUT              chn" << chn << ": " << trig << endl;
+		dmp << endl;
+	}
+	
+	chn = 0;
+	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+		Int_t peak, gap;
+		this->ReadEnergyPeakAndGap(Module, peak, gap, chn);
+		dmp << "Energy peak time       grp" << grp << "(" << (chn+1) << (chn+2) << "): " << peak << endl;
+		dmp << "Energy gap time        grp" << grp << "(" << (chn+1) << (chn+2) << "): " << gap << endl;
+		Int_t decim;
+		this->GetEnergyDecimation(Module, decim, chn);
+		dmp << "Energy decimation      grp" << grp << "(" << (chn+1) << (chn+2) << "): " << decim << endl;
+		dmp << endl;
+	}
+
+	chn = 0;
+	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+		Int_t gate;
+		this->ReadEnergyGateLength(Module, gate, chn);
+		dmp << "Energy gate length     grp" << grp << "(" << (chn+1) << (chn+2) << "): " << gate << endl;
+		Int_t bits;
+		this->GetTestBits(Module, bits, chn);
+		dmp << "Energy test bits       grp" << grp << "(" << (chn+1) << (chn+2) << "): " << setbase(16) << bits << endl;
+		dmp << endl;
+	}
+
+	chn = 0;
+	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+		Int_t sample;
+		this->ReadEnergySampleLength(Module, sample, chn);
+		dmp << "Energy sample length   grp" << grp << "(" << (chn+1) << (chn+2) << "): " << setbase(16) << sample << endl;
+		Int_t index;
+		this->ReadStartIndex(Module, index, 0, chn);
+		dmp << "Energy sample start #1 grp" << grp << "(" << (chn+1) << (chn+2) << "): " << setbase(16) << index << endl;
+		this->ReadStartIndex(Module, index, 1, chn);
+		dmp << "Energy sample start #2 grp" << grp << "(" << (chn+1) << (chn+2) << "): " << setbase(16) << index << endl;
+		this->ReadStartIndex(Module, index, 2, chn);
+		dmp << "Energy sample start #3 grp" << grp << "(" << (chn+1) << (chn+2) << "): " << setbase(16) << index << endl;
+		dmp << endl;
+	}
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		Int_t tau;
+		this->ReadTauFactor(Module, tau, chn);
+		dmp << "Energy tau factor      chn" << chn << ": " << tau << endl;
+	}
+	dmp << endl;
+	
+	dmp.close();
+
+	return(kTRUE);
 }

@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.16 2010-11-17 14:13:58 Marabou Exp $
-// Date:           $Date: 2010-11-17 14:13:58 $
+// Revision:       $Id: TC2LSis3302.h,v 1.17 2011-07-26 08:41:50 Marabou Exp $
+// Date:           $Date: 2011-07-26 08:41:50 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +41,7 @@ class TC2LSis3302 : public TC2LVMEModule {
 		~TC2LSis3302() {};							// default dtor
 
 		Bool_t GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t & MinorVersion);
+		Bool_t GetModuleAddress(UInt_t & Address, Int_t & AddrSpace);
 
 		Bool_t SetUserLED(Bool_t & OnFlag);
 
@@ -143,6 +144,8 @@ class TC2LSis3302 : public TC2LVMEModule {
 
 		Bool_t RampDac(TArrayI & Data, Int_t ChanNo);
 
+		Bool_t DumpRegisters();
+		
 		inline void SetFirmwareVersion(Int_t Major, Int_t Minor) { fMajorVersion = Major; fMinorVersion = Minor; };
 		inline UInt_t GetFirmwareVersion() { return ((fMajorVersion << 8) | fMinorVersion); };
 		inline UInt_t GetFirmwareMajor() { return fMajorVersion; };

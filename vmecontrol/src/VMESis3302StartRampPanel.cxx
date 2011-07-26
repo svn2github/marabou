@@ -2,11 +2,11 @@
 //////////////////////////////////////////////////////////////////////////////
 // ame:            VMESis3302StartRampPanel
 // Purpose:        A GUI to control a SIS 3302 adc
-// Description:   Accumulate histograms
+// Description:    Start ramping
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartRampPanel.cxx,v 1.2 2010-11-18 13:29:34 Marabou Exp $
+// Revision:       $Id: VMESis3302StartRampPanel.cxx,v 1.3 2011-07-26 08:41:50 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -44,6 +44,7 @@ namespace std {} using namespace std;
 
 extern VMEControlData * gVMEControlData;
 extern TMrbLogger * gMrbLog;
+extern TMrbC2Lynx * gMrbC2Lynx;
 
 static TC2LSis3302 * curModule = NULL;
 
@@ -263,6 +264,9 @@ void VMESis3302StartRampPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 		case VMESis3302StartRampPanel::kVMESis3302DeleteClones:
 			this->DeleteClones();
 			break;
+		case VMESis3302StartRampPanel::kVMESis3302Close:
+			this->KeyPressed(0, TGMrbLofKeyBindings::kGMrbKeyActionExit);
+			break;
 	}
 }
 
@@ -480,6 +484,7 @@ void VMESis3302StartRampPanel::KeyPressed(Int_t FrameId, Int_t Key) {
 
 	switch (Key) {
 		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
+			if (gMrbC2Lynx) gMrbC2Lynx->Bye();
 			gApplication->Terminate(0);
 			break;
 		case TGMrbLofKeyBindings::kGMrbKeyActionClose:

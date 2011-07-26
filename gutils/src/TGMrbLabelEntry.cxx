@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.24 2010-04-22 13:44:41 Rudolf.Lutter Exp $
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.25 2011-07-26 08:41:50 Marabou Exp $
 // Date:
 // Layout: A plain entry
 //Begin_Html
@@ -22,8 +22,8 @@
 #include "TGMsgBox.h"
 #include "TGButton.h"
 #include "TGToolTip.h"
-#include "TMrbString.h"
 #include "TMrbLogger.h"
+#include "TMrbString.h"
 #include "TGMrbLabelEntry.h"
 
 #include "SetColor.h"
@@ -98,8 +98,8 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 
 	fFrameId = FrameId;
 
-	fBase = TMrbString::kDefaultBase;
-	fPrecision = TMrbString::kDefaultPrecision;
+	fBase = 10;
+	fPrecision = 2;
 	fType = TGMrbLabelEntry::kGMrbEntryTypeChar;
 	fLabel = NULL;
 
@@ -220,25 +220,37 @@ void TGMrbLabelEntry::BeginButtonPressed(Int_t EntryNo) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString s = this->GetText(EntryNo);
+	TString s;
 	if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
-		Int_t dmy;
-		s.ToInteger(dmy, fBase);
-		Int_t intVal = (Int_t) fLowerLimit[EntryNo];
-		s.FromInteger(intVal, fWidth, fBase, kTRUE);
+		switch (fBase) {
+			case 10:
+				s = Form("%*d", fWidth, (Int_t) fLowerLimit[EntryNo]);
+				break;
+			case 16:
+				s = Form("%*x", fWidth, (Int_t) fLowerLimit[EntryNo]);
+				break;
+		}
 		this->SetText(s.Data(), EntryNo);
 	} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-		Int_t dmy;
-		TString prefix;
-		s.SplitOffInteger(prefix, dmy, fBase);
-		Int_t intVal = (Int_t) fLowerLimit[EntryNo];
-		s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
+		s = this->GetText(EntryNo);
+		for (Int_t i = s.Length() - 1; i >= 0; i--) {
+			TString c = s(i,1);
+			if (!c.IsDigit()) {
+				s = s(0, s.Length() - i - 1);
+				break;
+			}
+		}
+		switch (fBase) {
+			case 10:
+				s += Form("%*d", fWidth, (Int_t) fLowerLimit[EntryNo]);
+				break;
+			case 16:
+				s += Form("%*x", fWidth, (Int_t) fLowerLimit[EntryNo]);
+				break;
+		}
 		this->SetText(s.Data(), EntryNo);
 	} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
-		Double_t dmy;
-		s.ToDouble(dmy);
-		Double_t dblVal = fLowerLimit[EntryNo];
-		s.FromDouble(dblVal, fWidth, fPrecision);
+		s = Form("%*.*f", fWidth, fPrecision, fLowerLimit[EntryNo]);
 		this->SetText(s.Data(), EntryNo);
 	}
 	this->EntryChanged(EntryNo);
@@ -256,25 +268,37 @@ void TGMrbLabelEntry::EndButtonPressed(Int_t EntryNo) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString s = this->GetText(EntryNo);
+	TString s;
 	if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
-		Int_t dmy;
-		s.ToInteger(dmy, fBase);
-		Int_t intVal = (Int_t) fUpperLimit[EntryNo];
-		s.FromInteger(intVal, fWidth, fBase, kTRUE);
+		switch (fBase) {
+			case 10:
+				s = Form("%*d", fWidth, (Int_t) fUpperLimit[EntryNo]);
+				break;
+			case 16:
+				s = Form("%*x", fWidth, (Int_t) fUpperLimit[EntryNo]);
+				break;
+		}
 		this->SetText(s.Data(), EntryNo);
 	} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-		Int_t dmy;
-		TString prefix;
-		s.SplitOffInteger(prefix, dmy, fBase);
-		Int_t intVal = (Int_t) fUpperLimit[EntryNo];
-		s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
+		s = this->GetText(EntryNo);
+		for (Int_t i = s.Length() - 1; i >= 0; i--) {
+			TString c = s(i,1);
+			if (!c.IsDigit()) {
+				s = s(0, s.Length() - i - 1);
+				break;
+			}
+		}
+		switch (fBase) {
+			case 10:
+				s += Form("%*d", fWidth, (Int_t) fUpperLimit[EntryNo]);
+				break;
+			case 16:
+				s += Form("%*x", fWidth, (Int_t) fUpperLimit[EntryNo]);
+				break;
+		}
 		this->SetText(s.Data(), EntryNo);
 	} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
-		Double_t dmy;
-		s.ToDouble(dmy);
-		Double_t dblVal = fUpperLimit[EntryNo];
-		s.FromDouble(dblVal, fWidth, fPrecision);
+		s = Form("%*.*f", fWidth, fPrecision, fUpperLimit[EntryNo]);
 		this->SetText(s.Data(), EntryNo);
 	}
 	this->EntryChanged(EntryNo);
@@ -292,28 +316,47 @@ void TGMrbLabelEntry::UpButtonPressed(Int_t EntryNo) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString s = this->GetText(EntryNo);
+	TString s = this->GetText(EntryNo);
 	if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
-		Int_t intVal;
-		s.ToInteger(intVal, fBase);
+		Int_t intVal = s.Atoi();
 		intVal += (Int_t) fIncrement[EntryNo];
 		if (!this->CheckRange((Double_t) intVal)) return;
-		s.FromInteger(intVal, fWidth, fBase, kTRUE);
+		switch (fBase) {
+			case 10:
+				s = Form("%*d", fWidth, intVal);
+				break;
+			case 16:
+				s = Form("%*x", fWidth, intVal);
+				break;
+		}
 		this->SetText(s.Data(), EntryNo);
 	} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-		Int_t intVal;
-		TString prefix;
-		s.SplitOffInteger(prefix, intVal, fBase);
+		TString ns;
+		for (Int_t i = s.Length() - 1; i >= 0; i--) {
+			TString c = s(i,1);
+			if (!c.IsDigit()) {
+				ns = s(i + 1, s.Length() - i - 1);
+				s = s(0, s.Length() - i - 1);
+				break;
+			}
+		}
+		Int_t intVal = ns.Atoi();
 		intVal += (Int_t) fIncrement[EntryNo];
 		if (!this->CheckRange((Double_t) intVal)) return;
-		s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
+		switch (fBase) {
+			case 10:
+				s += Form("%*d", fWidth, intVal);
+				break;
+			case 16:
+				s += Form("%*x", fWidth, intVal);
+				break;
+		}
 		this->SetText(s.Data(), EntryNo);
 	} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
-		Double_t dblVal;
-		s.ToDouble(dblVal);
+		Double_t dblVal = s.Atof();
 		dblVal += fIncrement[EntryNo];
 		if (!this->CheckRange(dblVal)) return;
-		s.FromDouble(dblVal, fWidth, fPrecision);
+		s = Form("%*.*f", fWidth, fPrecision, dblVal);
 		this->SetText(s.Data(), EntryNo);
 	}
 	this->EntryChanged(EntryNo);
@@ -331,28 +374,47 @@ void TGMrbLabelEntry::DownButtonPressed(Int_t EntryNo) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString s = this->GetText(EntryNo);
+	TString s = this->GetText(EntryNo);
 	if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
-		Int_t intVal;
-		s.ToInteger(intVal, fBase);
+		Int_t intVal = s.Atoi();
 		intVal -= (Int_t) fIncrement[EntryNo];
 		if (!this->CheckRange((Double_t) intVal)) return;
-		s.FromInteger(intVal, fWidth, fBase, kTRUE);
+		switch (fBase) {
+			case 10:
+				s = Form("%*d", fWidth, intVal);
+				break;
+			case 16:
+				s = Form("%*x", fWidth, intVal);
+				break;
+		}
 		this->SetText(s.Data(), EntryNo);
 	} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-		Int_t intVal;
-		TString prefix;
-		s.SplitOffInteger(prefix, intVal, fBase);
+		TString ns;
+		for (Int_t i = s.Length() - 1; i >= 0; i--) {
+			TString c = s(i,1);
+			if (!c.IsDigit()) {
+				ns = s(i + 1, s.Length() - i - 1);
+				s = s(0, s.Length() - i - 1);
+				break;
+			}
+		}
+		Int_t intVal = ns.Atoi();
 		intVal -= (Int_t) fIncrement[EntryNo];
 		if (!this->CheckRange((Double_t) intVal)) return;
-		s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
+		switch (fBase) {
+			case 10:
+				s += Form("%*d", fWidth, intVal);
+				break;
+			case 16:
+				s += Form("%*x", fWidth, intVal);
+				break;
+		}
 		this->SetText(s.Data(), EntryNo);
 	} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
-		Double_t dblVal;
-		s.ToDouble(dblVal);
+		Double_t dblVal = s.Atof();
 		dblVal -= fIncrement[EntryNo];
 		if (!this->CheckRange(dblVal)) return;
-		s.FromDouble(dblVal, fWidth, fPrecision);
+		s = Form("%*.*f", fWidth, fPrecision, dblVal);
 		this->SetText(s.Data(), EntryNo);
 	}
 	this->EntryChanged(EntryNo);
@@ -378,14 +440,14 @@ void TGMrbLabelEntry::SetType(EGMrbEntryType EntryType, Int_t Width, Int_t BaseO
 	fPadZero = PadZero;
 	if (EntryType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 		if (BaseOrPrec == -1) {
-			fBase = TMrbString::kDefaultBase;
+			fBase = 10;
 		} else {
 			fBase = BaseOrPrec;
 		}
 		this->SetTextAlignment(kTextRight);
 	} else if (EntryType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 		if (BaseOrPrec == -1) {
-			fPrecision = TMrbString::kDefaultPrecision;
+			fPrecision = 2;
 		} else {
 			fPrecision = BaseOrPrec;
 		}
@@ -423,9 +485,16 @@ void TGMrbLabelEntry::SetText(Int_t Value, Int_t EntryNo) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString v;
-	v.FromInteger(Value, fWidth, fBase, fPadZero);
-	fEntry[EntryNo]->SetText(v.Data());
+	TString s;
+	switch (fBase) {
+		case 10:
+			s = Form("%*d", fWidth, Value);
+			break;
+		case 16:
+			s = Form("%*x", fWidth, Value);
+			break;
+	}
+	fEntry[EntryNo]->SetText(s.Data());
 	this->CreateToolTip(EntryNo);
 }
 
@@ -442,9 +511,9 @@ void TGMrbLabelEntry::SetText(Double_t Value, Int_t EntryNo) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString v;
-	v.FromDouble(Value, fWidth, fPrecision, fPadZero);
-	fEntry[EntryNo]->SetText(v.Data());
+	TString s;
+	s = Form("%*.*f", fWidth, fPrecision, Value);
+	fEntry[EntryNo]->SetText(s.Data());
 	this->CreateToolTip(EntryNo);
 }
 
@@ -543,7 +612,7 @@ Int_t TGMrbLabelEntry::GetText2Int(Int_t EntryNo) {
 			intStr = intStr(idx + 2, intStr.Length());
 			intStr.ToInteger(intVal, 16);
 		} else {
-			intStr.ToInteger(intVal);
+			intVal = intStr.Atoi();
 		}
 		this->CreateToolTip(EntryNo);
 	} else {
@@ -569,8 +638,8 @@ Double_t TGMrbLabelEntry::GetText2Double(Int_t EntryNo) {
 
 	Double_t dblVal = 0.0;
 	if (fType == kGMrbEntryTypeDouble) {
-		TMrbString dblStr = fEntry[EntryNo]->GetText();
-		dblStr.ToDouble(dblVal);
+		TString dblStr = fEntry[EntryNo]->GetText();
+		dblVal = dblStr.Atof();
 		this->CreateToolTip(EntryNo);
 	} else {
 		if (fLabel) gMrbLog->Err() << fLabel->GetTitle() << ": ";

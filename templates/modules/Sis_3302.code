@@ -26,15 +26,16 @@
 									/* init module $moduleName at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					s_$moduleNameLC = sis3302_alloc($baseAddrL, $moduleNameLC, "$moduleNameLC", $moduleSerial); /* allocate data struct */
- 					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
-					sis3302_moduleInfo(s_$moduleNameLC);						/* read module info */
+					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
+					sis3302_moduleInfo(s_$moduleNameLC);				/* read module info */
+					sis3302_checkAddressSpace(s_$moduleNameLC);			/* check address space: full(128MB) or reduced(16MB) */
 					sis3302_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill sis struct from file */
-					sis3302_loadFromDb(s_$moduleNameLC);			 			/* load module regs from database */
+					sis3302_loadFromDb(s_$moduleNameLC);			 	/* load module regs from database */
 					sis3302_setActiveChannelsFromDb(s_$moduleNameLC);	 	/* define active channels (according to trigger mode) */
 					sis3302_setBufferSize(s_$moduleNameLC, $bufferSize);		/* set max buffer size */
 					sis3302_setTracingMode(s_$moduleNameLC, $tracingMode);		/* turn tracing $onoff */
-					sis3302_resetSampling(s_$moduleNameLC);						/* reset sampling */
-					sis3302_clearTimestamp(s_$moduleNameLC);						/* reset time stamp */
+					sis3302_resetSampling(s_$moduleNameLC);				/* reset sampling */
+					sis3302_clearTimestamp(s_$moduleNameLC);			/* reset time stamp */
 					sis3302_dumpRegisters(s_$moduleNameLC, "$dumpFile");		/* dump registers */
 
 %%EndOfCode%%

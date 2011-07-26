@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.52 2009-05-14 09:49:54 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.53 2011-07-26 08:41:50 Marabou Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -3612,7 +3612,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 
 	TString argEnv, argName, argTitle, argType, argEntryType, argDefault, argDel, addLofValues;
 	TString envName, envVal;
-	TMrbString argSpace, envSpace, msgSpace;
+	TString argSpace, envSpace;
 
 	TGMrbMacroArg::EGMrbMacroEntryType argEntryTypeBits;
 
@@ -3761,7 +3761,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 							argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
 							thisArg.SetName(argName.Data());
 							argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
-							argSpace.Resize(0); argSpace.Fill(newFile.Length() + 5);
+							argSpace.Resize(0); Int_t n = newFile.Length() + 5; for (; n--;) argSpace.Insert(0, " ");
 							macroTmpl.Substitute("$macroFile", newFile);
 							macroTmpl.Substitute("$macroName", macroName);
 							macroTmpl.Substitute("$argName", argName);
@@ -3801,7 +3801,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 						thisArg.SetName(argName.Data());
 						argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
 						argTitle = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Title"), "");
-						argSpace.Resize(0); argSpace.Fill(25 - (argType.Length() + argName.Length() + 1));
+						argSpace.Resize(0); Int_t n = 25 - (argType.Length() + argName.Length() + 1); for (; n--;) argSpace.Insert(0, " ");
 						macroTmpl.Substitute("$argName", argName);
 						macroTmpl.Substitute("$argType", argType);
 						macroTmpl.Substitute("$argTitle", argTitle);
@@ -3819,7 +3819,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 						if (envName.Index("Arg.", 0) == -1) {
 							if (envName.CompareTo("Path") != 0) {
 								envVal = fCurrentEnv->GetValue(envName.Data(), "");
-								envSpace.Resize(0); envSpace.Fill(20 - envName.Length());
+								envSpace.Resize(0); Int_t n = 20 - envName.Length(); for (; n--;) envSpace.Insert(0, " ");
 								macroTmpl.InitializeCode();
 								macroTmpl.Substitute("$envName", envName);
 								macroTmpl.Substitute("$envVal", envVal);
@@ -3839,7 +3839,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 								thisArg.GetResource(argEnv, envName.Data());
 								envVal = fCurrentEnv->GetValue(argEnv.Data(), "");
 								if (envVal.Length() > 0) {
-									envSpace.Resize(0); envSpace.Fill(20 - argEnv.Length());
+									envSpace.Resize(0); Int_t n = 20 - argEnv.Length(); for (; n--;) envSpace.Insert(0, " ");
 									macroTmpl.InitializeCode();
 									macroTmpl.Substitute("$envName", argEnv);
 									macroTmpl.Substitute("$envVal", envVal);
@@ -3979,8 +3979,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 								} else									iniStr = "%ARG1%";
 								macroTmpl.InitializeCode(iniStr.Data());
 							} else {
-								argSpace.Resize(0);
-								argSpace.Fill(macroType.Length() + macroName.Length() + 2);
+								argSpace.Resize(0); Int_t n = macroType.Length() + macroName.Length() + 2; for (; n--;) argSpace.Insert(0, " ");
 								if (argDefault.Length() > 0) {
 									hasDefaults = kTRUE;
 									if (argType.BeginsWith("Char_t")) {
@@ -4062,8 +4061,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 									macroTmpl.Substitute("$argDefault", v);
 									argDel = ((na == lastRealArg) && !addGui && !(argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn)) ? ")" : ",";
 									macroTmpl.Substitute("$argDel", argDel);
-									argSpace.Resize(0);
-									argSpace.Fill(macroType.Length() + macroName.Length() + 2);
+									argSpace.Resize(0); Int_t n = macroType.Length() + macroName.Length() + 2; for (; n--;) argSpace.Insert(0, " ");
 									macroTmpl.Substitute("$argSpace", argSpace);
 									macroTmpl.WriteCode(macroStrm);
 								}
@@ -4074,13 +4072,12 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 								macroTmpl.Substitute("$argName", argName);
 								argDel = ((na == lastRealArg) && !addGui) ? ")" : ",";
 								macroTmpl.Substitute("$argDel", argDel);
-								argSpace.Resize(0);
-								argSpace.Fill(macroType.Length() + macroName.Length() + 2);
+								argSpace.Resize(0); Int_t n = macroType.Length() + macroName.Length() + 2; for (; n--;) argSpace.Insert(0, " ");
 								macroTmpl.Substitute("$argSpace", argSpace);
 								macroTmpl.WriteCode(macroStrm);
 							}
 							if (addLofValues.CompareTo("Yes") == 0) {
-								argSpace.Resize(0); argSpace.Fill(macroType.Length() + macroName.Length() + 2);
+								argSpace.Resize(0); Int_t n = macroType.Length() + macroName.Length() + 2; for (; n--;) argSpace.Insert(0, " ");
 								macroTmpl.InitializeCode("%ARGNDC%");
 								macroTmpl.Substitute("$argSpace", argSpace);
 								macroTmpl.Substitute("$argType", "const Char_t *");
@@ -4094,8 +4091,8 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 							firstArg = kFALSE;
 						}
 						if (addGui) {
-								argSpace.Resize(0); argSpace.Fill(macroType.Length() + macroName.Length() + 2);
-								macroTmpl.InitializeCode("%ARGND%");
+							argSpace.Resize(0); Int_t n = macroType.Length() + macroName.Length() + 2; for (; n--;) argSpace.Insert(0, " ");
+							macroTmpl.InitializeCode("%ARGND%");
 								macroTmpl.Substitute("$argSpace", argSpace);
 								macroTmpl.Substitute("$argType", "TGMrbMacroFrame *");
 								macroTmpl.Substitute("$argName", "GuiPtr");

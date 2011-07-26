@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.20 2011-02-28 11:52:12 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.21 2011-07-26 08:41:49 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -151,6 +151,7 @@ const SMrbNamedX kVMEActions[] =
 				{VMESis3302Panel::kVMESis3302ActionSaveRestore,		"Save/restore",		"Save/restore module settings"	},
 				{VMESis3302Panel::kVMESis3302ActionCopySettings,	"Copy settings",	"Copy settings to other modules/channels"	},
 				{VMESis3302Panel::kVMESis3302ActionUpdateGUI,		"Update GUI",		"Reread GUI settings from SIS module"	},
+				{VMESis3302Panel::kVMESis3302ActionDumpRegisters,	"Dump regs",		"Dump register contents"	},
 				{0, 							NULL,				NULL				}
 			};
 
@@ -187,7 +188,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-
+	
 //	Clear focus list
 	fFocusList.Clear();
 
@@ -257,7 +258,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 
 	//	module / channel selection
 	this->SetupModuleList();
-
+	
 	fSelectFrame = new TGGroupFrame(this, "Select module", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fSelectFrame);
 	this->AddFrame(fSelectFrame, groupGC->LH());
@@ -279,6 +280,14 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fModuleInfo = new TGMrbLabelEntry(fSelectFrame, "Firmware", 200, -1, frameWidth/5, kLEHeight, frameWidth/30, frameGC, labelGC, infoGC);
 	fSelectFrame->AddFrame(fModuleInfo, frameGC->LH());
 	fModuleInfo->SetState(kFALSE);
+
+	fModuleAddr = new TGMrbLabelEntry(fSelectFrame, "Address", 200, -1, frameWidth/5, kLEHeight, frameWidth/15, frameGC, labelGC, buttonGC);
+	fSelectFrame->AddFrame(fModuleAddr, frameGC->LH());
+	fModuleAddr->SetState(kFALSE);
+
+	fModuleAddrSpace = new TGMrbLabelEntry(fSelectFrame, "AddrSpace", 200, -1, frameWidth/5, kLEHeight, frameWidth/10, frameGC, labelGC, buttonGC);
+	fSelectFrame->AddFrame(fModuleAddrSpace, frameGC->LH());
+	fModuleAddrSpace->SetState(kFALSE);
 
 	fSettingsFrame = new TGGroupFrame(this, "Module settings", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fSettingsFrame);
@@ -490,6 +499,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 														frameWidth/5, kLEHeight, frameWidth/10,
 														frameGC, labelGC, entryGC);
 	HEAP(fTrigSumG);
+	fTrigSumG->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	tvr->AddFrame(fTrigSumG, groupGC->LH());
 	fTrigSumG->SetState(kFALSE);
 
@@ -497,6 +507,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 														frameWidth/5, kLEHeight, frameWidth/10,
 														frameGC, labelGC, entryGC);
 	HEAP(fTrigCounts);
+	fTrigCounts->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	tvr->AddFrame(fTrigCounts, groupGC->LH());
 	fTrigCounts->SetState(kFALSE);
 
@@ -728,7 +739,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	((TGMrbButtonFrame *) fActionButtons)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	this->ChangeBackground(gVMEControlData->fColorGreen);
-
+	
 	MapSubwindows();
 	Resize(GetDefaultSize());
 	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
@@ -770,6 +781,9 @@ void VMESis3302Panel::PerformAction(Int_t FrameId, Int_t Selection) {
 		case VMESis3302Panel::kVMESis3302ActionUpdateGUI:
 			this->UpdateGUI();
 			break;
+		case VMESis3302Panel::kVMESis3302ActionDumpRegisters:
+			this->DumpRegisters();
+			break;
 	}
 }
 
@@ -786,26 +800,11 @@ void VMESis3302Panel::UpdateGUI(TC2LSis3302 * Module, Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (Module == NULL) {
-		if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
-		TC2LSis3302 * cms = curModule;
-		TIterator * iter = fLofModules.MakeIterator();
-		TC2LSis3302 * m;
-		while (m = (TC2LSis3302 *) iter->Next()) {
-			if (Channel == kSis3302AllChans) this->UpdateGUI(m); else this->UpdateGUI(m, Channel);
-		}
-		curModule = cms;
-		this->UpdateGUI(curModule);
-		return;
-	}
-
-	if (Channel == kSis3302AllChans) {
-		Int_t ccs = curChannel;
-		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) this->UpdateGUI(Module, chn);
-		curChannel = ccs;
-		this->UpdateGUI(curModule, curChannel);
-		return;
-	}
+	if (curChannel < 0 || curChannel > kSis3302NofChans) curChannel = 0;
+	if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
+	
+	if (Channel == kSis3302AllChans) Channel = curChannel;
+	if (Module == NULL) Module = curModule;
 
 	Module->SetVerbose(gVMEControlData->IsVerbose());
 	Module->SetOffline(gVMEControlData->IsOffline());
@@ -819,6 +818,12 @@ void VMESis3302Panel::UpdateGUI(TC2LSis3302 * Module, Int_t Channel) {
 	Module->SetFirmwareVersion(major, minor);
 	fModuleInfo->SetText(Form("%x", Module->GetFirmwareVersion()));
 
+	UInt_t address;
+	Int_t addrSpace;
+	Module->GetModuleAddress(address, addrSpace);
+	fModuleAddr->SetText(Form("%#0lx", address));
+	fModuleAddrSpace->SetText((addrSpace == 128) ? "full (128MB)" : "reduced (16MB)");
+	
 	TString moduleName = Module->GetName();
 	fSettingsFrame->SetTitle(Form("Settings for module %s", moduleName.Data()));
 
@@ -1761,24 +1766,11 @@ void VMESis3302Panel::UpdateAdcCounts(TC2LSis3302 * Module, Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (Module == NULL) {
-		if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
-		TC2LSis3302 * cms = curModule;
-		TIterator * iter = fLofModules.MakeIterator();
-		TC2LSis3302 * m;
-		while (m = (TC2LSis3302 *) iter->Next()) this->UpdateAdcCounts(m, Channel);
-		curModule = cms;
-		fSelectModule->Select(curModule->GetIndex());
-		return;
-	}
-
-	if (Channel == kSis3302AllChans) {
-		Int_t ccs = curChannel;
-		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) this->UpdateAdcCounts(Module, chn);
-		curChannel = ccs;
-		fSelectChannel->Select(Channel);
-		return;
-	}
+	if (curChannel < 0 || curChannel > kSis3302NofChans) curChannel = 0;
+	if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
+	
+	if (Channel == kSis3302AllChans) Channel = curChannel;
+	if (Module == NULL) Module = curModule;
 
 	Int_t p, g, th;
 
@@ -1816,24 +1808,11 @@ void VMESis3302Panel::UpdateDecayTime(TC2LSis3302 * Module, Int_t Channel) {
 
 	Int_t cs[]	=	{	100000, 50000,	25000,	10000,	1000	};
 
-	if (Module == NULL) {
-		if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
-		TC2LSis3302 * cms = curModule;
-		TIterator * iter = fLofModules.MakeIterator();
-		TC2LSis3302 * m;
-		while (m = (TC2LSis3302 *) iter->Next()) this->UpdateDecayTime(m, Channel);
-		curModule = cms;
-		fSelectModule->Select(curModule->GetIndex());
-		return;
-	}
-
-	if (Channel == kSis3302AllChans) {
-		Int_t ccs = curChannel;
-		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) this->UpdateDecayTime(Module, chn);
-		curChannel = ccs;
-		fSelectChannel->Select(Channel);
-		return;
-	}
+	if (curChannel < 0 || curChannel > kSis3302NofChans) curChannel = 0;
+	if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
+	
+	if (Channel == kSis3302AllChans) Channel = curChannel;
+	if (Module == NULL) Module = curModule;
 
 	Int_t clockSource = 0;
 	if (Module->IsOffline()) {
@@ -1888,24 +1867,11 @@ void VMESis3302Panel::UpdateGates(TC2LSis3302 * Module, Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (Module == NULL) {
-		if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
-		TC2LSis3302 * cms = curModule;
-		TIterator * iter = fLofModules.MakeIterator();
-		TC2LSis3302 * m;
-		while (m = (TC2LSis3302 *) iter->Next()) this->UpdateGates(m, Channel);
-		curModule = cms;
-		fSelectModule->Select(curModule->GetIndex());
-		return;
-	}
-
-	if (Channel == kSis3302AllChans) {
-		Int_t ccs = curChannel;
-		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) this->UpdateGates(Module, chn);
-		curChannel = ccs;
-		fSelectChannel->Select(Channel);
-		return;
-	}
+	if (curChannel < 0 || curChannel > kSis3302NofChans) curChannel = 0;
+	if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
+	
+	if (Channel == kSis3302AllChans) Channel = curChannel;
+	if (Module == NULL) Module = curModule;
 
 // pretrigger delay
 
@@ -2053,3 +2019,18 @@ Int_t VMESis3302Panel::GetEnergyDataStarts(TArrayI & Start) {
 	}
 	return(nofStarts);
 }
+
+void VMESis3302Panel::DumpRegisters() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::DumpRegisters
+// Purpose:        Dump register contents of current module
+// Arguments:      --
+// Results:        --
+//////////////////////////////////////////////////////////////////////////////
+	
+	if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
+	curModule->DumpRegisters();
+}
+	
+

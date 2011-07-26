@@ -8,7 +8,7 @@
 // Class:          Sis3302        -- flash adc SIS3302
 // Description:    Class definitions for M2L server
 // Author:         R. Lutter
-// Revision:       $Id: SrvSis3302.h,v 1.6 2011-05-20 12:21:03 Marabou Exp $
+// Revision:       $Id: SrvSis3302.h,v 1.7 2011-07-26 08:41:50 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -42,6 +42,9 @@ class SrvSis3302 : public SrvVMEModule {
 		//! Dispatch to given function
 		M2L_MsgHdr * Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, M2L_MsgData * Data = NULL);
 
+		//! Dump register contents
+		Bool_t DumpRegisters(SrvVMEModule * Module, Char_t * File = NULL);
+		
 		//! Read module info: board id & version numbers
 		Bool_t GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t & MajorVersion, Int_t & MinorVersion, Bool_t PrintFlag = kTRUE);
 

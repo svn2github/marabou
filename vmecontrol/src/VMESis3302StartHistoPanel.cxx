@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.8 2010-11-17 12:25:11 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.9 2011-07-26 08:41:50 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -52,6 +52,7 @@ const SMrbNamedXShort kVMESis302StartHistoModes[] =
 
 extern VMEControlData * gVMEControlData;
 extern TMrbLogger * gMrbLog;
+extern TMrbC2Lynx * gMrbC2Lynx;
 
 static TC2LSis3302 * curModule = NULL;
 static Int_t traceMode = 0;
@@ -156,6 +157,11 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 	fSelectFrame->AddFrame(fSelectChanPatt, frameGC->LH());
 	fSelectChanPatt->ChangeBackground(gVMEControlData->fColorGold);
 	fSelectChanPatt->SetState(0x1);
+
+	fCloseButton = new TGTextButton(fSelectFrame, "Close", kVMESis3302Close);
+	HEAP(fCloseButton);
+	fSelectFrame->AddFrame(fCloseButton, groupGC->LH());
+	fCloseButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302Close));
 
 // canvas
 	fHistoFrame = new TGGroupFrame(this, "Histograms", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -349,6 +355,9 @@ void VMESis3302StartHistoPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 		case VMESis3302StartHistoPanel::kVMESis3302DeleteClones:
 			this->DeleteClones();
 			break;
+		case VMESis3302StartHistoPanel::kVMESis3302Close:
+			this->KeyPressed(0, TGMrbLofKeyBindings::kGMrbKeyActionExit);
+			break;
 	}
 }
 
@@ -431,6 +440,7 @@ void VMESis3302StartHistoPanel::StartHisto() {
 				while (fPausePressed) gSystem->ProcessEvents();
 				Int_t chn = nx->GetIndex() & 0xF;
 				Int_t wpt = this->ReadData(evtData, nx, &traceData[chn * kSis3302EventPreHeader], traceNo);
+				if (wpt == -1) return;
 				if (writeFlag && wpt > 0) {
 					this->WriteHisto(nx);
 					writeFlag = kFALSE;
@@ -721,6 +731,12 @@ void VMESis3302StartHistoPanel::KeyPressed(Int_t FrameId, Int_t Key) {
 
 	switch (Key) {
 		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
+			if (fTraceCollection) {
+				gMrbLog->Err() << "Accumulation of histos in progress - press STOP first" << endl;
+				gMrbLog->Flush(this->ClassName(), "KeyPressed");
+				return;
+			}
+			if (gMrbC2Lynx) gMrbC2Lynx->Bye();
 			gApplication->Terminate(0);
 			break;
 		case TGMrbLofKeyBindings::kGMrbKeyActionClose:

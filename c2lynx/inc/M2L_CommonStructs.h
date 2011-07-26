@@ -7,7 +7,7 @@
 // Purpose:        MARaBOU to Lynx: communication
 // Description:    Structure definitions for M2L server
 // Author:         R. Lutter
-// Revision:       $Id: M2L_CommonStructs.h,v 1.4 2008-07-04 11:58:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: M2L_CommonStructs.h,v 1.5 2011-07-26 08:41:50 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -155,5 +155,21 @@ typedef struct {
 	Int_t fMajorVersion;
 	Int_t fMinorVersion;
 } M2L_VME_Return_Module_Info;
+
+//___________________________________________________[C/C++ STRUCT DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           M2L_VME_Return_Module_Addr
+// Purpose:        Return module address
+// Members:        M2L_MsgHdr fhdr      -- header
+//                 UInt_t fAddress      -- vme address
+//                 Int_t fAddrSpace     -- address space (full or reduced)
+// Used by:        Server
+//////////////////////////////////////////////////////////////////////////////
+
+typedef struct {
+	M2L_MsgHdr fHdr;
+	UInt_t fAddress;
+	Int_t fAddrSpace;
+} M2L_VME_Return_Module_Addr;
 
 #endif

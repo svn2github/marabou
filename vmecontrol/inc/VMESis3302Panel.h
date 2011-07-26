@@ -8,8 +8,8 @@
 // Class:          VMESis3302Panel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302Panel.h,v 1.12 2011-02-15 09:12:08 Marabou Exp $
-// Date:           $Date: 2011-02-15 09:12:08 $
+// Revision:       $Id: VMESis3302Panel.h,v 1.13 2011-07-26 08:41:49 Marabou Exp $
+// Date:           $Date: 2011-07-26 08:41:49 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,8 @@ class VMESis3302Panel : public TGCompositeFrame {
 										kVMESis3302ActionSaveRestore,
 										kVMESis3302ActionCopySettings,
 										kVMESis3302ActionUpdateGUI,
-									};
+										kVMESis3302ActionDumpRegisters,
+		};
 
 		enum EVMESis3302Clock		{
 										kVMEClockSource100MHzA	=	0,
@@ -159,6 +160,7 @@ class VMESis3302Panel : public TGCompositeFrame {
 		};
 
 		void UpdateGUI(TC2LSis3302 * Module = NULL, Int_t Channel = kSis3302AllChans);
+		void DumpRegisters();
 
 		inline Int_t GetNofModules() { return(fLofModules.GetEntries()); };
 
@@ -215,6 +217,8 @@ class VMESis3302Panel : public TGCompositeFrame {
 		TGMrbLabelCombo * fSelectModule;  			//		module
 		TGMrbLabelCombo * fSelectChannel;  			//		channel
 		TGMrbLabelEntry * fModuleInfo;				// module id
+		TGMrbLabelEntry * fModuleAddr;				// ...	address
+		TGMrbLabelEntry * fModuleAddrSpace;			// ..	address space
 		TGGroupFrame * fSettingsFrame; 				// settings
 		TGGroupFrame * fClockLemo; 					//		clock, lemo in & out
 		TGMrbLabelCombo * fClockSource;  			//			clock

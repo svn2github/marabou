@@ -10,8 +10,8 @@
 //! \details		Structures describing a SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $
-//! $Date: 2011-03-08 08:25:13 $
+//! $Revision: 1.5 $
+//! $Date: 2011-07-26 08:41:50 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -23,8 +23,9 @@
 
 struct s_sis_3302 {
 	ULong_t vmeAddr;						/* phys addr given by module switches */
-	volatile Char_t * baseAddr;				/* addr mapped via find_controller() */
+	volatile Char_t * baseAddr;					/* addr mapped via find_controller() */
 	Int_t segSize;
+	Int_t curSegSize;
 	UInt_t lowerBound;
 	UInt_t upperBound;
 	UInt_t mappedAddr;
@@ -48,6 +49,8 @@ struct s_sis_3302 {
 	Bool_t updSettings;
 	Int_t updInterval;
 	Int_t updCountDown;
+	
+	Bool_t reducedAddressSpace;				/* 128 or 16 MB address space */
 
 	Int_t currentSampling;					/* sampling: bank 1 or 2 */
 

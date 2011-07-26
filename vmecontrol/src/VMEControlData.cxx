@@ -6,8 +6,8 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.13 2010-12-15 09:07:47 Marabou Exp $
-// Date:           $Date: 2010-12-15 09:07:47 $
+// Revision:       $Id: VMEControlData.cxx,v 1.14 2011-07-26 08:41:49 Marabou Exp $
+// Date:           $Date: 2011-07-26 08:41:49 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ VMEControlData::VMEControlData() {
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
 // open ROOT's resource data base
-	fRootrc = new TMrbResource("VMEControl", ".rootrc");
+	fRootrc = new TMrbResource("VMEControl:TMrbConfig:TMrbC2Lynx", ".rootrc");
 
 // GUI dims
 	fFrameWidth = fRootrc->Get(".FrameWidth", 0);
@@ -92,7 +92,7 @@ VMEControlData::VMEControlData() {
 	gSystem->ExpandPathName(fRcFile);
 	Bool_t ok = this->CheckAccess(fRcFile.Data(), kVMEAccessRead, errMsg, kFALSE);
 	if (ok) {
-		fVctrlrc = new TMrbResource("VMEControl:TMrbConfig", fRcFile.Data());
+		fVctrlrc = new TMrbResource("VMEControl:TMrbConfig:TMrbC2Lynx", fRcFile.Data());
 		if (fFrameWidth <= 0) fFrameWidth = fVctrlrc->Get(".FrameWidth", kFrameWidth);
 		if (fFrameHeight <= 0) fFrameHeight = fVctrlrc->Get(".FrameHeight", kFrameHeight);
 	} else {
@@ -185,7 +185,7 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 		gMrbLog->Flush(this->ClassName(), "SetupModuleList");
 		return(kFALSE);
 	}
-
+	
 	Int_t errCnt = 0;
 	Int_t from = 0;
 	TString moduleName;

@@ -4,8 +4,8 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.12 $
-//! $Date: 2011-03-08 08:25:13 $
+//! $Revision: 1.13 $
+//! $Date: 2011-07-26 08:41:50 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -53,6 +53,7 @@ struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * Base
 		Module->serial = Serial;
 		Module->verbose = 0;
 		Module->segSize = kSis3302SegSize;
+		Module->curSegSize = 0;
 		Module->lowerBound = 0;
 		Module->upperBound = 1;		/* to force re-mapping */
 		Module->mappedAddr = BaseAddr;
@@ -65,6 +66,12 @@ struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * Base
 		Module->activeChannels = kSis3302AllChans;
 		Module->bufferSize = 0;
 		Module->currentSampling = kSis3302KeyArmBank1Sampling;
+		
+		if (sis3302_mapAddress_sized(Module, 0, 0x10000) == NULL) {
+			sprintf(msg, "[alloc] Can't map addr 0");
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			Module = NULL;
+		}
 	} else {
 		sprintf(msg, "[alloc] Can't allocate sis_3302 struct");
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -76,11 +83,12 @@ struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * Base
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Maps address to vme memory
 //! \param[in]		Module			-- module database
-//! \param[out]		Offset	 		-- register offset
+//! \param[in]		Offset	 		-- register offset
+//! \param[in]		SegSize			-- size of segment to be allocated
 //! \retval 		MappedAddr		--
 ////////////////////////////////////////////////////////////////////////////*/
 
-volatile char * sis3302_mapAddress(struct s_sis_3302 * Module, Int_t Offset) {
+volatile char * sis3302_mapAddress_sized(struct s_sis_3302 * Module, Int_t Offset, Int_t SegSize) {
 
 	struct pdparam_master s_param;
 	UInt_t addr, low;
@@ -91,14 +99,14 @@ volatile char * sis3302_mapAddress(struct s_sis_3302 * Module, Int_t Offset) {
  	s_param.wrpost = 0;
  	s_param.swap = SINGLE_AUTO_SWAP;
  	s_param.dum[0] = 0;
-
+	
 	mapIt = kFALSE;
 	if (Module->upperBound == 0) {
 		mapIt = kTRUE;
 	} else if (Offset < Module->lowerBound || Offset > Module->upperBound) {
-		addr = return_controller(Module->mappedAddr, Module->segSize);
+		addr = return_controller(Module->mappedAddr, Module->curSegSize);
 		if (addr == 0xFFFFFFFF) {
-			sprintf(msg, "[mapAddress] Can't unmap log addr %#lx (seg size=%#lx, addr mod=%#x)", Module->mappedAddr, Module->addrMod);
+			sprintf(msg, "[mapAddress] Can't unmap log addr %#lx (seg size=%#lx, addr mod=%#x)", Module->mappedAddr, Module->curSegSize, Module->addrMod);
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			return(NULL);
 		}
@@ -106,20 +114,22 @@ volatile char * sis3302_mapAddress(struct s_sis_3302 * Module, Int_t Offset) {
 	}
 
 	if (mapIt) {
-		low = (Offset / Module->segSize) * Module->segSize;
-		addr = find_controller(Module->vmeAddr + low, Module->segSize, Module->addrMod, 0, 0, &s_param);
+		low = (Offset / SegSize) * SegSize;
+		addr = find_controller(Module->vmeAddr + low, SegSize, Module->addrMod, 0, 0, &s_param);
 		if (addr == 0xFFFFFFFF) {
-			sprintf(msg, "[mapAddress] Can't map phys addr %#lx (size=%#lx, addr mod=%#x)", (Module->baseAddr + Offset), Module->segSize, Module->addrMod);
+			sprintf(msg, "[mapAddress] Can't map phys addr %#lx (size=%#lx, addr mod=%#x)", (Module->baseAddr + Offset), SegSize, Module->addrMod);
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			return(NULL);
 		}
 		Module->mappedAddr = addr;
 		Module->lowerBound = low;
-		Module->upperBound = low + Module->segSize - 1;
+		Module->upperBound = low + SegSize - 1;
+		Module->curSegSize = SegSize;
 	}
 	return((volatile Char_t *) (Module->mappedAddr + (Offset - Module->lowerBound)));
 }
 
+volatile char * sis3302_mapAddress(struct s_sis_3302 * Module, Int_t Offset) { return(sis3302_mapAddress_sized(Module, Offset, Module->segSize)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -138,7 +148,7 @@ void sis3302_moduleInfo(struct s_sis_3302 * Module) {
 	Int_t minorVersion;
 
 
-	firmWare = (volatile ULong_t *) sis3302_mapAddress(Module, SIS3302_MODID);
+	firmWare = (volatile ULong_t *) sis3302_mapAddress(Module, ca(Module, SIS3302_MODID));
 	if (firmWare == NULL) return(kFALSE);
 
 	ident = *firmWare;
@@ -147,7 +157,8 @@ void sis3302_moduleInfo(struct s_sis_3302 * Module) {
 	boardId = (b &0xF) + 10 * ((b >> 4) & 0xF) + 100 * ((b >> 8) & 0xF) + 1000 * ((b >> 12) & 0xF);
 	majorVersion = (ident >> 8) & 0xFF;
 	minorVersion = ident & 0xFF;
-	sprintf(msg, "[moduleInfo] [%s]: addr (phys) %#lx (log) %#lx mod %#x type %d version %x%02x", Module->moduleName, Module->vmeAddr, Module->mappedAddr, Module->addrMod, boardId, majorVersion, minorVersion);
+	sprintf(msg, "[moduleInfo] [%s]: addr (phys) %#lx (log) %#lx mod %#x type %d version %x%02x",
+					Module->moduleName, Module->vmeAddr, Module->mappedAddr, Module->addrMod, boardId, majorVersion, minorVersion);
 	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	return(kTRUE);
 }
@@ -642,9 +653,9 @@ Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Chan
 	}
 	wc = lastChan - firstChan + 1;
 
-	dacStatus = (volatile Int_t *) sis3302_mapAddress(Module, SIS3302_DAC_CONTROL_STATUS);
+	dacStatus = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, SIS3302_DAC_CONTROL_STATUS));
 	if (dacStatus == NULL) return(kFALSE);
-	dacData = (volatile Int_t *) sis3302_mapAddress(Module, SIS3302_DAC_DATA);
+	dacData = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, SIS3302_DAC_DATA));
 	if (dacData == NULL) return(kFALSE);
 
 	maxTimeout = 5000;
@@ -696,9 +707,9 @@ Bool_t sis3302_writeDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Cha
 	}
 	wc = lastChan - firstChan + 1;
 
-	dacStatus = (volatile Int_t *) sis3302_mapAddress(Module, SIS3302_DAC_CONTROL_STATUS);
+	dacStatus = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, SIS3302_DAC_CONTROL_STATUS));
 	if (dacStatus == NULL) return(kFALSE);
-	dacData = (volatile Int_t *) sis3302_mapAddress(Module, SIS3302_DAC_DATA);
+	dacData = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, SIS3302_DAC_DATA));
 	if (dacData == NULL) return(kFALSE);
 
 	maxTimeout = 5000;
@@ -741,22 +752,22 @@ Bool_t sis3302_keyAddr(struct s_sis_3302 * Module, Int_t Key) {
 
 	offset = 0;
 	switch (Key) {
-		case kSis3302KeyReset:							offset = SIS3302_KEY_RESET; break;
+		case kSis3302KeyReset:						offset = SIS3302_KEY_RESET; break;
 		case kSis3302KeyResetSampling:					offset = SIS3302_KEY_SAMPLE_LOGIC_RESET_404; break;
 		case kSis3302KeyDisarmSampling:					offset = SIS3302_KEY_DISARM; break;
-		case kSis3302KeyTrigger:						offset = SIS3302_KEY_TRIGGER; break;
+		case kSis3302KeyTrigger:					offset = SIS3302_KEY_TRIGGER; break;
 		case kSis3302KeyClearTimestamp: 				offset = SIS3302_KEY_TIMESTAMP_CLEAR; break;
 		case kSis3302KeyArmBank1Sampling:				offset = SIS3302_KEY_DISARM_AND_ARM_BANK1; break;
 		case kSis3302KeyArmBank2Sampling:				offset = SIS3302_KEY_DISARM_AND_ARM_BANK2; break;
 		case kSis3302KeyResetDDR2Logic:					offset = SIS3302_KEY_RESET_DDR2_LOGIC; break;
 		case kSis3302KeyMcaScanLNEPulse:				offset = SIS3302_KEY_MCA_SCAN_LNE_PULSE; break;
-		case kSis3302KeyMcaScanArm:						offset = SIS3302_KEY_MCA_SCAN_ARM; break;
+		case kSis3302KeyMcaScanArm:					offset = SIS3302_KEY_MCA_SCAN_ARM; break;
 		case kSis3302KeyMcaScanStart:					offset = SIS3302_KEY_MCA_SCAN_START; break;
 		case kSis3302KeyMcaScanDisable:					offset = SIS3302_KEY_MCA_SCAN_DISABLE; break;
-		case kSis3302KeyMcaMultiscanStartResetPulse:	offset = SIS3302_KEY_MCA_MULTISCAN_START_RESET_PULSE; break;
-		case kSis3302KeyMcaMultiscanArmScanArm:			offset = SIS3302_KEY_MCA_MULTISCAN_ARM_SCAN_ARM; break;
-		case kSis3302KeyMcaMultiscanArmScanEnable:		offset = SIS3302_KEY_MCA_MULTISCAN_ARM_SCAN_ENABLE; break;
-		case kSis3302KeyMcaMultiscanDisable:			offset = SIS3302_KEY_MCA_MULTISCAN_DISABLE; break;
+		case kSis3302KeyMcaMultiscanStartResetPulse:			offset = SIS3302_KEY_MCA_MULTISCAN_START_RESET_PULSE; break;
+		case kSis3302KeyMcaMultiscanArmScanArm:				offset = SIS3302_KEY_MCA_MULTISCAN_ARM_SCAN_ARM; break;
+		case kSis3302KeyMcaMultiscanArmScanEnable:			offset = SIS3302_KEY_MCA_MULTISCAN_ARM_SCAN_ENABLE; break;
+		case kSis3302KeyMcaMultiscanDisable:				offset = SIS3302_KEY_MCA_MULTISCAN_DISABLE; break;
 		default:
 			sprintf(msg, "[keyAddr] [%s]: Illegal key value - %d", Module->moduleName, Key);
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -798,7 +809,7 @@ UInt_t sis3302_readControlStatus(struct s_sis_3302 * Module) {
 
 	offset = SIS3302_CONTROL_STATUS;
 
-	ctrlStat = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	ctrlStat = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (ctrlStat == NULL) return(0);
 
 	return (*ctrlStat);
@@ -819,7 +830,7 @@ Bool_t sis3302_writeControlStatus(struct s_sis_3302 * Module, UInt_t Bits) {
 
 	offset = SIS3302_CONTROL_STATUS;
 
-	ctrlStat = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	ctrlStat = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (ctrlStat == NULL) return(kFALSE);
 
 	*ctrlStat = Bits;
@@ -854,7 +865,7 @@ UInt_t sis3302_readEventConfig(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_EVENT_CONFIG_ADC78; break;
 	}
 
-	evtConf = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	evtConf = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (evtConf == NULL) return(0xaffec0c0);
 
 	return (*evtConf);
@@ -889,7 +900,7 @@ Bool_t sis3302_writeEventConfig(struct s_sis_3302 * Module, UInt_t Bits, Int_t C
 		case 7: 	offset = SIS3302_EVENT_CONFIG_ADC78; break;
 	}
 
-	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (evtConf == NULL) return(kFALSE);
 	*evtConf = Bits;
 	return(kTRUE);
@@ -921,7 +932,7 @@ UInt_t sis3302_readEventExtendedConfig(struct s_sis_3302 * Module, Int_t ChanNo)
 		case 7: 	offset = SIS3302_EVENT_EXTENDED_CONFIG_ADC78; break;
 	}
 
-	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (evtConf == NULL) return(0xaffec0c0);
 
 	return (*evtConf);
@@ -956,7 +967,7 @@ Bool_t sis3302_writeEventExtendedConfig(struct s_sis_3302 * Module, UInt_t Bits,
 		case 7: 	offset = SIS3302_EVENT_EXTENDED_CONFIG_ADC78; break;
 	}
 
-	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (evtConf == NULL) return(kFALSE);
 
 	*evtConf = Bits;
@@ -1389,7 +1400,7 @@ Int_t sis3302_readEndAddrThresh(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_END_ADDRESS_THRESHOLD_ADC78; break;
 	}
 
-	endAddr = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	endAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (endAddr == NULL) return(kFALSE);
 
 	return (*endAddr);
@@ -1429,7 +1440,7 @@ Bool_t sis3302_writeEndAddrThresh(struct s_sis_3302 * Module, Int_t Thresh, Int_
 		case 7: 	offset = SIS3302_END_ADDRESS_THRESHOLD_ADC78; break;
 	}
 
-	endAddr = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	endAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (endAddr == NULL) return(kFALSE);
 
 	*endAddr = Thresh;
@@ -1464,7 +1475,7 @@ UInt_t sis3302_readPreTrigDelayAndGateLength(struct s_sis_3302 * Module, Int_t C
 		case 7: 	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ADC78; break;
 	}
 
-	trigReg = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	trigReg = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigReg == NULL) return(0xaffec0c0);
 
 	return (*trigReg);
@@ -1498,7 +1509,7 @@ Bool_t sis3302_writePreTrigDelayAndGateLength(struct s_sis_3302 * Module, UInt_t
 		case 7: 	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ADC78; break;
 	}
 
-	trigReg = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	trigReg = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigReg == NULL) return(kFALSE);
 
 	*trigReg = Bits;
@@ -1638,7 +1649,7 @@ UInt_t sis3302_readRawDataBufConfig(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ADC78; break;
 	}
 
-	rawData = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	rawData = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (rawData == NULL) return(0xaffec0c0);
 
 	return (*rawData);
@@ -1672,7 +1683,7 @@ Bool_t sis3302_writeRawDataBufConfig(struct s_sis_3302 * Module, UInt_t Bits, In
 		case 7: 	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ADC78; break;
 	}
 
-	rawData = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	rawData = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (rawData == NULL) return(kFALSE);
 
 	*rawData = Bits;
@@ -1829,7 +1840,7 @@ Int_t sis3302_readNextSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_ACTUAL_SAMPLE_ADDRESS_ADC8; break;
 	}
 
-	samplAddr = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	samplAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (samplAddr == NULL) return(0xaffec0c0);
 	return (*samplAddr);
 }
@@ -1860,7 +1871,7 @@ Int_t sis3302_readPrevBankSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_PREVIOUS_BANK_SAMPLE_ADDRESS_ADC8; break;
 	}
 
-	samplAddr = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	samplAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (samplAddr == NULL) return(0xaffec0c0);
 	return (*samplAddr);
 }
@@ -1892,7 +1903,7 @@ UInt_t sis3302_readActualSample(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_ACTUAL_SAMPLE_VALUE_ADC78; break;
 	}
 
-	actSample = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	actSample = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (actSample == NULL) return(0xaffec0c0);
 
 	data = *actSample;
@@ -1926,7 +1937,7 @@ UInt_t sis3302_readTriggerSetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_TRIGGER_SETUP_ADC8; break;
 	}
 
-	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigSetup == NULL) return(0xaffec0c0);
 
 	return (*trigSetup);
@@ -1967,7 +1978,7 @@ Bool_t sis3302_writeTriggerSetup(struct s_sis_3302 * Module, UInt_t Data, Int_t 
 		case 7: 	offset = SIS3302_TRIGGER_SETUP_ADC8; break;
 	}
 
-	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigSetup == NULL) return(kFALSE);
 
 	*trigSetup = Data;
@@ -2000,7 +2011,7 @@ UInt_t sis3302_readTriggerExtendedSetup(struct s_sis_3302 * Module, Int_t ChanNo
 		case 7: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC8; break;
 	}
 
-	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigSetup == NULL) return(kFALSE);
 
 	return (*trigSetup);
@@ -2041,7 +2052,7 @@ Bool_t sis3302_writeTriggerExtendedSetup(struct s_sis_3302 * Module, UInt_t Data
 		case 7: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC8; break;
 	}
 
-	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigSetup == NULL) return(kFALSE);
 
 	*trigSetup = Data;
@@ -2363,7 +2374,7 @@ UInt_t sis3302_readTriggerThreshReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC8; break;
 	}
 
-	trigThresh = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	trigThresh = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigThresh == NULL) return(0xaffec0c0);
 	return (*trigThresh);
 }
@@ -2404,7 +2415,7 @@ Bool_t sis3302_writeTriggerThreshReg(struct s_sis_3302 * Module, UInt_t Data, In
 		case 7: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC8; break;
 	}
 
-	trigThresh = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	trigThresh = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigThresh == NULL) return(kFALSE);
 
 	*trigThresh = Data;
@@ -2584,7 +2595,7 @@ UInt_t sis3302_readEnergySetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_ENERGY_SETUP_GP_ADC78; break;
 	}
 
-	setup = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	setup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (setup == NULL) return(0xaffec0c0);
 
 	return (*setup);
@@ -2619,7 +2630,7 @@ Bool_t sis3302_writeEnergySetup(struct s_sis_3302 * Module, UInt_t Data, Int_t C
 		case 7: 	offset = SIS3302_ENERGY_SETUP_GP_ADC78; break;
 	}
 
-	setup = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	setup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (setup == NULL) return(kFALSE);
 
 	*setup = Data;
@@ -2776,7 +2787,7 @@ UInt_t sis3302_readEnergyGateReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_ENERGY_GATE_LENGTH_ADC78; break;
 	}
 
-	gateReg = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	gateReg = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (gateReg == NULL) return(0xaffec0c0);
 	return (*gateReg);
 }
@@ -2810,7 +2821,7 @@ Bool_t sis3302_writeEnergyGateReg(struct s_sis_3302 * Module, UInt_t Data, Int_t
 		case 7: 	offset = SIS3302_ENERGY_GATE_LENGTH_ADC78; break;
 	}
 
-	gateReg = (volatile UInt_t *) sis3302_mapAddress(Module, offset);
+	gateReg = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (gateReg == NULL) return(kFALSE);
 
 	*gateReg = Data;
@@ -2951,7 +2962,7 @@ Int_t sis3302_readEnergySampleLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_ENERGY_SAMPLE_LENGTH_ADC78; break;
 	}
 
-	sample = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	sample = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (sample == NULL) return(0xaffec0c0);
 
 	return(*sample);
@@ -2975,7 +2986,7 @@ Bool_t sis3302_writeEnergySampleLength(struct s_sis_3302 * Module, Int_t SampleL
 
 	switch (ChanNo) {
 		case kSis3302AllChans:
-					offset = SIS3302_ENERGY_SAMPLE_LENGTH_ALL_ADC; break;
+				offset = SIS3302_ENERGY_SAMPLE_LENGTH_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_ENERGY_SAMPLE_LENGTH_ADC12; break;
 		case 2:
@@ -2985,7 +2996,7 @@ Bool_t sis3302_writeEnergySampleLength(struct s_sis_3302 * Module, Int_t SampleL
 		case 6:
 		case 7: 	offset = SIS3302_ENERGY_SAMPLE_LENGTH_ADC78; break;
 	}
-	sample = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	sample = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (sample == NULL) return(kFALSE);
 
 	*sample = SampleLength;
@@ -3020,7 +3031,7 @@ Int_t sis3302_readTauFactor(struct s_sis_3302 * Module, Int_t ChanNo) {
 		case 7: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC8; break;
 	}
 
-	tauFactor = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	tauFactor = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (tauFactor == NULL) return(0xaffec0c0);
 
 	return (*tauFactor);
@@ -3067,7 +3078,7 @@ Bool_t sis3302_writeTauFactor(struct s_sis_3302 * Module, Int_t Tau, Int_t ChanN
 		case 7: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC8; break;
 	}
 
-	tauFactor = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	tauFactor = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (tauFactor == NULL) return(kFALSE);
 
 	*tauFactor = Tau;
@@ -3143,7 +3154,7 @@ Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t Chan
 			}
 	}
 
-	sampleIndex = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	sampleIndex = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (sampleIndex == NULL) return(0xaffec0c0);
 
 	return(*sampleIndex);
@@ -3238,7 +3249,7 @@ Bool_t sis3302_writeStartIndex(struct s_sis_3302 * Module, Int_t IdxVal, Int_t I
 	}
 
 
-	sampleIndex = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	sampleIndex = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (sampleIndex == NULL) return(kFALSE);
 	*sampleIndex = IdxVal;
 	return(kTRUE);
@@ -3259,7 +3270,7 @@ UInt_t sis3302_readAcquisitionControl(struct s_sis_3302 * Module) {
 	volatile Int_t * ctrl;
 
 	offset = SIS3302_ACQUISITION_CONTROL;
-	ctrl = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	ctrl = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (ctrl == NULL) return(0xaffec0c0);
 
 	return (*ctrl);
@@ -3279,7 +3290,7 @@ Bool_t sis3302_writeAcquisitionControl(struct s_sis_3302 * Module, UInt_t Data) 
 	volatile Int_t * ctrl;
 
 	offset = SIS3302_ACQUISITION_CONTROL;
-	ctrl = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	ctrl = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (ctrl == NULL) return(kFALSE);
 
 	*ctrl = Data;
@@ -3488,7 +3499,7 @@ Bool_t sis3302_setPageReg(struct s_sis_3302 * Module, Int_t PageNumber) {
 	volatile Int_t * pageReg;
 
 	offset = SIS3302_ADC_MEMORY_PAGE_REGISTER;
-	pageReg = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	pageReg = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (pageReg == NULL) return(kFALSE);
 
 	*pageReg = PageNumber;
@@ -3508,7 +3519,7 @@ Int_t sis3302_getPageRegister(struct s_sis_3302 * Module) {
 	volatile Int_t * pageReg;
 
 	offset = SIS3302_ADC_MEMORY_PAGE_REGISTER;
-	pageReg = (volatile Int_t *) sis3302_mapAddress(Module, offset);
+	pageReg = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (pageReg == NULL) return(0xaffec0c0);
 
 	return (*pageReg);
@@ -3559,7 +3570,55 @@ Bool_t sis3302_checkChannelNo(struct s_sis_3302 * Module, Char_t * Caller, Int_t
 	return(kTRUE);
 }
 
+/*________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Checks if reduced address space
+//! \param[in]		Module			-- module address
+//! \return 		TRUE or FALSE
+////////////////////////////////////////////////////////////////////////////*/
+
+Bool_t sis3302_checkAddressSpace(struct s_sis_3302 * Module) {
+	Int_t status;
+	Bool_t reduced;
+	ULong_t ident;
+	volatile ULong_t * firmWare;
+	
+	firmWare = (volatile ULong_t *) sis3302_mapAddress(Module, ca(Module, SIS3302_MODID));
+	if (firmWare == NULL) return(kFALSE);
+	ident = *firmWare;
+	
+	if ((ident & 0xFFFF) >= 0x1410) {
+		status = sis3302_readControlStatus(Module);
+		reduced = (status & kSis3302AddressSpaceReduced) != 0;
+	} else {
+		reduced = kFALSE;
+	}
+	if (reduced) {
+		sprintf(msg, "[%s] Using REDUCED address space (16MB)", Module->moduleName);
+	} else {
+		sprintf(msg, "[%s] Using FULL address space (128MB)", Module->moduleName);
+	}
+	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	Module->reducedAddressSpace = reduced;
+	if (reduced) Module->segSize = kSis3302SegSizeReduced;
+	return(kTRUE);
+}
+
+/*________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Convert address according to jumper J80:RED
+//! \param[in]		Module			-- module address
+//! \param[in]		Address			-- addr in full addr space
+//! \return 		Address			-- addr, possibly reduced
+////////////////////////////////////////////////////////////////////////////*/
+
+ULong_t ca(struct s_sis_3302 * Module, ULong_t Address) {
+	if (Address < 0x01000000 || !Module->reducedAddressSpace) return(Address);
+	return(((Address & 0xFFFF0000) >> 4) | (Address & 0xFFFF));
+}
+
 void sis3302_setStatus(struct s_sis_3302 * Module, UInt_t Bits) { Module->status |= Bits; };
 void sis3302_clearStatus(struct s_sis_3302 * Module, UInt_t Bits) { Module->status &= ~Bits; };
 UInt_t sis3302_getStatus(struct s_sis_3302 * Module) { return Module->status; };
 Bool_t sis3302_isStatus(struct s_sis_3302 * Module, UInt_t Bits) { return ((Module->status & Bits) != 0); };
+

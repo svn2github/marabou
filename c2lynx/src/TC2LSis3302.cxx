@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.21 2010-12-10 15:25:19 Marabou Exp $
-// Date:           $Date: 2010-12-10 15:25:19 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.22 2011-07-26 08:41:50 Marabou Exp $
+// Date:           $Date: 2011-07-26 08:41:50 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -109,6 +109,29 @@ Bool_t TC2LSis3302::GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t &
 			BoardId = r.fBoardId;
 			MajorVersion = r.fMajorVersion;
 			MinorVersion = r.fMinorVersion;
+			return(kTRUE);
+		} else {
+			return(kFALSE);
+		}
+	} else {
+		return(kFALSE);
+	}
+}
+
+Bool_t TC2LSis3302::GetModuleAddress(UInt_t & Address, Int_t & AddrSpace) {
+	if (this->IsOffline()) return(kTRUE);
+	M2L_VME_Exec_Function x;
+	gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &x, sizeof(M2L_VME_Exec_Function), kM2L_MESS_VME_EXEC_FUNCTION);
+	x.fData.fData[0] = kSis3302AllChans;
+	x.fXhdr.fHandle = this->GetHandle();
+	x.fXhdr.fCode = kM2L_FCT_SIS_3302_GET_MODULE_ADDR;
+	x.fData.fWc = 1;
+	if (gMrbC2Lynx->Send((M2L_MsgHdr *) &x)) {
+		M2L_VME_Return_Module_Addr r;
+		r.fHdr.fLength = sizeof(M2L_VME_Return_Module_Info) / sizeof(Int_t);
+		if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &r)) {
+			Address = r.fAddress;
+			AddrSpace = r.fAddrSpace;
 			return(kTRUE);
 		} else {
 			return(kFALSE);
@@ -696,6 +719,12 @@ Bool_t TC2LSis3302::DumpTrace() {
 Bool_t TC2LSis3302::RampDac(TArrayI & Data, Int_t ChanNo) {
 	TArrayI dataSend(1);
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_RAMP_DAC, dataSend, Data, ChanNo));
+}
+
+Bool_t TC2LSis3302::DumpRegisters() {
+	TArrayI dataSend(1);
+	dataSend[0] = 0;
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_DUMP_REGISTERS, dataSend, dataSend, kSis3302AllChans));
 }
 
 Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {

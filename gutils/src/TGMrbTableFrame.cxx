@@ -749,14 +749,11 @@ TGMrbTableOfInts::TGMrbTableOfInts(const TGWindow * Window, Int_t * RetValue, co
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {
 			os = (TObjString *) entries->At(idx);			// get (modified) string
-//			TMrbString s(os->GetString().Data());			// make it an extended TMrbString
-//			s.ToInteger(Values[idx]);						// convert to integer
          Values[idx] = atoi(os->GetString().Data());
 			idx++;
 		}
 	}
 	entries->Delete();										// remove temp alloc objects
-//	delete this;											// self-destroying
 }
 
 TGMrbTableOfDoubles::TGMrbTableOfDoubles(const TGWindow * Window, Int_t * RetValue, const Char_t * Title,
@@ -815,12 +812,9 @@ TGMrbTableOfDoubles::TGMrbTableOfDoubles(const TGWindow * Window, Int_t * RetVal
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {
 			os = (TObjString *) entries->At(idx);		// get (modified) string
-//			TMrbString s(os->GetString().Data());		// make it an extended TMrbString
-//			s.ToDouble(Values[idx]);					// convert to double
          Values[idx] = atof(os->GetString().Data());
 			idx++;
 		}
 	}
 	entries->Delete();									// remove temp alloc objects
-//	delete this;										// self-destroying
 }

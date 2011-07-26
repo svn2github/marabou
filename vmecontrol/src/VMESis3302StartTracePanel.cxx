@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.10 2010-11-17 12:25:11 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.11 2011-07-26 08:41:50 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -52,6 +52,7 @@ const SMrbNamedXShort kVMESis302StartTraceModes[] =
 
 extern VMEControlData * gVMEControlData;
 extern TMrbLogger * gMrbLog;
+extern TMrbC2Lynx * gMrbC2Lynx;
 
 static TC2LSis3302 * curModule = NULL;
 static Int_t curChannel = 0;
@@ -157,6 +158,11 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fSelectFrame->AddFrame(fSelectChanPatt, frameGC->LH());
 	fSelectChanPatt->ChangeBackground(gVMEControlData->fColorGold);
 	fSelectChanPatt->SetState(0x1);
+
+	fCloseButton = new TGTextButton(fSelectFrame, "Close", kVMESis3302Close);
+	HEAP(fCloseButton);
+	fSelectFrame->AddFrame(fCloseButton, groupGC->LH());
+//	fCloseButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302Close));
 
 // canvas
 	fHistoFrame = new TGGroupFrame(this, "Histograms", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -330,6 +336,9 @@ void VMESis3302StartTracePanel::PerformAction(Int_t FrameId, Int_t Selection) {
 		case VMESis3302StartTracePanel::kVMESis3302DeleteClones:
 			this->DeleteClones();
 			break;
+		case VMESis3302StartTracePanel::kVMESis3302Close:
+			this->KeyPressed(0, TGMrbLofKeyBindings::kGMrbKeyActionExit);
+			break;
 	}
 }
 
@@ -424,7 +433,7 @@ void VMESis3302StartTracePanel::StartTrace() {
 		while (rnx = (TMrbNamedX *) rIter->Next()) {
 			enx = (TMrbNamedX *) eIter->Next();
 			Int_t chn = rnx->GetIndex() & 0xF;
-			this->ReadData(evtData, rnx, enx, &traceData[chn * kSis3302EventPreHeader], traceNo);
+			if (this->ReadData(evtData, rnx, enx, &traceData[chn * kSis3302EventPreHeader], traceNo) == -1) return;
 			gSystem->ProcessEvents();
 		}
 	}
@@ -471,7 +480,7 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, TMrbNamedX * Rhisto
 	Int_t wpt = TraceData[2];
 	Int_t ect = TraceData[3];
 	Int_t nxs = TraceData[4];
-
+	
 	Int_t wpt2 = wpt - rdl/2;
 	if (nxs == 0 || wpt == 0 || wpt2 > nxs) return(0);
 
@@ -525,7 +534,7 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, TMrbNamedX * Rhisto
 	h->SetName(Form("%s-%d", RhistoDef->GetName(), TraceNumber));
 	h->SetTitle(Form("%s, trace %d", RhistoDef->GetTitle(), TraceNumber));
 	h->Reset("ICE");
-	h->ResetStats();
+//	h->ResetStats();
 	h->SetEntries(0);
 	for (Int_t i = 0; i < rdl; i++, k++) h->Fill(i, EvtData[k]);
 	h->Draw();
@@ -551,7 +560,7 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, TMrbNamedX * Rhisto
 	h->SetName(Form("%s-%d", EhistoDef->GetName(), TraceNumber));
 	h->SetTitle(Form("%s, trace %d", EhistoDef->GetTitle(), TraceNumber));
 	h->Reset("ICE");
-	h->ResetStats();
+//	h->ResetStats();
 	h->SetEntries(0);
 	for (Int_t i = 0; i < edl; i++, k++) h->Fill(i, EvtData[k]);
 	h->Draw();
@@ -713,6 +722,12 @@ void VMESis3302StartTracePanel::KeyPressed(Int_t FrameId, Int_t Key) {
 
 	switch (Key) {
 		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
+			if (fTraceCollection) {
+				gMrbLog->Err() << "Trace collection in progress - press STOP first" << endl;
+				gMrbLog->Flush(this->ClassName(), "KeyPressed");
+				return;
+			}
+			if (gMrbC2Lynx) gMrbC2Lynx->Bye();
 			gApplication->Terminate(0);
 			break;
 		case TGMrbLofKeyBindings::kGMrbKeyActionClose:

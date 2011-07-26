@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartHistoPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.6 2010-11-17 12:25:11 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.7 2011-07-26 08:41:49 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -71,8 +71,9 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 												kVMESis3302NofEvtsBuf,
 												kVMESis3302EnergyMax,
 												kVMESis3302HistoSize,
-												kVMESis3302EnergyFactor
-											};
+												kVMESis3302EnergyFactor,
+												kVMESis3302Close
+		};
 
 		enum EVMESis3302TraceModes			{				kVMESis3302ModeMAWD		= 0,
 												kVMESis3302ModeMAW		= BIT(0),
@@ -121,6 +122,7 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		TGTextButton * fDumpTraceButton;			// dump trace
 		TGTextButton * fWriteHistoButton;			// write histogram
 		TGTextButton * fWriteDeleteClonesButton;		// delete clones
+		TGTextButton * fCloseButton;				// close window
 
 		TGGroupFrame * fDisplayFrame;				// display
 		TGMrbLabelCombo * fSelectChannel;  			//		channel

@@ -10,15 +10,16 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.8 $
-//! $Date: 2011-03-08 08:25:13 $
+//! $Revision: 1.9 $
+//! $Date: 2011-07-26 08:41:50 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*! Alloc database for SIS3302 module */
 struct s_sis_3302 * sis3302_alloc(unsigned long VmeAddr, volatile unsigned char * BaseAddr, char * ModuleName, Int_t Serial);
 
 /*! Map VME address */
-volatile char * sis3302_MapAddr(struct s_sis_3302 * Module, Int_t Offset);
+volatile char * sis3302_mapAddress_sized(struct s_sis_3302 * Module, Int_t Offset, Int_t SegSize);
+volatile char * sis3302_MapAddress(struct s_sis_3302 * Module, Int_t Offset);
 
 /*! Get module info */
 void sis3302_moduleInfo(struct s_sis_3302 * Module);
@@ -275,5 +276,9 @@ void sis3302_setStatus(struct s_sis_3302 * Module, UInt_t Bits);
 void sis3302_clearStatus(struct s_sis_3302 * Module, UInt_t Bits);
 UInt_t sis3302_getStatus(struct s_sis_3302 * Module);
 Bool_t sis3302_ssStatus(struct s_sis_3302 * Module, UInt_t Bits);
+
+/*! check if reduced address space */
+Bool_t sis3302_checkAddressSpace(struct s_sis_3302 * Module);
+ULong_t ca(struct s_sis_3302 * Module, ULong_t Address);
 
 #endif

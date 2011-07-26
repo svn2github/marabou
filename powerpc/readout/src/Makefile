@@ -9,9 +9,9 @@ CFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CP
 ObjSuf		=	o
 SrcSuf		=	c
 LibSuf		=	a
-UTILIB		=	../../lib/$(LYNX_VERSION)/libUti.$(LibSuf)
+UTILIB		=	../../lib/$(GSI_OS_VERSION)/libUti.$(LibSuf)
 
-BINDIR		=	../../bin/$(LYNX_VERSION)
+BINDIR		=	../../bin/$(GSI_OS_VERSION)
 
 INCS		=	$(UTIINC)/gd_camio.h \
 				$(UTIINC)/gd_cnaf.h \
@@ -47,63 +47,63 @@ $(UTILIB):  	$(OBJS)
 
 caen:			caen.o $(UTILIB)
 				$(CC) -o caen caen.o \
-				-L ../../lib/$(LYNX_VERSION) \
+				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
 				-lUti -lvme -lnetinet
 				mv caen $(BINDIR)
 
 sis3801:		sis3801.o $(UTILIB)
 				$(CC) -o sis3801 sis3801.o \
-				-L ../../lib/$(LYNX_VERSION) \
+				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
 				-lUti -lvme -lnetinet
 				mv sis3801 $(BINDIR)
 
 cc32:			cc32.o $(UTILIB)
 				$(CC) -o cc32 cc32.o \
-				-L ../../lib/$(LYNX_VERSION) \
+				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
 				-lUti -lvme -lnetinet
 				mv cc32 $(BINDIR)
 
 cptm:			cptm.o $(UTILIB)
 				$(CC) -o cptm cptm.o \
-				-L ../../lib/$(LYNX_VERSION) \
+				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
 				-lUti -lvme -lnetinet
 				mv cptm $(BINDIR)
 
 dgfdown:		dgfdown.o $(UTILIB)
 				$(CC) -o dgfdown dgfdown.o \
-				-L ../../lib/$(LYNX_VERSION) \
+				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
 				-lUti -lvme -lnetinet
 				mv dgfdown $(BINDIR)
 
 histoDump:		histoDump.o $(UTILIB)
 				$(CC) -o histoDump histoDump.o \
-				-L ../../lib/$(LYNX_VERSION) \
+				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
 				-lUti -lvme -lnetinet
 				mv histoDump $(BINDIR)
 
 testParam:		testParam.o $(UTILIB)
 				$(CC) -o testParam testParam.o \
-				-L ../../lib/$(LYNX_VERSION) \
+				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
 				-lUti -lvme -lnetinet
 				mv testParam $(BINDIR)
 
 envtst:			envtst.o $(UTILIB)
 				$(CC) -o envtst envtst.o \
-				-L ../../lib/$(LYNX_VERSION) \
+				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
 				-lUti -lvme -lnetinet
 				mv envtst $(BINDIR)
 
 uxtst:			uxtst.o $(UTILIB)
 				$(CC) -o uxtst uxtst.o \
-				-L ../../lib/$(LYNX_VERSION) \
+				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
 				-lUti -lvme -lnetinet
 				mv uxtst $(BINDIR)

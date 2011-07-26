@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartTracePanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.8 2010-11-17 12:25:11 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.9 2011-07-26 08:41:49 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -69,7 +69,8 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 												kVMESis3302TimeStamp,
 												kVMESis3302TracesNo,
 												kVMESis3302TracesPerSecond,
-											};
+												kVMESis3302Close,
+		};
 
 		enum EVMESis3302TraceModes			{	kVMESis3302ModeMAWD		= 0,
 												kVMESis3302ModeMAW		= BIT(0),
@@ -107,6 +108,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		TGGroupFrame * fSelectFrame; 				// select
 		TGMrbLabelCombo * fSelectModule;  			//		module
 		TGMrbCheckButtonList * fSelectChanPatt;  		//		channel
+		TGTextButton * fCloseButton;				// close window
 
 		TGGroupFrame * fHistoFrame; 				// show histos
 		TRootEmbeddedCanvas * fHistoCanvas;			//		canvas

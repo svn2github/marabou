@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.6 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.7 2011-07-26 08:41:50 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -246,7 +246,7 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 	TMrbNamedX * module;
 	Int_t bit = 0x1;
 	Int_t nofModules = 0;
-	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Saving module settings ...", 400, "blue", NULL, kTRUE);
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Restoring module settings ...", 400, "blue", NULL, kTRUE);
 	pgb->SetRange(0, fLofSelected.GetEntries());
 	while (module = (TMrbNamedX *) iter->Next()) {
 		if (modSel & bit) {
@@ -258,8 +258,8 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 			if (!sis3302->RestoreSettings(settingsFile.Data())) nerr++;
 			nofModules++;
 			pgb->Increment(1, module->GetName());
-			bit <<= 1;
 		}
+		bit <<= 1;
 		gSystem->ProcessEvents();
 	}
 	pgb->DeleteWindow();
@@ -368,9 +368,10 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 			if (!sis3302->SaveSettings(settingsFile.Data())) nerr++;
 			nofModules++;
 			pgb->Increment(1, module->GetName());
-			bit <<= 1;
 		}
+		bit <<= 1;
 		gSystem->ProcessEvents();
+			bit <<= 1;
 	}
 	delete pgb;
 

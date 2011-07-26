@@ -45,6 +45,7 @@ enum EM2L_FunctionType {
 	kM2L_FCT_CAEN_875			=	0x100,					// caen adc v875
 //-------------------------------------------------------------------------------
 	kM2L_FCT_SIS_3302			=	0x200,					// sis flash adc 3302
+	kM2L_FCT_SIS_3302_GET_MODULE_ADDR,
 	kM2L_FCT_SIS_3302_SET_USER_LED,
 	kM2L_FCT_SIS_3302_READ_DAC,
 	kM2L_FCT_SIS_3302_WRITE_DAC,
@@ -125,6 +126,7 @@ enum EM2L_FunctionType {
 	kM2L_FCT_SIS_3302_DUMP_TRACE,
 	kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,
 	kM2L_FCT_SIS_3302_RAMP_DAC,
+	kM2L_FCT_SIS_3302_DUMP_REGISTERS,
 //--------------------------------------------------------------------------------
 	kM2L_FCT_VULOM_TB			=	0x300,					// vulom3 / triggerbox
 	kM2L_FCT_VULOM_TB_READ_SCALER,
@@ -146,6 +148,7 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_CAEN_875, 							"exec function (CAEN V785)"},
 //--------------------------------------------------------------------------------
 		{kM2L_FCT_SIS_3302, 							"exec function (SIS 3302)"},
+		{kM2L_FCT_SIS_3302_GET_MODULE_ADDR,				"get module address"},
 		{kM2L_FCT_SIS_3302_SET_USER_LED,				"turn on/off user led"},
 		{kM2L_FCT_SIS_3302_READ_DAC,					"read dac offsets"},
 		{kM2L_FCT_SIS_3302_WRITE_DAC,					"write dac offsets"},
@@ -226,6 +229,7 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_SIS_3302_DUMP_TRACE,					"dump trace data"},
 		{kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,				"accu histogram"},
 		{kM2L_FCT_SIS_3302_RAMP_DAC,				"ramp dac"},
+		{kM2L_FCT_SIS_3302_DUMP_REGISTERS,			"dump register contents"},
 //--------------------------------------------------------------------------------
 		{kM2L_FCT_VULOM_TB, 							"exec function (VULOM / TRIGBOX)"},
 		{kM2L_FCT_VULOM_TB_READ_SCALER, 				"read scaler"},

@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LVMEModule.cxx,v 1.4 2008-10-18 17:09:14 Marabou Exp $     
-// Date:           $Date: 2008-10-18 17:09:14 $
+// Revision:       $Id: TC2LVMEModule.cxx,v 1.5 2011-07-26 08:41:50 Marabou Exp $     
+// Date:           $Date: 2011-07-26 08:41:50 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -52,7 +52,8 @@ TC2LVMEModule::TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleTyp
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("c2lynx.log");
 
 	fOffline = Offline;
-
+	fVerbose = gEnv->GetValue("TMrbC2Lynx.VerboseMode", kFALSE);
+	
 	fLofFunctionTypes.AddNamedX(kMrbLofFunctionTypes);
 
 	if (this->Connect(Address, NofChannels)) {

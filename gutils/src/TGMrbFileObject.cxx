@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.24 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.25 2011-07-26 08:41:50 Marabou Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -30,7 +30,6 @@ namespace std {} using namespace std;
 #include "TGToolTip.h"
 #include "TGMsgBox.h"
 #include "TMrbSystem.h"
-#include "TMrbString.h"
 #include "TGMrbFileObject.h"
 
 // file types
@@ -372,7 +371,7 @@ Bool_t TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
 	TKey * key;
 	TIterator * keyIter = fileKeys->MakeIterator();
 	while (key = (TKey *) keyIter->Next()) {
-		TMrbString keyName = "(";
+		TString keyName = "(";
 		keyName += key->GetClassName();
 		keyName += " *) ";
 		keyName += key->GetName();
@@ -965,7 +964,7 @@ Bool_t TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
 	TKey * key;
 	TIterator * keyIter = fileKeys->MakeIterator();
 	while (key = (TKey *) keyIter->Next()) {
-		TMrbString keyName = "(";
+		TString keyName = "(";
 		keyName += key->GetClassName();
 		keyName += " *) ";
 		keyName += key->GetName();

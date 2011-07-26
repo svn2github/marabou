@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.10 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.11 2011-07-26 08:41:50 Marabou Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -167,7 +167,6 @@ void TGMrbLabelCombo::BeginButtonPressed() {
 
 	TMrbNamedX * nx = (TMrbNamedX *) fEntries.First();
 	fCombo->Select(nx->GetIndex());
-	this->SelectionChanged(nx->GetIndex());
 }
 
 void TGMrbLabelCombo::EndButtonPressed() {
@@ -184,7 +183,6 @@ void TGMrbLabelCombo::EndButtonPressed() {
 
 	TMrbNamedX * nx = (TMrbNamedX *) fEntries.Last();
 	fCombo->Select(nx->GetIndex());
-	this->SelectionChanged(nx->GetIndex());
 }
 
 void TGMrbLabelCombo::UpButtonPressed() {
@@ -207,7 +205,6 @@ void TGMrbLabelCombo::UpButtonPressed() {
 		nx = (TMrbNamedX *) fEntries.At(fEntries.IndexOf(nx) + 1);
 	}
 	fCombo->Select(nx->GetIndex());
-	this->SelectionChanged(nx->GetIndex());
 }
 
 void TGMrbLabelCombo::DownButtonPressed() {
@@ -230,7 +227,6 @@ void TGMrbLabelCombo::DownButtonPressed() {
 		nx = (TMrbNamedX *) fEntries.At(fEntries.IndexOf(nx) - 1);
 	}
 	fCombo->Select(nx->GetIndex());
-	this->SelectionChanged(nx->GetIndex());
 }
 
 void TGMrbLabelCombo::UpDownButtonEnable(Bool_t Flag) {

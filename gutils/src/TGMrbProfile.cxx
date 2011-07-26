@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbProfile.cxx,v 1.2 2007-07-30 12:25:33 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbProfile.cxx,v 1.3 2011-07-26 08:41:50 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +28,6 @@ namespace std {} using namespace std;
 #include "TOrdCollection.h"
 #include "TGMrbProfile.h"
 #include "TMrbLogger.h"
-#include "TMrbString.h"
 
 #include "SetColor.h"
 
@@ -149,12 +148,8 @@ TGMrbGC::TGMrbGC(const Char_t * Font, Pixel_t Foreground, Pixel_t Background, UI
 	}
 
 	fFontName = fontStr;
-	TMrbString str = "#";
-	str.AppendInteger(Foreground, 0, ' ', 16);
-	fForegroundName = str;
-	str = "#";
-	str.AppendInteger(Background, 0, ' ', 16);
-	fBackgroundName = str;
+	fForegroundName = Form("#%0x", Foreground);
+	fForegroundName = Form("#%0x", Background);
 
 	fFont = font;
 	fForeground = Foreground;
@@ -366,9 +361,15 @@ TGMrbGC * TGMrbProfile::AddGC(TMrbNamedX * GCSpec, TEnv * Env, TGMrbGC * Default
 	r = Env->GetValue(rName + ".Background", dflt.Data());
 	if (!r.IsNull()) gc->SetBG(r.Data());
 
-	TMrbString opt = Env->GetValue(rName + ".Options", "");
-	UInt_t optionBits;
-	opt.Encode(optionBits, frameOptString.Data());
+	TString optStr = Env->GetValue(rName + ".Options", "");
+	TMrbLofNamedX lofOptions; lofOptions.AddNamedX(frameOptString.Data());
+	UInt_t optionBits = 0;
+	Int_t from = 0;
+	TString opt;
+	while (optStr.Tokenize(opt, from, ":")) {
+		TMrbNamedX * o = lofOptions.FindByName(opt.Data());
+		if (o) optionBits |= o->GetIndex();
+	}
 	if (optionBits == 0) optionBits = DefaultGC ? DefaultGC->GetOptions() : 0;
 	gc->SetOptions(optionBits);
 
@@ -564,8 +565,18 @@ void TGMrbProfile::Print(ostream & Out, const Char_t * Type) const {
 				<< "#" << setbase(16) << setw(6) << setfill('0') << setiosflags(ios::uppercase)
 				<< gc->BG() << resetiosflags(ios::uppercase) << setbase(10)
 				<< " = " << gc->GetBackgroundName() << endl;
-			TMrbString opt;
-			opt.Decode(gc->GetOptions(), frameOptString.Data());
+			TMrbLofNamedX lofOptions; lofOptions.AddNamedX(frameOptString.Data());
+			TString opt;
+			UInt_t optionBits = gc->GetOptions();
+			TIterator * iter = lofOptions.MakeIterator();
+			TMrbNamedX * nx;
+			TString sep = "";
+			while (nx = (TMrbNamedX *) iter->Next()) {
+				if (optionBits & nx->GetIndex()) {
+					opt += Form("%s%s", sep, nx->GetName());
+					sep = ":";
+				}
+			}
 			Out << Form("%15s%15s", "", "[Options]: ")
 				<< setbase(16) << setiosflags(ios::showbase) << gc->GetOptions() << resetiosflags(ios::showbase) << setbase(10);
 			if (!opt.IsNull()) Out << " = " << opt;
@@ -616,26 +627,26 @@ TGMrbLofProfiles::TGMrbLofProfiles(const Char_t * Name, const Char_t * Title) : 
 	} else {
 		fEnv = new TEnv(fRcFile.Data());
 	}
-	TMrbString mstr = fEnv->GetValue(res + ".Members", "");
+	TString mstr = fEnv->GetValue(res + ".Members", "");
 	if (mstr.IsNull()) {
 		gMrbLog->Wrn() << "No graphics profiles defined (resource \"" << res << ".Members\" missing)" << endl;
 		gMrbLog->Flush("TGMrbLofProfiles");
 	} else {
-		TObjArray members;
-		Int_t n = mstr.Split(members, ":");
+		Int_t n = 0;
+		Int_t from = 0;
+		TString mbr;
+		while (mstr.Tokenize(mbr, from, ":")) {
+			n++;
+			mbr.ToLower();
+			res = mbr;
+			res(0,1).ToUpper();
+			title = fEnv->GetValue(res + ".Title", "");
+			TGMrbProfile * gc = new TGMrbProfile(mbr.Data(), title.Data(), fEnv);
+			this->AddNamedX(this->GetEntriesFast(), mbr.Data(), title.Data(), gc);
+		}
 		if (n == 0) {
 			gMrbLog->Wrn() << "No graphics profiles defined (resource \"" << res << ".Members\" is empty)" << endl;
 			gMrbLog->Flush("TGMrbLofProfiles");
-		} else {
-			for (Int_t i = 0; i < n; i++) {
-				TString mbr = ((TObjString *) members[i])->GetString();
-				mbr.ToLower();
-				res = mbr;
-				res(0,1).ToUpper();
-				title = fEnv->GetValue(res + ".Title", "");
-				TGMrbProfile * gc = new TGMrbProfile(mbr.Data(), title.Data(), fEnv);
-				this->AddNamedX(this->GetEntriesFast(), mbr.Data(), title.Data(), gc);
-			}
 		}
 	}
 	if (this->FindProfile("standard", kFALSE) == NULL) this->AddProfile("standard", "Standard graphics profile");

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEMainFrame.cxx,v 1.10 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Revision:       $Id: VMEMainFrame.cxx,v 1.11 2011-07-26 08:41:49 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -382,6 +382,7 @@ void VMEMainFrame::KeyPressed(Int_t FrameId, Int_t Key) {
 
 	switch (Key) {
 		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
+			if (gMrbC2Lynx) gMrbC2Lynx->Bye();
 			gApplication->Terminate(0);
 			break;
 	}

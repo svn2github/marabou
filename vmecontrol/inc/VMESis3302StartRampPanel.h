@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartRampPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartRampPanel.h,v 1.1 2010-11-17 14:18:14 Marabou Exp $
+// Revision:       $Id: VMESis3302StartRampPanel.h,v 1.2 2011-07-26 08:41:49 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -58,14 +58,15 @@ class VMESis3302StartRampPanel : public TGMainFrame {
 	public:
 
 		// cmd ids to dispatch over X events in this panel
-		enum EVMESis3302StartHistoId 			{
+		enum EVMESis3302StartRampId 			{
 												kVMESis3302SelectModule,
 												kVMESis3302SelectChanPatt,
 												kVMESis3302StartStop,
 												kVMESis3302WriteHisto,
 												kVMESis3302DeleteClones,
 												kVMESis3302Offset,
-											};
+												kVMESis3302Close
+		};
 
 		VMESis3302StartRampPanel(const TGWindow * Parent, TMrbLofNamedX * LofModules,
 							UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
