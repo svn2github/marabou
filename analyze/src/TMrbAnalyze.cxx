@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.102 2011-03-11 10:14:50 Otto.Schaile Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.103 2011-08-23 08:05:16 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2026,24 +2026,30 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 	Int_t nofCalibs = 0;
 	TString calType = cal->GetValue("Calib.Type", "linear");
 	Bool_t isLinear;
+	Bool_t isQuadratic;
+	Int_t calDegree;
 	calType.ToLower();
-	if (calType.CompareTo("linear") == 0) isLinear = kTRUE;
-	else if (calType.CompareTo("poly") == 0) isLinear = kFALSE;
-	else {
+	if (calType.CompareTo("linear") == 0)  {
+		isLinear = kTRUE;
+		isQuadratic = kFALSE;
+		calDegree = 1;
+	} else if (calType.CompareTo("quadratic") == 0)  {
+		isLinear = kFALSE;
+		isQuadratic = kTRUE;
+		calDegree = 2;
+	} else if (calType.CompareTo("poly") == 0)  {
+		isLinear = kFALSE;
+		isQuadratic = kFALSE;
+		calDegree = cal->GetValue("Calib.Degree", 0);
+		if (calDegree <= 0) {
+		  gMrbLog->Wrn()	<< "Polynomial degree missing - no calibration" << endl;
+		  gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
+		  return(0);
+		}
+	} else {
 		gMrbLog->Wrn()	<< "Unsupported calibration type - " << calType << ", no calibration" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
 		return(0);
-	}
-	Int_t calDegree = cal->GetValue("Calib.Degree", 1);
-	if (calDegree < 1) {
-		gMrbLog->Err()	<< "Wrong polynomial degree - " << calDegree
-						<< " (should be at least 1), no calibration" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
-		return(-1);
-	}
-	if (isLinear && calDegree != 1) {
-		gMrbLog->Wrn()	<< "Wrong polynomial degree - " << calDegree << " (should be 1 for linear), ignored" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
 	}
 
 	param.Set(calDegree + 2); 	// n+1 params for degree n, param#0 holds degree itself
@@ -2085,6 +2091,19 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 					resName += histoName;
 					resName += ".Gain";
 					param[2] = cal->GetValue(resName.Data(), 1.);
+				} else if (isQuadratic) {
+					resName = "Calib.";
+					resName += histoName;
+					resName += ".Offset";
+					param[1] = cal->GetValue(resName.Data(), 0.);
+					resName = "Calib.";
+					resName += histoName;
+					resName += ".Gain";
+					param[2] = cal->GetValue(resName.Data(), 1.);
+					resName = "Calib.";
+					resName += histoName;
+					resName += ".Quadratic";
+					param[3] = cal->GetValue(resName.Data(), 1.);
 				} else {
 					for (Int_t parNo = 1; parNo <= calDegree + 1; parNo++) {
 						resName = "Calib.";
