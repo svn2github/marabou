@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.9 2011-07-26 08:41:50 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.10 2011-08-30 08:01:25 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -732,8 +732,7 @@ void VMESis3302StartHistoPanel::KeyPressed(Int_t FrameId, Int_t Key) {
 	switch (Key) {
 		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
 			if (fTraceCollection) {
-				gMrbLog->Err() << "Accumulation of histos in progress - press STOP first" << endl;
-				gMrbLog->Flush(this->ClassName(), "KeyPressed");
+				gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop accumulation of histos first");
 				return;
 			}
 			if (gMrbC2Lynx) gMrbC2Lynx->Bye();

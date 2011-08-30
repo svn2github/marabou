@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.23 $
-//! $Date: 2011-07-26 08:41:50 $
+//! $Revision: 1.24 $
+//! $Date: 2011-08-30 08:01:25 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -4465,7 +4465,7 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 	TString fileName;
 	if (File == NULL) {
 		fileName = Module->GetName();
-		fileName += ".dmp";
+		fileName += "Settings.dmp";
 	} else {
 		fileName = File;
 	}

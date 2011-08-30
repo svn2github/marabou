@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.11 2011-07-26 08:41:50 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.12 2011-08-30 08:01:25 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -723,14 +723,17 @@ void VMESis3302StartTracePanel::KeyPressed(Int_t FrameId, Int_t Key) {
 	switch (Key) {
 		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
 			if (fTraceCollection) {
-				gMrbLog->Err() << "Trace collection in progress - press STOP first" << endl;
-				gMrbLog->Flush(this->ClassName(), "KeyPressed");
+				gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop trace collection first");
 				return;
 			}
 			if (gMrbC2Lynx) gMrbC2Lynx->Bye();
 			gApplication->Terminate(0);
 			break;
 		case TGMrbLofKeyBindings::kGMrbKeyActionClose:
+			if (fTraceCollection) {
+				gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop trace collection first");
+				return;
+			}
 			this->CloseWindow();
 			break;
 	}
