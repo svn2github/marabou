@@ -54,8 +54,8 @@ include config/Makefile.$(ARCH)
 
 -include MyConfig.mk
 
-EXTRA_CFLAGS   += -g -Wno-switch -Wno-write-strings -Wno-parentheses -DPPC_NEW_ADDRESS -I$(ROOTSYS)/include
-EXTRA_CXXFLAGS += -g -Wno-switch -Wno-write-strings -Wno-parentheses -DPPC_NEW_ADDRESS -I$(ROOTSYS)/include
+EXTRA_CFLAGS   += -g -Wno-switch -Wno-write-strings -Wno-parentheses -I$(ROOTSYS)/include
+EXTRA_CXXFLAGS += -g -Wno-switch -Wno-write-strings -Wno-parentheses -I$(ROOTSYS)/include
 
 ##### Modules to build #####
 

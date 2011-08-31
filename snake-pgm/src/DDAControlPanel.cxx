@@ -5,7 +5,7 @@
 // Description:    
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DDAControlPanel.cxx,v 1.1 2009-03-26 11:13:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: DDAControlPanel.cxx,v 1.2 2011-08-31 12:49:07 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -1292,7 +1292,6 @@ Bool_t DDAControlPanel::UpdateScanLimits(TSnkDDA0816 * DDA) {
 		valueS = fNofPixels[ddaChn]->GetEntry()->GetText();
 		if (valueS.CompareTo("variable") != 0) {
 			npix = valueS.Atoi();
-			cout << "@@@3 SetNofPixels " << ddaChn << " " << npix << endl;
 			ddaAddr->SetNofPixels(npix);
 		}
 		mode = DDA->GetScanMode();
@@ -1328,7 +1327,6 @@ Bool_t DDAControlPanel::UpdateScanLimits(TSnkDDA0816 * DDA) {
 					valueS = fNofPixels[0]->GetEntry()->GetText();
 					this->SetEntrySlave(fNofPixels[1], valueS.Data());
 					intVal = valueS.Atoi();
-					cout << "@@@0 SetNofPixels " << ddaChn << " " << intVal << endl;
 					ddaAddr->SetNofPixels(intVal);
 				}
 				this->SetEntryEnabled(fOffsetD[0]);
@@ -1336,7 +1334,6 @@ Bool_t DDAControlPanel::UpdateScanLimits(TSnkDDA0816 * DDA) {
 				this->SetEntryEnabled(fAmplitudeD[0]);
 				this->SetEntrySlave(fAmplitudeS[0]);
 				this->SetEntryEnabled(fNofPixels[0]);
-				cout << "@@@0 Addr " << ddaChn << " " << setbase(16) << ddaAddr << setbase(10) << endl;
 				if (!DDA->AdjustSettings(ddaChn, DDA->IsVerbose())) {
 					this->SetEntryDisabled(fScanLimitsD[ddaChn], "No Scan");
 					this->SetEntryDisabled(fScanLimitsS[ddaChn], "No Scan");
@@ -1725,7 +1722,6 @@ Bool_t DDAControlPanel::Gui2DDA(TSnkDDA0816 * DDA, Bool_t SaveFlag) {
 		range = fAmplitudeS[ddaChn]->GetEntry()->GetText();
 		if (range.CompareTo("variable") != 0) ddaAddr->SetAmplitude(range.Atoi());
 		npoints = fNofPixels[ddaChn]->GetEntry()->GetText();
-		cout << "@@@1 SetNofPixels " << ddaChn << " " << npoints << endl;
 		if (npoints.CompareTo("variable") != 0) ddaAddr->SetNofPixels(npoints.Atoi());
 
 		stopPos = fStopPosD[ddaChn]->GetEntry()->GetText();
@@ -2427,7 +2423,6 @@ Bool_t DDAControlPanel::OpenDDAFile(const Char_t * FileName) {
 		curDDA->SetOffset(chn, dda->Get("Offset", 0));
 		curDDA->SetAmplitude(chn, dda->Get("Amplitude",0));
 		curDDA->SetIncrement(chn, dda->Get("Increment", 0));
-		cout << "@@@2 SetNofPixels " << chn << " " << dda->Get("NofPixels", 0) << endl;
 		curDDA->GetDac(chn)->SetNofPixels(dda->Get("NofPixels", 0));
 		dda->Get(namedVal, "ScanProfile");
 		nx = curDDA->GetLofScanProfiles()->FindByIndex(namedVal.GetIndex());

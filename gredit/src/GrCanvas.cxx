@@ -297,7 +297,7 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       break;
 
    case kButton1Motion:
-   case kButton1ShiftMotion: //8 == kButton1Motion + shift modifier
+//   case kButton1ShiftMotion: //8 == kButton1Motion + shift modifier
       if (fSelected) {
          gPad = fSelectedPad;
 
@@ -584,6 +584,7 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       RunAutoExec();
 
       break;
+#if 0
    case kButton1Shift:
       // Try to select
       pad = Pick(px, py, prevSelObj);
@@ -611,7 +612,9 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       gPad = pad;
       fSelected->ExecuteEvent(event, px, py);
 		break;
-/*
+#endif
+
+#if 0
    case kKeyPress:
 
       // find pad in which input occured
@@ -627,7 +630,8 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (GetAutoExec())        RunAutoExec();
 
       break;
-*/
+#endif
+
    default:
       break;
    }

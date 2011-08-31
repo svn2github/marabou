@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TSnkDDA0816.cxx,v 1.1 2009-03-26 11:13:42 Rudolf.Lutter Exp $       
+// Revision:       $Id: TSnkDDA0816.cxx,v 1.2 2011-08-31 12:49:07 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -472,10 +472,7 @@ Bool_t TSnkDDA0816::AdjustSettings(Int_t Channel, Bool_t Verbose) {
 
 	if ((chn = this->CheckChannel(Channel, this->ClassName(), "AdjustSettings")) == NULL) return(kFALSE);
 
-	cout << "@@@1 Addr " << Channel << " " << setbase(16) << chn << setbase(10) << endl;
-
 	nofPixels = chn->GetNofPixels();
-	cout << "@@@ " << Channel << " " << nofPixels << endl;
 
 	ok = kTRUE;
 

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.2 2011-02-11 08:06:08 Marabou Exp $
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.3 2011-08-31 12:49:07 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -345,8 +345,6 @@ void DGFSetupPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 // Description:    Called on TGMrbPictureButton::ButtonPressed()
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
-
-	//cout<<"@@@In SelectModule: FrameID="<<FrameId<<", Selection="<<Selection<<endl;
 
 	if (Selection < kDGFSetupModuleSelectColumn) {
 		switch (Selection) {

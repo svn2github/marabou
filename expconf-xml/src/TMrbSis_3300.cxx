@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.1 2008-03-05 12:37:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.2 2011-08-31 12:49:07 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -799,6 +799,7 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
+				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
 				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
 				gMrbConfig->GetLofRdoIncludes()->Add(new TObjString(codeString.Data()));
 			}
@@ -809,6 +810,7 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
+				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
 				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
 				gMrbConfig->GetLofRdoLibs()->Add(new TObjString(codeString.Data()));
 			}

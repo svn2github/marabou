@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.1 2009-09-23 10:46:24 Marabou Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.2 2011-08-31 12:49:07 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -476,12 +476,7 @@ Bool_t DGFParamsPanel::ReadParams() {
 
 						if (pName.Index("CSRA", 0) >= 0 || pName.Index("PATTERN", 0) >= 0) {
 							  fParVal[n]->SetHexNumber(parVal);
-							//intStr.FromInteger(parVal, 4, 16, kTRUE);
 						} else {
-							//intStr = parVal;
-//  							  cout<<"@@@ n: "<<n<<endl;
-//  							  cout<<"@@@ fParVal[n]: "<<fParVal[n]<<endl;
-// 							  cout<<"@@@ parVal: "<<parVal<<endl;
 							  fParVal[n]->SetNumber(parVal);
 						}
 						//fParVal[n]->SetText(intStr.Data());

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.2 2008-06-16 15:00:21 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.3 2011-08-31 12:49:07 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7425,6 +7425,10 @@ Bool_t TMrbConfig::CheckConfig() {
 		lv = "3.1";
 	} else if (fMbsVersion.CompareTo("4.5") == 0) {
 		lv = "3.1";
+	} else if (fMbsVersion.CompareTo("5.0") == 0) {
+		lv = "4.0";
+	} else if (fMbsVersion.CompareTo("5.1") == 0) {
+		lv = "4.0";
 	} else {
 		gMrbLog->Err() << "Wrong MBS version - " << fMbsVersion << "; set TMbsSetup.MbsVersion in .rootrc properly" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckConfig");
