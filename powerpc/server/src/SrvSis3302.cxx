@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.24 $
-//! $Date: 2011-08-30 08:01:25 $
+//! $Revision: 1.25 $
+//! $Date: 2011-09-07 12:17:31 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -78,7 +78,6 @@ Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 	fSampling = kSis3302KeyArmBank1Sampling;
 	fTraceNo = 0;
 	fDumpTrace = kFALSE;
-
 
 	return(kTRUE);
 }
@@ -647,7 +646,16 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			}
 		case kM2L_FCT_SIS_3302_DUMP_TRACE:
 			{
-				fDumpTrace = kTRUE;
+				TString onoff;
+				if (fDumpTrace) {
+					onoff = "OFF";
+					fDumpTrace = kFALSE;
+				} else {
+					onoff = "ON";
+					fDumpTrace = kTRUE;
+				}
+				gMrbLog->Out()	<< "[" << Module->GetName() << "]: Turning trace dump " << onoff.Data() << endl;
+				gMrbLog->Flush(this->ClassName(), "Dispatch");
 				break;
 			}
 		case kM2L_FCT_SIS_3302_RAMP_DAC:
@@ -4100,6 +4108,8 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 	Int_t k = kSis3302EventPreHeader;
 	for (Int_t evtNo = evtFirst; evtNo <= evtLast; evtNo++) {
 
+		Int_t * mappedAddrSaved = mappedAddr;
+		
 		for (Int_t i = 0; i < kSis3302EventHeader; i++, k++) Data[k] = *mappedAddr++;			// event header: 32bit words
 
 		for (Int_t i = 0; i < rdl / 2; i++, k += 2) {			// raw data: fetch 2 samples packed in 32bit, store each in a single 32bit word
@@ -4117,7 +4127,8 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 
 		if (fDumpTrace || (trailer != 0xdeadbeef)) {
 			if (start) {
-				TString traceFile = Form("trace-%d.dmp", fTraceNo);
+				TString traceFile;
+				if (trailer == 0xdeadbeef) traceFile = Form("trace-ok-%d.dmp", fTraceNo); else traceFile = Form("trace-err-%d.dmp", fTraceNo);
 				char path[100];
 				getcwd(path, 100);
 				dump.open(traceFile.Data(), ios::out);
@@ -4137,6 +4148,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 					Int_t thresh;
 					this->ReadEndAddrThresh(Module, thresh, ChanNo);
 					dump << "Start address     : 0x" << setbase(16) << startAddr << setbase(10) << endl;
+					dump << "Mapped address    : 0x" << setbase(16) << mappedAddrSaved << setbase(10) << endl;
 					dump << "End thresh        : " << thresh << " 0x" << setbase(16) << thresh << setbase(10) << endl;
 					dump << "Next sample       : " << nxs << " 0x" << setbase(16) << nxs << setbase(10) << endl;
 				}
@@ -4187,7 +4199,6 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 	}
 
 	if (fDumpTrace) dump.close();
-	fDumpTrace = kFALSE;
 
 	return(!this->CheckBusTrap(Module, startAddr, "GetTraceData"));
 }
@@ -4219,7 +4230,7 @@ void SrvSis3302::SwitchSampling(SrvVMEModule * Module) {
 			pageNo = 0;
 		} else {
 			fSampling = kSis3302KeyArmBank1Sampling;
-			pageNo = 4;
+			pageNo = this->IsReduced() ? 0x40 : 0x4;
 		}
 		this->ContinueTraceCollection(Module);
 		this->SetPageRegister(Module, pageNo);

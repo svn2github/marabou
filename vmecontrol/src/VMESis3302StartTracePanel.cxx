@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.12 2011-08-30 08:01:25 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.13 2011-09-07 12:17:31 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -162,7 +162,7 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fCloseButton = new TGTextButton(fSelectFrame, "Close", kVMESis3302Close);
 	HEAP(fCloseButton);
 	fSelectFrame->AddFrame(fCloseButton, groupGC->LH());
-//	fCloseButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302Close));
+	fCloseButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302Close));
 
 // canvas
 	fHistoFrame = new TGGroupFrame(this, "Histograms", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -182,7 +182,8 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fTraceFrame->AddFrame(fStartStopButton, groupGC->LH());
 	fStartStopButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302StartStop));
 
-	fDumpTraceButton = new TGTextButton(fTraceFrame, "Dump trace", kVMESis3302DumpTrace);
+	fDumpTrace = kFALSE;
+	fDumpTraceButton = new TGTextButton(fTraceFrame, "Dump trace ON", kVMESis3302DumpTrace);
 	HEAP(fDumpTraceButton);
 	fTraceFrame->AddFrame(fDumpTraceButton, groupGC->LH());
 	fDumpTraceButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302DumpTrace));
@@ -305,6 +306,10 @@ void VMESis3302StartTracePanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (fTraceCollection) {
+		gVMEControlData->MsgBox(this, "ModuleChanged", "Error", "Stop trace collection first");
+		return;
+	}
 	curModule = (TC2LSis3302 *) fLofModules->FindByIndex(Selection);
 	curModule->SetVerbose(gVMEControlData->IsVerbose());
 	curModule->SetOffline(gVMEControlData->IsOffline());
@@ -328,6 +333,18 @@ void VMESis3302StartTracePanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			if (fTraceCollection) this->StopTrace(); else this->StartTrace();
 			break;
 		case VMESis3302StartTracePanel::kVMESis3302DumpTrace:
+			if (fDumpTrace) {
+				fDumpTraceButton->SetText("Dump trace ON");
+				fDumpTraceButton->SetBackgroundColor(gVMEControlData->fColorGreen);
+				fDumpTraceButton->SetForegroundColor(gVMEControlData->fColorWhite);
+				fDumpTrace = kFALSE;
+			} else {
+				fDumpTraceButton->SetText("Dump trace OFF");
+				fDumpTraceButton->SetBackgroundColor(gVMEControlData->fColorRed);
+				fDumpTraceButton->SetForegroundColor(gVMEControlData->fColorWhite);
+				fDumpTrace = kTRUE;
+			}
+			fDumpTraceButton->Layout();
 			curModule->DumpTrace();
 			break;
 		case VMESis3302StartTracePanel::kVMESis3302WriteTrace:
@@ -337,7 +354,7 @@ void VMESis3302StartTracePanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			this->DeleteClones();
 			break;
 		case VMESis3302StartTracePanel::kVMESis3302Close:
-			this->KeyPressed(0, TGMrbLofKeyBindings::kGMrbKeyActionExit);
+			this->KeyPressed(0, TGMrbLofKeyBindings::kGMrbKeyActionClose);
 			break;
 	}
 }
@@ -355,6 +372,10 @@ void VMESis3302StartTracePanel::TraceModeChanged(Int_t FrameId, Int_t Selection)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (fTraceCollection) {
+		gVMEControlData->MsgBox(this, "TraceModeChanged", "Error", "Stop trace collection first");
+		return;
+	}
 	traceMode = ((TMrbNamedX *) fLofTraceModes[Selection])->GetIndex();
 }
 
@@ -371,6 +392,10 @@ void VMESis3302StartTracePanel::ChannelChanged(Int_t FrameId, Int_t Selection) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (fTraceCollection) {
+		gVMEControlData->MsgBox(this, "ChannelChanged", "Error", "Stop trace collection first");
+		return;
+	}
 	curChannel = Selection;
 }
 

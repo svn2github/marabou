@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartTracePanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.9 2011-07-26 08:41:49 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.10 2011-09-07 12:17:31 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -134,6 +134,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 
 		TGMrbLofKeyBindings fKeyBindings; 			// key bindings
 
+		Bool_t fDumpTrace;					// kTRUE if traces should be dumped
 		Bool_t fTraceCollection;				// kTRUE if started
 		TFile * fTraceFile;					// root file to store traces
 		Int_t fNofTracesWritten;

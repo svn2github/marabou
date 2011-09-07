@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.10 2011-08-30 08:01:25 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.11 2011-09-07 12:17:31 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -356,7 +356,7 @@ void VMESis3302StartHistoPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			this->DeleteClones();
 			break;
 		case VMESis3302StartHistoPanel::kVMESis3302Close:
-			this->KeyPressed(0, TGMrbLofKeyBindings::kGMrbKeyActionExit);
+			this->KeyPressed(0, TGMrbLofKeyBindings::kGMrbKeyActionClose);
 			break;
 	}
 }
