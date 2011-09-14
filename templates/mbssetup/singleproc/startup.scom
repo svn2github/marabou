@@ -1,7 +1,7 @@
 #___________________________________________________________________[MBSSETUP]
 #/////////////////////////////////////////////////////////////////////////////
-# Revision:        $Id: startup.scom,v 1.6 2011-01-25 12:59:39 Marabou Exp $
-# Date:            $Date: 2011-01-25 12:59:39 $
+# Revision:        $Id: startup.scom,v 1.7 2011-09-14 09:26:23 Marabou Exp $
+# Date:            $Date: 2011-09-14 09:26:23 $
 #/////////////////////////////////////////////////////////////////////////////
 
 start task m_util
@@ -9,7 +9,6 @@ load setup ./setup.usf
 clear daq counter
 set trig_mod
 %%BeginOfCode%%
-$vmeconfig
 $irqOnOff
 %%EndOfCode%%
 %%IRQ_ONOFF%%

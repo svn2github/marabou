@@ -1531,7 +1531,8 @@ Try Clear MBS",this);
           delete fMbsControl; fMbsControl = 0;
           return kFALSE;
       } else {
-         if(fMbsControl->StartMbs()){
+         TMrbNamedX * nx = fSetup->ReadoutProc(0)->TriggerModule()->GetTriggerMode();
+         if(fMbsControl->StartMbs(nx->GetIndex())){
 //    start Message server
          TString mproc =  ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
          if (mproc.IsNull()) {
@@ -1541,7 +1542,7 @@ Try Clear MBS",this);
             fMessageServer = new MessageServer(mproc.Data(),
                               fMessageIntervall, kTRUE);
             fMessageServer->SetLogLevel(fMbsLogLevel);
-            if(fMbsControl->Startup(fMbsDebug)){
+			if(fMbsControl->Startup(fMbsDebug)) {
                if(fMbsControl->PrompterNode()){
 //                  cout << setgreen << "c_ana: PrompterNode "
 //                       << fMbsControl->PrompterNode()->GetName()<< setblack << endl;
@@ -1603,36 +1604,44 @@ Bool_t FhMainFrame::MbsSetup()
 		   fSetup = new TMbsSetup();
 	   }
     }
-	const char * mproc = ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
-   const char * sproc = ((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString();
-   cout << "mproc " << mproc << " sproc " << sproc;
 
-  	fSetup->EvtBuilder()->SetProcName(mproc); // Char_t *, name des master ppcs
-   TString remoteHome = fSetup->RemoteHomeDir();
-   if(remoteHome.IsNull()){
-      WarnBox("No .rhosts on Lynx home directory", this);
-      return kFALSE;
-   } else { cout << "remoteHome " << remoteHome.Data() << endl;}
+	TString mproc = ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
+	TString sproc = ((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString();
+	cout << "mproc: " << mproc << " sproc: " << sproc << endl;
+
+	fSetup->EvtBuilder()->SetProcName(mproc.Data()); // Char_t *, name des master ppcs
+	
+	TString remoteHome = fSetup->RemoteHomeDir();
+	if(remoteHome.IsNull()) {
+		WarnBox("No .rhosts on Lynx home directory", this);
+		return kFALSE;
+	} else {
+   		cout << "remoteHome " << remoteHome.Data() << endl;
+	}
+	
 	fSetup->SetNofReadouts(1);				      // momentan nur 1 readout proc
 	fSetup->SetPath(fTbDir->GetString());                 // Char_t *, relativer pfad zum homeDir am ppc
-	   fSetup->ReadoutProc(0)->SetProcName(sproc);		// dasselbe fuer den readout
-   if(!strcmp(mproc, sproc)){
-     fSetup->SetMode(kModeSingleProc);
-   } else {
-      fSetup->SetMode(kModeMultiProc);
-   }
-//   Int_t ttype;
-   if(fCbTrigger->GetSelected() == 1)
+
+	fSetup->ReadoutProc(0)->SetProcName(sproc.Data());		// dasselbe fuer den readout
+	if(!strcmp(mproc, sproc)){
+		fSetup->SetMode(kModeSingleProc);
+	} else {
+		fSetup->SetMode(kModeMultiProc);
+	}
+	
+	if(fCbTrigger->GetSelected() == 1)
 	    fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleVME);
-   else
-	   fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleCAMAC);
+	else
+		fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleCAMAC);
+		
 	fSetup->ReadoutProc(0)->TriggerModule()->SetConversionTime(fGateLength);
-   Bool_t ok = fSetup->MakeSetupFiles();		// erfindet alle files
+	
+	Bool_t ok = fSetup->MakeSetupFiles();		// erfindet alle files
 
-   if(fSetup) fSetup->Save();
-   return ok;
-
+	if(fSetup) fSetup->Save();
+	return ok;
 }
+
 //_____________________________________________________________________________________
 
 Bool_t FhMainFrame::MbsCompile()

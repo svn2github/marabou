@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Mux16.cxx,v 1.3 2007-10-25 17:24:13 Marabou Exp $       
-// Date:           $Date: 2007-10-25 17:24:13 $
+// Revision:       $Id: TMrbMesytec_Mux16.cxx,v 1.4 2011-09-14 09:26:23 Marabou Exp $       
+// Date:           $Date: 2011-09-14 09:26:23 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -131,15 +131,17 @@ Bool_t TMrbMesytec_Mux16::SetHistoName(Int_t Channel, const Char_t * HistoName, 
 	return(kTRUE);
 }
 
-const Char_t * TMrbMesytec_Mux16::GetHistoName(Int_t Channel) {
+const Char_t * TMrbMesytec_Mux16::GetHistoName(TString & HistoName, Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbMesytec_Mux16::GetHistoName
 // Purpose:        Return histo name
-// Arguments:      Int_t Channel        -- channel to be set
+// Arguments:      TString HistoName    -- where to store (modified) name
+//                 Int_t Channel        -- channel to be set
 // Results:        Char_t * HistoName   -- name
 // Exceptions:
 // Description:    Returns histogram name
+//                 Name and title are stored in one string; returns front part.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -150,21 +152,23 @@ const Char_t * TMrbMesytec_Mux16::GetHistoName(Int_t Channel) {
 	}
 	TObjString * o = (TObjString *) fHistoNames[Channel];
 	if (o == NULL) return("");
-	TString hName = o->GetString();
-	Int_t idx = hName.Index(":", 0);
-	if (idx != -1) hName = hName(0, idx);
-	return(hName.Data());
+	HistoName = o->GetString();
+	Int_t idx = HistoName.Index(":", 0);
+	if (idx != -1) HistoName = HistoName(0, idx);
+	return(HistoName.Data());
 }
 
-const Char_t * TMrbMesytec_Mux16::GetHistoTitle(Int_t Channel) {
+const Char_t * TMrbMesytec_Mux16::GetHistoTitle(TString & HistoTitle, Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbMesytec_Mux16::GetHistoTitle
 // Purpose:        Return histo title
-// Arguments:      Int_t Channel        -- channel to be set
+// Arguments:      TString HistoName    -- where to store (modified) title
+//                 Int_t Channel        -- channel to be set
 // Results:        Char_t * HistoName   -- title
 // Exceptions:
 // Description:    Returns histogram title
+//                 Name and title are stored in one string; returns rear part.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -175,11 +179,11 @@ const Char_t * TMrbMesytec_Mux16::GetHistoTitle(Int_t Channel) {
 	}
 	TObjString * o = (TObjString *) fHistoNames[Channel];
 	if (o == NULL) return("");
-	TString hTitle = o->GetString();
-	Int_t idx = hTitle.Index(":", 0);
+	HistoTitle = o->GetString();
+	Int_t idx = HistoTitle.Index(":", 0);
 	if (idx == -1) return("");
-	hTitle = hTitle(idx + 1, hTitle.Length());
-	return(hTitle.Data());
+	HistoTitle = HistoTitle(idx + 1, HistoTitle.Length());
+	return(HistoTitle.Data());
 }
 
 Bool_t TMrbMesytec_Mux16::BookHistograms() {
@@ -245,7 +249,8 @@ Bool_t TMrbMesytec_Mux16::WriteLookup(const Char_t * LkpFile) {
 		mux->SetValue(Form("TUsrMux.%d.Xmin", i), n);
 		n = mux->GetValue(Form("TUsrMux.%d.Xmax", i), 0);
 		mux->SetValue(Form("TUsrMux.%d.Xmax", i), n);
-		TString hName = this->GetHistoName(i);
+		TString hName;
+		this->GetHistoName(hName, i);
 		TString pName;
 		if (hName.IsNull()) {
 			hName = Form("hE%s%02d", this->GetName(), i);

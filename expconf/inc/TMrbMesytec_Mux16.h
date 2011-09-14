@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Mux16        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Mux16.h,v 1.3 2007-10-25 17:24:12 Marabou Exp $       
+// Revision:       $Id: TMrbMesytec_Mux16.h,v 1.4 2011-09-14 09:26:23 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -46,8 +46,8 @@ class TMrbMesytec_Mux16 : public TMrbModuleRaw {
 		const Char_t * GetParamNames(TString & ParamNames);
 
 		Bool_t SetHistoName(Int_t Channel, const Char_t * HistoName, const Char_t * HistoTitle = "");
-		const Char_t * GetHistoName(Int_t Channel);
-		const Char_t * GetHistoTitle(Int_t Channel);
+		const Char_t * GetHistoName(TString & HistoName, Int_t Channel);
+		const Char_t * GetHistoTitle(TString & HistoTitle, Int_t Channel);
 		inline TObjArray * GetHistoNames() { return(&fHistoNames); };
 
 		Bool_t BookHistograms();

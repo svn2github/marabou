@@ -168,7 +168,7 @@ public:
    Int_t  GetMbsNodes();
    Int_t  GetNofMbsProcs();
    Bool_t IdentifyMbsNodes();
-   Bool_t StartMbs();
+   Bool_t StartMbs(Int_t Interrupt = 0);
    Bool_t StopMbs();
    Bool_t ConnectPrompter(Int_t timeout = 10);
    Bool_t DisConnectPrompter();

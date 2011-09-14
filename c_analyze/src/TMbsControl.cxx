@@ -205,7 +205,7 @@ Bool_t TMbsControl:: IdentifyMbsNodes(){
 };
 //_________________________________________________________________________________________
 
-Bool_t  TMbsControl::StartMbs(){
+Bool_t  TMbsControl::StartMbs(Int_t Interrupt){
 
    TString rshCmd;
 
@@ -262,6 +262,7 @@ Bool_t  TMbsControl::StartMbs(){
 			rshCmd = "/usr/bin/rsh ";
 			rshCmd = rshCmd  + trnode.Data() + " -l " + fUserName.Data() +
                 " /bin/ces/vmeconfig -a /mbs/driv/trig-vme_2.5_RIO2/vmetab";
+			if (Interrupt != 0) rshCmd += "-c";
 			cout << setmagenta<< rshCmd << setblack<< endl;
 			gSystem->Exec(rshCmd.Data());
 		}
@@ -307,8 +308,9 @@ Bool_t  TMbsControl::StopMbs(){
 }
 //_________________________________________________________________________________________
 
-Bool_t TMbsControl:: Startup(Bool_t debug){
+Bool_t TMbsControl::Startup(Bool_t debug){
    Int_t ok;
+   
    if(debug){
       cout << setblue << "c_mbs: Starting DAQ processes in debug mode" << setblack << endl;
       ok = SendToPrompter("@startup_d");
@@ -444,7 +446,6 @@ Int_t TMbsControl:: SendToPrompter(const char * cmd){
       fPrompterSocket->RecvRaw(&Endian, 4);
       fPrompterSocket->RecvRaw(&Status, 4);
       Swap(&Status, 1, Endian);
-//      cout << "Status: " << Status << endl;
       return Status;
    } else return -1;
 }
