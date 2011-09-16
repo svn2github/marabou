@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.10 2011-02-24 12:32:26 Marabou Exp $
+// Revision:       $Id: TUsrEvent.cxx,v 1.11 2011-09-16 12:12:32 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -225,7 +225,7 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int
 	return(-1);
 }
 
-Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t Didx) {
+Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t Didx, Int_t InitValue) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::FillEventFromHB
@@ -234,6 +234,7 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t 
 //                                           has to have size=0 on start
 //                 Bool_t FillHisto       -- kTRUE -> write hit data to histogram
 //                 Int_t Didx             -- data index within hit
+//                 Int_t InitValue        -- init value to reset event vector
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:   Loops thru hitbuffers and fills subvent storage event by event.
@@ -247,6 +248,7 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t 
 		LofIndices.Reset(0);
 	}
 	Bool_t foundHbx = kFALSE;
+	this->Reset(InitValue, kTRUE);
 	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
 		TUsrHBX * h = this->GetHBX(hbx);
 		Int_t hidx = LofIndices[hbx];
