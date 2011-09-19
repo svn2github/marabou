@@ -148,11 +148,13 @@ void HprGaxis::ReDoAxis()
 void HprGaxis::HandlePadModified()
 {
 	if (gPad == fCanvas) {
-		if ( gDebug > 0 ) {
-			cout << "HprGaxis::HandlePadModified this: " << this << "  fCanvas: " << fCanvas <<
-					" fCanvas->GetLogy(), fLogy " <<  fCanvas->GetLogy() << " " << fLogy <<endl;
-			cout << "GetX1(), fFrameX1: "<<fCanvas->GetFrame()->GetX1()<<" "<<fFrameX1 <<endl;
+		if ( ((HTCanvas*)fCanvas)->GetHandleMenus() != NULL ) {
+			TTimer::SingleShot(50, "HprGaxis", this, "ReDoAxis()");
+			if ( gDebug > 0 ) {
+				cout << "HprGaxis::HandlePadModified this: " << this << "  fCanvas: " << fCanvas <<
+						" fCanvas->GetLogy(), fLogy " <<  fCanvas->GetLogy() << " " << fLogy <<endl;
+				cout << "GetX1(), fFrameX1: "<<fCanvas->GetFrame()->GetX1()<<" "<<fFrameX1 <<endl;
+			}
 		}
-		TTimer::SingleShot(50, "HprGaxis", this, "ReDoAxis()");
 	}
 }
