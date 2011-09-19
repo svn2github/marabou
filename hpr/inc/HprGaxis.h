@@ -1,6 +1,6 @@
 #ifndef __HPRGAXIS_h__
 #define __HPRGAXIS_h__
-#include "TCanvas.h"
+#include "HTCanvas.h"
 #include "TGaxis.h"
 
 namespace std {} using namespace std;
