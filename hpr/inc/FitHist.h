@@ -131,6 +131,7 @@ private:
    Int_t fLiveStat2Dim;
    Int_t fLiveGauss;
    Int_t fLiveBG;
+   Int_t fLiveConstBG;
 	Int_t   fSmoothLine;
 	Int_t   fSimpleLine;
 	Int_t   fBarChart;

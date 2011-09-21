@@ -55,21 +55,25 @@ E4 Draw a smoothed filled area through the end points\n\
 E5 Like E3 but ignore the bins with 0 contents.\n\
 E6 Like E4 but ignore the bins with 0 contents.\n\
 \n\
-Options E3-E6: Choose: Contour Off and FillHist On to get area\n\
+Options E3-E6: Choose: \"Contour Off\" and \"FillHist On\" to get area\n\
                filled between the error lines.\n\
-X ErrorS controls drawing of error bars in X.\n\
+X ErrorSz controls drawing of error bars in X.\n\
 A value of 0.5 draws a line X +- 0.5*BinWidth\n\
+\"EndErrorSz\" controls the length of the perpendicular lines\n\
+at the edges (option \"E1\").\n\
 \n\
-X and Y scales can be set by default to logarithmic or linear.\n\
+X and Y scales can be set as default to logarithmic or linear.\n\
 This can still be reset for individual histograms.\n\
 In detail: If a canvas is closed and its lin-log state differs\n\
 from the global default its state is stored and restored when\n\
 the histogram is shown again.\n\
-If \"Live statbox\" is activ a box is displayed when dragging the\n\
+\n\
+If \"Live stats\" is active a box is displayed when dragging the\n\
 pressed mouse in the histogram area showing various statistics\n\
-values. Selecting \"Live Gauss fit\" fits a gaussian to the\n\
-dragged region. Normally \"Linear background in fit\" should also\n\
-be selected.\n\
+values (Current bin, bin content, mean, integral.\n\
+Selecting \"Live Gauss\" fits a gaussian to the dragged region.\n\
+A constant: \"Const bg\" or linear background (a+ bx):\n\
+\"Linear bg\"\n\ may be selected.\n\
 ";
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
@@ -91,7 +95,7 @@ be selected.\n\
 	}
    RestoreDefaults();
 //	GetValuesFromHist();
-	fLiveBG = 1;  //force lin bg
+//	fLiveBG = 1;  //force lin bg
 	fAdvanced1Dim = 1;
    gROOT->GetListOfCleanups()->Add(this);
 	
@@ -221,7 +225,7 @@ be selected.\n\
 		fValp[ind++] = &fLineStyle[i];
 		fValp[ind++] = &fLineWidth[i];
 
-		fRow_lab->Add(new TObjString("CheckButton_Draw Mark"));
+		fRow_lab->Add(new TObjString("CheckButton_Draw Mark  "));
 		fValp[ind++] = &fShowMarkers[i];
 		fRow_lab->Add(new TObjString("ColorSelect+MColor"));
 		fValp[ind++] = &fMarkerColor[i];
@@ -232,7 +236,7 @@ be selected.\n\
 		
 		fRow_lab->Add(new TObjString("ComboSelect_ErrMod;none;E;E1;E2;E3;E4;E5;E6"));
 		fValp[ind++] = &fErrorMode[i];
-		fRow_lab->Add(new TObjString("CheckButton+Fill"));
+		fRow_lab->Add(new TObjString("CheckButton+   Fill"));
 		fValp[ind++] = &fFill[i];
 		fRow_lab->Add(new TObjString("ColorSelect+FColor"));
 		fValp[ind++] = &fFillColor[i];
@@ -241,44 +245,46 @@ be selected.\n\
 	}
 	
 	
-	fRow_lab->Add(new TObjString("Float_Value_EndErrSz"));
+	fRow_lab->Add(new TObjString("Float_Value_EndErrorSz "));
 	fValp[ind++] = &fEndErrorSize;
-	fRow_lab->Add(new TObjString("Float_Value+X ErrorS"));
+	fRow_lab->Add(new TObjString("Float_Value+X ErrorSz  "));
 	fValp[ind++] = &fErrorX;
-   fRow_lab->Add(new TObjString("CheckButton+Log X"));
+   fRow_lab->Add(new TObjString("CheckButton_     Log X"));
    fValp[ind++] = &fOneDimLogX;
-   fRow_lab->Add(new TObjString("CheckButton+Log Y"));
+   fRow_lab->Add(new TObjString("CheckButton+     Log Y"));
    fValp[ind++] = &fOneDimLogY;
 	
-   fRow_lab->Add(new TObjString("CheckButton_X Lab Top"));
+   fRow_lab->Add(new TObjString("CheckButton+X Lab Top"));
    fRow_lab->Add(new TObjString("CheckButton+Y Lab Right"));
    fValp[ind++] = &fLabelsTopX;
    fValp[ind++] = &fLabelsRightY;
-	fRow_lab->Add(new TObjString("CheckButton+Live stat"));
-	fValp[ind++] = &fLiveStat1Dim;
-	fRow_lab->Add(new TObjString("CheckButton+Live Gauss"));
-	fValp[ind++] = &fLiveGauss;
-//	fRow_lab->Add(new TObjString("CheckButton+Lin bg in fit "));
-//	fValp[ind++] = &fLiveBG;
 	if ( fAdvanced1Dim ) {
 		fRow_lab->Add(new TObjString("CheckButton_SmoothLine"));
 		fValp[ind++] = &fSmoothLine;
 		fRow_lab->Add(new TObjString("CheckButton+SimpleLine"));
 		fValp[ind++] = &fSimpleLine;
-		fRow_lab->Add(new TObjString("CheckButton+Text"));
+		fRow_lab->Add(new TObjString("CheckButton+     Text"));
 		fValp[ind++] = &fText;
 		fRow_lab->Add(new TObjString("PlainIntVal+Angle"));
 		fValp[ind++] = &fTextAngle;
 		
-		fRow_lab->Add(new TObjString("CheckButton_BarChart"));
+		fRow_lab->Add(new TObjString("CheckButton_  BarChart"));
 		fValp[ind++] = &fBarChart;
 		fRow_lab->Add(new TObjString("CheckButton+BarChart3D"));
 		fValp[ind++] = &fBarChart3D;
 		fRow_lab->Add(new TObjString("CheckButton+BarChartH"));
 		fValp[ind++] = &fBarChartH;
-		fRow_lab->Add(new TObjString("CheckButton+PieChart"));
+		fRow_lab->Add(new TObjString("CheckButton+ PieChart"));
 		fValp[ind++] = &fPieChart;
 	}
+	fRow_lab->Add(new TObjString("CheckButton_Live Stats"));
+	fValp[ind++] = &fLiveStat1Dim;
+	fRow_lab->Add(new TObjString("CheckButton+Live Gauss"));
+	fValp[ind++] = &fLiveGauss;
+	fRow_lab->Add(new TObjString("CheckButton+Const bg "));
+	fValp[ind++] = &fLiveConstBG;
+	fRow_lab->Add(new TObjString("CheckButton+Linear bg"));
+	fValp[ind++] = &fLiveBG;
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
    fRow_lab->Add(new TObjString("CommandButt+Reset all to default"));
@@ -349,6 +355,7 @@ void Set1DimOptDialog::SetHistAtt()
    env.SetValue("Set1DimOptDialog.fLiveStat1Dim" , fLiveStat1Dim);
    env.SetValue("Set1DimOptDialog.fLiveGauss"    , fLiveGauss);
    env.SetValue("Set1DimOptDialog.fLiveBG"       , fLiveBG);
+   env.SetValue("Set1DimOptDialog.fLiveConstBG"       , fLiveConstBG);
    env.SaveLevel(kEnvLocal);
 	TH1* hist;
 	for ( Int_t i =0; i < fNHists; i++ ) {
@@ -562,6 +569,7 @@ void Set1DimOptDialog::SaveDefaults()
    env.SetValue("Set1DimOptDialog.fLiveStat1Dim"  , fLiveStat1Dim );
    env.SetValue("Set1DimOptDialog.fLiveGauss"     , fLiveGauss    );
    env.SetValue("Set1DimOptDialog.fLiveBG"        , fLiveBG       );
+   env.SetValue("Set1DimOptDialog.fLiveConstBG"   , fLiveConstBG       );
    env.SetValue("Set1DimOptDialog.fDrawAxisAtTop" , fDrawAxisAtTop);
    env.SetValue("Set1DimOptDialog.fShowContour"   , fShowContour[0]  );
    env.SetValue("Set1DimOptDialog.fLabelsTopX"    , fLabelsTopX   );
@@ -591,7 +599,7 @@ void Set1DimOptDialog::SetAllToDefault()
 
 void Set1DimOptDialog::RestoreDefaults(Int_t resetall)
 {
-   cout << "SetHistOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
+//    cout << "SetHistOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
 	TString envname;
 	if (resetall == 0 ) {
 		envname = ".hprrc";
@@ -619,6 +627,7 @@ void Set1DimOptDialog::RestoreDefaults(Int_t resetall)
 	fLiveStat1Dim   = env.GetValue("Set1DimOptDialog.fLiveStat1Dim"  ,0);
 	fLiveGauss      = env.GetValue("Set1DimOptDialog.fLiveGauss"     ,0);
 	fLiveBG         = env.GetValue("Set1DimOptDialog.fLiveBG"        ,1);
+	fLiveConstBG    = env.GetValue("Set1DimOptDialog.fLiveConstBG"   ,1);
 	fDrawAxisAtTop  = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop" ,0);
 //	fShowContour    = env.GetValue("Set1DimOptDialog.fShowContour"   ,1);
 	fLabelsTopX     = env.GetValue("Set1DimOptDialog.fLabelsTopX"    ,0);

@@ -68,7 +68,8 @@ HTCanvas::~HTCanvas()
 {
 	if ( gDebug > 0 )
 		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
-   Disconnect((TPad*)this, "Modified()");
+//   TQObject::Disconnect((TPad*)this, "Modified()");
+   TQObject::Disconnect("TPad", "Modified()");
 	if (fHandleMenus) {
       delete fHandleMenus;
       fHandleMenus = 0;
@@ -106,7 +107,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
 void HTCanvas::HandlePadModified()
 {
-	if ( TCanvas::fUpdating ) {
+	if ( gDebug > 1 &&  TCanvas::fUpdating ) {
 		cout << "TCanvas::fUpdating" << endl;
 		return;
 	}

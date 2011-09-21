@@ -492,6 +492,7 @@ again:
 //                     cout << "TVirtualPadEditor::GetPadEditor(kFALSE) " <<TVirtualPadEditor::GetPadEditor(kFALSE) << endl;
 //                     if ( (TVirtualPadEditor::GetPadEditor(kFALSE) != 0) )
 //                        TVirtualPadEditor::Terminate();
+							fHCanvas->Disconnect(((TPad*)fHCanvas), "Modified()");
                      fRootCanvas->ShowEditor(kFALSE);
 
                      fRootCanvas->SendCloseMessage();

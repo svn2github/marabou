@@ -47,6 +47,7 @@ private:
    Int_t   fLiveStat1Dim;
    Int_t   fLiveGauss;
    Int_t   fLiveBG;
+   Int_t   fLiveConstBG;
 	
    Int_t   fDrawAxisAtTop;
 	Int_t   fLabelsTopX;

@@ -186,6 +186,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void ListMacros(const char* bp =0);               //
    void GetFileSelMask(const char* bp =0);               //
    void GetHistSelMask(const char* bp =0);               //
+   void SetHistSelMask();               //
    void SelectCut(const char* , const char*, const char* bp =0);
    void SelectContour(const char* , const char*, const char* bp =0);
    void SelectGraph(const char*  , const char* dir, const char*, const char* bp =0);

@@ -59,10 +59,11 @@ void HistPresent::RestoreOptions()
    fMarkSize           = env.GetValue("HistPresent.fMarkSize", 1);
    fMarkColor          = env.GetValue("HistPresent.fMarkColor", 1);
    *fHistSelMask       = env.GetValue("HistPresent.fHistSelMask", "");
-
+   *fFileSelMask       = env.GetValue("HistPresent.fFileSelMask", "");
+	SetHistSelMask();
    fRealStack         = env.GetValue("HistPresent.fRealStack", 1);
-   fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
-   fLinScaleMin = atof(env.GetValue("HistPresent.LinScaleMin", "0"));
+   fLogScaleMin		= atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
+   fLinScaleMin		= atof(env.GetValue("HistPresent.LinScaleMin", "0"));
 
    *fHostToConnect =
        env.GetValue("HistPresent.HostToConnect", fHostToConnect->Data());
@@ -164,7 +165,8 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.EditPoXwidth", fEditPoXwidth);
    env.SetValue("HistPresent.EditPoYwidth", fEditPoYwidth);
    env.SetValue("HistPresent.EditPoXRange", fEditPoXRange);
-
+   env.SetValue("HistPresent.fHistSelMask", *fHistSelMask);
+   env.SetValue("HistPresent.fFileSelMask", *fFileSelMask);
    env.SaveLevel(kEnvLocal);
    GeneralAttDialog::SaveDefaults();
    cout << "env.SaveLevel(kEnvLocal) " << endl;

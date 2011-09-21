@@ -613,8 +613,13 @@ void FitHist::RestoreDefaultRanges()
 
 void FitHist::handle_mouse()
 {
-   Double_t fChi2Limit = 5;
-   static TF1 * gFitFunc;
+   Double_t fChi2Limit = 10;
+	TString likelyhood = "";
+	TString fitopt;
+   static TF1 * gFitGauss = NULL;
+   static TF1 * gFitBG = NULL;
+	static Bool_t gFitGaussNotYetDrawn = kTRUE;
+	static Bool_t gFitBGNotYetDrawn = kTRUE;
    Double_t cont, sum, mean;
    static Double_t gconst, center, sigma, bwidth,  esigma;
    static Double_t startbinX_lowedge, startbinY_lowedge;
@@ -624,7 +629,7 @@ void FitHist::handle_mouse()
    static Int_t px1old, py1old, px2old, py2old;
 
    static Bool_t is2dim = kFALSE;
-   static Bool_t first_fit = kFALSE;
+   static Bool_t first_time = kTRUE;
    static Bool_t skip_after_TCUTG = kFALSE;
 	static Bool_t TCUTG_moved = kFALSE;
    static TH1 * hist = 0;
@@ -746,8 +751,9 @@ void FitHist::handle_mouse()
          }
 
          if (box) {delete box; box = 0;};
-         if (gFitFunc) { delete gFitFunc; gFitFunc = 0;}
-         first_fit = kFALSE;
+			if (gFitGauss) { delete gFitGauss; gFitGauss = 0;}
+			if (gFitBG)   { delete gFitBG; gFitBG = 0;}
+			first_time = kTRUE;
          Axis_t xx = gPad->AbsPixeltoX(px);
          startbinX = hist->GetXaxis()->FindBin(xx);
          startbinX_lowedge = hist->GetXaxis()->GetBinLowEdge(startbinX);
@@ -766,22 +772,37 @@ void FitHist::handle_mouse()
             center = hist->GetBinCenter(startbinX);
 				fLiveGauss     = env.GetValue("Set1DimOptDialog.fLiveGauss", 0);
 				fLiveBG        = env.GetValue("Set1DimOptDialog.fLiveBG", 0);
+				fLiveConstBG   = env.GetValue("Set1DimOptDialog.fLiveConstBG", 0);
 
             if (fLiveGauss) {
                if (fLiveBG) {
-                  gFitFunc = new TF1("fitfunc", "pol1+gaus(2)");
+                  gFitGauss = new TF1("fitfunc", "pol1+gaus(2)");
+                  gFitBG = new TF1("bgfunc", "pol1");
                   npar = 5;
                   if (nrows != 6) {delete fTofLabels; fTofLabels = 0;}
                   nrows = 6;
+               } else if (fLiveConstBG) {
+                  gFitGauss = new TF1("fitfunc", "pol0+gaus(1)");
+						gFitGauss->SetParLimits(0, hist->GetMinimum(), hist->GetMaximum());
+                  gFitBG = new TF1("bgfunc", "pol0");
+                 npar = 5;
+                  if (nrows != 6) {delete fTofLabels; fTofLabels = 0;}
+                  nrows = 6;
                } else {
-                  gFitFunc = new TF1("fitfunc", "gaus");
- //                 gFitFunc ->SetParameters(gconst, center, esigma);
+                  gFitGauss = new TF1("fitfunc", "gaus");
+ //                 gFitGauss ->SetParameters(gconst, center, esigma);
                  npar = 3;
                  if (nrows != 5) {delete fTofLabels; fTofLabels = 0;}
                  nrows = 5;
                }
-					gFitFunc->SetLineColor(2);
-					gFitFunc->SetLineWidth(3);
+					gFitGaussNotYetDrawn = kTRUE;
+					gFitBGNotYetDrawn = kTRUE;
+					gFitGauss->SetLineColor(kRed);
+					gFitGauss->SetLineWidth(3);
+					if ( gFitBG ) {
+						gFitBG->SetLineColor(kCyan);
+						gFitBG->SetLineWidth(2);
+					}
             } else {
                if (nrows != 4) {delete fTofLabels; fTofLabels = 0;}
                nrows = 4;
@@ -841,8 +862,12 @@ void FitHist::handle_mouse()
                   	 if (fLiveBG) {
                      	 rowlabels.Add(new TObjString("Backgd: content, const, slope"));
                      	 values.Add(new TObjString("no fit done yet"));
+                  	 }  else if (fLiveConstBG) {
+                     	 rowlabels.Add(new TObjString("Backgd: content, const"));
+                     	 values.Add(new TObjString("no fit done yet"));
                   	 }
-                  	 rowlabels.Add(new TObjString("Gaus: Content, Mean, Sigma"));
+
+                  	 rowlabels.Add(new TObjString("Gaus: Cont, Mean, Sig, Xi2"));
                   	 values.Add(new TObjString("no fit done yet"));
                	}
             	}
@@ -924,9 +949,9 @@ void FitHist::handle_mouse()
             	fTofLabels->SetLabelText(0,3,Form("%lg,  %lg", sum, mean));
             }
          } else {
-              if (fTofLabels) {
+				if (fTofLabels) {
 //              if (fLiveStat1Dim && fTofLabels) {
-              Double_t sumx = 0;
+					Double_t sumx = 0;
             	cont = hist->GetBinContent(binX);
             	sum = hist->Integral(binXlow, binXup);
 //           	Int_t totbins = (binXup - binXlow +1);
@@ -948,68 +973,76 @@ void FitHist::handle_mouse()
                }
             	fTofLabels->SetLabelText(0,2,Form("%lg", cont));
             	fTofLabels->SetLabelText(0,3,Form("%lg,  %lg", sum, mean));
+					// set initial parameters
             	if (fLiveGauss &&  (binXup - binXlow - npar) > 0) {
                	Int_t ndf = binXup - binXlow - npar;
-               	if (first_fit) chi2 = gFitFunc->GetChisquare();
-               	if (fLiveBG) {
-                  	if (!first_fit                    ||
-                     	 gFitFunc->GetParameter(2) < 0 ||
-                     	 gFitFunc->GetParameter(4) < 0 ||
-                     	 chi2 / ndf > fChi2Limit) {
-	//                     	 cout << " old par at bin " << binX << ": ";
-	//                     	 for (Int_t i = 0; i < gFitFunc->GetNpar(); i++)
-	//                        	cout  << gFitFunc->GetParameter(i) << " ";
-	//                     	 cout << chi2 << " " << ndf << endl;
-                     		 gFitFunc->SetParameter(0, cont);
-                      		 gFitFunc->SetParameter(1, 0);
-                    			 gFitFunc->SetParameter(2, sum * bwidth);
-                     		 gFitFunc->SetParameter(3, 0.5 * (XupEdge + XlowEdge));
-                     		 gFitFunc->SetParameter(4, 0.25 * (XupEdge - XlowEdge) );
-	 //                    	 cout << " new par: " << cont << " 0.0 "  << sum * bwidth << " "
-	//                        	  << 0.5 * (XupEdge + XlowEdge)<< " "
-	//                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
-                  	}
-               	} else {
-                  	if (!first_fit                   ||
-                     	gFitFunc->GetParameter(0) < 0 ||
-                     	gFitFunc->GetParameter(3) < 0 ||
-                     	chi2 / ndf > 5) {
-	//                        cout << " old par at bin " << binX << ": ";
-	//                     	for (Int_t i = 0; i < gFitFunc->GetNpar(); i++)
-	//                        	cout  << gFitFunc->GetParameter(i) << " ";
-	//                     	cout << chi2 << " " << ndf << endl;
-                    			gFitFunc->SetParameter(0, sum * bwidth);
-                     		gFitFunc->SetParameter(1, 0.5 * (XupEdge + XlowEdge));
-                     		gFitFunc->SetParameter(2, 0.5 * (XupEdge - XlowEdge));
-	//                        cout << " new par: " << sum * bwidth << " "
-	//                        	  << 0.5 * (XupEdge + XlowEdge)<< " "
-	//                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
-                  	}
-               	}
-               	hist->Fit(gFitFunc, "RNLQ", "",XlowEdge ,XupEdge );
-               	first_fit = kTRUE;
-                  gFitFunc->SetRange(XlowEdge ,XupEdge);
-               	gFitFunc->Draw("same");
+               	if (!first_time) chi2 = gFitGauss->GetChisquare();
+						
+						Int_t paroff = 0;
+						if ( fLiveBG )
+							paroff = 2;
+						else if ( fLiveConstBG )
+							paroff = 1;
+						if (first_time                    ||
+						gFitGauss->GetParameter(0 + paroff) < 0 ||
+						gFitGauss->GetParameter(2 + paroff) < 0 ||
+						chi2 / ndf > fChi2Limit) {
+//                     	 cout << " old par at bin " << binX << ": ";
+//                     	 for (Int_t i = 0; i < gFitGauss->GetNpar(); i++)
+//                        	cout  << gFitGauss->GetParameter(i) << " ";
+//                     	 cout << chi2 << " " << ndf << endl;
+							if ( paroff > 0 ) gFitGauss->SetParameter(0, cont);
+							if ( paroff > 1 ) gFitGauss->SetParameter(1, 0);
+							gFitGauss->SetParameter(0 + paroff, sum * bwidth);
+							gFitGauss->SetParameter(1 + paroff, hist->GetMean() );
+							gFitGauss->SetParameter(2 + paroff, hist->GetRMS() );
+/*                    	 cout << " new par: bg cont " << cont << " gaus cont "  << sum * bwidth << " mean "
+                        	  << hist->GetMean()<< "  sig "
+                        	  << hist->GetRMS() << endl;*/
+						}
+						fitopt = "RNQ";
+						fitopt += likelyhood;
+               	hist->Fit(gFitGauss, fitopt, "",XlowEdge ,XupEdge );
+               	first_time = kFALSE;
+                  gFitGauss->SetRange(XlowEdge ,XupEdge);
+						if ( gFitGaussNotYetDrawn ) {
+							gFitGauss->Draw("same");
+							gFitGaussNotYetDrawn = kFALSE;
+						}
+						Double_t bcont = 0;
+						if (fLiveBG || fLiveConstBG) {
+							gFitBG->SetParameter(0, gFitGauss->GetParameter(0));
+							if ( fLiveBG )
+								gFitBG->SetParameter(1, gFitGauss->GetParameter(1));
+							gFitBG->SetRange(XlowEdge ,XupEdge);
+							if ( gFitBGNotYetDrawn ) {
+								gFitBG->Draw("same");
+								gFitBGNotYetDrawn = kFALSE;
+							}
+						}
+               	gPad->Modified();
                	gPad->Update();
                	gPad->GetCanvas()->GetFrame()->SetBit(TBox::kCannotMove);
-               	if (fLiveBG) {
-							Double_t a = gFitFunc->GetParameter(0);
-							Double_t b = gFitFunc->GetParameter(1);
-							Double_t bcont = (a + 0.5 * b 
-							   * (XupEdge+XlowEdge))*(XupEdge-XlowEdge) / bwidth;
-                  	sigma = gFitFunc->GetParameter(4);
-                  	gconst = gFitFunc->GetParameter(2) * sqrt2pi * sigma / bwidth;
-                  	center = gFitFunc->GetParameter(3);
+						Double_t chi2 = gFitGauss->GetChisquare() / (Double_t)TMath::Max(gFitGauss->GetNDF(),1);
+
+						if ( fLiveBG ) {
+							Double_t a = gFitGauss->GetParameter(0);
+							Double_t b = gFitGauss->GetParameter(1);
+							bcont = (a + 0.5 * b * (XupEdge+XlowEdge))*(XupEdge-XlowEdge) / bwidth;
 							fTofLabels->SetLabelText(0,4,Form("%lg,  %lg,  %lg", bcont, a, b));
-                  	fTofLabels ->SetLabelText(0,5, Form("%lg,  %lg,  %lg",
-                              	 gconst, center, sigma));
-               	} else {
-                  	sigma = gFitFunc->GetParameter(2);
-                  	gconst = gFitFunc->GetParameter(0) * sqrt2pi * sigma / bwidth;
-                  	center = gFitFunc->GetParameter(1);
-                  	fTofLabels ->SetLabelText(0, 4, Form("%lg,  %lg,  %lg",
-                              	 gconst, center, sigma));
-               	}
+						}		
+						else if (fLiveConstBG) {
+							Double_t a = gFitGauss->GetParameter(0);
+							bcont = a * (XupEdge-XlowEdge) / bwidth;
+							fTofLabels->SetLabelText(0,4,Form("%lg,  %lg", bcont, a));
+						}		
+                  sigma = gFitGauss->GetParameter(paroff + 2);
+                  gconst = gFitGauss->GetParameter(paroff + 0) * sqrt2pi * sigma / bwidth;
+                  center = gFitGauss->GetParameter(paroff + 1);
+						Int_t laboff = 0;
+						if (paroff > 0) laboff =1;
+                  fTofLabels ->SetLabelText(0,laboff + 4, Form("%lg,  %lg,  %lg,  %lg",
+                              	 gconst, center, sigma, chi2));
             	}
             }
          }
@@ -2204,7 +2237,7 @@ void FitHist::Superimpose(Int_t mode)
 	}
 	if ( !drawopt.Contains("SAME") )
 		drawopt += "SAME";
-   cout << "DrawCopy(drawopt) " << drawopt << endl;
+  // cout << "DrawCopy(drawopt) " << drawopt << endl;
 	hdisp->DrawCopy(drawopt.Data());
 	if ( new_axis != 0 && hist->GetDimension() == 1 ) {
 //		TString opt("+SL");->GetFrame()->GetX1()

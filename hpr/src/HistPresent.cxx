@@ -1550,7 +1550,6 @@ void HistPresent::GetFileSelMask(const char* bp)
 
 void HistPresent::GetHistSelMask(const char* bp)
 {
-
     Bool_t yesno = kFALSE;
     if (GeneralAttDialog::fUseRegexp) yesno=kTRUE;
     Bool_t ok;
@@ -1558,31 +1557,33 @@ void HistPresent::GetHistSelMask(const char* bp)
                   "Edit Hist Selection Mask",(const char *)*fHistSelMask, &ok,
                   fRootCanvas, "Use Regexp syntax", &yesno,
                   Help_SelectionMask_text);
-     if (!ok) return;
-     if (yesno) GeneralAttDialog::fUseRegexp = 1;
-     else         GeneralAttDialog::fUseRegexp = 0;
-//    if (!GeneralAttDialog::fUseRegexp) {
-      if      (fHistSelMask->Contains("&")) {
-         fHistSelOp = kHsOp_And;
-         Int_t indop = fHistSelMask->Index("&");
-         *fHistSelMask_1 = (*fHistSelMask)(0, indop);
-         *fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
-      } else if (fHistSelMask->Contains("|")) {
-         fHistSelOp = kHsOp_Or;
-         Int_t indop = fHistSelMask->Index("|");
-         *fHistSelMask_1 = (*fHistSelMask)(0, indop);
-         *fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
-      } else if (fHistSelMask->Contains("!")) {
-         fHistSelOp = kHsOp_Not;
-         Int_t indop = fHistSelMask->Index("!");
-         *fHistSelMask_1 = (*fHistSelMask)(0, indop);
-         *fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
-      } else                                 fHistSelOp = kHsOp_None;
-      *fHistSelMask_1 = fHistSelMask_1->Strip(TString::kBoth);
-      *fHistSelMask_2 = fHistSelMask_2->Strip(TString::kBoth);
-//      cout << fHistSelOp  << " " << "|" <<
-//      fHistSelMask_1->Data() << "|" << " "<< "|"  << fHistSelMask_2->Data() << "|" << endl;
-//   }
+	if (!ok) return;
+	if (yesno) GeneralAttDialog::fUseRegexp = 1;
+	else        GeneralAttDialog::fUseRegexp = 0;
+	SetHistSelMask();
+}
+//________________________________________________________________________________________
+
+void HistPresent::SetHistSelMask()
+{
+	if      (fHistSelMask->Contains("&")) {
+		fHistSelOp = kHsOp_And;
+		Int_t indop = fHistSelMask->Index("&");
+		*fHistSelMask_1 = (*fHistSelMask)(0, indop);
+		*fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
+	} else if (fHistSelMask->Contains("|")) {
+		fHistSelOp = kHsOp_Or;
+		Int_t indop = fHistSelMask->Index("|");
+		*fHistSelMask_1 = (*fHistSelMask)(0, indop);
+		*fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
+	} else if (fHistSelMask->Contains("!")) {
+		fHistSelOp = kHsOp_Not;
+		Int_t indop = fHistSelMask->Index("!");
+		*fHistSelMask_1 = (*fHistSelMask)(0, indop);
+		*fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
+	} else                                 fHistSelOp = kHsOp_None;
+	*fHistSelMask_1 = fHistSelMask_1->Strip(TString::kBoth);
+	*fHistSelMask_2 = fHistSelMask_2->Strip(TString::kBoth);
 }
 //________________________________________________________________________________________
 // Save histograms from mapped file

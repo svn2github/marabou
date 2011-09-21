@@ -36,34 +36,13 @@ void HprGaxis::ReDoAxis()
 {	
 //	TIter next(canvas->GetListOfPrimitives());
 //	TObject *obj;
+	if ( gDebug > 0 ) {
+		cout << "HprGaxis::ReDoAxis()"<< endl;
+	}
+	// anything changed??
 	if ( (fFrameX1 == fCanvas->GetFrame()->GetX1() && fFrameX2 == fCanvas->GetFrame()->GetX2()
 		&& fFrameY1 == fCanvas->GetFrame()->GetY1() && fFrameY2 == fCanvas->GetFrame()->GetY2())
 		&& fCanvas->GetLogy() == fLogy &&  fCanvas->GetLogx() == fLogx ) {
-//		return;
-/*		TPave * leg;
-		TString envn;
-		leg = (TPave*)fCanvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeGraph");
-		if (leg ) {
-			envn = "SuperImposeGraph.";
-		} else {
-			leg = (TPave*)fCanvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
-			if (leg ) {
-				envn = "SuperImposeHist.";	
-			}
-		}
-		if ( leg ) {
-			TString res;
-			TEnv env(".hprrc");
-			res = envn + "fLegendX1";
-			env.SetValue(res, leg->GetX1NDC());
-			res = envn + "fLegendX2";
-			env.SetValue(res, leg->GetX2NDC());
-			res = envn + "fLegendY1";
-			env.SetValue(res, leg->GetY1NDC());
-			res = envn + "fLegendY2";
-			env.SetValue(res, leg->GetY2NDC());
-			env.SaveLevel(kEnvLocal);
-		}*/
 		return;
 	}
 	Double_t ledge = 0, uedge = 0;
@@ -148,13 +127,14 @@ void HprGaxis::ReDoAxis()
 void HprGaxis::HandlePadModified()
 {
 	if (gPad == fCanvas) {
-		if ( ((HTCanvas*)fCanvas)->GetHandleMenus() != NULL ) {
+		if ( gDebug > 0 ) {
+			cout << "HprGaxis::HandlePadModified this: " << this << endl;
+		}
+//		if ( ((HTCanvas*)fCanvas)->GetHandleMenus() != NULL ) {
 			TTimer::SingleShot(50, "HprGaxis", this, "ReDoAxis()");
 			if ( gDebug > 0 ) {
-				cout << "HprGaxis::HandlePadModified this: " << this << "  fCanvas: " << fCanvas <<
-						" fCanvas->GetLogy(), fLogy " <<  fCanvas->GetLogy() << " " << fLogy <<endl;
-				cout << "GetX1(), fFrameX1: "<<fCanvas->GetFrame()->GetX1()<<" "<<fFrameX1 <<endl;
+				cout << "TTimer::SingleShot " << endl;
 			}
 		}
-	}
+//	}
 }
