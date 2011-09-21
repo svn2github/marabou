@@ -193,8 +193,8 @@ void InsertFunctionDialog::RestoreDefaults()
    fName		    = env.GetValue("InsertFunctionDialog.Name"		  , "expcos");
    fXtitle 	    = env.GetValue("InsertFunctionDialog.Xtitle" 	  , "Xa");
    fYtitle 	    = env.GetValue("InsertFunctionDialog.Ytitle" 	  , "Ya");
-   fFrom		    = env.GetValue("InsertFunctionDialog.From"		  , 0);
-   fTo			 = env.GetValue("InsertFunctionDialog.To"  		  , 10);
+   fFrom		    = env.GetValue("InsertFunctionDialog.From"		  , 0.);
+   fTo			 = env.GetValue("InsertFunctionDialog.To"  		  , 10.);
    fCol 		    = env.GetValue("InsertFunctionDialog.Col" 		  , 4);
    fPadOpacity  = env.GetValue("InsertFunctionDialog.PadOpacity", 30);
 	fNew_canvas  = env.GetValue("InsertFunctionDialog.New_canvas" , 0);

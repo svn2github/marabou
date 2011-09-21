@@ -106,6 +106,7 @@ size it can be inserted directly\n\
 	} else {
 		fInnerRadius = 21;
 	}
+	fPsSuffix = ".ps";
 	fCanvasFromFile = fRootFileName;
 	fCanvasFromFile += "|GrCanvas|pic";
 	Int_t itemwidth = 400;
@@ -192,7 +193,10 @@ void CreateCDlabel::MakePS()
 {
 //	cout << "MakePS" << endl;
 //  gStyle->SetPaperSize(12, 12);
+	fEditor->RemoveEditGrid();
    gStyle->SetPaperSize(0.1 * fPaperSizeX, 0.1 * fPaperSizeY);
+	// ps file has a .25 0.25 scale
+	gStyle->SetHeaderPS("-64 -96 translate");
    TString pn;
    pn = fProjectName;
 	pn += fPsSuffix;
@@ -221,9 +225,9 @@ void CreateCDlabel::CloseProject()
 void CreateCDlabel::NewCDlabel()
 {
 	NewProject(604, 628, 120, 120);
-	fPaperSizeX = 122.; 
-	fPaperSizeY = 122.; 
-	fPsSuffix = ".eps";
+	fPaperSizeX = 120.; 
+	fPaperSizeY = 120.; 
+	fPsSuffix = ".ps";
 }
 //_____________________________________________________________________
 
@@ -318,8 +322,11 @@ void CreateCDlabel::CreateBackgroundPicture()
 		return;
 	}
 	TString newname(fBGImage);
-	Int_t idot = newname.Index(".");
-	newname.Replace(idot, 1, "_square.");
+	TString bn = gSystem->BaseName(newname);
+	newname.Resize(newname.Index(bn));
+	Int_t idot = bn.Index(".");
+	bn.Replace(idot, 1, "_square.");
+	newname += bn;
 	cout <<"Create: " << newname << endl;
 	Int_t xoff = (Int_t)(fCDP->GetX1() - fCDP->GetR1()); 
 	Double_t yy = (fImgCanvas->GetUymax() - fCDP->GetY1());
@@ -454,6 +461,12 @@ void CreateCDlabel::ExecuteGetProject()
 //	fCanvas->SetWindowSize(ww,wh);
 	fXRange = fCanvas->GetUxmax();
 	fYRange = fCanvas->GetUymax();
+	fPaperSizeX = fXRange;
+	fPaperSizeY = fYRange;
+//	if ( fPaperSizeX == 120 && fPaperSizeY == 120 ) {
+//		fPaperSizeX = fPaperSizeY = 122;
+//	}
+	cout << "fPaperSizeX, fPaperSizeY " <<fPaperSizeX << " "<< fPaperSizeY<< endl;
 }
 //________________________________________________________________________________
 
@@ -528,7 +541,7 @@ void CreateCDlabel::RestoreDefaults()
    fSmallInnerHole = env.GetValue("CreateCDlabel.fSmallInnerHole", 1);
    fProjectName    = env.GetValue("CreateCDlabel.fProjectName",    "CDlabel");
    fBGImage        = env.GetValue("CreateCDlabel.fBGImage",        "agv.gif");
-   fUserRX         = env.GetValue("CreateCDlabel.fUserRX",          100);
+   fUserRX         = env.GetValue("CreateCDlabel.fUserRX",          100.);
    fUserWindowX    = env.GetValue("CreateCDlabel.fUserWindowX",     500);
    fUserWindowY    = env.GetValue("CreateCDlabel.fUserWindowY",     500);
 	

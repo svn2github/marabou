@@ -473,10 +473,10 @@ void InsertTextDialog::RestoreDefaults()
    fEditTextMarkCompound = 0;
    fEditTextSeqNr = 0;
 
-   fEditTextX0          = env.GetValue("InsertTextDialog.EditTextX0"  		  , 0);
-   fEditTextY0          = env.GetValue("InsertTextDialog.EditTextY0"  		  , 0);
+   fEditTextX0          = env.GetValue("InsertTextDialog.EditTextX0"  		  , 0.);
+   fEditTextY0          = env.GetValue("InsertTextDialog.EditTextY0"  		  , 0.);
    fEditTextFileName    = env.GetValue("InsertTextDialog.EditTextFileName"   , "latex.txt");
-   fEditTextDy          = env.GetValue("InsertTextDialog.EditTextDy"  		  , 10);
+   fEditTextDy          = env.GetValue("InsertTextDialog.EditTextDy"  		  , 10.);
    fEditTextAlign       = env.GetValue("InsertTextDialog.EditTextAlign"  	  , 11);
    fEditTextColor       = env.GetValue("InsertTextDialog.EditTextColor"  	  , 1);
    fEditTextFont        = env.GetValue("InsertTextDialog.EditTextFont"		  , 62);
@@ -486,11 +486,11 @@ void InsertTextDialog::RestoreDefaults()
 		fEditTextFont /= 10;
    fEditTextPrec        = env.GetValue("InsertTextDialog.EditTextPrec"		  , 2);
    fEditTextSize        = env.GetValue("InsertTextDialog.EditTextSize"		  , 0.02);
-   fEditTextCharSep     = env.GetValue("InsertTextDialog.EditTextCharSep"	  , 0);
-   fEditTextAngle       = env.GetValue("InsertTextDialog.EditTextAngle"  	  , 0);
+   fEditTextCharSep     = env.GetValue("InsertTextDialog.EditTextCharSep"	  , 0.);
+   fEditTextAngle       = env.GetValue("InsertTextDialog.EditTextAngle"  	  , 0.);
    fEditTextLatexFilter = env.GetValue("InsertTextDialog.EditTextLatexFilter", 1);
-   fEditTextStartAngle  = env.GetValue("InsertTextDialog.EditTextStartAngle" , 90);
-   fEditTextRadius      = env.GetValue("InsertTextDialog.EditTextRadius"     , 30);
+   fEditTextStartAngle  = env.GetValue("InsertTextDialog.EditTextStartAngle" , 90.);
+   fEditTextRadius      = env.GetValue("InsertTextDialog.EditTextRadius"     , 30.);
 	
 }
 //_________________________________________________________________________

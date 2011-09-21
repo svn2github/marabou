@@ -39,14 +39,13 @@ radius is not 0 only the center must be marked  \n\
    Int_t ind = 0;
    RestoreDefaults();
    fRow_lab = new TList();
- //  Int_t win_width = 160InsertArcByPointsOnCF()
    RestoreDefaults();
    TList * fRow_lab = new TList;
    static TString bycenter("ArcByCenterAndRadius()");
    static TString byponcf("ArcByPointsOnCF()");
-   fXcenter = fYcenter = fX1 = fX2 = fY1 = fY2 = 0;
-   fPhi1 = 0;
-   fPhi2 = 360;
+   fX1 = fX2 = fY1 = fY2 = 0;
+//   fPhi1 = 0;
+//   fPhi2 = 360;
    fRow_lab->Add(new TObjString("DoubleValue_Xc"));
    fValp[ind++] = &fXcenter;
    fRow_lab->Add(new TObjString("DoubleValue+Yc"));
@@ -260,8 +259,8 @@ void InsertArcDialog::RestoreDefaults()
    fWidth     = env.GetValue("InsertArcDialog.fWidth" , 2);
    fFillColor = env.GetValue("InsertArcDialog.fFillColor" , 1);
    fFillStyle = env.GetValue("InsertArcDialog.fFillStyle" , 1);
-   fXcenter   = env.GetValue("InsertArcDialog.fXcenter"   , 0);
-   fYcenter   = env.GetValue("InsertArcDialog.fYcenter"   , 0 );
+   fXcenter   = env.GetValue("InsertArcDialog.fXcenter"   , 0.);
+   fYcenter   = env.GetValue("InsertArcDialog.fYcenter"   , 0.);
    fR1		  = env.GetValue("InsertArcDialog.fR1"  , 30.);
    fR2  	      = env.GetValue("InsertArcDialog.fR2"  , -1.);
    fPhi1			= env.GetValue("InsertArcDialog.fPhi1"  , 0.);

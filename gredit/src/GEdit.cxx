@@ -2995,7 +2995,19 @@ void  GEdit::SetUseEditGrid(Int_t use)
    ((GrCanvas*)fParent)->SetEditGrid(fEditGridX, fEditGridY);
    ((GrCanvas*)fParent)->SetUseEditGrid(use);
 #endif
+	fVisibleGridX = TMath::Max( fVisibleGridX,fEditGridX );
+	fVisibleGridY = TMath::Max( fVisibleGridY,fEditGridY );
    fUseEditGrid = use;
+   if (2 * fEditGridX  > gPad->GetX2() - gPad->GetX1() ||
+       2 * fEditGridY  > gPad->GetY2() - gPad->GetY1()) {
+      cout << "Edit grid too coarse, disable it" << endl;
+      fUseEditGrid = 0;
+   }
+   if (500 * fEditGridX  < gPad->GetX2() - gPad->GetX1() ||
+       500 * fEditGridY  < gPad->GetY2() - gPad->GetY1()) {
+      cout << "Edit grid too fine, disable it" << endl;
+      fUseEditGrid = 0;
+   }
    Int_t temp = 0;
    if (use) temp = 1;
 };
