@@ -72,8 +72,8 @@ If \"Live stats\" is active a box is displayed when dragging the\n\
 pressed mouse in the histogram area showing various statistics\n\
 values (Current bin, bin content, mean, integral.\n\
 Selecting \"Live Gauss\" fits a gaussian to the dragged region.\n\
-A constant: \"Const bg\" or linear background (a+ bx):\n\
-\"Linear bg\"\n\ may be selected.\n\
+A constant: \"Const bg\" or linear background (a+ bx): \"Linear bg\"\n\
+may be selected.\n\
 ";
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
