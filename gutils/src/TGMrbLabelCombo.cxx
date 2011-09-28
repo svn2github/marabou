@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.11 2011-07-26 08:41:50 Marabou Exp $       
+// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.12 2011-09-28 12:22:02 Marabou Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -151,6 +151,42 @@ Bool_t TGMrbLabelCombo::AddEntries(TMrbLofNamedX * Entries) {
 		entry = (TMrbNamedX *) Entries->After(entry);
 	}
 	return(kTRUE);
+}
+
+const Char_t * TGMrbLabelCombo::GetText() const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelCombo::GetText
+// Purpose:        Get text from selected field
+// Arguments:      --
+// Results:        Char_t * Text   -- field text
+// Exceptions:     
+// Description:    Returns text of selected combo field
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TGTextLBEntry * cf = (TGTextLBEntry *) fCombo->GetSelectedEntry();
+	return (cf == NULL) ? "" : cf->GetText()->GetString();
+}
+
+void TGMrbLabelCombo::SetText(const Char_t * Text) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelCombo::SetText
+// Purpose:        Set text of selected field
+// Arguments:      Char_t * Text   -- field text
+// Results:        --
+// Exceptions:     
+// Description:    Sets text of selected combo field
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TGTextLBEntry * cf = (TGTextLBEntry *) fCombo->GetSelectedEntry();
+	if (cf != NULL) {
+		TGString * s = (TGString *) cf->GetText();
+		s->SetString(Text);
+	}
+	return;
 }
 
 void TGMrbLabelCombo::BeginButtonPressed() {

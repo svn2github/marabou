@@ -146,6 +146,8 @@ extern "C" {
 
 #define HOWMANY(x, y)   (((x)+((y)-1))/(y))
 
+typedef int socklen_t;
+
 enum EAccessMode {
    kFileExists        = 0,
    kExecutePermission = 1,

@@ -9,7 +9,7 @@
 //                                        a combo box
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelCombo.h,v 1.10 2008-09-23 10:47:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelCombo.h,v 1.11 2011-09-28 12:22:02 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -67,8 +67,8 @@ class TGMrbLabelCombo: public TGCompositeFrame, public TGMrbObject {
 
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 
-		inline const Char_t * GetText() const { return(((TGTextLBEntry *) fCombo->GetSelectedEntry())->GetText()->GetString()); };	// return text field data
-		inline void SetText(const Char_t * Text) { TGString * s = (TGString *) ((TGTextLBEntry *) fCombo->GetSelectedEntry())->GetText(); s->SetString(Text); };	  // set text field
+		const Char_t * GetText() const;
+		void SetText(const Char_t * Text);
 
 		inline void Select(Int_t ItemIdx) { fCombo->Select(ItemIdx, kFALSE); };
 		inline Int_t GetSelected() { return(fCombo->GetSelected()); };

@@ -4,8 +4,8 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.13 $
-//! $Date: 2011-07-26 08:41:50 $
+//! $Revision: 1.14 $
+//! $Date: 2011-09-28 12:22:02 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -3466,7 +3466,7 @@ Bool_t sis3302_dataReady(struct s_sis_3302 * Module) {
 //! \details		Switch sampling
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo		-- channel number
-//! \return			NextSample	-- next sampling address
+//! \return		NextSample	-- next sampling address
 ////////////////////////////////////////////////////////////////////////////*/
 
 void sis3302_switchSampling(struct s_sis_3302 * Module) {
@@ -3479,7 +3479,7 @@ void sis3302_switchSampling(struct s_sis_3302 * Module) {
 		pageNo = 0;
 	} else {
 		sampling = kSis3302KeyArmBank1Sampling;
-		pageNo = 4;
+		pageNo = Module->reducedAddressSpace ? 0x40 : 4;
 	}
 	sis3302_armSampling(Module, sampling);
 	sis3302_setPageReg(Module, pageNo);

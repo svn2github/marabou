@@ -123,7 +123,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
 		if (channelPattern & 1) {
 			  startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
-			  mappedAddr = (volatile Int_t *) sis3302_mapAddress(Module, startAddr);
+			  mappedAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, startAddr));
 			  if (mappedAddr == NULL) continue;
 			  for (evtNo = 0; evtNo < nofEvents[chn]; evtNo++) {
 				  for (i = 0; i < kSis3302EventHeader; i++) {

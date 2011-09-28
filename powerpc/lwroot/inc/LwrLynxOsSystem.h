@@ -9,11 +9,12 @@
 //! 				An interface to the LynxOs Operating System.
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.4 $     
+//! $Date: 2011-09-28 12:22:02 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <errno.h>
+#include <sys/socket.h>
 #include "LwrTypes.h"
 #include "LwrNamed.h"
 #include "LwrList.h"
