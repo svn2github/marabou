@@ -29,13 +29,13 @@
   TFile *hfile = new TFile("hsimple_hpr.root","RECREATE","Demo ROOT file with histograms");
 
 // Create some histograms, a profile histogram and an ntuple
-  TH1F *hpx1   = new TH1F("hpx1","px distribution",100,-4,4);
+  TH1F *hpx1   = new TH1F("hpx1","Gaussian distribution, px",100,-4,4);
   TH1F *hpx2   = new TH1F("hpx2","px * 2 distribution",100,-4,4);
   TH1F *hpx3   = new TH1F("hpx3","px * 3 distribution",100,-4,4);
   TH1F *hpmany   = new TH1F("hpmany","Some gauss peaks",1000,0,4000);
   TH1F *hpmany_a   = new TH1F("hpmany_a","Some gauss peaks, diff statistics",1000,0,4000);
-  TH2F *hpxpy  = new TH2F("hpxpy","py vs px",100,-4,4,100,-4,4);
-  TH2F *hpxpy2  = new TH2F("hpxpy2","py vs px",100,-4,4,100,-4,4);
+  TH2F *hp2_2p  = new TH2F("hp2_2p","Two peaks",100,-4,4,100,-4,4);
+  TH2F *hp2_1p  = new TH2F("hp2_1p","One peak",100,-4,4,100,-4,4);
   TH2F *hpxpz  = new TH2F("hpxpz","2dim, pz=px*px+py*py",100,-4,4,100,-4,4);
   TProfile *hprof  = new TProfile("hprof","Profile of pz (mean(pz)) versus px",100,-4,4,0,20);
   TNtuple *ntuple = new TNtuple("ntuple","Demo ntuple","xvalue:yvalue:zvalue:random:event_number");
@@ -81,10 +81,10 @@
      hpx1->Fill(px);
      hpx2->Fill(2 * py);
 	  hpx3->Fill(3 * px1);
-	  hpxpy->Fill(0.3 * px + 1, 0.7 * py+0.5);
-     hpxpy->Fill(0.5 * px - 1, 0.5 * py-0.5);
+	  hp2_2p->Fill(0.3 * px + 1, 0.7 * py+0.5);
+     hp2_2p->Fill(0.5 * px - 1, 0.5 * py-0.5);
 
-     hpxpy2->Fill(px, px * 0.5 + 0.5 * py);
+     hp2_1p->Fill(px,-px + 0.5 * py - 1);
      hpxpz->Fill(px,pz);
      hprof->Fill(px,pz);
      ntuple->Fill(px,py,pz,random,(Float_t)i);
@@ -103,7 +103,7 @@
      hp33->Fill(px, py,pz);
 
      if (i && (i%kUPDATE) == 0) {
-        if (i == kUPDATE) hp33->Draw();
+        if (i == kUPDATE) hp2_1p->Draw();
         c1->Modified();
         c1->Update();
         if (gSystem->ProcessEvents())
@@ -152,6 +152,10 @@
         hpmany_a->Fill(px1);
      }
   }
+  // remove stat box from hp2_1p
+  TPaveStats * st = (TPaveStats*)hp2_1p->GetListOfFunctions()->FindObject("stats");
+  if ( st )
+	  hp2_1p->GetListOfFunctions()->Remove(st);
 // add some linear background
   TF1 * lbg = new TF1("lbg", "pol1",0, 4000);
   lbg->SetParameters(400, - 300. / 4000);
