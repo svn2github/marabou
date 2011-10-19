@@ -1,12 +1,21 @@
 {
+	static const char setred[]      =   "\033[31m";
 	gROOT->Macro("LoadUtilityLibs.C");
 	gROOT->Macro("LoadConfigLibs.C");
 	setup = new TMbsSetup(".mbssetup");
-	TString evtBuilder = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "gar-ex-ppc01");
+	TString evtBuilder = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "");
+	if (evtBuilder.IsNull()) {
+		cerr << setred << "mbssetup.C: Name of eventBuilder missing: Please define \"TMbsSetup.EventBuilder.Name\" in .rootrc" << endl;
+		gSystem->Exit(0);
+	}
 	setup->EvtBuilder()->SetProcName(evtBuilder.Data());
 	TString remoteHome = setup->RemoteHomeDir();
 	setup->SetNofReadouts(1);
-	TString ppcPath = gEnv->GetValue("TMbsSetup.WorkingDir", "ppc");
+	TString ppcPath = gEnv->GetValue("TMbsSetup.WorkingDir", "");
+	if (ppcPath.IsNull()) {
+		cerr << setred << "mbssetup.C: Working directory missing: Please define \"TMbsSetup.WorkingDir\" in .rootrc (\"ppc\" recommended)" << endl;
+		gSystem->Exit(0);
+	}
 	setup->SetPath(ppcPath.Data());
 	TString rdoProc = gEnv->GetValue("TMbsSetup.Readout0.Name", "");
 	if (rdoProc.IsNull()) rdoProc = evtBuilder;

@@ -15,7 +15,7 @@ ARFLAG = -rv
 
 # ------------ Library-Objects ----------------------------------------
 
-LIB_TARGETS = ../../../lib/$(LYNX_VERSION)/libSis_3302.a
+LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libSis_3302.a
 
 libSis_3302.OBJS = sis_3302_fct.o sis_3302_readout.o block.o
 
