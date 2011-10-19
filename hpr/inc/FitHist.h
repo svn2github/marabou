@@ -21,6 +21,7 @@
 #include "FindPeakDialog.h"
 #include "CalibrationDialog.h"
 #include "Save2FileDialog.h"
+#include "HprLegend.h"
 
 namespace std {} using namespace std;
 
@@ -112,13 +113,13 @@ private:
    Bool_t fDeleteCalFlag;
    HTCanvas * fCutPanel;
    TableOfLabels * fTofLabels;
-
+	HprLegend * fLegend;
    Int_t fFill1Dim;
    Color_t fFillColor;
    Color_t fLineColor;
    Float_t fLineWidth;
    Float_t fMarkerSize;
-	Int_t fDrawMarker;
+	Int_t fShowMarkers;
 	Int_t fFillStyle;
    Int_t fShowContour;
    Int_t fShowDateBox;
@@ -214,6 +215,7 @@ public:
    void SetTemplateMacro(const char * name){fTemplateMacro = name;};
    void SetFitSliceYMacroName(const char *name){fFitSliceYMacroName = name;};                  //
    void RedefineAxis();                  //
+   void RestoreAxis();                  //
    void AddAxis(Int_t where);           //
 	void ObjMoved(Int_t px, Int_t py, TObject *obj);
 	void ObjCreated(Int_t px, Int_t py, TObject *obj){};

@@ -63,7 +63,7 @@ CONT1 : Draw a contour plot using line styles to distinguish contours\n\
 CONT2 : Draw a contour plot using the same line style for all contours\n\
 CONT3 : Draw a contour plot using fill area colors\n\
 CONT4 : Draw a contour plot using surface colors (SURF option at theta = 0)\n\
-TRI2  : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
+CONT5 : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
 LEGO  : Draw a lego plot with hidden line removal\n\
 LEGO1 : Draw a lego plot with hidden surface removal\n\
 LEGO2 : Draw a lego plot using colors to show the cell contents\n\
@@ -78,6 +78,7 @@ SURF5 : Same as SURF3 but only the colored contour is drawn. Used with\n\
           or polar coordinates, option SURF3 is used.\n\
 ARR   : arrow mode. Shows gradient between adjacent cells\n\
 TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
+        TextSize is taken from MarkerSize (ts = 0.03 * ms)\n\
 \n\
 CYL	: Use Cylindrical coordinates. The X coordinate is mapped on the angle\n\
         and the Y coordinate on the cylinder length.\n\
@@ -94,9 +95,9 @@ Interaction with the OpenGL plots \n\
 Selectable parts\n\
 Different parts of the plot can be selected:\n\
 \n\
-    * xoz, yoz, xoy back planes: When such a plane selected, it's highlighted\n\
-	 * in green if the dynamic slicing by this plane is supported, and it's highlighted in red,\n\
-	 * if the dynamic slicing is not supported.\n\
+    * xoz, yoz, xoy back planes: When such a plane is selected, it is highlighted\n\
+	 * in green if the dynamic slicing by this plane is supported, and it is highlighted\n\
+	 * in red, if the dynamic slicing is not supported.\n\
     * The plot itself: On surfaces, the selected surface is outlined in red.\n\
 	 * (TF3 and ISO are not outlined).\n\
 	 * On lego plots, the selected bin is highlighted.\n\
@@ -149,19 +150,26 @@ For further details contact ROOTs documentation.\n\
    TIter next(fCanvas->GetListOfPrimitives());
 	TObject *obj;
    while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TH1")) {
-         fHist = (TH1*)obj;
-         if (obj->InheritsFrom("TGraph")) {
-            fHist = ((TGraph*)obj)->GetHistogram();
-            if (!fHist) continue;
+      if (obj->InheritsFrom("TH2")) {
+         fHist = (TH2*)obj;
+         if (obj->InheritsFrom("TGraph2D")) {
+            fHist = ((TGraph2D*)obj)->GetHistogram();
+//            if (!fHist) continue;
 		   }
          if (fHist->GetDimension() == 1) nh1++;
          if (fHist->GetDimension() > 1)  nh2++;
-			break;
+//			break;
       }
    }
 	if ( fHist == NULL ) {
 	   cout << "No Histogram in Canvas" << endl;
+//		return;
+	} else {
+		if ( gDebug > 0 )
+			cout << "Set2DimOptDialog: " << endl
+			<< "TCanvas* canvas = (TCanvas*)" << fCanvas
+			<< "; TH2* hist = (TH2*)" << fHist 
+			<< "; Set2DimOptDialog * d2 = (Set2DimOptDialog*)" << this << endl;
 	}
    RestoreDefaults();
 //   Int_t selected = -1;
@@ -179,7 +187,10 @@ For further details contact ROOTs documentation.\n\
          fOptRadio[i] = 0;
       }
    }*/
-   GetValuesFromHist();
+	fSameOpt = "";
+   if ( fHist ) {
+		GetValuesFromHist();
+	}
 	if (fDrawOpt2Dim.Contains("Z")) fShowZScale = 1;
 	else                            fShowZScale = 0;
 	if (fDrawOpt2Dim.Contains("BB")) fHideBackBox = 1;
@@ -188,6 +199,17 @@ For further details contact ROOTs documentation.\n\
 	else                             fHideFrontBox = 0;
 //	if (fDrawOpt2Dim.Contains("GL")) fUseGL = 1;
 //	else                             fUseGL = 0;
+// extract draw option
+	for (Int_t i = kNdrawopt-1; i >= 0; i--) {
+		Int_t ind = fDrawOpt2Dim.Index(fDrawOpt2DimArray[i]);
+		if ( ind >= 0 ) {
+			Int_t len = strlen(fDrawOpt2DimArray[i]);
+			fDrawOpt2Dim = fDrawOpt2Dim.Replace(ind, len, "");
+			fOptRadio[i] = 1;
+		} else {
+			fOptRadio[i] = 0;
+		}
+	}
 	fHistNo = 0;
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
@@ -272,7 +294,7 @@ For further details contact ROOTs documentation.\n\
 	fValp[ind++] = &f2DimBackgroundColor;
 	fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
    fValp[ind++] = &fHistLineColor2Dim;
-	fRow_lab->Add(new TObjString("ColorSelect+LStyle "));
+	fRow_lab->Add(new TObjString("LineSSelect+LStyle "));
 	fValp[ind++] = &fHistLineStyle2Dim;
 	fRow_lab->Add(new TObjString("PlainShtVal+LineWid"));
 	fValp[ind++] = &fHistLineWidth2Dim;
@@ -290,25 +312,26 @@ For further details contact ROOTs documentation.\n\
 	fValp[ind++] = &fUseGL;
 	fValp[ind++] = &fHideFrontBox;
 	fValp[ind++] = &fHideBackBox;
-	fRow_lab->Add(new TObjString("CheckButton_Z Scale"));
-   fRow_lab->Add(new TObjString("CheckButton+Live stat"));
-	fRow_lab->Add(new TObjString("PlainIntVal+Cont Levs"));
+	fRow_lab->Add(new TObjString("CheckButton_    Z Scale"));
    fValp[ind++] = &fShowZScale;
+   fRow_lab->Add(new TObjString("CheckButton+  Live stat"));
+	fBidLiveStat = ind;
    fValp[ind++] = &fLiveStat2Dim;
+	fRow_lab->Add(new TObjString("PlainIntVal+Cont Levs"));
 	fValp[ind++] = &fContourLevels;
 	//   fRow_lab->Add(new TObjString("DoubleValue_LogScaleMin"));
 //   fRow_lab->Add(new TObjString("DoubleValue+LogScaleMax"));
 //   fValp[ind++] = &fLogScaleMin;
 //   fValp[ind++] = &fLogScaleMax;
-	fRow_lab->Add(new TObjString("CheckButton_Log X"));
-	fRow_lab->Add(new TObjString("CheckButton+Log Y"));
-	fRow_lab->Add(new TObjString("CheckButton+Log Z"));
+	fRow_lab->Add(new TObjString("CheckButton_      Log X"));
+	fRow_lab->Add(new TObjString("CheckButton+      Log Y"));
+	fRow_lab->Add(new TObjString("CheckButton+      Log Z"));
 	fValp[ind++] = &fTwoDimLogX;
 	fValp[ind++] = &fTwoDimLogY;
 	fValp[ind++] = &fTwoDimLogZ;
-	fRow_lab->Add(new TObjString("PlainIntVal-Hist No"));
-	fBidHistNo = ind;
-	fValp[ind++] = &fHistNo;
+//	fRow_lab->Add(new TObjString("PlainIntVal-Hist No"));
+//	fBidHistNo = ind;
+//	fValp[ind++] = &fHistNo;
 
 
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
@@ -376,22 +399,54 @@ void Set2DimOptDialog::SetHistAttNow(TCanvas *canvas)
       }
    }
    if (!canvas) return;
-   Set2DimOptDialog::SetHistAtt(canvas);
+	if ( fHist ) {
+		SetHistAtt((TPad*)canvas, fHist); 
+/*		if ( gDebug > 0 ) 
+			cout << "SetHistAttNow: " << fDrawOpt2Dim << endl;
+		fHist->SetDrawOption(fDrawOpt2Dim);*/
+	} else {
+		SetHistAttAll(canvas);
+	}
+	canvas->Pop();
+	canvas->Modified();
+	canvas->Update();
 }
 //_______________________________________________________________________
 
-void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
+void Set2DimOptDialog::SetHistAttAll(TCanvas *canvas)
 {
-   if (!canvas) return;
-	canvas->cd();
-	canvas->SetLogx(fTwoDimLogX);
-	canvas->SetLogy(fTwoDimLogY);
-	canvas->SetLogz(fTwoDimLogZ);
+	TIter next(canvas->GetListOfPrimitives());
+	TObject *obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TGraph2D")) {
+         ((TGraph2D*)obj)->SetDrawOption(fDrawOpt);
+		} else if ((obj->InheritsFrom("TPad"))) {
+         TPad *pad = (TPad*)obj;
+         TIter next1(pad->GetListOfPrimitives());
+         TObject *obj1;
+         pad->cd();
+			while ( (obj1 = next1()) ) {
+				if (obj1->InheritsFrom("TH2")) {
+               SetHistAtt(pad, ((TH2*)obj1));
+            }
+         }
+      }
+   }
+}
+//_______________________________________________________________________
+
+void Set2DimOptDialog::SetHistAtt(TPad *pad, TH2 * hist)
+{
+   if ( !pad || !hist ) return;
+	pad->cd();
+	pad->SetLogx(fTwoDimLogX);
+	pad->SetLogy(fTwoDimLogY);
+	pad->SetLogz(fTwoDimLogZ);
    fDrawOpt = fDrawOpt2Dim;
    if ( fShowZScale && (
         fDrawOpt.Contains("COL")   || fDrawOpt.Contains("CONT0")
       ||fDrawOpt.Contains("CONT1") || fDrawOpt.Contains("CONT4")
-      ||fDrawOpt.Contains("TRI2")  || fDrawOpt.Contains("SURF1")
+      ||fDrawOpt.Contains("CONT5")  || fDrawOpt.Contains("SURF1")
       ||fDrawOpt.Contains("SURF2") || fDrawOpt.Contains("SURF3")
       ||fDrawOpt.Contains("LEGO2") ) && fUseGL == 0 ) {
       fDrawOpt += "Z";
@@ -408,88 +463,41 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
 	} else {
 		gStyle->SetCanvasPreferGL(kFALSE);
 	}
-		
-	Int_t nhists = 0, histno = 0;
-	TIter next1(canvas->GetListOfPrimitives());
-   TObject *obj;
-   while ( (obj = next1()) ) {
-      if (obj->InheritsFrom("TH2")) {
-			nhists++;
-		}
+	if ( !fDrawOpt.Contains("SAME") )
+		fDrawOpt += fSameOpt;
+	if ( gDebug > 0 ) 
+			cout << "SetHistAtt: " << fDrawOpt << endl;
+	hist->SetDrawOption(fDrawOpt);
+	hist->SetOption(fDrawOpt);
+	hist->SetFillColor(fHistFillColor2Dim);
+	hist->SetLineColor(fHistLineColor2Dim);
+	hist->SetLineWidth(fHistLineWidth2Dim);
+	hist->SetLineStyle(fHistLineStyle2Dim);
+	hist->SetFillStyle(fHistFillStyle2Dim);
+	if ( fDrawOpt.Contains("SCAT") || fDrawOpt.Contains("TEXT")){
+		hist->SetMarkerColor(fMarkerColor2Dim);  
+		hist->SetMarkerStyle(fMarkerStyle2Dim);  
+		hist->SetMarkerSize (fMarkerSize2Dim); 
+	} else {
+		hist->SetMarkerColor(0);  
+		hist->SetMarkerStyle(0);  
+		hist->SetMarkerSize (0.); 
 	}
-	if ( gDebug > 0 )
-		cout << "fHistNo " << fHistNo<< " nhists " << nhists<< endl;
-	TIter next(canvas->GetListOfPrimitives());
-   while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TGraph2D")) {
-         ((TGraph2D*)obj)->SetDrawOption(fDrawOpt);
-      } else if (obj->InheritsFrom("TH2")) {
-			if ( nhists > 1 && histno != fHistNo ) {
-				histno++;
-				continue;
-			}
-			if ( gDebug > 0 )
-				cout << "histno " << histno << " " << fDrawOpt << endl;
-			histno++;
-			((TH2*)obj)->SetDrawOption(fDrawOpt);
-         ((TH2*)obj)->SetOption(fDrawOpt);
-			((TH2*)obj)->SetFillColor(fHistFillColor2Dim);
-			((TH2*)obj)->SetLineColor(fHistLineColor2Dim);
-			((TH2*)obj)->SetLineWidth(fHistLineWidth2Dim);
-			((TH2*)obj)->SetLineStyle(fHistLineStyle2Dim);
-			((TH2*)obj)->SetFillStyle(fHistFillStyle2Dim);
-			((TH2*)obj)->SetMarkerColor(fMarkerColor2Dim);  
-			((TH2*)obj)->SetMarkerStyle(fMarkerStyle2Dim);  
-			((TH2*)obj)->SetMarkerSize (fMarkerSize2Dim);   			
-			if (((TH2*)obj)->GetContour() != fContourLevels) {
-				((TH2*)obj)->SetContour(fContourLevels);
-			}
-		} else if ((obj->InheritsFrom("TPad"))) {
-         TPad *pad = (TPad*)obj;
-         TIter next1(pad->GetListOfPrimitives());
-         TObject *obj1;
-         pad->cd();
-			while ( (obj1 = next1()) ) {
-				if (obj1->InheritsFrom("TH1")) {
-               ((TH2*)obj1)->SetDrawOption(fDrawOpt);
-               ((TH2*)obj1)->SetOption(fDrawOpt);
-					if (((TH2*)obj1)->GetContour() != fContourLevels) {
-						((TH2*)obj1)->SetContour(fContourLevels);
-					}
-            }
-         }
-	      pad->Modified();
-	      pad->Update();
-      }
-   }
-   if (gPad == gPad->GetMother()) {
-//		if (fLiveStat2Dim) {
-//			cout << "SetAutoExec() true" << endl;
-			TEnv env(".hprrc");
-			env.SetValue("Set2DimOptDialog.fLiveStat2Dim", 
-							 fLiveStat2Dim);
-/*			if (!canvas->GetAutoExec())
-				canvas->ToggleAutoExec();
-		} else {
-			if (canvas->GetAutoExec())
-				canvas->ToggleAutoExec();
-		}
-*/
-   }
+	if ( hist->GetContour() != fContourLevels ) {
+		hist->SetContour(fContourLevels);
+	}
    if (f2DimBackgroundColor == 0) {
       if (gStyle->GetCanvasColor() == 0) {
-         canvas->GetFrame()->SetFillStyle(0);
+         pad->GetFrame()->SetFillStyle(0);
       } else {
-      	canvas->GetFrame()->SetFillStyle(1001);
-      	canvas->GetFrame()->SetFillColor(10);
+      	pad->GetFrame()->SetFillStyle(1001);
+      	pad->GetFrame()->SetFillColor(10);
    	}
    } else {
-      canvas->GetFrame()->SetFillStyle(1001);
-      canvas->GetFrame()->SetFillColor(f2DimBackgroundColor);
+      pad->GetFrame()->SetFillStyle(1001);
+      pad->GetFrame()->SetFillColor(f2DimBackgroundColor);
    }
-	canvas->Pop();
-	canvas->Modified();
-	canvas->Update();
+   
 }
 //______________________________________________________________________
 
@@ -503,7 +511,7 @@ void Set2DimOptDialog::SetHistAttPermLocal()
 
 void Set2DimOptDialog::SetHistAttPerm()
 {
-//    cout << "Set2DimOptDialog:: SetHistAttPerm()" << endl;
+    cout << "Set2DimOptDialog:: SetHistAttPerm()" << endl;
    TEnv env(".hprrc");
    env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim);
    env.SetValue("Set2DimOptDialog.fDrawOpt2Dim", fDrawOpt2Dim);
@@ -562,10 +570,12 @@ void Set2DimOptDialog::GetValuesFromHist()
    if ( !fHist ) return;
 	fCanvas->cd();
 	fDrawOpt2Dim = fHist->GetDrawOption();
+	if ( fDrawOpt2Dim.Contains("SAME") )
+		fSameOpt = "SAME";
 	if ( gDebug > 0 )
-		cout << "fDrawOpt2Dim " << fDrawOpt2Dim << endl;
+		cout << "fDrawOpt2Dim::GetValuesFromHist() " << fDrawOpt2Dim << endl;
 	
-	for (Int_t i = kNdrawopt-1; i >= 0; i--) {
+/*	for (Int_t i = kNdrawopt-1; i >= 0; i--) {
 		Int_t ind = fDrawOpt2Dim.Index(fDrawOpt2DimArray[i]);
 		if ( ind >= 0 ) {
 			Int_t len = strlen(fDrawOpt2DimArray[i]);
@@ -574,7 +584,15 @@ void Set2DimOptDialog::GetValuesFromHist()
 		} else {
 			fOptRadio[i] = 0;
 		}
-	}
+	}*/
+	fHistFillColor2Dim = fHist->GetFillColor();
+	fHistFillStyle2Dim = fHist->GetFillStyle();
+	fHistLineColor2Dim = fHist->GetLineColor();
+	fHistLineStyle2Dim = fHist->GetLineStyle();
+	fHistLineWidth2Dim = fHist->GetLineWidth();
+	fMarkerColor2Dim   = fHist->GetMarkerColor();
+	fMarkerStyle2Dim   = fHist->GetMarkerStyle();
+	fMarkerSize2Dim    = fHist->GetMarkerSize();
 }
 //______________________________________________________________________
 
@@ -590,7 +608,7 @@ void Set2DimOptDialog::RestoreDefaults(Int_t resetall)
 		gSystem->TempFileName(envname);
 	}
    TEnv env(envname);
-//   fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
+   fDrawOpt2Dim       = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    fShowZScale        = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
    fLiveStat2Dim      = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
 	f2DimBackgroundColor = env.GetValue("Set2DimOptDialog.f2DimBackgroundColor", 0);
@@ -623,9 +641,9 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
 	if ( gDebug > 0 )
-		cout << "CRButtonPressed:" << wid<< ", " <<bid << " fBidHistNo "  <<fBidHistNo << endl;
-	if ( bid == fBidHistNo ) 
-		return;
+		cout << "CRButtonPressed:" << wid<< ", " <<bid << " canvas "  << canvas << endl;
+//	if ( bid == fBidHistNo ) 
+//		return;
 /*
 	const char *fDrawOpt2[kNdrawopt] =
 	{"SCAT", "BOX",    "BOX1",  "COL",   "ARR",   "TEXT",
@@ -633,6 +651,13 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 	"SURF1", "SURF2",  "SURF3", "SURF4", "SURF5", "LEGO",
 	"LEGO1", "LEGO2",  "POL",   "CYL",    "SPH",  "PSR"};
 */
+	if ( bid == fBidLiveStat ) {
+		TEnv env(".hprrc");
+		env.SetValue("Set2DimOptDialog.fLiveStat2Dim",     fLiveStat2Dim);
+		env.SaveLevel(kEnvLocal);
+		return;
+	}
+
 	// 2-dim options exclude 3-dim
 	if ( bid >= 0 && bid <= 10) {
 		for ( Int_t i = 11; i <= 23; i++ ) {
@@ -652,11 +677,17 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 	// non cartesian options are mutually  exclusive
 	if ( bid >= 20 && bid <= 23) {
 		for ( Int_t i = 20; i <= 23; i++ ) {
-			fOptRadio[i] = 0;
-			fDialog->SetCheckButton(i, 0);
+			if ( gDebug > 0 )
+				cout << "CRButtonPressed: fOptRadio[" << i <<"] = " << fOptRadio[i]<< endl;
+			if ( bid != i ) {
+				if ( fOptRadio[bid] != 0 ) {
+					fOptRadio[i] = 0;
+					fDialog->SetCheckButton(i, 0);
+					if ( gDebug > 0 )
+						cout << "CRButtonPressed: uncheck " << i << endl;
+				}
+			}
 		}
-		fOptRadio[bid] = 1;
-		fDialog->SetCheckButton(bid, 1);
 	}
 	
    SetHistAttNow(canvas);

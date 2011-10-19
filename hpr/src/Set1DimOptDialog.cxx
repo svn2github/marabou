@@ -92,6 +92,7 @@ may be selected.\n\
    }
 	if ( fNHists == 0 ) {
 	   cout << "No 1dim histogram in Canvas" << endl;
+		return;
 	}
    RestoreDefaults();
 //	GetValuesFromHist();
@@ -388,9 +389,9 @@ void Set1DimOptDialog::SetHistAtt()
 		if (fShowMarkers[i] != 0) {
 			if ( fMarkerSize[i] < 0.01 )
 				fMarkerSize[i] = 1;
-			if (!fDrawOpt[i].Contains("P")) {
+//			if (!fDrawOpt[i].Contains("P")) {
 				drawopt += "P";
-			}
+//			}
 			hist->SetMarkerSize(fMarkerSize[i]);
 		}
 //		} else if (fDrawOpt[i].Contains("P")) {
@@ -553,6 +554,7 @@ void Set1DimOptDialog::SetHistAttPerm()
 
 void Set1DimOptDialog::SaveDefaults()
 {
+	cout << "Set1DimOptDialog::SaveDefaults() fShowMarkers[0] " << fShowMarkers[0]<< endl;
    TEnv env(".hprrc");
 	env.SetValue("Set1DimOptDialog.fFill1Dim",      fFill[0]      );
 	env.SetValue("Set1DimOptDialog.fFillColor",     fFillColor[0] );

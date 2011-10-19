@@ -24,6 +24,7 @@ Int_t GeneralAttDialog::fUseRegexp = 0;
 Int_t GeneralAttDialog::fShowListsOnly = 0;
 Int_t GeneralAttDialog::fRememberLastSet = 1;
 Int_t GeneralAttDialog::fRememberZoom = 1;
+Int_t GeneralAttDialog::fRememberStatBox = 1;
 Int_t GeneralAttDialog::fUseAttributeMacro = 0;
 Int_t GeneralAttDialog::fMaxListEntries = 333;
 Int_t GeneralAttDialog::fContentLowLimit = 0;
@@ -145,6 +146,8 @@ ____________________________________________________________\n\
    fValp[ind++] = &fRememberLastSet;
    fRow_lab->Add(new TObjString("CheckButton_Remember Zoomings (by left mouse)"));
    fValp[ind++] = &fRememberZoom;
+   fRow_lab->Add(new TObjString("CheckButton_  Remember positioning of StatBox"));
+   fValp[ind++] = &fRememberStatBox;
    fRow_lab->Add(new TObjString("CheckButton_              Use Attribute Macro"));
    fValp[ind++] = &fUseAttributeMacro;
    fRow_lab->Add(new TObjString("CheckButton_    Use Regular expression syntax"));
@@ -204,6 +207,7 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fShowListsOnly", fShowListsOnly);
    env.SetValue("GeneralAttDialog.fRememberLastSet", fRememberLastSet);
    env.SetValue("GeneralAttDialog.fRememberZoom", fRememberZoom);
+	env.SetValue("GeneralAttDialog.fRememberStatBox", fRememberStatBox);
    env.SetValue("GeneralAttDialog.fUseAttributeMacro", fUseAttributeMacro);
    env.SetValue("GeneralAttDialog.fMaxListEntries", fMaxListEntries);
    env.SetValue("GeneralAttDialog.fVertAdjustLimit", fVertAdjustLimit);
@@ -232,6 +236,7 @@ void GeneralAttDialog::RestoreDefaults()
    fShowListsOnly = env.GetValue("GeneralAttDialog.fShowListsOnly", 0);
    fRememberLastSet = env.GetValue("GeneralAttDialog.fRememberLastSet", 1);
    fRememberZoom = env.GetValue("GeneralAttDialog.fRememberZoom", 1);
+	fRememberStatBox = env.GetValue("GeneralAttDialog.fRememberStatBox", 1);
    fUseAttributeMacro = env.GetValue("GeneralAttDialog.fUseAttributeMacro", 0);
    fMaxListEntries =
    env.GetValue("GeneralAttDialog.fMaxListEntries", 333);

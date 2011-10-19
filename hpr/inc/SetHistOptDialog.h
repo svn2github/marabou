@@ -58,7 +58,7 @@ private:
 	Color_t      fTitleTextColor;
    Width_t      fTitleBorderSize;
    Style_t      fTitleFont;
-   Float_t      fTitleFontSize;
+   Float_t      fHistTitleSize;
    Style_t      fTitleStyle;
    Float_t      fTitleX;
    Float_t      fTitleY;

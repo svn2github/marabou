@@ -232,6 +232,7 @@ enum ERootCanvasCommands {
    kFHDeleteCal,
    kFHShowPeaks,
    kFHRedefineAxis,
+   kFHRestoreAxis,
    kFHAddAxisX,
    kFHAddAxisY,
 	kFHReDoAxis,
@@ -1146,6 +1147,9 @@ again:
                   case kFHRedefineAxis:
                      fFitHist->RedefineAxis();
                      break;
+                  case kFHRestoreAxis:
+                     fFitHist->RestoreAxis();
+                     break;
                   case kFHAddAxisX:
                      fFitHist->AddAxis(1);
                      break;
@@ -1548,6 +1552,7 @@ void HandleMenus::BuildMenus()
 				fDisplayMenu->AddSeparator();
 				fDisplayMenu->AddEntry("Magnify",     kFHMagnify    );
 				fDisplayMenu->AddEntry("Redefine Axis",     kFHRedefineAxis);
+				fDisplayMenu->AddEntry("Restore orig Axis",     kFHRestoreAxis);
 				fDisplayMenu->AddEntry("Add new X axis",     kFHAddAxisX);
 				fDisplayMenu->AddEntry("Add new Y axis",     kFHAddAxisY);
 				fDisplayMenu->AddEntry("Repaint extra axis", kFHReDoAxis);

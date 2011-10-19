@@ -46,8 +46,8 @@
 #include "TArrayC.h"
 #include "TArrayI.h"
 #include "TExec.h"
-#include "TLegend.h"
 #include "TLegendEntry.h"
+#include "THistPainter.h"
 
 #include "TGWidget.h"
 #include "HprGaxis.h"
@@ -135,7 +135,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fExplx  = fExpux = fExply = fExpuy = 0;    
 	fX_1    =   fX_2 =   fY_1 =   fY_2 = 0;    
 	fRangeLowX = fRangeUpX = fRangeLowY = fRangeUpY = 0;
-	fOrigLowX  = fOrigUpX  = fOrigLowY  = fOrigUpY  = 0;
+//	fOrigLowX  = fOrigUpX  = fOrigLowY  = fOrigUpY  = 0;
 	fFrameX1   = fFrameX2  = fFrameY1   = fFrameY2  = 0;
    fBinX_1 = fBinX_2 = -1;
    fLogx = 0;
@@ -160,6 +160,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fTofLabels = NULL;
 	fMarkers = NULL;
 	fDialog = NULL;
+	fLegend = NULL;
 	fSerialRot = 0;
 	fFirstUse = 0;
 	fSetColors = kFALSE;
@@ -236,7 +237,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
    fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "none");
    fMarkerSize    = env.GetValue("Set1DimOptDialog.fMarkerSize", 1);
-	fDrawMarker    = env.GetValue("Set1DimOptDialog.fDrawMarker", 0);
+	fShowMarkers    = env.GetValue("Set1DimOptDialog.fShowMarkers", 0);
 	gStyle->SetErrorX(env.GetValue("Set1DimOptDialog.fErrorX", 0.));
 	fSmoothLine  = env.GetValue("Set1DimOptDialog.fSmoothLine",    0);
 	fSimpleLine  = env.GetValue("Set1DimOptDialog.fSimpleLine",    0);
@@ -705,14 +706,17 @@ void FitHist::handle_mouse()
 //   if ( (!fLiveStat1Dim && fDimension == 1) || (!fLiveStat2Dim && fDimension == 2) ||
 //         fDimension == 3 )  return;
    if ( fDimension == 3 )  return;
-
    TEnv env(".hprrc");
-   if ( (fDimension == 1 && 
-      (Int_t)env.GetValue("Set1DimOptDialog.fLiveStat1Dim",0) == 0 ) )
-      return;
-   if ( (fDimension == 2 && 
-      (Int_t)env.GetValue("Set2DimOptDialog.fLiveStat2Dim",0) == 0) )
-      return;
+   if ( fDimension == 1) { 
+      fLiveStat1Dim = (Int_t)env.GetValue("Set1DimOptDialog.fLiveStat1Dim",0);
+      if (fLiveStat1Dim == 0)
+			return;
+	}
+   if ( fDimension == 2) { 
+      fLiveStat2Dim = (Int_t)env.GetValue("Set2DimOptDialog.fLiveStat2Dim",0);
+		if (fLiveStat2Dim == 0)
+			return;
+	}
    
    if (event == kButton1Down) {
       if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")
@@ -1404,18 +1408,22 @@ for expanded Histogram");
       if (!is2dim(fSelHist)) {
          fRangeLowX = xyvals[0];
          fRangeUpX = xyvals[1];
-         fSelHist->GetXaxis()->Set(fSelHist->GetNbinsX(),
-                                   fRangeLowX, fRangeUpX);
       } else {
          fRangeLowX = xyvals[0];
          fRangeUpX = xyvals[2];
          fRangeLowY = xyvals[1];
          fRangeUpY = xyvals[3];
-         fSelHist->GetXaxis()->Set(fSelHist->GetNbinsX(),
-                                   fRangeLowX, fRangeUpX);
-         fSelHist->GetYaxis()->Set(fSelHist->GetNbinsY(),
-                                   fRangeLowY, fRangeUpY);
       }
+      TIter next(fCanvas->GetListOfPrimitives());
+		TObject *obj;
+		while ( obj = next() ) {
+			if (obj->InheritsFrom("TH1") ){
+				TH1* h = ((TH1*)obj);
+				h->GetXaxis()->Set(h->GetNbinsX(), fRangeLowX, fRangeUpX);
+				if (h->GetDimension() == 2)
+					h->GetYaxis()->Set(h->GetNbinsY(), fRangeLowY, fRangeUpY);
+			}
+		}
       fSetRange = kTRUE;
       fCanvas->Modified(kTRUE);
       fCanvas->Update();
@@ -1426,6 +1434,30 @@ for expanded Histogram");
       delete row_lab;
    }
 };
+//_______________________________________________________________________________________
+
+void FitHist::RestoreAxis()
+{
+   if (fExpHist) {
+      Hpr::WarnBox("RedefineAxis not implemented \
+for expanded Histogram");
+      return;
+   }
+
+	TIter next(fCanvas->GetListOfPrimitives());
+	TObject *obj;
+	while ( obj = next() ) {
+		if (obj->InheritsFrom("TH1") ){
+			TH1* h = ((TH1*)obj);
+			h->GetXaxis()->Set(h->GetNbinsX(), fOrigLowX, fOrigUpX);
+			if (h->GetDimension() == 2)
+				h->GetYaxis()->Set(h->GetNbinsY(), fOrigLowY, fOrigUpY);
+		}
+	}
+	fSetRange = kFALSE;
+	fCanvas->Modified(kTRUE);
+	fCanvas->Update();
+}
 //_______________________________________________________________________________________
 
 void FitHist::AddAxis(Int_t where)
@@ -2038,8 +2070,16 @@ void FitHist::Superimpose(Int_t mode)
 //					return;
 //			}
 			if ( lWarnDiffBin && !Hpr::HistLimitsMatch(horig, hist) ) {
-				if ( !QuestionBox("Hist limits or bins differ, really superimpose?",win) )
+				if ( !QuestionBox("Hist limits or bins differ, really superimpose?",win) ) {
 					return;
+				} else {
+					hist->GetXaxis()->Set(horig->GetXaxis()->GetNbins(),
+												 horig->GetXaxis()->GetXmin(), horig->GetXaxis()->GetXmax());
+					if (horig->GetDimension() == 2) {
+						hist->GetYaxis()->Set(horig->GetYaxis()->GetNbins(),
+												 horig->GetYaxis()->GetXmin(), horig->GetYaxis()->GetXmax());
+					}
+				}
 			}
 			nhists++;
 		}
@@ -2066,20 +2106,70 @@ void FitHist::Superimpose(Int_t mode)
 	static Width_t lLWidth;
 	static Style_t lMStyle;
 	static Size_t  lMSize;
+	static Double_t lStatBoxDX1;
+	static Double_t lStatBoxDX2;
+	static Double_t lStatBoxDY1;
+	static Double_t lStatBoxDY2;
 // 	static Int_t   dummy;
+	lFStyle     = horig->GetFillStyle();
+	lLStyle     = horig->GetLineStyle();
+	lLWidth     = horig->GetLineWidth();
+	lMStyle     = horig->GetMarkerStyle();
+	lMSize      = horig->GetMarkerSize();
+	TPaveStats *sbo = (TPaveStats*)horig->GetListOfFunctions()->FindObject("stats");
+	if ( sbo ) {
+		lStatBoxDX1 = sbo->GetX1NDC();
+		lStatBoxDX2 = sbo->GetX2NDC();
+		lStatBoxDY1 = sbo->GetY1NDC();
+		lStatBoxDY2 = sbo->GetY2NDC();
+	}
 	if (hist->GetDimension() == 1 ) {
+/*		lFStyle     = env.GetValue("Set1DimOptDialog.fFillStyle", 0);
+		lLStyle     = env.GetValue("Set1DimOptDialog.fLineStyle", 1);
+		lLWidth     = env.GetValue("Set1DimOptDialog.fLineWidth", 1);
+		lMStyle     = env.GetValue("Set1DimOptDialog.MarkerStyle", 7);
+		lMSize      = env.GetValue("Set1DimOptDialog.MarkerSize",  1);*/
+		if ( !sbo ) {
+			lStatBoxDX1 = env.GetValue("Set1DimOptDialog.StatBox1D.fX1", 0.8);
+			lStatBoxDX2 = env.GetValue("Set1DimOptDialog.StatBox1D.fX2", 0.9);
+			lStatBoxDY1 = env.GetValue("Set1DimOptDialog.StatBox1D.fY1", 0.8);
+			lStatBoxDY2 = env.GetValue("Set1DimOptDialog.StatBox1D.fY2", 0.9);
+		}
+	} else {
+/*		lFStyle     = env.GetValue("Set2DimOptDialog.fHistFillStyle2Dim", 0);
+		lLStyle     = env.GetValue("Set2DimOptDialog.fHistLineStyle2Dim", 1);
+		lLWidth     = env.GetValue("Set2DimOptDialog.fHistLineWidth2Dim", 1);
+		lMStyle     = env.GetValue("Set2DimOptDialog.MarkerStyle2Dim", 7);
+		lMSize      = env.GetValue("Set2DimOptDialog.MarkerSize2Dim",  1);*/
+		
+		if ( !sbo ) {
+			lStatBoxDX1 = env.GetValue("Set2DimOptDialog.StatBox2D.fX1", 0.8);
+			lStatBoxDX2 = env.GetValue("Set2DimOptDialog.StatBox2D.fX2", 0.9);
+			lStatBoxDY1 = env.GetValue("Set2DimOptDialog.StatBox2D.fY1", 0.8);
+			lStatBoxDY2 = env.GetValue("Set2DimOptDialog.StatBox2D.fY2", 0.9);
+		}
+	}
+/*	if (hist->GetDimension() == 1 ) {
 		lFStyle     = env.GetValue("Set1DimOptDialog.fFillStyle", 0);
 		lLStyle     = env.GetValue("Set1DimOptDialog.fLineStyle", 1);
 		lLWidth     = env.GetValue("Set1DimOptDialog.fLineWidth", 1);
 		lMStyle     = env.GetValue("Set1DimOptDialog.MarkerStyle", 7);
 		lMSize      = env.GetValue("Set1DimOptDialog.MarkerSize",  1);
+		lStatBoxDX1 = env.GetValue("Set1DimOptDialog.StatBox1D.fX1", 0.8);
+		lStatBoxDX2 = env.GetValue("Set1DimOptDialog.StatBox1D.fX2", 0.9);
+		lStatBoxDY1 = env.GetValue("Set1DimOptDialog.StatBox1D.fY1", 0.8);
+		lStatBoxDY2 = env.GetValue("Set1DimOptDialog.StatBox1D.fY2", 0.9);
 	} else {
 		lFStyle     = env.GetValue("Set2DimOptDialog.fHistFillStyle2Dim", 0);
 		lLStyle     = env.GetValue("Set2DimOptDialog.fHistLineStyle2Dim", 1);
 		lLWidth     = env.GetValue("Set2DimOptDialog.fHistLineWidth2Dim", 1);
 		lMStyle     = env.GetValue("Set2DimOptDialog.MarkerStyle2Dim", 7);
 		lMSize      = env.GetValue("Set2DimOptDialog.MarkerSize2Dim",  1);
-	}
+		lStatBoxDX1 = env.GetValue("Set2DimOptDialog.StatBox2D.fX1", 0.8);
+		lStatBoxDX2 = env.GetValue("Set2DimOptDialog.StatBox2D.fX2", 0.9);
+		lStatBoxDY1 = env.GetValue("Set2DimOptDialog.StatBox2D.fY1", 0.8);
+		lStatBoxDY2 = env.GetValue("Set2DimOptDialog.StatBox2D.fY2", 0.9);
+	}*/
 	
 	if ( lMSize <= 0 ) lMSize = 1;
 	Double_t new_scale = 1;   
@@ -2237,8 +2327,22 @@ void FitHist::Superimpose(Int_t mode)
 	}
 	if ( !drawopt.Contains("SAME") )
 		drawopt += "SAME";
-  // cout << "DrawCopy(drawopt) " << drawopt << endl;
-	hdisp->DrawCopy(drawopt.Data());
+	if (gDebug > 0) 
+		cout << "DrawCopy(drawopt) " << drawopt << endl;
+	TH1 * hdrawn = hdisp->DrawCopy(drawopt.Data());
+	TPaveStats *sb = (TPaveStats*)hdrawn->GetListOfFunctions()->FindObject("stats");
+	if ( sb ) {
+		cout << "SetStatBox: "  
+			<< " lStatBoxDX1 " << lStatBoxDX1<< 
+				" lStatBoxDX2 " << lStatBoxDX2<< 
+				" lStatBoxDY1 " << lStatBoxDY1<< 
+				" lStatBoxDY2 " << lStatBoxDY2<< 
+		endl;
+		sb->SetX1NDC(lStatBoxDX1);
+		sb->SetX2NDC(lStatBoxDX2);
+		sb->SetY1NDC(lStatBoxDY1 - nhists*(lStatBoxDY2 - lStatBoxDY1) );
+		sb->SetY2NDC(lStatBoxDY2 - nhists*(lStatBoxDY2 - lStatBoxDY1));
+	}
 	if ( new_axis != 0 && hist->GetDimension() == 1 ) {
 //		TString opt("+SL");->GetFrame()->GetX1()
 		Double_t ledge = gPad->GetFrame()->GetY1();
@@ -2274,7 +2378,7 @@ void FitHist::Superimpose(Int_t mode)
 	}
 	if ( lLegend != 0 ) {
 		// remove possible TLegend
-		TIter next2( fCanvas->GetListOfPrimitives() );
+/*		TIter next2( fCanvas->GetListOfPrimitives() );
 		TObject *obj;
 		TLegend * leg = NULL;
 		while ( obj = next2() ) {
@@ -2282,51 +2386,72 @@ void FitHist::Superimpose(Int_t mode)
 				leg = (TLegend*)obj;
 				break;
 			}
-		}
-		if ( leg )
-			delete leg;
+		}*/
+//		if ( leg )
+//			delete leg;
 		TEnv env(".hprrc");
 		Double_t x1 = env.GetValue("SuperImposeHist.fLegendX1", 0.11);
 		Double_t x2 = env.GetValue("SuperImposeHist.fLegendX2", 0.3);
 		Double_t y1 = env.GetValue("SuperImposeHist.fLegendY1", 0.8);
 		Double_t y2 = env.GetValue("SuperImposeHist.fLegendY2", 0.95);
-		leg = fCanvas->BuildLegend(x1, y1, x2,y2);
-		leg->SetName("Legend_SuperImposeHist");
-		TIter next( leg->GetListOfPrimitives() );
-		TList * tmp = new TList();
-		TLegendEntry *le;
-		while ( le = (TLegendEntry*)next() ) {
-			if ( le->GetObject()->IsA() == HprGaxis::Class() )
-				tmp->Add(le);
-		}
-		TIter next1(tmp);
-		while ( le = (TLegendEntry*)next1() ) {
-			leg->GetListOfPrimitives()->Remove(le);
-		}
-		delete tmp;
-	}
-/*	if ( lNoStatBox ) {
-		TPaveStats *ps = (TPaveStats*)hdisp->GetListOfFunctions()->FindObject("stats");
-		if (ps) {
-			delete ps;
-		}
-	}*/
-// remove "How to display a 1-dim histogram"
-/*	TGMenuBar * menubar = win->GetMenuBar();
-	TGPopupMenu *pu = menubar->GetPopup("Hpr-Options");
-	if  (pu ) {
-		TGMenuEntry* ment;
-		TString mname;
-		TIter next(pu->GetListOfEntries());
-		while ( ment = (TGMenuEntry*)next() ) {
-			mname = ment->GetName();
-			if ( mname.BeginsWith("How to display") ) {
-				pu->DeleteEntry(ment->GetEntryId());
-				break;
+		TString opt;
+		TString dopt;
+		if ( fLegend == NULL ) {
+			fLegend = new HprLegend(x1, y1, x2, y2, "", "brNDC");
+			fLegend->SetName("Legend_SuperImposeHist");
+			dopt = fSelHist->GetDrawOption();
+			if (fSelHist->GetDimension() == 2 ) {
+				if ( dopt.Contains("SCAT", TString::kIgnoreCase) ) opt = "P";
+				if ( dopt.Contains("BOX", TString::kIgnoreCase) && 
+					!dopt.Contains("BOX1", TString::kIgnoreCase) ) opt += "L";
+				if ( dopt.Contains("BOX", TString::kIgnoreCase) &&
+					fSelHist->GetFillColor() != 0 && fSelHist->GetFillStyle() != 0 || 
+					dopt.Contains("BOX1", TString::kIgnoreCase) ) opt+= "F";
+			} else {
+				if (dopt.Length() == 0 || dopt.Contains("HIST",TString::kIgnoreCase) ||
+					dopt.Contains("E", TString::kIgnoreCase) )
+					opt = "L";
+				if (fSelHist->GetFillStyle() != 0 )
+					opt+= "F";
+				if (dopt.Contains("P",TString::kIgnoreCase) )
+					opt += "P";
 			}
+			fLegend->AddEntry(fSelHist, "", opt);
+//			cout << "fLegend->AddEntry: " << opt << endl;
+			fLegend->Draw();
 		}
-	}*/
+		opt = "";
+		dopt = hdrawn->GetDrawOption();
+		if (fSelHist->GetDimension() == 2 ) {
+			if ( dopt.Contains("SCAT", TString::kIgnoreCase) ) opt = "P";
+			if ( dopt.Contains("BOX", TString::kIgnoreCase) && 
+				!dopt.Contains("BOX1", TString::kIgnoreCase) ) opt += "L";
+			if ( (dopt.Contains("BOX", TString::kIgnoreCase) &&
+				lFillColor != 0 && lFStyle != 0) || 
+				dopt.Contains("BOX1", TString::kIgnoreCase)) opt+= "F";
+		} else {
+			if (dopt.Length() == 0 || dopt.Contains("HIST",TString::kIgnoreCase) ||
+				dopt.Contains("E", TString::kIgnoreCase) )
+				opt = "L";
+			if (hdrawn->GetFillStyle() != 0 )
+					opt+= "F";
+			if (dopt.Contains("P",TString::kIgnoreCase) )
+				opt += "P";
+		}
+//		cout << "fLegend->AddEntry: " << opt << endl;
+		fLegend->AddEntry(hdrawn, "", opt);
+	}
 	fCanvas->Update();
+	if ( hdrawn ) {
+		TRegexp sa("SAME");
+		TString dro(hdrawn->GetDrawOption());
+		dro(sa)="";
+//		hdrawn->SetDrawOption(dro);
+//		THistPainter *hp = (THistPainter*)hdrawn->GetPainter();
+//		hdrawn->Pop();
+		fCanvas->Modified();
+		fCanvas->Update();
+}
 	if (lIncrColors > 0) {
 		lLColor++;
 		lMColor++;
@@ -3425,6 +3550,7 @@ void FitHist::Draw1Dim()
 	fCanvas->cd();
    fSelHist->Draw();
    if ( gROOT->GetForceStyle() ) {
+		fCanvas->UseCurrentStyle();
 		if (fErrorMode != "none") {
 			 drawopt += fErrorMode;
 		} 
@@ -3432,7 +3558,7 @@ void FitHist::Draw1Dim()
 //			 drawopt += "P";
 //		}
 		if (drawopt.Length() == 0 || fShowContour != 0) drawopt += "HIST";
-		if (fDrawMarker != 0) drawopt += "P";
+		if (fShowMarkers != 0) drawopt += "P";
 		gStyle->SetOptTitle(fShowTitle);
 		if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
 			 fSelHist->SetFillStyle(fFillStyle);
@@ -3481,7 +3607,7 @@ void FitHist::Draw1Dim()
    }
    if ( gDebug > 0 )
 		cout << "Draw1Dim() " << drawopt << " fSelHist->Draw() " <<fSelHist->GetDrawOption() <<  endl;
-	if (fDrawMarker == 0 && fText == 0)
+	if (fShowMarkers == 0 && fText == 0)
 		fSelHist->SetMarkerSize(0.01);
 //   fSelHist->Draw(drawopt);
    TList *lof = fOrigHist->GetListOfFunctions();
@@ -3520,6 +3646,9 @@ void FitHist::Draw1Dim()
 			st->SetX2NDC(env.GetValue("StatBox1D.fX2", 0.98));
 			st->SetY1NDC(env.GetValue("StatBox1D.fY1", 0.835));
 			st->SetY2NDC(env.GetValue("StatBox1D.fY2", 0.995));
+			if (gDebug > 0) {
+				cout << "Draw1Dim() StatBox1D.fX1: " << st->GetX1NDC() << endl;
+			}
 		}	
 	}
 	//  add extra axis (channels) at top
@@ -3580,12 +3709,11 @@ void FitHist::Draw2Dim()
 //      gStyle->SetTitleFont(gHpr->fTitleFont);
 	if ( gDebug > 0 ) {
 		cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim 
-		<< " gStyle->GetHistFillColor() :" <<gStyle->GetFillColor() << endl;
+		<< " gStyle->GetHistFillColor() :" <<gStyle->GetFillColor() << endl
+		<< " fHistFillColor2Dim :" <<fHistFillColor2Dim<< endl
+		<< " fHistFillStyle2Dim :" <<fHistFillStyle2Dim<< endl;
 	}
 //   fSelHist->DrawCopy(fDrawOpt2Dim);
-   fSelHist->Draw(fDrawOpt2Dim);
-   fSelHist->SetOption(fDrawOpt2Dim);
-   fSelHist->SetDrawOption(fDrawOpt2Dim);
    if (fShowStatBox) {
       gStyle->SetOptStat(fOptStat);
       fSelHist->SetStats(1);
@@ -3594,20 +3722,26 @@ void FitHist::Draw2Dim()
       fSelHist->SetStats(0);
 //      cout << "fSelHist->SetStats(0); " << endl;
    } 
+   fSelHist->Draw(fDrawOpt2Dim);
+   if ( gROOT->GetForceStyle() ) {
+		fCanvas->UseCurrentStyle();
+	}
+   fSelHist->SetOption(fDrawOpt2Dim);
+   fSelHist->SetDrawOption(fDrawOpt2Dim);
    if (fTitleCenterX)
       fSelHist->GetXaxis()->CenterTitle(kTRUE);
    if (fTitleCenterY)
       fSelHist->GetYaxis()->CenterTitle(kTRUE);
    if (fTitleCenterY)
-      fSelHist->GetYaxis()->CenterTitle(kTRUE);
-		fSelHist->SetFillColor(fHistFillColor2Dim);
-		fSelHist->SetFillStyle(fHistFillStyle2Dim);
-		fSelHist->SetLineColor(fHistLineColor2Dim);
-		fSelHist->SetLineStyle(fHistLineStyle2Dim);
-		fSelHist->SetLineWidth(fHistLineWidth2Dim);
-		fSelHist->SetMarkerColor(fMarkerColor2Dim);  
-		fSelHist->SetMarkerStyle(fMarkerStyle2Dim);  
-		fSelHist->SetMarkerSize (fMarkerSize2Dim);   			
+		fSelHist->GetYaxis()->CenterTitle(kTRUE);
+	fSelHist->SetFillColor(fHistFillColor2Dim);
+	fSelHist->SetFillStyle(fHistFillStyle2Dim);
+	fSelHist->SetLineColor(fHistLineColor2Dim);
+	fSelHist->SetLineStyle(fHistLineStyle2Dim);
+	fSelHist->SetLineWidth(fHistLineWidth2Dim);
+	fSelHist->SetMarkerColor(fMarkerColor2Dim);  
+	fSelHist->SetMarkerStyle(fMarkerStyle2Dim);  
+	fSelHist->SetMarkerSize (fMarkerSize2Dim);   			
    DrawCut();
    TList *lof = fOrigHist->GetListOfFunctions();
    if (lof) {
@@ -3651,7 +3785,10 @@ void FitHist::Draw2Dim()
       fCanvas->GetFrame()->SetFillColor(f2DimBackgroundColor);
    }
    DrawDate();
+	fCanvas->Modified();
+   fCanvas->Update();
 	TPaveStats * st = (TPaveStats *)fCanvas->GetPrimitive("stats");
+//   cout << "Draw2Dim: st " << st << endl;
 	if ( st && GeneralAttDialog::fRememberLastSet ) {
 		TEnv env(".hprrc");
 		if ( env.Lookup("StatBox2D.fX1") ) {
@@ -3659,6 +3796,9 @@ void FitHist::Draw2Dim()
 			st->SetX2NDC(env.GetValue("StatBox2D.fX2", 0.98));
 			st->SetY1NDC(env.GetValue("StatBox2D.fY1", 0.835));
 			st->SetY2NDC(env.GetValue("StatBox2D.fY2", 0.995));
+			if (gDebug > 0)
+			cout << "Draw2Dim: StatBox2D.fX1 " << env.GetValue("StatBox2D.fX1", 0.78) << endl;
+			fCanvas->Modified();
 		}	
 	}
 	if (!fCanvas->GetAutoExec())
@@ -3887,7 +4027,7 @@ void FitHist::SetLogy(Int_t state)
 //    Color_t fLineColor;
 //    Float_t fLineWidth;
 //    Float_t fMarkerSize;
-// 	Int_t fDrawMarker;
+// 	Int_t fShowMarkers;
 // 	Int_t fFillStyle;
 //    Int_t fShowContour;
 //    Int_t fShowDateBox;

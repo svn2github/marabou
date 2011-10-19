@@ -15,8 +15,9 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
-	TH1          *fHist;
+	TH2          *fHist;
    TString fDrawOpt;
+   TString fSameOpt;
    Int_t fOptRadio[kNdrawopt];
    const char *fDrawOpt2DimArray[kNdrawopt];
    TString fDrawOpt2Dim;
@@ -45,6 +46,7 @@ private:
 	Int_t   fBidMarkerSize;
 	Int_t   fBidLineColor;
 	Int_t   fBidFillColor;
+	Int_t   fBidLiveStat;
 	Int_t   fTwoDimLogX;
 	Int_t   fTwoDimLogY;
 	Int_t   fTwoDimLogZ;
@@ -61,8 +63,9 @@ public:
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);
-   void SetHistAtt(TCanvas *canvas);
+   void SetHistAtt(TPad *canvas, TH2* hist);
    void SetHistAttPermLocal();
+   void SetHistAttAll(TCanvas *canvas);
    void SetHistAttPerm();
    void SaveDefaults();
    void SetAllToDefault();

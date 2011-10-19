@@ -49,6 +49,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/AddFitMenus.h \
  					$(HPRDIRI)/HprStack.h \
  					$(HPRDIRI)/HprGaxis.h \
+ 					$(HPRDIRI)/HprLegend.h \
   					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)

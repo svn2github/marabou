@@ -119,6 +119,9 @@ void HTCanvas::HandlePadModified()
 
 void HTCanvas::DoSaveLegendStats()
 {
+	TEnv env(".hprrc");
+	if (! env.GetValue("GeneralAttDialog.fRememberStatBox", 1) )
+		return;
 	if ( gDebug > 0 ) 
 		cout << "HTCanvas::DoSaveLegendStats " << this << endl;
 	TPave * leg;

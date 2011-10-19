@@ -261,7 +261,8 @@ void GroupOfHists::BuildCanvas()
          if (fFill1Dim) {
             hist->SetFillStyle(fHistFillStyle);
             hist->SetFillColor(fHistFillColor);
-//            cout << "fHistPresent->fHistFillStyle " << fHistPresent->fHistFillStyle << endl;
+				if ( gDebug > 0)
+            cout << "fHistPresent->fHistFillStyle " << fHistFillStyle << endl;
          } else {
             hist->SetFillStyle(0);
          }
