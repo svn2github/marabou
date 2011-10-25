@@ -4,7 +4,7 @@
 // Name:           TMrbSubevent_DGF_Xhit
 // Purpose:        Base class for subevents containing DGF data
 // Description:    Provides basic methods for DGF subevents
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class TMrbSubevent_DGF_Xhit : public TObject {
@@ -21,7 +21,9 @@ class TMrbSubevent_DGF_Xhit : public TObject {
 			return(&fHitBuffer);
 		};
 		inline TUsrXhitBuffer * GetHitBuffer() { return(&fHitBuffer); };
-		inline Int_t GetNofData() { return(fNofData); };		
+		inline Int_t GetNofData() { return(fNofData); };
+		inline Bool_t HasHitBuffer() { return kTRUE; };
+
 	protected:
 		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
 

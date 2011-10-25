@@ -3,8 +3,8 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Caen_V1X90
 // Purpose:        Base class for subevents containing data from CAEN V1X90 tdcs
-// Description:    
-// Keywords:       
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class TMrbSubevent_Caen_V1X90 : public TObject {
@@ -21,6 +21,7 @@ class TMrbSubevent_Caen_V1X90 : public TObject {
 			return(&fHitBuffer);
 		};
 		inline TUsrHitBuffer * GetHitBuffer() { return(&fHitBuffer); };
+		inline Bool_t HasHitBuffer() { return kTRUE; };
 
 	protected:
 		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };

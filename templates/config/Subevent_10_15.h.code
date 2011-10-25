@@ -60,6 +60,8 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TObject {
 		inline Int_t GetIndex() const { return(kMrbSevt%%SEVT_NAME_UC%%); };			// subevent index
 		inline UInt_t GetIndexBit() const { return(kMrbSevtBit%%SEVT_NAME_UC%%); };	// subevent index bit
 
+		inline Bool_t HasHitBuffer() { return kFALSE; };
+
 	protected:
 		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
 

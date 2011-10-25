@@ -22,6 +22,7 @@ class TMrbSubevent_HB : public TObject {
 			return(&fHitBuffer);
 		};
 		inline TUsrHitBuffer * GetHitBuffer() { return(&fHitBuffer); };
+		inline Bool_t HasHitBuffer() { return kTRUE; };
 
 	protected:
 		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };

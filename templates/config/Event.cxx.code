@@ -108,6 +108,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::AllocHitBuffers() {
 %S% 	coincWindowS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.CoincWindow"), coincWindowE);
 %S% 	hb = $sevtNameLC.AllocHitBuffer("HB$sevtNameUC", nofEntriesS, highWaterS);
 %S% 	hbx = new TUsrHBX(this, hb, coincWindowS);
+%S%		hbx->SetParentSevt(&$sevtNameLC);
 %S% 	this->AddHBX(hbx, (Int_t) kMrbSevt$sevtNameUC);
 %SPH%// alloc hit buffer for subevent $sevtNameLC (has special hit $xhit)
 %SPH% 	nofEntriesS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.NofEntries"), nofEntriesE);
@@ -115,6 +116,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::AllocHitBuffers() {
 %SPH% 	coincWindowS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.CoincWindow"), coincWindowE);
 %SPH% 	hb = $sevtNameLC.AllocHitBuffer("HB$sevtNameUC", nofEntriesS, highWaterS);
 %SPH% 	hbx = new TUsrHBX(this, hb, coincWindowS);
+%SPH%	hbx->SetParentSevt(&$sevtNameLC);
 %SPH% 	this->AddHBX(hbx, (Int_t) kMrbSevt$sevtNameUC);
 %S%
 %%EndOfCode%%
