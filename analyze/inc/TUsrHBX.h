@@ -7,10 +7,10 @@
 // Purpose:        Class to implement an index for a hit buffer
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHBX.h,v 1.2 2011-03-03 12:59:47 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: TUsrHBX.h,v 1.3 2011-10-28 13:30:05 Marabou Exp $
+// Date:
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TObject.h"
@@ -23,7 +23,7 @@
 // Name:           TUsrHBX
 // Purpose:        A wrapper to access hit buffer elements
 // Description:    Provides means to access hit buffer data
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class TUsrHBX : public TObject {
@@ -36,7 +36,7 @@ class TUsrHBX : public TObject {
 
 		inline Int_t GetNofEntries() const { return(fHitBuffer->GetNofEntries()); };
 		inline Int_t GetNofHits() const { return(fHitBuffer->GetNofHits()); };
-		
+
 		inline void SetWindow(Int_t Window) { fWindow = Window; };
 		inline Int_t GetWindow() const { return(fWindow); };
 
@@ -51,7 +51,7 @@ class TUsrHBX : public TObject {
 		Int_t FindHitIndex(Int_t ModuleIndex, Int_t Channel);					// ...
 
 		TUsrHit * At(Int_t Index) const { return ((TUsrHit *) fHits->At(Index)); }; 	// return hit at given index
-		
+
 		TUsrHit * FindEvent(Int_t EventNumber); 							// find an event
 		TUsrHit * FindNextEvent();											// find first hit of next event
 
@@ -64,17 +64,21 @@ class TUsrHBX : public TObject {
 
 		inline TUsrHitBuffer * GetHitBuffer() const { return(fHitBuffer); };
 
+		inline void SetParentSevt(TObject * Sevt) { fParentSevt = Sevt; };
+		inline TObject * GetParentSevt() { return fParentSevt; };
+
 		inline void Sort(Int_t UpTo = kMaxInt) { fHits->Sort(UpTo); };		// sort entries by time
-		
+
 	protected:
 		TObject * fEvent;						// event / trigger
+		TObject * fParentSevt;					// parent subevent
 		Bool_t fResetDone;						// kTRUE after ResetIndex()
 		Int_t fCurIndex;						// current index in buffer
 		Int_t fWindow;							// time stamp window
 		TUsrHitBuffer * fHitBuffer; 			//! hit buffer address
 		TClonesArray * fHits;					//! access to hit array
-			
+
 	ClassDef(TUsrHBX, 1)				// [Analyze] Hit buffer index
 };
-	
+
 #endif
