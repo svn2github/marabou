@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.39 2009-08-19 12:52:49 Rudolf.Lutter Exp $
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.40 2011-11-02 13:53:21 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -252,7 +252,6 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fEnergyPeakTimeEntry->ShowToolTip(kTRUE, kTRUE);
 	fEnergyPeakTimeEntry->AddToFocusList(&fFocusList);
 	fEnergyPeakTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
-
 	fEnergyGapTimeEntry = new TGMrbLabelEntry(fEnergyFilterFrame, "Gap [us]",
 																200, kDGFInstrEnergyGapTimeEntry,
 																kLEWidth,
@@ -1153,7 +1152,7 @@ void DGFInstrumentPanel::EntryChanged(Int_t FrameId, Int_t Selection) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	this->UpdateValue(Selection,	gDGFControlData->GetSelectedModuleIndex(),
+	this->UpdateValue(FrameId,	gDGFControlData->GetSelectedModuleIndex(),
 									gDGFControlData->GetSelectedChannelIndex());
 
 }
@@ -1464,19 +1463,19 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 
 	dgf = gDGFControlData->GetModule(ModuleId)->GetAddr();
 	chn = gDGFControlData->GetChannel(ChannelId);
-
+	
 //	Bool_t updateLocalEnv = kFALSE;
 
 	switch (EntryId) {
 		case kDGFInstrEnergyPeakTimeEntry:
 			dblVal = fEnergyPeakTimeEntry->GetText2Double();
-			if (fEnergyPeakTimeEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetPeakTime(chn, dblVal);
+			if (fEnergyPeakTimeEntry->CheckRange(dblVal, 0, kTRUE, kTRUE)) dgf->SetPeakTime(chn, dblVal);
 			fEnergyPeakTimeEntry->SetText(dgf->GetPeakTime(chn));
 			fEnergyGapTimeEntry->SetText(dgf->GetGapTime(chn));
 			break;
 		case kDGFInstrEnergyGapTimeEntry:
 			dblVal = fEnergyGapTimeEntry->GetText2Double();
-			if (fEnergyGapTimeEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetGapTime(chn, dblVal);
+			if (fEnergyGapTimeEntry->CheckRange(dblVal, 0, kTRUE, kTRUE)) dgf->SetGapTime(chn, dblVal);
 			fEnergyGapTimeEntry->SetText(dgf->GetGapTime(chn));
 			fEnergyPeakTimeEntry->SetText(dgf->GetPeakTime(chn));
 			break;
@@ -1486,17 +1485,17 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			break;
 		case kDGFInstrEnergyTauEntry:
 			dblVal = fEnergyTauEntry->GetText2Double();
-			if (fEnergyTauEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetTau(chn, dblVal);
+			if (fEnergyTauEntry->CheckRange(dblVal, 0, kTRUE, kTRUE)) dgf->SetTau(chn, dblVal);
 			break;
 		case kDGFInstrTriggerPeakTimeEntry:
 			dblVal = fTriggerPeakTimeEntry->GetText2Double();
-			if (fTriggerPeakTimeEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetFastPeakTime(chn, dblVal);
+			if (fTriggerPeakTimeEntry->CheckRange(dblVal, 0, kTRUE, kTRUE)) dgf->SetFastPeakTime(chn, dblVal);
 			fTriggerPeakTimeEntry->SetText(dgf->GetFastPeakTime(chn));
 			fTriggerGapTimeEntry->SetText(dgf->GetFastGapTime(chn));
 			break;
 		case kDGFInstrTriggerGapTimeEntry:
 			dblVal = fTriggerGapTimeEntry->GetText2Double();
-			if (fTriggerGapTimeEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetFastGapTime(chn, dblVal);
+			if (fTriggerGapTimeEntry->CheckRange(dblVal, 0, kTRUE, kTRUE)) dgf->SetFastGapTime(chn, dblVal);
 			fTriggerGapTimeEntry->SetText(dgf->GetFastGapTime(chn));
 			fTriggerPeakTimeEntry->SetText(dgf->GetFastPeakTime(chn));
 			break;
