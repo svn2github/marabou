@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 //*KEEP,TPad.
+#include "TTimer.h"
 #include "GrCanvas.h"
 #include <iostream>
 
@@ -32,6 +33,7 @@ private:
    FitHist        * fFitHist;         //! dont stream
    TGraph         * fGraph;           //! dont stream
    HandleMenus    * fHandleMenus;     //! dont stream
+   TTimer         fTimer;
 //
 public:
    HTCanvas();

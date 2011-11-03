@@ -55,7 +55,8 @@ int GetBPars(const char *cmd, TObject * cc, int xpos, int ypos, float dx,
       printf("Illegal button position: %d %d\n", xpos, ypos);
       return 0;
    }
-   *tmp = cc->GetName();
+   *tmp = "gHpr";
+//   *tmp = cc->GetName();
    (*tmp) += "->";
    (*tmp) += cmd;
    (*tmp) += "();";

@@ -13,6 +13,7 @@
 #include <TPaveText.h>
 #include "TGWindow.h"
 #include "TVirtualPad.h"
+#include "TTimer.h"
 #include "HTCanvas.h"
 #include "TRootCanvas.h"
 #include "FhMarker.h"
@@ -40,6 +41,7 @@ static const char fitmacroname[]="fit_user_function.C";
 
 class FitHist : public TNamed, public TQObject {
 private:
+	TTimer  fTimer;
    Int_t   fBinX_1, fBinX_2, fBinY_1, fBinY_2;  // lower, upper bin selected
    Int_t   fBinlx, fBinux, fBinly, fBinuy;     // lower, upper bin in expanded
    Axis_t  fExplx, fExpux, fExply, fExpuy;     // lower, upper edge in expanded
@@ -179,7 +181,8 @@ public:
            const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5,
            Int_t win_widx = 750, Int_t win_widy = 550);
    ~FitHist();
-   void SaveDefaults(Bool_t recalculate = kTRUE);
+	void DisconnectFromPadModified();
+	void SaveDefaults(Bool_t recalculate = kTRUE);
    void RestoreDefaultRanges();
    void DisplayHist(TH1*, Int_t, Int_t, Int_t, Int_t);  // display hists
 //   void DrawHist();                      //

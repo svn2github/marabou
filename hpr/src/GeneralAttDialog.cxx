@@ -15,8 +15,8 @@
 
 namespace std {} using namespace std;
 
-Int_t GeneralAttDialog::fPrependFilenameName = 1;
-Int_t GeneralAttDialog::fPrependFilename = 0;
+Int_t GeneralAttDialog::fPrependFilenameToName = 1;
+Int_t GeneralAttDialog::fPrependFilenameToTitle = 0;
 Int_t GeneralAttDialog::fForceStyle = 1;
 Int_t GeneralAttDialog::fShowPSFile = 0;
 Int_t GeneralAttDialog::fSuppressWarnings = 1;
@@ -133,9 +133,9 @@ ____________________________________________________________\n\
    fGlobalStyleButton = ind;
    fValp[ind++] = &fGlobalStyle;
    fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo names"));
-   fValp[ind++] = &fPrependFilenameName;
+   fValp[ind++] = &fPrependFilenameToName;
    fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo titles"));
-   fValp[ind++] = &fPrependFilename;
+   fValp[ind++] = &fPrependFilenameToTitle;
 	fRow_lab->Add(new TObjString("CheckButton_              Show histlists only"));
 	fValp[ind++] = &fShowListsOnly;
 	fRow_lab->Add(new TObjString("CheckButton_        Suppress warning messages"));
@@ -215,8 +215,8 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fStackedReally" , fStackedReally );
    env.SetValue("GeneralAttDialog.fStackedNostack", fStackedNostack);
    env.SetValue("GeneralAttDialog.fStackedPads"   , fStackedPads   );
-	env.SetValue("GeneralAttDialog.fPrependFilename", fPrependFilename);
-	env.SetValue("GeneralAttDialog.fPrependFilenameName", fPrependFilenameName);
+	env.SetValue("GeneralAttDialog.fPrependFilenameToTitle", fPrependFilenameToTitle);
+	env.SetValue("GeneralAttDialog.fPrependFilenameToName", fPrependFilenameToName);
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -245,8 +245,8 @@ void GeneralAttDialog::RestoreDefaults()
    fStackedReally   = env.GetValue("GeneralAttDialog.fStackedReally" , 1);
    fStackedNostack  = env.GetValue("GeneralAttDialog.fStackedNostack", 0);
    fStackedPads     = env.GetValue("GeneralAttDialog.fStackedPads"   , 0);
-	fPrependFilename = env.GetValue("GeneralAttDialog.fPrependFilename"   , 0);
-	fPrependFilenameName = env.GetValue("GeneralAttDialog.fPrependFilenameName", 1);
+	fPrependFilenameToTitle = env.GetValue("GeneralAttDialog.fPrependFilenameToTitle"   , 0);
+	fPrependFilenameToName = env.GetValue("GeneralAttDialog.fPrependFilenameToName", 1);
 }
 //______________________________________________________________________
 

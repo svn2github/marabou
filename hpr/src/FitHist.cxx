@@ -106,8 +106,10 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
           (FitHist *) gDirectory->GetList()->FindObject(GetName());
       if (hold) {
 //         Warning("Build","Replacing existing : %s",GetName());
+			cout << "FitHist ctor: this " <<this << " Delete hold: " << hold << endl;
          gDirectory->GetList()->Remove(hold);
-         delete hold;
+			gROOT->GetListOfCanvases()->Remove(hold->GetCanvas());
+         delete hold->GetCanvas();
       }
 //      AppendDirectory();
       gDirectory->Append(this);
@@ -118,7 +120,10 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fHname = hname;
 //   Int_t pp = fHname.Index(".");
 //   if(pp) fHname.Remove(0,pp+1);
-//    cout << "ctor: " << GetName() << " hname: " << fHname.Data()<< endl;
+	if (gDebug > 0)
+		cout << "FitHist ctor: " << this << " name: " << name << " title: " << name
+		<< " hname: " << fHname.Data()
+		<< endl << flush;
    fCutPanel = NULL;
 //   fDialog  = NULL;
    fSetRange = kFALSE;
@@ -181,6 +186,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
       fAllWindows = gHpr->GetWindowList();
       fAllCuts = gHpr->GetCutList();
    }
+	fTimer.Connect("Timeout()", "FitHist", this, "DoSaveLimits()");
+
 //   fMarkers = new FhMarkerList(0);
    peaks = new TObjArray(0);
    fDimension = hist->GetDimension();
@@ -340,11 +347,80 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 						   "FitHist", this, "HandlePadModified()");
 	
 };
+//------------------------------------------------------
+// destructor
+FitHist::~FitHist()
+{
+	fTimer.Stop();
+	DisconnectFromPadModified();
+//	TQObject::Disconnect((TPad*)fCanvas, "Modified()", this, "HandlePadModified()");
+	if ( gDebug > 0 ) {
+		cout << " ~FitHist()this : " << this<< " fSelHist " <<fSelHist
+		<< " fCanvas " <<fCanvas << endl;
+//		fSelHist->Print();
+	}
+//   cout<< "enter FitHist  dtor "<< GetName()<<endl;
+   if (!fExpHist && gHpr && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
+   gDirectory->GetList()->Remove(this);
+   gROOT->GetListOfCleanups()->Remove(this);
+   if ( fFit1DimD ) fFit1DimD->CloseDialog();
+   if ( fFit2DimD ) fFit2DimD->CloseDialog();
+	if ( WindowSizeDialog::fNwindows > 0 ) 
+		WindowSizeDialog::fNwindows -= 1;
+   if ( fExpHist ) {
+//      cout << "fExpHist " << fExpHist->GetName() << endl;
+//      dont delete possible windows
+      fExpHist->GetListOfFunctions()->Clear("nodelete");
+      gDirectory->GetList()->Remove(fExpHist);
+      delete fExpHist;
+      fExpHist = 0;
+   }
+   if (fTofLabels) { delete fTofLabels; fTofLabels=NULL;}
+   if (fCalFunc) delete fCalFunc;
+//   if (fDateText) delete fDateText;
+   if (!fCanvas || !fCanvas->TestBit(TObject::kNotDeleted) ||
+       fCanvas->TestBit(0xf0000000)) {
+      cout << "~FitHist: " << this << " Canvas : " << fCanvas << " is deleted" << endl;
+
+      fCanvas = 0;
+   }
+
+   if (fCanvas) {
+      fCanvas->SetFitHist(NULL);
+      if (fCanvasIsAlive) {
+//         cout << " deleting " << fCanvas->GetName() << endl;
+         delete fCanvas;
+         fCanvas = 0;
+      }
+   }
+   if (fCutPanel && fCutPanel->TestBit(TObject::kNotDeleted))
+      delete fCutPanel;
+//   if (fMarkers)
+//      ClearMarks();
+//      delete fMarkers;
+   if (fActiveCuts)
+      delete fActiveCuts;
+   if (peaks)
+      delete peaks;
+   if (fCmdLine)
+      delete fCmdLine;
+};
+
+//_______________________________________________________________________________
+
+void FitHist::DisconnectFromPadModified()
+{
+	TQObject::Disconnect((TPad*)fCanvas, "Modified()", this, "HandlePadModified()");
+	if (gDebug > 0)
+		cout << " DisconnectFromPadModified this : " << this << " fCanvas " <<fCanvas << endl;
+}
 //_______________________________________________________________________________
 
 void FitHist::HandlePadModified()
 {
-	TTimer::SingleShot(50, "FitHist", this, "DoSaveLimits()");
+//	DoSaveLimits();
+	fTimer.Start(20, kTRUE);   // 2 seconds single-shot
+//	TTimer::SingleShot(20, "FitHist", this, "DoSaveLimits()");
 }
 //_______________________________________________________________________________
 
@@ -407,8 +483,11 @@ void FitHist::DoSaveLimits()
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-//   cout << "FitHist::RecursiveRemove: " << obj << endl;
-   if (fSelHist)
+	if (gDebug > 0)
+		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist
+		<< " RecursiveRemove: " << obj  << endl;
+	//fSelHist->Print();
+   if (fSelHist && obj != fSelHist)
       fSelHist->GetListOfFunctions()->Remove(obj);
    fActiveCuts->Remove(obj);
    fActiveWindows->Remove(obj);
@@ -417,63 +496,6 @@ void FitHist::RecursiveRemove(TObject * obj)
    if (obj == fFit2DimD) fFit2DimD = NULL;
 }
 
-//------------------------------------------------------
-// destructor
-FitHist::~FitHist()
-{
-	if ( gDebug > 0 )
-		cout << " ~FitHist()this : " << this<< " fCanvas " <<fCanvas << endl;
-//   cout<< "enter FitHist  dtor "<< GetName()<<endl;
-   if (!fExpHist && gHpr && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
-   gDirectory->GetList()->Remove(this);
-   gROOT->GetListOfCleanups()->Remove(this);
-	TQObject::Disconnect((TPad*)fCanvas, "Modified()");
-							//   if ( fDialog != NULL ) fDialog->CloseDialog();
-   if ( fFit1DimD ) fFit1DimD->CloseDialog();
-   if ( fFit2DimD ) fFit2DimD->CloseDialog();
-	if ( WindowSizeDialog::fNwindows > 0 ) 
-		WindowSizeDialog::fNwindows -= 1;
-   if ( fExpHist ) {
-//      cout << "fExpHist " << fExpHist->GetName() << endl;
-//      dont delete possible windows
-      fExpHist->GetListOfFunctions()->Clear("nodelete");
-      gDirectory->GetList()->Remove(fExpHist);
-      delete fExpHist;
-      fExpHist = 0;
-   }
-   if (fTofLabels) { delete fTofLabels; fTofLabels=NULL;}
-   if (fCalFunc) delete fCalFunc;
-//   if (fDateText) delete fDateText;
-   if (!fCanvas || !fCanvas->TestBit(TObject::kNotDeleted) ||
-       fCanvas->TestBit(0xf0000000)) {
-      cout << "~FitHist: " << this << " Canvas : " << fCanvas << " is deleted" << endl;
-
-      fCanvas = 0;
-   }
-
-   if (fCanvas) {
-      fCanvas->SetFitHist(NULL);
-      if (fCanvasIsAlive) {
-//         cout << " deleting " << fCanvas->GetName() << endl;
-         delete fCanvas;
-         fCanvas = 0;
-      }
-   }
-   if (fCutPanel && fCutPanel->TestBit(TObject::kNotDeleted))
-      delete fCutPanel;
-//   if (fMarkers)
-//      ClearMarks();
-//      delete fMarkers;
-   if (fActiveCuts)
-      delete fActiveCuts;
-   if (peaks)
-      delete peaks;
-   if (fCmdLine)
-      delete fCmdLine;
-//   if (datebox)
- //     delete datebox;
-   gROOT->Reset();
-};
 //________________________________________________________________
 
 void FitHist::SaveDefaults(Bool_t recalculate)
@@ -1092,7 +1114,7 @@ void FitHist::handle_mouse()
 //_____________________________________________________________________________________
 
 void FitHist::DrawTopAxis() {
-   cout << "  add axis (channels) on top" << endl;
+ //  cout << "  add axis (channels) on top" << endl;
    TGaxis *naxis;
    Axis_t x1, y1, x2, y2;
 //      TString side("-");

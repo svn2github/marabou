@@ -53,7 +53,10 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 	if ( gDebug > 0 )
 		cout << "ctor HTCanvas: " << this << " " << name
         << " Id " << GetRootCanvas()->GetId() << endl;
-	TTimer::SingleShot(50, "HTCanvas", this, "ConnectToModified()");
+//	TTimer::SingleShot(20, "HTCanvas", this, "ConnectToModified()");
+	ConnectToModified();
+//   fTimer = new TTimer();
+	fTimer.Connect("Timeout()", "HTCanvas", this, "DoSaveLegendStats()");
 }
 //______________________________________________________________________________________
 
@@ -69,12 +72,25 @@ HTCanvas::~HTCanvas()
 	if ( gDebug > 0 )
 		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
 //   TQObject::Disconnect((TPad*)this, "Modified()");
-   TQObject::Disconnect("TPad", "Modified()");
+	fTimer.Stop();
+   TQObject::Disconnect((TPad*)this, "Modified()", this, "HandlePadModified()");
 	if (fHandleMenus) {
       delete fHandleMenus;
       fHandleMenus = 0;
    }
    if (fHistPresent) fHistPresent->HandleDeleteCanvas(this);
+/*	TList * lop = GetListOfPrimitives();
+	TIter next(lop);
+	TObject *obj;
+	TList temp;
+	while ( (obj = next()) ){
+		if (obj->InheritsFrom("TH1") || obj->InheritsFrom("TGraph") )
+			temp.Add(obj);
+	}
+	TIter next1(&temp);
+	while ( (obj = next()) ){
+		lop->Remove(obj);
+	}*/
    if(fFitHist) {
       fFitHist->UpdateCut();
       fFitHist->SetCanvasIsDeleted();
@@ -107,13 +123,15 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
 void HTCanvas::HandlePadModified()
 {
-	if ( gDebug > 1 &&  TCanvas::fUpdating ) {
+	if ( TCanvas::fUpdating ) {
 		cout << "TCanvas::fUpdating" << endl;
 		return;
 	}
 	if ( gDebug > 0 ) 
 		cout << "HTCanvas::HandlePadModified() " << this << endl;
-	TTimer::SingleShot(50, "HTCanvas", this, "DoSaveLegendStats()");
+	fTimer.Start(20, kTRUE);
+//	TTimer::SingleShot(10, "HTCanvas", this, "DoSaveLegendStats()");
+//	DoSaveLegendStats();
 }	
 //______________________________________________________________________________
 

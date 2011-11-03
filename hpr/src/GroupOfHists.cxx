@@ -198,7 +198,7 @@ void GroupOfHists::BuildCanvas()
 			}
 		}
 		if ( fname.Index("Socket") < 0 && fname.Index("Memory") < 0
-			&& GeneralAttDialog::fPrependFilenameName ) {
+			&& GeneralAttDialog::fPrependFilenameToName ) {
 			fname = gSystem->BaseName(fname);
 			if ( fname.EndsWith("root") )
 				fname.Resize(fname.Length() - 5);

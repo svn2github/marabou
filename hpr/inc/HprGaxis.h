@@ -2,6 +2,7 @@
 #define __HPRGAXIS_h__
 //#include "HTCanvas.h"
 #include "TCanvas.h"
+#include "TTimer.h"
 #include "TGaxis.h"
 
 namespace std {} using namespace std;
@@ -13,6 +14,9 @@ namespace std {} using namespace std;
 //////////////////////////////////////////////////////////////////////////////
 
 class  HprGaxis : public TGaxis {
+	private:
+		TTimer        * fTimer;
+ 		Int_t 		fSkipNextNotify;
    protected:
 		TCanvas *fCanvas;
 		Double_t fFrameX1;
@@ -29,7 +33,7 @@ class  HprGaxis : public TGaxis {
 		HprGaxis(TCanvas * canvas, Double_t xmin, Double_t ymin, Double_t xmax, Double_t ymax,
 					Double_t wmin, Double_t wmax, Int_t ndiv = 510, 
 					Option_t* chopt = "", Double_t gridlength = 0);
-      HprGaxis() {};
+      HprGaxis() { fTimer->Stop(); delete fTimer;};
 		void ReDoAxis();
 		void HandlePadModified();
 		void SetOffset(Double_t off) { fOffset = off; };           // *MENU*

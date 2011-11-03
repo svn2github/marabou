@@ -20,20 +20,11 @@ void   HprLegend::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {
 	TLegendEntry *entry = GetEntry();
 	if ( !entry ) return;
-//	TRegexp sa("SAME");
-//	entry->Print();
 	if ( event == kButton1Down ) {
 		TObject *obj = entry->GetObject();
 		if (obj) {
-//			TString dopt = obj->GetDrawOption();
-//			dopt(sa) = "";
-//			obj->SetDrawOption(dopt);
 			obj->Pop();
-// 			std::cout << "HprLegend pop " << obj << " gPad " << gPad << std::endl
-// 			<< " An open Set2DimOptDialog may get invalid"  << std::endl;
 			this->Pop();
-			gPad->Modified();
-			gPad->Update();
 		}
 	}
 	TLegend::ExecuteEvent(event, px, py);

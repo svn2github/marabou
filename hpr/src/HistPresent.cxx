@@ -2039,7 +2039,7 @@ void HistPresent::RebinHist()
    TH1* hold=(TH1*)gROOT->GetList()->FindObject(buf.Data());
    if (hold) {
 //      cout << "Delete existing " <<  buf.str()<< endl;
-      delete hold;
+//      delete hold;
    }
    TH1F *hnew = (TH1F*)hist->Rebin(fRebin,buf.Data());
    if (fRMethod == 1) hnew->Scale(1./(Float_t)fRebin);
@@ -2160,8 +2160,9 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
    TString newname(hname.Data());
    newname += "_",
    newname += pos;
-	if ( GeneralAttDialog::fPrependFilename != 0 ) {
+	if ( GeneralAttDialog::fPrependFilenameToTitle != 0 ) {
 		TString title = hist->GetTitle();
+		fname = gSystem->BaseName(fname);
 		pp = fname.Index(".");
 		fname.Resize(pp);
 		title.Prepend("_");
@@ -2233,8 +2234,9 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
    TString newname(hname.Data());
    newname += "_",
    newname += pos;
-	if ( GeneralAttDialog::fPrependFilename != 0 ) {
+	if ( GeneralAttDialog::fPrependFilenameToTitle != 0 ) {
 		TString title = hist->GetTitle();
+		fname = gSystem->BaseName(fname);
 		pp = fname.Index(".");
 		fname.Resize(pp);
 		title.Prepend("_");
@@ -2829,35 +2831,25 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
    if (strstr(fname,".root")) {
       TString newhname;
       if (fRootFile) fRootFile->Close();
-      newhname = gSystem->BaseName(fname);
-      Int_t pp = newhname.Index(".");
-      if (pp) newhname.Resize(pp);
-      newhname = newhname + "_" + shname.Data();
+		if ( GeneralAttDialog::fPrependFilenameToName ) {
+			newhname = gSystem->BaseName(fname);
+			Int_t pp = newhname.Index(".");
+			if (pp) newhname.Resize(pp);
+			newhname += "_";
+		}
+      newhname += shname.Data();
+		
       while (newhname.Index(notascii) >= 0) {
          newhname(notascii) = "_";
       }
-//      if (newhname.Index(";") > 1) newhname.Resize(newhname.Index(";"));
-      const char * hn = (const char*)newhname;
-//      TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
-      TString FHname("F");
-      FHname += hn;
-      while (FHname.Index(notascii) >= 0) {
-         FHname(notascii) = "_";
-      }
-      FitHist *fhist = (FitHist*)gDirectory->GetList()->FindObject(FHname);
-      if (fhist) {
-//         Warning("In GetHist:"," Delete  existing : %s",FHname.Data());
-         gDirectory->GetList()->Remove(fhist);
-         delete fhist;
-      }
-      hist=(TH1*)gROOT->GetList()->FindObject(hn);
-
-      if(hist) {
-//         cout << "delete existing: " << hn << endl;
-         CleanWindowLists(hist);
-         delete hist;
-         hist = NULL;
-      }
+      
+//       hist=(TH1*)gROOT->GetList()->FindObject(newhname);
+//       if(hist) {
+//          cout << "GetHist: delete existing: " << newhname << endl;
+//          CleanWindowLists(hist);
+//          delete hist;
+//          hist = NULL;
+//       }
 
       if (!hist) {
 //         gROOT->ProcessLine("gHpr->WarnBox(\"aaaaaaa\")");
@@ -3002,9 +2994,10 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 			b->Update();
 		}
 //      TurnButtonGreen(&activeHist);
-		if ( GeneralAttDialog::fPrependFilename != 0 ) {
+		if ( GeneralAttDialog::fPrependFilenameToTitle != 0 ) {
 			TString title = hist->GetTitle();
 			TString fn(fname);
+			fn = gSystem->BaseName(fn);
 			Int_t pp = fn.Index(".");
 			fn.Resize(pp);
 			title.Prepend("_");
@@ -3038,7 +3031,11 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 			FHname.Resize(FHname.Index(";"));
 		}
 	}
-//   cout << "hist->GetName() " <<   hist->GetName()<<  " hname " << hname <<" origname " << origname << " FHname " << FHname<< endl;
+	if (gDebug > 0){
+		cout << "enter HistPresent::ShowHist: "<< FHname << endl << flush;
+		cout << "hist->GetName() " <<   hist->GetName()<<  " hname " << hname 
+		<< " origname " << origname << endl;
+	}
    TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
    while (FHname.Index(notascii) >= 0) {
       FHname(notascii) = "_";
@@ -3050,9 +3047,15 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
       TList *tl=gDirectory->GetList();
       FitHist *fhist = (FitHist*)tl->FindObject(FHname);
       if (fhist) {
-//         Warning("In ShowHist:"," Delete  existing : %s",FHname.Data());
+			if (gDebug > 0)
+				cout << "In ShowHist: Delete canvas: " <<  fhist->GetCanvas()<< endl<< flush;
 //         gDirectory->GetList()->Remove(hold);
-         delete fhist;
+			gROOT->GetListOfCanvases()->Remove(fhist->GetCanvas());
+			TH1 *oldhist=fhist->GetSelHist();
+         delete fhist->GetCanvas();
+			if (oldhist)
+				delete oldhist;
+//			gSystem->Sleep(100);
       }
 //     Cleaning FitHist objects for which Canvas was closed
       TIter next(tl);
@@ -3099,6 +3102,8 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 //    cout << "FHname " << FHname << endl;
 //    cout << "hist->GetName() " << hist->GetName() << endl;
 //    cout << "origname " << origname << endl;
+	if (gDebug > 0)
+		cout << "HistPresent::ShowHist new FitHist: "<< FHname << endl<< flush;
    fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname.Data(),
           WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, wwidx, wwidy);
    fLastWindow = fh->GetMyCanvas();
@@ -3669,8 +3674,10 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
                oa = line.Tokenize(space);
                if (oa->GetEntries() < 2) continue;
                hname = ((TObjString*)oa->At(1))->String();
-               hname.Prepend("_");
-               hname.Prepend(fname);
+					if (GeneralAttDialog::fPrependFilenameToName) {
+						hname.Prepend("_");
+						hname.Prepend(fname);
+					}
                if (histname == hname) {
 //                  cout << "Set color for: " << histname << endl;
                   b->SetFillColor(17);
@@ -3733,9 +3740,10 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 		cout << "Graph not found" << endl;
 		return;
 	}
-	if ( GeneralAttDialog::fPrependFilename != 0 ) {
+	if ( GeneralAttDialog::fPrependFilenameToTitle != 0 ) {
 		TString title = ((TNamed*)obj)->GetTitle();
 		TString fn(fname);
+		fn = gSystem->BaseName(fn);
 		Int_t pp = fn.Index(".");
 		fn.Resize(pp);
 		title.Prepend("_");
