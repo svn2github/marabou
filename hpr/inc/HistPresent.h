@@ -85,7 +85,6 @@ protected:
    Int_t fSeqNumberMany;
 	Int_t fSeqNumberGraph;
 	Int_t fPageNumber;
-   Int_t fLikelyHood;
 
    TString  fGraphFile;
 
@@ -117,11 +116,9 @@ protected:
    Bool_t    fConnectedOnce;
    Int_t     fSocketToConnect;
    TSocket * fComSocket;
-   Bool_t  fAskedFor;
    Bool_t  fSocketIsOpen;
    Bool_t  fAnyFromSocket;
    TGWindow * fLastWindow;
-   TGWindow * fcHprWindow;
 	TButton * fHfromM_aButton;
    Int_t         fLabelMaxDigits;
 
@@ -147,7 +144,6 @@ protected:
    Int_t      fEditPoYwidth;
    Double_t   fEditPoXRange;
 	TString 		fEditor;
-    Float_t fXXXXX;
 
 public:
 enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,

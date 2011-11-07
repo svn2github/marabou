@@ -327,6 +327,14 @@ void FitHist::UpdateCut(){
       cout << "Create cut: " << fCutname.Data() << endl;
       TMrbWindow2D * wdw2d =
       new TMrbWindow2D(fCutname.Data(), cut->GetN(), cut->GetX(), cut->GetY());
+		if ( strlen(fSelHist->GetXaxis()->GetTitle()) > 0 )
+			wdw2d->SetVarX(fSelHist->GetXaxis()->GetTitle());
+		else 
+			wdw2d->SetVarX("X");
+		if ( strlen(fSelHist->GetYaxis()->GetTitle()) > 0 )
+			wdw2d->SetVarY(fSelHist->GetYaxis()->GetTitle());
+		else
+			wdw2d->SetVarY("Y");
       fActiveCuts->Add(wdw2d);
       fAllCuts->Add(wdw2d);
       delete cut;

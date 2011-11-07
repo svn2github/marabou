@@ -149,7 +149,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fUserContourLevels = 0;
 //   datebox = 0;
    fExpInd = 0;
-
+	fLiveConstBG = 0;
    fSelHist = hist;
    fFit1DimD = 0;
    fFit2DimD = 0;
@@ -186,6 +186,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
       fAllWindows = gHpr->GetWindowList();
       fAllCuts = gHpr->GetCutList();
    }
+   fTimer.SetTimerID(0);
 	fTimer.Connect("Timeout()", "FitHist", this, "DoSaveLimits()");
 
 //   fMarkers = new FhMarkerList(0);
@@ -319,6 +320,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fMin = hist->GetMinimum();
    fXmin = hist->GetXaxis()->GetXmin();
    fXmax = hist->GetXaxis()->GetXmax();
+	fYmax = fYmin = fLogz = 0;
    if (fDimension == 2) {
       fYmin = hist->GetYaxis()->GetXmin();
       fYmax = hist->GetYaxis()->GetXmax();

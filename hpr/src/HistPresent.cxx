@@ -238,7 +238,8 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    activeHist= NULL;
    fFileList = NULL;
    fControlBar = NULL;
-   fRootCanvas=0;
+   fRootCanvas= NULL;
+	fCurrentHist = NULL;
    WindowSizeDialog::fMainWidth = 300;
 
    fByTitle=kFALSE;
@@ -271,17 +272,22 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 //   fAutoExecName_1 = new TString();
 //   fAutoExecName_2 = new TString();
    fHelpDir        = new TString();
+	fAutoUpdateDelay = 5;
    fHostToConnect  = new TString("localhost");
    fComSocket       = 0;
    fSocketToConnect = 9090;
    fConnectedOnce = kFALSE;
+	fSocketIsOpen = kFALSE;
+	fAnyFromSocket = kFALSE;
 	fHfromM_aButton = NULL;
+	fLastWindow = NULL;
    fHelpBrowser = NULL;
    fUseHist = kFALSE;
    fApplyGraphCut = kFALSE;
    fApplyLeafCut = kFALSE;
    fApplyExpression = kFALSE;
    fCanvasClosing = kFALSE;
+	fLabelMaxDigits = 3;
 	fEditor = gSystem->Getenv("EDITOR");
 	if (fEditor.Length() < 2)
 		fEditor = "vi";
