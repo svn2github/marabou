@@ -1798,21 +1798,21 @@ void FitOneDimDialog::SetFittingOptions()
    static void *valp[50];
    Int_t ind = 0;
    Double_t dummy;
-   row_lab->Add(new TObjString("CheckButton_Use Loglikelihood method"));
-   row_lab->Add(new TObjString("RadioButton_Quiet, minimal printout"));
-   row_lab->Add(new TObjString("RadioButton_Print one line / peak"));
-   row_lab->Add(new TObjString("RadioButton_Verbose printout"));
-   row_lab->Add(new TObjString("CheckButton_Use Minos to improve fit"));
-   row_lab->Add(new TObjString("CheckButton_Set all errors to 1"));
-   row_lab->Add(new TObjString("CheckButton_Use Integral of function in bin"));
-   row_lab->Add(new TObjString("CheckButton_Dont draw result function"));
-   row_lab->Add(new TObjString("CheckButton_Add all fitted functions to hist"));
-   row_lab->Add(new TObjString("CheckButton_Print covariance matrix"));
-   row_lab->Add(new TObjString("CheckButton_Confirm start values"));
-   row_lab->Add(new TObjString("CheckButton_Print start values"));
+   row_lab->Add(new TObjString("CheckButton_    Use Loglikelihood method"));
+   row_lab->Add(new TObjString("RadioButton_     Quiet, minimal printout"));
+   row_lab->Add(new TObjString("RadioButton_       Print one line / peak"));
+   row_lab->Add(new TObjString("RadioButton_            Verbose printout"));
+   row_lab->Add(new TObjString("CheckButton_    Use Minos to improve fit"));
+   row_lab->Add(new TObjString("CheckButton_         Set all errors to 1"));
+   row_lab->Add(new TObjString("CheckButton_ Use Integral of func in bin"));
+   row_lab->Add(new TObjString("CheckButton_   Dont draw result function"));
+   row_lab->Add(new TObjString("CheckButton_Add all fitted funcs to hist"));
+   row_lab->Add(new TObjString("CheckButton_     Print covariance matrix"));
+   row_lab->Add(new TObjString("CheckButton_        Confirm start values"));
+   row_lab->Add(new TObjString("CheckButton_          Print start values"));
 
    row_lab->Add(new TObjString("CommentOnly_Params for FitPeakList"));
-   row_lab->Add(new TObjString("DoubleValue_Half Fit Window[sigma]"));
+   row_lab->Add(new TObjString("DoubleValue_    Half Fit Window[sigma]"));
    row_lab->Add(new TObjString("DoubleValue_Two Peak Separation[sigma]"));
 
    valp[ind++] = &fFitOptLikelihood    ;
@@ -1831,7 +1831,7 @@ void FitOneDimDialog::SetFittingOptions()
    valp[ind++] = &fFitWindow           ;
    valp[ind++] = &fPeakSep             ;
    Bool_t ok;
-   Int_t itemwidth = 240;
+   Int_t itemwidth = 260;
    ok = GetStringExt("Fitting options", NULL, itemwidth, fParentWindow
                      ,NULL, NULL, row_lab, valp);
    if (ok) SaveDefaults();
