@@ -187,9 +187,11 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 %CC32% 	cam_bcast_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(25));	/* broadcast in crate C$crateNo */
 %CC32% 	cam_lam_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));		/* LAM pattern in crate C$crateNo */
 %V% 	$moduleNameLC = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* $moduleNameLC: $moduleTitle */
+%V%	if ((UInt_t) $moduleNameLC == 0xFFFFFFFF) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
 %V% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %VS%																		/* $moduleName: $moduleTitle */
 %VS% 	$moduleNameLCBase = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* -- base addr */
+%VS%	if ((UInt_t) $moduleNameLC == 0xFFFFFFFF) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
 %VS% 	$moduleNameLC = $mnemoLC_get_subdevice($moduleNameLCBase, $subDevice);								/* -- subdevice $subDevice */
 %VS% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %%EndOfCode%%
