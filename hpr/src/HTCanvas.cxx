@@ -124,7 +124,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 void HTCanvas::HandlePadModified()
 {
 	if ( TCanvas::fUpdating ) {
-		cout << "TCanvas::fUpdating" << endl;
+		if ( gDebug > 0 ) 
+			cout << "TCanvas::fUpdating" << endl;
 		return;
 	}
 	if ( gDebug > 0 ) 

@@ -37,6 +37,10 @@ X, Y, W:    2 dim: X, Y , Weight \n\
 X, Ym Z:    3 dim: X, Y, Z values to be filled\n\
 X, Y, Z, W: 3 dim: X, Y ,Z, Weight \n\
 \n\
+For convenience the first N columns of the input data\n\
+may be skipped typically if the first value is just a\n\
+a serial number.\n\
+\n\
 A common error is applied to all channels\n\
 if this value is > 0\n\
 \n\
@@ -56,15 +60,16 @@ for the axis can be calculated if the option\n\
    fCommandHead = "Show_Head_of_File()";
    RestoreDefaults();
    TList *row_lab = new TList();
-   row_lab->Add(new TObjString("RadioButton_1 Dim, Spectrum, channel content, no X "));
-   row_lab->Add(new TObjString("RadioButton_1 Dim, X values to be filled"));
-   row_lab->Add(new TObjString("RadioButton_1 Dim, X, Weight"));
-	row_lab->Add(new TObjString("RadioButton_1 Dim, X, Weight, Error"));
-	row_lab->Add(new TObjString("RadioButton_2 Dim, X, Y values to be filled"));
-   row_lab->Add(new TObjString("RadioButton_2 Dim, X, Y, Weight"));
-   row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z values to be filled"));
-   row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z, Weight"));
-   row_lab->Add(new TObjString("FileRequest_Input datafile"));
+   row_lab->Add(new TObjString("RadioButton_1 Dim, Spectrum, channel cont, no X "));
+   row_lab->Add(new TObjString("RadioButton_1 Dim, X values to be filled        "));
+   row_lab->Add(new TObjString("RadioButton_1 Dim, X, Weight                    "));
+	row_lab->Add(new TObjString("RadioButton_1 Dim, X, Weight, Error             "));
+	row_lab->Add(new TObjString("RadioButton_2 Dim, X, Y values to be filled     "));
+   row_lab->Add(new TObjString("RadioButton_2 Dim, X, Y, Weight                 "));
+   row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z values to be filled  "));
+   row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z, Weight              "));
+	row_lab->Add(new TObjString("PlainIntVal_Skip first n columns, n:            "));
+	row_lab->Add(new TObjString("FileRequest_Input datafile"));
    row_lab->Add(new TObjString("StringValue_Name"));
    row_lab->Add(new TObjString("StringValue_Title"));
    row_lab->Add(new TObjString("PlainIntVal_NbX"));
@@ -90,8 +95,9 @@ for the axis can be calculated if the option\n\
    valp[ind++] = &f2DimWithWeight;
    valp[ind++] = &f3Dim;
    valp[ind++] = &f3DimWithWeight;
-   valp[ind++] = &fHistFileName;
-   valp[ind++] = &fHistName;
+   valp[ind++] = &fNskip;
+	valp[ind++] = &fHistFileName;
+	valp[ind++] = &fHistName;
    valp[ind++] = &fHistTitle;
    valp[ind++] = &fNbinsX;
    valp[ind++] = &fXlow;
@@ -151,7 +157,7 @@ void Ascii2HistDialog::Read_Input()
    TString line;
 	TString del(" ,\t, \r");
 	TObjArray * oa;
-//	Int_t nn = 0;
+	Int_t nn = 0;
 	while ( 1 ) {
 		line.ReadLine(infile);
 		// check for DOS format
@@ -161,30 +167,36 @@ void Ascii2HistDialog::Read_Input()
 		if (infile.eof()) break;
 		oa = line.Tokenize(del);
 		Int_t nent = oa->GetEntries();
-//		if (nn < 50) {
-//			cout << line << " " << nent << endl;
-//			nn++;
-//		}
+		if (nn < 50 && gDebug > 0) {
+			cout << line << " " << nent << endl;
+			nn++;
+		}
 		if (nval == 1 && nent > 1 )
 			continue;
-		if (nent < nval) {
+		if (nent < nval+fNskip) {
 			cout << "Not enough entries at: " << fNvalues+1 << endl;
 			ok = kFALSE;
 			continue;
 		}
-		for (Int_t i = 0; i < nval; i++) {
+// 		if (nn < 50) cout << " val: ";
+		for (Int_t i = fNskip; i < nval+fNskip; i++) {
 			TString val = ((TObjString*)oa->At(i))->String();
+			if (nn < 50 && gDebug > 0) 
+				cout << val << " " ; 
 			if (!val.IsFloat()) {
 				cout << "Illegal double: " << val << " at line: " << fNvalues+1 << endl;
 				ok = kFALSE;
 				continue;
 			}
-			if      (i == 0) fXval.AddAt(val.Atof(), fNvalues);
-			else if (i == 1) fYval.AddAt(val.Atof(), fNvalues);
-			else if (i == 2) fZval.AddAt(val.Atof(), fNvalues);
-			else if (i == 3) fWval.AddAt(val.Atof(), fNvalues);
-			fNvalues++;
+			
+			if      ( i == 0+fNskip ) fXval.AddAt(val.Atof(), fNvalues);
+			else if ( i == 1+fNskip ) fYval.AddAt(val.Atof(), fNvalues);
+			else if ( i == 2+fNskip ) fZval.AddAt(val.Atof(), fNvalues);
+			else if ( i == 3+fNskip ) fWval.AddAt(val.Atof(), fNvalues);
 		}
+		fNvalues++;
+		if (nn < 50 && gDebug > 0) 
+			cout << endl;
 		if (fNvalues >= fXval.GetSize() - 1){
 			fXval.Set(fNvalues+100);
 			fYval.Set(fNvalues+100);
@@ -275,7 +287,11 @@ void Ascii2HistDialog::Read_Input()
       	   fZup  += binw2;
             cout << " fZlow " << fZlow  << " fZup " << fZup;
    	   }
-   	}
+   	   if (f3DimWithWeight) {
+				cout << "Min val, max val: " << fWval[TMath::LocMin(fNvalues, fWval.GetArray())]
+				<< " " << fWval[TMath::LocMax(fNvalues, fWval.GetArray())] << endl;
+			}
+		}
    }
 
    cout << endl;
@@ -339,8 +355,10 @@ void Ascii2HistDialog::Draw_The_Hist()
       }
    }
    if (f3Dim || f3DimWithWeight) {
+		
       TH3F * hist3 = new TH3F(fHistName, fHistTitle, fNbinsX, fXlow, fXup,
                              fNbinsY, fYlow, fYup, fNbinsZ, fZlow, fZup);
+		hist3->Sumw2();
       hist = hist3;
       if (f3Dim) {
          for (Int_t i = 0; i < fNvalues; i++) {
@@ -349,6 +367,8 @@ void Ascii2HistDialog::Draw_The_Hist()
       } else if (f3DimWithWeight) {
          for (Int_t i = 0; i < fNvalues; i++) {
             hist3->Fill(fXval[i], fYval[i], fZval[i], fWval[i]);
+//				if (fWval[i] != 0)
+//					cout << fXval[i]<< " " << fYval[i]  <<" " << fZval[i]<<  "  " <<  fWval[i] << endl;
          }
       }
    }
@@ -376,7 +396,8 @@ void Ascii2HistDialog::Show_Head_of_File()
 
 void Ascii2HistDialog::SaveDefaults()
 {
-   cout << "Ascii2HistDialog::SaveDefaults() " << endl;
+	if ( gDebug > 0 )
+		cout << "Ascii2HistDialog::SaveDefaults() " << endl;
    TEnv env(gHprLocalEnv);
    env.SetValue("Ascii2HistDialog.fHistFileName",   fHistFileName);
    env.SetValue("Ascii2HistDialog.fHistName",		 fHistName);
@@ -389,7 +410,8 @@ void Ascii2HistDialog::SaveDefaults()
    env.SetValue("Ascii2HistDialog.f2DimWithWeight", f2DimWithWeight);
    env.SetValue("Ascii2HistDialog.f3Dim", 			 f3Dim);
    env.SetValue("Ascii2HistDialog.f3DimWithWeight", f3DimWithWeight);
-   env.SetValue("Ascii2HistDialog.fError",  		     fError);
+	env.SetValue("Ascii2HistDialog.fNskip",  			  fNskip);
+	env.SetValue("Ascii2HistDialog.fError",  		     fError);
    env.SetValue("Ascii2HistDialog.fNbinsX",  		  fNbinsX);
    env.SetValue("Ascii2HistDialog.fXlow",  			  fXlow);
    env.SetValue("Ascii2HistDialog.fXup",   			  fXup);
@@ -417,8 +439,9 @@ void Ascii2HistDialog::RestoreDefaults()
 	f2Dim            = env.GetValue("Ascii2HistDialog.f2Dim", 			   0);
    f2DimWithWeight  = env.GetValue("Ascii2HistDialog.f2DimWithWeight",  0);
    f3Dim            = env.GetValue("Ascii2HistDialog.f3Dim", 			   0);
-   f3DimWithWeight  = env.GetValue("Ascii2HistDialog.f3DimWithWeight", 0);
-   fError           = env.GetValue("Ascii2HistDialog.fError",  		  0.0);
+   f3DimWithWeight  = env.GetValue("Ascii2HistDialog.f3DimWithWeight",  0);
+	fNbinsX  		  = env.GetValue("Ascii2HistDialog.fNskip",  	      0);
+	fError           = env.GetValue("Ascii2HistDialog.fError",  		  0.0);
    fNbinsX  		  = env.GetValue("Ascii2HistDialog.fNbinsX",  	    100);
    fXlow    		  = env.GetValue("Ascii2HistDialog.fXlow", 			   0.);
    fXup     		  = env.GetValue("Ascii2HistDialog.fXup",  			 100.);
