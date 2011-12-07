@@ -173,12 +173,13 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
       fWidgetList->AddFirst(hframe);
       fCombinedButton = new TGCheckButton(hframe, 
                     new TGHotString("Change combined"), kCOMBINED);
-      fCombinedButton->SetState(kButtonDown);
+      fCombinedButton->SetState(kButtonUp);
       fWidgetList->Add(fCombinedButton);
       fCombinedButton->Associate(this);
       hframe->AddFrame(fCombinedButton, new TGLayoutHints( 0 , 2, 2, 2, 2));
       AddFrame(hframe, new TGLayoutHints(kLHintsBottom | kLHintsCenterX , 2, 2, 2, 2));
-   }
+		fCombined = kFALSE;
+	}
 
    // set dialog title
    this->SetWindowName(Title);
