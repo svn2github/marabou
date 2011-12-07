@@ -22,13 +22,12 @@ GrCanvas::GrCanvas():TCanvas()
 {
    fRootCanvas  = NULL;
    fGEdit       = NULL;
-   fHasConnection = kFALSE;
+   fConnections = 0;
    fHiddenPrimitives  = NULL;
    fEditGridX = 0;
    fEditGridY = 0;
    fUseEditGrid = 0;
    fEditorIsShown = kFALSE;
-   fHasConnection = kFALSE;
    fCurrentPlane      = 50;
 //   fOrigWw = 0;
 //  fOrigWh = 0;
@@ -75,7 +74,7 @@ GrCanvas::GrCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fHiddenPrimitives = new TList();
    fUseEditGrid = 0;
    fEditorIsShown = kFALSE;
-   fHasConnection = kFALSE;
+   fConnections = 0;
    fCurrentPlane      = 50;
    fButtonsEnabled = kTRUE;
    if (TestBit(kIsAEditorPage)) {
@@ -137,10 +136,13 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 		}
 		return;
 	}
-	if (gDebug > 3)
+	if (gDebug > 3 && event != 51 && event != 21)
 		cout << "GrCanvas::HandleInput Event: " << event << endl;
    if (gROOT->GetEditorMode() != 0) {
       in_edit = kTRUE;
+		if (gDebug > 1 && event != 51 && event != 21)
+		cout << "GrCanvas::HandleInput in_edit  Event: " << event << endl;
+		
    }
    if (fSelected && fSelected->TestBit(kNotDeleted))
       prevSelObj = fSelected;
@@ -260,7 +262,8 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       x = gPad->AbsPixeltoX(px);
       y = gPad->AbsPixeltoY(py);
       if(fUseEditGrid && fSelectedPad == this &&
-       !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
+       !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() 
+		 || fSelected->InheritsFrom("TPave"))
         ){
 //         cout << "x y  " << gPad->AbsPixeltoX(px) << " " << gPad->AbsPixeltoY(py) << endl;
          if(fEditGridX !=0){
@@ -297,7 +300,7 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       break;
 
    case kButton1Motion:
-//   case kButton1ShiftMotion: //8 == kButton1Motion + shift modifier
+   case kButton1ShiftMotion: //8 == kButton1Motion + shift modifier
       if (fSelected) {
          gPad = fSelectedPad;
 
@@ -329,7 +332,8 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          }
 //         if(fUseEditGrid && !(fSelected->IsA() == TPad::Class())){
          if(fUseEditGrid && fSelectedPad == this &&
-          !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
+          !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class()  
+			 || fSelected->InheritsFrom("TPave"))
            ){
             if(fEditGridX !=0){
                x = gPad->AbsPixeltoX(px);
@@ -437,8 +441,9 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 					cout << "kButton1Up:  obj_moved = kTRUE" << endl;
 			}
          if (fUseEditGrid && fSelectedPad == this &&
-          !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
-           ){
+          !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() 
+				 || fSelected->InheritsFrom("TPave")) )
+           {
             if(fEditGridX !=0){
                x = gPad->AbsPixeltoX(px);
                n = (Int_t)((x + TMath::Sign(0.5*fEditGridX, x)) / fEditGridX);
@@ -705,7 +710,7 @@ void GrCanvas::Add2ConnectedClasses(TObject *obj)
                  "ObjCreated(Int_t, Int_t, TObject*)");
    this->Connect("ObjectMoved(Int_t, Int_t, TObject*)", obj->ClassName(), obj,
                  "ObjMoved(Int_t, Int_t, TObject*)");
-   fHasConnection = kTRUE;
+   fConnections++;
 }
 //______________________________________________________________________________
 
@@ -718,14 +723,14 @@ void GrCanvas::RemoveFromConnectedClasses(TObject *obj)
 	this->Disconnect("ObjectMoved(Int_t, Int_t, TObject*)", obj,
 					  "ObjMoved(Int_t, Int_t, TObject*)");
 	if ( this->NumberOfConnections() == 0 )
-		fHasConnection = kFALSE;
+		fConnections--;
 }
 //______________________________________________________________________________
 
 void GrCanvas::ObjectCreated(Int_t px, Int_t py, TObject *obj)
 {
    Long_t args[3];
-   if (fHasConnection) {
+   if (fConnections) {
       args[0] = (Long_t)px;
       args[1] = (Long_t)py;
       args[2] = (Long_t)obj;
@@ -739,7 +744,7 @@ void GrCanvas::ObjectCreated(Int_t px, Int_t py, TObject *obj)
 void GrCanvas::ObjectMoved(Int_t px, Int_t py, TObject *obj)
 {
    Long_t args[3];
-   if (fHasConnection) {
+   if (fConnections) {
       args[0] = (Long_t)px;
       args[1] = (Long_t)py;
       args[2] = (Long_t)obj;
@@ -826,7 +831,7 @@ TObject * GrCanvas::WaitForCreate(const char * what, TPad **pad)
 			cout << "GrCanvas::WaitForCreate: " << &what[1]<< endl;
 		gROOT->SetEditorMode(&what[1]);
 	}
-	for (Int_t i = 0; i < 3000; i++) {
+	for (Int_t i = 0; i < 30000; i++) {
 		gSystem->ProcessEvents();
 		if (*pad != NULL) {
 			gROOT->SetEditorMode();

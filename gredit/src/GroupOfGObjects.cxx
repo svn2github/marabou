@@ -179,8 +179,8 @@ void GroupOfGObjects::SetEnclosingCut(TCutG *cut)
 //________________________________________________________________
 
 Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yoff_c,
-                                        Double_t scaleNDC, Double_t scaleG,
-                                        Double_t angle, Int_t align, Int_t draw_cut, Int_t plane)
+                                        Double_t scaleNDC, Double_t scaleG, Double_t angle, 
+                                        Int_t align, Int_t mirror, Int_t draw_cut, Int_t plane)
 {
 ////////////////////////////////////////////////////////////////////
 //
@@ -202,7 +202,9 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
    else if (align/10 == 3) xoff -= scaleG * dx2;
    if      (align%10 == 1) yoff += scaleG * dy2;
    else if (align%10 == 3) yoff -= scaleG * dy2;
-
+	fAngle = angle;
+	fAlign = align;
+	fMirror = 0;
    TList * list_in_cut = 0;
    if (draw_cut != 0 && this->GetN()){
       clone = this->Clone();
@@ -212,7 +214,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
       Double_t * x = cut->GetX();
       Double_t * y = cut->GetY();
       for (Int_t i = 0; i < cut->GetN(); i++) {
-         Transform(x[i], y[i], xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(x[i], y[i], xoff,yoff, scaleG, &xt, &yt);
          x[i] = xt;
          y[i] = yt;
       }
@@ -221,6 +223,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
       pad->cd();
       cut->Draw();
    }
+	fMirror = mirror;
    TObjOptLink *lnk = (TObjOptLink*)fMembers.FirstLink();
    while ( lnk ) {
       obj = lnk->GetObject();
@@ -238,17 +241,17 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
 
       if (clone->InheritsFrom("TArrow")) {
          TArrow * b = (TArrow*)clone;
-         Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, &xt, &yt);
          b->SetX1(xt);
          b->SetY1(yt);
-         Transform(b->GetX2(), b->GetY2(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetX2(), b->GetY2(), xoff,yoff, scaleG, &xt, &yt);
          b->SetX2(xt);
          b->SetY2(yt);
          b->SetArrowSize(b->GetArrowSize() * scaleNDC);
 
       } else if (clone->InheritsFrom("TCurlyArc")) {
          TCurlyArc* b = (TCurlyArc*)clone;
-         Transform(b->GetStartX(), b->GetStartY(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetStartX(), b->GetStartY(), xoff,yoff, scaleG, &xt, &yt);
          b->SetCenter(xt, yt);
          b->SetRadius(scaleG * b->GetRadius());
          Double_t phi = b->GetPhimin() + angle;
@@ -261,9 +264,9 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
 
       } else if (clone->InheritsFrom("TCurlyLine")) {
          TCurlyLine * b = (TCurlyLine*)clone;
-         Transform(b->GetStartX(), b->GetStartY(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetStartX(), b->GetStartY(), xoff,yoff, scaleG, &xt, &yt);
          b->SetStartPoint(xt, yt);
-         Transform(b->GetEndX(), b->GetEndY(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetEndX(), b->GetEndY(), xoff,yoff, scaleG, &xt, &yt);
          b->SetEndPoint(xt, yt);
          b->SetWaveLength(b->GetWaveLength() * scaleNDC);
          b->SetAmplitude(b->GetAmplitude() * scaleNDC);
@@ -271,21 +274,21 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
 
       } else if (clone->InheritsFrom("TMarker")) {
          TMarker * b = (TMarker*)clone;
-         Transform(b->GetX(), b->GetY(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetX(), b->GetY(), xoff,yoff, scaleG, &xt, &yt);
          b->SetX(xt);
          b->SetY(yt);
          b->SetMarkerSize(b->GetMarkerSize() * scaleNDC);
 
       } else if (clone->InheritsFrom("TText")) {
          TText * b = (TText*)clone;
-         Transform(b->GetX(), b->GetY(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetX(), b->GetY(), xoff,yoff, scaleG, &xt, &yt);
          b->SetX(xt);
          b->SetY(yt);
          b->SetTextSize(b->GetTextSize() * scaleNDC);
 
       } else if (clone->InheritsFrom("TEllipse")) {
          TEllipse * b = (TEllipse*)clone;
-         Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, &xt, &yt);
          b->SetR1(scaleG * b->GetR1());
          b->SetR2(scaleG * b->GetR2());
          if (b->GetPhimin() != 0 || b->GetPhimax() != 360) {
@@ -309,7 +312,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          Double_t* xt = new Double_t[gr->GetN()];
          Double_t* yt = new Double_t[gr->GetN()];
          for (Int_t i = 0; i < gr->GetN(); i++) {
-            Transform(x[i], y[i], xoff,yoff, scaleG, angle, align, &xt[i], &yt[i]);
+            Transform(x[i], y[i], xoff,yoff, scaleG, &xt[i], &yt[i]);
  //           xt[i] = x[i] + xoff;
  //          yt[i] = y[i] + yoff;
          }
@@ -322,7 +325,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          Double_t * x = b->GetX();
          Double_t * y = b->GetY();
          for (Int_t i = 0; i < b->GetN(); i++) {
-            Transform(x[i], y[i], xoff,yoff, scaleG, angle, align, &xt, &yt);
+            Transform(x[i], y[i], xoff,yoff, scaleG, &xt, &yt);
             x[i] = xt;
             y[i] = yt;
          }
@@ -341,8 +344,8 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          x2 = x2 * (fXUpEdge - fXLowEdge);
          y2 = y2 * (fYUpEdge - fYLowEdge);
 
-         Transform(x1, y1, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt, &yt);
-         Transform(x2, y2, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt2, &yt2);
+         Transform(x1, y1, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, &xt, &yt);
+         Transform(x2, y2, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, &xt2, &yt2);
 
          x1 = (xt - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
          y1 = (yt - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
@@ -366,10 +369,14 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          y1 = y1 * (fYUpEdge - fYLowEdge);
          x2 = x2 * (fXUpEdge - fXLowEdge);
          y2 = y2 * (fYUpEdge - fYLowEdge);
-
-         Transform(x1, y1, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt, &yt);
-         Transform(x2, y2, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt2, &yt2);
-
+			cout << "ent TPave: x1, x2: " << x1 << " " <<x2 << endl;
+         Transform(x1, y1, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, &xt, &yt);
+         Transform(x2, y2, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, &xt2, &yt2);
+			cout << "exi TPave: x1, x2: " << x1 << " " <<x2 << endl;
+			if ( fMirror%10 == 1) {
+				xt += 2 * dx2;
+				xt2 += 2 * dx2;
+			}
          x1 = (xt - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
          y1 = (yt - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
          x2 = (xt2 - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
@@ -381,21 +388,23 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
 
       } else if (clone->InheritsFrom("TBox")) {
          TBox * b = (TBox*)clone;
-         Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, &xt, &yt);
          b->SetX1(xt);
          b->SetY1(yt);
-         Transform(b->GetX2(), b->GetY2(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetX2(), b->GetY2(), xoff,yoff, scaleG, &xt, &yt);
          b->SetX2(xt);
          b->SetY2(yt);
 
       } else if (clone->InheritsFrom("TLine")){
          TLine * b = (TLine*)clone;
-         Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+			cout << "ent TLine: x1, x2: " << b->GetX1()<< " " <<b->GetX2()<< endl;
+         Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, &xt, &yt);
          b->SetX1(xt);
          b->SetY1(yt);
-         Transform(b->GetX2(), b->GetY2(), xoff,yoff, scaleG, angle, align, &xt, &yt);
+         Transform(b->GetX2(), b->GetY2(), xoff,yoff, scaleG, &xt, &yt);
          b->SetX2(xt);
          b->SetY2(yt);
+			cout << "exi TLine: x1, x2: " << b->GetX1()<< " " <<b->GetX2()<< endl;
 
       } else {
 //         cout << clone->ClassName() << " not yet implemented" << endl;
@@ -418,15 +427,24 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
 //____________________________________________________________________________
 
 void  GroupOfGObjects::Transform(Double_t x, Double_t y, Double_t xoff, Double_t yoff,
-               Double_t scaleG, Double_t angle, Int_t  align, Double_t* xt, Double_t* yt)
+               Double_t scaleG, Double_t* xt, Double_t* yt)
 {
-   if (align);
    Double_t xx = scaleG * x;
    Double_t yy = scaleG * y;
    *xt = xx;
    *yt = yy;
-   if (angle != 0) {
-      Double_t ar = angle * TMath::Pi() / 180.;
+	if ( fMirror/10 == 1 ) {
+//		Double_t ym = 0.5 * (fYUpEdge + fYLowEdge);
+//		Double_t dy = ym - *yt;
+		*yt = -*yt;
+	}
+	if ( fMirror%10 == 1 ) {
+//		Double_t xm = 0.5 * (fXUpEdge + fXLowEdge);
+//		Double_t dx = xm - *xt;
+		*xt = -*xt;
+	}
+	if (fAngle != 0) {
+      Double_t ar = fAngle * TMath::Pi() / 180.;
       *xt = xx * TMath::Cos(ar) - yy * TMath::Sin(ar);
       *yt = xx * TMath::Sin(ar) + yy * TMath::Cos(ar);
    }

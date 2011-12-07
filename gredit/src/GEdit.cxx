@@ -44,7 +44,7 @@
 #include "HprImage.h"
 #include "HprEditBits.h"
 #include "HprEditCommands.h"
-#include "TSplineX.h"
+#include "THprSplineX.h"
 #include "TSplineXDialog.h"
 #include "InsertFunctionDialog.h"
 #include "FeynmanDiagramDialog.h"
@@ -283,13 +283,13 @@ void GEdit::HandleMenu(Int_t id)
       case M_UseGrid:
          {
      		if (fUseEditGrid) {
-               fEditMenu->UnCheckEntry(M_UseGrid);
-               SetUseEditGrid(kFALSE);
-      		} else {
-               fEditMenu->CheckEntry(M_UseGrid);
-               SetUseEditGrid(kTRUE);
-            }
-         }
+//				fEditMenu->UnCheckEntry(M_UseGrid);
+				SetUseEditGrid(kFALSE);
+      	} else {
+//				fEditMenu->CheckEntry(M_UseGrid);
+				SetUseEditGrid(kTRUE);
+			}
+			}
          break;
 
       case M_PutObjectsOnGrid:
@@ -1640,6 +1640,8 @@ void GEdit::ModifyGraphs()
 
 void GEdit::DefineBox()
 {
+	if (gDebug >1)
+		cout << "GEdit::DefineBox() " << endl;
    TPave* p = (TPave*)GrCanvas::WaitForCreate("TPave", &fPad);
 	if (p == NULL) {
 		return;
@@ -1702,7 +1704,8 @@ void GEdit::DrawControlGraphs()
    TObject * obj;
    fParent->cd();
    while ( (obj = next()) ){
-      if (obj->IsA() == TSplineX::Class()) ((TSplineX*)obj)->DrawControlPoints();
+      if (obj->InheritsFrom("TSplineX"))
+			((TSplineX*)obj)->DrawControlPoints();
    }
    fParent->Update();
 }
@@ -2143,7 +2146,7 @@ tryagain:
       } else if (obj->IsA() == TGraph::Class() && !strncmp(obj->GetName(), "ParallelG", 9)) {
          cout << "Skip ParallelG" << endl;
 
-      } else if (obj->IsA() == TSplineX::Class()) {
+      } else if (obj->IsA() == THprSplineX::Class()) {
          TSplineX* b = ( TSplineX*)obj;
          ControlGraph* gr = b->GetControlGraph();
          Double_t * x = gr->GetX();
@@ -2153,6 +2156,7 @@ tryagain:
          }
          Double_t * y = gr->GetY();
 //         either first or last point
+			cout << "Extract TSplineX " << x << " " << y <<endl;
          if (cut->IsInside(x[0], y[0])
             |cut->IsInside(x[gr->GetN()-1], y[gr->GetN()-1])) {
             if (!markonly) {
@@ -2232,6 +2236,8 @@ void GEdit::InsertGObjects(const char * objname)
    static Short_t  align = 11;
    static Double_t x0 = 0;
    static Double_t y0 = 0;
+   static Int_t mirror_x = 0;
+   static Int_t mirror_y = 0;
    static Int_t    draw_cut = 1;
 
    static void *valp[25];
@@ -2260,6 +2266,10 @@ void GEdit::InsertGObjects(const char * objname)
    valp[ind++] = &x0;
    row_lab->Add(new TObjString("DoubleValue_Y value"));
    valp[ind++] = &y0;
+   row_lab->Add(new TObjString("CheckButton_Mirror X"));
+   valp[ind++] = &mirror_x;
+   row_lab->Add(new TObjString("CheckButton_Mirror Y"));
+   valp[ind++] = &mirror_y;
    row_lab->Add(new TObjString("CheckButton_Draw enclosing cut"));
    valp[ind++] = &draw_cut;
 
@@ -2318,7 +2328,8 @@ void GEdit::InsertGObjects(const char * objname)
    } else {
       current_plane = cc->GetCurrentPlane();
    }
-   gg->AddMembersToList(fParent, x0, y0, scaleNDC, scaleU, angle, align, draw_cut, current_plane);
+   gg->AddMembersToList(fParent, x0, y0, scaleNDC, scaleU, angle, align, 
+								mirror_x + 10*mirror_y, draw_cut, current_plane);
    x0 = y0 = 0;
    fParent->Modified();
    fParent->Update();
@@ -2983,7 +2994,7 @@ Double_t GEdit::PutOnGridY(Double_t y)
    return (Double_t)n * fEditGridY;
 }
 //______________________________________________________________________________
-void  GEdit::SetUseEditGrid(Int_t use)
+void  GEdit::SetUseEditGrid(Bool_t use)
 {
    if (use) {
       if (fEditGridX <= 0 ||  fEditGridY <= 0) {
@@ -2991,10 +3002,6 @@ void  GEdit::SetUseEditGrid(Int_t use)
          return;
       }
    }
-#ifdef MARABOUVERS
-   ((GrCanvas*)fParent)->SetEditGrid(fEditGridX, fEditGridY);
-   ((GrCanvas*)fParent)->SetUseEditGrid(use);
-#endif
 	fVisibleGridX = TMath::Max( fVisibleGridX,fEditGridX );
 	fVisibleGridY = TMath::Max( fVisibleGridY,fEditGridY );
    fUseEditGrid = use;
@@ -3008,8 +3015,18 @@ void  GEdit::SetUseEditGrid(Int_t use)
       cout << "Edit grid too fine, disable it" << endl;
       fUseEditGrid = 0;
    }
-   Int_t temp = 0;
-   if (use) temp = 1;
+	if (fUseEditGrid) {
+		fEditMenu->CheckEntry(M_UseGrid);
+	} else {
+		fEditMenu->UnCheckEntry(M_UseGrid);
+	}
+
+#ifdef MARABOUVERS
+	if ( fUseEditGrid ) {
+		((GrCanvas*)fParent)->SetEditGrid(fEditGridX, fEditGridY);
+	}
+   ((GrCanvas*)fParent)->SetUseEditGrid(fUseEditGrid);
+#endif
 };
 //______________________________________________________________________________
 

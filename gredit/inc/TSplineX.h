@@ -15,6 +15,7 @@
 #include "HprText.h"
 #include <iostream>
 
+class TOrdCollection;
 class TSplineX;
 
 //_________________________________________________________________
@@ -70,10 +71,12 @@ private:
    TArrayI fMixerMinval;                    //!
    TArrayI fMixerMaxval;                    //!
    TArrayI fMixerFlags;                     //!
+   TOrdCollection *fRowlab;                 //!
 	
 protected:
-   virtual ~ControlGraph() {std::cout << "dtor ControlGraph(): " << this << std::endl;};
-
+//   virtual ~ControlGraph() {std::cout << "dtor ControlGraph(): " << this << std::endl;};
+	virtual ~ControlGraph() {};
+	
 
 public:
    ControlGraph (Int_t npoints = 0, Double_t*  x = NULL, Double_t* y = NULL);

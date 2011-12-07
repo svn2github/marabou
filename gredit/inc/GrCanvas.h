@@ -27,7 +27,7 @@ class GrCanvas : public TCanvas {
 private:
    TRootCanvas    * fRootCanvas;      //! dont stream
    GEdit          * fGEdit;           //! dont stream
-   Bool_t         fHasConnection;     //! dont stream
+   Int_t          fConnections;     //! dont stream
    Bool_t         fButtonsEnabled;    //! dont stream
    Bool_t         fEditorIsShown;     //! dont stream
    TList          *fHiddenPrimitives; //

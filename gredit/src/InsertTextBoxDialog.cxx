@@ -51,7 +51,7 @@ This has not the features of auto-align and adopt.\n\
    fValp[ind++] = &fDy;
    fRow_lab->Add(new TObjString("CheckButton_Show shadow"));
    fValp[ind++] = &fShowShadow;
-   fRow_lab->Add(new TObjString("PlainIntVal+Shwidth"));
+   fRow_lab->Add(new TObjString("PlainIntVal+Shwid"));
    fValp[ind++] = &fBorderSize;
    fRow_lab->Add(new TObjString("AlignSelect+ShPos"));
    fValp[ind++] = &fShadowPosition;
@@ -214,7 +214,12 @@ void InsertTextBoxDialog::RestoreDefaults()
    fRoundCorners  = env.GetValue("InsertTextBoxDialog.fRoundCorners" ,0);
    fShowShadow    = env.GetValue("InsertTextBoxDialog.fShowShadow" ,1);
    fBorderSize    = env.GetValue("InsertTextBoxDialog.fBorderSize" ,4);
+	if (fBorderSize > 10 || fBorderSize < 0)
+		fBorderSize = 1;
    fShadowPosition= env.GetValue("InsertTextBoxDialog.fShadowPosition" ,31);
+	if (fShadowPosition > 33 || fShadowPosition < 11)
+		fShadowPosition = 31;
+	
    fNoAlign       = env.GetValue("InsertTextBoxDialog.fNoAlign"    ,0);
    fWeakAlign     = env.GetValue("InsertTextBoxDialog.fWeakAlign"  ,1);
    fStrongAlign   = env.GetValue("InsertTextBoxDialog.fStrongAlign",0);

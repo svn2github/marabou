@@ -40,6 +40,7 @@ Double_t distance(Double_t x1, Double_t y1, Double_t x2, Double_t y2)
 TextBox::TextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,const char *name)
    : TPave(x1 ,y1, x2, y2)
 {
+	fTimer = NULL;
    if (name) SetName(name);
    fTextMargin = 0.25;
    fSmall = 0.001 *(x2-x1);
@@ -62,6 +63,7 @@ TextBox::TextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,const char *
 TextBox::TextBox()
 {
 //   cout << "def ctor TextBox" << endl;
+	fTimer = NULL;
 	#ifdef MARABOUVERS
 	if (gPad) {
 		GrCanvas* hc = (GrCanvas*)gPad;
@@ -69,7 +71,7 @@ TextBox::TextBox()
 	}
 	#endif
 	fPrimitives = 0;
-	fTimer = new TbTimer(100, kTRUE, this);
+//	fTimer = new TbTimer(100, kTRUE, this);
 };
 
 //_________________________________________________________________________
@@ -84,7 +86,8 @@ TextBox::~TextBox()
 		hc->RemoveFromConnectedClasses(this);
 	}
 	#endif
-	delete fTimer;
+	if (fTimer)
+		delete fTimer;
 };
 //_________________________________________________________________________
 
@@ -634,26 +637,25 @@ void TextBox::PrintMembers()
 
 void TextBox::Wakeup()
 {
-   if (gROOT->GetEditorMode() != 0) return;
-   Int_t nfp = gPad->GetListOfPrimitives()->GetEntries();
-   if (nfp <= fPrimitives) {
-      fPrimitives = nfp;
-      return;
-   }
-   fPrimitives = nfp;
-   AdoptAll();
+	if (gROOT->GetEditorMode() != 0) return;
+	Int_t nfp = gPad->GetListOfPrimitives()->GetEntries();
+	if (nfp <= fPrimitives) {
+		fPrimitives = nfp;
+		return;
+	}
+	fPrimitives = nfp;
+	AdoptAll();
 }
 //_________________________________________________________________________
 
 void TextBox::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {
-//   if ((event == kButton1Down || event == kButton1Up)) {
-//       && gROOT->GetEditorMode() != 0) {
-//     cout << "EditorMode " << gROOT->GetEditorMode() << endl;
-//  }
-   fX1Save = GetX1();
-   fY1Save = GetY1();
-   fX2Save = GetX2();
+//	if ((event == kButton1Down || event == kButton1Up)) {
+//		cout << "TextBox::ExecuteEvent " << px << " " << py << endl;
+//	}
+	fX1Save = GetX1();
+	fY1Save = GetY1();
+	fX2Save = GetX2();
    fY2Save = GetY2();
 
    TPave::ExecuteEvent(event, px, py);
@@ -663,7 +665,7 @@ void TextBox::ExecuteEvent(Int_t event, Int_t px, Int_t py)
    Double_t dX2 = GetX2() - fX2Save;
    Double_t dY2 = GetY2() - fY2Save;
    if (dX1 != 0 || dX2 != 0 || dY1 != 0 || dY2 != 0)
-      AlignEntries(dX1, dY1, dX2, dY2);
+		AlignEntries(dX1, dY1, dX2, dY2);
 };
 //________________________________________________________________________________
 

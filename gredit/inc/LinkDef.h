@@ -35,6 +35,7 @@
 #pragma link C++ class HprElement;
 #pragma link C++ class HprText;
 #pragma link C++ class HprElementEditor;
+#pragma link C++ class TextBoxEditor;
 #pragma link C++ class THprArc;
 #pragma link C++ class THprEllipse;
 #pragma link C++ class THprCurlyArc;

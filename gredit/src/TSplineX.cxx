@@ -537,7 +537,8 @@ TSplineX::TSplineX():
    , fRatioXY( 0)
    , fTextList ( NULL)
 {
-   cout << "TSplineX: def ctor npoints " << GetLastPoint() + 1 << " " << endl;
+	if ( gDebug > 0 ) 
+		cout << "TSplineX: def ctor npoints " << GetLastPoint() + 1 << " " << endl;
 //   SetName("TSplineX");
 
 }
@@ -1017,6 +1018,7 @@ void TSplineX::DrawControlPoints(Style_t marker,  Size_t size)
    fCPGraph.SetMarkerStyle(fMStyle);
    if (size > 0)  fMSize = size;
    fCPGraph.SetMarkerSize(fMSize);
+   fCPGraph.SetMarkerColor(GetLineColor());
    fCPGraph.Draw("P");
    fCPDrawn = kTRUE;
    gPad->Update();
@@ -1881,7 +1883,7 @@ ControlGraph::ControlGraph (Int_t npoints, Double_t*  x, Double_t* y) :
               TGraph(npoints, x, y),
               fParent(0), fShapeFactors(0), fSelectedPoint (-1), fSelectedX(0),  fSelectedY(0),
               fSelectedShapeFactor(-1),fMixerValues(0), fMixerMinval(0),
-              fMixerMaxval(0), fMixerFlags(0)
+              fMixerMaxval(0), fMixerFlags(0), fRowlab(NULL)
 {
 };
 //______________________________________________________________________________
@@ -1954,6 +1956,8 @@ void TSplineX::Pop()
 void ControlGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 //
 	Double_t d;
+	if (gDebug > 0 && event != 21 && event != 51) 
+		std::cout << "ControlGraph::ExecuteEvent " <<event << std::endl;
    if (event == kButton3Down) {
 //      cout << "kButton3Down " << endl;
        for (Int_t i=0; i < fNpoints; i++) {
@@ -2115,7 +2119,10 @@ void ControlGraph::ControlGraphMixer()
 // shapefactors
 
    if (!fParent) return;
-   static TOrdCollection * row_lab = new TOrdCollection;
+   if (fRowlab == NULL)
+		fRowlab = new TOrdCollection;
+	else
+		fRowlab->Delete();
    Int_t nrows = GetN();
 	fMixerValues.Set(nrows);
 	fMixerMinval.Set(nrows);
@@ -2135,11 +2142,11 @@ void ControlGraph::ControlGraphMixer()
       }
       Int_t ix = (Int_t)x[i];
       Int_t iy = (Int_t)y[i];
-      row_lab->Add(new TObjString(Form("%d, %d", ix, iy)));
+      fRowlab->Add(new TObjString(Form("%d, %d", ix, iy)));
    }
    TGMrbSliders * sliders = new TGMrbSliders("ControlGraphMixer", nrows,
                        fMixerMinval.GetArray(), fMixerMaxval.GetArray(), fMixerValues.GetArray(),
-                       row_lab, fMixerFlags.GetArray(), NULL);
+                       fRowlab, fMixerFlags.GetArray(), NULL);
    sliders->Connect("SliderEvent(Int_t, Int_t)",this->ClassName() , this,
                "SetShapeFactor(Int_t, Int_t)");
 }

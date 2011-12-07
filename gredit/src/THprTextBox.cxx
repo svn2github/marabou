@@ -24,6 +24,7 @@ void THprTextBox::Paint(const Option_t *opt)
       SetX2(htc->PutOnGridX(GetX2()));
       SetY1(htc->PutOnGridY(GetY1()));
       SetY2(htc->PutOnGridY(GetY2()));
+		SetPaveNDC(this);
    }
    if (GetVisibility() == 1)
       TextBox::Paint(opt);

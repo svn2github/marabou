@@ -110,7 +110,7 @@ public:
    void    SetEditGridY(Double_t y) {fEditGridY = y;};
    void    SetVisibleGridX(Double_t x) {fVisibleGridX = x;};
    void    SetVisibleGridY(Double_t y) {fVisibleGridY = y;};
-   void    SetUseEditGrid(Int_t use = 1);
+   void    SetUseEditGrid(Bool_t use = kTRUE);
    Int_t   GetUseEditGrid() {return fUseEditGrid;};
    void    DrawEditGrid(Bool_t visible);
    void    RemoveEditGrid();
