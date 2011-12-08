@@ -2,6 +2,7 @@
 #define __SIS3302_PROTOS_H__
 
 #include "LwrTypes.h"
+#include "sis_3302_database.h"
 
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
@@ -10,9 +11,11 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.9 $
-//! $Date: 2011-07-26 08:41:50 $
+//! $Revision: 1.10 $
+//! $Date: 2011-12-08 10:04:49 $
 ////////////////////////////////////////////////////////////////////////////*/
+
+void sis_print(struct s_sis_3302 * Module, char * Message);
 
 /*! Alloc database for SIS3302 module */
 struct s_sis_3302 * sis3302_alloc(unsigned long VmeAddr, volatile unsigned char * BaseAddr, char * ModuleName, Int_t Serial);

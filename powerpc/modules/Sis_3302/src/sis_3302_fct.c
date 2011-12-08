@@ -4,13 +4,14 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.14 $
-//! $Date: 2011-09-28 12:22:02 $
+//! $Revision: 1.15 $
+//! $Date: 2011-12-08 10:04:50 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 #include <string.h>
 #include <allParam.h>
 #include <ces/vmelib.h>
@@ -30,7 +31,7 @@
 #include "err_mask_def.h"
 #include "errnum_def.h"
 
-char msg[256];
+char msg[256];	
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -52,7 +53,7 @@ struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * Base
 		strcpy(Module->moduleName, Name);
 		Module->serial = Serial;
 		Module->verbose = 0;
-		Module->segSize = kSis3302SegSize;
+		Module->segSize = 0;
 		Module->curSegSize = 0;
 		Module->lowerBound = 0;
 		Module->upperBound = 1;		/* to force re-mapping */
@@ -67,7 +68,7 @@ struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * Base
 		Module->bufferSize = 0;
 		Module->currentSampling = kSis3302KeyArmBank1Sampling;
 		
-		if (sis3302_mapAddress_sized(Module, 0, 0x10000) == NULL) {
+		if (sis3302_mapAddress(Module, 0) == NULL) {
 			sprintf(msg, "[alloc] Can't map addr 0");
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			Module = NULL;
@@ -76,6 +77,7 @@ struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * Base
 		sprintf(msg, "[alloc] Can't allocate sis_3302 struct");
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	}
+
 	return(Module);
 }
 
@@ -111,6 +113,10 @@ volatile char * sis3302_mapAddress_sized(struct s_sis_3302 * Module, Int_t Offse
 			return(NULL);
 		}
 		mapIt = kTRUE;
+		if (Module->verbose) {
+			sprintf(msg, "[mapAddress] Unmapping log addr %#lx (seg size=%#lx, addr mod=%#x)", Module->mappedAddr, Module->curSegSize, Module->addrMod);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		}
 	}
 
 	if (mapIt) {
@@ -125,11 +131,15 @@ volatile char * sis3302_mapAddress_sized(struct s_sis_3302 * Module, Int_t Offse
 		Module->lowerBound = low;
 		Module->upperBound = low + SegSize - 1;
 		Module->curSegSize = SegSize;
+		if (Module->verbose) {
+			sprintf(msg, "[mapAddress] Mapping phys addr %#lx to log addr %#lx (size=%#lx, addr mod=%#x)", (Module->vmeAddr + low), addr, SegSize, Module->addrMod);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		}
 	}
 	return((volatile Char_t *) (Module->mappedAddr + (Offset - Module->lowerBound)));
 }
 
-volatile char * sis3302_mapAddress(struct s_sis_3302 * Module, Int_t Offset) { return(sis3302_mapAddress_sized(Module, Offset, Module->segSize)); }
+volatile char * sis3302_mapAddress(struct s_sis_3302 * Module, Int_t Offset) { return(sis3302_mapAddress_sized(Module, Offset, (Module->segSize == 0) ? 0x10000 : Module->segSize)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -593,8 +603,8 @@ void sis3302_setEndAddress(struct s_sis_3302 * Module, Int_t NofEvents) {
 	for (chn = 0; chn < kSis3302NofChans; chn++, chnPattern >>= 1) {
 		if (chnPattern & 1) {
 			grp = chn / 2;
-			rdl = Module->rawDataSampleLength[grp] / 2;
-			edl = Module->energySampleLength[grp];
+			rdl = Module->tracingMode ? Module->rawDataSampleLength[grp] / 2 : 0;
+			edl = Module->tracingMode ? Module->energySampleLength[grp] : 0;
 			wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl;	/* 32 bit words */
 			wc *= NofEvents * 2;		/* 16 bit words */
 			if (wc > kSis3302MaxBufSize) wc = kSis3302MaxBufSize;
@@ -1712,7 +1722,7 @@ Int_t sis3302_readRawDataSampleLength(struct s_sis_3302 * Module, Int_t ChanNo) 
 //! \details		Writes raw data sample length
 //! \param[in]		Module			-- module address
 //! \param[in]		Sample			-- length
-//! \param[in]		ChanNo 			-- channel numer
+//! \param[in]		ChanNo 			-- group numer
 //! \return 		TRUE or FALSE
 ////////////////////////////////////////////////////////////////////////////*/
 
@@ -1812,7 +1822,7 @@ Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t Index, I
 	return(sis3302_writeRawDataBufConfig(Module, sx, ChanNo));
 }
 
-Bool_t sis3302_writeRawDataStartIndex_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeRawDataSampleLength(Module, Module->rawDataSampleStart[ChanNo/2], ChanNo)); }
+Bool_t sis3302_writeRawDataStartIndex_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeRawDataStartIndex(Module, Module->rawDataSampleStart[ChanNo/2], ChanNo)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -3595,12 +3605,14 @@ Bool_t sis3302_checkAddressSpace(struct s_sis_3302 * Module) {
 	}
 	if (reduced) {
 		sprintf(msg, "[%s] Using REDUCED address space (16MB)", Module->moduleName);
+		Module->reducedAddressSpace = kTRUE;
+		Module->segSize = kSis3302SegSizeReduced;
 	} else {
 		sprintf(msg, "[%s] Using FULL address space (128MB)", Module->moduleName);
+		Module->reducedAddressSpace = kFALSE;
+		Module->segSize = kSis3302SegSize;
 	}
 	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-	Module->reducedAddressSpace = reduced;
-	if (reduced) Module->segSize = kSis3302SegSizeReduced;
 	return(kTRUE);
 }
 

@@ -1,4 +1,4 @@
-/*____________________________________________________________________[C CODE]
+  /*____________________________________________________________________[C CODE]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           sis_3302_readout.c
 // Purpose:        Readout code for module SIS3302
@@ -76,15 +76,15 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 			  if (nxs == 0) continue;
 			  nxs >>= 1;
 			  grp = chn / 2;
-			  rdl = Module->rawDataSampleLength[grp] / 2;
-			  edl = Module->energySampleLength[grp];
+			  rdl = Module->tracingMode ? Module->rawDataSampleLength[grp] / 2 : 0;
+			  edl = Module->tracingMode ? Module->energySampleLength[grp] : 0;
 			  wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl;
 			  nofEvents[chn] = nxs / wc;
 			  totalSize += nofEvents[chn] * (wc + 1) * sizeof(Int_t);
 		}
 	}
 
-	if (totalSize > Module->bufferSize) {
+	if (totalSize > Module->bufferSize) {	/* if data exceed buffer space in the ppc */
 		Float_t x = ((Float_t) Module->bufferSize) / totalSize;
 		if (Module->verbose) {
 			f_ut_send_msg("m_read_meb", "--------------------------------------------------------------------------------------------", ERR__MSG_INFO, MASK__PRTT);
@@ -131,6 +131,9 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 					if (i == 0) d = (d & 0xFFFF0000) | chn;
 					*pointer++ = d;
 				  }
+			  	grp = chn / 2;
+			 	rdl = Module->tracingMode ? Module->rawDataSampleLength[grp] / 2 : 0;
+			  	edl = Module->tracingMode ? Module->energySampleLength[grp] : 0;
 				  *pointer++ = (rdl << 16) | edl;	/* extra word: lh=raw data length, rh=energy data length */
 				  for (i = 0; i < rdl; i++) {		/* raw data: fetch 2 samples packed in 32bit, store each in a single 32bit word */
 					  d = *mappedAddr++;
