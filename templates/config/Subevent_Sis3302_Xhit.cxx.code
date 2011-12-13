@@ -1,0 +1,156 @@
+%%BeginOfCode%%
+Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis3302::FillSubevent
+// Purpose:        Unpack SIS3302 flash adc data
+// Arguments:      const UShort_t * SevtData   -- pointer to subevent data
+//                 Int_t SevtWC                -- word count
+//                 Int_t TimeStamp             -- time since last start
+//                                                in units of 100 microsecs
+// Results:        kTRUE/kFALSE
+// Exceptions:   
+// Description:    Assigns MBS data to corresponding subevent data members
+//                 Special version for SIS 3302 modules.
+//
+//                 31              16|15                 0
+//                 |=================|===================|
+//                 |    word count   |   module serial   | header word
+//                 |=====================================|
+//                 |   tstamp high   |   channel number  |
+//                 |-------------------------------------|
+//                 |          time stamp low             |
+//                 |-------------------------------------|
+//                 | raw data lngth  | energy data lngth | [0,0] normally
+//                 |-------------------------------------|
+//                 |     raw data    |  (traces, 16bit)  |
+//                 |        ...      |        ...        |
+//                 |-------------------------------------|
+//                 |            energy data              |
+//                 |              (32bit)                |
+//                 |-------------------------------------|
+//                 |            max energy               |
+//                 |-------------------------------------|
+//                 |            min energy               |
+//                 |-------------------------------------|
+//                 |           status bits               |
+//                 |-------------------------------------|
+//                 |       trailer (0xdeadbeef)          |
+//                 |=====================================|
+//                 |   tstamp high   |   channel number  |
+//                 |-------------------------------------|
+//                 |          time stamp low             |
+//                 |-------------------------------------|
+//                 |                ~~~                  |
+//                 |                ~~~                  |
+//                 32====================================0
+//////////////////////////////////////////////////////////////////////////////
+
+	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
+	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
+
+	this->GetHitBuffer()->Reset();			// clear hit buffer
+
+	recNo++;								// count this record	
+	Int_t origSevtWC = SevtWC;				// save original subevent wc
+	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
+	Int_t wordsProcessed = 0; 			// words processed so far
+	UInt_t * dataPtr = (UInt_t *) SevtData;
+	Int_t eventsProcessed = 0;
+	Int_t evtNo = 0;
+
+	UInt_t * sevtStart = dataPtr;				// save ptr to begin of subevent 
+	while (SevtWC > 0) {					// subevent may contain several SIS modules
+		UInt_t header = *dataPtr++;			// header word
+		Int_t wc = (Int_t) ((header >> 16) & 0xFFFF);
+		Int_t wcs = wc;
+		wc--;
+
+		Int_t moduleNumber = header & 0xFFFF; 		// extract module number
+		if (moduleNumber <= 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
+			cerr	<< setred
+				<< this->ClassName() << "::FillSubevent() [sevtWC="
+				<< wordsProcessed << "] Wrong module number - " << moduleNumber << setblack << endl;
+			return(kTRUE);
+		}
+		
+		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+		if (mle == NULL) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Wrong module number - " << moduleNumber << setblack << endl;
+			return(kTRUE);
+		}
+
+		while (wc > 0) {
+			UInt_t tsHigh = *dataPtr++;			// time stamp high, channel
+			UInt_t tsLow = *dataPtr++;			// time stamp low
+			UShort_t tsArr[3];
+			tsArr[0] = (tsHigh >> 16) & 0xFFFF;
+			tsArr[1] = (tsLow >> 16) & 0xFFFF;
+			tsArr[2] = tsLow & 0xFFFF;
+			Int_t edl = *dataPtr++;
+			Int_t rdl = (edl >> 16) & 0xFFFF;
+			edl &= 0xFFFF;
+			if (rdl != 0 || edl != 0) {
+				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected trace data", SevtData, origSevtWC);
+				cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Unexpected trace data - rdl=" << rdl << ", edl=" << edl << " (not yet implemented)" << setblack << endl;
+				return(kTRUE);
+			}
+
+			UInt_t maxEnergy = *dataPtr++;
+			UInt_t minEnergy = *dataPtr++;
+			UInt_t statusBits = *dataPtr++;
+
+			UInt_t trailer = *dataPtr++;
+
+			if (trailer != 0xdeadbeef) {
+				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong trailer", SevtData, origSevtWC);
+				cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Wrong trailer - " << setbase(16) << trailer << setbase(10) << " (should be 0xdeadbeef)" << setblack << endl;
+				return(kTRUE);
+			}
+
+			Int_t chn = (Int_t) (tsHigh & 0xF);		// channel number
+
+			mle->IncrChannelHits(chn);			// count this channel
+
+			TUsrHit * hit = this->GetHitBuffer()->AddHit(
+							eventsProcessed,
+							moduleNumber,
+							chn,
+							tsArr,
+							NULL, 0);
+			if (hit == NULL) {
+				cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Error while filling hitbuffer - giving up"
+					<< setblack << endl;
+				return(kTRUE);
+			}
+			hit->SetDataLong(maxEnergy);	// insert energy value
+			wc -= 7;
+		}
+		SevtWC -= wcs * sizeof(Int_t) / sizeof(Short_t);	// count for wc 32 bit words
+	}
+  
+	return(kTRUE);
+}
+
+%%EndOfCode%%
+%%SEVT_CLASS_METHODS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCLUDE_EVT_SEVT_MOD_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INITIALIZE_EVT_SEVT_MODS%%

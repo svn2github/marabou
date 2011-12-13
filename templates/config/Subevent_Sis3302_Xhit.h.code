@@ -1,0 +1,43 @@
+%%BeginOfCode%%
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis3302_Xhit
+// Purpose:        Base class for subevents containing data from SIS3302 VME modules
+//                 includes extended hits (trace data)
+// Description:
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbSubevent_Sis3302_Xhit : public TObject {
+
+	public:
+		TMrbSubevent_Sis3302_Xhit() {}			// default ctor
+		~TMrbSubevent_Sis3302_Xhit() {};		// default dtor
+
+		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
+
+		inline $xHitNameBuffer * AllocHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater = 0) {	// allocate buffer space
+			fHitBuffer.SetName(Name);
+			fHitBuffer.AllocClonesArray(NofEntries, HighWater);
+			return(&fHitBuffer);
+		};
+		inline $xHitNameBuffer * GetHitBuffer() { return(&fHitBuffer); };
+		inline Bool_t HasHitBuffer() { return kTRUE; };
+
+		inline Bool_t IsVerbose() { return(fVerboseMode); };
+
+	protected:
+		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
+
+	protected:
+		TObject * fMyAddr;						//! ptr to subevent to be used in TTree::Branch() (online)
+		TBranch * fBranch;						//! branch address (replay only)
+		Bool_t fVerboseMode;						// verbose mode
+		Int_t fTimeStamp;						// time stamp, same as fUniqueID
+
+		$xHitNameBuffer fHitBuffer; 				// hit buffer to store subevent data
+
+	ClassDef(TMrbSubevent_Sis3302_Xhit, 1)			// [Analyze] Store SIS3302 data
+};
+%%EndOfCode%%
+%%SEVT_CLASS_DEFINITION%%
