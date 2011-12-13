@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.11 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.12 2011-12-13 08:04:58 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -290,7 +290,7 @@ const Char_t * TMrbSubevent_DGF_3::GetCommonCodeFile() const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fHitDataLength > 0) {
+	if (fXhit) {
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_DGF_Xhit");
 		return("Subevent_DGF_Xhit");
 	} else {

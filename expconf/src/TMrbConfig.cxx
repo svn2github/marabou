@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.192 2011-09-16 12:12:32 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.193 2011-12-13 08:04:58 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3575,7 +3575,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TIterator * sevtIter = fLofSubevents.MakeIterator();
 							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 								if (onceOnly.FindObject(sevt->GetCommonCodeFile()) == NULL) {
-									this->MakeAnalyzeCode(anaStrm, sevt->ClassName(), sevt->GetCommonCodeFile(), tagIdx, pp->GetX());
+									this->MakeAnalyzeCode(anaStrm, sevt, sevt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(sevt->GetCommonCodeFile(), ""));
 								sevt->MakeAnalyzeCode(anaStrm, tagIdx, pp->GetX());
@@ -3590,7 +3590,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TIterator * evtIter = fLofEvents.MakeIterator();
 							while (evt = (TMrbEvent *) evtIter->Next()) {
 								if (onceOnly.FindObject(evt->GetCommonCodeFile()) == NULL) {
-									this->MakeAnalyzeCode(anaStrm, evt->ClassName(), evt->GetCommonCodeFile(), tagIdx, pp->GetX());
+									this->MakeAnalyzeCode(anaStrm, evt, evt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(evt->GetCommonCodeFile(), ""));
 								evt->MakeAnalyzeCode(anaStrm, tagIdx, pp->GetX());
@@ -3736,7 +3736,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TIterator * evtIter = fLofEvents.MakeIterator();
 							while (evt = (TMrbEvent *) evtIter->Next()) {
 								if (onceOnly.FindObject(evt->GetCommonCodeFile()) == NULL) {
-									this->MakeAnalyzeCode(anaStrm, evt->ClassName(), evt->GetCommonCodeFile(), tagIdx, pp->GetX());
+									this->MakeAnalyzeCode(anaStrm, evt, evt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(evt->GetCommonCodeFile(), ""));
 							}
@@ -3744,7 +3744,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TIterator * sevtIter = fLofSubevents.MakeIterator();
 							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 								if (onceOnly.FindObject(sevt->GetCommonCodeFile()) == NULL) {
-									this->MakeAnalyzeCode(anaStrm, sevt->ClassName(), sevt->GetCommonCodeFile(), tagIdx, pp->GetX());
+									this->MakeAnalyzeCode(anaStrm, sevt, sevt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(sevt->GetCommonCodeFile(), ""));
 							}
@@ -3752,7 +3752,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->GetCommonCodeFile()) == NULL) {
-									this->MakeAnalyzeCode(anaStrm, module->ClassName(), module->GetCommonCodeFile(), tagIdx, pp->GetX());
+									this->MakeAnalyzeCode(anaStrm, module, module->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(module->GetCommonCodeFile(), ""));
 							}
@@ -3954,14 +3954,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 	return(kTRUE);
 }
 
-Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName, const Char_t * CodeFile,
+Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, TObject * Class, const Char_t * CodeFile,
 										TMrbConfig::EMrbAnalyzeTag TagIndex, const Char_t * Extension) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEvent::MakeAnalyzeCode
 // Purpose:        Generate class-specific code for user's analysis
 // Arguments:      ofstream & AnaStrm          -- where to output code
-//                 Char_t * ClassName          -- class name
+//                 TObject * Class             -- class
 //                 Char_t * CodeFile           -- common code file
 //                 EMrbAnalyzeTag TagIndex     -- tag word index
 //                 Char_t * Extension          -- file extension
@@ -3988,11 +3988,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 	TString tf;
 
 	TMrbTemplate anaTmpl;
-
+	
 	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptVerbose) != 0);
 
+	TString className = Class->ClassName();
+	
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
@@ -4005,7 +4007,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	}
 	if (fileSpec.IsNull()) {
-		tf = ClassName;
+		tf = className;
 		tf.ReplaceAll("TMrb", "");
 		tf += "_Common";
 		tf += Extension;
@@ -4016,7 +4018,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 
 	if (!this->TagToBeProcessed(tf.Data(), TagIndex)) { 	// will be processed only once
 		if (verboseMode) {
-			gMrbLog->Out()  << "[" << ClassName << "] Template file " << fileSpec
+			gMrbLog->Out()  << "[" << className << "] Template file " << fileSpec
 							<< ": Tag " << fLofAnalyzeTags.FindByIndex(TagIndex)->GetName()
 							<< "(" << TagIndex << ") already processed" << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
@@ -4030,12 +4032,12 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 
 	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) {
 		if (verboseMode) {
-			gMrbLog->Err()  << "[" << ClassName << "] Skipping template file " << fileSpec << endl;
+			gMrbLog->Err()  << "[" << className << "] Skipping template file " << fileSpec << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 		}
 		return(kFALSE);
 	} else if (verboseMode) {
-		gMrbLog->Out()  << "[" << ClassName << "] Using template file " << fileSpec << endl;
+		gMrbLog->Out()  << "[" << className << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 	}
 
@@ -4048,6 +4050,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 		if (TagIndex == analyzeTag->GetIndex()) {
 			if (!this->ExecUserMacro(&AnaStrm, this, analyzeTag->GetName())) {
 				switch (TagIndex) {
+					case kAnaSevtClassDef:
+					    {
+						anaTmpl.InitializeCode();
+						anaTmpl.Substitute("$xHitName", ((TMrbSubevent *) Class)->GetNameOfXhit());
+						anaTmpl.WriteCode(AnaStrm);
+					    }
+					    break;
 					default:
 						anaTmpl.InitializeCode();
 						anaTmpl.WriteCode(AnaStrm);

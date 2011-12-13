@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.100 2011-05-18 11:04:49 Marabou Exp $
+// Revision:       $Id: TMrbConfig.h,v 1.101 2011-12-13 08:04:58 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -593,7 +593,7 @@ class TMrbConfig : public TNamed {
 											UInt_t VarType, TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
 														// include class specific code
-		Bool_t MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName, const Char_t * CodeFile,
+		Bool_t MakeAnalyzeCode(ofstream & AnaStrm, TObject * Class, const Char_t * CodeFile,
 											TMrbConfig::EMrbAnalyzeTag TagIndex, const Char_t * Extension);
 
  														// generate config file from memory

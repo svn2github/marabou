@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_3302_3.cxx,v 1.2 2010-12-16 13:12:43 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_3302_3.cxx,v 1.3 2011-12-13 08:04:58 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -192,3 +192,23 @@ Bool_t TMrbSubevent_Sis_3302_3::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::
 	return(kTRUE);
 }
 
+const Char_t * TMrbSubevent_Sis_3302_3::GetCommonCodeFile() const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis_3302_3::GetCommonCodeFile
+// Purpose:        Specify common code to be loaded
+// Arguments:      --
+// Results:        Char_t * CommonCodeFile   -- file containing common code
+// Exceptions:
+// Description:    Returns name of common code file to be used.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fXhit) {
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis3302_Xhit");
+		return("Subevent_Sis3302_Xhit");
+	} else {
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis3302");
+		return("Subevent_Sis3302_Common");
+	}
+}

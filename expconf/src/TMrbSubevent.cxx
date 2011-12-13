@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.45 2011-05-18 11:04:49 Marabou Exp $
+// Revision:       $Id: TMrbSubevent.cxx,v 1.46 2011-12-13 08:04:58 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -117,8 +117,7 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 
 			fArrayMode = kFALSE;
 
-			fXhit = "";
-			fHitDataLength = 0;
+			fXhit = NULL;
 
 			fSoftModule = NULL;
 
@@ -1972,49 +1971,47 @@ Bool_t TMrbSubevent::UseXhit(const Char_t * HitName, Int_t DataLength) {
 	Bool_t rewriteCode = kFALSE;
 	Bool_t needUserClass = kFALSE;
 
-	fXhit = HitName;
-	fXhit(0,1).ToUpper();
-	fXhit.Prepend("TUsr");
-	fHitDataLength = DataLength;
+	TString xHitName = HitName;
+	xHitName(0,1).ToUpper();
+	xHitName.Prepend("TUsr");
 	if (this->NeedsHitBuffer()) {
-		if (fHitDataLength != -1 && fHitDataLength <= 0) {
-			gMrbLog->Err()	<< "[" << this->GetName() << "] Illegal hit data length - " << fHitDataLength << " (should be > 0)" << endl;
+		if (DataLength != -1 && DataLength <= 0) {
+			gMrbLog->Err()	<< "[" << this->GetName() << "] Illegal hit data length - " << DataLength << " (should be > 0)" << endl;
 			gMrbLog->Flush(this->ClassName(), "UseXhit");
 			xHit = NULL;
 		} else {
 			TObjArray * lofHits = gMrbConfig->GetLofXhits();
-			xHit = (TMrbNamedX *) lofHits->FindObject(fXhit.Data());
+			xHit = (TMrbNamedX *) lofHits->FindObject(xHitName.Data());
 			if (xHit) {
-				if (xHit->GetIndex() == fHitDataLength) {
+				if (xHit->GetIndex() == DataLength) {
 					TObjArray * lofSevts = (TObjArray *) xHit->GetAssignedObject();
 					if (lofSevts->FindObject(this) == NULL) lofSevts->Add(this);
 					rewriteCode = kFALSE;
 				} else {
-					if (fHitDataLength == -1) {
-						fHitDataLength = xHit->GetIndex();
-					} else if (fHitDataLength > xHit->GetIndex()) {
-						xHit->SetIndex(fHitDataLength);
-						if (verboseMode) {
-							gMrbLog->Out()  << "[" << this->GetName() << "] Extending hit data length to " << fHitDataLength << endl;
-							gMrbLog->Flush(this->ClassName(), "UseXhit");
-						}
+					if (DataLength == -1) {
+						DataLength = xHit->GetIndex();
+					} else if (DataLength > xHit->GetIndex()) {
+						xHit->SetIndex(DataLength);
+						gMrbLog->Wrn()  << "[" << this->GetName() << "] Changing hit data length to "
+								<< DataLength << " for ALL subevents using extended hit \"" << xHit->GetName() << "\"" << endl;
+						gMrbLog->Flush(this->ClassName(), "UseXhit");
 					}
 					TObjArray * lofSevts = (TObjArray *) xHit->GetAssignedObject();
 					lofSevts->Add(this);
 					rewriteCode = kTRUE;
 				}
 			} else {
-				if (fHitDataLength == -1) {
+				if (DataLength == -1) {
 					gMrbLog->Err()	<< "[" << this->GetName() << "] Hit data length missing" << endl;
 					gMrbLog->Flush(this->ClassName(), "UseXhit");
 					xHit = NULL;
 				} else {
 					TObjArray * lofSevts = new TObjArray();
 					lofSevts->Add(this);
-					xHit = new TMrbNamedX(fHitDataLength, fXhit.Data(), "", lofSevts);
+					xHit = new TMrbNamedX(DataLength, xHitName.Data(), "", lofSevts);
 					lofHits->Add(xHit);
 					if (verboseMode) {
-						gMrbLog->Out()  << "[" << this->GetName() << "] Using special hit " << fXhit
+						gMrbLog->Out()  << "[" << this->GetName() << "] Using special hit " << xHitName
 										<< " (user defined)" << endl;
 					}
 					gMrbLog->Flush(this->ClassName(), "UseXhit");
@@ -2025,32 +2022,32 @@ Bool_t TMrbSubevent::UseXhit(const Char_t * HitName, Int_t DataLength) {
 		}
 	} else {
 		gMrbLog->Err()	<< "[" << this->GetName() << "] Subevent is not configured to use a hit buffer - extended hit \""
-						<< fXhit << "\" ignored" << endl;
+						<< xHitName << "\" ignored" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseXhit");
 		xHit = NULL;
 	}
 	if (xHit) {
 		if (!rewriteCode) {
-			TString xHitFile = fXhit;
+			TString xHitFile = xHitName;
 			xHitFile += ".cxx";
 			rewriteCode = (gSystem->AccessPathName(xHitFile.Data()) != 0);
 		}
 		if (!rewriteCode) {
-			TString xHitFile = fXhit;
+			TString xHitFile = xHitName;
 			xHitFile += ".h";
 			rewriteCode = (gSystem->AccessPathName(xHitFile.Data()) != 0);
 		}
 		if (rewriteCode) {
 			gMrbConfig->CreateXhit(xHit);
 			if (needUserClass) {
-				TString xHitFile = fXhit;
+				TString xHitFile = xHitName;
 				xHitFile += ".cxx";
 				gMrbConfig->IncludeUserClass(xHitFile.Data(), kFALSE);
 			}
 		}
+		fXhit = new TMrbNamedX(xHit->GetIndex(), xHit->GetName());
 	} else {
-		fXhit = "";
-		fHitDataLength = 0;
+		fXhit = NULL;
 	}
 	return(xHit != NULL);
 }

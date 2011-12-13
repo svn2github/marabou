@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbProfile.cxx,v 1.3 2011-07-26 08:41:50 Marabou Exp $       
+// Revision:       $Id: TGMrbProfile.cxx,v 1.4 2011-12-13 08:04:58 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -573,7 +573,7 @@ void TGMrbProfile::Print(ostream & Out, const Char_t * Type) const {
 			TString sep = "";
 			while (nx = (TMrbNamedX *) iter->Next()) {
 				if (optionBits & nx->GetIndex()) {
-					opt += Form("%s%s", sep, nx->GetName());
+					opt += Form("%s%s", sep.Data(), nx->GetName());
 					sep = ":";
 				}
 			}

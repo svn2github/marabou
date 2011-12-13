@@ -24,7 +24,7 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=/usr/local/opt/root/524-00
+ROOTSYS=/home/marabou/root
 MARABOU=`pwd`
 MARABOU_INSTALL_PATH=nothing_to_install
 
@@ -126,11 +126,6 @@ else
 			OK=y
 		fi
 	done
-	if [ ! -x /usr/local/bin/xrcm ]
-	then
-		echo "iniMrbPath: Executable \"xrcm\" not found at /usr/local/bin" >&2
-		ERR=y
-	fi
 	if [ $ERR = "y" ]
 	then
 		echo -e -n $RED >&2

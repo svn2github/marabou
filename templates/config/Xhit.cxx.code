@@ -22,13 +22,14 @@ extern TMrbAnalyze * gMrbAnalyze;				// user's base class
 ClassImp(%%EXTENDED_HIT_NAME_UC%%)
 ClassImp(%%EXTENDED_HIT_NAME_UC%%Buffer)
 
-TUsrXhit * TUsrXhitBuffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
+%%EXTENDED_HIT_NAME_UC%%) *
+    %%EXTENDED_HIT_NAME_UC%%Buffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
 										UShort_t * Hdata, Int_t NofHdata,
 										UShort_t * Xdata, Int_t NofXdata) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHitBuffer::AddXhit
+// Name:           %%EXTENDED_HIT_NAME_UC%%Buffer::AddXhit
 // Purpose:        Add data to hit buffer
 // Arguments:      Int_t EventNumber      -- event index within buffer
 //                 Int_t ModuleNumber     -- module serial
@@ -52,7 +53,8 @@ TUsrXhit * TUsrXhitBuffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t 
 		return(NULL);
 	}
 	TClonesArray &hits = * fHits;
-	TUsrXhit * hit = new(hits[fNofHits]) TUsrXhit(gMrbAnalyze->GetEventsProcessed(),
+	%%EXTENDED_HIT_NAME_UC%% * hit =
+	    new(hits[fNofHits]) %%EXTENDED_HIT_NAME_UC%%(gMrbAnalyze->GetEventsProcessed(),
 																			EventNumber,
 																			ModuleNumber, Channel,
 																			BufferTimeHi, EventTimeHi, FastTrigTime,
@@ -61,13 +63,14 @@ TUsrXhit * TUsrXhitBuffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t 
 	return(hit);
 }
 
-TUsrXhit * TUsrXhitBuffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
+%%EXTENDED_HIT_NAME_UC%% *
+    %%EXTENDED_HIT_NAME_UC%%Buffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t * ChannelTime,
 										UShort_t * Hdata, Int_t NofHdata,
 										UShort_t * Xdata, Int_t NofXdata) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHitBuffer::AddXhit
+// Name:           %%EXTENDED_HIT_NAME_UC%%Buffer::AddXhit
 // Purpose:        Add data to hit buffer
 // Arguments:      Int_t EventNumber      -- event index within buffer
 //                 Int_t ModuleNumber     -- module serial
@@ -89,7 +92,8 @@ TUsrXhit * TUsrXhitBuffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t 
 		return(NULL);
 	}
 	TClonesArray &hits = * fHits;
-	TUsrXhit * hit = new(hits[fNofHits]) TUsrXhit(gMrbAnalyze->GetEventsProcessed(),
+	%%EXTENDED_HIT_NAME_UC%% * hit =
+	    new(hits[fNofHits]) %%EXTENDED_HIT_NAME_UC%%(gMrbAnalyze->GetEventsProcessed(),
 																			EventNumber,
 																			ModuleNumber, Channel,
 																			ChannelTime,

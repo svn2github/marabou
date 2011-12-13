@@ -70,7 +70,7 @@ class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 			this->ClearXdata();
 		};
 
-		inline Int_t GetMaxData() { return(k%%EXTENDED_HIT_NAME_UC%%DataLength); };
+		inline Int_t GetMaxDataLength() { return(k%%EXTENDED_HIT_NAME_UC%%DataLength); };
 		inline Int_t GetNofXData() { return(fXdataLength); };
 
 	protected:		
@@ -94,15 +94,15 @@ class %%EXTENDED_HIT_NAME_UC%%Buffer : public TUsrHitBuffer {
 		};										// default dtor
 
 
-		TUsrXhit * AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 			// add a new hit
+		%%EXTENDED_HIT_NAME_UC%% * AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 			// add a new hit
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
 										UShort_t * Hdata, Int_t NofHdata,
 										UShort_t * Xdata, Int_t NofXdata);
-		TUsrXhit * AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 
+		%%EXTENDED_HIT_NAME_UC%% * AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 
 										UShort_t * ChannelTime,
 										UShort_t * Hdata, Int_t NofHdata, UShort_t * Xdata, Int_t NofXdata);
 
-		inline Int_t GetDataLength() { return(k%%EXTENDED_HIT_NAME_UC%%DataLength); };
+		inline Int_t GetMaxDataLength() { return(k%%EXTENDED_HIT_NAME_UC%%DataLength); };
 
 	ClassDef(%%EXTENDED_HIT_NAME_UC%%Buffer, 1)				// [Analyze] An extension to TUsrHitBuffer object
 };

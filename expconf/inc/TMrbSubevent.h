@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.24 2011-05-18 11:04:49 Marabou Exp $
+// Revision:       $Id: TMrbSubevent.h,v 1.25 2011-12-13 08:04:58 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -183,9 +183,9 @@ class TMrbSubevent : public TNamed {
 
 		Bool_t UseXhit(const Char_t * HitName, Int_t DataLength = -1);			// define a special hit object to be used
 		inline Bool_t UseXhit(Int_t DataLength) { return(this->UseXhit("Xhit", DataLength)); };
-		inline const Char_t * GetNameOfXhit() { return(fXhit.Data()); };
-		inline Int_t GetHitDataLength() { return(fHitDataLength); };
-		inline Bool_t HasXhit() { return(fHitDataLength > 0); };
+		inline const Char_t * GetNameOfXhit() { return(fXhit ? fXhit->GetName() : ""); };
+		inline Int_t GetHitDataLength() { return(fXhit ? fXhit->GetIndex() : 0); };
+		inline Bool_t HasXhit() { return(fXhit != NULL); };
 
 		virtual inline Bool_t NeedsHitBuffer() const { return(kFALSE); }; 			// no hit buffer needed
 		virtual inline Bool_t NeedsBranchMode() const { return(kFALSE); }; 			// may run with leaves or branches
@@ -249,8 +249,7 @@ class TMrbSubevent : public TNamed {
 		Bool_t fPrependPrefix;				// kTRUE if subevents has its own prefix
 		TString fPrefix;					// prefix to be prepended to params & histos
 
-		TString fXhit;						// a special (extended) hit
-		Int_t fHitDataLength;				// length of hit data
+		TMrbNamedX * fXhit;				// a special (extended) hit
 
 		Bool_t fCreateHistoArray;			// kTRUE if histo array / .histlist file is to be created
 		TString fHistoArrayName;			// name of histo array / .histlist file
