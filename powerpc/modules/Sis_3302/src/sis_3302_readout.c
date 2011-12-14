@@ -76,9 +76,9 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 			  if (nxs == 0) continue;
 			  nxs >>= 1;
 			  grp = chn / 2;
-			  rdl = Module->tracingMode ? Module->rawDataSampleLength[grp] / 2 : 0;
-			  edl = Module->tracingMode ? Module->energySampleLength[grp] : 0;
-			  wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl;
+			  rdl = Module->rawDataSampleLength[grp];
+			  edl = Module->energySampleLength[grp];
+			  wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl/2;
 			  nofEvents[chn] = nxs / wc;
 			  totalSize += nofEvents[chn] * (wc + 1) * sizeof(Int_t);
 		}
@@ -98,7 +98,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 					mp = &msg[strlen(msg)];
 				}
 			}
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);			
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 		totalSize = 0;
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
@@ -114,11 +114,11 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 					mp = &msg[strlen(msg)];
 				}
 			}
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);			
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			f_ut_send_msg("m_read_meb", "--------------------------------------------------------------------------------------------", ERR__MSG_INFO, MASK__PRTT);
 		}
 	}
-	
+
 	channelPattern = Module->activeChannels;
 	for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
 		if (channelPattern & 1) {
