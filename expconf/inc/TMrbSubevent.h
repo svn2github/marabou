@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.25 2011-12-13 08:04:58 Marabou Exp $
+// Revision:       $Id: TMrbSubevent.h,v 1.26 2011-12-15 16:33:23 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ class TMrbSubevent : public TNamed {
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 			// normal code generation
 		virtual inline Bool_t SingleModuleOnly() const { return(kFALSE); }; 		// only module per subevent only
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
-		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
+		virtual inline const Char_t * GetCommonCodeFile() { return(NULL); };
 
 		inline TObjArray * GetLofEvents() { return(&fLofEvents); };			// get address of ...
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
@@ -250,7 +250,10 @@ class TMrbSubevent : public TNamed {
 		TString fPrefix;					// prefix to be prepended to params & histos
 
 		TMrbNamedX * fXhit;				// a special (extended) hit
-
+		
+		TString fInheritsFrom;				// subevent parent class
+		TString fCommonCodeFile;			// name of common code
+		
 		Bool_t fCreateHistoArray;			// kTRUE if histo array / .histlist file is to be created
 		TString fHistoArrayName;			// name of histo array / .histlist file
 

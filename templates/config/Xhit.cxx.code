@@ -22,7 +22,7 @@ extern TMrbAnalyze * gMrbAnalyze;				// user's base class
 ClassImp(%%EXTENDED_HIT_NAME_UC%%)
 ClassImp(%%EXTENDED_HIT_NAME_UC%%Buffer)
 
-%%EXTENDED_HIT_NAME_UC%%) *
+%%EXTENDED_HIT_NAME_UC%% *
     %%EXTENDED_HIT_NAME_UC%%Buffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
 										UShort_t * Hdata, Int_t NofHdata,

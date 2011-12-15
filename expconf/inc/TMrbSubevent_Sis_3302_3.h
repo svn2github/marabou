@@ -9,7 +9,7 @@
 //                                            dedicated format for Sis modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_3302_3.h,v 1.2 2011-12-13 08:04:58 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_3302_3.h,v 1.3 2011-12-15 16:33:23 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ class TMrbSubevent_Sis_3302_3 : public TMrbSubevent {
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 					// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 
-		const Char_t * GetCommonCodeFile() const;
+		const Char_t * GetCommonCodeFile();
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

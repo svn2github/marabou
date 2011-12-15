@@ -1,8 +1,8 @@
 %%BeginOfCode%%
-Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+Bool_t  TMrbSubevent_Sis3302_Xhit::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis3302::FillSubevent
+// Name:           TMrbSubevent_Sis3302_Xhit::FillSubevent
 // Purpose:        Unpack SIS3302 flash adc data
 // Arguments:      const UShort_t * SevtData   -- pointer to subevent data
 //                 Int_t SevtWC                -- word count
@@ -94,12 +94,17 @@ Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 			Int_t edl = *dataPtr++;
 			Int_t rdl = (edl >> 16) & 0xFFFF;
 			edl &= 0xFFFF;
-			if (rdl != 0 || edl != 0) {
-				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected trace data", SevtData, origSevtWC);
-				cerr	<< setred
-					<< this->ClassName() << "::FillSubevent() [sevtWC="
-					<< wordsProcessed << "] Unexpected trace data - rdl=" << rdl << ", edl=" << edl << " (not yet implemented)" << setblack << endl;
-				return(kTRUE);
+			UInt_t * rdPtr = dataPtr;
+			Int_t rdledl = rdl + edl;
+			if (rdledl > 0) {
+				if (rdledl > $xHitDataLength) {
+					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Too many trace data", SevtData, origSevtWC);
+					cerr	<< setred
+						<< this->ClassName() << "::FillSubevent() [sevtWC="
+						<< wordsProcessed << "] Too many trace data - " << rdledl << " (max $xHitDataLength)" << setblack << endl;
+					return(kTRUE);
+				}
+				dataPtr += rdledl;
 			}
 
 			UInt_t maxEnergy = *dataPtr++;
@@ -120,12 +125,12 @@ Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 
 			mle->IncrChannelHits(chn);			// count this channel
 
-			TUsrHit * hit = this->GetHitBuffer()->AddHit(
+			$xHitName * hit = this->GetHitBuffer()->AddXhit(
 							eventsProcessed,
 							moduleNumber,
 							chn,
 							tsArr,
-							NULL, 0);
+							NULL, 0, (UShort_t *) rdPtr, rdledl * 2);
 			if (hit == NULL) {
 				cerr	<< setred
 					<< this->ClassName() << "::FillSubevent() [sevtWC="
@@ -134,7 +139,7 @@ Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 				return(kTRUE);
 			}
 			hit->SetDataLong(maxEnergy);	// insert energy value
-			wc -= 7;
+			wc -= (7 + rdledl);
 		}
 		SevtWC -= wcs * sizeof(Int_t) / sizeof(Short_t);	// count for wc 32 bit words
 	}

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_3302_3.cxx,v 1.3 2011-12-13 08:04:58 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_3302_3.cxx,v 1.4 2011-12-15 16:33:23 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -116,7 +116,6 @@ TMrbSubevent_Sis_3302_3::TMrbSubevent_Sis_3302_3(const Char_t * SevtName, const 
 		fSevtSubtype = 57;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataULong;
-		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis3302");	// we need this base class
 		gDirectory->Append(this);
 	}
 }
@@ -192,7 +191,7 @@ Bool_t TMrbSubevent_Sis_3302_3::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::
 	return(kTRUE);
 }
 
-const Char_t * TMrbSubevent_Sis_3302_3::GetCommonCodeFile() const {
+const Char_t * TMrbSubevent_Sis_3302_3::GetCommonCodeFile() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Sis_3302_3::GetCommonCodeFile
@@ -205,10 +204,12 @@ const Char_t * TMrbSubevent_Sis_3302_3::GetCommonCodeFile() const {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fXhit) {
-		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis3302_Xhit");
-		return("Subevent_Sis3302_Xhit");
+		fInheritsFrom = "TMrbSubevent_Sis3302_Xhit";
+		fCommonCodeFile = "Subevent_Sis3302_Xhit";
 	} else {
-		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis3302");
-		return("Subevent_Sis3302_Common");
+		fInheritsFrom = "TMrbSubevent_Sis3302";
+		fCommonCodeFile = "Subevent_Sis3302_Common";
 	}
+	gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, fInheritsFrom);
+	return(fCommonCodeFile.Data());
 }

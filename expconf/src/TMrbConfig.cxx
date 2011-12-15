@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.193 2011-12-13 08:04:58 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.194 2011-12-15 16:33:23 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -271,6 +271,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEvtBaseClass,				"EVT_BASE_CLASS"				},
 								{TMrbConfig::kAnaSevtNameLC,				"SEVT_NAME_LC"					},
 								{TMrbConfig::kAnaSevtNameUC,				"SEVT_NAME_UC"					},
+								{TMrbConfig::kAnaSevtInheritsFrom,			"SEVT_INHERITS_FROM"				},
 								{TMrbConfig::kAnaSevtTitle, 				"SEVT_TITLE"					},
 								{TMrbConfig::kAnaSevtSetName,				"SEVT_SET_NAME" 				},
 								{TMrbConfig::kAnaSevtSerial,				"SEVT_SERIAL"					},
@@ -2578,8 +2579,8 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.WriteCode(anaStrm);
 							}
 							TMrbNamedX * ucl;
-							TIterator * iclIter = fLofUserClasses.MakeIterator();
-							while (ucl = (TMrbNamedX *) iclIter->Next()) {
+							TIterator * uclIter = fLofUserClasses.MakeIterator();
+							while (ucl = (TMrbNamedX *) uclIter->Next()) {
 								if (ucl->GetIndex() & kIclOptUserClass) {
 									anaTmpl.InitializeCode();
 									anaTmpl.Substitute("$className", ucl->GetName());
@@ -4051,9 +4052,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, TObject * Class, const Ch
 			if (!this->ExecUserMacro(&AnaStrm, this, analyzeTag->GetName())) {
 				switch (TagIndex) {
 					case kAnaSevtClassDef:
-					    {
+					case kAnaSevtClassMethods:
+					{
 						anaTmpl.InitializeCode();
-						anaTmpl.Substitute("$xHitName", ((TMrbSubevent *) Class)->GetNameOfXhit());
+						TString xHitName = ((TMrbSubevent *) Class)->GetNameOfXhit();
+						if (xHitName.IsNull()) xHitName = "TUsrHit";
+						anaTmpl.Substitute("$xHitName", xHitName.Data());
+						anaTmpl.Substitute("$xHitDataLength", ((TMrbSubevent *) Class)->GetHitDataLength());
 						anaTmpl.WriteCode(AnaStrm);
 					    }
 					    break;
@@ -5936,7 +5941,7 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 						}
 						break;
 					case TMrbConfig::kXhitTitle:
-						outStrm << xHitTmpl.Encode(line, this->GetTitle()) << endl;
+						outStrm << xHitTmpl.Encode(line, Xhit->GetTitle()) << endl;
 						break;
 					case TMrbConfig::kXhitAuthor:
 						outStrm << xHitTmpl.Encode(line, fAuthor) << endl;

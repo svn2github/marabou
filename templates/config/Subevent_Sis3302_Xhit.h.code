@@ -18,7 +18,7 @@ class TMrbSubevent_Sis3302_Xhit : public TObject {
 
 		inline $xHitNameBuffer * AllocHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater = 0) {	// allocate buffer space
 			fHitBuffer.SetName(Name);
-			fHitBuffer.AllocClonesArray(NofEntries, HighWater);
+			fHitBuffer.AllocClonesArray("$xHitName", NofEntries, HighWater);
 			return(&fHitBuffer);
 		};
 		inline $xHitNameBuffer * GetHitBuffer() { return(&fHitBuffer); };

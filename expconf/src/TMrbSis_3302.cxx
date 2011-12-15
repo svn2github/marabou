@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3302.cxx,v 1.7 2011-03-08 08:25:13 Marabou Exp $
+// Revision:       $Id: TMrbSis_3302.cxx,v 1.8 2011-12-15 16:33:23 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -70,9 +70,7 @@ TMrbSis_3302::TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr) :
 			this->MakeZombie();
 		} else {
 			TString ppc = gEnv->GetValue("TMbsSetup.ProcType", "RIO2");
-			Int_t segSize = kSegSize3;
-			if (ppc.CompareTo("RIO2") == 0 || ppc.CompareTo("PPC") == 0) segSize = kSegSize2;
-			this->SetSegmentSize(segSize);
+			this->SetSegmentSize(kSegSizeStart);
 			SetTitle("SIS 3302 digitizing adc 8 chn 16 bit 100 MHz"); 	// store module type
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";

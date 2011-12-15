@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.46 2011-12-13 08:04:58 Marabou Exp $
+// Revision:       $Id: TMrbSubevent.cxx,v 1.47 2011-12-15 16:33:23 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -128,6 +128,8 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 
 			fCreateHistoArray = kFALSE;
 			fExplicitParamNames = kFALSE;
+			
+			fInheritsFrom = "TObject";
 
 			gMrbConfig->AddSubevent(this); 	// insert subevent in list
 		}
@@ -695,6 +697,9 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 					break;
 				case TMrbConfig::kAnaSevtTitle:
 					AnaStrm << anaTmpl.Encode(line, GetTitle()) << endl;
+					break;
+				case TMrbConfig::kAnaSevtInheritsFrom:
+					AnaStrm << anaTmpl.Encode(line, fInheritsFrom) << endl;
 					break;
 				case TMrbConfig::kAnaSevtSerial:
 					{
