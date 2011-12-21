@@ -43,7 +43,7 @@ TextBox::TextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,const char *
 	fTimer = NULL;
    if (name) SetName(name);
    fTextMargin = 0.25;
-   fSmall = 0.001 *(x2-x1);
+   fSmall = 0.01 *(x2-x1);
    fPrimitives = 0;
 	fOwnMembers = kFALSE;
 	fTextMargin = 0.;
@@ -65,7 +65,7 @@ TextBox::TextBox()
 //   cout << "def ctor TextBox" << endl;
 	fTimer = NULL;
 	#ifdef MARABOUVERS
-	if (gPad) {
+	if (gPad && gPad == gPad->GetMother()) {
 		GrCanvas* hc = (GrCanvas*)gPad;
 		hc->Add2ConnectedClasses(this);
 	}
@@ -97,7 +97,7 @@ void TextBox::RecursiveRemove(TObject * obj)
    TextBoxMember *tbm;
    while ( (tbm = (TextBoxMember*)next()) ) {
       if (tbm->GetObject() == obj) {
-         cout << "TextBox::RecursiveRemove " << obj << " " << obj->ClassName() << endl;
+ //        cout << "TextBox::RecursiveRemove " << obj << " " << obj->ClassName() << endl;
          fMembers.Remove(tbm);
          delete tbm;
          fPrimitives--;
@@ -381,13 +381,13 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
       Int_t halign = align / 10;
       Int_t valign = align%10;
       Bool_t shiftonly = kFALSE;
-//      cout << "TextBox::AlignEntries, ha " << halign << " va " << valign << endl;
+		dX = dX1;
+		dY = dY1;
+		//      cout << "TextBox::AlignEntries, ha " << halign << " va " << valign << endl;
       if (   TMath::Abs(dX1 - dX2) < fSmall
           && TMath::Abs(dY1 - dY2) < fSmall) {
          // pure shift
          shiftonly = kTRUE;
-         dX = dX1;
-         dY = dY1;
       } else {
          //size changed
          if      (halign == 1) dX = dX1;
@@ -439,7 +439,7 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
          g->SetPoint(ip, x, y);
          if (obj->InheritsFrom("TSplineX")) {
 				((TSplineX*)obj)->NeedReCompute();
-				((TSplineX*)obj)->Paint();
+//				((TSplineX*)obj)->Paint();
 				if (gDebug > 1)
 					cout << "((TSplineX*)obj)->Paint()" << endl;
 			}

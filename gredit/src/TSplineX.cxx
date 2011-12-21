@@ -707,7 +707,7 @@ TSplineX::~TSplineX()
    fPGraphs.Delete();
    Delete_ControlPoints();
    Delete_ShapeFactors();
-//   cout << "exit ~TSplineX(): "<< this  << endl << flush;
+   cout << "exit ~TSplineX(): "<< this  << endl << flush;
 
 }
 //______________________________________________________________________________
@@ -838,7 +838,7 @@ Int_t TSplineX::ComputeSpline()
       return -1;
    }
 //   Dump();
-   CopyControlPoints();
+	CopyControlPoints();
    if (fClosed)
       cl_spline(fControlPointList, fShapeFactorList, fPrec);
    else
@@ -889,8 +889,8 @@ Int_t TSplineX::GetResult(Double_t*& x, Double_t*& y)
 void TSplineX::RemovePolyLines()
 {
 //
-// Before the spline is repainted teh auxilliary lines
-// mustr be removed
+// Before the spline is repainted the auxilliary lines
+// must be removed
 
    if (fDPolyLines.GetSize() > 0) {
       TIter next(&fDPolyLines);
@@ -907,6 +907,7 @@ void TSplineX::RemovePolyLines()
 void TSplineX::Delete_ControlPoints()
 {
    if (fControlPointList) {
+// 		cout << "TSplineX::Delete_ControlPoints() " << endl;
       while (fControlPointList) {
          ControlPoint * next = fControlPointList->GetNext();
          delete  fControlPointList;
@@ -939,7 +940,7 @@ void TSplineX::CopyControlPoints()
 //
 
    Double_t xp, yp;
-   if (fControlPointList) Delete_ControlPoints();
+	if (fControlPointList) Delete_ControlPoints();
    if (fShapeFactorList)  Delete_ShapeFactors() ;
    ControlPoint* previous_cp = 0;
    ShapeFactor* previous_sf = 0;
@@ -1117,7 +1118,7 @@ void TSplineX::Paint(Option_t * opt)
 // add parallel lines, arrows, railway sleepers if needed
 // If required fill the space between rails or inside the
 // spline.
-
+	//cout << "TSplineX::Paint " << fComputeDone << endl;
    if (opt) ; // keep compiler quiet
    if (!fComputeDone) ComputeSpline();
    Bool_t aas = fPaintArrowAtStart;
@@ -2048,7 +2049,7 @@ void ControlGraph::SetControlPoint(Int_t ipoint, Double_t x, Double_t y, Float_t
    if (ipoint >=0 && ipoint < fShapeFactors.GetSize() ) {
       fShapeFactors[ipoint] = sfactor;
       SetPoint(ipoint, x, y);
-      fParent->ComputeSpline();
+//      fParent->ComputeSpline();
    }
 }
 //_____________________________________________________________________________________

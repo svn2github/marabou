@@ -56,13 +56,18 @@ void THprSplineX::Paint(const Option_t *opt)
 {
    GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
-      Double_t x, y;
+		Double_t x, y, x1, y1;
       Float_t sf;
+		Int_t changed = 0;
       for (Int_t ip = 0; ip < GetNofControlPoints(); ip++) {
          GetControlPoint(ip, &x, &y, &sf);
          SetControlPoint(ip, htc->PutOnGridX(x), htc->PutOnGridY(y),sf);
-      }
-      NeedReCompute();
+			GetControlPoint(ip, &x1, &y1, &sf);
+			if (Length(x,y, x1,y1) > 0.001)
+				changed++;
+		}
+		if (changed > 0)
+			NeedReCompute();
 //      cout << "THprSplineX htc->PutOnGridY(GetEndY() " <<  htc->PutOnGridY(GetEndY())<< endl;
    }
    if (GetVisibility() == 1)
