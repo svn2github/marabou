@@ -138,7 +138,8 @@ void Save2FileDialog::ExecuteSave()
 #endif
 		cout << "Saving " << fObject->GetName() << " to: "
         << gDirectory->GetPath() <<endl;
-      fObject->Write();
+//		fObject->Dump();
+		fObject->Write();
 //      fObject->Write(fObjName);
       outfile->Close();
 #ifdef MARABOUVERS

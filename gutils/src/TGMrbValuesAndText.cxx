@@ -2048,6 +2048,7 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
 void TGMrbValuesAndText::CloseWindow()
 {
 // come here when deleted by Windowmanager (X)
+//	cout <<"TGMrbValuesAndText::CloseWindow() " << endl;
    CloseDown(-2);
 }
 //_______________________________________________________________________________________
