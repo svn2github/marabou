@@ -1100,25 +1100,45 @@ void AdjustMaximum(TH1 * h2, TArrayD * xyvals)
 Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
 {
    Int_t ndeleted = 0;
-   TString name;
+   TString name, fn, entry;
    TIter next(list);
    TObjString * sel;
    while ( (sel = (TObjString*)next()) ) {
    	name = sel->GetString();
 		cout << "DeleteOnFile " << fname << " entry: " << name << endl;
    	if (name.BeginsWith(fname)) {
-      	Int_t start  = name.Index(" ") + 1;
-      	Int_t length = name.Length() - start;
-      	name = name(start,length);
+			Ssiz_t pos = 0,slen;
+			Bool_t ok;
+			const Char_t * del = ",";
+			ok = name.Tokenize(fn,pos, del);
+			if ( ok ) {
+				slen = fn.Length();
+				name = name(slen+1, name.Length());
+//				cout << "DeleteOnFile fn: " << fn << endl;
+			} else {
+				cout << "Cant get file name from: " << name << endl;
+				return -1;
+			}
+			pos = 0;
+			if ( name.Tokenize(entry,pos, del) ) {
+//				cout << "DeleteOnFile entry: " << entry << endl;
+			} else {
+				cout << "Cant get entry from: " << fn << endl;
+				return -1;
+			}
+			if (entry.Length() < 1) {
+				cout << "Cant get entry from: " << fn << endl;
+				return -1;
+			}
 //			Int_t ip = name.Index(";");
 //			if (ip > 0) name.Resize(ip);
       	TString question("Delete: ");
-      	question += name.Data();
+      	question += entry;
       	question += " from ";
-      	question += fname;
+      	question += fn;
       	if (QuestionBox(question.Data(), win) == kMBYes) {
          	TFile * f = new TFile(fname, "update");
-         	if (f->Get(name.Data())) {
+         	if (f->Get(entry.Data())) {
                list->Remove(sel);
 //               Int_t cycle = f->GetKey(name.Data())->GetCycle();
 //               if (cycle > 0) {
@@ -1126,10 +1146,10 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
 //                  name += cycle;
 //               }
                cout << "Deleting: " << name.Data() << endl;
-            	f->Delete(name.Data());
+            	f->Delete(entry.Data());
             	ndeleted++;
          	} else {
-            	cout << name.Data() << " not found  on " << fname << endl;
+            	cout << entry.Data() << " not found on " << fname << endl;
          	}
          	f->Close();
       	}

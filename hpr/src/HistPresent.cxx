@@ -250,7 +250,8 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fAllFunctions = new TList();
    fHistLists = new TList();
    fSelectHist = new TList();
-   fHistListList = new TList();
+	fSelectCanvas = new TList();
+	fHistListList = new TList();
    fSelectCut = new TList();
    fSelectWindow = new TList();
    fSelectLeaf = new TList();
@@ -355,7 +356,8 @@ void HistPresent::RecursiveRemove(TObject * obj)
    fAllFunctions->Remove(obj);
    fHistLists->Remove(obj);
    fSelectHist->Remove(obj);
-   fHistListList->Remove(obj);
+	fSelectCanvas->Remove(obj);
+	fHistListList->Remove(obj);
    fSelectCut->Remove(obj);
    fSelectWindow->Remove(obj);
    fSelectLeaf->Remove(obj);
@@ -917,6 +919,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
        WarnBox("Unknown file");
        return;
    }
+   // histograms
    Int_t not_shown = 0;
    if (nstat > 0) {
 
@@ -1075,7 +1078,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 //            cmd = cmd + "\",\"" + title.Data() + "\")";
             sel = cmd;
             cmd.Prepend("gHpr->ShowCanvas(\"");
-            sel.Resize(0);
+				sel.Prepend("gHpr->SelectCanvas(\"");
+//				sel.Resize(0);
             title.Prepend("c ");
             hint =  title;
             hint+=" canvas";
@@ -1273,7 +1277,8 @@ void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
    Int_t ndeleted = 0;
    ndeleted += DeleteOnFile(fname, fSelectCut, fRootCanvas);
    ndeleted += DeleteOnFile(fname, fSelectHist, fRootCanvas);
-   ndeleted += DeleteOnFile(fname, fSelectWindow, fRootCanvas);
+	ndeleted += DeleteOnFile(fname, fSelectCanvas, fRootCanvas);
+	ndeleted += DeleteOnFile(fname, fSelectWindow, fRootCanvas);
    ndeleted += DeleteOnFile(fname, fSelectContour, fRootCanvas);
    ndeleted += DeleteOnFile(fname, fAllFunctions, fRootCanvas);
    ndeleted += DeleteOnFile(fname, fSelectGraph, fRootCanvas);
@@ -2304,6 +2309,35 @@ void HistPresent::SelectHist(const char* fname, const char* dir, const char* hna
       }
       b->Modified(kTRUE);b->Update();
    }
+}
+//________________________________________________________________________________________
+// Select
+
+void HistPresent::SelectCanvas(const char* fname, const char* dir, const char* hname, const char* bp)
+{
+	cout << " HistPresent::SelectCanvas "  << fname << " " << hname << endl;
+	TString sel = fname;
+	sel = sel + "," + hname + "," + dir;
+	if (bp) {
+		TButton * b;
+		b = (TButton *)strtoul(bp, 0, 16);
+		//      cout << "bp " << b << endl;
+		if (b->TestBit(kSelected)) {
+			TObjString tobjs((const char *)sel);
+			//      tobjs.Print(" ");
+			fSelectCanvas->Remove(&tobjs);
+			b->SetFillColor(16);
+			b->ResetBit(kSelected);
+			//      gPad->SetFillColor(16);
+			//     case not already selected
+		} else {
+			fSelectCanvas->Add(new TObjString((const char *)sel));
+			b->SetFillColor(3);
+			b->SetBit(kSelected);
+			//      gPad->SetFillColor(3);
+		}
+		b->Modified(kTRUE);b->Update();
+	}
 }
 //________________________________________________________________________________________
 // Select

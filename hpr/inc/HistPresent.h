@@ -72,7 +72,8 @@ protected:
    TList *fAllCuts;
    TList *fHistLists;
    TList *fSelectHist;
-   TList *fHistListList;
+	TList *fSelectCanvas;
+	TList *fHistListList;
    TList *fSelectLeaf;
    TList *fSelectCut;
    TList *fSelectWindow;
@@ -215,7 +216,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
 //   void ShowMap(const char* , const char*);
    void ShowHist(const char * fname , const char* dir, const char  * hname, const char* bp =0);
    void SelectHist(const char*  fname , const char* dir , const char * hname, const char* bp =0);
-   void ShowStatOfAll(const char* , const char* , const char* bp =0);
+	void SelectCanvas(const char*  fname , const char* dir , const char * hname, const char* bp =0);
+	void ShowStatOfAll(const char* , const char* , const char* bp =0);
    void PurgeEntries(const char* , const char* bp =0);
    void DeleteSelectedEntries(const char* , const char* bp =0);
    void ShowSelectedHists(const char* bp =0);
@@ -239,7 +241,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
 //   TList* GetCanvasList(){return fCanvasList;};
    TList* GetHistList(){return fHistLists;};
    TList* GetSelectedHist(){return fSelectHist;};
-   TList* GetWindowList(){return fAllWindows;};
+	TList* GetSelectedCanvas(){return fSelectCanvas;};
+	TList* GetWindowList(){return fAllWindows;};
    TList* GetFunctionList(){return fAllFunctions;};
    TList* GetCutList(){return fAllCuts;};
 	TH1*   GetSelHistAt(Int_t pos = 0, TList * hl = NULL, Bool_t try_memory = kFALSE,
