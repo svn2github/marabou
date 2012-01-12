@@ -695,8 +695,8 @@ void HistPresent::HistsFromProof(const char* bp)
 	} else if ( gROOT->GetListOfProofs()->GetSize()  > 1 ) {
 		cout << "Warning: more than one proof session found" << endl;
 	}
-	TProof * proof = (TProof*)gROOT->GetListOfProofs()->At(0);
-	TList * hlist = proof->GetOutputList();
+//	TProof * proof = (TProof*)gROOT->GetListOfProofs()->At(0);
+	TList * hlist = gProof->GetOutputList();
 	if ( hlist->GetSize() == 0 ) {
 		cout << "No output objects found" << endl;
 		return;
