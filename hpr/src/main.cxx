@@ -21,6 +21,7 @@ int main(int argc, char **argv)
 //loop:
    theApp->Run(kTRUE);
 //   delete gHpr;
-   return 0;
+	gSystem->Exit(0);
+//   return 0;
 }
 
