@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.16 2011-05-18 11:04:49 Marabou Exp $
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.17 2012-01-18 11:11:32 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -23,6 +23,7 @@ namespace std {} using namespace std;
 
 #include "Rtypes.h"
 #include "TSystem.h"
+#include "TEnv.h"
 #include "TObject.h"
 
 class TMrbVMEChannel;
@@ -280,7 +281,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline Bool_t SetTsDivisor(Int_t Divisor) { return(this->Set(TMrbMesytec_Madc32::kRegTsDivisor, Divisor)); };
 		inline Int_t GetTsDivisor() { return(this->Get(TMrbMesytec_Madc32::kRegTsDivisor)); };
 
-		Bool_t UseSettings(const Char_t * SettingsFile = NULL);
+		TEnv * UseSettings(const Char_t * SettingsFile = NULL);
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 
 		inline void UpdateSettings(Bool_t Flag = kTRUE) { fUpdateSettings = Flag; };	// update settings

@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3302        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3302.h,v 1.5 2011-12-15 16:33:23 Marabou Exp $
+// Revision:       $Id: TMrbSis_3302.h,v 1.6 2012-01-18 11:11:32 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -23,6 +23,7 @@ namespace std {} using namespace std;
 
 #include "Rtypes.h"
 #include "TSystem.h"
+#include "TEnv.h"
 #include "TObject.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -64,7 +65,7 @@ class TMrbSis_3302 : public TMrbVMEModule {
 		inline void SetMaxEvents(Int_t Events) { fMaxEvents = Events; };
 		inline Int_t GetMaxEvents() { return(fMaxEvents); };
 
-		Bool_t UseSettings(const Char_t * SettingsFile = NULL);
+		TEnv * UseSettings(const Char_t * SettingsFile = NULL);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

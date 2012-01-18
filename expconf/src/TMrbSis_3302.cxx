@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3302.cxx,v 1.8 2011-12-15 16:33:23 Marabou Exp $
+// Revision:       $Id: TMrbSis_3302.cxx,v 1.9 2012-01-18 11:11:32 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +19,6 @@ namespace std {} using namespace std;
 #include <fstream>
 
 #include "TDirectory.h"
-#include "TEnv.h"
 
 #include "TMrbLogger.h"
 #include "TMrbConfig.h"
@@ -117,13 +116,13 @@ void TMrbSis_3302::DefineRegisters() {
 
 }
 
-Bool_t TMrbSis_3302::UseSettings(const Char_t * SettingsFile) {
+TEnv * TMrbSis_3302::UseSettings(const Char_t * SettingsFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSis_3302::UseSettings
 // Purpose:        Read settings from file
 // Arguments:      Char_t * SettingsFile   -- settings file
-// Results:        kTRUE/kFALSE
+// Results:        TEnv * settings         -- settings in ROOT's TEnv format
 // Exceptions:
 // Description:    Load settings to be used from env file
 // Keywords:
@@ -138,7 +137,7 @@ Bool_t TMrbSis_3302::UseSettings(const Char_t * SettingsFile) {
 	} else {
 		gMrbLog->Err() << "Settings file not found - " << SettingsFile << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		return(kFALSE);
+		return(NULL);
 	}
 
 	TEnv * sisEnv = new TEnv(fSettingsFile.Data());
@@ -147,9 +146,9 @@ Bool_t TMrbSis_3302::UseSettings(const Char_t * SettingsFile) {
 	if (moduleName.CompareTo(this->GetName()) != 0) {
 		gMrbLog->Err() << "Module name different - " << moduleName << " (should be " << this->GetName() << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		return(kFALSE);
+		return(NULL);
 	}
-	return(kTRUE);
+	return(sisEnv);
 }
 
 Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) {

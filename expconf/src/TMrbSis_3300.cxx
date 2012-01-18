@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.17 2011-02-28 08:51:49 Marabou Exp $
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.18 2012-01-18 11:11:32 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +19,6 @@ namespace std {} using namespace std;
 #include <fstream>
 
 #include "TDirectory.h"
-#include "TEnv.h"
 
 #include "TMrbLogger.h"
 #include "TMrbConfig.h"
@@ -315,13 +314,13 @@ void TMrbSis_3300::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 }
 
-Bool_t TMrbSis_3300::UseSettings(const Char_t * SettingsFile) {
+TEnv * TMrbSis_3300::UseSettings(const Char_t * SettingsFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSis_3300::UseSettings
 // Purpose:        Read settings from file
 // Arguments:      Char_t * SettingsFile   -- settings file
-// Results:        kTRUE/kFALSE
+// Results:        TEnv * settings         -- settings in ROOT's TEnv format
 // Exceptions:
 // Description:    Load settings to be used from env file
 // Keywords:
@@ -342,7 +341,7 @@ Bool_t TMrbSis_3300::UseSettings(const Char_t * SettingsFile) {
 		gMrbLog->Err()	<< "Please edit this file and then rename it to \"" << SettingsFile << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
 		this->SaveSettings(sf.Data());
-		return(kFALSE);
+		return(NULL);
 	}
 
 	TEnv * sisEnv = new TEnv(fSettingsFile.Data());
@@ -351,7 +350,7 @@ Bool_t TMrbSis_3300::UseSettings(const Char_t * SettingsFile) {
 	if (moduleName.CompareTo(this->GetName()) != 0) {
 		gMrbLog->Err() << "Module name different - " << moduleName << " (should be " << this->GetName() << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		return(kFALSE);
+		return(NULL);
 	}
 	moduleName(0,1).ToUpper();
 
@@ -402,7 +401,7 @@ Bool_t TMrbSis_3300::UseSettings(const Char_t * SettingsFile) {
 		this->SetPulseLength(sisEnv->GetValue(Form("SIS3300.%s.Group%d.PulseLength", moduleName.Data(), i), 0), i);
 	}
 
-	return(kTRUE);
+	return(sisEnv);
 }
 
 Bool_t TMrbSis_3300::SetSmin(Int_t Smin) {

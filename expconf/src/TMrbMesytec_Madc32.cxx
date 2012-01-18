@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.25 2011-05-18 11:04:49 Marabou Exp $
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.26 2012-01-18 11:11:32 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +19,6 @@ namespace std {} using namespace std;
 #include <fstream>
 
 #include "TDirectory.h"
-#include "TEnv.h"
 
 #include "TMrbLogger.h"
 #include "TMrbConfig.h"
@@ -521,13 +520,13 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 }
 
-Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
+TEnv * TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbMesytec_Madc32::UseSettings
 // Purpose:        Read settings from file
 // Arguments:      Char_t * SettingsFile   -- settings file
-// Results:        kTRUE/kFALSE
+// Results:        TEnv * settings         -- settings in ROOT's TEnv format
 // Exceptions:
 // Description:    Load settings to be used from env file
 // Keywords:
@@ -548,7 +547,7 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 		gMrbLog->Err()	<< "Please edit this file and then rename it to \"" << SettingsFile << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
 		this->SaveSettings(sf.Data());
-		return(kFALSE);
+		return(NULL);
 	}
 
 	TMrbResource * madcEnv = new TMrbResource("MADC32", fSettingsFile.Data());
@@ -557,7 +556,7 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	if (moduleName.CompareTo(this->GetName()) != 0) {
 		gMrbLog->Err() << "Module name different - \"" << moduleName << "\" (should be " << this->GetName() << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		return(kFALSE);
+		return(NULL);
 	}
 	moduleName(0,1).ToUpper();
 	moduleName.Prepend(".");
@@ -609,7 +608,7 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	fXmax = fRange;
 	fBinRange = fRange;
 
-	return(kTRUE);
+	return(madcEnv->Env());
 }
 
 Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {

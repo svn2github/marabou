@@ -1,4 +1,4 @@
-  /*____________________________________________________________________[C CODE]
+/*____________________________________________________________________[C CODE]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           sis_3302_readout.c
 // Purpose:        Readout code for module SIS3302
@@ -53,6 +53,11 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	  volatile Int_t * mappedAddr;
 	  Int_t i;
 	  UInt_t d;
+	  
+	  Int_t bankFlag, bankShouldBe;
+	  Int_t sampling;
+	  Int_t tryIt;
+	  Bool_t bankOk;
 
 	  Char_t msg[256];
 	  Char_t * mp;
@@ -68,19 +73,35 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 
 	totalSize = 0;
 	channelPattern = Module->activeChannels;
+	sampling = Module->currentSampling;
 	for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
 		if (channelPattern & 1) {
-			  nxs = sis3302_readPrevBankSampleAddr(Module, chn);
-			  if (nxs == 0xaffec0c0) continue;
-			  nxs &= 0x3FFFFC;
-			  if (nxs == 0) continue;
-			  nxs >>= 1;
-			  grp = chn / 2;
-			  rdl = Module->rawDataSampleLength[grp];
-			  edl = Module->energySampleLength[grp];
-			  wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl/2;
-			  nofEvents[chn] = nxs / wc;
-			  totalSize += nofEvents[chn] * (wc + 1) * sizeof(Int_t);
+			nofEvents[chn] = 0;
+			tryIt = 0;
+			bankOk = kFALSE;
+			do {
+				nxs = sis3302_readPrevBankSampleAddr(Module, chn);
+				if (nxs == 0xaffec0c0) break;
+				bankFlag = nxs & 0x01000000;	/* check bit 24 */
+				bankShouldBe = (sampling == kSis3302KeyArmBank1Sampling) ? 0x01000000 : 0;
+				bankOk = (bankFlag == bankShouldBe);
+				if (bankOk) {
+					nxs &= 0x3FFFFC;
+					if (nxs == 0) break;
+					nxs >>= 1;
+					grp = chn / 2;
+					rdl = Module->rawDataSampleLength[grp];
+					edl = Module->energySampleLength[grp];
+					wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl/2;
+					nofEvents[chn] = nxs / wc;
+					totalSize += nofEvents[chn] * (wc + 1) * sizeof(Int_t);
+					break;
+				}
+			} while (++tryIt < 20);
+			if (!bankOk) {
+				sprintf(msg, "[readout] module %s: Bank switching failed for chn %d - bank bit is %d but should be %d", Module->moduleName, chn, bankFlag, bankShouldBe);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			}
 		}
 	}
 
@@ -135,20 +156,10 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 			 	rdl = Module->tracingMode ? Module->rawDataSampleLength[grp] / 2 : 0;
 			  	edl = Module->tracingMode ? Module->energySampleLength[grp] : 0;
 				  *pointer++ = (rdl << 16) | edl;	/* extra word: lh=raw data length, rh=energy data length */
-				  for (i = 0; i < rdl; i++) {		/* raw data: fetch 2 samples packed in 32bit, store each in a single 32bit word */
-					  d = *mappedAddr++;
-					  *pointer++ = (d >> 16) & 0xFFFF;
-					  *pointer++ = d & 0xFFFF;
-				  }
-				  for (i = 0; i < edl; i++) *pointer++ = *mappedAddr++;			/* event data: 32bit words */
-				  for (i = 0; i < kSis3302EventMinMax; i++) {
-					d = *mappedAddr++;	/* max energy, min energy */
-					*pointer++ = d;
-				  }
-				  for (i = 0; i < kSis3302EventTrailer; i++) {
-					d = *mappedAddr++;	/* status, trailer */
-					*pointer++ = d;
-				  }
+				  for (i = 0; i < rdl; i++) *pointer++ = *mappedAddr++;				/* raw data, packed 2 16 bit words in 32 bits */
+				  for (i = 0; i < edl; i++) *pointer++ = *mappedAddr++;				/* event data: 32bit words */
+				  for (i = 0; i < kSis3302EventMinMax; i++) *pointer++ = *mappedAddr++;		/* energy min and max values */
+				  for (i = 0; i < kSis3302EventTrailer; i++) *pointer++ = *mappedAddr++;	/* status, trailer */
 			  }
 		  }
 	  }

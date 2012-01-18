@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.25 $
-//! $Date: 2011-09-07 12:17:31 $
+//! $Revision: 1.26 $
+//! $Date: 2012-01-18 11:11:32 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -276,6 +276,7 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 		case kM2L_FCT_SIS_3302_WRITE_END_ADDR_THRESH:
 			{
 				d = data[0];
+				cout << "@@@ extern: end=" << d << endl;
 				if (!this->WriteEndAddrThresh(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
@@ -1629,6 +1630,7 @@ Bool_t SrvSis3302::SetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t
 	}
 
 	Int_t data;
+	
 	if (!this->ReadEventConfig(Module, data, ChanNo)) return(kFALSE);
 
 	UInt_t mask = (ChanNo & 1) ? (kSis3302PolarityNegative << 8) : kSis3302PolarityNegative;
@@ -3904,6 +3906,7 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 	Int_t maxWords = 0;
 	Int_t bit = 1;
 	Bool_t foundchan = kFALSE;
+	this->DumpRegisters(Module, "xxx.dmp");
 	for (Int_t chan = 0; chan < kSis3302NofChans; chan++, bit <<= 1) {
 		if ((ChanPatt & bit) == 0) continue;
 		foundchan = kTRUE;
@@ -3945,8 +3948,10 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 	}
 
 	Int_t maxThresh = maxWords * 2;		// thresh has to be 16bit
-	
+	cout << "@@@ start trace: end=" << maxThresh << endl;
 	this->WriteEndAddrThresh(Module, maxThresh);
+	Int_t sl = 400;
+	this->WriteRawDataSampleLength(Module, sl, kSis3302AllChans);
 	this->KeyResetSampling(Module);
 	this->KeyClearTimestamp(Module);
 	fSampling = kSis3302KeyArmBank1Sampling;
@@ -4016,7 +4021,6 @@ Bool_t SrvSis3302::PauseTraceCollection(SrvVMEModule * Module) {
 
 Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t ChanPatt) {
 
-	Data.Reset(0);
 	if (!fTraceCollection ||  !this->DataReady(Module)) return(kTRUE);
 
 	this->SwitchSampling(Module);
@@ -4028,10 +4032,28 @@ Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t C
 		Data[k + 2] = wordsPerEvent[chan];
 		Data[k + 3] = nofEventsPerBuffer[chan];
 		Int_t n = 0;
-		if (ChanPatt & 1 && this->ReadPrevBankSampleAddr(Module, n, chan)) {
-			n &= 0x3FFFFC;
-			n >>= 1;
-			traceDataOk = kTRUE;
+		if (ChanPatt & 1) {
+			Int_t bankFlag;
+			Int_t bankShouldBe;
+			Int_t tryIt = 0;
+			Bool_t bankOk = kFALSE;
+			do {
+				if (!this->ReadPrevBankSampleAddr(Module, n, chan)) break;
+				bankFlag = n & 0x01000000;	// check bit 24
+				bankShouldBe = (fSampling == kSis3302KeyArmBank1Sampling) ? 0x01000000 : 0;
+				bankOk = (bankFlag == bankShouldBe);
+				if (bankOk) {
+					n &= 0x3FFFFC;
+					n >>= 1;
+					traceDataOk = kTRUE;
+					break;
+				}
+			} while (++tryIt < 20);
+			if (!bankOk) {
+				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Bank switching failed for chn" << chan << " - bank bit is " << bankFlag << " but should be " << bankShouldBe << endl;
+				gMrbLog->Flush(this->ClassName(), "GetTraceLength");
+				n = 0;
+			}
 		}
 		nextSample[chan] = n;
 		Data[k + 4] = n;
@@ -4495,6 +4517,7 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 
 	Int_t clockSource;
 	Int_t bits;
+	Bool_t flag;
 	this->GetClockSource(Module, clockSource);
 	dmp << "Clock source                    : " <<  clockSource << endl;
 	this->GetLemoOutMode(Module, bits);
@@ -4513,21 +4536,21 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 	Int_t chn = 0;
 	for (Int_t grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
 		this->GetHeaderBits(Module, bits, chn);
-		dmp << "Header bits grp" << grp << "(" << (chn+1) << (chn+2) << "): " << setbase(16) << bits << endl;
+		dmp << "Header bits grp" << grp << "(" << (chn+1) << (chn+2) << "): 0x" << setbase(16) << bits << endl;
 	}
 	dmp << endl;
 
 	for (chn = 0; chn < kSis3302NofChans; chn++) {
 		this->GetTriggerMode(Module, bits, chn);
-		dmp << "Trigger mode chn" << chn << "                 : " << setbase(16) << bits << endl;
+		dmp << "Trigger mode chn" << chn << "                 : 0x" << setbase(16) << bits << endl;
 		this->GetGateMode(Module, bits, chn);
-		dmp << "Gate mode    chn" << chn << "                 : " << setbase(16) << bits << endl;
+		dmp << "Gate mode    chn" << chn << "                 : 0x" << setbase(16) << bits << endl;
 		this->GetNextNeighborTriggerMode(Module, bits, chn);
-		dmp << "Next neighbor trigger chn" << chn << "        : " << setbase(16) << bits << endl;
+		dmp << "Next neighbor trigger chn" << chn << "        : 0x" << setbase(16) << bits << endl;
 		this->GetNextNeighborGateMode(Module, bits, chn);
-		dmp << "Next neighbor gate    chn" << chn << "        : " << setbase(16) << bits << endl;
-		this->GetPolarity(Module, bits, chn);
-		dmp << "Polarity              chn" << chn << "        : " << setbase(16) << bits << endl;
+		dmp << "Next neighbor gate    chn" << chn << "        : 0x" << setbase(16) << bits << endl;
+		this->GetPolarity(Module, flag, chn);
+		dmp << "Invert polarity       chn" << chn << "        : " << (flag ? "TRUE" : "FALSE") << endl;
 		dmp << endl;
 	}
 
@@ -4577,11 +4600,11 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 		Int_t thresh;
 		this->ReadTriggerThreshold(Module, thresh, chn);
 		dmp << "Trigger threshold        chn" << chn << ": " << thresh << endl;
-		Int_t trig;
+		Bool_t trig;
 		this->GetTriggerGT(Module, trig, chn);
-		dmp << "Trigger GT               chn" << chn << ": " << trig << endl;
+		dmp << "Trigger GT               chn" << chn << ": " << (trig ? "TRUE" : "FALSE") << endl;
 		this->GetTriggerOut(Module, trig, chn);
-		dmp << "Trigger OUT              chn" << chn << ": " << trig << endl;
+		dmp << "Trigger OUT              chn" << chn << ": " << (trig ? "TRUE" : "FALSE") << endl;
 		dmp << endl;
 	}
 	

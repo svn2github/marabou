@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.21 2011-07-26 08:41:49 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.22 2012-01-18 11:11:32 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -1294,6 +1294,7 @@ void VMESis3302Panel::TrigPolarChanged(Int_t FrameId, Int_t Selection) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t invTrig = kFALSE;
+	cout << "@@@ " << Selection << endl;
 	switch (Selection) {
 		case kVMETrigPolPos:	invTrig = kFALSE; break;
 		case kVMETrigPolNeg:	invTrig = kTRUE; break;

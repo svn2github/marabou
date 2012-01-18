@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.13 2011-09-07 12:17:31 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.14 2012-01-18 11:11:32 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -518,7 +518,6 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, TMrbNamedX * Rhisto
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
 		return(-1);
 	}
-
 	Int_t k = kSis3302EventPreHeader;
 
 	ULong64_t ts = (UInt_t) EvtData[k + 1];

@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3300        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3300.h,v 1.8 2009-05-08 16:24:51 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.h,v 1.9 2012-01-18 11:11:32 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -23,6 +23,7 @@ namespace std {} using namespace std;
 
 #include "Rtypes.h"
 #include "TSystem.h"
+#include "TEnv.h"
 #include "TObject.h"
 
 class TMrbVMEChannel;
@@ -247,7 +248,7 @@ class TMrbSis_3300 : public TMrbVMEModule {
 		};
 		inline Int_t GetShaperBinRange() const { return(fShaperBinRange); };
 
-		Bool_t UseSettings(const Char_t * SettingsFile = NULL);
+		TEnv * UseSettings(const Char_t * SettingsFile = NULL);
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 
 		inline Char_t * GetDeviceStruct() { return(Form("s_%s", this->GetName())); };

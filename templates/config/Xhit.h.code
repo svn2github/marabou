@@ -47,12 +47,18 @@ class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 		};
 
 		~%%EXTENDED_HIT_NAME_UC%%() {};								// default dtor
-		
-		inline UShort_t * GetXdataAddr() { return(fXdata); };
-		inline UShort_t GetXdata(Int_t Index) const { return(fXdata[Index]); };
 
 		inline void CopyXdata(UShort_t * Data, Int_t NofData, Int_t Offset = 0) {			// copy extra hit data
 			if (Data) for (Int_t i = 0; i < NofData; i++) fXdata[i + Offset] = *Data++;
+		};
+
+		inline UShort_t * GetXdataAddr() { return(fXdata); };		// get extra data from hit
+		inline UShort_t GetXdata(Int_t Index) const { return(fXdata[Index]); };
+		inline void GetXdata(UShort_t * Data, Int_t NofData, Int_t Offset = 0) {
+			if (Data) for (Int_t i = 0; i < NofData; i++) *Data++ = fXdata[i + Offset];
+		};
+		inline void GetXdata(Float_t * Data, Int_t NofData, Int_t Offset = 0) {
+			if (Data) for (Int_t i = 0; i < NofData; i++) *Data++ = (Float_t) fXdata[i + Offset];
 		};
 
 		inline void ClearXdata() {									// clear extra hit data
@@ -71,7 +77,7 @@ class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 		};
 
 		inline Int_t GetMaxDataLength() { return(k%%EXTENDED_HIT_NAME_UC%%DataLength); };
-		inline Int_t GetNofXData() { return(fXdataLength); };
+		inline Int_t GetNofXdata() { return(fXdataLength); };
 
 	protected:		
 		Int_t fXdataLength; 							// actual length of extended data
