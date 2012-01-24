@@ -48,7 +48,8 @@ namespace std {} using namespace std;
 // and any number of ints, floats, colors etc. arranged in a table       //
 //                                                                       //
 // The string input part implements a history and text completion        //
-// facility                                                              //
+// facility, for this to work a file containing the history and          //
+// a TList containing TObjStrings must
 //                                                                       //
 // The meaning of the requested values are stored in the first 11        //
 // characters terminated by _, +, - of the row labels as follows:        //
@@ -72,16 +73,18 @@ namespace std {} using namespace std;
 // Fill_Select : Fill style															 //
 // Mark_Select : Marker style 														 //
 // ColorSelect : Color_t																 //
-// ComboSelect : a Combo box																 //
+// ComboSelect : a Combo box															 //
 // RadioButton : radio button 														 //
 // CheckButton : check button 														 //
+// DoubleV+CbF : a double + a CheckButton label "Fix"							 //
+// DoubleV+CbU : a double + a CheckButton label "Use"							 //
 // Exec_Button : only emit signal button clicked								 //
 // FileRequest : file name (invokes file dialog)								 //
 // FileContReq : invoke file dialog and present listbox with content		 //
 //             : arg: filename | classname | object name                 //
 // Pressing one of the above buttons emits a signal which is connected   //
 // to a slot:  CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)       //
-// which must be implemented in thee "calling_class"                     //
+// which must be implemented in the "calling_class"                     //
 //                                                                       //
 // CommandButt : Command button implemented as follows:						 //
 //               assume: CommandButt_DrawArrow()								 //
@@ -104,7 +107,7 @@ namespace std {} using namespace std;
 //  optional arguments:                                                  //
 //                                                                       //
 // TGWindow *win        pointer to parent window								 //
-// Char_t * FileName:   a file containing lines from which a selection   //
+// Char_t * History   a file containing lines from which a selection   //
 //                      may be made, a TGListBox is used in this case	 //
 //                      This is used to store newly type text lines not  //
 //                      yet in the list											 //
@@ -128,7 +131,7 @@ namespace std {} using namespace std;
 //                                                                       //
 // Bool_t GetStringExt(const char *Prompt, TString  *text , 				 //
 // 							  Int_t win_width, TGWindow *Win,   				 //
-// 							  const char *FileName, TList * Complist, 		 //
+// 							  const char *History, TList * Complist, 		 //
 // 							  TList * rowlabs, void **val_pointers,			 //
 // 							  TArrayI * Flags, const char * Flagslabel,		 //
 // 							  const char *helptext, TObject * calling_class, //
@@ -730,7 +733,7 @@ ClassImp(TGMrbValuesAndText)
 
 TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                   Int_t * ok, Int_t win_width, const TGWindow *Win,
-                  const char * FileName, TList * complist,
+                  const char * History, TList * complist,
                   TList * RowLabels, void **val_pointers,
                   TArrayI * Flags, const char * Flagslabel,
                   const char *helptext, TObject * calling_class,
@@ -1269,7 +1272,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       TGLabel *label = new TGLabel(hframe, Prompt);
 //      fWidgets->AddFirst(label);
       hframe->AddFrame(label, lo1);
-      if (FileName != NULL) {
+      if (History != NULL) {
          b = new TGTextButton(hframe, "Clear history",  1000*kIdClearHist);
  //        fWidgets->AddFirst(b);
          b->Associate(this);
@@ -1289,12 +1292,12 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
       // optionally create a ListBox from which items can be selected
       Int_t wid;
-      fFileName = FileName;         // remember
-      if (FileName != NULL) {
-         if (gSystem->AccessPathName(FileName)) {
-            cout << "Warning: File with selections not found: " << FileName << endl;
+      fHistory = History;         // remember
+      if (History != NULL) {
+         if (gSystem->AccessPathName(History)) {
+            cout << "Warning: File with selections not found: " << History << endl;
          } else {
-            ifstream selections(FileName);
+            ifstream selections(History);
             TString line;
             Int_t id = 0;
             fListBox = new TGListBox(this,  1000*kIdTextSelect);
@@ -1477,7 +1480,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                 if (idCmd == kIdOk) {
                    // here copy the string from text buffer to return variable
                    if (fText) *fText = fTE->GetBuffer()->GetString();
-                   if (fFileName && fFileName.Length() > 0) this->SaveList();
+                   if (fHistory && fHistory.Length() > 0) this->SaveList();
                    StoreValues();
                    idButton = -1;
                    *fReturn = 0;
@@ -1485,8 +1488,8 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 //                 break;
 
                 } else if (idCmd == kIdClearHist) {
-                   if (fFileName && fFileName.Length() > 0) {
-                      TString cmd(fFileName);
+                   if (fHistory && fHistory.Length() > 0) {
+                      TString cmd(fHistory);
                       cmd.Prepend("rm ");
                       gSystem->Exec(cmd);
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
@@ -1627,7 +1630,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                 // here copy the string from text buffer to return variable
                 if (fText) {
                    *fText = fTE->GetBuffer()->GetString();
-                   if (fFileName.Length() > 0) this->SaveList();
+                   if (fHistory.Length() > 0) this->SaveList();
                    *fReturn = 0;
                    CloseDown(0);
                 } else if (fValPointers != NULL) {
@@ -1659,7 +1662,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
       && idCmd== kIdCommand) {
 //
       if (fText) *fText = fTE->GetBuffer()->GetString();
-	   if (fFileName && fFileName.Length() > 0) this->SaveList();
+	   if (fHistory && fHistory.Length() > 0) this->SaveList();
       ReloadValues();
 //      StoreValues();
 //   } else if (fValPointers != NULL && idButton >= 0  && idButton != kIdExec ) {
@@ -1981,12 +1984,12 @@ void TGMrbValuesAndText::SaveList()
 //      fWidgets->AddFirst(fListBox);
       gClient->NeedRedraw(this);
    }
-   if (!(gSystem->AccessPathName(fFileName.Data()))) {
-      TString bak(fFileName);
+   if (!(gSystem->AccessPathName(fHistory.Data()))) {
+      TString bak(fHistory);
       bak += ".bak";
-      gSystem->Rename(fFileName.Data(), bak.Data());
+      gSystem->Rename(fHistory.Data(), bak.Data());
    }
-   ofstream outfile(fFileName.Data());
+   ofstream outfile(fHistory.Data());
    TString sel(fTE->GetBuffer()->GetString());
    Int_t ne = fListBox->GetNumberOfEntries();
 //   cout << "SaveList() Selected: |" << sel <<"|" << endl;
@@ -2153,7 +2156,7 @@ void TGMrbValuesAndText::SetCheckButton(Int_t id, Int_t state)
 
 Bool_t GetStringExt(const char *Prompt, TString  *text ,
                         Int_t win_width, TGWindow *Win,
-                        const char *FileName, TList * Complist,
+                        const char *History, TList * Complist,
                         TList * rowlabs, void **val_pointers,
                         TArrayI * Flags, const char * Flagslabel,
                         const char *helptext, TObject * calling_class,
@@ -2162,7 +2165,7 @@ Bool_t GetStringExt(const char *Prompt, TString  *text ,
    Int_t ret = 0;
 
    new TGMrbValuesAndText(Prompt, text, &ret, win_width,  Win,
-       FileName, Complist, rowlabs, val_pointers,Flags, Flagslabel, helptext,
+       History, Complist, rowlabs, val_pointers,Flags, Flagslabel, helptext,
        calling_class, cname);
    if(ret == 0) return kTRUE;
    else         return kFALSE;

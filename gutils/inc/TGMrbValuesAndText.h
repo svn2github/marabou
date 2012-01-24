@@ -81,7 +81,7 @@ private:
    TGListBox        *fListBoxReq;
    TGTextEntry      **fFileDialogContTextEntry;
    TString          **fClassName;
-   TString          fFileName;
+   TString          fHistory;
    Int_t            fWidgetId;
    TGTextButton     *fCancelButton;
    const char       *fPrompt;
@@ -117,7 +117,7 @@ private:
 public:
    TGMrbValuesAndText(const char *prompt, TString * text,
                              Int_t * ok, Int_t win_width, const TGWindow *win=0,
-                             const char * FileName = 0, TList * complist=0,
+                             const char * History = 0, TList * complist=0,
                              TList * rowlabs = 0, void **val_pointers = 0,
                              TArrayI * Flags = 0, const char * Flagslabel = 0,
                              const char *helptext=0, TObject * calling_class = 0,
@@ -148,7 +148,7 @@ ClassDef(TGMrbValuesAndText,0)		// [GraphUtils] A dialog box
 
 Bool_t  GetStringExt(const char *prompt, TString * text,
                              Int_t win_width, TGWindow *win = 0,
-                             const char * FileName = 0, TList * complist=0,
+                             const char * History = 0, TList * complist=0,
                              TList * rowlabs =0 , void ** val_pointers=0,
                              TArrayI * Flags = 0, const char * Flagslabel = 0,
                              const char *helptext = 0, TObject * calling_class = 0,
