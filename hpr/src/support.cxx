@@ -1212,20 +1212,18 @@ Bool_t IsInsideFrame(TCanvas * c, Int_t px, Int_t py)
    return kFALSE;
 }
 //_______________________________________________________________________________________
-Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads)
+TGraph * FindGraph(TVirtualPad * ca)
 {
-   if (!ca) return -1;
-   Int_t ngr = 0;
-   TIter next(ca->GetListOfPrimitives());
+   if (!ca) return NULL;
+   TGraph * gr = NULL;
+	TIter next(ca->GetListOfPrimitives());
    while (TObject * obj = next()) {
       if (obj->InheritsFrom("TGraph")) {
-          ngr++;
-          if (logr) logr->Add(obj);
-          if (pads) pads->Add(ca);
+          gr = (TGraph*)obj;
       }
    }
 // look for subpads
-   TIter next1(ca->GetListOfPrimitives());
+/*   TIter next1(ca->GetListOfPrimitives());
    while (TObject * obj = next1()) {
       if (obj->InheritsFrom("TPad")) {
           TPad * p = (TPad*)obj;
@@ -1238,8 +1236,38 @@ Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads)
              }
           }
       }
-   }
-   return ngr;
+   }*/
+   return gr;
+};
+//_______________________________________________________________________________________
+Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads)
+{
+	if (!ca) return -1;
+	Int_t ngr = 0;
+	TIter next(ca->GetListOfPrimitives());
+	while (TObject * obj = next()) {
+		if (obj->InheritsFrom("TGraph")) {
+			ngr++;
+			if (logr) logr->Add(obj);
+			if (pads) pads->Add(ca);
+	}
+}
+// look for subpads
+TIter next1(ca->GetListOfPrimitives());
+while (TObject * obj = next1()) {
+	if (obj->InheritsFrom("TPad")) {
+		TPad * p = (TPad*)obj;
+		TIter next2(p->GetListOfPrimitives());
+		while (TObject * obj = next2()) {
+			if (obj->InheritsFrom("TGraph")) {
+				ngr++;
+				if (logr) logr->Add(obj);
+				if (pads) pads->Add(p);
+		}
+}
+}
+}
+return ngr;
 };
 //_______________________________________________________________________________________
 Int_t FindObjs(TVirtualPad * ca, TList * logr, TList * pads, const char * oname)

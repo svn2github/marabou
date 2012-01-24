@@ -63,6 +63,7 @@ _________________________________________________________________________\n\
 	} 
 	gROOT->GetListOfCleanups()->Add(this);
 	RestoreDefaults();
+	fCanvas->cd();
 	
 	fDrawOpt   = new TString[fNGraphs];
 	fFill      = new Int_t[fNGraphs];
@@ -77,9 +78,16 @@ _________________________________________________________________________\n\
    fShowMarkers = new Int_t[fNGraphs];
 	fLineMode    = new TString[fNGraphs];
 	fErrorMode   = new TString[fNGraphs];
+	fTitle       = new TString[fNGraphs];
 	for ( Int_t i =0; i < fNGraphs; i++ ) {
 		TGraph *gr =(TGraph*)fGraphList.At(i);
+		if (i == 0 ) {
+			fTitleX = gr->GetHistogram()->GetXaxis()->GetTitle();
+			fTitleY = gr->GetHistogram()->GetYaxis()->GetTitle();
+		}
+		fTitle[i] = gr->GetTitle();
 		fDrawOpt[i]   = gr->GetDrawOption();
+		cout << "GetDrawOption() " << i << ": " << fDrawOpt[i] << endl;
 		fFillColor[i] = gr->GetFillColor(); 
 		fFillStyle[i] = gr->GetFillStyle(); 
 		fLineColor[i] = gr->GetLineColor(); 
@@ -137,6 +145,10 @@ _________________________________________________________________________\n\
 	fValp[ind++] = &fEndErrorSize;
 	fRow_lab->Add(new TObjString("Float_Value+X ErrS"));
 	fValp[ind++] = &fErrorX;
+	fRow_lab->Add(new TObjString("StringValue_Title X "));
+	fValp[ind++] = &fTitleX;
+	fRow_lab->Add(new TObjString("StringValue+Title Y "));
+	fValp[ind++] = &fTitleY;
 	
 	for ( Int_t i =0; i < fNGraphs; i++ ) {
 		fRow_lab->Add(new TObjString("ComboSelect_ErrMo;(default);X(no Err);Z(no XErr);>;|>;||(only end);2;3;4"));
@@ -164,11 +176,14 @@ _________________________________________________________________________\n\
 		fValp[ind++] = &fMarkerSize[i];
 		fRow_lab->Add(new TObjString("ColorSelect+MColor"));
 		fValp[ind++] = &fMarkerColor[i];
+		fRow_lab->Add(new TObjString("StringValue_Graph Title"));
+		fValp[ind++] = &fTitle[i];
 	}
-/*	fRow_lab->Add(new TObjString("CheckButton_Log X scale"));
+	fRow_lab->Add(new TObjString("CheckButton_Log X scale"));
 	fValp[ind++] = &fLogX;
 	fRow_lab->Add(new TObjString("CheckButton+Log Y scale"));
 	fValp[ind++] = &fLogY;
+	/*	
 	Int_t logz = ind;
 	fRow_lab->Add(new TObjString("CheckButton+Log Z scale"));
 	fValp[ind++] = &fLogZ;*/
@@ -221,6 +236,10 @@ void GraphAttDialog::SetGraphAtt(TCanvas *ca, Int_t bid)
 	TString errmod;
 	for ( Int_t i =0; i < fNGraphs; i++ ) {
 		TGraph *gr =(TGraph*)fGraphList.At(i);
+		if (i == 0 ) {
+			gr->GetHistogram()->GetXaxis()->SetTitle(fTitleX);
+			gr->GetHistogram()->GetYaxis()->SetTitle(fTitleY);
+		}
 		drawopt = fLineMode[i];
 		if (drawopt.Index("(") >= 0)
 			drawopt.Resize(drawopt.Index("("));
@@ -254,7 +273,10 @@ void GraphAttDialog::SetGraphAtt(TCanvas *ca, Int_t bid)
 			gr->SetMarkerSize (fMarkerSize[i] );
 			gr->SetMarkerColor(fMarkerColor[i]);
 		}
+		gr->SetTitle(fTitle[i]);
 	}
+	ca->SetLogx(fLogX);
+	ca->SetLogy(fLogY);
 	ca->Modified();
 	ca->Update();
 }
@@ -282,9 +304,9 @@ void GraphAttDialog::SaveDefaults()
 	env.SetValue("GraphAttDialog.fMarkerColor",fMarkerColor[0]);
 	env.SetValue("GraphAttDialog.fFillStyle",  fFillStyle[0]);
 	env.SetValue("GraphAttDialog.fFillColor",  fFillColor[0]);
-/*	env.SetValue("GraphAttDialog.fLogX",       fLogX);
+	env.SetValue("GraphAttDialog.fLogX",       fLogX);
 	env.SetValue("GraphAttDialog.fLogY",       fLogY);
-	env.SetValue("GraphAttDialog.fLogZ",       fLogZ);*/
+//	env.SetValue("GraphAttDialog.fLogZ",       fLogZ);
 // 	env.SetValue("GraphAttDialog.fErrorMode",  fErrorMode[0]);
 	env.SetValue("GraphAttDialog.fEndErrorSize",fEndErrorSize);
 	env.SetValue("GraphAttDialog.fErrorX",      fErrorX);
@@ -317,14 +339,17 @@ void GraphAttDialog::RestoreDefaults()
    fShowMarkers = env.GetValue("GraphAttDialog.fShowMarkers", 1);
    fBarChart    = env.GetValue("GraphAttDialog.fBarChart", 0);
    fShowAxis   = env.GetValue("GraphAttDialog.fShowAxis", 1);
+*/
 	fLogX       = env.GetValue("GraphAttDialog.fLogX", 0);
 	fLogY       = env.GetValue("GraphAttDialog.fLogY", 0);
+	/*
 	fLogZ       = env.GetValue("GraphAttDialog.fLogZ", 0);
 	fErrorMode       = env.GetValue("GraphAttDialog.fErrorMode",    "");
 	fEndErrorSize    = env.GetValue("GraphAttDialog.fEndErrorSize",  1);
 	fErrorX          = env.GetValue("GraphAttDialog.fErrorX",        1);
-//	gStyle->SetOptLogx      (fLogX);
-//	gStyle->SetOptLogy      (fLogY);*/
+	*/
+	gStyle->SetOptLogx      (fLogX);
+	gStyle->SetOptLogy      (fLogY);
 }
 //______________________________________________________________________
 

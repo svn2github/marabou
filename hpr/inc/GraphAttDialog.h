@@ -11,38 +11,41 @@ class GraphAttDialog : public TObject {
 
 private:
 
-   void *fValp[100];
-   TList *fRow_lab;
-   TGMrbValuesAndText *fDialog;
-   TCanvas      *fCanvas;
+	void *fValp[100];
+	TList *fRow_lab;
+	TGMrbValuesAndText *fDialog;
+	TCanvas      *fCanvas;
 	TList fGraphList;
 	Int_t fNGraphs;
 
 public:
-    TString * fDrawOpt;
-    Style_t * fFillStyle;
-    Color_t * fFillColor;
-	 Style_t * fLineStyle;
-	 Width_t * fLineWidth;
-	 Color_t * fLineColor;
-	 Style_t * fMarkerStyle;
-    Size_t  * fMarkerSize;
-    Color_t * fMarkerColor;
-	 
-    TString * fLineMode;
-	 TString * fErrorMode;
-	 Float_t fEndErrorSize;
-    Float_t fErrorX;
-    Int_t   * fShowMarkers;
-    Int_t   * fBarChart;
-    Int_t   * fFill;
-    Int_t   fShowAxis;
-	 Int_t   fShowTitle;
-	 Int_t   fLogX;
-	 Int_t   fLogY;
-	 Int_t   fLogZ;
+	TString * fDrawOpt;
+	TString * fTitle;
+	Style_t * fFillStyle;
+	Color_t * fFillColor;
+	Style_t * fLineStyle;
+	Width_t * fLineWidth;
+	Color_t * fLineColor;
+	Style_t * fMarkerStyle;
+	Size_t  * fMarkerSize;
+	Color_t * fMarkerColor;
+
+	TString * fLineMode;
+	TString * fErrorMode;
+	Float_t fEndErrorSize;
+	Float_t fErrorX;
+	Int_t   * fShowMarkers;
+	Int_t   * fBarChart;
+	Int_t   * fFill;
+	Int_t   fShowAxis;
+	Int_t   fShowTitle;
+	Int_t   fLogX;
+	Int_t   fLogY;
+	Int_t   fLogZ;
+	TString fTitleX;
+	TString fTitleY;
 	
-   GraphAttDialog(TGWindow * win = NULL);
+	GraphAttDialog(TGWindow * win = NULL);
    ~GraphAttDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();

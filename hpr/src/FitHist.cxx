@@ -2314,8 +2314,6 @@ void FitHist::Superimpose(Int_t mode)
 		cout << "Superimpose: Scale errors linearly" << endl;
 	}
 	fCanvas->cd();
-//   TString drawopt = fSelHist->GetDrawOption();
-//   if ( hist->GetDimension() == 1 ) {
 	hdisp->SetLineColor(lLColor);
 	hdisp->SetLineStyle(lLStyle);
 	hdisp->SetFillStyle(lFStyle);
@@ -2401,18 +2399,6 @@ void FitHist::Superimpose(Int_t mode)
 		}
 	}
 	if ( lLegend != 0 ) {
-		// remove possible TLegend
-/*		TIter next2( fCanvas->GetListOfPrimitives() );
-		TObject *obj;
-		TLegend * leg = NULL;
-		while ( obj = next2() ) {
-			if ( obj->InheritsFrom("TLegend") ) {
-				leg = (TLegend*)obj;
-				break;
-			}
-		}*/
-//		if ( leg )
-//			delete leg;
 		TEnv env(".hprrc");
 		Double_t x1 = env.GetValue("SuperImposeHist.fLegendX1", 0.11);
 		Double_t x2 = env.GetValue("SuperImposeHist.fLegendX2", 0.3);

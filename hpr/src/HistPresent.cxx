@@ -3860,6 +3860,8 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			}
 		}
 		TString drawopt = env.GetValue("GraphAttDialog.fDrawOpt", "PA");
+		if (drawopt.Length() == 0 || drawopt == " ")
+			drawopt = "PA";
 		graph1d->Draw(drawopt);
 //		cout << "graph1d->Draw " << drawopt<< " " << graph1d->GetName()<< " "
 //		<< graph1d->GetHistogram()->GetName()<< endl;
@@ -3888,6 +3890,8 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 				graph1d->GetHistogram()->GetXaxis()->SetBit(TAxis::kCenterTitle);
 		}
 	}
+	gPad->SetLogy(env.GetValue("GraphAttDialog.fLogY",  0));
+	gPad->SetLogx(env.GetValue("GraphAttDialog.fLogX",  0));
 	if (fRootFile) fRootFile->Close();
 	//	GraphAttDialog::SetGraphAtt(cg);
 	gPad->Modified();
@@ -3900,8 +3904,8 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	static const char helptext[] =
 	"\n\
 	A selected graph is drawn in the same pad\n\
-	The graph can be scaled either automatically\n\
-	The scale is adjusted such that the maximum value\n\
+	The graph may be scaled automatically. In this case\n\
+	the scale is adjusted such that the maximum value\n\
 	is 10% below the maximum of the pad. Any value may be\n\
 	selected manually.\n\
 	An extra axis may be drawn on the right side.\n\
@@ -3954,20 +3958,13 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	if ( mode == 1 ) {
 		do_scale = auto_scale = new_axis = 1;
 	}
-	Double_t  axis_offset = 0.;
-	Double_t label_offset = 0.01;
-	static Color_t    axis_color = 2;
-	static Color_t lFColor   = axis_color;
-	static Color_t lLColor   = axis_color;
-	static Color_t lMColor   = axis_color;
-	if ( GetNofGraphs(current)  == 1 ) {
-		axis_color = 2;
-		lFColor   = axis_color;
-		lLColor   = axis_color;
-		lMColor   = axis_color;
-	}
+	
+	TGraph * gr_exist = FindGraph(current);
+	if ( !gr_exist )
+		return;
 	TString lLineMode;
-	TString drawopt     = env.GetValue("GraphAttDialog.fDrawOpt", "PA");
+//	TString drawopt     = env.GetValue("GraphAttDialog.fDrawOpt", "PA");
+	TString drawopt     = gr_exist->GetDrawOption();
 	if ( drawopt.Contains("C") ) {
 		lLineMode = "C(smooth)";
 	} else if (drawopt.Contains("L")) {
@@ -3976,16 +3973,34 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		lLineMode = "(noline)";
 	}
 	Int_t lShowMarkers = 0;
-	if (drawopt.Contains("P")) {
+	if (drawopt.Contains("P", TString::kIgnoreCase)) {
 		lShowMarkers= 1;
 	}
-	Style_t lFStyle   = env.GetValue("GraphAttDialog.fFillStyle", 0);
+/*	Style_t lFStyle   = env.GetValue("GraphAttDialog.fFillStyle", 0);
 	Int_t   lFill     = env.GetValue("GraphAttDialog.fFill", 0);
 	Style_t lLStyle   = env.GetValue("GraphAttDialog.fLineStyle", 1);
 	Size_t  lLWidth   = env.GetValue("GraphAttDialog.fLineWidth", 1);
 	Style_t lMStyle   = env.GetValue("GraphAttDialog.fMarkerStyle", 7);
-	Size_t  lMSize    = env.GetValue("GraphAttDialog.fMarkerSize",  1);
+	Size_t  lMSize    = env.GetValue("GraphAttDialog.fMarkerSize",  1);*/
 
+	Style_t lFStyle   = gr_exist->GetFillStyle();
+	Style_t lLStyle   = gr_exist->GetLineStyle();
+	Size_t  lLWidth   = gr_exist->GetLineWidth();
+	Style_t lMStyle   = gr_exist->GetMarkerStyle();
+	Size_t  lMSize    = gr_exist->GetMarkerSize();
+	
+	Double_t  axis_offset = env.GetValue("SuperImposeGraph.axis_offset", 0.);
+	
+	Double_t label_offset = 0.01;
+	Color_t def_col = 2;
+	if (def_col == gr_exist->GetMarkerColor())
+		def_col = 3;;
+	static Color_t lLColor    = env.GetValue("SuperImposeGraph.lLColor", def_col);
+	static Color_t lMColor    = env.GetValue("SuperImposeGraph.lMColor", def_col);
+	static Color_t lFColor    = env.GetValue("SuperImposeGraph.lFColor", def_col);
+	static Color_t axis_color = env.GetValue("SuperImposeGraph.axis_color", def_col);
+	static Int_t   lFill      = env.GetValue("SuperImposeGraph.fFill", 0);
+	
 	Double_t new_scale = 1;
 	TString axis_title;
 	Int_t   lLegend      = env.GetValue("SuperImposeGraph.DrawLegend", 1);
@@ -4086,7 +4101,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	gr->SetName(gname);
 	gr->SetLineColor(axis_color);
 	gr->SetMarkerColor(axis_color);
-	drawopt = env.GetValue("GraphAttDialog.fDrawOpt", "P");
+//	drawopt = env.GetValue("GraphAttDialog.fDrawOpt", "P");
 	Int_t inda = drawopt.Index("A", 0, TString::kIgnoreCase);
 	if (inda>=0) drawopt.Remove(inda,1);
 	TString lm(lLineMode);
@@ -4197,6 +4212,12 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		lFColor++;
 		axis_offset += 0.05;
 	}
+	env.SetValue("SuperImposeGraph.lLColor", lLColor);
+	env.SetValue("SuperImposeGraph.lMColor", lMColor);
+	env.SetValue("SuperImposeGraph.lFColor", lFColor);
+	env.SetValue("SuperImposeGraph.lFill",   lFill);
+	env.SetValue("SuperImposeGraph.axis_color", axis_color);
+	env.SetValue("SuperImposeGraph.axis_offset", axis_offset);
 	env.SetValue("SuperImposeGraph.DrawLegend", lLegend);
 	env.SetValue("SuperImposeGraph.AutoIncrColors", lIncrColors);
 	env.SetValue("SuperImposeGraph.SkipDialog", lSkipDialog);
