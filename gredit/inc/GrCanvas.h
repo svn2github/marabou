@@ -72,13 +72,11 @@ public:
    Double_t PutOnGridY_NDC(Double_t);
    void     HideObject(TObject*);
    void     ViewObject(TObject*);
-   void     ViewAllObjects(); // *MENU*
+   void     ViewAllObjects();       // *MENU*
    Int_t    GetCurrentPlane() {return fCurrentPlane;};
    void     SetCurrentPlane(Int_t p) {fCurrentPlane = p;};
    TList    *GetHiddenPrimitives() {return fHiddenPrimitives;};
-   void PrintAddress()  {std::cout << ClassName() << "* aa = "
-                         << "(" << ClassName() << "*)" << this
-                         << std::endl; GetListOfPrimitives()->ls();}; // *MENU*
+	void 		ListPrimitives();             // *MENU*
 //______________________________________________________________________________
 
 	void RemovePicture()

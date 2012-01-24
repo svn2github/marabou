@@ -5,15 +5,19 @@
 #include "TObjString.h"
 #include "TRootCanvas.h"
 #include "TSplineXDialog.h"
-#include "THprSplineX.h"
+#ifdef MARABOUVERS
+	#include "THprSplineX.h"
+#else
+	#include "TSplineX.h"
+#endif
 #include "TGMrbValuesAndText.h"
 
-static const Char_t helpText[] =
-"This class helps to construct a Xspline with\n\
-additional graphical elements:\n\
-Arrows at either ends\n\
-Railway like filling etc.\n\
-";
+// static const Char_t helpText[] =
+// "This class helps to construct a Xspline with\n\
+// additional graphical elements:\n\
+// Arrows at either ends\n\
+// Railway like filling etc.\n\
+// ";
 
 ClassImp(TSplineXDialog)
 
@@ -138,8 +142,13 @@ void TSplineXDialog::Draw_The_TSplineX()
    Bool_t closed_spline;
    if (fClosed != 0) closed_spline = kTRUE;
    else              closed_spline = kFALSE;
-   THprSplineX* xsp =
+#ifdef MARABOUVERS
+	THprSplineX* xsp =
      new THprSplineX(npoints, x, y, shape_factors.GetArray(), fPrec, closed_spline);
+#else
+	TSplineX* xsp =
+		new TSplineX(npoints, x, y, shape_factors.GetArray(), fPrec, closed_spline);
+#endif	
    xsp->Draw("L");
    xsp->SetFillColor(fFcolor);
    xsp->SetFillStyle(fFstyle);

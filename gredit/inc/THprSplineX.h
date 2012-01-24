@@ -15,7 +15,8 @@ public:
    ~THprSplineX(){};
    void AddTextDialog();    // *MENU*
    void InsertTextExecute();
-   void CloseDown(Int_t flag);
+	void InsertTextOnArc() {};
+	void CloseDown(Int_t flag);
    void CRButtonPressed(int,int,TObject* obj) {};
    void Paint(const Option_t *opt);
    Bool_t IsSortable() const {return kTRUE;}

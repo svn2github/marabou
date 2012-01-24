@@ -100,6 +100,16 @@ ClassImp(GEdit)
 //GEdit::GEdit(GrCanvas * parent)
 GEdit::GEdit(GrCanvas * parent)
 {
+	TString iconpath = gEnv->GetValue("Gui.IconPath","");
+	if ( !iconpath.Contains("ROOT", TString::kIgnoreCase) ||
+		!iconpath.Contains("MARABOU", TString::kIgnoreCase)) {
+		cout <<endl << setred << "Your environment does not contain the needed IconPath" << endl
+		<< "Please add the following line to your $HOME/.rootrc :" << endl
+		<< "Gui.IconPath:  .:$HOME/icons:$MARABOU/icons:$ROOTSYS/icons" << endl
+		<< "and restart HistPresent otherwise you cannot use the graphics editor" 
+		<< setblack << endl << endl;
+		return;
+	}
    fParent = parent;
    Constructor();
    fParent->SetGEdit(this);

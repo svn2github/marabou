@@ -37,6 +37,7 @@ THprLatex *THprLatex::DrawLatex(Double_t x, Double_t y, const char *text)
    TAttText::Copy(*newtext);
    newtext->SetBit(kCanDelete);
    if (TestBit(kTextNDC)) newtext->SetNDC();
+	// hpr
    if (TestBit(kValignNoShift)) newtext->SetBit(kValignNoShift);
    newtext->AppendPad();
    return newtext;
@@ -54,10 +55,15 @@ void THprLatex::PaintLatex(Double_t x, Double_t y, Double_t angle, Double_t size
 
    // do not use Latex if font is low precision
    if (fTextFont%10 < 2) {
-      gPad->PaintText(x,y,text1);
+		if (gVirtualX) gVirtualX->SetTextAngle(angle);
+		if (gVirtualPS) gVirtualPS->SetTextAngle(angle);
+		gPad->PaintText(x,y,text1);
       return;
    }
-
+   
+   TString newText = text1;
+	if( newText.Length() == 0) return;
+	
    Double_t saveSize = size;
    Int_t saveFont = fTextFont;
    if (fTextFont%10 > 2) {
@@ -73,9 +79,6 @@ void THprLatex::PaintLatex(Double_t x, Double_t y, Double_t angle, Double_t size
    }
    if (gVirtualPS) gVirtualPS->SetBit(kLatex);
 
-   TString newText = text1;
-
-   if( newText.Length() == 0) return;
 
    fError = 0 ;
    if (CheckLatexSyntax(newText)) {
@@ -109,15 +112,13 @@ void THprLatex::PaintLatex(Double_t x, Double_t y, Double_t angle, Double_t size
    Short_t halign = fTextAlign/10;
    Short_t valign = fTextAlign - 10*halign;
    TextSpec_t newSpec = spec;
-//   std::cout << " PaintLatex "<< valign << " " 
-//   << kValignNoShift << " " << TestBit(kValignNoShift) << " " 
-//   << kTextNDC << " " << TestBit(kTextNDC)
-//   << std::endl;
+	//hpr
    Double_t cshift = 0;
    if ( this->TestBit(kValignNoShift) && valign == 2) {
       TLatexFormSize fs1 = FirstParse(angle,size,"a");
       cshift = (fs1.Over()-fs1.Under())/1.5;
    }
+   // hpr end
    if (fError != 0) {
       cout<<"*ERROR<TLatex>: "<<fError<<endl;
       cout<<"==> "<<text<<endl;
