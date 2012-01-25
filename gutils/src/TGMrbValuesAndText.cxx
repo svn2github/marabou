@@ -1669,9 +1669,10 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
    } else if (fValPointers != NULL && idButton >= 0) {
       StoreValues();
    }
-   if (idButton >= 0)
-     CRButtonPressed(fWidgetId, idButton, fCallingCanvas);
-   return kTRUE;
+   if (idButton >= 0) {
+		CRButtonPressed(fWidgetId, idButton, fCallingCanvas);
+	}
+	return kTRUE;
 }
 
 //_____________________________________________________________________________
