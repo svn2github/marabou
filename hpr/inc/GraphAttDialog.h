@@ -21,6 +21,7 @@ private:
 public:
 	TString * fDrawOpt;
 	TString * fTitle;
+	Int_t   * fTitleModBid;
 	Style_t * fFillStyle;
 	Color_t * fFillColor;
 	Style_t * fLineStyle;
@@ -49,7 +50,7 @@ public:
    ~GraphAttDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
-   void SetGraphAtt(TCanvas *ca, Int_t bid = 0);
+   void SetGraphAtt(TCanvas *ca = NULL, Int_t bid = 0);
    void SetAsDefault();
    void SaveDefaults();
    void RestoreDefaults();

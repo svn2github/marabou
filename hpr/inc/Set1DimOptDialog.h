@@ -19,8 +19,10 @@ private:
 	TCanvas *fCanvas;
 	Int_t   fOk;
 	
-   TString *fDrawOpt;
-   Int_t   *fShowContour;
+   TString *fTitle;
+	Int_t   * fTitleModBid;
+	TString *fDrawOpt;
+	Int_t   *fShowContour;
    Int_t   *fFill;
    Color_t *fFillColor ;
    Style_t *fFillStyle;
@@ -34,7 +36,9 @@ private:
    Int_t   *fShowMarkers;
    Int_t   *fSame;
 	
-   Float_t fEndErrorSize;
+	TString fTitleX;
+	TString fTitleY;
+	Float_t fEndErrorSize;
    Float_t fErrorX;
 	Int_t   fSmoothLine;
 	Int_t   fSimpleLine;
@@ -65,8 +69,8 @@ public:
 	void LinLogChanged(TObject* o);
 	void RecursiveRemove(TObject * obj);
    void CloseDialog();
-   void SetHistAttNow(TCanvas *canvas);
-   void SetHistAtt();
+   void SetHistAttNow(TCanvas *canvas = NULL, Int_t id = 0);
+	void SetHistAtt(TCanvas *canvas = NULL, Int_t id = 0);
    void SetAtt(TH1* hist);
    void SetHistAttPermLocal();
    void SetHistAttPerm();

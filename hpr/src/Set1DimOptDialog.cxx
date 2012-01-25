@@ -11,6 +11,8 @@
 #include "TStyle.h"
 #include "TSystem.h"
 #include "TRegexp.h"
+#include "TLegend.h"
+#include "TLegendEntry.h"
 #include "Set1DimOptDialog.h"
 #include <iostream>
 
@@ -100,6 +102,8 @@ may be selected.\n\
 	fAdvanced1Dim = 1;
    gROOT->GetListOfCleanups()->Add(this);
 	
+	fTitle       = new TString[fNHists];
+	fTitleModBid = new Int_t[fNHists];
 	fDrawOpt     = new TString[fNHists];
 	fShowContour = new Int_t[fNHists];
 	fFill        = new Int_t[fNHists];
@@ -120,11 +124,17 @@ may be selected.\n\
 
    fRow_lab = new TList();
    Int_t ind = 0;
-	TString opt, erm, errmode;
+	TString opt, erm, errmode, title;
+	TRegexp semicolon(";");
 	fCanvas->cd();
 	for ( Int_t i =0; i < fNHists; i++ ) {
 		hist =(TH1*)fHistList.At(i);
 		fDrawOpt[i]   = hist->GetDrawOption();
+		fTitle[i]     = hist->GetTitle();
+		if ( i == 0 ) {
+			fTitleX = hist->GetXaxis()->GetTitle();
+			fTitleY = hist->GetYaxis()->GetTitle();
+		}
 		if ( gDebug  > 0 )
 			cout << "GetDrawOption: [" << i << "] " << hist->GetDrawOption() << endl;
 		opt           = hist->GetDrawOption();
@@ -217,6 +227,15 @@ may be selected.\n\
 		fMarkerStyle[i] =  hist->GetMarkerStyle(); 
 		fMarkerSize[i]  =  hist->GetMarkerSize(); 
 	
+		title = "StringValue_Hist \"";
+		title += hist->GetName();
+		title += "\" Title ";
+		while ( title.Contains(";") )  {
+			title(semicolon) = "";
+		}
+		fRow_lab->Add(new TObjString(title));
+		fTitleModBid[i] = ind;
+		fValp[ind++] = &fTitle[i];
 		fRow_lab->Add(new TObjString("CheckButton_HistContour"));
 		fRow_lab->Add(new TObjString("ColorSelect+LColor"));
 		fRow_lab->Add(new TObjString("LineSSelect+LSty"));
@@ -245,6 +264,10 @@ may be selected.\n\
 		fValp[ind++] = &fFillStyle[i];
 	}
 	
+	fRow_lab->Add(new TObjString("StringValue_Title X "));
+	fValp[ind++] = &fTitleX;
+	fRow_lab->Add(new TObjString("StringValue+Title Y "));
+	fValp[ind++] = &fTitleY;
 	
 	fRow_lab->Add(new TObjString("Float_Value_EndErrorSz "));
 	fValp[ind++] = &fEndErrorSize;
@@ -332,13 +355,13 @@ void Set1DimOptDialog::CloseDialog()
 }
 //_______________________________________________________________________
 
-void Set1DimOptDialog::SetHistAttNow(TCanvas *canvas)
+void Set1DimOptDialog::SetHistAttNow(TCanvas *canvas, Int_t bid)
 {
-   SetHistAtt();
+   SetHistAtt(canvas, bid);
 }
 //_______________________________________________________________________
 
-void Set1DimOptDialog::SetHistAtt()
+void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 {
 	Bool_t changed =kFALSE;
 	fCanvas->cd();
@@ -358,9 +381,24 @@ void Set1DimOptDialog::SetHistAtt()
    env.SetValue("Set1DimOptDialog.fLiveBG"       , fLiveBG);
    env.SetValue("Set1DimOptDialog.fLiveConstBG"       , fLiveConstBG);
    env.SaveLevel(kEnvLocal);
+	TList * leg_entries = NULL;
+	TLegend * leg = (TLegend*)canvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
+	if ( leg ) {
+		leg_entries = leg->GetListOfPrimitives();
+		if ( leg_entries->GetSize() != fNHists ) 
+			leg_entries = NULL;
+	}
 	TH1* hist;
 	for ( Int_t i =0; i < fNHists; i++ ) {
 		hist =(TH1*)fHistList.At(i);
+		if (i == 0 ) {
+			hist->SetTitle(fTitle[0]);
+			hist->GetXaxis()->SetTitle(fTitleX);
+			hist->GetYaxis()->SetTitle(fTitleY);
+		}
+		if ( leg_entries != NULL  && bid == fTitleModBid[i] ) {
+			((TLegendEntry*)leg_entries->At(i))->SetLabel(fTitle[i]);
+		}
 		if (fFill[i]) {
 			if ( fFillColor[i] == 0 )
 				fFillColor[i] = 4;
@@ -700,6 +738,6 @@ void Set1DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 //  cout << "CRButtonPressed(" << wid<< ", " <<bid;
 //   if (obj) cout  << ", " << canvas->GetName() << ")";
 //   cout << endl;
-   SetHistAttNow(canvas);
+   SetHistAttNow(canvas, bid);
 }
 

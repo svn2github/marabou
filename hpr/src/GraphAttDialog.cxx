@@ -67,6 +67,7 @@ _________________________________________________________________________\n\
 	
 	fDrawOpt   = new TString[fNGraphs];
 	fFill      = new Int_t[fNGraphs];
+	fTitleModBid = new Int_t[fNGraphs];
 	fFillColor = new Color_t[fNGraphs];
    fFillStyle = new Style_t[fNGraphs];
    fLineColor = new Color_t[fNGraphs];
@@ -134,7 +135,7 @@ _________________________________________________________________________\n\
 	fRow_lab = new TList();
 //	cout << "fDrawOpt " << fDrawOpt<< endl;
    Int_t ind = 0;
-//   static Int_t dummy;
+   static Int_t dummy;
 //   static TString stycmd("SetAsDefault()");
 //   RestoreDefaults();
 	fRow_lab->Add(new TObjString("CheckButton_Show Axis   "));
@@ -151,6 +152,13 @@ _________________________________________________________________________\n\
 	fValp[ind++] = &fTitleY;
 	
 	for ( Int_t i =0; i < fNGraphs; i++ ) {
+		TString comment("CommentOnly_GraphNo ");
+		comment +=i;
+		fRow_lab->Add(new TObjString(comment));
+		fValp[ind++] = &dummy;
+		fRow_lab->Add(new TObjString("StringValue+Graph Title"));
+		fTitleModBid[i] = ind;
+		fValp[ind++] = &fTitle[i];
 		fRow_lab->Add(new TObjString("ComboSelect_ErrMo;(default);X(no Err);Z(no XErr);>;|>;||(only end);2;3;4"));
 		fValp[ind++] = &fErrorMode[i];
 		fRow_lab->Add(new TObjString("CheckButton+DoFill"));
@@ -176,8 +184,6 @@ _________________________________________________________________________\n\
 		fValp[ind++] = &fMarkerSize[i];
 		fRow_lab->Add(new TObjString("ColorSelect+MColor"));
 		fValp[ind++] = &fMarkerColor[i];
-		fRow_lab->Add(new TObjString("StringValue_Graph Title"));
-		fValp[ind++] = &fTitle[i];
 	}
 	fRow_lab->Add(new TObjString("CheckButton_Log X scale"));
 	fValp[ind++] = &fLogX;
@@ -225,15 +231,28 @@ void GraphAttDialog::CloseDialog()
 
 void GraphAttDialog::SetGraphAtt(TCanvas *ca, Int_t bid)
 {
+	TCanvas * canvas;
+	if ( ca == NULL )
+		canvas = fCanvas;
+	else
+		canvas = ca;
 	gStyle->SetEndErrorSize(fEndErrorSize);
 	gStyle->SetErrorX(fErrorX);
 	if (fShowTitle) 
 		gStyle->SetOptTitle(kTRUE);
 	else 
 		gStyle->SetOptTitle(kFALSE);
-	ca->cd();
+	canvas->cd();
 	TString drawopt;
 	TString errmod;
+	
+	TList * leg_entries = NULL;
+	TLegend * leg = (TLegend*)canvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeGraph");
+	if ( leg ) {
+		leg_entries = leg->GetListOfPrimitives();
+		if ( leg_entries->GetSize() != fNGraphs ) 
+			leg_entries = NULL;
+	}
 	for ( Int_t i =0; i < fNGraphs; i++ ) {
 		TGraph *gr =(TGraph*)fGraphList.At(i);
 		if (i == 0 ) {
@@ -274,11 +293,14 @@ void GraphAttDialog::SetGraphAtt(TCanvas *ca, Int_t bid)
 			gr->SetMarkerColor(fMarkerColor[i]);
 		}
 		gr->SetTitle(fTitle[i]);
+		if ( leg_entries != NULL  && bid == fTitleModBid[i] ) {
+			((TLegendEntry*)leg_entries->At(i))->SetLabel(fTitle[i]);
+		}
 	}
-	ca->SetLogx(fLogX);
-	ca->SetLogy(fLogY);
-	ca->Modified();
-	ca->Update();
+	canvas->SetLogx(fLogX);
+	canvas->SetLogy(fLogY);
+	canvas->Modified();
+	canvas->Update();
 }
 //_______________________________________________________________________
 
@@ -355,7 +377,9 @@ void GraphAttDialog::RestoreDefaults()
 
 void GraphAttDialog::CloseDown(Int_t wid)
 {
-//   cout << "CloseDown(" << wid<< ")" <<endl;
+	if ( gDebug > 0 )
+		cout << "CloseDown(" << wid<< ")" <<endl;
+	SetGraphAtt();
    fDialog = NULL;
    if (wid == -1)
       SaveDefaults();
@@ -364,10 +388,12 @@ void GraphAttDialog::CloseDown(Int_t wid)
 
 void GraphAttDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
-   TCanvas *canvas = (TCanvas *)obj;
-//  cout << ClassName() << " CRButtonPressed(" << wid<< ", " <<bid;
-//   if (obj) cout  << ", " << canvas->GetName() << ")";
-//   cout << endl;
+	TCanvas *canvas = (TCanvas *)obj;
+	if ( gDebug > 0 ) {
+		cout << ClassName() << " CRButtonPressed(" << wid << ", " << bid;
+		if (obj) cout  << ", " << canvas->GetName() << ")";
+		cout << endl;
+	}
    SetGraphAtt(canvas, bid);
 }
 
