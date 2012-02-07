@@ -36,6 +36,7 @@
 					sis3302_setTracingMode(s_$moduleNameLC, $tracingMode);		/* turn tracing $onoff */
 					sis3302_resetSampling(s_$moduleNameLC);				/* reset sampling */
 					sis3302_clearTimestamp(s_$moduleNameLC);			/* reset time stamp */
+					sis3302_enable_bma(s_$moduleNameLC);				/* enable/disable bma */
 					sis3302_dumpRegisters(s_$moduleNameLC, "$dumpFile");		/* dump registers */
 
 %%EndOfCode%%

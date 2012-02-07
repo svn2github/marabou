@@ -31,7 +31,7 @@
 #include "err_mask_def.h"
 #include "errnum_def.h"
 
-char msg[256];	
+char msg[256];
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * Base
 		Module->activeChannels = kSis3302AllChans;
 		Module->bufferSize = 0;
 		Module->currentSampling = kSis3302KeyArmBank1Sampling;
-		
+
 		if (sis3302_mapAddress(Module, 0) == NULL) {
 			sprintf(msg, "[alloc] Can't map addr 0");
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -101,7 +101,7 @@ volatile char * sis3302_mapAddress_sized(struct s_sis_3302 * Module, Int_t Offse
  	s_param.wrpost = 0;
  	s_param.swap = SINGLE_AUTO_SWAP;
  	s_param.dum[0] = 0;
-	
+
 	mapIt = kFALSE;
 	if (Module->upperBound == 0) {
 		mapIt = kTRUE;
@@ -382,7 +382,7 @@ void sis3302_loadFromDb(struct s_sis_3302 * Module) {
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Reset and initialize module
+//! \details		Dump registers to file
 //! \param[in]		Module			-- module address
 //! \param[in]		DumpFile		-- where to dump settings
 //! \return 		--
@@ -523,7 +523,7 @@ void sis3302_setActiveChannelsFromDb(struct s_sis_3302 * Module) {
 		chnBit <<= 1;
 	}
 }
-	
+
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Define active channels
@@ -804,6 +804,32 @@ Bool_t sis3302_clearTimestamp(struct s_sis_3302 * Module) { return(sis3302_keyAd
 Bool_t sis3302_armSampling(struct s_sis_3302 * Module, Int_t Sampling) { return(sis3302_keyAddr(Module, Sampling)); };
 
 Bool_t sis3302_disarmSampling(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyDisarmSampling)); };
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Enables block mode transfer
+//! \param[in]		Module			-- module address
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis_3302_enable_bma(struct s_sis_3302 * Module)
+{
+	Module->bma = NULL;
+	Module->bltBuffer = NULL;
+	if (Module->blockTransOn) {
+		if ((Module->bma = bmaAlloc(Module->bufferSize)) == NULL) {
+			sprintf(msg, "[enable_bma] [%s]: %s, turning BlockXfer OFF", Module->moduleName,  sys_errlist[errno]);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			Module->blockTransOn = 0;
+		} else {
+			Module->bltBuffer = (unsigned char *) s->bma->virtBase;
+			sprintf(msg, "[enable_bma] [%s]: turning block xfer ON (mode=CHAINED, buffer=%#lx, size=%d)", Module->moduleName, Module->bltBuffer, Modules->bufferSize);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		}
+	} else {
+		  sprintf(msg, "[enable_bma] [%s]: Block xfer is OFF", Module->moduleName);
+		  f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	}
+}
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -3592,11 +3618,11 @@ Bool_t sis3302_checkAddressSpace(struct s_sis_3302 * Module) {
 	Bool_t reduced;
 	ULong_t ident;
 	volatile ULong_t * firmWare;
-	
+
 	firmWare = (volatile ULong_t *) sis3302_mapAddress(Module, ca(Module, SIS3302_MODID));
 	if (firmWare == NULL) return(kFALSE);
 	ident = *firmWare;
-	
+
 	if ((ident & 0xFFFF) >= 0x1410) {
 		status = sis3302_readControlStatus(Module);
 		reduced = (status & kSis3302AddressSpaceReduced) != 0;

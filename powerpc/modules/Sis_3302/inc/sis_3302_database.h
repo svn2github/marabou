@@ -19,6 +19,7 @@
 #define NOF_GROUPS		4
 #define STRLEN			100
 
+
 #define GROUP(adc)		(adc >> 1)
 
 struct s_sis_3302 {
@@ -44,12 +45,16 @@ struct s_sis_3302 {
 	Bool_t verbose;
 	Bool_t dumpRegsOnInit;
 
+	struct s_bma * bma; 					/* block mode access */
+	Char_t * bltBuffer;
+	Bool_t blockTransOn;
+
 	UInt_t status;
 
 	Bool_t updSettings;
 	Int_t updInterval;
 	Int_t updCountDown;
-	
+
 	Bool_t reducedAddressSpace;				/* 128 or 16 MB address space */
 
 	Int_t currentSampling;					/* sampling: bank 1 or 2 */
