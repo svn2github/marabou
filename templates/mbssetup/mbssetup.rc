@@ -3,8 +3,8 @@
 # Name             mbssetup.rc
 # Purpose:         Different addr/length settings depending on MBS, CPU etc.
 # Author:          MARaBOU
-# Revision:        $Id: mbssetup.rc,v 1.9 2011-01-27 12:49:09 Marabou Exp $
-# Date:            $Date: 2011-01-27 12:49:09 $
+# Revision:        $Id: mbssetup.rc,v 1.9 2011/01/27 12:49:09 Marabou Exp $
+# Date:            $Date: 2011/01/27 12:49:09 $
 # URL:
 #/////////////////////////////////////////////////////////////////////////////
 

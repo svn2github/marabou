@@ -3,7 +3,7 @@
 # Makefile:        %%READOUT_FILE%%.mk
 # Purpose:         Build MBS readout task for RIO2/3/4 cpus
 # Author:          %%AUTHOR%%
-# Revision:        $Id: Readout.mk.code,v 1.17 2011-09-14 09:26:23 Marabou Exp $
+# Revision:        $Id: Readout.mk.code,v 1.17 2011/09/14 09:26:23 Marabou Exp $
 # Date:            %%CREATION_DATE%%
 # URL:
 #/////////////////////////////////////////////////////////////////////////////

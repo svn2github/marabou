@@ -16,9 +16,9 @@
 //                 write_setup          -- write setup description
 //
 // Author:         %%AUTHOR%%
-// Revision:         
+// Revision:
 // Date:           %%CREATION_DATE%%
-// Keywords:       
+// Keywords:
 //
 //EXP_SETUP
 ////////////////////////////////////////////////////////////////////////////*/
@@ -156,10 +156,10 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 //                 long *pl_rem_cam[]   -- offset to remote crate(s),
 //                                         indexed by crate no.
 // Results:        TRUE(1)
-// Exceptions:     
+// Exceptions:
 // Description:    This function assigns values to all pointers defined above.
 //                 It should be called once on startup of event builder task.
-// Keywords:       
+// Keywords:
 ///////////////////////////////////////////////////////////////////////////*/
 
 	static long ptrs_passed = 0L;	/* once only code */
@@ -187,11 +187,11 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 %CC32% 	cam_bcast_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(25));	/* broadcast in crate C$crateNo */
 %CC32% 	cam_lam_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));		/* LAM pattern in crate C$crateNo */
 %V% 	$moduleNameLC = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* $moduleNameLC: $moduleTitle */
-%V%	if ((UInt_t) $moduleNameLC == 0xFFFFFFFF) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
+%V%	if ((unsigned int) $moduleNameLC == 0xFFFFFFFF) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
 %V% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %VS%																		/* $moduleName: $moduleTitle */
 %VS% 	$moduleNameLCBase = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* -- base addr */
-%VS%	if ((UInt_t) $moduleNameLC == 0xFFFFFFFF) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
+%VS%	if ((unsigned int) $moduleNameLC == 0xFFFFFFFF) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
 %VS% 	$moduleNameLC = $mnemoLC_get_subdevice($moduleNameLCBase, $subDevice);								/* -- subdevice $subDevice */
 %VS% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %%EndOfCode%%
@@ -213,12 +213,12 @@ int f_user_init (unsigned char  bh_crate_nr,
 //                 long *pl_rem_cam[]           -- offset (remote crates)
 //                 long *pl_stat                -- status (unused)
 // Results:        TRUE(1)
-// Exceptions:     
+// Exceptions:
 // Description:    This function performs initialization of modules.
 //                 It is called for every begin of run ( start of acquisition )
 //                 and for every crate that is expected to be read out by
 //                 event builder - as specified in the 'setup.usf' file.
-// Keywords:       
+// Keywords:
 ///////////////////////////////////////////////////////////////////////////*/
 
 	struct timespec res;
@@ -285,13 +285,13 @@ int f_user_readout (unsigned char  bh_trig_typ,
 // Results:        TRUE(1)
 //                 l_se_read_len              -- actual subevent length
 //                 l_read_stat                -- status (not yet implemented)
-// Exceptions:     
+// Exceptions:
 // Description:    This is the user's readout routine.
 //                 It is called for every event trigger and for every crate
 //                 that is expected to be read out by event builder
 //                 (as specified in 'setup.usf' file).
 //
-// Keywords:       
+// Keywords:
 ///////////////////////////////////////////////////////////////////////////*/
 
 	int i;

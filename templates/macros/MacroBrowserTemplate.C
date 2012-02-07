@@ -20,7 +20,7 @@
 // Author:           %%AUTHOR%%
 // Mail:             %%MAILADDR%%
 // URL:              %%URL%%
-// Revision:         $Id: MacroBrowserTemplate.C,v 1.6 2007-09-26 07:43:05 Rudolf.Lutter Exp $
+// Revision:         $Id: MacroBrowserTemplate.C,v 1.6 2007/09/26 07:43:05 Rudolf.Lutter Exp $
 // Date:             %%CREATION_DATE%%
 %%BeginOfCode%%
 //                   $envName:$envSpace$envVal

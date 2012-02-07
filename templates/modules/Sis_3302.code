@@ -54,7 +54,7 @@
 %%BeginOfCode%%
 					if (sis3302_dataReady(s_$moduleNameLC)) {
 						sis3302_switchSampling(s_$moduleNameLC);
-						evt.out32 += sis3302_readout(s_$moduleNameLC, (UInt_t *) evt.out32);
+						evt.out32 += sis3302_readout(s_$moduleNameLC, (unsigned int *) evt.out32);
 					}
 %%EndOfCode%%
 %%READ_MODULE%%

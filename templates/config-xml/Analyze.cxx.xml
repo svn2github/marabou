@@ -33,8 +33,8 @@
 			<author><S>author</S></author>
 			<mail><s>mailAddr</s></mail>
 			<url><s>URL</s></url>
-			<version>$Id: Analyze.cxx.xml,v 1.1 2008-03-05 12:43:17 Rudolf.Lutter Exp $</version>
-			<date>$Date: 2008-03-05 12:43:17 $</date>
+			<version>$Id: Analyze.cxx.xml,v 1.1 2008/03/05 12:43:17 Rudolf.Lutter Exp $</version>
+			<date>$Date: 2008/03/05 12:43:17 $</date>
 		</fileHdr>
 		<code indent="1">
 			<comment type="code">class definitions</comment>

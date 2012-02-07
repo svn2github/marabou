@@ -93,25 +93,25 @@
 
 %%BeginOfCode%%
 					/* read fifo data from $moduleName, $moduleTitle */
-					$moduleNameLastTag = 1000;
+					$mnemoLCLastTag = 1000;
 					while (*$moduleNameControl & $mnemoUC_CCSR_FNE) { 	/* fifo containing data? */
-						$moduleNameData = ((long) *$moduleNameFifoData) / 4 + 8192; /* data port MUST be read first!! */
-						$moduleNameTag = ((short) *$moduleNameFifoTag);				/* channel */
-						if ($moduleNameTag <= $moduleNameLastTag) {
-							if ($moduleNameLastTag != 1000) {						/* check for end of event */
-								*$moduleNameHeader = ((long) HB_D_HDR) | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* update header */
+						$mnemoLCData = ((long) *$moduleNameFifoData) / 4 + 8192; /* data port MUST be read first!! */
+						$mnemoLCTag = ((short) *$moduleNameFifoTag);				/* channel */
+						if ($mnemoLCTag <= $mnemoLCLastTag) {
+							if ($mnemoLCLastTag != 1000) {						/* check for end of event */
+								*$mnemoLCHeader = ((long) HB_D_HDR) | ($mnemoLCWC << HB_SH_WC) | $moduleSerial; /* update header */
 								RDO_2MEM_32((long) HB_D_EOB);						/* write trailer (EOB) */
 							}
-							$moduleNameWC = 0;										/* start new event */
-							$moduleNameHeader = evt.out32++; 						/* store pointer to header */
+							$mnemoLCWC = 0;										/* start new event */
+							$mnemoLCHeader = evt.out32++; 						/* store pointer to header */
 						}
-						$moduleNameData |= ($moduleNameTag << 16);				/* merge tag and data */
-						RDO_2MEM_32($moduleNameData);							/* write to subevent buffer */
-						$moduleNameWC++;										/* count this item */
-						$moduleNameLastTag = $moduleNameTag;					/* store channel number */
+						$mnemoLCData |= ($mnemoLCTag << 16);				/* merge tag and data */
+						RDO_2MEM_32($mnemoLCData);							/* write to subevent buffer */
+						$mnemoLCWC++;										/* count this item */
+						$mnemoLCLastTag = $mnemoLCTag;					/* store channel number */
 					}
-					if ($moduleNameLastTag != 1000) {
-						*$moduleNameHeader = ((long) HB_D_HDR) | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* update last header */
+					if ($mnemoLCLastTag != 1000) {
+						*$mnemoLCHeader = ((long) HB_D_HDR) | ($mnemoLCWC << HB_SH_WC) | $moduleSerial; /* update last header */
 						RDO_2MEM_32((long) HB_D_EOB);								/* write trailer (EOB) */
 					}
 %%EndOfCode%%
@@ -225,11 +225,11 @@ volatile char * $moduleNameFifoTag;
 %%DEFINE_LOCAL_VARS_INIT%%
 
 %%BeginOfCode%%
-	short $moduleNameTag;
-	long $moduleNameData;
-	long * $moduleNameHeader;
-	short $moduleNameWC;
-	int $moduleNameLastTag;
+	short $mnemoLCTag;
+	long $mnemoLCData;
+	long * $mnemoLCHeader;
+	short $mnemoLCWC;
+	int $mnemoLCLastTag;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
 
