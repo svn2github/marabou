@@ -3721,7 +3721,6 @@ void FitHist::Draw2Dim()
 //      cout << "fSelHist->SetStats(1); " << fOptStat << endl;
    } else {
       fSelHist->SetStats(0);
-//      cout << "fSelHist->SetStats(0); " << endl;
    } 
    fSelHist->Draw(fDrawOpt2Dim);
 	if (gDebug > 0)
