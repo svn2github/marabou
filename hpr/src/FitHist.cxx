@@ -1200,25 +1200,20 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    fSelPad = fCanvas;
    fSelPad->cd();
    fCanvas->ToggleEventStatus();
-
+	
    if (is3dim(hist)) {
-      fSelPad->cd();
       Draw3Dim();
    } else if (is2dim(hist)) {
 		fCanvas->SetLogx(fLogx);
 		fCanvas->SetLogy(fLogy);
-		SetLogz(fLogz);
-		fCanvas->GetHandleMenus()->SetLog(fLogz);
-		fSelPad->cd();
-      Draw2Dim();
+		fCanvas->SetLogz(fLogz);
+		Draw2Dim();
    } else {
-      fSelPad->cd();
 		fCanvas->SetLogx(fLogx);
 		fCanvas->SetLogy(fLogy);
 		fCanvas->GetHandleMenus()->SetLog(fLogy);
       Draw1Dim();
    }
-   fCanvas->cd();
 	fFrameX1 = fCanvas->GetFrame()->GetX1();
 	fFrameX2 = fCanvas->GetFrame()->GetX2();
 	fFrameY1 = fCanvas->GetFrame()->GetY1();
@@ -3712,18 +3707,14 @@ void FitHist::DrawDate()
 void FitHist::Draw2Dim()
 {
    fCanvas->cd();
-//   SetLogz(fCanvas->GetLogz());
-   SetLogz(fLogz);
-//   gStyle->SetOptTitle(gHpr->GetShowTitle());
-//   if (->GetShowTitle())
-//      gStyle->SetTitleFont(gHpr->fTitleFont);
+	if (gDebug > 0)
+		cout << "Draw2Dim:" << " GetLogy " << fCanvas->GetLogy() << endl;
 	if ( gDebug > 0 ) {
 		cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim 
 		<< " gStyle->GetHistFillColor() :" <<gStyle->GetFillColor() << endl
 		<< " fHistFillColor2Dim :" <<fHistFillColor2Dim<< endl
 		<< " fHistFillStyle2Dim :" <<fHistFillStyle2Dim<< endl;
 	}
-//   fSelHist->DrawCopy(fDrawOpt2Dim);
    if (fShowStatBox) {
       gStyle->SetOptStat(fOptStat);
       fSelHist->SetStats(1);
@@ -3733,10 +3724,18 @@ void FitHist::Draw2Dim()
 //      cout << "fSelHist->SetStats(0); " << endl;
    } 
    fSelHist->Draw(fDrawOpt2Dim);
-   if ( gROOT->GetForceStyle() ) {
+	if (gDebug > 0)
+		cout << "Draw2Dim:" << " GetLogy " << fCanvas->GetLogy() << endl;
+	if ( gROOT->GetForceStyle() ) {
 		fCanvas->UseCurrentStyle();
 	}
-   fSelHist->SetOption(fDrawOpt2Dim);
+	fCanvas->SetLogx(fLogx);
+	fCanvas->SetLogy(fLogy);
+	SetLogz(fLogz);
+	fCanvas->GetHandleMenus()->SetLog(fLogz);
+	if (gDebug > 0)
+		cout << "Draw2Dim:" << " GetLogy " << fCanvas->GetLogy() << endl;
+	fSelHist->SetOption(fDrawOpt2Dim);
    fSelHist->SetDrawOption(fDrawOpt2Dim);
    if (fTitleCenterX)
       fSelHist->GetXaxis()->CenterTitle(kTRUE);
@@ -3807,7 +3806,8 @@ void FitHist::Draw2Dim()
 			st->SetY1NDC(env.GetValue("StatBox2D.fY1", 0.835));
 			st->SetY2NDC(env.GetValue("StatBox2D.fY2", 0.995));
 			if (gDebug > 0)
-			cout << "Draw2Dim: StatBox2D.fX1 " << env.GetValue("StatBox2D.fX1", 0.78) << endl;
+			cout << "Draw2Dim: StatBox2D.fX1 " << env.GetValue("StatBox2D.fX1", 0.78)
+			<< " fTwoDimLogY " << fTwoDimLogY<< endl;
 			fCanvas->Modified();
 		}	
 	}

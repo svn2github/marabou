@@ -76,7 +76,9 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    fSelectLeaf->Delete();
    *fLeafCut="";
 //   TButton *button;
-   Int_t len, l;
+   Int_t len, l, not_shown = 0;
+	Bool_t showit;
+	
 //   TLeaf *leafcount;
 //   char *bname;
 //   char branchname[1000];
@@ -109,6 +111,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    TString cmd_base("mypres->ShowLeaf(\"");
    TString sel_base("mypres->SelectLeaf(\"");
    cmd_base = cmd_base + fname + "\",\"" + dir + "\",\"" + tname + "\",\"";
+	
    for (l=0;l<nleaves;l++) {
       TLeaf *leaf = (TLeaf*)leaves->UncheckedAt(l);
       TBranch *branch = leaf->GetBranch();
@@ -169,6 +172,13 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 			   }
 		   }
 */
+			if (fCmdLine->GetSize() >= GeneralAttDialog::fMaxListEntries) {
+				showit = kFALSE;
+				not_shown++;
+			} else {
+				showit = kTRUE;
+			}
+
          if (len > 1) {
            for (Int_t ix = 0; ix < len; ix++) {
               cmd = cmd_base + Form("%s[%d]",leaf->GetName(), ix) + "\")";
@@ -194,6 +204,13 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
          }
       }
    }
+   if ( not_shown > 0) {
+		cout << setred << "Too many entries in list" << endl;
+		cout << "this might crash X, please use or tighten selection mask"<< endl;
+		cout << "to reduce number of entries below: " <<  GeneralAttDialog::fMaxListEntries  << endl;
+		cout << "On your own risk you may increase value beyond: " << GeneralAttDialog::fMaxListEntries << endl;
+		cout << "WARNING: branches not shown: " << not_shown << setblack << endl;
+	}
    cmd = "mypres->EditLeafCut(\"";
 	ostringstream buf;
 	buf << var_list;

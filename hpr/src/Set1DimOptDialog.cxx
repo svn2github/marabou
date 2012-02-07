@@ -263,6 +263,8 @@ may be selected.\n\
 		fRow_lab->Add(new TObjString("Fill_Select+FStyle"));
 		fValp[ind++] = &fFillStyle[i];
 	}
+	fOneDimLogX        = fCanvas->GetLogx();
+	fOneDimLogY        = fCanvas->GetLogy();
 	
 	fRow_lab->Add(new TObjString("StringValue_Title X "));
 	fValp[ind++] = &fTitleX;

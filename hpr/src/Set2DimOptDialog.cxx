@@ -574,7 +574,9 @@ void Set2DimOptDialog::GetValuesFromHist()
 		fSameOpt = "SAME";
 	if ( gDebug > 0 )
 		cout << "fDrawOpt2Dim::GetValuesFromHist() " << fDrawOpt2Dim << endl;
-	
+	fTwoDimLogX        = fCanvas->GetLogx();
+	fTwoDimLogY        = fCanvas->GetLogy();
+	fTwoDimLogZ        = fCanvas->GetLogz();
 /*	for (Int_t i = kNdrawopt-1; i >= 0; i--) {
 		Int_t ind = fDrawOpt2Dim.Index(fDrawOpt2DimArray[i]);
 		if ( ind >= 0 ) {
