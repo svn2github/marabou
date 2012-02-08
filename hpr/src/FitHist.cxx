@@ -515,10 +515,19 @@ void FitHist::SaveDefaults(Bool_t recalculate)
 	if (!env) return;
 	
    env->SetValue("FitMacroName", fFitMacroName);
-	env->SetValue("LogX", fLogx);
-	env->SetValue("LogY", fLogy);
+	if (fDimension == 1) {
+		if ( fLogx != fOneDimLogX ) 
+			env->SetValue("LogX", fLogx);
+		if ( fLogy != fOneDimLogY ) 
+			env->SetValue("LogY", fLogy);
+	}
 	if (fDimension == 2) {
-		env->SetValue("LogZ", fLogz);
+		if ( fLogx != fTwoDimLogX ) 
+			env->SetValue("LogX", fLogx);
+		if ( fLogy != fTwoDimLogY ) 
+			env->SetValue("LogY", fLogy);
+		if ( fLogz != fTwoDimLogZ ) 
+			env->SetValue("LogZ", fLogz);
 		env->SetValue("fBinly", fBinly);
 		env->SetValue("fBinuy", fBinuy);
 	}
