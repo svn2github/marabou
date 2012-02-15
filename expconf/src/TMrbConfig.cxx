@@ -3989,13 +3989,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, TObject * Class, const Ch
 	TString tf;
 
 	TMrbTemplate anaTmpl;
-	
+
 	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptVerbose) != 0);
 
 	TString className = Class->ClassName();
-	
+
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 

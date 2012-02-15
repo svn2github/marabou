@@ -194,7 +194,7 @@ class TMrbSubevent : public TNamed {
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 			// normal code generation
 		virtual inline Bool_t SingleModuleOnly() const { return(kFALSE); }; 		// only module per subevent only
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
-		virtual inline const Char_t * GetCommonCodeFile() { return(NULL); };
+		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
 
 		inline TObjArray * GetLofEvents() { return(&fLofEvents); };			// get address of ...
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
@@ -250,10 +250,10 @@ class TMrbSubevent : public TNamed {
 		TString fPrefix;					// prefix to be prepended to params & histos
 
 		TMrbNamedX * fXhit;				// a special (extended) hit
-		
+
 		TString fInheritsFrom;				// subevent parent class
 		TString fCommonCodeFile;			// name of common code
-		
+
 		Bool_t fCreateHistoArray;			// kTRUE if histo array / .histlist file is to be created
 		TString fHistoArrayName;			// name of histo array / .histlist file
 
