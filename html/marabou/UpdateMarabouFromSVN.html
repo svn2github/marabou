@@ -1,0 +1,46 @@
+<h3>How to download or update MARaBOU / HistPresent from SVN</h3>
+<UL>
+	<LI>
+	Download the latest version of MARaBOU and store in directory <strong>marabou</strong>:<br>
+	<pre>svn co https://svn.physik.uni-muenchen.de/repos/marabou/trunk/marabou marabou</pre>
+	You might need to install the package <strong>subversion</strong> prior to this.
+	<p>
+	<LI>
+
+	To update to the latest version:<br><br>
+	Change to your installation directory previously created by the svn command above and execute:
+	<pre>svn up</pre>
+
+	<LI>
+
+	To download a specific version (tag) e.g. v5-32-00:<br>
+	<pre>svn co https://svn.physik.uni-muenchen.de/repos/marabou/tags/v5-32-00 marabou_5.32.00</pre>
+	<LI>
+	To find out what you have installed:<br>
+	Change to your installation directory and execute:
+	<pre>svn info</pre>
+
+	To find out which versions are available:<br>
+	<pre>svn list https://svn.physik.uni-muenchen.de/repos/marabou/tags/
+</UL>
+<br>
+<h3>How to compile MARaBOU after download or update</h3>
+<ul>
+	<li>Change to your installation directory <strong>marabou</strong>
+	<p>
+	<li>Adjust file <strong>iniMrbPath</strong> to reflect your installation path <strong>ROOTSYS</strong>
+   <br>
+	(<strong>SYSMODE=y</strong>, <strong>MARABOU=`pwd`</strong>, <strong>ROOTSYS</strong> set properly)</li>
+	<p>
+	<li>Execute "<strong>. iniMrbPath</strong>" to activate environment settings (dont forget the <strong>.</strong> (dot))</li>
+	<p>
+	<li>Do a <strong>make clean; make</strong> to recompile MARaBOU</li>
+	<p>
+	<li>If you only need <strong>HistPresent</strong>: <strong>make hpr</strong></li>
+	<p>
+	<li>If a <strong>make install</strong> is needed to make it accessible to others:<br>
+	Adjust <strong>MARABOU_INSTALL_PATH</strong> in <strong>iniMrbPath</strong> properly and <strong>make install</strong>.
+	</li>
+	<p>
+	<li>You might want to provide a modified <strong>iniMrbPath</strong> for users (<strong>SYSMODE=n</strong>, <strong>MARABOU=</strong>MARaBOU's top dir)</li>
+</ul>
