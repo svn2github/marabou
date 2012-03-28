@@ -171,7 +171,7 @@ class TMrbModule : public TNamed {
 
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 					// normal code generation
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
-		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
+		virtual inline const Char_t * GetCommonCodeFile() { return(NULL); };
 
 		inline void CreateHistoArray(const Char_t * ArrayName = NULL) {		// create array of histograms and write .histlist file
 			fCreateHistoArray = kTRUE;

@@ -60,8 +60,8 @@ class TMrbSubevent_Sis_3 : public TMrbSubevent {
 		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 					// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
-		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Sis_Common"); };
-		
+		inline const Char_t * GetCommonCodeFile() { return("Subevent_Sis_Common"); };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_Sis_3, 1) 	// [Config] Subevent type [10,53]: a format dedicated to SIS modules

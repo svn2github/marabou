@@ -657,6 +657,21 @@ Bool_t TC2LSis3302::GetLemoInEnableMask(Int_t & Bits) {
 	return(kTRUE);
 }
 
+Bool_t TC2LSis3302::GetTriggerFeedback(Bool_t & Feedback) {
+	TArrayI dataSend(0);
+	TArrayI bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_FEEDBACK, dataSend, bits, kSis3302AllChans)) return(kFALSE);
+	Feedback = (bits[0] != 0);
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::SetTriggerFeedback(Bool_t & Feedback) {
+	TArrayI bits(1); bits[0] = Feedback ? 1 : 0;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_FEEDBACK, bits, bits, kSis3302AllChans)) return(kFALSE);
+	Feedback = (bits[0] != 0);
+	return(kTRUE);
+}
+
 Bool_t TC2LSis3302::SetLemoInEnableMask(Int_t & Bits) {
 	TArrayI bits(1); bits[0] = Bits;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_IN_ENABLE_MASK, bits, bits, kSis3302AllChans)) return(kFALSE);

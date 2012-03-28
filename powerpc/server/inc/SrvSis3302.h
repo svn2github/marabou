@@ -8,7 +8,7 @@
 // Class:          Sis3302        -- flash adc SIS3302
 // Description:    Class definitions for M2L server
 // Author:         R. Lutter
-// Revision:       $Id: SrvSis3302.h,v 1.7 2011-07-26 08:41:50 Marabou Exp $
+// Revision:       $Id: SrvSis3302.h,v 1.7 2011/07/26 08:41:50 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -191,6 +191,10 @@ class SrvSis3302 : public SrvVMEModule {
 		Bool_t GetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits);
 		Bool_t SetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits);
 
+		//! trigger feedback
+		Bool_t SetTriggerFeedback(SrvVMEModule * Module, Bool_t & Feedback);
+		Bool_t GetTriggerFeedback(SrvVMEModule * Module, Bool_t & Feedback);
+		
 		//! start trace collection, get trace data
 		Bool_t StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents, Int_t & ChanPatt);
 		Bool_t ContinueTraceCollection(SrvVMEModule * Module);

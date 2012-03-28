@@ -239,6 +239,11 @@ Int_t sis3302_getLemoInEnableMask(struct s_sis_3302 * Module);
 Bool_t sis3302_setLemoInEnableMask(struct s_sis_3302 * Module, Int_t Bits);
 Bool_t sis3302_setLemoInEnableMask_db(struct s_sis_3302 * Module);
 
+/*! trigger feedback */
+Bool_t sis3302_getTriggerFeedback(struct s_sis_3302 * Module);
+Bool_t sis3302_setTriggerFeedback(struct s_sis_3302 * Module, Bool_t Feedback);
+Bool_t sis3302_setTriggerFeedback_db(struct s_sis_3302 * Module);
+
 /*! read traces and/or energy data */
 Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer);
 

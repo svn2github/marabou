@@ -112,7 +112,7 @@ class TMrbEvent : public TNamed {
 
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 				// normal code generation
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
-		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
+		virtual inline const Char_t * GetCommonCodeFile() { return(NULL); };
 
 		Bool_t SetMbsBranch(Int_t MbsBranchNo, const Char_t * MbsBranchName = NULL);	// mbs branch
 		inline Bool_t SetMbsBranch(TMrbNamedX * MbsBranch) { return(this->SetMbsBranch(MbsBranch->GetIndex(), MbsBranch->GetName())); };

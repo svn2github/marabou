@@ -70,7 +70,7 @@ class TMrbSubevent_DGF_3 : public TMrbSubevent {
 		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
-		virtual const Char_t * GetCommonCodeFile() const; 									// common code to be loaded
+		virtual const Char_t * GetCommonCodeFile(); 									// common code to be loaded
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

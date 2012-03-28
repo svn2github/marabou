@@ -98,6 +98,7 @@ struct s_sis_3302 {
 	Int_t lemoOutMode;
 	Int_t lemoInMode;
 	Int_t lemoInEnableMask;
+	Bool_t triggerFeedback;
 
 	Int_t energyTestBits[NOF_GROUPS];
 	Int_t energySampleLength[NOF_GROUPS];

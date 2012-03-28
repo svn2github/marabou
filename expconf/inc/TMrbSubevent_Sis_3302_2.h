@@ -61,7 +61,7 @@ class TMrbSubevent_Sis_3302_2 : public TMrbSubevent {
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 			// needs branch mode
 
-		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Sis3302_Common"); };
+		inline const Char_t * GetCommonCodeFile() { return("Subevent_Sis3302_Common"); };
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

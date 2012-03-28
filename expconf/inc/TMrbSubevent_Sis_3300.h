@@ -60,7 +60,7 @@ class TMrbSubevent_Sis_3300 : public TMrbSubevent {
 		};
 				
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
-		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Sis3300_Common"); };
+		inline const Char_t * GetCommonCodeFile() { return("Subevent_Sis3300_Common"); };
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

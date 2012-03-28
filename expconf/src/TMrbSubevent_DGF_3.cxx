@@ -278,7 +278,7 @@ Bool_t TMrbSubevent_DGF_3::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 	return(kTRUE);
 }
 
-const Char_t * TMrbSubevent_DGF_3::GetCommonCodeFile() const {
+const Char_t * TMrbSubevent_DGF_3::GetCommonCodeFile() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_DGF_3::GetCommonCodeFile

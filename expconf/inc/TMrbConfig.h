@@ -555,9 +555,12 @@ class TMrbConfig : public TNamed {
 		enum					{	kRdoHeaderBit		=	BIT(31)	};
 
 		enum					{	kMbsSevtSize		=	0x1000 };
-		enum					{	kMbsPipeSegLength	=	0x100000 };
+		enum					{	kMbsPipeSegLength	=	0x2000000 };	// 16MB
 		enum					{	kMbsPipeLengthMax	=	1000 };
 		enum					{	kMbsPipeLengthMin	=	100 };
+		enum					{	kMbsEventBufferSize	=	0x4000 };
+		enum					{	kMbsNofEventBuffers	=	8 };
+		enum					{	kMbsNofStreams		=	8 };
 
 	public:
 
@@ -609,9 +612,13 @@ class TMrbConfig : public TNamed {
 		Bool_t CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag = kTRUE) const;	// compile readout code
 		Bool_t CompileAnalyzeCode(Bool_t CleanFlag = kTRUE) const;						// compile analysis code
 
-		inline void SetSevtSize(Int_t Size, Int_t PipeSegLength = kMbsPipeSegLength) { fSevtSize = Size; fPipeSegLength = PipeSegLength; }; 	// set size of subevent (for all events/triggers)
+		inline void SetSevtSize(Int_t Size = kMbsSevtSize, Int_t PipeSegLength = kMbsPipeSegLength) { fSevtSize = Size; fPipeSegLength = PipeSegLength; }; 	// set size of subevent (for all events/triggers)
 		inline Int_t GetSevtSize() { return(fSevtSize); }
-;
+		
+		inline void SetMbsBuffers(Int_t Size = kMbsEventBufferSize, Int_t NofBuffers = kMbsNofEventBuffers, Int_t NofStreams = kMbsNofStreams) {
+			fEventBufferSize = Size; fNofEventBuffers = NofBuffers; fNofStreams = NofStreams;
+		};
+		
 		Bool_t UpdateMbsSetup();									// update .mbssetup database if online mode
 
 		Bool_t ExecRootMacro(const Char_t * Macro);
@@ -955,6 +962,9 @@ class TMrbConfig : public TNamed {
 
 		Int_t fSevtSize;					// subevent size to be used in .mbssetup
 		Int_t fPipeSegLength;					// length of subevent pipe
+		Int_t fEventBufferSize;			// mbs event size
+		Int_t fNofEventBuffers;			// number of buffers
+		Int_t fNofStreams;			// numer of streams
 
 		Bool_t fUserMacroToBeCalled;		// call user macro
 		TString fUserMacro; 				// macro name

@@ -128,6 +128,9 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t SetLemoOutMode(Int_t & Bits);
 		Bool_t GetLemoInEnableMask(Int_t & Bits);
 		Bool_t SetLemoInEnableMask(Int_t & Bits);
+		
+		Bool_t GetTriggerFeedback(Bool_t & Feedback);
+		Bool_t SetTriggerFeedback(Bool_t & Feedback);
 
 		Bool_t GetClockSource(Int_t & ClockSource);
 		Bool_t SetClockSource(Int_t & ClockSource);
