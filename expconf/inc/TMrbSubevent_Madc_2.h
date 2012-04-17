@@ -53,8 +53,10 @@ class TMrbSubevent_Madc_2 : public TMrbSubevent {
 		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
 		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
-		inline Bool_t CheckModuleID(TMrbModule * Module) const {					// needs modules of type MADC32
-			return(Module->CheckID(TMrbConfig::kModuleMesytecMadc32));
+		inline Bool_t CheckModuleID(TMrbModule * Module) const {				// needs modules of type MADC32 or MQDC32
+			if (Module->CheckID(TMrbConfig::kModuleMesytecMadc32)) return(kTRUE);
+			if (Module->CheckID(TMrbConfig::kModuleMesytecMqdc32)) return(kTRUE);
+			return(kFALSE);
 		};
 
 		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer

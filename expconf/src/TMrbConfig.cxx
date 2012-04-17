@@ -470,6 +470,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleISN4481,				"ISN_4481" 						},
 								{TMrbConfig::kModuleMesytecMux16,			"Mesytec_Mux16" 				},
 								{TMrbConfig::kModuleMesytecMadc32,			"Mesytec_Madc32" 				},
+								{TMrbConfig::kModuleMesytecMqdc32,			"Mesytec_Mqdc32" 				},
 								{TMrbConfig::kModuleCaenV1X90,				"Caen_V1X90"	 				},
 								{TMrbConfig::kModuleVulomTB,				"VulomTB"		 				},
 								{TMrbConfig::kModuleSoftModule, 	 		"@SoftMod@" 					},

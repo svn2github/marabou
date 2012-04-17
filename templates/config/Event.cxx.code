@@ -226,12 +226,15 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 	nofEvents = 0;
 
 	if (fReplayMode) {
-		if (!this->IsFakeMode()) nofEntries = (Int_t) fTreeIn->GetEntries();
-
-		if (nofEntries == 0) {
-			gMrbLog->Err()	<< "No events found in tree - " << fTreeIn->GetName() << endl;
-			gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
-			return(kFALSE);
+		if (!this->IsFakeMode()) {
+			nofEntries = (Int_t) fTreeIn->GetEntries();
+			if (nofEntries == 0) {
+				gMrbLog->Err()	<< "No events found in tree - " << fTreeIn->GetName() << endl;
+				gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				return(kFALSE);
+			}
+		} else {
+			nofEntries = 1000000000;
 		}
 
 		startEvent = IOSpec->GetStartEvent();
@@ -262,10 +265,11 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 				}
 			}
 
-			for (Int_t i = 0; i < nofEntries; i++) {
+			Bool_t go = kTRUE;
+			for (Int_t evt = 0; evt < nofEntries; evt++) {
 				if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);
 				pthread_mutex_lock(&global_data_mutex);
-				if (!this->IsFakeMode()) nbytes = fTreeIn->GetEvent(i);
+				if (!this->IsFakeMode()) nbytes = fTreeIn->GetEvent(evt);
 				timeStamp = %%EVT_FIRST_SEVT%%.fTimeStamp - tsOffset;
 				if (timeStamp >= startEvent && timeStamp <= stopEvent) {
 					nofEvents++;
@@ -273,12 +277,12 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 					nofBytes += nbytes;
 					gMrbAnalyze->IncrEventCount();
 %%BeginOfCode%%
-					this->$processEvent();
+					go = this->$processEvent(evt);
 %%EndOfCode%%
 %%EVT_REPLAY_EVENT%%
 				}
 				pthread_mutex_unlock(&global_data_mutex);
-				if (timeStamp > stopEvent) break;
+				if (!go || (timeStamp > stopEvent)) break;
 			}
 
 			if (verboseMode) {
@@ -326,18 +330,20 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 				}
 			}
 
-			for (Int_t i = startEvent; i <= stopEvent; i++) {
+			Bool_t go = kTRUE;
+			for (Int_t evt = startEvent; evt <= stopEvent; evt++) {
 				if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);
 				pthread_mutex_lock(&global_data_mutex);
-				if (!this->IsFakeMode()) nofBytes += fTreeIn->GetEvent(i);
+				if (!this->IsFakeMode()) nofBytes += fTreeIn->GetEvent(evt);
 				nofEvents++;
 				fNofEvents++;
 				gMrbAnalyze->IncrEventCount();
 %%BeginOfCode%%
-				this->$processEvent();
+				go = this->$processEvent(evt);
 %%EndOfCode%%
 %%EVT_REPLAY_EVENT%%
 				pthread_mutex_unlock(&global_data_mutex);
+				if (!go) break;
 			}
 
 			if (verboseMode) {

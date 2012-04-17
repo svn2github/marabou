@@ -254,6 +254,20 @@ bool_t madc32_getSkipOutOfRange(struct s_madc32 * s)
 	return (f != 0) ? TRUE : FALSE;
 }
 
+void madc32_setIgnoreThresholds_db(struct s_madc32 * s) { madc32_setIgnoreThresholds(s, s->ignoreThresh); }
+
+void madc32_setIgnoreThresholds(struct s_madc32 * s, bool_t flag)
+{
+	uint16_t f = flag ? 1 : 0;
+	SET16(s->baseAddr, MADC32_IGNORE_THRESHOLDS, f);
+}
+
+bool_t madc32_getIgnoreThresholds(struct s_madc32 * s)
+{
+	uint16_t f = GET16(s->baseAddr, MADC32_IGNORE_THRESHOLDS) & MADC32_IGNORE_THRESH_MASK;
+	return (f != 0) ? TRUE : FALSE;
+}
+
 void madc32_setHoldDelay_db(struct s_madc32 * s, uint16_t gg) { madc32_setHoldDelay(s, gg, s->ggHoldDelay[gg]); }
 
 void madc32_setHoldDelay(struct s_madc32 * s, uint16_t gg, uint16_t delay)

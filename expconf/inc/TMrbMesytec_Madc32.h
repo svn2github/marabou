@@ -60,6 +60,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 								kRegAdcOverride,
 								kRegSlidingScaleOff,
 								kRegSkipOutOfRange,
+								kRegIgnoreThresh,
 								kRegHoldDelay,
 								kRegHoldWidth,
 								kRegUseGG,
@@ -163,6 +164,8 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 											kPulserAmplToggle	=	7
 										};
 
+		enum EMrbTestPulserDac			{	kPulserDacDefault	=	32		};
+
 		enum EMrbTsSource		 		{	kTstampVME			=	0,
 											kTstampExtern		=	BIT(0),
 											kTstampReset		=	BIT(1)
@@ -231,6 +234,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 		inline void SetSkipOutOfRange(Bool_t Flag) { fSkipOutOfRange = Flag; };
 		inline Bool_t SkipOutOfRange() { return(fSkipOutOfRange); };
+
+		inline void SetIgnoreThresholds(Bool_t Flag) { fIgnoreThresh = Flag; };
+		inline Bool_t IgnoreThresholds() { return(fIgnoreThresh); };
 
 		inline Bool_t SetHoldDelay(Int_t Delay, Int_t GG) { return(this->Set(TMrbMesytec_Madc32::kRegHoldDelay, Delay, GG)); };
 		inline Int_t GetHoldDelay(Int_t GG) { return(this->Get(TMrbMesytec_Madc32::kRegHoldDelay, GG)); };
@@ -313,6 +319,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		Bool_t fBlockXfer;
 		Bool_t fSlidingScaleOff;
 		Bool_t fSkipOutOfRange;
+		Bool_t fIgnoreThresh;
 		Bool_t fAdcOverride;
 
 	ClassDef(TMrbMesytec_Madc32, 1)		// [Config] MADC-32 peak sensing adc

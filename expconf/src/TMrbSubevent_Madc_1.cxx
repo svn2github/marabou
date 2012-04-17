@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Madc_1.cxx,v 1.4 2010-12-14 14:18:04 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Madc_1.cxx,v 1.4 2010-12-14 14:18:04 Marabou Exp $
 // Date:           $Date: 2010-12-14 14:18:04 $
 //////////////////////////////////////////////////////////////////////////////
 
@@ -133,7 +133,7 @@ Bool_t TMrbSubevent_Madc_1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 
 				((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);
 				parNo += parentModule->GetNofChannelsUsed();
-				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
+				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;
 			}
 			miter = fLofModules.MakeIterator();
 			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
@@ -150,3 +150,4 @@ Bool_t TMrbSubevent_Madc_1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 	}
 	return(kTRUE);
 }
+

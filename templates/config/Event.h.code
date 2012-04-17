@@ -34,7 +34,7 @@ class TUsrEvt%%EVT_NAME_UC%% :
 		Bool_t AllocHitBuffers();								// allocate hit buffers for subevents if needed
 		Bool_t CreateTree();									// create a tree if needed
 %%BeginOfCode%%
-		Bool_t $processEvent();									// method to process this event
+		Bool_t $processEvent(Int_t EntryNo = 0);				// method to process this event
 %%EndOfCode%%
 %%EVT_METHOD_TO_PROCESS_EVENT%%
 		Bool_t InitializeTree(TFile * RootFile); 				// init tree (replay mode only)

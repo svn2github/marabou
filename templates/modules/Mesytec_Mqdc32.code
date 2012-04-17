@@ -1,0 +1,166 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           Mesytec_Mqdc32.code
+// Purpose:        Code for Mesytec adc type MQDC-32
+// Description:    Contains template code to operate a MQDC-32 module
+// Author:         R. Lutter
+// Revision:
+// Date:
+// Keywords:
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+#include "mqdc32.h"
+#include "mqdc32_protos.h"
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleNameLC at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					s_$moduleNameLC = mqdc32_alloc($baseAddrL, $moduleNameLC, "$moduleNameLC", $moduleSerial); /* allocate data struct */
+ 					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
+					mqdc32_moduleInfo(s_$moduleNameLC);						/* read module info */
+					mqdc32_reset(s_$moduleNameLC);	 						/* reset module */
+					mqdc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill database from environment data */
+					mqdc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
+					mqdc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
+					mqdc32_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
+					mqdc32_initialize(s_$moduleNameLC);		 					/* initialize module */
+
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					evt.out32 += mqdc32_readout(s_$moduleName, (uint32_t *) evt.out32);	/* read data */
+					if (s_$moduleName->updSettings) { 				/* update settings? */
+						s_$moduleName->updCountDown--;
+						if ((s_$moduleName->updCountDown <= 0) && mqdc32_updateSettings(s_$moduleName, "$updateFile")) {
+ 							sprintf(msg, "Updating settings for module $moduleName after %d count(s)\n", s_$moduleName->updInterval);
+ 							f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+							mqdc32_stopAcq(s_$moduleName);
+							mqdc32_reset(s_$moduleName);
+							mqdc32_fillStruct(s_$moduleName, "$settingsFile");
+							mqdc32_loadFromDb(s_$moduleName, $chnPattern);
+							mqdc32_resetReadout(s_$moduleName);
+							mqdc32_resetFifo(s_$moduleName);
+							mqdc32_startAcq(s_$moduleName);
+						}
+					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+								mqdc32_stopAcq(s_$moduleName); 	/* start module $moduleName */
+								mqdc32_resetFifo(s_$moduleName);  	/* reset fifo */
+								mqdc32_startAcq(s_$moduleName); 	/* start module $moduleName */
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+								mqdc32_stopAcq(s_$moduleName);  	/* stop module $moduleName */
+								mqdc32_resetFifo(s_$moduleName);  	/* reset fifo */
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+static struct s_mqdc32 * s_$moduleName;
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+	-I@{.PPCIncludePath:/nfs/marabou/include}
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+	-L@{.PPCLibraryPath:/nfs/marabou/lib}  -lMqdc32
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+

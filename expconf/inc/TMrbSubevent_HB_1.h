@@ -9,8 +9,8 @@
 //                                         format similar to [10,1] but with hitbuffer
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_HB_1.h,v 1.4 2009-06-24 14:07:34 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_HB_1.h,v 1.4 2009-06-24 14:07:34 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -57,7 +57,7 @@ class TMrbSubevent_HB_1 : public TMrbSubevent {
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 					// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		inline const Char_t * GetCommonCodeFile() { return("Subevent_HB_Common"); };
-		
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_HB_1, 1) 	// [Config] Subevent type [10,71]: with hitbuffer

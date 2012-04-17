@@ -9,8 +9,8 @@
 //                                         dedicated format for XIA DGF-4C modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_DGF_3.h,v 1.6 2006-02-14 15:57:09 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_DGF_3.h,v 1.6 2006-02-14 15:57:09 Marabou Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -51,14 +51,14 @@ class TMrbSubevent_DGF_3 : public TMrbSubevent {
 											TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
 		Bool_t MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag TagIndex, const Char_t * ResourceName);
-		
+
 		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
 		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
 		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type XIA DGF-4C
 			return(Module->CheckID(TMrbConfig::kModuleXia_DGF_4C));
 		};
-				
+
 		inline void SetClusterID(Int_t Number, Int_t Serial, const Char_t * Color) {
 			fClusterNumber = Number;
 			fClusterID.Set(Serial, Color);
@@ -71,7 +71,7 @@ class TMrbSubevent_DGF_3 : public TMrbSubevent {
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		virtual const Char_t * GetCommonCodeFile(); 									// common code to be loaded
-		
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:

@@ -1,0 +1,35 @@
+%%BeginOfCode%%
+#ifndef __MadcDefs__
+#define __MadcDefs__
+// definitions for MADC32 modules
+
+#define MADC_SH_CHN							16
+#define MADC_SH_SERIAL						16
+#define MADC_SH_RES 						11
+
+#define MADC_M_SIGNATURE					0xC0000000
+#define MADC_D_HDR							0x40000000
+#define MADC_D_DATA							0x00000000
+#define MADC_D_EOE							0xC0000000
+#define MADC_D_BOB							0x80000000
+#define MADC_D_EOB							0xdeadbeef
+
+#define MADC_D_XTS							0x04800000
+
+#define MADC_M_SERIAL						0xFF
+#define MADC_M_RES							0x7
+#define MADC_M_WC							0x7FF
+#define MADC_M_CHN							0x1F
+#define MADC_M_XTS							0xFFFF0000
+#define MADC_M_ID							0xC0000000
+#define MADC_M_ADCDATA	 					0x00001FFF
+#define MADC_M_TSLOW		 				0x3FFFFFFF
+#define MADC_M_TSHIGH		 				0x0000FFFF
+
+#define MADC_M_RES2K			 			0x000007FF
+#define MADC_M_RES4K			 			0x00000FFF
+#define MADC_M_RES8K			 			0x00001FFF
+#endif
+
+%%EndOfCode%%
+%%INCLUDES_AND_DEFS_ANALYZE%%

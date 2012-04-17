@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.12 2011-12-13 08:04:58 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.12 2011-12-13 08:04:58 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -182,7 +182,7 @@ Bool_t TMrbSubevent_DGF_3::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 
 				((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);
 				parNo += parentModule->GetNofChannelsUsed();
-				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
+				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;
 			}
 			miter = fLofModules.MakeIterator();
 			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
@@ -223,11 +223,11 @@ Bool_t TMrbSubevent_DGF_3::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 	TString templatePath;
 	TString sevtNameUC;
 	TString iniTag;
-		
+
 	TString tf;
-	
+
 	TMrbTemplate rcTmpl;
-	
+
 	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetRcFileOptions() & TMrbConfig::kRcOptVerbose) != 0);
 
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
@@ -246,7 +246,7 @@ Bool_t TMrbSubevent_DGF_3::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 		gMrbLog->Out()  << "[" << this->GetName() << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeRcFile");
 	}
-	
+
  	rcTemplateFile = fileSpec;
 
 	if (!rcTmpl.Open(rcTemplateFile, &gMrbConfig->fLofRcFileTags)) return(kFALSE);
@@ -255,7 +255,7 @@ Bool_t TMrbSubevent_DGF_3::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 	sevtNameUC(0,1).ToUpper();
 
 	iniTag = (gMrbConfig->GetRcFileOptions() & TMrbConfig::kRcOptByName) ? "%NAM%" : "%NUM%";
-	
+
 	for (;;) {
 		rcFileTag = rcTmpl.Next(line);
 		if (rcTmpl.IsEof()) break;

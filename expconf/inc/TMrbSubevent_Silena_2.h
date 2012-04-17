@@ -10,8 +10,8 @@
 //                                          running in zero-compressed mode
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Silena_2.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_Silena_2.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -59,12 +59,12 @@ class TMrbSubevent_Silena_2 : public TMrbSubevent {
 					|| Module->CheckID(TMrbConfig::kModuleSilena4418T)
 					|| Module->CheckID(TMrbConfig::kModuleXia_DGF_4C));
 		};
-		
+
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };						// allocate hit buffer
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		inline const Char_t * GetCommonCodeFile() { return("Subevent_Silena_Common"); };
-		
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_Silena_2, 1) 	// [Config] Subevent type [10,32]: format for Silena 4418 ADCs with zero suppression

@@ -9,8 +9,8 @@
 //                                         dedicated format for Sis modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_2.h,v 1.7 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_Sis_2.h,v 1.7 2009-06-24 13:59:12 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -56,12 +56,12 @@ class TMrbSubevent_Sis_2 : public TMrbSubevent {
 		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type Sis
 			return(Module->CheckID(TMrbConfig::kModuleSis_3600) || Module->CheckID(TMrbConfig::kModuleSis_3801));
 		};
-				
+
 		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 					// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		inline const Char_t * GetCommonCodeFile() { return("Subevent_Sis_Common"); };
-		
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_Sis_2, 1) 	// [Config] Subevent type [10,52]: a format dedicated to SIS modules

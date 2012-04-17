@@ -532,6 +532,7 @@ class TMrbConfig : public TNamed {
 									kModuleMesytecMadc32	=	kManufactMesytec + 0x24,
 									kModuleCaenV1X90	    =   kManufactCaen + 0x25,
 									kModuleVulomTB		    =   kManufactGSI + 0x26,
+									kModuleMesytecMqdc32	=	kManufactMesytec + 0x27,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};
@@ -614,11 +615,11 @@ class TMrbConfig : public TNamed {
 
 		inline void SetSevtSize(Int_t Size = kMbsSevtSize, Int_t PipeSegLength = kMbsPipeSegLength) { fSevtSize = Size; fPipeSegLength = PipeSegLength; }; 	// set size of subevent (for all events/triggers)
 		inline Int_t GetSevtSize() { return(fSevtSize); }
-		
+
 		inline void SetMbsBuffers(Int_t Size = kMbsEventBufferSize, Int_t NofBuffers = kMbsNofEventBuffers, Int_t NofStreams = kMbsNofStreams) {
 			fEventBufferSize = Size; fNofEventBuffers = NofBuffers; fNofStreams = NofStreams;
 		};
-		
+
 		Bool_t UpdateMbsSetup();									// update .mbssetup database if online mode
 
 		Bool_t ExecRootMacro(const Char_t * Macro);

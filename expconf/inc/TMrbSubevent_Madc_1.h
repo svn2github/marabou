@@ -9,8 +9,8 @@
 //                                          dedicated format Mesytec MADC32 modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Madc_1.h,v 1.2 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
-// Date:           $Date: 2009-06-24 13:59:12 $ 
+// Revision:       $Id: TMrbSubevent_Madc_1.h,v 1.2 2009-06-24 13:59:12 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-06-24 13:59:12 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -53,12 +53,14 @@ class TMrbSubevent_Madc_1 : public TMrbSubevent {
 		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
 		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
-		inline Bool_t CheckModuleID(TMrbModule * Module) const {					// needs modules of type MADC32
-			return(Module->CheckID(TMrbConfig::kModuleMesytecMadc32));
+		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type MADC32 or MQDC32
+			if (Module->CheckID(TMrbConfig::kModuleMesytecMadc32)) return(kTRUE);
+			if (Module->CheckID(TMrbConfig::kModuleMesytecMqdc32)) return(kTRUE);
+			return(kFALSE);
 		};
-				
+
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
-		
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_Madc_1, 1) 	// [Config] Subevent type [10,81]: a format dedicated to Mesytec MADC32 modules

@@ -87,6 +87,10 @@ void madc32_setSkipOutOfRange(struct s_madc32 * s, bool_t flag);
 void madc32_setSkipOutOfRange_db(struct s_madc32 * s);
 bool_t madc32_getSkipOutOfRange(struct s_madc32 * s);
 
+void madc32_setIgnoreThresholds(struct s_madc32 * s, bool_t flag);
+void madc32_setIgnoreThresholds_db(struct s_madc32 * s);
+bool_t madc32_getIgnoreThresholds(struct s_madc32 * s);
+
 void madc32_setHoldDelay(struct s_madc32 * s, uint16_t gg, uint16_t delay);
 void madc32_setHoldDelay_db(struct s_madc32 * s, uint16_t gg);
 uint16_t madc32_getHoldDelay(struct s_madc32 * s, uint16_t gg);

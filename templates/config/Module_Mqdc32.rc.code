@@ -3,21 +3,21 @@
 #___________________________________________________[MODULE PARAM DEFINITION]
 #////////////////////////////////////////////////////////////////////////////
 # Name:           Module_Mesytec_Madc32.rc.code
-# Purpose:        Param defs for Mesytec MADC32 ADC
+# Purpose:        Param defs for Mesytec MQDC32 ADC
 # Description:
 # Author:         $author
 # Date:           $date
 #////////////////////////////////////////////////////////////////////////////
 
-MADC32.ModuleName: 						$moduleName
-MADC32.ModuleSerial: 					$moduleSerial
+MQDC32.ModuleName: 						$moduleName
+MQDC32.ModuleSerial: 					$moduleSerial
 
-MADC32.Firmware: 						$moduleFirmware
+MQDC32.Firmware: 						$moduleFirmware
 
-MADC32.VerboseMode:						FALSE
-MADC32.DumpRegisters:					FALSE
-MADC32.UpdateSettings:					FALSE
-MADC32.UpdateInterval:					1000
+MQDC32.VerboseMode:						FALSE
+MQDC32.DumpRegisters:					FALSE
+MQDC32.UpdateSettings:					FALSE
+MQDC32.UpdateInterval:					1000
 
 %%End(Preamble)%%
 
@@ -29,13 +29,13 @@ MADC32.UpdateInterval:					1000
 
 # address source        0  -->  board coder (default)
 #                       1  -->  address register
-MADC32.$moduleName.AddrSource: 			$addrSource
+MQDC32.$moduleName.AddrSource: 			$addrSource
 
 # vme address           overrides board code if address source = 1
-MADC32.$moduleName.AddrReg: 			$addrReg
+MQDC32.$moduleName.AddrReg: 			$addrReg
 
 # module id             default = 0xFF -> use high byte of board coder
-MADC32.$moduleName.ModuleId: 			$moduleId
+MQDC32.$moduleName.ModuleId: 			$moduleId
 %%End(AddressRegisters)%%
 
 %%Begin(FifoHandling)%%
@@ -48,26 +48,26 @@ MADC32.$moduleName.ModuleId: 			$moduleId
 #                       1  -->  16 bit
 #                       2  -->  32 bit (default)
 #                       3  -->  64 bit
-MADC32.$moduleName.DataWidth:			$dataWidth
+MQDC32.$moduleName.DataWidth:			$dataWidth
 
 # multievent            0  -->  no / single event
 #                       1  -->  yes
 #                       3  -->  xfer event by event
 #						5  -->  same as 1, but BERR turned off
-MADC32.$moduleName.MultiEvent:			$multiEvent
+MQDC32.$moduleName.MultiEvent:			$multiEvent
 
 # max xfer data (if multievent is set to "3", default = 0)
-MADC32.$moduleName.XferData:			$xferData
+MQDC32.$moduleName.XferData:			$xferData
 
 # marking type          0x0  -->  event counter (default)
 #                       0x1  -->  time stamp (30 bits)
 #                       0x3  -->  extended time stamp (+16bits)
-MADC32.$moduleName.MarkingType: 		$markingType
+MQDC32.$moduleName.MarkingType: 		$markingType
 
 # block transfer        0  --> off (default)
 #                       1  --> on (normal)
 #                       2  --> on (chained)
-MADC32.$moduleName.BlockXfer:			$blockXfer
+MQDC32.$moduleName.BlockXfer:			$blockXfer
 %%End(FifoHandling)%%
 
 %%Begin(OperationMode)%%
@@ -78,52 +78,35 @@ MADC32.$moduleName.BlockXfer:			$blockXfer
 
 # bank operation        0  -->  banks connected (default)
 #                       1  -->  banks independent
-#                       3  -->  toggle mode
-MADC32.$moduleName.BankOperation:		$bankOperation
+MQDC32.$moduleName.BankOperation:		$bankOperation
 
-# adc resolution        0  -->  2k / 800ns
-#                       1  -->  4k / 1.6us
-#                       2  -->  4k high resolution / 3.2us (default)
-#                       3  -->  8k / 6.4us
-#                       4  -->  8k high resolution / 12.5us
-MADC32.$moduleName.AdcResolution:		$adcResolution
+# adc resolution        0  -->  4k / 100ns (fixed)
+MQDC32.$moduleName.AdcResolution:		$adcResolution
 
-# output format         0  -->  addressed (always 0)
-MADC32.$moduleName.OutputFormat:		$outputFormat
-
-# adc override          0  -->  2k
-# (same as adc res)     1  -->  4k
-#                       2  -->  4k high resolution
-#                       3  -->  8k
-#                       4  -->  8k high resolution
-#                       5  -->  don't override (default)
-MADC32.$moduleName.AdcOverride: 		$adcOverride
+# bank offset           0 ... 255, default 128
+MQDC32.$moduleName.BankOffset.0:		$offsetBank0
+MQDC32.$moduleName.BankOffset.1:		$offsetBank1
 
 # sliding scale off     true/false
-MADC32.$moduleName.SlidingScaleOff: 	$slidingScaleOff
+MQDC32.$moduleName.SlidingScaleOff: 	$slidingScaleOff
 
 # skip out of range     true/false
-MADC32.$moduleName.SkipOutOfRange:		$skipOutOfRange
+MQDC32.$moduleName.SkipOutOfRange:		$skipOutOfRange
 
 # ignore thresholds     true/false
-MADC32.$moduleName.IgnoreThresh:		$ignoreThresh
+MQDC32.$moduleName.IgnoreThresh:		$ignoreThresh
 %%End(OperationMode)%%
 
 %%Begin(GateGenerator)%%
 
 #-----------------------------------------------------------------------------
-# Gate generator
+# Gate limit          0 ... 254
+#                     0    --> 6ns
+#                     255  --> no limit (default)
 #-----------------------------------------------------------------------------
-MADC32.$moduleName.HoldDelay.0:			$holdDelay0
-MADC32.$moduleName.HoldDelay.1:			$holdDelay1
-MADC32.$moduleName.HoldWidth.0:			$holdWidth0
-MADC32.$moduleName.HoldWidth.1:			$holdWidth1
+MQDC32.$moduleName.GateLimit.0:			$gateLimit0
+MQDC32.$moduleName.GateLimit.1:			$gateLimit1
 
-# use gate generator    0  -->  none
-#                       1  -->  use GG0
-#                       2  -->  use GG1
-#                       3  -->  use both
-MADC32.$moduleName.UseGG:				$useGateGenerator
 %%End(GateGenerator)%%
 
 %%Begin(InputOutput)%%
@@ -132,36 +115,38 @@ MADC32.$moduleName.UseGG:				$useGateGenerator
 # Gate generator
 #-----------------------------------------------------------------------------
 
-# input range           0  -->  4V
-#                       1  -->  10V
-#                       2  -->  8V (default)
-MADC32.$moduleName.InputRange:			$inputRange
+# input coupling        0  -->  AC
+#                       1  -->  DC
+MQDC32.$moduleName.InputCoupling:		$inputCoupling
 
-# ECL terminators       0       -->  off (default)
+# ECL terminators       0       -->  off
 #                       bit[0]  -->  gate0
 #                       bit[1]  -->  gate1
 #                       bit[2]  -->  fast clear
-MADC32.$moduleName.EclTerm: 			$eclTerm
+#                       bit[3]  -->  bank0 individual limits
+#                       bit[4]  -->  bank1 individual limits
+#                       default -->  0x18 (both banks indiv)
+MQDC32.$moduleName.EclTerm: 			$eclTerm
 
 # ECL gate1/osc         0  -->  gate1 (default)
 #                       1  -->  oscillator
-MADC32.$moduleName.EclG1OrOsc:			$eclG1OrOsc
+MQDC32.$moduleName.EclG1OrOsc:			$eclG1OrOsc
 
 # ECL fast clear/reset  0  -->  fast clear (default)
 #                       1  -->  reset timestamp osc
-MADC32.$moduleName.EclFclOrRts:			$eclFclOrRts
+MQDC32.$moduleName.EclFclOrRts:			$eclFclOrRts
 
-# ECL busy              0  -->  busy (default)
-#                       1  -->  (reserved)
-MADC32.$moduleName.EclBusy:			$eclBusy
+# gate select           0  -->  NIM inputs (default)
+#                       1  -->  ECL inputs
+MQDC32.$moduleName.GateSelect:			$gateSelect
 
 # NIM gate1/osc         0  -->  gate1 (default)
 #                       1  -->  oscillator
-MADC32.$moduleName.NimG1OrOsc:			$nimG1OrOsc
+MQDC32.$moduleName.NimG1OrOsc:			$nimG1OrOsc
 
 # NIM fast clear/reset  0  -->  fast clear (default)
 #                       1  -->  reset timestamp osc, hold at value 0
-MADC32.$moduleName.NimFclOrRts:			$nimFclOrRts
+MQDC32.$moduleName.NimFclOrRts:			$nimFclOrRts
 
 # NIM busy              0  -->  busy (default)
 #                       1  -->  gate0 out
@@ -169,7 +154,7 @@ MADC32.$moduleName.NimFclOrRts:			$nimFclOrRts
 #                       3  -->  cbus out
 #                       4  -->  buffer full
 #                       8  -->  buffer above thresh
-MADC32.$moduleName.NimBusy: 			$nimBusy
+MQDC32.$moduleName.NimBusy: 			$nimBusy
 %%End(InputOutput)%%
 
 %%Begin(TestPulser)%%
@@ -183,7 +168,10 @@ MADC32.$moduleName.NimBusy: 			$nimBusy
 #                       0x5  -->  low ampl
 #                       0x6  -->  high ampl
 #                       0x7  -->  ampl 0 .. low .. high .. 0
-MADC32.$moduleName.PulserStatus: 		$pulserStatus
+MQDC32.$moduleName.PulserStatus: 		$pulserStatus
+
+# pulser dac            0 ... 255, default = 32
+MQDC32.$moduleName.PulserDac: 		$pulserDac
 %%End(TestPulser)%%
 
 %%Begin(Counters)%%
@@ -195,10 +183,10 @@ MADC32.$moduleName.PulserStatus: 		$pulserStatus
 # timestamp source      0x0  -->  VME (default)
 #                       0x1  -->  external source
 #                       0x2  -->  enable reset
-#                       0x3  -->  external source & enable reset
-MADC32.$moduleName.TsSource: 			$tsSource
+#                       0x3  -->  external source & reset
+MQDC32.$moduleName.TsSource: 			$tsSource
 
-MADC32.$moduleName.TsDivisor: 			$tsDivisor
+MQDC32.$moduleName.TsDivisor: 			$tsDivisor
 %%End(Counters)%%
 
 %%Begin(Thresholds)%%
@@ -208,7 +196,7 @@ MADC32.$moduleName.TsDivisor: 			$tsDivisor
 #-----------------------------------------------------------------------------
 %%End(Thresholds)%%
 %%Begin(ThreshLoop)%%
-MADC32.$moduleName.Thresh.$chn:		$threshold
+MQDC32.$moduleName.Thresh.$chn:		$threshold
 %%End(ThreshLoop)%%
 
 %%EndOfCode%%
