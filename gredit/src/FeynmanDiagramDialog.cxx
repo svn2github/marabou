@@ -171,7 +171,6 @@ void FeynmanDiagramDialog::FeynmanCurlyWavyArc(Int_t curly)
    else
      ha->SetWavy();
 //   cout << "TCurlyArc" <<endl;
-   ha->SetCurly();
    ha->SetAmplitude(fAmplitude);
    ha->SetWaveLength(fWaveLength);
    ha->SetPhimin(fPhi1);
