@@ -836,8 +836,15 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 //   Format the help text
 //   Insert anchors  
 //   Display embedded images in separate windows
-
-//   cout << "Enter DrawText(" << hname << ")" << endl;
+	if (gDebug > 0)
+		cout << "Enter DrawText(" << hname << ")" << endl;
+	TString url(hname);
+	if ( url.BeginsWith("http://") ) {
+		url.Prepend("firefox ");
+		url.Append("&");
+		gSystem->Exec(url);
+		return;
+	}
    TObject * obj = gROOT->GetListOfCanvases()->FindObject(hname);
    if(obj && obj->IsA() == TCanvas::Class()){
        cout << hname << " already on screen " << endl;
