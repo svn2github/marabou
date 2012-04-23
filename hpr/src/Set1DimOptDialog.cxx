@@ -559,8 +559,8 @@ void Set1DimOptDialog::SetDefaults()
 //		temp+= "P";
 //		gStyle->SetDrawOption(temp);
 //	}
-	gStyle->SetOptLogx         (env.GetValue("Set1DimOptDialog.fOneDimLogX",     0));
-	gStyle->SetOptLogy         (env.GetValue("Set1DimOptDialog.fOneDimLogY",     0));
+//	gStyle->SetOptLogx         (env.GetValue("Set1DimOptDialog.fOneDimLogX",     0));
+//	gStyle->SetOptLogy         (env.GetValue("Set1DimOptDialog.fOneDimLogY",     0));
 }
 //______________________________________________________________________
 
@@ -587,8 +587,8 @@ void Set1DimOptDialog::SetHistAttPerm()
 	gStyle->SetMarkerColor  (fMarkerColor[0]);
    gStyle->SetMarkerStyle  (fMarkerStyle[0]);
    gStyle->SetMarkerSize   (fMarkerSize[0] );
-	gStyle->SetOptLogx      (fOneDimLogX);
-	gStyle->SetOptLogy      (fOneDimLogY);
+//	gStyle->SetOptLogx      (fOneDimLogX);
+//	gStyle->SetOptLogy      (fOneDimLogY);
 }
 //______________________________________________________________________
 
@@ -727,7 +727,7 @@ void Set1DimOptDialog::GetValuesFromHist()
 
 void Set1DimOptDialog::CloseDown(Int_t wid)
 {
-//   cout << "CloseDown(" << wid<< ")" <<endl;
+   cout << "CloseDown(" << wid<< ")" <<endl;
    fDialog = NULL;
    if (wid == -1)
       SaveDefaults();

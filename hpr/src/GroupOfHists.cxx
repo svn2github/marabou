@@ -165,26 +165,29 @@ void GroupOfHists::BuildCanvas()
       }
       TString temp = ((TObjString *)fHList->At(i))->String();
       if (temp.Index("Socket") == 0) fAnyFromSocket = kTRUE;
-		Int_t slen;
-		Ssiz_t pos = 0;
-		Bool_t ok;
-		const Char_t * del = ",";
-		ok = temp.Tokenize(fname,pos, del);
-		if ( ok ) {
-			slen = fname.Length();
-			temp = temp(slen+1, temp.Length());
-		} else {
-			cout << "Cant get file name from: " << temp << endl;
-			return;
+		fname = temp;
+		Int_t pp = fname.Index(",");
+		if (pp < 0) {
+			pp = fname.Index(" ");
+			if ( pp <= 0 ) {
+				cout << "Cant get file name from: " << temp << endl;
+				return;
+			}
 		}
-		pos = 0;
-		if ( temp.Tokenize(hname,pos, del) ) {
-			slen = hname.Length();
-			temp = temp(slen+1, temp.Length());
-		} else {
+		fname.Resize(pp);
+		hname = temp(pp+1, temp.Length());
+		if (hname.Length() <= 0) {
 			cout << "Cant get hist name from: " << temp << endl;
 			return;
 		}
+		pp = hname.Index(",");
+		if (pp < 0) {
+			pp = fname.Index(" ");
+			if ( pp > 0 ) {
+				hname.Resize(pp);
+			}
+		}
+		
 //      hname = hist->GetName();
 		if (gDebug > 0)
       cout << "Enter GroupOfHists::BuildCanvas: " << fname<< " "  << hname << endl;

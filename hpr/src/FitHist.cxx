@@ -549,8 +549,8 @@ void FitHist::SaveDefaults(Bool_t recalculate)
 		if (fZtitle.Length() > 0)
 			env->SetValue("fZtitle", fZtitle);
    }
-
-//   cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " << fBinux << endl;
+	if (gDebug > 0)
+		cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " << fBinux << fLogy << endl;
    env->SaveLevel(kEnvLocal);
    delete env;
    return;
@@ -1220,6 +1220,14 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    } else {
 		fCanvas->SetLogx(fLogx);
 		fCanvas->SetLogy(fLogy);
+		if (gDebug > 0) {
+			cout<< "fCanvas->GetLogy(): " ;
+			if (fCanvas->GetLogy()) 
+				cout << "true";
+			else
+				cout << "false";
+			cout << endl;
+		}
 		fCanvas->GetHandleMenus()->SetLog(fLogy);
       Draw1Dim();
    }
@@ -1780,7 +1788,6 @@ void FitHist::Set2Marks()
 void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
 {
    Float_t x, y;
-   Int_t binx = 0, biny = 0;
    if (pad != (TVirtualPad *) fCanvas) {
       cout << " its not us " << endl;
       return;
@@ -1796,11 +1803,6 @@ void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
    y = pad->AbsPixeltoY(py);
    if (pad->GetLogx()) x = TMath::Power(10, x);
    if (pad->GetLogy()) y = TMath::Power(10, y);
-   binx = XBinNumber(fSelHist, x);
-   if (is2dim(fOrigHist))
-      biny = YBinNumber(fSelHist, y);
-//   binx     = fXaxis.FindBin(x);
-//   biny     = fYaxis.FindBin(y);
    FhMarker *m = new FhMarker(x, y, 28);
    m->SetMarkerColor(6);
    m->SetMarkerSize(1);
@@ -2891,7 +2893,8 @@ void FitHist::FastFT()
    ok = GetStringExt("FFT Parameters", NULL, itemwidth, mycanvas,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0]);
-
+	if ( !ok )
+		return;
    TString option;
    TString name;
    TString title;
@@ -3174,8 +3177,8 @@ void FitHist::ExpandProject(Int_t what)
       Double_t sum = 0;
       Double_t sumx = 0;
       Double_t sumx2 = 0;
-      Double_t mean;
-      Double_t sigma;
+//      Double_t mean;
+//     Double_t sigma;
 //     get values in expanded hist
       TAxis *xaxis_new = fSelHist->GetXaxis();
       Axis_t bw = xaxis_new->GetBinWidth(fBinX_1);
@@ -3217,10 +3220,10 @@ void FitHist::ExpandProject(Int_t what)
                fExpHist->SetBinError(newbin, fOrigHist->GetBinError(i));
          }
       }
-      if (sum > 0.) {
-         mean = sumx / sum;
-         sigma = sqrt(sumx2 / sum - mean * mean);
-      }
+//      if (sum > 0.) {
+//         mean = sumx / sum;
+//         sigma = sqrt(sumx2 / sum - mean * mean);
+//      }
       if (fExpHist)
          fExpHist->SetEntries(Int_t(sum));
 
@@ -3619,8 +3622,16 @@ void FitHist::Draw1Dim()
 //			 cout << "fSelHist->SetStats(0); " << endl;
 		} 
    }
-   if ( gDebug > 0 )
-		cout << "Draw1Dim() " << drawopt << " fSelHist->Draw() " <<fSelHist->GetDrawOption() <<  endl;
+   if ( gDebug > 0 ) {
+		cout << "Draw1Dim() " << drawopt << " fSelHist->Draw() " 
+		<<fSelHist->GetDrawOption() 
+		<< " logy " ;
+		if (fCanvas->GetLogy())
+			cout << " true";
+		else
+			cout << " false";
+		cout <<  endl;
+	}
 	if (fShowMarkers == 0 && fText == 0)
 		fSelHist->SetMarkerSize(0.01);
 //   fSelHist->Draw(drawopt);
@@ -3682,9 +3693,20 @@ void FitHist::Draw1Dim()
 
    }
    UpdateDrawOptions();
+	if (fLogy)
+		fCanvas->SetLogy();
+	if (fLogx)
+		fCanvas->SetLogx();
    fCanvas->Update();
-	if (gDebug > 0)
-		cout << "exit Draw1Dim() " <<fSelHist->GetDrawOption() <<  endl;
+	if (gDebug > 0) {
+		cout << "exit Draw1Dim() " <<fSelHist->GetDrawOption()
+		<< " logy " ;
+		if (fCanvas->GetLogy())
+			cout << " true";
+		else
+			cout << " false";
+		cout <<  endl;
+	}
 //   gStyle->SetOptStat(save_optstat);
 }
 //____________________________________________________________________________

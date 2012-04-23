@@ -1184,8 +1184,6 @@ void HandleMenus::BuildMenus()
 */
    TMrbHelpBrowser * hbrowser = NULL;
    Bool_t fh_menus = kFALSE;
-//   Bool_t edit_menus = kFALSE;
-   Bool_t autops = kFALSE;
    Bool_t graph1d = kFALSE;
    Bool_t graph2d = kFALSE;
    Bool_t graph3d = kFALSE;
@@ -1203,22 +1201,8 @@ void HandleMenus::BuildMenus()
       }
    }
    if(fHistPresent){
-      autops = GeneralAttDialog::fShowPSFile;
       hbrowser=fHistPresent->GetHelpBrowser();
 	}
-/*
-	cout << " edit_menus ";
-	if (fHCanvas->TestBit(HTCanvas::kIsAEditorPage)) {
-		edit_menus = kTRUE;
-		cout << " TRUE ";
-   } else {
-		cout << " FALSE ";
-	}
-*/
-//   if (fFitHist != 0 && fFitHist->GetSelHist()->GetDimension() != 3) {
-//     fh_menus = kTRUE;
-//     edit_menus = kTRUE;
-//   }
    Int_t nDim = 0;
    if ( fFitHist ) {
 		fh_menus = kTRUE;
@@ -1396,27 +1380,10 @@ void HandleMenus::BuildMenus()
 		fFileMenu->AddEntry("Save As .gif",  kFileSaveAsGIF);
 		fFileMenu->AddEntry("Save As .C",    kFileSaveAsC);
 	}
-	/*
-   static Int_t img = 0;
-
-   if (!img) {
-      Int_t sav = gErrorIgnoreLevel;
-      gErrorIgnoreLevel = kFatal;
-      img = TImage::Create() ? 1 : -1;
-      gErrorIgnoreLevel = sav;
-   }
-   if (img > 0) {
-      fFileMenu->AddEntry("Save As .jpg",  kFileSaveAsJPG);
-   }
-	*/
    if (  its_start_window ) {
-//   if(!fFitHist)fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
-//   if(!fFitHist)fFileMenu->AddEntry("Save As canvas.root", kFileSaveAsRoot);
       fFileMenu->AddSeparator();
       fFileMenu->AddEntry("Read Cuts (Window2D) from ASCII file", kFHCutsFromASCII);
-//   fFileMenu->AddEntry("&Print...",           kFilePrint);
       fFileMenu->AddSeparator();
- //     fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
       fFileMenu->AddEntry("Open Edit canvas (A4 portrait)",    kFH_Portrait);
       fFileMenu->AddEntry("Open Edit canvas (A4 landscape)",   kFH_Landscape);
       fFileMenu->AddEntry("Open Edit canvas (user defined)",   kFH_UserEdit);
@@ -1426,10 +1393,6 @@ void HandleMenus::BuildMenus()
 		fFileMenu->AddSeparator();
 		fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
 	}
-//	if ( edit_menus ) {
-//      fFileMenu->AddSeparator();
-//    	fFileMenu->AddEntry("Write this picture to ROOT file",  kFH_WritePrim);
-//   }
 
    fOptionMenu = new TGPopupMenu(fRootCanvas->GetParent());
    if(!fGraph && !fFitHist) {
@@ -1473,12 +1436,13 @@ void HandleMenus::BuildMenus()
    } else {
       fOptionMenu->UnCheckEntry(kOptionAutoExec);
    }
-
    fViewMenu = new TGPopupMenu(fRootCanvas->GetParent());
-   fViewMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
-   fViewMenu->AddEntry("Event &Status", kViewEventStatus);
-   fViewMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
-   fViewMenu->AddSeparator();
+	if ( ! its_start_window ) {
+		fViewMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
+		fViewMenu->AddEntry("Event &Status", kViewEventStatus);
+		fViewMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
+		fViewMenu->AddSeparator();
+	}
    fViewMenu->AddEntry("Show Colors",             kViewColors);
    fViewMenu->AddEntry("Show Fonts",              kViewFonts);
    fViewMenu->AddEntry("Show Markers",            kViewMarkers);

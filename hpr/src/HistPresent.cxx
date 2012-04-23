@@ -753,7 +753,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 			if (contains_filenames(fn) > 0) continue;
 		   if (strstr(fname,".root")) {
 			   if (FindHistsInFile(fname, fn) <= 0) {
-//				   cout << "No hist of: " << fn << " found in: " << fname << endl;
+				   cout << "No hist of: " << fn << " found in: " << fname << endl;
 					continue;
 				}
 			}
@@ -1290,7 +1290,6 @@ void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
 
 void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char * bp)
 {
-  Int_t nstat;
    TString sname(fname);
    TMrbStatistics * st = 0;
    TRegexp rname("\\.root");
@@ -1322,8 +1321,8 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
          TString sname(fname);
          if (strlen(dir) > 0) sname = sname + " Dir: " + dir;
          st=new TMrbStatistics(sname);
-         nstat = st->Fill(gDirectory);
-      } else nstat = st->GetListOfEntries()->GetSize();
+         st->Fill(gDirectory);
+      }
       if (rfile )rfile->Close();
    } else if (sname.Index(mname) > 0) {
       sname(mname) = "";
@@ -1332,8 +1331,8 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
       st = (TMrbStatistics*)mfile->Get("TMrbStatistics");
       if (!st) {
          st=new TMrbStatistics(fname);
-         nstat = st->Fill(mfile);
-      } else nstat = st->GetListOfEntries()->GetSize();
+         st->Fill(mfile);
+      }
    } else {
        cout << "Unkown suffix in : " << fname << endl;
        return;
@@ -1362,7 +1361,14 @@ void HistPresent::ComposeList(const char* bp)
       return;
    }
    TString fname  = ((TObjString *)fSelectHist->At(0))->String();
-   Int_t pp = fname.Index(" ");
+   Int_t pp = fname.Index(",");
+	if (pp < 0) {
+		pp = fname.Index(" ");
+		if (pp < 0 ) {
+			cout << "ComposeList cant isolate file name: " << fname << endl;
+			return;
+		}
+	}
    fname.Resize(pp);
    Bool_t put_file = kFALSE;
    TString listname  =  fname;
@@ -1393,7 +1399,7 @@ void HistPresent::ComposeList(const char* bp)
 	}
    for(Int_t i = 0; i < nselect; i++) {
       TString hname  = ((TObjString *)fSelectHist->At(i))->String();
-//		cout << hname << endl;
+		cout << hname << endl;
       Int_t pp = hname.Index(" ");
       hname.Remove(0,pp+1);
 		TRegexp vers(";[0-9]*");
@@ -1438,7 +1444,9 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
 		if (line.Length() <= 0) continue;
 		if (line[0] == '#') continue;
       if (cfn) {
-         Int_t pp = line.Index(" ");
+         Int_t pp = line.Index(",");
+         if (pp < 0 )
+				pp = line.Index(" ");
          if (pp <= 0) continue;
          fname = line(0,pp);
          line.Remove(0,pp+1);
@@ -1450,7 +1458,10 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
       cmd += fname;
 		TString hname(line);
 		TString dname;
-		Int_t pp = line.Index(" ");
+		Int_t pp = line.Index(",");
+		if (pp < 0) {
+			pp = line.Index(" ");
+		}
 		if (pp > 0) {
 		   dname = line;
 			hname.Resize(pp);
@@ -2078,16 +2089,29 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
 //  Bool_t ok;
 
    TString fname = obj->String();
-//	cout << "GetSelHistAt |" << fname << "|" << endl;
-   Int_t pp = fname.Index(",");
-   if (pp <= 0) {cout << "No file name in: " << obj->String() << endl; return NULL;};
+	if (gDebug > 0)
+		cout << "GetSelHistAt |" << fname << "|" << endl;
+	Int_t pp = fname.Index(",");
+	if (pp < 0) {
+		pp = fname.Index(" ");
+		if (pp <= 0) {
+			cout << "No file name in: " << obj->String() << endl;
+			return NULL;
+		}
+	}
    fname.Resize(pp);
 
    TString hname = obj->String();
    hname.Remove(0,pp+1);
    TString dname = hname.Data();
    pp = hname.Index(",");
-   if (pp <= 0) {cout << "No histogram name in: " << obj->String()<< endl; return NULL;};
+	if (pp < 0) {
+		pp = hname.Index(" ");
+		if (pp <= 0) {
+			cout << "No histogram name in: " << obj->String()<< endl;
+			return NULL;
+		}
+	}
    hname.Resize(pp);
    dname.Remove(0,pp+1);
 //   cout << fname << "|" << hname << "|" << dname << "|" << endl;
@@ -2578,11 +2602,10 @@ void HistPresent::LoadCut(const char* fname, const char* hname, const char* bp)
 //________________________________________________________________________________________
 void HistPresent::PrintWindow(const char* fname, const char* hname, const char* bp)
 {
-   TMrbWindow *wdw;
    TObject * obj = NULL;
    TString sel = fname;
    if (is_memory(fname)) {
-      wdw = (TMrbWindow*)gROOT->GetList()->FindObject(hname);
+		
    } else if (sel.Contains(".map")) {
        TMapFile *mfile;
        mfile = TMapFile::Create(fname);
@@ -3205,11 +3228,12 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
 	cout << "StackSelectedHists  " << nsel << endl;
 	for(Int_t i=0; i<nsel; i++) {
       TH1* hist = GetSelHistAt(i, hlist);
-		cout << "StackSelectedHists  " << hist->GetName() << endl;
 		if (!hist) {
          cout << " Hist not found at: " << i << endl;
          continue;
       } else {
+			if (gDebug > 0)
+				cout << "StackSelectedHists  " << hist->GetName() << endl;
          hl.Add(hist);
       }
    }
@@ -3812,19 +3836,18 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			//      }
 	}
 	WindowSizeDialog::fNwindows++;
-	HTCanvas * cg = NULL;
 	TEnv env(".hprrc");
 
 	//      graph->SetName(hname);
 	//      graph->SetTitle(htitle);
 	if ( graph2d ) {
 		graph2d->SetName(gname);
-		cg = new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
+		new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
 								WindowSizeDialog::fWinwidx_1dim, WindowSizeDialog::fWinwidy_1dim, this, 0, (TGraph*)graph2d);
 								graph2d->Draw(env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "cont5"));
 	} else {
 		graph1d->SetName(gname);
-		cg = new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
+		new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
 		WindowSizeDialog::fWinwidx_1dim, WindowSizeDialog::fWinwidy_1dim, this, 0, graph1d);
 		TH1* hh = (TH1*)gROOT->GetList()->FindObject("hist_for_graph");
 		if (hh) {

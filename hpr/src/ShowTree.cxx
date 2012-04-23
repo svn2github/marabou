@@ -7,6 +7,7 @@
 #include "TRootCanvas.h"
 #include "TCanvasImp.h"
 #include "TPaletteAxis.h"
+#include "TStopwatch.h"
 
 #include "HistPresent.h"
 #include "GeneralAttDialog.h"
@@ -454,7 +455,7 @@ void HistPresent::DefineGraphCut(const char* bp)
 void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tname,
                             const char* leafname, const char* bp)
 {
-
+	TStopwatch *stopwatch = new TStopwatch();
    TString leaf0;
    TString leaf1;
    TString leaf2;
@@ -881,6 +882,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    tree->SetMarkerColor(fMarkColor);
 
    if (nof_events <= 0) nof_events = 100000000;
+   cout << "Start tree->Draw()" << endl;
+   stopwatch->Start();
+	
    if (fApplyLeafCut) {
       TString cut = *fLeafCut;
       TRegexp a1("\\$1");
@@ -917,6 +921,10 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
                           << first_event << " " <<nof_events << endl;
       tree->Draw((const char*)cmd,"",option, nof_events, first_event);
    }
+   stopwatch->Stop();
+   cout << "End tree->Draw()" << endl;
+	stopwatch->Print();
+	
    fRootFile->Close();
    fRootFile=NULL;
    if ( cc ) cc->Modified();

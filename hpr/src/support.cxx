@@ -701,9 +701,12 @@ Int_t contains_filenames(const char *lname)
          continue;
       if (line[0] == '#')
          continue;
-      Int_t pp = line.Index(" ");
-      if (pp <= 0)
+      Int_t pp = line.Index(",");
+		if (pp < 0) {
+			pp = line.Index(" ");
+			if (pp <= 0)
          break;
+		}
       line.Resize(pp);
       if (line.Contains(".root") || line.Contains(".map"))
          ok = 1;
@@ -1335,7 +1338,7 @@ Int_t FindPaveStats(TVirtualPad * ca, TList * lops, TList * pads)
 void Show_Fonts()
 {
    const char text[] = "The big brown fox jumps over the lazy dog.";
-   new TCanvas("ct", "Text fonts used by root", 100, 100, 600, 600);
+   HTCanvas * cc = new HTCanvas("ct", "Text fonts used by root", 100, 100, 600, 600);
    Float_t x0 = 0.05, y = 0.9, dy = 0.05;
    TText *t1;
    TText *t;
@@ -1346,7 +1349,9 @@ void Show_Fonts()
       t1->SetTextFont(i);
       t->SetTextSize(0.035);
       t->SetTextFont(i);
-      t1->Draw();
+		t->SetNDC();
+ 		t1->SetNDC();
+		t1->Draw();
       t->Draw();
       y -= dy;
    }
@@ -1354,6 +1359,7 @@ void Show_Fonts()
    t->SetTextSize(0.04);
    t->SetTextAlign(22);
    t->SetTextFont(60);
+	t->SetNDC();
    t->Draw();
 
    TPad * pp = new TPad("apad", "apad", 0.3, 0.01, 0.6 ,0.25);
@@ -1363,26 +1369,28 @@ void Show_Fonts()
    pp->Draw();
    pp->cd();
 
-   t = new TText(0.05, 0.05, "11"); t->SetTextAlign(11);
+   t = new TText(0.05, 0.05, "11"); t->SetTextAlign(11);t->SetNDC();
    t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-   t = new TText(0.05, 0.5, "12");  t->SetTextAlign(12);
+   t = new TText(0.05, 0.5, "12");  t->SetTextAlign(12);t->SetNDC();
    t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-   t = new TText(0.05, 0.95, "13"); t->SetTextAlign(13);
-   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-
-   t = new TText(0.5, 0.05, "21");   t->SetTextAlign(21);
-   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-   t = new TText(0.5, 0.5, "22");   t->SetTextAlign(22);
-   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-   t = new TText(0.5, 0.95, "23");   t->SetTextAlign(23);
+   t = new TText(0.05, 0.95, "13"); t->SetTextAlign(13);t->SetNDC();
    t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
 
-   t = new TText(0.95, 0.05, "31");   t->SetTextAlign(31);
+   t = new TText(0.5, 0.05, "21");   t->SetTextAlign(21);t->SetNDC();
    t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-   t = new TText(0.95, 0.5, "32");   t->SetTextAlign(32);
+   t = new TText(0.5, 0.5, "22");   t->SetTextAlign(22);t->SetNDC();
    t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-   t = new TText(0.95, 0.95, "33");   t->SetTextAlign(33);
+   t = new TText(0.5, 0.95, "23");   t->SetTextAlign(23);t->SetNDC();
    t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+
+   t = new TText(0.95, 0.05, "31");   t->SetTextAlign(31);t->SetNDC();
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+   t = new TText(0.95, 0.5, "32");   t->SetTextAlign(32);t->SetNDC();
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+   t = new TText(0.95, 0.95, "33");   t->SetTextAlign(33);t->SetNDC();
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+	cc->Modified();
+	cc->Update();
 };
 
 //______________________________________________________________________________________

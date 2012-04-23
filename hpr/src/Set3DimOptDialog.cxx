@@ -149,7 +149,6 @@ For further details contact ROOTs documentation.\n\
 	fBidBOX  = 2;
 	fBidBOX1 = 3;
    for (Int_t i = 0; i < 4; i++) {
-//   cout << " indopt  " <<  indopt << endl;
        TString text("RadioButton");
        if (i == 0)text += "_";
        else       text += "+";
@@ -193,7 +192,6 @@ For further details contact ROOTs documentation.\n\
 void Set3DimOptDialog::RecursiveRemove(TObject * obj)
 {
    if (obj == fCanvas) {
- //     cout << "Set3DimOptDialog: CloseDialog "  << endl;
       CloseDialog();
    }
 }

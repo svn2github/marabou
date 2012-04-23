@@ -370,8 +370,8 @@ void GraphAttDialog::RestoreDefaults()
 	fEndErrorSize    = env.GetValue("GraphAttDialog.fEndErrorSize",  1);
 	fErrorX          = env.GetValue("GraphAttDialog.fErrorX",        1);
 	*/
-	gStyle->SetOptLogx      (fLogX);
-	gStyle->SetOptLogy      (fLogY);
+//	gStyle->SetOptLogx      (fLogX);
+//	gStyle->SetOptLogy      (fLogY);
 }
 //______________________________________________________________________
 
