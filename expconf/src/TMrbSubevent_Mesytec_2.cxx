@@ -1,13 +1,13 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           expconf/src/TMrbSubevent_Madc_2.cxx
+// Name:           expconf/src/TMrbSubevent_Mesytec_2.cxx
 // Purpose:        MARaBOU configuration: subevents of type [10,82] - SIS data
 // Description:    Implements class methods to handle [10,82] subevents
 //                 reflecting data structure of Mesytec MADC32 modules
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Madc_2.cxx,v 1.5 2010-12-14 14:18:04 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Mesytec_2.cxx,v 1.5 2010-12-14 14:18:04 Marabou Exp $
 // Date:           $Date: 2010-12-14 14:18:04 $
 //////////////////////////////////////////////////////////////////////////////
 
@@ -26,20 +26,20 @@ namespace std {} using namespace std;
 #include "TMrbConfig.h"
 #include "TMrbModule.h"
 #include "TMrbModuleChannel.h"
-#include "TMrbSubevent_Madc_2.h"
+#include "TMrbSubevent_Mesytec_2.h"
 
 #include "SetColor.h"
 
 extern TMrbConfig * gMrbConfig;
 extern TMrbLogger * gMrbLog;
 
-ClassImp(TMrbSubevent_Madc_2)
+ClassImp(TMrbSubevent_Mesytec_2)
 
-TMrbSubevent_Madc_2::TMrbSubevent_Madc_2(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
+TMrbSubevent_Mesytec_2::TMrbSubevent_Mesytec_2(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
 																: TMrbSubevent(SevtName, SevtTitle, Crate) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Madc_2
+// Name:           TMrbSubevent_Mesytec_2
 // Purpose:        Create a subevent type [10,82]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
@@ -47,7 +47,7 @@ TMrbSubevent_Madc_2::TMrbSubevent_Madc_2(const Char_t * SevtName, const Char_t *
 // Results:        --
 // Exceptions:
 // Description:    Create a new subevent of type [10,82]
-//                 used to store MADC32 data in DGF-4C list-mode format
+//                 used to store MADC32/MQDC32 data in DGF-4C list-mode format
 //
 //
 //                 Data format as given by the producer (MBS) - same as [10,82]:
@@ -107,12 +107,12 @@ TMrbSubevent_Madc_2::TMrbSubevent_Madc_2(const Char_t * SevtName, const Char_t *
 	}
 }
 
-Bool_t TMrbSubevent_Madc_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
+Bool_t TMrbSubevent_Mesytec_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
 															TMrbTemplate & Template,
 															const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Madc_2::MakeReadoutCode
+// Name:           TMrbSubevent_Mesytec_2::MakeReadoutCode
 // Purpose:        Write a piece of code for subevent [10,82]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file
@@ -160,7 +160,7 @@ Bool_t TMrbSubevent_Madc_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 
 				((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);
 				parNo += parentModule->GetNofChannelsUsed();
-				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
+				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;
 			}
 			miter = fLofModules.MakeIterator();
 			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
