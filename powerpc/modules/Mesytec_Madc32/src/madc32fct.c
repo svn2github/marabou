@@ -897,7 +897,6 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 		for (i = 0; i < numData; i++) {
 			data = GET32(s->baseAddr, MADC32_DATA);
 			if (data == 0) {
-				printf("data=0!\n");
 				s->evtp++; *s->evtp = (MADC32_M_TRAILER | 0x00525252);
 				pointer = madc32_pushEvent(s, pointer);
 				madc32_resetEventBuffer(s);

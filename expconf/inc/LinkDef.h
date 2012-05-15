@@ -48,9 +48,9 @@
 #pragma link C++ class TMrbSubevent_Sis_3302_2;
 #pragma link C++ class TMrbSubevent_Sis_3302_3;
 #pragma link C++ class TMrbSubevent_CPTM;
-#pragma link C++ class TMrbSubevent_Madc_1;
-#pragma link C++ class TMrbSubevent_Madc_2;
-#pragma link C++ class TMrbSubevent_Madc_3;
+#pragma link C++ class TMrbSubevent_Mesytec_1;
+#pragma link C++ class TMrbSubevent_Mesytec_2;
+#pragma link C++ class TMrbSubevent_Mesytec_3;
 #pragma link C++ class TMrbSubeventRaw;
 #pragma link C++ class TMrbSubevent_Data_S;
 #pragma link C++ class TMrbSubevent_Data_I;
