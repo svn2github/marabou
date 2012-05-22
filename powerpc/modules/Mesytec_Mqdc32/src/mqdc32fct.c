@@ -63,7 +63,7 @@ struct s_mqdc32 * mqdc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 void mqdc32_initialize(struct s_mqdc32 * s)
 {
 	signal(SIGBUS, catchBerr);
-	mqdc32_disableBusError(s);
+/*	mqdc32_disableBusError(s);	*/
 	mqdc32_enable_bma(s);
 	mqdc32_resetReadout(s);
 }
@@ -75,7 +75,7 @@ void mqdc32_setBltBlockSize(struct s_mqdc32 * s, uint32_t size)
 
 void mqdc32_reset(struct s_mqdc32 * s)
 {
-  SET16(s->baseAddr, MQDC32_SOFT_RESET, 0x1);
+/*  SET16(s->baseAddr, MQDC32_SOFT_RESET, 0x1);	*/
 }
 
 uint16_t mqdc32_getThreshold(struct s_mqdc32 * s, uint16_t channel)
@@ -813,8 +813,6 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	int tryIt;
 	int numData;
 
-	dataStart = pointer;
-
 	tryIt = 20;
 	while (tryIt-- && !mqdc32_dataReady(s)) { usleep(1000); }
 	if (tryIt <= 0) {
@@ -823,6 +821,8 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 		mqdc32_startAcq(s);
 		return (pointer - dataStart);
 	}
+
+	dataStart = pointer;
 
 	numData = (int) mqdc32_getFifoLength(s);
 
@@ -873,7 +873,6 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 		for (i = 0; i < numData; i++) {
 			data = GET32(s->baseAddr, MQDC32_DATA);
 			if (data == 0) {
-				printf("data=0!\n");
 				s->evtp++; *s->evtp = (MQDC32_M_TRAILER | 0x00525252);
 				pointer = mqdc32_pushEvent(s, pointer);
 				mqdc32_resetEventBuffer(s);
@@ -990,6 +989,4 @@ void mqdc32_resetEventBuffer(struct s_mqdc32 * s) {
 	s->skipData = FALSE;
 }
 
-void catchBerr() {
-	printf("BUS ERROR\n");
-}
+void catchBerr() {}

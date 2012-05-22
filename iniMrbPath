@@ -24,9 +24,9 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=/usr/local/opt/root/root5.30-00_gcc-412
+ROOTSYS=/usr/daq/root_pro
 MARABOU=`pwd`
-MARABOU_INSTALL_PATH=nothing_to_install
+MARABOU_INSTALL_PATH=/usr/daq/marabou_pro
 
 #____________________________[end editable section]___________________________
 

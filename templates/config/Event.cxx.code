@@ -473,13 +473,13 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, MBSDataIO * B
 }
 
 %%BeginOfCode%%
-Bool_t TUsrEvt$evtNameUC::Analyze() {
+Bool_t TUsrEvt$evtNameUC::Analyze(Int_t EvtNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:		TUsrEvt$evtNameUC::Analyze
 // Purpose: 	Analyze data for event $evtNameLC
 //  			(Trigger $evtTrigger)
-// Arguments:		--
+// Arguments:		Int_t EvtNo    -- event number
 // Results: 	kTRUE/kFALSE
 // Exceptions:
 // Description:    User's analysis function for trigger $evtTrigger

@@ -569,7 +569,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %B%		case kMrbTrigger$evtNameUC:		// event $evtNameLC, trigger $trigNo
 %B%			pthread_mutex_lock(&global_data_mutex);
 %B%			g$evtNameUC->FillEvent(EventData, BaseAddr);
-%P%			sts = g$evtNameUC->$processEvent();
+%P%			sts = g$evtNameUC->$processEvent(0);
 %E%			pthread_mutex_unlock(&global_data_mutex);
 %E%			return(sts);
 %%EndOfCode%%
@@ -587,7 +587,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %N%			gStartEvent->Print("START Acquisition");
 %SF%			gStartEvent->FillEvent(EventData, BaseAddr);
 %SF%			gStartEvent->Print("START Acquisition");
-%SP%			sts = gStartEvent->$processEvent();
+%SP%			sts = gStartEvent->$processEvent(0);
 %E%			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
 %E%			return(kTRUE);
 %%EndOfCode%%
@@ -599,7 +599,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %N%			gStopEvent->Print("STOP Acquisition");
 %SF%			gStopEvent->FillEvent(EventData, BaseAddr);
 %SF%			gStopEvent->Print("STOP Acquisition");
-%SP%			sts = gStopEvent->$processEvent();
+%SP%			sts = gStopEvent->$processEvent(0);
 %E%			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
 %E%			return(kFALSE);
 %%EndOfCode%%
