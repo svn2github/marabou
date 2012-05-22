@@ -52,6 +52,13 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 		Int_t wc = header & MADC_M_WC;							// extract wc
 		Int_t wcs = (wc + 1) * 2; 								// wc + header
 
+		Bool_t align64 = kFALSE;								// check if 64bit alignment
+		UInt_t * trailer32 = (UInt_t *) dataPtr + wc;
+		if (*trailer32 == 0) {
+			wc--;								// ignore 0-word at end of event
+			align64 = kTRUE;
+		}
+
 		UShort_t * trailPtr = dataPtr + 2 * (wc - 2);
 
 		UInt_t highTimeStamp = (*trailPtr++ << 16);		// possibly extended timestamp
@@ -159,6 +166,7 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 
 		if (xts) dataPtr += 2;				// compensate for extended ts
 		if (hasTrailer) dataPtr += 2;		// and for trailer
+		if (align64) dataPtr += 2;			// and for 64bit alignment
 
 		SevtWC -= wcs;						// remaining subevent data
 		wordsProcessed += wcs;

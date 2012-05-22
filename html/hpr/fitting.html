@@ -19,19 +19,21 @@ User defined function with the help of a <a href=#Help_on_Fit_1dim_Macro>macro</
 
 <a NAME=Help_on_Fit_1dim_Menu></a>
 <H3>Fitting of functions to 1-dim histograms</H3>
-from the Fit Popup Menu:
-Predefined are polynomials upto degree 8, gaussians
-(max 3 peaks) plus a linear background and gaussians
-with low or high energy tails. The tail function is
-explained <a href=#Help_on_Tail>here</a>.
-In case with tail the parameter Ta_fract (tail
-fraction) is the contents of the tail part relative
-to the pure gaussian part. In case of more then one
-peak this fraction, the width of the tail and of the
-gaussian are the same to all peaks. Marks should be
-used to provide lower and upper limits and estimated
-positions of peaks if more than 1 gaussian is be
-fitted. The program estimates from this the start
+From the <b>Fit/Calib/FFT</b> popup menu:
+<b>Gaussians with <a href=#Help_on_Tail>tail</a></b>
+<b>Exponential function</b>
+<b>Polynomial</b>
+<b>User formula</b>
+
+Each of the widgets provides an own <b>Help button</b>.
+<p>
+Marks are used to provide lower and upper limits of the
+fitting region.
+In case of gaussians with more than 1 peak in addition
+the estimated positions of the peaks must be marked.
+Marks are set by pressing the middle mouse button.
+<p>
+The program estimates from this the start
 parameters of the fit which are presented and may be
 changed. Values may be fixed and bound.<B> When using
 bounds please be aware of the warnings in the MINUIT
@@ -39,26 +41,13 @@ manual on this.</B> Fitted parameters may be kept as
 start for a new fit. As default Minos error analysis
 is not done but may be switched on.
 <p>
-A linear background determined from 2 regions in
-the spectrum outside the peaks can be incorporated
-in the following way:<br>
-
-Define 4 marks to select the 2 regions. Then use the
-item 'Determine linear background' from the Fit
-popup menu to calculate the parameters const and
-slope of the linear background.  (This activates
-automatically the corresponding option  'Use linear
-background'.) In a subsequent fit the parameters
-Bg_Const and Bg_Slope will be  fixed to the above
-calculated values.  If needed these values can still
-be changed manually. Unfixing them of course will
-let MINUIT vary their values.
-<p>
 The quality of the start parameters of a fit determine
 the speed of convergence. Bad start parameters may lead
 MINUIT to find an unwanted minimum. Start parameters
 may be checked by drawing the fit function with these 
 parameters without actually doing a fit.
+<p>
+
 
 <a NAME=Help_on_Fit_1dim_Macro></a>
 <H3>Fitting of 1-dim functions by a macro</H3>

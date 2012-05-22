@@ -31,6 +31,12 @@
 
 void catchBerr();
 
+int numData;
+int rdoWc;
+int evtWc;
+int lastData;
+struct s_madc32 * s_sav;
+
 char msg[256];
 static struct dmachain *bma_page;
 
@@ -41,6 +47,7 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 
 	s = (struct s_madc32 *) calloc(1, sizeof(struct s_madc32));
 	if (s != NULL) {
+		s_sav = s;
 		s->baseAddr = base;
 		s->vmeAddr = vmeAddr;
 		strcpy(s->moduleName, moduleName);
@@ -835,13 +842,16 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 {
 	uint32_t * dataStart;
 	uint32_t data;
-	int numData;
 	unsigned int i;
 	int bmaError;
+	int tryIt;
+	int numData;
 
 	dataStart = pointer;
 
-	if (!madc32_dataReady(s)) {
+	tryIt = 20;
+	while (tryIt-- && !madc32_dataReady(s)) { usleep(1000); }
+	if (tryIt <= 0) {
 		*pointer++ = 0xaffec0c0;
 		madc32_resetFifo(s);
 		madc32_startAcq(s);
@@ -894,16 +904,24 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 		pointer += numData;
 	} else {
 		s->blockXfer = MADC32_BLT_OFF;
+		evtWc = 0;
+		lastData = -1;
 		for (i = 0; i < numData; i++) {
+			rdoWc = i;
 			data = GET32(s->baseAddr, MADC32_DATA);
 			if (data == 0) {
 				s->evtp++; *s->evtp = (MADC32_M_TRAILER | 0x00525252);
 				pointer = madc32_pushEvent(s, pointer);
 				madc32_resetEventBuffer(s);
 				s->skipData = TRUE;
+/*				printf("DATA ZERO numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData); */
+				lastData = 0;
 				continue;
 			} else if ((data & MADC32_M_SIGNATURE) == MADC32_M_HEADER) {
 				s->skipData = FALSE;
+/*				printf("HEADER numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData); */
+				lastData = 1;
+				evtWc = data & MADC32_M_WC;
 				if (s->evtp != s->evtBuf) {
 					s->evtp++; *s->evtp = (MADC32_M_TRAILER | 0x00252525);
 					pointer = madc32_pushEvent(s, pointer);
@@ -912,13 +930,20 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 				*s->evtp = data;
 			} else if ((data & MADC32_M_SIGNATURE) == MADC32_M_TRAILER) {
 				if (s->skipData) continue;
+				evtWc--;
+/*				printf("TRAILER numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData); */
+				lastData = 2;
 				s->evtp++; *s->evtp = data;
 				pointer = madc32_pushEvent(s, pointer);
 				madc32_resetEventBuffer(s);
 			} else if ((data & MADC32_M_SIGNATURE) == MADC32_M_EOB) {
+/*				printf("EOB numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData); */
+				lastData = 3;
 				break;
 			} else {
 				if (s->skipData) continue;
+				evtWc--;
+				lastData = 4;
 				s->evtp++; *s->evtp = data;
 			}
 		}
@@ -1014,5 +1039,8 @@ void madc32_resetEventBuffer(struct s_madc32 * s) {
 }
 
 void catchBerr() {
-	printf("BUS ERROR\n");
+	return;
+	printf("BUS ERROR numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData);
+	if (lastData != 5) getchar();
+	lastData = 5;
 }

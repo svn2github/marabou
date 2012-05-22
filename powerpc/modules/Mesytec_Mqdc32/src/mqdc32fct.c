@@ -808,13 +808,16 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 {
 	uint32_t * dataStart;
 	uint32_t data;
-	int numData;
 	unsigned int i;
 	int bmaError;
+	int tryIt;
+	int numData;
 
 	dataStart = pointer;
 
-	if (!mqdc32_dataReady(s)) {
+	tryIt = 20;
+	while (tryIt-- && !mqdc32_dataReady(s)) { usleep(1000); }
+	if (tryIt <= 0) {
 		*pointer++ = 0xaffec0c0;
 		mqdc32_resetFifo(s);
 		mqdc32_startAcq(s);

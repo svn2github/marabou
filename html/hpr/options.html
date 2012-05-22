@@ -15,6 +15,9 @@ Here error bars, filling and contours may be choosen.
 Fitting of Gaussian optionally with linear background
 when dragging with mouse button 1 pressed can be
 switched on and off here.
+<b>Width + threshold in fpeak</b>
+HistPresent implements a simple peakfinder.
+Here the two relevant parameters may be set.
 
 <H3>Display mode of 2-dim histogram</H3>
 ROOT has many different ways to plot a 2-dim histogram
@@ -31,6 +34,12 @@ may be choosen:
 
 Contour levels and colors may still be modified from 
 the <a href=display.html#Help_on_Contour>Set User Contour</a> popup.
+<b> LogScale_Minimum </b>  
+    This allows to set the minimum when logarithmic sales 
+    are used with 2-dim histograms
+<b> LinScale_Minimum </b>  
+    This allows to set the minimum when linear sales 
+    are used with 2-dim histograms
 
 <H3>Various HistPresent options</H3>
 These options are described in some detail below.
@@ -45,24 +54,13 @@ Also this widget provides its own <b>Help</b> button.
 <a href=#Help_on_Auto_1dim>Help_on_Auto_1dim</a> 
 <a href=#Help_on_Auto_2dim>Help_on_Auto_2dim</a> 
 
-<H3>HistPresent numerical options</H3>
-
-<b> LogScale_Minimum </b>  
-    This allows to set the minimum when logarithmic sales 
-    are used with 2-dim histograms
-<b> LinScale_Minimum </b>  
-    This allows to set the minimum when linear sales 
-    are used with 2-dim histograms
-<b> AutoUpdateDelay</b>
-    This is the update frequency when using the 
-    <a href=showlists.html#Help_on_ShowSelected>automatic update</a> option.
 <b> Max Entries in Histlists</b>
     When very many histograms are in one file this
     parameter avoids crashing some X-implementations,
     default value 333
-<b>Width + threshold in fpeak</b>
-    HistPresent implements a simple peakfinder.
-    Here the two relevant parameters may be set.
+<b> AutoUpdateDelay</b>
+    This is the update frequency when using the 
+    <a href=showlists.html#Help_on_ShowSelected>automatic update</a> option.
 
 <H3>Default window sizes and positions</H3>
 Default sizes of windows for 1-dim and 2-dim histograms 
@@ -81,9 +79,6 @@ by the value of <b>Window_X_Width_List</b> as follows:
 The parameter Project_Both_Ratio determines the
 space left for the original scatter plot when the
 the Display action <b>ProjectBoth</b> is used.
-
-<H3>Default colors and fonts</H3>
-This allows to set various colors and fonts.
 
 <H3>Graphics Attr (Canvas, Pad..)</H3>
 This menu gives access to most parameters in the ROOT class
