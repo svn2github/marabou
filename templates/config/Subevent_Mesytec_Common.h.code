@@ -7,7 +7,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbSubevent_Madc : public TObject {
+class TMrbSubevent_Mesytec : public TObject {
 
 	public:
 		TMrbSubevent_Mesytec() {};				// default ctor
