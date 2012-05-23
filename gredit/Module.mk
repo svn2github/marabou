@@ -39,7 +39,7 @@ INCLUDEFILES += $(GREDITDEP)
 MRBUTILSLIB   := $(LPATH)/libTMrbUtils.$(SOEXT)
 MRBGUTILSLIB  := $(LPATH)/libTGMrbUtils.$(SOEXT)
 
-OCDLLIBS      := $(MRBUTILSLIB) $(MRBGUTILSLIB) $(GREDITLIB)
+OCDLLIBS      := $(GREDITLIB) $(MRBGUTILSLIB) $(MRBUTILSLIB)
 
 ##### local rules #####
 
@@ -49,14 +49,12 @@ include/%.h:    $(GREDITDIRI)/%.h
 $(CDLEXE):      $(CDLMAINO) $(CDLLIB) $(OCDLLIBS)
 		@echo "other libs: $(OCDLLIBS)"
 		@echo "$(CDLEXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(CDLMAINO) $(OCDLLIBS) $(ROOTGLIBS) \
-            -o $(CDLEXE)
+		$(LD) -g -o $(CDLEXE) $(LDFLAGS) $(CDLMAINO) $(OCDLLIBS) $(ROOTGLIBS)
 
 $(GREDITLIB):     $(GREDITDO) $(GREDITO) $(MAINLIBS) $(GREDITLIBDEP)
 			@echo "Making libGrEdit $@..."
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-			"$(SOFLAGS)" libGrEdit.$(SOEXT) $@ "$(GREDITDO) $(GREDITO)" \
-			"$(GREDITLIBEXTRA)"
+			"$(SOFLAGS)" libGrEdit.$(SOEXT) $@ "$(GREDITDO) $(GREDITO)"
 
 $(GREDITDS):     $(GREDITH) $(GREDITL)
 		@echo "Generating dictionary: $@...."
