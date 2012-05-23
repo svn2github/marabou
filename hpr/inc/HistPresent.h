@@ -223,7 +223,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void ShowSelectedHists(const char* bp =0);
    void ShowSelectedHists(TList *, const char* title =0);
    void StackSelectedHists(const char* bp =0);
-   void StackSelectedHists(TList *, const char* title =0);
+//	void StackSelectedHistsScaled(const char* bp =0);
+	void StackSelectedHists(TList *, const char* title =0);
    void ShowInOneCanvas(const char* bp =0);
    void StackInOneCanvas(const char* bp =0);
    void ShowTree(const char*, const char*, const char*, const char* bp =0);

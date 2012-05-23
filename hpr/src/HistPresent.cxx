@@ -351,6 +351,10 @@ void HistPresent::RecursiveRemove(TObject * obj)
 //      fCloseWindowsButton->SetMethod("gHpr->CloseAllCanvases();");
 //      cout << "------> HistPresent: all canvases closed" << endl;
 //   }
+	if ( obj == fFileList ) {
+		fFileList = NULL;
+	}
+
    fAllCuts->Remove(obj);
    fAllWindows->Remove(obj);
    fAllFunctions->Remove(obj);
@@ -476,7 +480,13 @@ void HistPresent::ShowMain()
    b->SetToolTipText(
    "Stackselected histograms",hint_delay);
    y-=dy;
-
+/*	cmd = "gHpr->StackSelectedHistsScaled()";
+	tit = "Stack sel hists scaled";
+	b = CommandButton(cmd,tit,x0,y,x1,y+dy);
+	b->SetToolTipText(
+	"Stack selected histograms with a scale applied to each",hint_delay);
+	y-=dy;*/
+	
    cmd = "gHpr->ShowSelectedHists()";
    tit = "Show selected hists";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
@@ -989,7 +999,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             anything_to_delete++;
          } else {
             if (not_shown <= 0){
-               cout << setred << "Too many entries in list: " << nstat << endl;
+               cout << setred << "Too many entries in list: " << endl;
                cout << "this might crash X, please use selection mask"<< endl;
                cout << "to reduce number of entries below: " <<  GeneralAttDialog::fMaxListEntries  << endl;
                cout << "On your own risk you may increase value beyond: " << GeneralAttDialog::fMaxListEntries << endl;
@@ -1088,11 +1098,12 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 					anything_to_delete++;
 				} else {
 					if (not_shown <= 0){
-						cout << setred << "Too many entries in list: " << nstat << endl;
-						cout << "this might crash X, please use selection mask"<< endl;
-						cout << "to reduce number of entries below: " <<  GeneralAttDialog::fMaxListEntries  << endl;
+						cout << setred << endl<< 
+						"Too many entries in list this might crash X." << endl;
+						cout << "Please use selection mask to reduce number of entries below: " 
+						<<  GeneralAttDialog::fMaxListEntries  << endl;
 						cout << "On your own risk you may increase value beyond: " << GeneralAttDialog::fMaxListEntries << endl;
-						cout << "WARNING: not all hists will be shown" << setblack << endl;
+						cout << "WARNING: not all canvases will be shown" << setblack << endl;
 					}
 					not_shown++;
 					//            cout << "Not shown: " << stent->GetName() << endl;
@@ -3220,6 +3231,12 @@ void HistPresent::StackSelectedHists(const char *bp)
    StackSelectedHists(fSelectHist);
 }
 //_______________________________________________________________________
+/*
+void HistPresent::StackSelectedHistsScaled(const char *bp)
+{
+	StackSelectedHists(fSelectHist," ", 1);
+}*/
+//_______________________________________________________________________
 
 void HistPresent::StackSelectedHists(TList * hlist, const char* title)
 {
@@ -3233,11 +3250,11 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
          continue;
       } else {
 			if (gDebug > 0)
-				cout << "StackSelectedHists  " << hist->GetName() << endl;
+				cout << "StackSelectedHists  " << hist->GetName()<< " " << hist << endl;
          hl.Add(hist);
       }
    }
-   new HprStack(&hl);
+   new HprStack(&hl, GeneralAttDialog::fScaleStack);
 }
 //_______________________________________________________________________
 
@@ -3383,7 +3400,9 @@ void HistPresent::DinA4Page(Int_t form)
 
 void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* name, const char* bp)
 {
-   cout << "ShowCanvas: " << fname << " " << dir << " " << name << endl;
+//	static Int_t seqnr = 0;
+	if (gDebug > 0)
+		cout << "ShowCanvas: " << fname << " " << dir << " " << name << endl;
    TString sname(name);
    HTCanvas *c = NULL;
    if (strstr(fname,".root")) {
@@ -3391,11 +3410,8 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       fRootFile=new TFile(fname);
       if (strlen(dir) > 0) fRootFile->cd(dir);
       c = (HTCanvas*)gDirectory->Get(sname);
-		if ( gROOT->GetListOfCanvases()->FindObject(c->GetName()) != NULL ) {
-			cout << "sname exists already, please close" << endl;
-			gDirectory = gROOT;
-			return;
-		}
+		c->SetName(sname);
+		
    } else {
       c=(HTCanvas*)gROOT->GetListOfCanvases()->FindObject(sname);
    }
@@ -3411,10 +3427,26 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       TList * logr = new TList();
       TList * lohi = new TList();
       c->Draw();
-	   c->cd();
+		c->SetWindowPosition(WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury);
+		WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
+		WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
+		WindowSizeDialog::fNwindows++;
+		c->cd();
       Int_t ngr = FindGraphs(gPad, logr);
-      if (ngr > 0)
+		
+      if (ngr > 0) {
 		   gStyle->SetOptStat(0);
+/*			TObject *objg;
+			TIter nextgr(c->GetListOfPrimitives());
+			while ( (objg = nextgr()) ) {
+				if ( objg->InheritsFrom("TGraph") ) {
+					TString opt=((TGraph*)objg)->GetDrawOption();
+					cout << "opt: " << opt << endl;
+//					if( opt.Length() <=0 )
+						((TGraph*)objg)->SetDrawOption("AL");
+				}
+			}*/
+		}
 		if ( c->GetListOfExecs() )
 			c->GetListOfExecs()->Clear();
       if (c->GetAutoExec())
@@ -3434,7 +3466,9 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 //		c->SetWindowSize(ww, wh);
 		c->Modified();
 		c->Update();
-      delete logr;
+		logr->Clear("nodelete");
+		lohi->Clear("nodelete");
+		delete logr;
       delete lohi;
 		return;
    } else {

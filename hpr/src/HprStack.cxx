@@ -31,12 +31,18 @@ enum EGoHCommandIds {
 };
 //________________________________________________________________________
 
-HprStack::HprStack(TList * hlist)
+HprStack::HprStack(TList * hlist, Int_t scaled)
             : fHList(hlist)
 {
-//   cout << " ctor HprStack::" << this << endl;
+	static const Char_t helptext[] =
+	"Apply scale to stacked histograms\n\
+	Please consult: http://root.cern.ch/root/html532/TH1.html#TH1:Scale\n\
+	";
+	
+	//   cout << " ctor HprStack::" << this << endl;
    fCanvas = NULL;
    fDialog = NULL;
+	fScaled = scaled;
 //
    fNhists = fHList->GetSize();
 //   TH1* hist = 0;
@@ -59,7 +65,37 @@ HprStack::HprStack(TList * hlist)
    fMarkerSize = new Size_t[fNhists];
 	fMinScale   = new Double_t[fNhists];
 	fMaxScale   = new Double_t[fNhists];
-   RestoreDefaults();
+	
+	fScales   = new Double_t[fNhists];
+	fColorW    = new Color_t[fNhists];
+	RestoreDefaults();
+	
+	TString hname_com;
+	TH1  *hist;
+	Int_t dummy;
+	if ( scaled > 0 ) {
+		fRow_labW = new TList();
+		Int_t ind = 0;
+	//	static Int_t dummy = 0;
+		for(Int_t i=0; i<fNhists; i++) {
+//			fScales[i] = 1.;
+			hist = (TH1*)fHList->At(i);
+			hname_com = "CommentOnly_";
+			hname_com += hist->GetName();
+			fRow_labW->Add(new TObjString(hname_com));
+			fValpW[ind++] = &dummy;
+			fRow_labW->Add(new TObjString("DoubleValue+Scale"));
+			fValpW[ind++] = &fScales[i];
+			fRow_labW->Add(new TObjString("ColorSelect+Color"));
+			fValpW[ind++] = &fColorW[i];
+		}
+		Int_t itemwidth = 420;
+		static Int_t ok = -2;   // wait until closed
+		fDialogW =
+		new TGMrbValuesAndText ("Scale histos", NULL, &ok, itemwidth,
+										NULL, NULL, NULL, fRow_labW, fValpW,
+										NULL, NULL, helptext);
+	}								
    gROOT->GetList()->Add(this);
    gROOT->GetListOfCleanups()->Add(this);
    BuildCanvas();
@@ -91,9 +127,10 @@ void HprStack::BuildCanvas()
    fStack = new THStack("hstack","");
 //   cout << "THStack *st = (THStack*)" <<  fStack << endl;
    fNDrawn = 0;
-   TH1 *hist;
+   TH1 *orig_hist, *hist;
    for(Int_t i=0; i<fNhists; i++) {
-      hist = (TH1*)fHList->At(i);;
+      orig_hist = (TH1*)fHList->At(i);
+		hist = (TH1*)orig_hist->Clone();
       if (!hist) {
 //         cout << " Hist not found at: " << i << endl;
          continue;
@@ -117,7 +154,12 @@ void HprStack::BuildCanvas()
       Int_t last_us = hname.Last(';');    // chop off version
       if (last_us >0) hname.Remove(last_us);
       hist->SetName(hname);
-      fStack->Add(hist);
+		if ( fScaled > 0 ) {
+			hist->Scale(fScales[i]);
+		   cout << "TH1 *hist = (TH1*)" <<  hist << ";// added with scale: " 
+		   << fScales[i] << endl;
+		}
+		fStack->Add(hist);
       fNDrawn ++;
       stitle += hist->GetName();
       if ( i < fNhists - 1 ) stitle += "_";
@@ -176,6 +218,8 @@ HprStack::~HprStack()
 	delete [] fMarkerSize;
 	delete [] fMinScale;
 	delete [] fMaxScale;
+	delete [] fScales;
+	delete [] fColorW;
 }
 //________________________________________________________________________
 
@@ -257,7 +301,7 @@ of \"One pad for each\"\n\
 \n\
 ";
    fRow_lab = new TList();
-	static void *fValp[50];
+//	static void *fValp[50];
 	Int_t ind = 0;
 //	static Int_t dummy = 0;
    fRow_lab->Add(new TObjString("RadioButton_Really stack"));
@@ -366,8 +410,10 @@ void HprStack::RestoreDefaults()
 
       lab = "HprStack.fLineColor["; lab+=i; lab+="]";
       fLineColor[i] = i+2;
-      if (env.Lookup(lab))
+      if (env.Lookup(lab)){
          fLineColor[i]  = env.GetValue(lab, 0);
+			fColorW[i] =  fLineColor[i];
+		}
       lab = "HprStack.fLineStyle["; lab+=i; lab+="]";
       fLineStyle[i] = 1;
       if (env.Lookup(lab))
@@ -389,7 +435,11 @@ void HprStack::RestoreDefaults()
       fMarkerSize[i] = 1;
       if (env.Lookup(lab))
          fMarkerSize[i]  = env.GetValue(lab, 0);
-   }
+		lab = "HprStack.fScales["; lab+=i; lab+="]";
+		fScales[i] = 1.;
+		if (env.Lookup(lab))
+			fScales[i]  = env.GetValue(lab, 1.);
+	}
 }
 //_______________________________________________________
 
@@ -431,9 +481,11 @@ void HprStack::SaveDefaults()
       env.SetValue(lab,fMarkerStyle[i]);
       lab = "HprStack.fMarkerSize["; lab+=i; lab+="]";
       env.SetValue(lab,fMarkerSize[i]);
-  }
-  GeneralAttDialog::SaveDefaults();
-   env.SaveLevel(kEnvLocal);
+		lab = "HprStack.fScales["; lab+=i; lab+="]";
+		env.SetValue(lab,fScales[i]);
+	}
+	GeneralAttDialog::SaveDefaults();
+	env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
 

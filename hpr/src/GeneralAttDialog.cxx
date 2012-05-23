@@ -30,6 +30,7 @@ Int_t GeneralAttDialog::fMaxListEntries = 333;
 Int_t GeneralAttDialog::fContentLowLimit = 0;
 Int_t GeneralAttDialog::fVertAdjustLimit =0;
 Int_t GeneralAttDialog::fStackedReally = 1;
+Int_t GeneralAttDialog::fScaleStack = 1;
 Int_t GeneralAttDialog::fStackedNostack = 0;
 Int_t GeneralAttDialog::fStackedPads = 0;
 TString GeneralAttDialog::fGlobalStyle = "Plain";
@@ -159,10 +160,12 @@ ____________________________________________________________\n\
 	fRow_lab->Add(new TObjString("PlainIntVal_    Fit2Dim Vertical Adjust Limit"));
 	fValp[ind++] = &fVertAdjustLimit;
 
-   fRow_lab->Add(new TObjString("CommentOnly_Display option for stacked hists"));
-   fValp[ind++] = &fStackedReally;
-   fRow_lab->Add(new TObjString("RadioButton_ Really stack"));
-   fValp[ind++] = &fStackedReally;
+   fRow_lab->Add(new TObjString("CommentOnly_Option for stacked hists"));
+   fValp[ind++] = &fScaleStack;
+   fRow_lab->Add(new TObjString("CheckButton_Apply scale to stacked hists"));
+	fValp[ind++] = &fScaleStack;
+	fRow_lab->Add(new TObjString("RadioButton_ Really stack"));
+	fValp[ind++] = &fStackedReally;
    fRow_lab->Add(new TObjString("RadioButton+  Superimpose"));
    fValp[ind++] = &fStackedNostack;
    fRow_lab->Add(new TObjString("RadioButton+Separate Pads"));
@@ -213,7 +216,8 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fVertAdjustLimit", fVertAdjustLimit);
    env.SetValue("GeneralAttDialog.fContentLowLimit", fContentLowLimit);
    env.SetValue("GeneralAttDialog.fStackedReally" , fStackedReally );
-   env.SetValue("GeneralAttDialog.fStackedNostack", fStackedNostack);
+	env.SetValue("GeneralAttDialog.fScaleStack" , fScaleStack );
+	env.SetValue("GeneralAttDialog.fStackedNostack", fStackedNostack);
    env.SetValue("GeneralAttDialog.fStackedPads"   , fStackedPads   );
 	env.SetValue("GeneralAttDialog.fPrependFilenameToTitle", fPrependFilenameToTitle);
 	env.SetValue("GeneralAttDialog.fPrependFilenameToName", fPrependFilenameToName);
@@ -242,8 +246,9 @@ void GeneralAttDialog::RestoreDefaults()
    env.GetValue("GeneralAttDialog.fMaxListEntries", 333);
    fVertAdjustLimit = env.GetValue("GeneralAttDialog.fVertAdjustLimit", 0);
    fContentLowLimit = env.GetValue("GeneralAttDialog.fContentLowLimit", 0);
-   fStackedReally   = env.GetValue("GeneralAttDialog.fStackedReally" , 1);
-   fStackedNostack  = env.GetValue("GeneralAttDialog.fStackedNostack", 0);
+   fScaleStack      = env.GetValue("GeneralAttDialog.fScaleStack" , 0);
+	fStackedReally   = env.GetValue("GeneralAttDialog.fStackedReally" , 1);
+	fStackedNostack  = env.GetValue("GeneralAttDialog.fStackedNostack", 0);
    fStackedPads     = env.GetValue("GeneralAttDialog.fStackedPads"   , 0);
 	fPrependFilenameToTitle = env.GetValue("GeneralAttDialog.fPrependFilenameToTitle"   , 0);
 	fPrependFilenameToName = env.GetValue("GeneralAttDialog.fPrependFilenameToName", 1);

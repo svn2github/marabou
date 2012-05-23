@@ -27,6 +27,14 @@ private:
    Int_t fDim;
    THStack *fStack;
    TGMrbValuesAndText *fDialog;
+	
+	Int_t    fScaled;
+	Double_t *fScales;
+	void *fValpW[100];
+	TList *fRow_labW;
+	Color_t  *fColorW;
+	TGMrbValuesAndText *fDialogW;
+	
    TCanvas    *fCanvas;
    TList       fHistList;
    TGPopupMenu *fMenu;
@@ -57,7 +65,7 @@ private:
    TString fErrorMode;
 	Int_t   fSameScale;
 public:
-   HprStack(TList * hlist);
+   HprStack(TList * hlist, Int_t weighted = 0);
    HprStack(){};
    ~HprStack();
    void   BuildCanvas();

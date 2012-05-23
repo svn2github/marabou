@@ -1106,12 +1106,19 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
    TString name, fn, entry;
    TIter next(list);
    TObjString * sel;
+	TRegexp space(" +");
+	
    while ( (sel = (TObjString*)next()) ) {
    	name = sel->GetString();
-		cout << "DeleteOnFile " << fname << " entry: " << name << endl;
+		if (gDebug > 0)
+		cout << "DeleteOnFile " << endl << "fname: " << fname << endl<< "entry: " << name << endl;
    	if (name.BeginsWith(fname)) {
 			Ssiz_t pos = 0,slen;
 			Bool_t ok;
+			while ( name.Contains(" ") ) {
+				name(space) = ",";
+			}
+			
 			const Char_t * del = ",";
 			ok = name.Tokenize(fn,pos, del);
 			if ( ok ) {
@@ -1243,6 +1250,7 @@ TGraph * FindGraph(TVirtualPad * ca)
    return gr;
 };
 //_______________________________________________________________________________________
+
 Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads)
 {
 	if (!ca) return -1;
@@ -1253,24 +1261,24 @@ Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads)
 			ngr++;
 			if (logr) logr->Add(obj);
 			if (pads) pads->Add(ca);
-	}
-}
-// look for subpads
-TIter next1(ca->GetListOfPrimitives());
-while (TObject * obj = next1()) {
-	if (obj->InheritsFrom("TPad")) {
-		TPad * p = (TPad*)obj;
-		TIter next2(p->GetListOfPrimitives());
-		while (TObject * obj = next2()) {
-			if (obj->InheritsFrom("TGraph")) {
-				ngr++;
-				if (logr) logr->Add(obj);
-				if (pads) pads->Add(p);
 		}
-}
-}
-}
-return ngr;
+	}
+	// look for subpads
+	TIter next1(ca->GetListOfPrimitives());
+	while (TObject * obj = next1()) {
+		if (obj->InheritsFrom("TPad")) {
+			TPad * p = (TPad*)obj;
+			TIter next2(p->GetListOfPrimitives());
+			while (TObject * obj = next2()) {
+				if (obj->InheritsFrom("TGraph")) {
+					ngr++;
+					if (logr) logr->Add(obj);
+					if (pads) pads->Add(p);
+				}
+			}
+		}
+	}
+	return ngr;
 };
 //_______________________________________________________________________________________
 Int_t FindObjs(TVirtualPad * ca, TList * logr, TList * pads, const char * oname)
