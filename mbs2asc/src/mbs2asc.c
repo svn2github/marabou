@@ -25,6 +25,7 @@
 #define CAEN_V7X5_B_UNDERTHRESH 				(0x1 << 13)
 
 #define CAEN_V7X5_N_MAXEVENTS					32
+#define CAEN_V7X5_N_MAXCHAN						32
 
 #define MADC_SH_CHN							16
 #define MADC_SH_SERIAL						16
@@ -49,6 +50,8 @@
 #define MADC_M_RES2K			 			0x000007FF
 #define MADC_M_RES4K			 			0x00000FFF
 #define MADC_M_RES8K			 			0x00001FFF
+
+#define MADC_N_MAXCHN						32
 
 enum 	{	kMrbSevt_Sis_B_Header 			=	(0x1 << 15) };
 enum 	{	kMrbSevt_Sis_M_ModuleNumber		=	0xFF		};
@@ -185,6 +188,9 @@ const char * madcChnFmt = "%-6s%-6s%8d%8d";
 const char * madcXtsFmt = "%-6s%-6s%16u";
 const char * madcEoe1Fmt = "%-6s%-6s%16u";
 const char * madcEoe2Fmt = "%-6s%-6s%16u%16u";
+const char * madcSkpEoeFmt = "%-6s%-6s%016x";
+const char * madcSkpXtsFmt = "%-6s%-18s%04x";
+const char * madcSkipFmt = "%-6s%-6s%#16x%16u";
 
 int main(int argc, char * argv[]) {
 /*_______________________________________________________________________________________________[MAIN]
@@ -839,7 +845,7 @@ int processSubevent_caen(MBSDataIO * mbs) {
 		}
 		int wc = (header >> CAEN_V7X5_SH_WC) & CAEN_V7X5_M_WC;				/* extract wc */
 		int wcs = wc;
-		if (wc < 0 || wc > 32) {				/* max 32 data words */
+		if (wc < 0 || wc > CAEN_V7X5_N_MAXCHAN) {				/* max 32 data words */
 			printf("?-WRGHWC-[processSubevent_caen]- Wrong header word count - %d\n", wc);
 			fprintf(stderr, "?-WRGHWC-[processSubevent_caen]- Wrong header word count - %d\n", wc);
 		}
@@ -882,10 +888,10 @@ int processSubevent_caen(MBSDataIO * mbs) {
 					wcs -= wc;
 					break;
 					if (moduleNumber <= 0) {
-			printf("?-WRGMOD-[processSubevent_caen]- Wrong module number - %d\n", moduleNumber);
-			nofErrors++;
-		}
-	} else {
+						printf("?-WRGMOD-[processSubevent_caen]- Wrong module number - %d\n", moduleNumber);
+						nofErrors++;
+					}
+			 } else {
 					printf("?-WRGDAT-[processSubevent_caen]- Wrong data - %#x\n", data);
 					nofErrors++;
 					return(kTRUE);
@@ -950,7 +956,7 @@ int processSubevent_madc(MBSDataIO * mbs) {
 	int sevtWC;
 	int origSevtWC;
 	int wordsProcessed;
-	int header;
+	unsigned int header;
 	int moduleNumber;
 	int res;
 	int wc, wcs;
@@ -975,7 +981,45 @@ int processSubevent_madc(MBSDataIO * mbs) {
 		if ((header & MADC_M_ID) != MADC_D_HDR) {
 			printf("?-WRGHDR-[processSubevent_madc]- Wrong header - %#lx\n", header);
 			nofErrors++;
-			return(kTRUE);
+			printf("?-SKPDAT-[processSubevent_madc]- Skipping data\n");
+			for (i = 0; i < MADC_N_MAXCHN + 3; i++) {
+			  	data = (*dataPtr++ << 16);
+				data |= *dataPtr++;
+				sevtWC--;
+				switch (data & MADC_M_ID) {
+					case MADC_D_HDR: break;
+					case MADC_D_EOE:
+						printf(madcSkpEoeFmt, "MADC", "EOE", data & MADC_M_TSLOW);
+						if (verboseMode == kTRUE) {
+							printf("%48s # %04x %04x", "", (data >> 16) & 0xFFFF, data & 0xFFFF);
+						}
+						printf(" *SKIPPED*\n");
+						break;
+					case MADC_D_DATA:
+						if ((data & MADC_M_XTS) == MADC_D_XTS) {
+							printf(madcSkpXtsFmt, "MADC", "XTS", data & MADC_M_TSHIGH);
+							if (verboseMode == kTRUE) {
+								printf("%48s # %04x %04x", "", (data >> 16) & 0xFFFF, data & 0xFFFF);
+							}
+						} else {
+							chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
+							data16 = data & 0xFFFF;
+							printf(madcChnFmt, "MADC", "CHN", chn, data16);
+							if (verboseMode == kTRUE) {
+								printf("%48s # %04x %04x", "", (data >> 16) & 0xFFFF, data & 0xFFFF);
+							}
+						}
+						printf(" *SKIPPED*\n");
+						break;
+				}
+				if ((data & MADC_M_ID) == MADC_D_HDR) break;
+			}
+			if ((data & MADC_M_ID) != MADC_D_HDR) {
+				printf("?-OOPHAS-[processSubevent_madc]- Out of phase - giving up\n");
+				return(kTRUE);
+			}
+			dataPtr -= 2;
+			continue;
 		}
 
 		moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;		/* extract module id */
@@ -1011,9 +1055,47 @@ int processSubevent_madc(MBSDataIO * mbs) {
 		trailer |= *trailPtr++;
 
 		if ((trailer & MADC_M_ID) != MADC_D_EOE) {
-			printf("?-WRGHDR-[processSubevent_madc]- Wrong EOE - %#lx\n", trailer);
+			printf("?-WRGEOE-[processSubevent_madc]- Wrong EOE - expecting id=%#x, found id=%#lx\n", MADC_D_EOE, trailer & MADC_M_ID);
 			nofErrors++;
-			return(kTRUE);
+			printf("?-SKPDAT-[processSubevent_madc]- Skipping data\n");
+			for (i = 0; i < MADC_N_MAXCHN + 3; i++) {
+			  	data = (*dataPtr++ << 16);
+				data |= *dataPtr++;
+				sevtWC--;
+				switch (data & MADC_M_ID) {
+					case MADC_D_HDR: break;
+					case MADC_D_EOE:
+						printf(madcSkpEoeFmt, "MADC", "EOE", data & MADC_M_TSLOW);
+						if (verboseMode == kTRUE) {
+							printf("%48s # %04x %04x", "", (data >> 16) & 0xFFFF, data & 0xFFFF);
+						}
+						printf(" *SKIPPED*\n");
+						break;
+					case MADC_D_DATA:
+						if ((data & MADC_M_XTS) == MADC_D_XTS) {
+							printf(madcSkpXtsFmt, "MADC", "XTS", data & MADC_M_TSHIGH);
+							if (verboseMode == kTRUE) {
+								printf("%48s # %04x %04x", "", (data >> 16) & 0xFFFF, data & 0xFFFF);
+							}
+						} else {
+							chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
+							data16 = data & 0xFFFF;
+							printf(madcChnFmt, "MADC", "CHN", chn, data16);
+							if (verboseMode == kTRUE) {
+								printf("%48s # %04x %04x", "", (data >> 16) & 0xFFFF, data & 0xFFFF);
+							}
+						}
+						printf(" *SKIPPED*\n");
+						break;
+				}
+				if ((data & MADC_M_ID) == MADC_D_HDR) break;
+			}
+			if ((data & MADC_M_ID) != MADC_D_HDR) {
+				printf("?-OOPHAS-[processSubevent_madc]- Out of phase - giving up\n");
+				return(kTRUE);
+			}
+			dataPtr -= 2;
+			continue;
 		}
 		wc--;								/* - trailer word */
 
@@ -1578,6 +1660,7 @@ void writeHeader(int argc, char * argv[]) {
 	printf("#                              printf(\"%s # %%s\\n\", ...);\n", madcXtsFmt);
 	printf("#            [Madc32:EoE]      MADC  EOE <timeStamp> [<ts64>]# <comments>\n");
 	printf("#                              printf(\"%s # %%s\\n\", ...);\n", madcEoe2Fmt);
+	printf("#            [Madc32:Skip]     MADC  SKIP <data16> <data10>\n");
 }
 
 unsigned long long calcTime48(unsigned short t48, unsigned short t32, unsigned short t16) {

@@ -52,7 +52,7 @@ MADC32.$moduleName.DataWidth:			$dataWidth
 
 # multievent            0  -->  no / single event
 #                       1  -->  yes
-#                       3  -->  xfer event by event
+#                       3  -->  limited amount of data
 #						5  -->  same as 1, but BERR turned off
 MADC32.$moduleName.MultiEvent:			$multiEvent
 

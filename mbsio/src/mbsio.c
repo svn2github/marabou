@@ -2744,11 +2744,11 @@ int _mbs_connect_to_server(char * host, unsigned int server_type) {
 	sa.sin_family = hp->h_addrtype;
 	sa.sin_port = htons(port);
 	if((s = socket(hp->h_addrtype, SOCK_STREAM, 0)) < 0) {
-		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d)", strerror(errno), errno);
+		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d), socket=%d", strerror(errno), errno, port);
 		return(-1);
 	}
 	if(connect(s, (struct sockaddr *) &sa, sizeof sa) < 0) {
-		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d)", strerror(errno), errno);
+		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d), socket=%d", strerror(errno), errno, port);
 		return(-1);
 	}
 	return(s);

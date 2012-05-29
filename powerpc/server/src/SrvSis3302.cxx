@@ -64,7 +64,7 @@ Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 	Int_t boardId, majorVersion, minorVersion;
 	UInt_t address;
 	Int_t addrSpace;
-	
+
 	if (!this->GetModuleInfo(Module, boardId, majorVersion, minorVersion, kTRUE)) return(kFALSE);
 	if (boardId != 3302) {
 		gMrbLog->Err()	<< "[" << Module->GetName()
@@ -766,13 +766,13 @@ Bool_t SrvSis3302::CheckAddressSpace(SrvVMEModule * Module, Bool_t PrintFlag) {
 	Int_t status;
 	Bool_t reduced;
 	volatile ULong_t * firmWare;
-	
+
 	firmWare = (volatile ULong_t *) Module->MapAddress(this->CA(SIS3302_MODID));
 	if (firmWare == NULL) return(kFALSE);
 	gSignalTrap = kFALSE;
 	ULong_t ident = *firmWare;
 	if (this->CheckBusTrap(Module, this->CA(SIS3302_MODID), "CheckAddressSpace")) return(kFALSE);
-	
+
 	if ((ident & 0xFFFF) >= 0x1410) {
 		if (!this->ReadControlStatus(Module, status)) return(kFALSE);
 		reduced = (status & kSis3302AddressSpaceReduced) != 0;
@@ -781,7 +781,7 @@ Bool_t SrvSis3302::CheckAddressSpace(SrvVMEModule * Module, Bool_t PrintFlag) {
 	}
 	this->SetReduced(reduced);
 	if (reduced) Module->SetSegmentSize(kSis3302SegSizeReduced);
-	
+
 	if (PrintFlag) {
 		if (reduced) {
 			gMrbLog->Out()	<< "Using REDUCED address space (16MB)" << endl;
@@ -1630,7 +1630,7 @@ Bool_t SrvSis3302::SetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t
 	}
 
 	Int_t data;
-	
+
 	if (!this->ReadEventConfig(Module, data, ChanNo)) return(kFALSE);
 
 	UInt_t mask = (ChanNo & 1) ? (kSis3302PolarityNegative << 8) : kSis3302PolarityNegative;
@@ -4120,7 +4120,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 
 	volatile Int_t * mappedAddr = (volatile Int_t *) Module->MapAddress(this->CA(startAddr));
 	if (mappedAddr == NULL) return(kFALSE);
-	
+
 	gSignalTrap = kFALSE;
 
 
@@ -4130,8 +4130,8 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 	Int_t k = kSis3302EventPreHeader;
 	for (Int_t evtNo = evtFirst; evtNo <= evtLast; evtNo++) {
 
-		Int_t * mappedAddrSaved = mappedAddr;
-		
+		volatile Int_t * mappedAddrSaved = mappedAddr;
+
 		for (Int_t i = 0; i < kSis3302EventHeader; i++, k++) Data[k] = *mappedAddr++;			// event header: 32bit words
 
 		for (Int_t i = 0; i < rdl / 2; i++, k += 2) {			// raw data: fetch 2 samples packed in 32bit, store each in a single 32bit word
@@ -4502,10 +4502,10 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 	} else {
 		fileName = File;
 	}
-		
+
 	gMrbLog->Out() << "[" << Module->GetName() << "] Dumping registers to file " << fileName.Data() << " ..." << endl;
 	gMrbLog->Flush(this->ClassName(), "DumpRegisters");
-	
+
 	ofstream dmp;
 	dmp.open(fileName.Data(), ios::out);
 	if (!dmp.good()) {
@@ -4540,7 +4540,7 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 	}
 	dmp << endl;
 
-	for (chn = 0; chn < kSis3302NofChans; chn++) {
+	for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
 		this->GetTriggerMode(Module, bits, chn);
 		dmp << "Trigger mode chn" << chn << "                 : 0x" << setbase(16) << bits << endl;
 		this->GetGateMode(Module, bits, chn);
@@ -4555,7 +4555,7 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 	}
 
 	chn = 0;
-	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+	for (Int_t grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
 		Int_t delay;
 		this->ReadPreTrigDelay(Module, delay, chn);
 		dmp << "Pretrigger delay    grp" << grp << "(" << (chn+1) << (chn+2) << "): " << delay << endl;
@@ -4566,7 +4566,7 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 	}
 
 	chn = 0;
-	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+	for (Int_t grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
 		Int_t sample;
 		this->ReadRawDataSampleLength(Module, sample, chn);
 		dmp << "Raw data sample length grp" << grp << "(" << (chn+1) << (chn+2) << "): " << sample << endl;
@@ -4576,7 +4576,7 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 		dmp << endl;
 	}
 
-	for (chn = 0; chn < kSis3302NofChans; chn++) {
+	for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
 		Int_t peak, gap;
 		this->ReadTriggerPeakAndGap(Module, peak, gap, chn);
 		dmp << "Trigger peak time        chn" << chn << ": " << peak << endl;
@@ -4596,7 +4596,7 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 		dmp << endl;
 	}
 
-	for (chn = 0; chn < kSis3302NofChans; chn++) {
+	for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
 		Int_t thresh;
 		this->ReadTriggerThreshold(Module, thresh, chn);
 		dmp << "Trigger threshold        chn" << chn << ": " << thresh << endl;
@@ -4607,9 +4607,9 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 		dmp << "Trigger OUT              chn" << chn << ": " << (trig ? "TRUE" : "FALSE") << endl;
 		dmp << endl;
 	}
-	
+
 	chn = 0;
-	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+	for (Int_t grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
 		Int_t peak, gap;
 		this->ReadEnergyPeakAndGap(Module, peak, gap, chn);
 		dmp << "Energy peak time       grp" << grp << "(" << (chn+1) << (chn+2) << "): " << peak << endl;
@@ -4621,7 +4621,7 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 	}
 
 	chn = 0;
-	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+	for (Int_t grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
 		Int_t gate;
 		this->ReadEnergyGateLength(Module, gate, chn);
 		dmp << "Energy gate length     grp" << grp << "(" << (chn+1) << (chn+2) << "): " << gate << endl;
@@ -4632,7 +4632,7 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 	}
 
 	chn = 0;
-	for (grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
+	for (Int_t grp = 0; grp < kSis3302NofGroups; grp++, chn += 2) {
 		Int_t sample;
 		this->ReadEnergySampleLength(Module, sample, chn);
 		dmp << "Energy sample length   grp" << grp << "(" << (chn+1) << (chn+2) << "): " << setbase(16) << sample << endl;
@@ -4646,13 +4646,13 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 		dmp << endl;
 	}
 
-	for (chn = 0; chn < kSis3302NofChans; chn++) {
+	for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
 		Int_t tau;
 		this->ReadTauFactor(Module, tau, chn);
 		dmp << "Energy tau factor      chn" << chn << ": " << tau << endl;
 	}
 	dmp << endl;
-	
+
 	dmp.close();
 
 	return(kTRUE);

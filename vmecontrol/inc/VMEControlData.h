@@ -47,7 +47,7 @@ enum						{	kEntryWidth			= kFrameWidth/4			};
 enum						{	kButtonWidth		= kFrameWidth/8			};
 enum						{	kButtonHeight		= kLEHeight				};
 
-enum						{	kVMENofPPCs 		= 20					};
+enum						{	kVMENofPPCs 		= 30					};
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
