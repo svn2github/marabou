@@ -188,8 +188,8 @@ const char * madcChnFmt = "%-6s%-6s%8d%8d";
 const char * madcXtsFmt = "%-6s%-6s%16u";
 const char * madcEoe1Fmt = "%-6s%-6s%16u";
 const char * madcEoe2Fmt = "%-6s%-6s%16u%16u";
-const char * madcSkpEoeFmt = "%-6s%-6s%016x";
-const char * madcSkpXtsFmt = "%-6s%-18s%04x";
+const char * madcSkpEoeFmt = "%-6s%-12s%#010x";
+const char * madcSkpXtsFmt = "%-6s%-12s%#010x";
 const char * madcSkipFmt = "%-6s%-6s%#16x%16u";
 
 int main(int argc, char * argv[]) {
