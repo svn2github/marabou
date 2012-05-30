@@ -15,6 +15,7 @@
 #include <math.h>
 #include <string.h>
 #include <allParam.h>
+#include <ces/uiocmd.h>
 #include <ces/bmalib.h>
 #include <errno.h>
 #include <sigcodes.h>
@@ -35,6 +36,7 @@ int numData;
 int rdoWc;
 int evtWc;
 int lastData;
+
 struct s_madc32 * s_sav;
 
 char msg[256];
@@ -783,9 +785,18 @@ void madc32_enable_bma(struct s_madc32 * s)
 
 	if (s->blockXfer == MADC32_BLT_NORMAL) {
 		s->bltBufferSize = s->memorySize;
-		s->bltBuffer = calloc(s->memorySize, sizeof(uint32_t));
+/*		s->bltBuffer = calloc(s->memorySize, sizeof(uint32_t)); */
 
 		bmaError = bma_open();
+		if (bmaError != 0) {
+			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			s->blockXfer = MADC32_BLT_OFF;
+			bma_close();
+			return;
+		}
+
+		bmaError = uio_calloc(&s->bmaBuf, s->memorySize * sizeof(uint32_t));
 		if (bmaError != 0) {
 			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -861,20 +872,21 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	numData = (int) madc32_getFifoLength(s);
 
 	if (s->blockXfer == MADC32_BLT_NORMAL) {
-		bmaError = bma_read((unsigned long) s->vmeAddr + MADC32_DATA, s->bltDestination, numData, BMA_DEFAULT_MODE);
+		bmaError = bma_read(s->vmeAddr + MADC32_DATA, s->bmaBuf.paddr | 0x80000000, numData, 0);
+/*		bmaError = bma_read(s->vmeAddr + MADC32_DATA, s->bltDestination, numData, BMA_DEFAULT_MODE); */
 		if (bmaError != 0) {
-			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data", s->mpref, s->moduleName, sys_errlist[errno], errno);
+			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, sys_errlist[errno], errno, numData);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
 
-		bmaError = bma_wait(BMA_DEFAULT_MODE);
+/*		bmaError = bma_wait(BMA_DEFAULT_MODE);
 		if (bmaError != 0) {
 			sprintf(msg, "[%sreadout] %s: %s (%d) while waiting for block xfer", s->mpref, s->moduleName, sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
-		}
-		memcpy(pointer, s->bltBuffer, sizeof(uint32_t) * numData);
+		} */
+		memcpy(pointer, s->bmaBuf.uaddr, sizeof(uint32_t) * numData);
 		pointer += numData;
 	} else if (s->blockXfer == MADC32_BLT_CHAINED) {
 		if (bmaResetChain(s->bma) < 0) {
@@ -1039,7 +1051,6 @@ void madc32_resetEventBuffer(struct s_madc32 * s) {
 }
 
 void catchBerr() {
-	return;
 	printf("BUS ERROR numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData);
 	if (lastData != 5) getchar();
 	lastData = 5;

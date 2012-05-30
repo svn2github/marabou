@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <allParam.h>
+#include <ces/uiocmd.h>
 #include <ces/bmalib.h>
 #include <errno.h>
 

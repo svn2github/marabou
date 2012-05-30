@@ -305,6 +305,8 @@ struct s_madc32 {
 	uint32_t bltDestination;
 	int blockXfer;
 
+	uio_mem_t bmaBuf;
+
 	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
 	uint32_t *evtp;
 	bool_t skipData;
