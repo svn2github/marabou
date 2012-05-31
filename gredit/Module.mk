@@ -54,7 +54,7 @@ $(CDLEXE):      $(CDLMAINO) $(CDLLIB) $(OCDLLIBS)
 $(GREDITLIB):     $(GREDITDO) $(GREDITO) $(MAINLIBS) $(GREDITLIBDEP)
 			@echo "Making libGrEdit $@..."
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-			"$(SOFLAGS)" libGrEdit.$(SOEXT) $@ "$(GREDITDO) $(GREDITO)"
+			"$(SOFLAGS)" libGrEdit.$(SOEXT) $@ "$(GREDITDO) $(GREDITO) $(GREDITLIBEXTRA)"
 
 $(GREDITDS):     $(GREDITH) $(GREDITL)
 		@echo "Generating dictionary: $@...."
