@@ -203,7 +203,15 @@ void FindPeakDialog::PrintList()
 			if (!gSystem->AccessPathName((const char *)fPeakListName , kFileExists)) {
 				TString question = fPeakListName;
 				question += " exists, Overwrite?";
-				if (!QuestionBox(question.Data(), fParentWindow)) return;
+//				if (!QuestionBox(question.Data(), fParentWindow)) return;
+				int buttons = kMBOk | kMBDismiss, retval = 0;
+				EMsgBoxIcon icontype = kMBIconQuestion;
+				new TGMsgBox(gClient->GetRoot(), fParentWindow,
+								 "Question", question,
+								 icontype, buttons, &retval);
+								 if (retval == kMBDismiss)
+									 return;
+								 
 			}
 			wstream.open(fPeakListName, ios::out);
 			if (!wstream.good()) {
@@ -229,14 +237,22 @@ void FindPeakDialog::ReadList()
 	TList * p
 	= (TList*)fSelHist->GetListOfFunctions()->FindObject("spectrum_peaklist");
 	if ( p && p->GetSize()  > 0 ) {
-		if (!QuestionBox("Peak list exists, add anyway?", fParentWindow)) return;
+//		if (!QuestionBox("Peak list exists, add anyway?", fParentWindow)) return;
+		int buttons = kMBOk | kMBDismiss, retval = 0;
+		EMsgBoxIcon icontype = kMBIconQuestion;
+		new TGMsgBox(gClient->GetRoot(),fParentWindow ,
+						 "Question", "Peak list exists, add anyway?",
+						 icontype, buttons, &retval);
+						 if (retval == kMBDismiss)
+							 return;
 	}
 	ifstream infile;
 	if ( fPeakListName.Length() > 0 ) {
 		if (gSystem->AccessPathName((const char *)fPeakListName , kFileExists)) {
-			TString question = fPeakListName;
-			question += " not found";
-			WarnBox(question, fParentWindow);
+//			TString question = fPeakListName;
+//			question += " not found";
+//			WarnBox(question, fParentWindow);
+			cout << setred << fPeakListName << " not found" << setblack << endl;
 			return;
 		}
 		infile.open(fPeakListName, ios::in);

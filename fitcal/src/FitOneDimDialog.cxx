@@ -342,13 +342,21 @@ Double_t gausf(Double_t * x, Double_t * par)
 FitOneDimDialog::FitOneDimDialog(TH1 * hist, Int_t type, Int_t interactive)
 {
    fInteractive = interactive;
+	fSelPad = NULL;
    fFitPeakListDone = kFALSE;
    fSelHist = hist;
+	if (fSelHist == NULL ) {
+		TObject * obj = gPad->GetCanvas()->GetClickSelected();
+		if (obj && obj->InheritsFrom("TH1") ) {
+			fSelHist = (TH1*)obj;
+			fSelPad = gPad->GetCanvas();
+		}
+	}
    fGraph = NULL;
-//   if (!fSelHist) {
-//      cout << "No hist selected" << endl;
-//      return;
-//   }
+   if (!fSelHist) {
+		cout << "No hist selected, please click on one first" << endl;
+      return;
+   }
 
    if (fSelHist && fSelHist->GetDimension() != 1) {
       cout << "Can only be used with 1-dim hist" << endl;
@@ -362,12 +370,24 @@ FitOneDimDialog::FitOneDimDialog(TH1 * hist, Int_t type, Int_t interactive)
 
 FitOneDimDialog::FitOneDimDialog(TGraph * graph, Int_t type, Int_t interactive)
 {
-   fInteractive = interactive;
+	fSelPad = NULL;
+	fInteractive = interactive;
    if (!graph) {
       cout << "No graph selected" << endl;
       return;
    }
-   fGraph = graph;
+   if (graph == NULL ) {
+		TObject * obj = gPad->GetCanvas()->GetClickSelected();
+		if (obj && obj->InheritsFrom("TGraph") ) {
+			graph = (TGraph*)obj;
+			fSelPad = gPad->GetCanvas();
+		}
+	}
+	if (!graph) {
+		cout << "No graph selected, please click on one first" << endl;
+		return;
+	}
+	fGraph = graph;
    fSelHist = graph->GetHistogram();
    if (!fSelHist) {
       cout << "Graph must be drawn" << endl;
@@ -522,7 +542,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
    fMeanError  = 0;
    fAdded      = -1;
    RestoreDefaults();
-   fSelPad = NULL;
+//   fSelPad = NULL;
    SetBit(kMustCleanup);
    fFuncName = Form("_%d", fFuncNumber);
    fFuncNumber++;
@@ -547,14 +567,16 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 
    TIter next(gROOT->GetListOfCanvases());
    TCanvas *c;
-   while ( (c = (TCanvas*)next()) ) {
-      if (c->GetListOfPrimitives()->FindObject(fName)) {
-         fSelPad = c;
-         fSelPad->cd();
-//         cout << "fSelPad " << fSelPad << endl;
-         break;
-      }
-   }
+	if ( fSelPad == NULL ) {
+		while ( (c = (TCanvas*)next()) ) {
+			if (c->GetListOfPrimitives()->FindObject(fName)) {
+				fSelPad = c;
+				fSelPad->cd();
+	//         cout << "fSelPad " << fSelPad << endl;
+				break;
+			}
+		}
+	}
    if (fSelPad == NULL) {
      cout << "fSelPad = 0!!" <<  endl;
    } else {
@@ -596,9 +618,10 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 	//   fSelHist->Dump();
 		const char * helptext = NULL;
 		Int_t itemwidth = 320;
-      TString tagname;
+		TString tagname;
+		title = fSelHist->GetName();
 		if (type == 1) {
-         title = "Gauss + background";
+         title.Prepend("Fit Gauss: ");
          itemwidth = 340;
 			helptext = helptext_gaus;
 			fFuncName.Prepend(fGausFuncName);
@@ -622,7 +645,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			row_lab->Add(new TObjString("CheckButton+Show comp'nts of fit"));
 			valp[ind++] = &fShowcof;
 		} else if (type == 2) {
-         title = "Exponential";
+         title.Prepend("Exp: ");
 			helptext = helptext_exp;
 			fFuncName.Prepend(fExpFuncName);
 	//      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
@@ -648,7 +671,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			valp[ind++] = &dummy;
 
 		} else if (type == 3) {
-         title = "Polynomial";
+			title.Prepend("Poly: ");
 			helptext = helptext_pol;
 			fFuncName.Prepend(fPolFuncName);
 			row_lab->Add(new TObjString("CommentOnly_Pol: a0 + a1*x +.."));
@@ -669,7 +692,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		      valp[ind++] = &fPolFixPar[i];
          }
 		} else if (type == 4) {
-         title = "User defined formula";
+         title.Prepend("User def form: ");
 			helptext = helptext_form;
 			fFuncName.Prepend(fFormFuncName);
 			row_lab->Add(new TObjString("CommentOnly_User defined formula"));
@@ -793,7 +816,8 @@ void FitOneDimDialog::RecursiveRemove(TObject * obj)
 
 void FitOneDimDialog::ClearFunctionList()
 {
-   TList temp;
+	Check4Reselect();
+	TList temp;
    TList *lof = fSelHist->GetListOfFunctions();
    TIter next(lof);
    TObject *obj;
@@ -987,7 +1011,8 @@ void FitOneDimDialog::PrintPeakList()
 
 Bool_t FitOneDimDialog::FitGausExecute()
 {
-  Int_t retval = 0;
+	Int_t retval = 0;
+	Check4Reselect();
    if (fGraph != NULL && fGraph->GetN() == 0) {
       new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
                 "Warning",
@@ -1041,10 +1066,11 @@ Bool_t FitOneDimDialog::FitGausExecute()
       PrintMarkers();
    }
    if ( GetMarkers() < 2 ) {
-      Int_t retval = 0;
-      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-                "Warning", "No marks set,\n use whole range" ,
-                kMBIconExclamation, kMBDismiss, &retval);
+//      Int_t retval = 0;
+//      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+//                "Warning", "No marks set,\n use whole range" ,
+//                kMBIconExclamation, kMBDismiss, &retval);
+		cout << setblue<< "Warning: No marks set, using entire range"<< setblack << endl;
 		if (fMarkers == NULL) {
 			fMarkers = new  FhMarkerList();
 			fSelHist->GetListOfFunctions()->Add(fMarkers);
@@ -1696,6 +1722,10 @@ void FitOneDimDialog::ClearMarkers() {
 //____________________________________________________________________________________
 
 Int_t  FitOneDimDialog::SetMarkers() {
+	if (fSelPad == NULL ) 
+		return 0;
+	else 
+		fSelPad->cd();
    cout << "Request " << fReqNmarks << " Markers" << endl;
    Int_t nmarks = 0;
    if (fReqNmarks <= 0) {
@@ -1726,13 +1756,15 @@ Int_t  FitOneDimDialog::SetMarkers() {
 //      if (fSelPad->GetLogy()) y = TMath::Power(10, y);
       FhMarker *m = new FhMarker(x, y, 28);
       m->SetMarkerColor(6);
-      m->Paint();
+		m->SetMarkerSize(1);
+		m->Paint();
       fMarkers->Add(m);
       delete m1;
       nmarks++;
    }
    PrintMarkers();
-   if (fSelPad) fSelPad->Update();
+	fSelPad->Modified();
+	fSelPad->Update();
    if (fDialog) fDialog->ReloadValues();
    return nmarks;
 };
@@ -1859,7 +1891,8 @@ void FitOneDimDialog::DrawExpExecute()
 void FitOneDimDialog::ExpExecute(Int_t draw_only)
 {
    Int_t retval = 0;
-   if (draw_only == 0 && fSelHist == NULL && (fGraph != NULL && fGraph->GetN()) == 0) {
+	Check4Reselect();
+	if (draw_only == 0 && fSelHist == NULL && (fGraph != NULL && fGraph->GetN()) == 0) {
       new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
                 "Warning",
                 "No histogram nore graph defined\n Use Draw only" ,
@@ -1994,7 +2027,8 @@ void FitOneDimDialog::DrawPolExecute()
 void FitOneDimDialog::PolExecute(Int_t draw_only)
 {
    Int_t retval = 0;
-   if (draw_only == 0 && fSelHist == NULL && (fGraph != NULL && fGraph->GetN()) == 0) {
+	Check4Reselect();
+	if (draw_only == 0 && fSelHist == NULL && (fGraph != NULL && fGraph->GetN()) == 0) {
       new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
                 "Warning",
                 "No histogram nore graph defined\n Use Draw only" ,
@@ -2047,8 +2081,9 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
       if (fFitOptMinos)     fitopt += "E";
       if (fFitOptErrors1)   fitopt += "W";
       if (fFitOptIntegral)  fitopt += "I";
-      if (fFitOptNoDraw)    fitopt += "0";
+//      if (fFitOptNoDraw)    fitopt += "0";
       if (fFitOptAddAll)    fitopt += "+";
+      fitopt += "0";    // dont draw
       Int_t bound = 0;
       for (Int_t i = 0; i < 6; i++) {
          bound += fFormFixPar[i];
@@ -2078,6 +2113,8 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
             }
          }
       }
+      if ( !fFitOptNoDraw )
+			fFitFunc->Draw("same");
       for (Int_t i = 0; i < fPolN; i++) {
          fPolPar[i] = fFitFunc->GetParameter(i);
       }
@@ -2111,20 +2148,36 @@ void FitOneDimDialog::GraphFormExecute()
 void FitOneDimDialog::FormExecute(Int_t draw_only)
 {
    Int_t retval = 0;
+	Check4Reselect(); 
 	cout << "FormExecute  fSelHist: " << fSelHist ;
 	if ( fSelHist )
 		cout << " fSelHist->GetEntries() " << fSelHist->GetEntries();
 	cout << " draw_only " << draw_only<< endl;
    if (draw_only == 0 && (fSelHist == 0 || fSelHist->GetEntries() < 1)
 		  && (fGraph == NULL || fGraph->GetN() == 0)) {
-		fSelHist = Hpr::FindHistInPad(fSelPad);
-	    cout << "FindHistInPad: fSelHist: " << fSelHist ;
+//		fSelHist = Hpr::FindHistInPad(fSelPad);
+		TIter next(fSelPad->GetListOfPrimitives());
+		while (TObject * obj = next()) {
+			if (obj->InheritsFrom("TH1")) {
+				fSelHist = (TH1*)obj;
+				break;
+			}
+		}
+		
+		cout << "FindHistInPad: fSelHist: " << fSelHist ;
 		if ( fSelHist )
 			cout << " fSelHist->GetEntries() " << fSelHist->GetEntries();
 		cout << endl;
 	
 		if (fSelHist == 0 || fSelHist->GetEntries() < 1 ) {
-			fGraph = Hpr::FindGraphInPad(fSelPad);
+//			fGraph = Hpr::FindGraphInPad(fSelPad);
+			TIter next1(fSelPad->GetListOfPrimitives());
+			while (TObject * obj = next1()) {
+				if (obj->InheritsFrom("TGraph")) {
+					fGraph = (TGraph*)obj;
+					break;
+				}
+			}
 			if ( fGraph == NULL ) {
 				new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
 						"Warning",
@@ -2622,3 +2675,19 @@ void FitOneDimDialog::SaveFunction()
    new Save2FileDialog(fCalFunc);
 }
 //____________________________________________________________________________________
+
+void FitOneDimDialog::Check4Reselect()
+{
+	TH1 * nhist = NULL;
+	if ( fSelPad && fSelPad->GetClickSelected()
+			&& fSelPad->GetClickSelected()->InheritsFrom("TH1")) {
+		nhist = (TH1*)fSelPad->GetClickSelected();
+		if (nhist != fSelHist) {
+			fSelHist = nhist;
+			cout << "Selected hist now: " << fSelHist->GetName() << endl;
+			TString tit("Use: ");
+			tit+= fSelHist->GetName();
+			fDialog->SetWindowName(tit.Data());
+		}
+	}
+}

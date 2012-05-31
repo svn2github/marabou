@@ -452,12 +452,13 @@ void Fit2DimDialog::GausExecute(Int_t draw_only)
                fHistFitResult->SetBinContent(i,j, fFitFunc->Eval(xc,yc));
 			}
 		}
-      HistPresent * hpr = (HistPresent*)gROOT->FindObject("mypres");
-      if ( hpr ) {
-         hpr ->ShowHist(fHistFitResult);
-      } else {
+//      HistPresent * hpr = (HistPresent*)gROOT->FindObject("mypres");
+ //     if ( hpr ) {
+
+//			hpr ->ShowHist(fHistFitResult);
+//      } else {
          fHistFitResult->Draw(fSelHist->GetDrawOption());
-		}
+//		}
 //      fFitFunc->Draw("colz");
 
       //     add to ListOfFunctions if requested

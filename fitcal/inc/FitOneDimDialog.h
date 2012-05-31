@@ -198,7 +198,7 @@ public:
    Int_t GetFitOptAddAll() { return fFitOptAddAll; };
    Int_t GetFitPrintCovariance() { return fFitPrintCovariance; };
    void CRButtonPressed(Int_t, Int_t, TObject *){};
-
+	void Check4Reselect();
 ClassDef(FitOneDimDialog,0)
 };
 #endif

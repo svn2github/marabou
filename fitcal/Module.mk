@@ -36,6 +36,7 @@ include/%.h:    $(FITCALDIRI)/%.h
 		cp $< $@
 
 $(FITCALLIB):     $(FITCALDO) $(FITCALO) $(MAINLIBS) $(FITCALLIBDEP)
+			@echo "FITCALLIBEXTRA:  $(FITCALLIBEXTRA)"
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libFitCal.$(SOEXT) $@ "$(FITCALDO) $(FITCALO)" \
 		   "$(FITCALLIBEXTRA)"
