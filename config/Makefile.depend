@@ -1,0 +1,21 @@
+UTILSLIBEXTRA    = -L$(ROOTSYS)/lib -lGraf -lHist  -lRIO -lCore -lCint -ldl
+GUTILSLIBEXTRA   = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lGed -lGui -lGraf -lHist -lRIO -lCore -lCint -ldl
+FITCALLIBEXTRA   = -L$(MARABOU)/lib -lTGMrbUtils -L$(ROOTSYS)/lib -lSpectrum -lMathCore -lMathMore -lGed -lGui -lGraf -lHist -lGpad -lRIO -lCore -lCint -ldl
+HELPBLIBEXTRA    = -L$(ROOTSYS)/lib -lASImage -lGraf  -lGpad -lGui -lRIO -lCore -lCint -ldl
+GREDITLIBEXTRA   = -L$(MARABOU)/lib -lTGMrbUtils -L$(ROOTSYS)/lib  -lASImage -lGpad -lGed -lGui -lGraf -lHist -lMathCore -lRIO  -lRint -lCore -lCint -ldl
+HPRLIBEXTRA      = -L$(MARABOU)/lib -lTMrbUtils  -lTGMrbUtils -lGrEdit -lFitCal -lTMrbHelpBrowser -L$(ROOTSYS)/lib  -lASImage  -lHistPainter -lSpectrum -lGed -lGpad  -lGui -lGraf -lHist -lProof  -lMathCore -lRIO -lTree -lNet -lCore -lCint -ldl
+
+C2LYNXLIBEXTRA   = 
+CAMCLILIBEXTRA   = 
+DGFCOMLIBEXTRA   = 
+ESONELIBEXTRA    = 
+EXPCONFLIBEXTRA  = 
+NGUTILSLIBEXTRA  = 
+MBSSETUPLIBEXTRA = 
+MBSSIMLIBEXTRA   = 
+POLARLIBEXTRA    = 
+TIDYLIBLIBEXTRA  = 
+TIDYLIBEXTRA     = 
+TRANSPLIBEXTRA   = 
+XIADGFLIBEXTRA   = 
+XMLLIBEXTRA      = 
