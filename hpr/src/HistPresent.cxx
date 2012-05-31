@@ -778,7 +778,17 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    if (fCmdLine->GetSize() > 0) fCmdLine->Sort();
 
    if (fRootFile) fRootFile->Close();
-
+	TButton * b = NULL;
+	if (bp) {
+		b = (TButton *)strtoul(bp, 0, 16);
+		if ( b ) {
+			b->SetBit(kSelected);
+			b->SetFillColor(3);
+			b->Modified(kTRUE);
+			b->Update();
+		}
+	}
+	
    Int_t anything_to_delete = 0;
    if (strstr(fname,".root")) {
       TFile * rfile = NULL;

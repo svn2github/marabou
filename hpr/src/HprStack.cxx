@@ -13,8 +13,10 @@
 #include "WindowSizeDialog.h"
 #include "GeneralAttDialog.h"
 #include "SetHistOptDialog.h"
+#include "Set1DimOptDialog.h"
 #include "SetCanvasAttDialog.h"
 #include "HprStack.h"
+#include "hprbase.h"
 
 ClassImp (HprStack)
 static Int_t gSeqNumberStack = 0;
@@ -27,6 +29,7 @@ enum EGoHCommandIds {
    M_Option2Dim,
    M_Option2DimCol,
 	M_OptionHist,
+	M_SuperImpose,
 	M_OptionPad
 };
 //________________________________________________________________________
@@ -111,10 +114,14 @@ void HprStack::BuildCanvas()
    TString buf("cstack_");
    buf += gSeqNumberStack++;
    const char * tit = buf.Data();
-   fCanvas = new TCanvas(buf.Data(), tit, 
+//   fCanvas = new TCanvas(buf.Data(), tit, 
+//		WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
+//		fWindowXWidth, fWindowYWidth);
+	fCanvas = new HTCanvas(buf.Data(), tit, 
 		WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
 		fWindowXWidth, fWindowYWidth);
-   WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
+	
+	WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
    WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
 //   cout << "TCanvas *ca = (TCanvas*)" <<  fCanvas << endl;
 
@@ -160,6 +167,7 @@ void HprStack::BuildCanvas()
 		   << fScales[i] << endl;
 		}
 		fStack->Add(hist);
+		fLastHist = hist;
       fNDrawn ++;
       stitle += hist->GetName();
       if ( i < fNhists - 1 ) stitle += "_";
@@ -178,7 +186,8 @@ void HprStack::BuildCanvas()
    }
    SetAttributes();
    fStack->SetTitle(stitle);
-   fCanvas->BuildLegend(fLegendX1, fLegendY1, fLegendX2, fLegendY2);
+   TLegend * leg = fCanvas->BuildLegend(fLegendX1, fLegendY1, fLegendX2, fLegendY2);
+	leg->SetName("Legend_SuperImposeHist");
    fCanvas->Modified();
    fCanvas->Update();
 }
@@ -235,7 +244,12 @@ void HprStack::BuildMenu()
 	fMenu->AddEntry("Axis / Title / StatBox Attributes", M_OptionHist);
 	fMenu->AddEntry("Canvas, Pad, Frame", M_OptionPad);
 	fMenu->AddEntry("Store changed Attributes", M_RememberOptions);
-   fMenu->Connect("Activated(Int_t)", "HprStack", this,
+	if (fDim == 1) {
+		fMenu->AddEntry("SuperImpose hist", M_SuperImpose);
+		fMenu->AddEntry("Draw option for superimposed hist", M_Option1Dim);
+		
+	}
+	fMenu->Connect("Activated(Int_t)", "HprStack", this,
                         "HandleMenu(Int_t)");
    menubar->MapSubwindows();
    menubar->Layout();
@@ -262,7 +276,13 @@ void HprStack::HandleMenu(Int_t id)
 			SetOptions();
 			break;
 		case M_RememberOptions:
-            CRButtonPressed();
+			CRButtonPressed();
+			break;
+		case M_Option1Dim:
+			new Set1DimOptDialog(fRootCanvas);
+			break;
+		case M_SuperImpose:
+			Hpr::SuperImpose(fCanvas, fLastHist, 0);
 			break;
    }
 }
@@ -279,6 +299,7 @@ The selected histograms are drawn in the same picture\n\
 \"One pad for each\"\n\
 The canvas is divided and each histogram is drawn in a\n\
 separate pad.\n\
+For 2-dim histograms only \"Really stack\" is supported.\n\
 \n\
 Error Drawing Modes:\n\
 E	Draw error bars.\n\

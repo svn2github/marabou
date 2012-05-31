@@ -1,16 +1,23 @@
+#include "TROOT.h"
+#include "TEnv.h"
 #include "TFile.h"
 #include "TGraphErrors.h"
 #include "TFrame.h"
 #include "TString.h"
 #include "TObjString.h"
+#include "TPaveStats.h"
 #include "TSystem.h"
 #include "TList.h"
 #include "TMath.h"
 #include "TGMsgBox.h"
+#include "TRootCanvas.h"
+#include "TRegexp.h"
 #include "TGMrbValuesAndText.h"
+#include "TGMrbTableFrame.h"
 #include <iostream>
 #include <fstream>
 #include "hprbase.h"
+#include "HistPresent.h"
 
 using std::cout;
 using std::cerr;
@@ -436,5 +443,493 @@ HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where,
 
 	return naxis;
 };
+//____________________________________________________________________________________
+
+void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
+{
+	static const char helptext[] =
+	"\n\
+	A selected hist is drawn in the same pad\n\
+	The histogram may be scaled automatically: \n\
+	The scale is adjusted such that the maximum value\n\
+	of the superimposed histogram is equal to the maximum\n\
+	of the original histogram in the displayed range.\n\
+	So a certain peak can used as reference by zooming in\n\
+	on this peak. Any value may be selected manually.\n\
+	\n\
+	An extra axis may be drawn on the right side:\n\
+	The AxOffs determines its position, 0 is on top\n\
+	of the right edge of the frame, negative is left\n\
+	of it in the pad, positive at the right side\n\
+	This is useful if more than one histogram is superimposed\n\
+	The color of the extra axis equals the color of the hist.\n\
+	With option \"Incr Colors\" Line-, Mark- FillColors are\n\
+	automatically incremented (red->green->blue etc.)\n\
+	With \"Skip Dialog\" this widget is only shown once\n\
+	for the first histogram\n\
+		\n\
+		";
+	HprLegend * fLegend = (HprLegend*)canvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
+	TH1 *hist;
+	//   TPaveLabel *tname;
+	//  choose from histo list
+	//   Int_t nh = gHpr->GetSelectedHist()->GetSize();
+	if (gHpr->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
+		if (gHpr->GetSelectedHist()->GetSize() > 1) {
+			Hpr::WarnBox("More than 1 selection,\n please choose only one");
+			return;
+		}
+		hist = gHpr->GetSelHistAt(0);
+	} else {
+		hist = Hpr::GetOneHist(selhist);      // look in memory
+	}
+	if ( !hist ) {
+		Hpr::WarnBox("No hist selected");
+		return;
+	}
+	hist->SetMinimum(-1111);
+	hist->SetMaximum(-1111);
+	
+	//    cout << "hist->GetName() " << hist->GetName() << endl;
+	TEnv env(".hprrc");
+	static Int_t   lLegend      = env.GetValue("SuperImposeHist.DrawLegend", 1);
+	static Int_t   lIncrColors  = env.GetValue("SuperImposeHist.AutoIncrColors", 0);
+	static Int_t   lSkipDialog  = env.GetValue("SuperImposeHist.SkipDialog", 0);
+	static Int_t   lWarnDiffBin = env.GetValue("SuperImposeHist.WarnDiffBin", 1);
+	//	static Int_t   lNoStatBox   = env.GetValue("SuperImposeHist.NoStatBox", 1);
+	
+	if (hist->GetDimension() != selhist->GetDimension()) {
+		Hpr::WarnBox("Dimensions of histograms differ");
+		return;
+	}
+	//	Double_t rightmax = 1.1*ymax;
+	//	canvas->cd();
+	TRootCanvas * win = (TRootCanvas*)canvas->GetCanvasImp();
+	TIter next(canvas->GetListOfPrimitives());
+	Int_t nhists = 0 ;
+	TObject *obj;
+	TH1* horig = NULL;
+	while ( obj  = next() ) {
+		if ( obj->InheritsFrom("TH1") ) {
+			horig = (TH1*)obj;
+			TString oname(obj->GetName());
+			TString hname(hist->GetName());
+			//			if ( obj == selhist ) {
+		//				oname = fHname;
+		//			}
+		//			cout << "oname, hname " << oname << " " << hname << endl;
+		//			if ( oname == hname ) {
+			//				if ( !QuestionBox("Hist already in canvas, really draw again?",win) )
+			//					return;
+			//			}
+			if ( lWarnDiffBin && !Hpr::HistLimitsMatch(horig, hist) ) {
+				if ( !QuestionBox("Hist limits or bins differ, really superimpose?",win) ) {
+					return;
+				} else {
+					hist->GetXaxis()->Set(horig->GetXaxis()->GetNbins(),
+												 horig->GetXaxis()->GetXmin(), horig->GetXaxis()->GetXmax());
+												 if (horig->GetDimension() == 2) {
+													 hist->GetYaxis()->Set(horig->GetYaxis()->GetNbins(),
+																				  horig->GetYaxis()->GetXmin(), horig->GetYaxis()->GetXmax());
+												 }
+				}
+			}
+			nhists++;
+		}
+	}
+	if ( !horig ) 
+		horig = selhist;
+	Int_t    do_scale;
+	do_scale = mode;
+	Int_t    auto_scale;
+	auto_scale = mode;
+	static Double_t axis_offset;
+	static Double_t label_offset = 0.01;
+	static Color_t  axis_color;
+	static Color_t lLColor   = axis_color; 
+	static Color_t lMColor   = axis_color;
+	static Color_t lFillColor= axis_color; 
+	if ( nhists < 2 ) {
+		axis_color = 2;
+		lLColor   = axis_color;
+		lMColor   = axis_color;
+		lFillColor  = axis_color;
+		axis_offset = 0.;
+	}
+	static Style_t lFStyle;
+	static Style_t lLStyle;
+	static Width_t lLWidth;
+	static Style_t lMStyle;
+	static Size_t  lMSize;
+	static Double_t lStatBoxDX1;
+	static Double_t lStatBoxDX2;
+	static Double_t lStatBoxDY1;
+	static Double_t lStatBoxDY2;
+	// 	static Int_t   dummy;
+	lFStyle     = horig->GetFillStyle();
+	lLStyle     = horig->GetLineStyle();
+	lLWidth     = horig->GetLineWidth();
+	lMStyle     = horig->GetMarkerStyle();
+	lMSize      = horig->GetMarkerSize();
+	TPaveStats *sbo = (TPaveStats*)horig->GetListOfFunctions()->FindObject("stats");
+	if ( sbo ) {
+		lStatBoxDX1 = sbo->GetX1NDC();
+		lStatBoxDX2 = sbo->GetX2NDC();
+		lStatBoxDY1 = sbo->GetY1NDC();
+		lStatBoxDY2 = sbo->GetY2NDC();
+	}
+	if (hist->GetDimension() == 1 ) {
+		if ( !sbo ) {
+			lStatBoxDX1 = env.GetValue("Set1DimOptDialog.StatBox1D.fX1", 0.8);
+			lStatBoxDX2 = env.GetValue("Set1DimOptDialog.StatBox1D.fX2", 0.9);
+			lStatBoxDY1 = env.GetValue("Set1DimOptDialog.StatBox1D.fY1", 0.8);
+			lStatBoxDY2 = env.GetValue("Set1DimOptDialog.StatBox1D.fY2", 0.9);
+		}
+	} else {
+		
+		if ( !sbo ) {
+			lStatBoxDX1 = env.GetValue("Set2DimOptDialog.StatBox2D.fX1", 0.8);
+			lStatBoxDX2 = env.GetValue("Set2DimOptDialog.StatBox2D.fX2", 0.9);
+			lStatBoxDY1 = env.GetValue("Set2DimOptDialog.StatBox2D.fY1", 0.8);
+			lStatBoxDY2 = env.GetValue("Set2DimOptDialog.StatBox2D.fY2", 0.9);
+		}
+	}
+	
+	if ( lMSize <= 0 ) lMSize = 1;
+	Double_t new_scale = 1;   
+	static TString axis_title;
+	axis_title= hist->GetYaxis()->GetTitle();
+	static Int_t new_axis = kTRUE;
+	canvas->cd();
+	TString drawopt = horig->GetDrawOption();
+	if ( gDebug  > 0 )
+		cout << "horig->GetDrawOption() " << hist << " drawopt  " << drawopt<< endl;
+	if ( lSkipDialog == 0 || nhists < 2 ) {
+		// Error modes 
+		static void *valp[50];                    
+		Int_t ind = 0;                            
+		TList *row_lab = new TList();
+		Bool_t ok = kTRUE;
+		row_lab->Add(new TObjString("CheckButton_New scale  "));
+		valp[ind++] = &do_scale;
+		row_lab->Add(new TObjString("CheckButton+Auto scale "));
+		valp[ind++] = &auto_scale;
+		row_lab->Add(new TObjString("DoubleValue+Factor"));
+		valp[ind++] = &new_scale;
+		row_lab->Add(new TObjString("CheckButton_Extra axis "));
+		valp[ind++] = &new_axis;
+		row_lab->Add(new TObjString("DoubleValue+AxOffs;-1;1 "));
+		valp[ind++] = &axis_offset;
+		row_lab->Add(new TObjString("DoubleValue+LabOffs"));
+		valp[ind++] = &label_offset;
+		row_lab->Add(new TObjString("ColorSelect_AxisColor"));
+		valp[ind++] = &axis_color;
+		row_lab->Add(new TObjString("StringValue+AxTitle"));
+		valp[ind++] = &axis_title;
+		row_lab->Add(new TObjString("CheckButton+Legend  "));
+		valp[ind++] = &lLegend;
+		row_lab->Add(new TObjString("ColorSelect_MarkColor"));
+		valp[ind++] = &lMColor;
+		row_lab->Add(new TObjString("Mark_Select+MarkStyle"));
+		valp[ind++] = &lMStyle;
+		row_lab->Add(new TObjString("Float_Value+MSize"));
+		valp[ind++] = &lMSize;
+		row_lab->Add(new TObjString("ColorSelect_LineColor"));
+		valp[ind++] = &lLColor;
+		row_lab->Add(new TObjString("LineSSelect+LStyle"));
+		valp[ind++] = &lLStyle;
+		row_lab->Add(new TObjString("PlainShtVal+LineWidth"));
+		valp[ind++] = &lLWidth;
+		row_lab->Add(new TObjString("ColorSelect_FillColor"));
+		valp[ind++] = &lFillColor;
+		row_lab->Add(new TObjString("Fill_Select+FillStyle"));
+		valp[ind++] = &lFStyle;
+		// 		row_lab->Add(new TObjString("CommentOnly+-"));
+		// 		valp[ind++] = &dummy;
+		row_lab->Add(new TObjString("StringValue+DrawOpt"));
+		valp[ind++] = &drawopt;
+		row_lab->Add(new TObjString("CheckButton_Incr Colors "));
+		valp[ind++] = &lIncrColors;
+		row_lab->Add(new TObjString("CheckButton+Skip Dialog"));
+		valp[ind++] = &lSkipDialog;
+		row_lab->Add(new TObjString("CheckButton+WarnDiffBin"));
+		valp[ind++] = &lWarnDiffBin;
+		//		row_lab->Add(new TObjString("CheckButton+NoStatBox"));
+		//		valp[ind++] = &lNoStatBox;
+		
+		Int_t itemwidth = 380;
+		ok = GetStringExt("Superimpose Histogram", NULL, itemwidth, win,
+								NULL, NULL, row_lab, valp,
+								NULL, NULL, helptext);
+								if (!ok )
+									return;
+	}
+	if ( do_scale != 0 && auto_scale != 0 ) {
+		//		new_scale = hymax / rightmax;
+		cout << "Scale will be auto adjusted " << endl;
+	}
+	
+	//	TGaxis *naxis = 0;
+	TH1 *hdisp = (TH1 *) hist->Clone();
+	if (do_scale && selhist->GetDimension() != 2)  {
+		//		cout << "!!!!!!!!!!!!!!!!" << endl;
+		if ( auto_scale ) {
+			Stat_t maxy = 0;
+			if (selhist->GetXaxis()->GetNbins() != hist->GetXaxis()->GetNbins()) {
+				//  case expanded histogram
+				Axis_t x, xmin, xmax;
+				xmin = selhist->GetXaxis()->GetXmin();
+				xmax = selhist->GetXaxis()->GetXmax();
+				for (Int_t i = 1; i <= hist->GetXaxis()->GetNbins(); i++) {
+					x = hist->GetBinCenter(i);
+					if (x >= xmin && x < xmax && hist->GetBinContent(i) > maxy)
+						maxy = hist->GetBinContent(i);
+				}
+			} else {
+				//  case zoomed histogram
+				for (Int_t i = selhist->GetXaxis()->GetFirst();
+				i <= selhist->GetXaxis()->GetLast();
+				i++) {
+					if (hist->GetBinContent(i) > maxy)
+						maxy = hist->GetBinContent(i);
+				}
+				
+			}
+			if ( maxy == 0 ) {
+				cout << "Max = 0 " << endl;
+				return;
+			}
+			new_scale = selhist->GetMaximum() / maxy;
+		} else {
+			//			new_scale = 1;
+		}
+		TString name = hdisp->GetName();
+		name += "_scaled";
+		hdisp->SetName(name.Data());
+		cout << "Scale " << hdisp->GetName() << " by " << new_scale << endl;
+		hdisp->Scale(new_scale);
+		for (Int_t i = 1; i <= hist->GetNbinsX(); i++) {
+			hdisp->SetBinError(i, new_scale * hist->GetBinError(i));
+		}
+		cout << "Superimpose: Scale errors linearly" << endl;
+	}
+	canvas->cd();
+	hdisp->SetLineColor(lLColor);
+	hdisp->SetLineStyle(lLStyle);
+	hdisp->SetFillStyle(lFStyle);
+	hdisp->SetLineColor(lLColor);
+	if ( hist->GetDimension() == 2 ) 
+		hdisp->SetFillColor(lFillColor);
+	hdisp->SetLineWidth(lLWidth);
+	hdisp->SetMarkerColor(lMColor);
+	hdisp->SetMarkerStyle(lMStyle);
+	hdisp->SetMarkerSize(lMSize);
+	if ( hist->GetDimension() == 1 ) {
+		if (!drawopt.Contains("E", TString::kIgnoreCase)) {
+			if (!drawopt.Contains("hist",TString::kIgnoreCase)) {
+				drawopt += "hist";
+			}
+		}
+		if ( env.GetValue("Set1DimOptDialog.fFill1Dim", 0 ) > 0 ){ 
+			hdisp->SetFillColor(lFillColor);
+			drawopt += "F";
+			axis_color = lFillColor;
+		} else {
+			hdisp->SetFillColor(0);
+			if (drawopt.Contains("hist",TString::kIgnoreCase)) {
+				axis_color = lLColor;
+			} else {
+				axis_color = lMColor;
+			}
+		}
+	}
+	if (hdisp->GetDimension() == 2) {
+		TRegexp zopt("Z");
+		drawopt(zopt)="";
+	}
+	if ( !drawopt.Contains("SAME") )
+		drawopt += "SAME";
+	if (gDebug > 0) 
+		cout << "DrawCopy(drawopt) " << drawopt << endl;
+	TH1 * hdrawn = hdisp->DrawCopy(drawopt.Data());
+	TPaveStats *sb = (TPaveStats*)hdrawn->GetListOfFunctions()->FindObject("stats");
+	if ( sb ) {
+		cout << "SetStatBox: "  
+		<< " lStatBoxDX1 " << lStatBoxDX1<< 
+		" lStatBoxDX2 " << lStatBoxDX2<< 
+		" lStatBoxDY1 " << lStatBoxDY1<< 
+		" lStatBoxDY2 " << lStatBoxDY2<< 
+		endl;
+		sb->SetX1NDC(lStatBoxDX1);
+		sb->SetX2NDC(lStatBoxDX2);
+		sb->SetY1NDC(lStatBoxDY1 - nhists*(lStatBoxDY2 - lStatBoxDY1) );
+		sb->SetY2NDC(lStatBoxDY2 - nhists*(lStatBoxDY2 - lStatBoxDY1));
+	}
+	if ( new_axis != 0 && hist->GetDimension() == 1 ) {
+		//		TString opt("+SL");->GetFrame()->GetX1()
+		Double_t ledge = gPad->GetFrame()->GetY1();
+		Double_t uedge = gPad->GetFrame()->GetY2();
+		if ( gPad->GetLogy() ) {
+			ledge = TMath::Power(10, ledge);
+			uedge = TMath::Power(10, uedge);
+		}
+		ledge /= new_scale;
+		uedge /= new_scale;
+		HprGaxis *axis = Hpr::DoAddAxis(canvas, hdisp, 2, ledge, uedge, axis_offset, axis_color);
+		
+		TString ax_name("axis_");
+		ax_name += hdisp->GetTitle();
+		axis->SetName(ax_name);
+		axis->SetLineColor(axis_color);
+		axis->SetLabelColor(axis_color);
+		axis->SetTickSize   (env.GetValue("SetHistOptDialog.fTickLength", 0.01));
+		axis->SetLabelFont  (env.GetValue("SetHistOptDialog.fLabelFont", 62));
+		axis->SetLabelOffset(label_offset);
+		axis->SetLabelOffset(env.GetValue("SetHistOptDialog.fLabelOffsetY", 0.01));
+		axis->SetLabelSize  (env.GetValue("SetHistOptDialog.fLabelSize", 0.03));
+		axis->SetMaxDigits  (env.GetValue("SetHistOptDialog.fLabelMaxDigits", 4));
+		if (axis_title.Length() > 0) {
+			axis->SetTitle(axis_title);
+			axis->SetTitleColor(axis_color);
+			axis->SetTitleFont( env.GetValue("SetHistOptDialog.fTitleFont", 62));
+			axis->SetTitleSize( env.GetValue("SetHistOptDialog.fTitleSize",0.03));
+			axis->SetTitleOffset( 1. );
+			if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 0) == 1 ) 
+				axis->CenterTitle();
+		}
+	}
+	
+	if ( lLegend != 0 ) {
+		TEnv env(".hprrc");
+		Double_t x1 = env.GetValue("SuperImposeHist.fLegendX1", 0.11);
+		Double_t x2 = env.GetValue("SuperImposeHist.fLegendX2", 0.3);
+		Double_t y1 = env.GetValue("SuperImposeHist.fLegendY1", 0.8);
+		Double_t y2 = env.GetValue("SuperImposeHist.fLegendY2", 0.95);
+		TString opt;
+		TString dopt;
+		if ( fLegend == NULL ) {
+			fLegend = new HprLegend(x1, y1, x2, y2, "", "brNDC");
+			fLegend->SetName("Legend_SuperImposeHist");
+			dopt = selhist->GetDrawOption();
+			if (selhist->GetDimension() == 2 ) {
+				if ( dopt.Contains("SCAT", TString::kIgnoreCase) ) opt = "P";
+				if ( dopt.Contains("BOX", TString::kIgnoreCase) && 
+					!dopt.Contains("BOX1", TString::kIgnoreCase) ) opt += "L";
+				if ( dopt.Contains("BOX", TString::kIgnoreCase) &&
+					selhist->GetFillColor() != 0 && selhist->GetFillStyle() != 0 || 
+					dopt.Contains("BOX1", TString::kIgnoreCase) ) opt+= "F";
+			} else {
+				if (dopt.Length() == 0 || dopt.Contains("HIST",TString::kIgnoreCase) ||
+					dopt.Contains("E", TString::kIgnoreCase) )
+					opt = "L";
+				if (selhist->GetFillStyle() != 0 )
+					opt+= "F";
+				if (dopt.Contains("P",TString::kIgnoreCase) )
+					opt += "P";
+			}
+			fLegend->AddEntry(selhist, "", opt);
+			//			cout << "fLegend->AddEntry: " << opt << endl;
+			fLegend->Draw();
+		}
+		opt = "";
+		dopt = hdrawn->GetDrawOption();
+		if (selhist->GetDimension() == 2 ) {
+			if ( dopt.Contains("SCAT", TString::kIgnoreCase) ) opt = "P";
+			if ( dopt.Contains("BOX", TString::kIgnoreCase) && 
+				!dopt.Contains("BOX1", TString::kIgnoreCase) ) opt += "L";
+			if ( (dopt.Contains("BOX", TString::kIgnoreCase) &&
+				lFillColor != 0 && lFStyle != 0) || 
+				dopt.Contains("BOX1", TString::kIgnoreCase)) opt+= "F";
+		} else {
+			if (dopt.Length() == 0 || dopt.Contains("HIST",TString::kIgnoreCase) ||
+				dopt.Contains("E", TString::kIgnoreCase) )
+				opt = "L";
+			if (hdrawn->GetFillStyle() != 0 )
+				opt+= "F";
+			if (dopt.Contains("P",TString::kIgnoreCase) )
+				opt += "P";
+		}
+		//		cout << "fLegend->AddEntry: " << opt << endl;
+		fLegend->AddEntry(hdrawn, "", opt);
+	}
+	canvas->Update();
+	if ( hdrawn ) {
+		TRegexp sa("SAME");
+		TString dro(hdrawn->GetDrawOption());
+		dro(sa)="";
+		//		hdrawn->SetDrawOption(dro);
+		//		THistPainter *hp = (THistPainter*)hdrawn->GetPainter();
+		//		hdrawn->Pop();
+		canvas->Modified();
+		canvas->Update();
+	}
+	if (lIncrColors > 0) {
+		lLColor++;
+		lMColor++;
+		axis_color++;
+		lFillColor++;
+		axis_offset += 0.05;
+	}
+	env.SetValue("SuperImposeHist.DrawLegend", lLegend);
+	env.SetValue("SuperImposeHist.AutoIncrColors", lIncrColors);
+	env.SetValue("SuperImposeHist.SkipDialog", lSkipDialog);
+	env.SetValue("SuperImposeHist.WarnDiffBin", lWarnDiffBin);
+	env.SaveLevel(kEnvLocal);
+}
+//____________________________________________________________________________________
+
+TH1 * GetOneHist(TH1 * selhist)
+{
+	Int_t nhists = 0;
+	TOrdCollection *entries = new TOrdCollection();
+	TH1 * hist = NULL;
+	TList *tl = gDirectory->GetList();
+	TIter next(tl);
+	while (TObject * obj = next()) {
+		if (obj->InheritsFrom("TH1")) {
+			hist = (TH1 *) obj;
+			if (hist != selhist) {
+				entries->Add(new TObjString(hist->GetName()));
+				nhists++;
+			}
+		}
+	}
+	if (nhists <= 0) {
+		Hpr::WarnBox("No Histogram found");
+		return 0;
+	}
+	
+	TArrayI flags(nhists);
+	flags.Reset();
+	Int_t retval = 0;
+	
+	Int_t itemwidth = 240;
+	new TGMrbTableFrame(NULL, &retval, "Select a histogram", itemwidth, 1, nhists,
+		entries, 0, 0, &flags, nhists);
+	if (retval < 0){
+		  return NULL;
+	}
+	TObjString * objs;
+	TString s;
+	for (Int_t i = 0; i < nhists; i++) {
+		  //      Char_t sel = selected[i];
+		  if (flags[i] == 1) {
+			  objs = (TObjString *) entries->At(i);
+			  s = objs->String();
+			  hist = (TH1 *) gROOT->FindObject((const char *) s);
+			  break;
+		  }
+	}
+	delete entries;
+	if (!hist) {
+		  Hpr::WarnBox("No Histogram found");
+	}
+	if (hist == selhist) {
+		  Hpr::WarnBox("Cant use same histogram");
+		  hist = NULL;
+	}
+	return hist;
+}
+
 
 }   // end namespace Hpr

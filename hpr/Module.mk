@@ -81,7 +81,7 @@ OHPRLIBS      := $(MRBUTILSLIB) $(MRBGUTILSLIB) $(HELPBRLIB) $(FITCALLIB) $(GRED
 include/%.h:    $(HPRDIRI)/%.h
 		cp $< $@
 
-$(HPREXE):      $(HPRMAINO) $(HPRLIB) $(OHPRLIBS)
+$(HPREXE):      $(HPRMAINO) $(OHPRLIBS) $(HPRLIB)
 		@echo "other libs: $(OHPRLIBS)"
 		@echo "$(HPREXE) linking exe ----------------------------------"
 		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(OHPRLIBS) $(ROOTGLIBS) -lSpectrum -lProof \
@@ -89,9 +89,9 @@ $(HPREXE):      $(HPRMAINO) $(HPRLIB) $(OHPRLIBS)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)
 #		@echo "objs: $(HPRO)"
-		@echo "$(HPRLIB) make shared lib ------------------------------------"
+		@echo "$(HPRLIB) make shared lib EXPLICITLINK = $(EXPLICITLINK) ----------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-		   "$(SOFLAGS)" libHpr.$(SOEXT) $@ "$(HPRO) $(HPRDO)"
+		   "$(SOFLAGS)" libHpr.$(SOEXT) $@ "$(HPRO) $(HPRDO) $(HPRLIBEXTRA)"
 
 $(HPRDS):     $(HPRDH) $(HPRL)
 		@echo "Generating dictionary $@..."

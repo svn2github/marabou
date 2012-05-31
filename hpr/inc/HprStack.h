@@ -26,8 +26,9 @@ private:
    Int_t fNDrawn;
    Int_t fDim;
    THStack *fStack;
+	TH1 *fLastHist;
    TGMrbValuesAndText *fDialog;
-	
+// for weight dialog	
 	Int_t    fScaled;
 	Double_t *fScales;
 	void *fValpW[100];
@@ -35,10 +36,10 @@ private:
 	Color_t  *fColorW;
 	TGMrbValuesAndText *fDialogW;
 	
-   TCanvas    *fCanvas;
-   TList       fHistList;
+   HTCanvas    *fCanvas;
+//	TCanvas    *fCanvas;
+	TList       fHistList;
    TGPopupMenu *fMenu;
-   TGPopupMenu *fOptionMenu;
    TRootCanvas *fRootCanvas;
    Int_t       fWindowXWidth;
    Int_t       fWindowYWidth;

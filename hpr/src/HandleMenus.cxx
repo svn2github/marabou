@@ -1612,7 +1612,7 @@ void HandleMenus::BuildMenus()
       	fFitMenu->AddEntry("Execute User FitSlices Y Macro", kFHFitSlicesYUser);
       	fFitMenu->AddSeparator();
       } else {
-			if ( fFitHist )
+//			if ( fFitHist )
 				fFitMenu->AddEntry("Gaussians (with tail)",   kFHFitGausLBg);
          fFitMenu->AddEntry("Exponential",     kFHFitExp);
          fFitMenu->AddEntry("Polynomial",      kFHFitPol);

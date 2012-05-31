@@ -117,6 +117,16 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
                     // we will only use its coordinate system
       if(fFitHist) fFitHist->AddMark((TPad*)gPad,px,py);
 	}
+	if ( event == kButton1Down ) {
+		// find pad in which input occured
+		pad = Pick(px, py, prevSelObj);
+		if (!pad) return;
+		gPad = pad;   // don't use cd() because we won't draw in pad
+		// we will only use its coordinate system
+		if (fSelected->InheritsFrom("TH1") || fSelected->InheritsFrom("TGraph") ) {
+			cout << "Select: " << fSelected->ClassName()<< " " << fSelected->GetName() << endl;
+		}
+	}
 	GrCanvas::HandleInput(event, px, py);
 }
 //______________________________________________________________________________

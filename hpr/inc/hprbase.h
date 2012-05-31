@@ -6,6 +6,7 @@
 #include "TGraph.h"
 #include "TGraph.h"
 #include "HprGaxis.h"
+#include "HprLegend.h"
 
 namespace Hpr
 {
@@ -17,6 +18,9 @@ namespace Hpr
 	TGraph * FindGraphInPad(TVirtualPad * ca);
 	Bool_t HistLimitsMatch(TH1* h1, TH1* h2);
 	HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where, 
-			Double_t ledge, Double_t uedge, Double_t axis_offset=0, Color_t col=0);
+		Double_t ledge, Double_t uedge, Double_t axis_offset=0, Color_t col=0);
+	void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode);
+	TH1 * GetOneHist(TH1 * selhist);
+	
 }
 #endif

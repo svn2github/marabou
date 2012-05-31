@@ -115,7 +115,6 @@ private:
    Bool_t fDeleteCalFlag;
    HTCanvas * fCutPanel;
    TableOfLabels * fTofLabels;
-	HprLegend * fLegend;
    Int_t fFill1Dim;
    Color_t fFillColor;
    Color_t fLineColor;
@@ -201,7 +200,6 @@ public:
       else                            Draw1Dim();
       return temp;
    };
-   TH1* GetOneHist();
    Bool_t IsThereAnyHist();
    void Entire();                  //
    void SetXaxisRange();                  //
