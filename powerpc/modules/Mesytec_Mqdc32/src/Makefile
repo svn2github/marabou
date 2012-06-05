@@ -16,7 +16,7 @@ ARFLAG = -rv
 
 LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libMqdc32.a
 
-libMqdc32.OBJS = mqdc32fct.o block.o
+libMqdc32.OBJS = mqdc32fct.o block.o xvmelib.o
 
 # ------------ Suffix Rules -------------------------------------------
 

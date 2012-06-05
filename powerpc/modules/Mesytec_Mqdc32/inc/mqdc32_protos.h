@@ -30,7 +30,6 @@ void mqdc32_printDb(struct s_mqdc32 * s);
 
 void mqdc32_reset(struct s_mqdc32 * s);
 
-void  mqdc32_setBltBlockSize(struct s_mqdc32 * s, uint32_t size);
 void mqdc32_initDefaults(struct s_mqdc32 * s);
 
 void mqdc32_setThreshold(struct s_mqdc32 * s, uint16_t channel,  uint16_t thresh);

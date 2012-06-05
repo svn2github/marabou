@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <allParam.h>
+#include <ces/uiocmd.h>
 #include <ces/bmalib.h>
 
 #include "block.h"
@@ -244,11 +245,6 @@
 
 #define NOF_CHANNELS	32
 
-struct dmachain {
-        void *address;
-        int count;
-};
-
 struct s_madc32 {
 	unsigned long vmeAddr;					/* phys addr given by module switches */
 	volatile unsigned char * baseAddr;		/* addr mapped via find_controller() */
@@ -298,14 +294,10 @@ struct s_madc32 {
 
 	int memorySize;
 
-	struct s_bma * bma; 					/* block mode access */
+	unsigned long bltAddr;
+	uio_mem_t bltBuffer;
 	uint32_t bltBufferSize;
-	uint32_t bltBlockSize;
-	uint8_t * bltBuffer;
-	uint32_t bltDestination;
 	int blockXfer;
-
-	uio_mem_t bmaBuf;
 
 	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
 	uint32_t *evtp;

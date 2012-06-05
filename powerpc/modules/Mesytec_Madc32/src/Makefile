@@ -16,7 +16,7 @@ ARFLAG = -rv
 
 LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libMadc32.a
 
-libMadc32.OBJS = madc32fct.o block.o
+libMadc32.OBJS = madc32fct.o block.o xvmelib.o
 
 # ------------ Suffix Rules -------------------------------------------
 

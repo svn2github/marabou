@@ -30,7 +30,6 @@ void madc32_printDb(struct s_madc32 * s);
 
 void madc32_reset(struct s_madc32 * s);
 
-void  madc32_setBltBlockSize(struct s_madc32 * s, uint32_t size);
 void madc32_initDefaults(struct s_madc32 * s);
 
 void madc32_setThreshold(struct s_madc32 * s, uint16_t channel,  uint16_t thresh);
@@ -162,7 +161,5 @@ bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile);
 
 void madc32_resetEventBuffer(struct s_madc32 * s);
 uint32_t * madc32_pushEvent(struct s_madc32 * s, uint32_t * pointer);
-
-extern int vmtopm (int, struct dmachain *, char *, long);
 
 #endif
