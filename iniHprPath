@@ -27,9 +27,6 @@ SYSMODE=y
 # export ROOTSYS=/usr/cern/Linux/root_v4.04.02
 MARABOU=`pwd`
 
-# export LD_LIBRARY_PATH=$MARABOU/lib:$ROOTSYS/lib:$LD_LIBRARY_PATH
-# export PATH=$MARABOU/bin:$ROOTSYS/bin:$PATH
-
 #____________________________[end editable section]___________________________
 
 BLK='\033[39m' # default foreground color
