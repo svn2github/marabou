@@ -3,18 +3,6 @@
 #
 # Author: Otto stolen from ROOT (Fons Rademakers), 15/9/2000
 
-##### Include path/location macros (result of ./configure) #####
-##### However, if we are building packages or cleaning,    #####
-##### config/Makefile.config isn't made yet - the package  #####
-##### scripts want's to make it them selves - so we don't  #####
-
-ifeq ($(findstring $(MAKECMDGOALS), maintainer-clean debian redhat),)
-include config/Makefile.config
-endif
-ifeq ($(MAKECMDGOALS),clean)
-include config/Makefile.config
-endif
-
 MAKE_VERSION_MAJOR := $(word 1,$(subst ., ,$(MAKE_VERSION)))
 MAKE_VERSION_MINOR := $(shell echo $(word 2,$(subst ., ,$(MAKE_VERSION))) | \
                               sed 's/\([0-9][0-9]*\).*/\1/')
@@ -24,23 +12,7 @@ ORDER_ := $(shell test $(MAKE_VERSION_MAJOR) -gt 3 || \
                   test $(MAKE_VERSION_MAJOR) -eq 3 && \
                   test $(MAKE_VERSION_MINOR) -ge 80 && echo '|')
 
-##### Include machine dependent macros                     #####
-##### However, if we are building packages or cleaning, we #####
-##### don't include this file since it may screw up things #####
-
-ifeq ($(findstring $(MAKECMDGOALS), maintainer-clean debian redhat),)
-include config/Makefile.$(ARCH)
-endif
-ifeq ($(MAKECMDGOALS),clean)
-include config/Makefile.$(ARCH)
-endif
-
-##### Include library dependencies for explicit linking #####
-
 ifeq ($(EXPLICITLINK),yes)
-include config/Makefile.depend
-endif
-ifneq ($(findstring map, $(MAKECMDGOALS)),)
 include config/Makefile.depend
 endif
 
@@ -68,70 +40,72 @@ MODULES       = build utils gutils helpbrowser fitcal gredit hpr
 
 # if offline data analysis in the marabou framework is needed
 
-ifeq ($(shell if [ -d analyze ] ; then echo yes; fi), yes)
-MODULES      += c_analyze analyze mbssetup mbsio transport
-endif
+ifeq ($(findstring $(MAKECMDGOALS),hpr),)
+	ifeq ($(shell if [ -d analyze ] ; then echo yes; fi), yes)
+	MODULES      += c_analyze analyze mbssetup mbsio transport
+	endif
 
-ifeq ($(shell if [ -f .useXML ] ; then echo yes; fi), yes)
-ifeq ($(shell if [ -d expconf-xml ] ; then echo yes; fi), yes)
-MODULES      += expconf-xml
-endif
-ifeq ($(shell if [ -d xml ] ; then echo yes; fi), yes)
-MODULES      += xml
-endif
-else
-ifeq ($(shell if [ -d expconf ] ; then echo yes; fi), yes)
-MODULES      += expconf
-endif
-endif
+	ifeq ($(shell if [ -f .useXML ] ; then echo yes; fi), yes)
+	ifeq ($(shell if [ -d expconf-xml ] ; then echo yes; fi), yes)
+	MODULES      += expconf-xml
+	endif
+	ifeq ($(shell if [ -d xml ] ; then echo yes; fi), yes)
+	MODULES      += xml
+	endif
+	else
+	ifeq ($(shell if [ -d expconf ] ; then echo yes; fi), yes)
+	MODULES      += expconf
+	endif
+	endif
 
-ifeq ($(shell if [ -d tidy ] ; then echo yes; fi), yes)
-MODULES      += tidy tidylib
+	ifeq ($(shell if [ -d tidy ] ; then echo yes; fi), yes)
+	MODULES      += tidy tidylib
+	endif
+
+	ifeq ($(shell if [ -d gutils-new ] ; then echo yes; fi), yes)
+	MODULES      += gutils-new
+	endif
+
+	ifeq ($(shell if [ -d macrobrowser ] ; then echo yes; fi), yes)
+	MODULES      += macrobrowser
+	endif
+
+	ifeq ($(shell if [ -d dgfcomm ] ; then echo yes; fi), yes)
+	MODULES      += dgfcomm
+	endif
+
+	ifeq ($(shell if [ -d c2lynx ] ; then echo yes; fi), yes)
+	MODULES      += c2lynx
+	endif
+
+	# if online data acquisition is needed in addition
+
+	ifeq ($(shell if [ -d camcli  ] ; then echo yes; fi), yes)
+	MODULES      += camcli esone
+	endif
+
+	# the following modules are for special hardware
+
+	ifeq ($(shell if [ -d vmecontrol ] ; then echo yes; fi), yes)
+	MODULES      += vmecontrol
+	endif
+
+	ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
+	MODULES      += xiadgf dgfcontrol cptmcontrol
+	endif
+
+	ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
+	MODULES      += polar
+	endif
+
+	#ifeq ($(shell if [ -d snake-lib ] ; then echo yes; fi), yes)
+	#MODULES      += snake-lib
+	#endif
+
+	#ifeq ($(shell if [ -d snake-pgm ] ; then echo yes; fi), yes)
+	#MODULES      += snake-pgm
+	#endif
 endif
-
-ifeq ($(shell if [ -d gutils-new ] ; then echo yes; fi), yes)
-MODULES      += gutils-new
-endif
-
-ifeq ($(shell if [ -d macrobrowser ] ; then echo yes; fi), yes)
-MODULES      += macrobrowser
-endif
-
-ifeq ($(shell if [ -d dgfcomm ] ; then echo yes; fi), yes)
-MODULES      += dgfcomm
-endif
-
-ifeq ($(shell if [ -d c2lynx ] ; then echo yes; fi), yes)
-MODULES      += c2lynx
-endif
-
-# if online data acquisition is needed in addition
-
-ifeq ($(shell if [ -d camcli  ] ; then echo yes; fi), yes)
-MODULES      += camcli esone
-endif
-
-# the following modules are for special hardware
-
-ifeq ($(shell if [ -d vmecontrol ] ; then echo yes; fi), yes)
-MODULES      += vmecontrol
-endif
-
-ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
-MODULES      += xiadgf dgfcontrol cptmcontrol
-endif
-
-ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
-MODULES      += polar
-endif
-
-#ifeq ($(shell if [ -d snake-lib ] ; then echo yes; fi), yes)
-#MODULES      += snake-lib
-#endif
-
-#ifeq ($(shell if [ -d snake-pgm ] ; then echo yes; fi), yes)
-#MODULES      += snake-pgm
-#endif
 
 ##### ROOT libraries #####
 
