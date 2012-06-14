@@ -31,7 +31,6 @@ arrows at the ends\n\
    RestoreDefaults();
    fRow_lab = new TList();
    static TString exc("ExecuteInsert()");
-   TList * fRow_lab = new TList();
    fRow_lab->Add(new TObjString("DoubleValue_Ampl"));
    fValp[ind++] = &fWaveLength;
    fRow_lab->Add(new TObjString("DoubleValue+WaveL"));

@@ -206,7 +206,7 @@ void MarkerLineDialog::RestoreDefaults()
 }
 //______________________________________________________________________
 
-void MarkerLineDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void MarkerLineDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/)
 {
 //   TCanvas *canvas = (TCanvas *)obj;
 //  cout << " MarkerLineDialog::CRButtonPressed(" << wid<< ", " <<bid;

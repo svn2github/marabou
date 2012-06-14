@@ -151,7 +151,7 @@ void Rebin2DimDialog::RestoreDefaults()
 }
 //______________________________________________________________________
 	
-void Rebin2DimDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void Rebin2DimDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
 {
 	//	TCanvas *canvas = (TCanvas *)obj;
 	//   cout << "CRButtonPressed(" << wid<< ", " <<bid;
@@ -208,7 +208,7 @@ void Rebin2DimDialog::CloseDialog()
 }
 //______________________________________________________________________
 
-void Rebin2DimDialog::CloseDown(Int_t wid)
+void Rebin2DimDialog::CloseDown(Int_t /*wid*/)
 {
 	gROOT->GetListOfCleanups()->Remove(this);
 	//   cout << "CloseDown(" << wid<< ")" <<endl;

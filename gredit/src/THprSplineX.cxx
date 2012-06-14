@@ -41,7 +41,7 @@ void THprSplineX::InsertTextExecute()
 }
 //_____________________________________________________________________________________
 
-void THprSplineX::CloseDown(Int_t flag)
+void THprSplineX::CloseDown(Int_t /*flag*/)
 {
 //   std::cout << "THprSplineX::CloseDown "<<  flag<< std::endl;
    if (fTextDialog) {

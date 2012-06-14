@@ -219,7 +219,7 @@ public:
    void RestoreAxis();                  //
    void AddAxis(Int_t where);           //
 	void ObjMoved(Int_t px, Int_t py, TObject *obj);
-	void ObjCreated(Int_t px, Int_t py, TObject *obj){};
+	void ObjCreated(Int_t , Int_t , TObject *){};
 	void Magnify();                 //
    void GetLimits();               //
    void GetRange();                // get range from another hist

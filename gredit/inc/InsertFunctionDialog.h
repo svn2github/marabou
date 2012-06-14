@@ -41,7 +41,7 @@ public:
    void CloseDown(Int_t wid);
    void IncrementIndex(TString * arg);
    Int_t GetFunctionPad(TPad *ipad = NULL);
-   void    CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) {};
+   void    CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/) {};
 
 ClassDef(InsertFunctionDialog,0)
 };

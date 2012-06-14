@@ -20,8 +20,8 @@
 #include "TMrbStatistics.h"
 #include "HTCanvas.h"
 #include "SetColor.h"
-#include "TMrbWdw.h"
-#include "TMrbVarWdwCommon.h"
+//#include "TMrbWdw.h"
+//#include "TMrbVarWdwCommon.h"
 #include "TMrbHelpBrowser.h"
 #include "CmdListEntry.h"
 #include "WindowSizeDialog.h"
@@ -55,7 +55,7 @@ void AddMathExpressions(TList * var_list)
 //________________________________________________________________________________________
 // Show Tree
 
-void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname, const char* bp)
+void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname, const char* /*bp*/)
 {
 	static Int_t ycanvas=180;
 //  const Int_t MAXLEAF=33;
@@ -298,7 +298,7 @@ void HistPresent::ToggleExpression(const char* bp)
 }
 //________________________________________________________________________________________
 
-void HistPresent::UseHist(const char* bp)
+void HistPresent::UseHist(const char* /*bp*/)
 {
    ShowContents("Memory", "");
    if (!fUseHist) ToggleUseHist();
@@ -961,7 +961,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 //________________________________________________________________________________________
 
 void HistPresent::MkClass( const char* fname, const char* dir, const char* tname,
-                            const char* leafname, const char* bp)
+                            const char* /*leafname*/, const char* /*bp*/)
 {
    if (fRootFile) fRootFile->Close();
    fRootFile=new TFile(fname);
@@ -987,7 +987,7 @@ void HistPresent::SetShowTreeOptionsCint(const char *pointer)
 }
 //_______________________________________________________________________
 
-void HistPresent::SetShowTreeOptions(TGWindow * win, FitHist * fh)
+void HistPresent::SetShowTreeOptions(TGWindow * win, FitHist * /*fh*/)
 {
 // *INDENT-OFF*
 static const char helptext[] =
@@ -1055,7 +1055,7 @@ if they are shown again\n\
 }
 //_______________________________________________________________________
 
-void HistPresent::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void HistPresent::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/)
 {
 //   TCanvas *c = (TCanvas *)obj;
 //   cout << "CRButtonPressed(" << wid<< ", " <<bid;

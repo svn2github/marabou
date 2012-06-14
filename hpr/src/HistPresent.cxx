@@ -59,7 +59,7 @@
 #include "GEdit.h"
 #include "GroupOfHists.h"
 #include "SetColor.h"
-#include "TMrbString.h"
+//#include "TMrbString.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
 #include "TMrbHelpBrowser.h"
@@ -548,7 +548,7 @@ void HistPresent::EditAttrFile()
 }
 //________________________________________________________________________________________
 
-void HistPresent::ShowFiles(const char *how, const char *bp)
+void HistPresent::ShowFiles(const char *how, const char */*bp*/)
 {
    if (fFileList) {
       if (gROOT->GetListOfCanvases()->FindObject("FileList")) delete fFileList;
@@ -628,7 +628,7 @@ Should we create a sample file",
 };
 //________________________________________________________________________________________
 
-void HistPresent::ListMacros(const char *bp)
+void HistPresent::ListMacros(const char */*bp*/)
 {
 //   if (fControlBar) {
 //      if (fControlBar->TestBit(TObject::kNotDeleted) &&
@@ -877,11 +877,11 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 			}
 			if ( fComSocket ) {
 				if (bp) {
-					TButton * b;
-					b = (TButton *)strtoul(bp, 0, 16);
+					TButton * b1;
+					b1 = (TButton *)strtoul(bp, 0, 16);
 					//      cout << "bp " << b << endl;
-					if (b) {
-						fHfromM_aButton = b;
+					if (b1) {
+						fHfromM_aButton = b1;
 						SetSelected(fHfromM_aButton, kTRUE);
 					} else {
 						fHfromM_aButton = NULL;
@@ -1280,7 +1280,7 @@ Bool_t HistPresent::IsSelected(const char * name) {
 }
 //________________________________________________________________________________________
 
-void HistPresent::PurgeEntries(const char * fname, const char * bp)
+void HistPresent::PurgeEntries(const char * fname, const char * /*bp*/)
 {
    TString question(fname);
    question.Prepend("Purge file: ");
@@ -1292,7 +1292,7 @@ void HistPresent::PurgeEntries(const char * fname, const char * bp)
 }
 //________________________________________________________________________________________
 
-void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
+void HistPresent::DeleteSelectedEntries(const char * fname, const char * /*bp*/)
 {
 	cout << "DeleteSelectedEntries " << fname << endl;
    Int_t ndeleted = 0;
@@ -1309,7 +1309,7 @@ void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
 }
  //________________________________________________________________________________________
 
-void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char * bp)
+void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char * /*bp*/)
 {
    TString sname(fname);
    TMrbStatistics * st = 0;
@@ -1339,9 +1339,9 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
       if (strlen(dir) > 0) rfile->cd(dir);
       st = (TMrbStatistics*)gDirectory->Get("TMrbStatistics");
       if (!st) {
-         TString sname(fname);
-         if (strlen(dir) > 0) sname = sname + " Dir: " + dir;
-         st=new TMrbStatistics(sname);
+         TString snames(fname);
+         if (strlen(dir) > 0) snames = snames + " Dir: " + dir;
+         st=new TMrbStatistics(snames);
          st->Fill(gDirectory);
       }
       if (rfile )rfile->Close();
@@ -1374,7 +1374,7 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
 }
 //________________________________________________________________________________________
 
-void HistPresent::ComposeList(const char* bp)
+void HistPresent::ComposeList(const char* /*bp*/)
 {
    Int_t nselect=fSelectHist->GetSize();
    if (nselect < 1) {
@@ -1421,7 +1421,7 @@ void HistPresent::ComposeList(const char* bp)
    for(Int_t i = 0; i < nselect; i++) {
       TString hname  = ((TObjString *)fSelectHist->At(i))->String();
 		cout << hname << endl;
-      Int_t pp = hname.Index(" ");
+      pp = hname.Index(" ");
       hname.Remove(0,pp+1);
 		TRegexp vers(";[0-9]*");
 		hname(vers) = "";
@@ -1433,7 +1433,7 @@ void HistPresent::ComposeList(const char* bp)
 //_______________________________ShowList_________________________________________________________
 // Show List
 
-void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
+void HistPresent::ShowList(const char* fcur, const char* lname, const char* /*bp*/)
 {
    static Int_t ycanvas=20;
    TString sl = lname;
@@ -1583,7 +1583,7 @@ void HistPresent::ShowInOneCanvas(const char *bp)
 }
 //________________________________________________________________________________________
 
-void HistPresent::GetFileSelMask(const char* bp)
+void HistPresent::GetFileSelMask(const char* /*bp*/)
 {
     Bool_t ok;
     *fFileSelMask = GetString(
@@ -1591,7 +1591,7 @@ void HistPresent::GetFileSelMask(const char* bp)
 }
 //________________________________________________________________________________________
 
-void HistPresent::GetHistSelMask(const char* bp)
+void HistPresent::GetHistSelMask(const char* /*bp*/)
 {
     Bool_t yesno = kFALSE;
     if (GeneralAttDialog::fUseRegexp) yesno=kTRUE;
@@ -1631,7 +1631,7 @@ void HistPresent::SetHistSelMask()
 //________________________________________________________________________________________
 // Save histograms from mapped file
 
-void HistPresent::SaveMap(const char* mapname, const char* bp)
+void HistPresent::SaveMap(const char* mapname, const char* /*bp*/)
 {
    TMapFile *mfile;
    mfile = TMapFile::Create(mapname);
@@ -1675,7 +1675,7 @@ void HistPresent::SaveMap(const char* mapname, const char* bp)
 //________________________________________________________________________________________
 // Save histograms from mapped file
 
-void HistPresent::SaveFromSocket(const char * name, const char* bp)
+void HistPresent::SaveFromSocket(const char * /*name*/, const char* /*bp*/)
 {
    if (!fComSocket) return;
    TString fname ("hists_XX.root");
@@ -1738,7 +1738,7 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
 //________________________________________________________________________________________
 // Show Function
 
-void HistPresent::ShowFunction(const char* fname, const char* dir, const char* name, const char* bp)
+void HistPresent::ShowFunction(const char* fname, const char* dir, const char* name, const char*/*bp*/ )
 {
    TF1* func;
    if (strstr(fname,".root")) {
@@ -1774,7 +1774,7 @@ void HistPresent::ShowFunction(const char* fname, const char* dir, const char* n
 //________________________________________________________________________________________
 // Show user contour
 
-void HistPresent::ShowContour(const char* fname, const char* dir, const char* name, const char* bp)
+void HistPresent::ShowContour(const char* fname, const char* dir, const char* name, const char*/*bp*/ )
 {
    FhContour * co;
    if (strstr(fname,".root")) {
@@ -2305,7 +2305,7 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
 //________________________________________________________________________________________
 // Get Ccut
 
-void HistPresent::SelectCut(const char* fname, const char* cname, const char* bp)
+void HistPresent::SelectCut(const char* fname, const char* cname, const char* /*bp*/)
 {
    if (!gPad) cout << "Cut: Cant find Pad, call debugger" << endl;
    else      gPad->SetFillColor(3);
@@ -2441,7 +2441,7 @@ void HistPresent::SelectGraph(const char* fname, const char* dir, const char* hn
 }
 //________________________________________________________________________________________
 
-void HistPresent::PrintCut(const char* fname, const char* hname, const char* bp)
+void HistPresent::PrintCut(const char* fname, const char* hname, const char* /*bp*/)
 {
    TCutG* cut;
    if (is_memory(fname)) {
@@ -2468,7 +2468,7 @@ void HistPresent::PrintCut(const char* fname, const char* hname, const char* bp)
 }
 //________________________________________________________________________________________
 
-void HistPresent::CutsToASCII(const char* name, const char* bp)
+void HistPresent::CutsToASCII(const char* name, const char* /*bp*/)
 {
    if (fAllCuts->GetSize() <= 0) {
       WarnBox("No cuts selected");
@@ -2621,7 +2621,7 @@ void HistPresent::LoadCut(const char* fname, const char* hname, const char* bp)
    b->Update();
 }
 //________________________________________________________________________________________
-void HistPresent::PrintWindow(const char* fname, const char* hname, const char* bp)
+void HistPresent::PrintWindow(const char* fname, const char* hname, const char* /*bp*/)
 {
    TObject * obj = NULL;
    TString sel = fname;
@@ -3236,7 +3236,7 @@ void HistPresent::CloseAllCanvases()
 }
 //_______________________________________________________________________
 
-void HistPresent::StackSelectedHists(const char *bp)
+void HistPresent::StackSelectedHists(const char */*bp*/)
 {
    StackSelectedHists(fSelectHist);
 }
@@ -3248,7 +3248,7 @@ void HistPresent::StackSelectedHistsScaled(const char *bp)
 }*/
 //_______________________________________________________________________
 
-void HistPresent::StackSelectedHists(TList * hlist, const char* title)
+void HistPresent::StackSelectedHists(TList * hlist, const char* /*title*/)
 {
    TList hl;
    Int_t nsel = hlist->GetSize();
@@ -3268,7 +3268,7 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
 }
 //_______________________________________________________________________
 
-void HistPresent::ShowSelectedHists(const char *bp)
+void HistPresent::ShowSelectedHists(const char */*bp*/)
 {
    ShowSelectedHists(fSelectHist);
 }
@@ -3337,7 +3337,6 @@ void HistPresent::DinA4Page(Int_t form)
       Ywidth = fEditPoYwidth;
       XRange = fEditPoXRange;
    }
-   TMrbString temp;
    row_lab->Add(new TObjString("StringValue_Name of page"));
    row_lab->Add(new TObjString("PlainIntVal_  X Position"));
    row_lab->Add(new TObjString("PlainIntVal_  Y Position"));
@@ -3408,7 +3407,7 @@ void HistPresent::DinA4Page(Int_t form)
 //________________________________________________________________________________________
 // Show Canvas
 
-void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* name, const char* bp)
+void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* name, const char* /*bp*/)
 {
 //	static Int_t seqnr = 0;
 	if (gDebug > 0)
@@ -3823,7 +3822,7 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 //________________________________________________________________________________________
 // Show a graph
 
-void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name, const char* bp)
+void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name, const char* /*bp*/)
 {
 	TGraph     * graph1d = NULL;
 	TGraph2D   * graph2d = NULL;
@@ -4242,7 +4241,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		}
 		if ( leg )
 			delete leg;
-		TEnv env(".hprrc");
+//		TEnv env(".hprrc");
 		Double_t x1 = env.GetValue("SuperImposeGraph.fLegendX1", 0.11);
 		Double_t x2 = env.GetValue("SuperImposeGraph.fLegendX2", 0.3);
 		Double_t y1 = env.GetValue("SuperImposeGraph.fLegendY1", 0.8);

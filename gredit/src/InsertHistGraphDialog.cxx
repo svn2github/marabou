@@ -187,7 +187,7 @@ void InsertHistGraphDialog::CloseDown(Int_t wid)
    delete this;
 }
 
-void  InsertHistGraphDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void  InsertHistGraphDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/)
 {
 //   cout << "InsertHistGraphDialog::CRButtonPressed " << bid << " fScale "
 //        << fScale  << endl;

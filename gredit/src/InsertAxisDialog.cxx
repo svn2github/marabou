@@ -30,7 +30,6 @@ static const Char_t helptext[] =
    fRow_lab = new TList();
    static TString execute_cmd("ExecuteInsert()");
 
-   TList *fRow_lab = new TList();
    fRow_lab->Add(new TObjString("DoubleValue_X Start"));
    fValp[ind++] = &fX0;
    fRow_lab->Add(new TObjString("DoubleValue+Y Start"));

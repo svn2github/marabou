@@ -257,7 +257,7 @@ void EditFitMacroG(TGWindow * win)
       if (retval < 0) {
          return;
       }
-      Bool_t ok = kFALSE;
+		ok = kFALSE;
       for (Int_t i = 0; i < nFitTemplatesG; i++) {
          if (flags[i] == 1) {
             tmpfile << FitMacroTemplatesG[i];

@@ -1548,7 +1548,7 @@ void CalibrationDialog::CloseDialog()
 }
 //_______________________________________________________________________
 
-void CalibrationDialog::CloseDown(Int_t wid)
+void CalibrationDialog::CloseDown(Int_t /*wid*/)
 {
 //   cout << "CalibrationDialog::CloseDown() " << endl;
    if ( fDialogSetNominal ) {

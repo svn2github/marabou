@@ -456,7 +456,7 @@ void Ascii2HistDialog::RestoreDefaults()
 }
 //_________________________________________________________________________
 
-void Ascii2HistDialog::CloseDown(Int_t wid)
+void Ascii2HistDialog::CloseDown(Int_t /*wid*/)
 {
    cout << "Ascii2HistDialog::CloseDown() " << endl;
    delete this;

@@ -23,7 +23,7 @@ void FhPeak::PrintPeak(ostream & ostr) const {
 	ostr << fMean << " " << fWidth << " " << fContent << " " 
 	     << fMeanError << " " << fChi2oNdf << endl;
 };
-void FhPeak::Print(Option_t * opt) const {
+void FhPeak::Print(Option_t * /*opt*/) const {
 	printf("%10.2f %10.2f %10.2f %10.2f %10.2f", 
 			 fMean, fWidth, fContent, fMeanError, fChi2oNdf);
 	//    cout << setw(12)<< fContent << setw(12)<< fMean 

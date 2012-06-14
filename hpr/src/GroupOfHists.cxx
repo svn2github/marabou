@@ -50,7 +50,7 @@ enum EGoHCommandIds {
 };
 //________________________________________________________________________
 
-GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title)
+GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*title*/)
             : fHList(hlist), fHistPresent(hpr)
 {
 //   cout << " ctor GroupOfHists::" << this << endl;
@@ -731,7 +731,7 @@ Histograms may be arranged: on top of each other, side by side\n\
 or as tiles\n\
 ";
    fRow_lab = new TList();
-	static void *fValp[50];
+//	static void *fValp[50];
 	Int_t ind = 0;
 //	static Int_t dummy = 0;
    fRow_lab->Add(new TObjString("PlainIntVal_Window X Width"));
@@ -813,7 +813,7 @@ void GroupOfHists::CloseDown(Int_t)
    fDialog = NULL;
 }
 //_______________________________________________________________________
-void GroupOfHists::CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject *obj)
+void GroupOfHists::CRButtonPressed(Int_t /*widgetId*/, Int_t buttonId, TObject */*obj*/)
 {
 //   cout << "GroupOfHists::CRButtonPressed " << widgetId << " " << buttonId << endl;
    if (fCanvas->GetWindowWidth() != (UInt_t)fWindowXWidth ||

@@ -51,7 +51,7 @@ void FitHist::SaveUserContours()
 //	GetListOfFunctions()->FindObject("Pixel");
 	if (colors && colors->GetSize() > 0) {
 		Int_t ncol = colors->GetSize();
-		Int_t ncont = fSelHist->GetContour();
+		ncont = fSelHist->GetContour();
 		Double_t * uc = 0;
 		if (ncont == ncol) {
 			uc = new Double_t[ncont];

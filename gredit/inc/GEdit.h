@@ -61,7 +61,8 @@ private:
    TGLayoutHints       *fVertical1Layout;    // layout hints for separator
    TGLayoutHints       *fVertical2Layout;    // layout hints for separator
    TGLayoutHints       *fHorizontal1Layout;  // layout hints for separator
-   TGDockableFrame     *fToolDock;           // dockable frame holding the toolbar
+   TGLayoutHints		  *fToolBarLayout;
+	TGDockableFrame     *fToolDock;           // dockable frame holding the toolbar
    TGLayoutHints       *fDockLayout;         // layout hints for dockable frame widget
    const TGPicture     *fIconPic;            // icon picture
 
@@ -72,8 +73,8 @@ public:
    void Constructor();
    virtual ~GEdit();
    void RecursiveRemove(TObject * obj);
-	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
-	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
+	void    ObjCreated(Int_t, Int_t, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t, Int_t, TObject *) { };
 
    Bool_t   SloppyInside(TCutG * cut, Double_t x, Double_t y);
    Double_t MinElement(Int_t n, Double_t * x);

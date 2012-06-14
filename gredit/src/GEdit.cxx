@@ -1828,11 +1828,11 @@ void GEdit::WritePrimitives()
    while (lnk) {
       obj = lnk->GetObject();
       if (obj->InheritsFrom("HTPad")) {
-         TList *lop = ((HTPad*)obj)->GetListOfPrimitives();
+         TList *lop1 = ((HTPad*)obj)->GetListOfPrimitives();
          TIter next(&laxis);
          TObject *obj1;
          while ( (obj1 = next() )) {
-            lop->Remove(obj1);
+            lop1->Remove(obj1);
             cout << " remove " << obj1  << " from " << obj << endl;
         }
       }
@@ -1968,12 +1968,12 @@ tryagain:
       }
    }
    GroupOfGObjects * gg = new GroupOfGObjects(name.Data(), 0. ,0., NULL);
-   Double_t * x = cut->GetX();
-   Double_t * y = cut->GetY();
-   gg->fXLowEdge = MinElement(cut->GetN(), x);
-   gg->fXUpEdge  = MaxElement(cut->GetN(), x);
-   gg->fYLowEdge = MinElement(cut->GetN(), y);
-   gg->fYUpEdge  = MaxElement(cut->GetN(), y);
+   Double_t * xc = cut->GetX();
+   Double_t * yc = cut->GetY();
+   gg->fXLowEdge = MinElement(cut->GetN(), xc);
+   gg->fXUpEdge  = MaxElement(cut->GetN(), xc);
+   gg->fYLowEdge = MinElement(cut->GetN(), yc);
+   gg->fYUpEdge  = MaxElement(cut->GetN(), yc);
 //   gg->fXLowEdge = TMath::MinElement(cut->GetN(), x);
 //   gg->fXUpEdge  = TMath::MaxElement(cut->GetN(), x);
 //   gg->fYLowEdge = TMath::MinElement(cut->GetN(), y);

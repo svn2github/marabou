@@ -276,7 +276,7 @@ void FitHist::AddWindow(const char * name, const char * bp){
 }
 //______________________________________________________________________________________
 
-void FitHist::EditWindow(const char * name, const char *bp)
+void FitHist::EditWindow(const char * name, const char */*bp*/)
 {
    if(CheckList(fAllWindows)<= 0) return;
    TObject* obj=fAllWindows->FindObject((char *)name);
@@ -555,7 +555,7 @@ void FitHist::AddCut(const char * name, const char * bp){
 }
 //______________________________________________________________________________________
 
-void FitHist::EditCut(const char * name, const char *bp)
+void FitHist::EditCut(const char * name, const char */*bp*/)
 {
    UpdateCut();
    TMrbWindow2D* cut = (TMrbWindow2D*)fActiveCuts->FindObject((char *)name);

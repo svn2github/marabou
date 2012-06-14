@@ -40,7 +40,6 @@ radius is not 0 only the center must be marked  \n\
    RestoreDefaults();
    fRow_lab = new TList();
    RestoreDefaults();
-   TList * fRow_lab = new TList;
    static TString bycenter("ArcByCenterAndRadius()");
    static TString byponcf("ArcByPointsOnCF()");
    fX1 = fX2 = fY1 = fY2 = 0;

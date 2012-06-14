@@ -264,7 +264,7 @@ void GeneralAttDialog::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void GeneralAttDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void GeneralAttDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
 {
 //   TCanvas *canvas = (TCanvas *)obj;
 //  cout << "CRButtonPressed(" << wid<< ", " <<bid;

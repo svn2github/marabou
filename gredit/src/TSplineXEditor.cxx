@@ -571,7 +571,7 @@ void TSplineXEditor::DoSetTextSize()
 }
 //______________________________________________________________________________
 
-void TSplineXEditor::DoSetTextAlign(Style_t al)
+void TSplineXEditor::DoSetTextAlign(Style_t /*al*/)
 {
    if ( !fHprText ) return;
    fHprText->SetTextAlign(fTextAlign->GetAlignStyle());

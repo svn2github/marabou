@@ -12,13 +12,6 @@
 #endif
 #include "TGMrbValuesAndText.h"
 
-// static const Char_t helpText[] =
-// "This class helps to construct a Xspline with\n\
-// additional graphical elements:\n\
-// Arrows at either ends\n\
-// Railway like filling etc.\n\
-// ";
-
 ClassImp(TSplineXDialog)
 
 TSplineXDialog::TSplineXDialog()

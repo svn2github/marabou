@@ -1525,7 +1525,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 }
 //__________________________________________________________________________
 
-void FitOneDimDialog::AddPeaktoList(TF1 *func)
+void FitOneDimDialog::AddPeaktoList(TF1 */*func*/)
 {
 	cout << "AddPeaktoList " << endl;
 	Double_t sigma, mean, cont, chi2;
@@ -2360,7 +2360,7 @@ void FitOneDimDialog::FillHistRandom()
    TString pn;
    TString newname(fFuncName);
    newname += "_range";
-   TF1Range *fFitFunc = new TF1Range(newname,(const char*)fFormula, fFrom, fTo);
+   fFitFunc = new TF1Range(newname,(const char*)fFormula, fFrom, fTo);
    if (fFitFunc->GetNdim() <= 0) {
       cout << "Something wrong with formula" << endl;
       return;
@@ -2525,7 +2525,7 @@ void FitOneDimDialog::CloseDialog()
 }
 //_______________________________________________________________________
 
-void FitOneDimDialog::CloseDown(Int_t wid)
+void FitOneDimDialog::CloseDown(Int_t /*wid*/)
 {
 //   cout << "FitOneDimDialog::CloseDown() " << endl;
    SaveDefaults();

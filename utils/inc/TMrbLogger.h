@@ -106,7 +106,7 @@ class TMrbLogger: public TNamed {
 
 		~TMrbLogger() { Reset(); };						// dtor
 
-		Bool_t Flush(const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL, Bool_t Indent = kFALSE);	// *SIGNAL*
+		Bool_t Flush(const Char_t * ClassNameL = "", const Char_t * Method = "", const Char_t * Color = NULL, Bool_t Indent = kFALSE);	// *SIGNAL*
 		Bool_t Open(const Char_t * LogFile = "marabou.log", const Char_t * Option = "APPEND");
 		Bool_t Close();
 				
@@ -148,14 +148,14 @@ class TMrbLogger: public TNamed {
 				
 		const Char_t * Prefix(const Char_t * Identifier = "*", const Char_t * ProgName = NULL); 	// line prefix
 		
-		inline Bool_t Out(const Char_t * Msg, const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL) {
-				return(this->OutputMessage(TMrbLogMessage::kMrbMsgMessage, Msg, ClassName, Method, Color));
+		inline Bool_t Out(const Char_t * Msg, const Char_t * ClassNameL = "", const Char_t * Method = "", const Char_t * Color = NULL) {
+				return(this->OutputMessage(TMrbLogMessage::kMrbMsgMessage, Msg, ClassNameL, Method, Color));
 		};
-		inline Bool_t Err(const Char_t * Msg, const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL) {
-				return(this->OutputMessage(TMrbLogMessage::kMrbMsgError, Msg, ClassName, Method, Color));
+		inline Bool_t Err(const Char_t * Msg, const Char_t * ClassNameL = "", const Char_t * Method = "", const Char_t * Color = NULL) {
+				return(this->OutputMessage(TMrbLogMessage::kMrbMsgError, Msg, ClassNameL, Method, Color));
 		};
-		inline Bool_t Wrn(const Char_t * Msg, const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL) {
-				return(this->OutputMessage(TMrbLogMessage::kMrbMsgWarning, Msg, ClassName, Method, Color));
+		inline Bool_t Wrn(const Char_t * Msg, const Char_t * ClassNameL = "", const Char_t * Method = "", const Char_t * Color = NULL) {
+				return(this->OutputMessage(TMrbLogMessage::kMrbMsgWarning, Msg, ClassNameL, Method, Color));
 		};
 	
 		inline ostringstream & Out() { return(*fOut); };
@@ -167,7 +167,7 @@ class TMrbLogger: public TNamed {
 
 	protected:
 		Bool_t OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char_t * Msg,
-									const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL, Bool_t Indent = kFALSE);
+									const Char_t * ClassNameL = "", const Char_t * Method = "", const Char_t * Color = NULL, Bool_t Indent = kFALSE);
 
 	protected:
 

@@ -98,13 +98,13 @@ void Ascii2NtupleDialog::Show_Head_of_File()
 }
 //_________________________________________________________________________
 
-void Ascii2NtupleDialog::CloseDown(Int_t wid)
+void Ascii2NtupleDialog::CloseDown(Int_t /*wid*/)
 {
    cout << "Ascii2NtupleDialog::CloseDown()" << endl;
    delete this;
 }
 //_________________________________________________________________________
 
-void Ascii2NtupleDialog::CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject *obj)
+void Ascii2NtupleDialog::CRButtonPressed(Int_t /*widgetId*/, Int_t /*buttonId*/, TObject */*obj*/)
 {
 }

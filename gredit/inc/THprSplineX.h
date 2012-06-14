@@ -17,7 +17,7 @@ public:
    void InsertTextExecute();
 	void InsertTextOnArc() {};
 	void CloseDown(Int_t flag);
-   void CRButtonPressed(int,int,TObject* obj) {};
+   void CRButtonPressed(int,int,TObject* /*obj*/) {};
    void Paint(const Option_t *opt);
    Bool_t IsSortable() const {return kTRUE;}
    Int_t Compare( const TObject *obj) const

@@ -376,7 +376,7 @@ void CreateCDlabel::CoverDeadArea()
 	} else {
 		fInnerRadius = 21;
 	}
-	Double_t fOuterRadius = 57.5;
+	fOuterRadius = 57.5;
 	
 	TArc *arc2 = new TArc(xc, yc, fInnerRadius);
 	if (fDrawCircles > 0) {

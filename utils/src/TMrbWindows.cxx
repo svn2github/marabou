@@ -462,7 +462,7 @@ void TMrbWindow::Draw(Option_t * Option) {
 	AppendPad(opt);
 }
 
-void TMrbWindowI::PaintLine(Double_t Xlower, Double_t Ylower, Double_t Xupper, Double_t Yupper) {
+void TMrbWindowI::PaintLine(Double_t Xlower, Double_t /*Ylower*/, Double_t Xupper, Double_t /*Yupper*/) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbWindowI::PaintLine
@@ -533,8 +533,8 @@ void TMrbWindow::Paint(Option_t * Option) {
 	gPad->PaintText(fX2 + dx, fY1 + dy, wdwName.Data());
 }
 
-void TMrbWindowF::PaintLine(Double_t Xlower, Double_t Ylower,
-                            Double_t Xupper, Double_t Yupper) {
+void TMrbWindowF::PaintLine(Double_t Xlower, Double_t /*Ylower*/,
+                            Double_t Xupper, Double_t /*Yupper*/) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbWindowF::PaintLine

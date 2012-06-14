@@ -428,7 +428,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 //            gPad->Modified();
 //            gPad->Update();
       }
-      TEnv env(gHprLocalEnv);
+//      TEnv env(gHprLocalEnv);
 
 		TH1 * gh = graph->GetHistogram();
       if (fGraphXtitle.Length() > 0)
@@ -476,14 +476,14 @@ Int_t Ascii2GraphDialog::FindGraphs(TVirtualPad * ca, TList * logr, TList * pads
    }
 // look for subpads
    TIter next1(ca->GetListOfPrimitives());
-   while (TObject * obj = next1()) {
-      if (obj->InheritsFrom("TPad")) {
-          TPad * p = (TPad*)obj;
+   while (TObject * obj1 = next1()) {
+      if (obj1->InheritsFrom("TPad")) {
+          TPad * p = (TPad*)obj1;
           TIter next2(p->GetListOfPrimitives());
-          while (TObject * obj = next2()) {
-             if (obj->InheritsFrom("TGraph")) {
+          while (TObject * obj2 = next2()) {
+             if (obj2->InheritsFrom("TGraph")) {
                 ngr++;
-                if (logr) logr->Add(obj);
+                if (logr) logr->Add(obj2);
                 if (pads) pads->Add(p);
              }
           }
@@ -602,7 +602,7 @@ void Ascii2GraphDialog::Show_Tail_of_File()
 }
 //_________________________________________________________________________
 
-void Ascii2GraphDialog::CloseDown(Int_t wid)
+void Ascii2GraphDialog::CloseDown(Int_t /*wid*/)
 {
 //    cout << "Ascii2GraphDialog::CloseDown() " << endl;
    delete this;

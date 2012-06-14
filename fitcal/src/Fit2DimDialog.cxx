@@ -95,7 +95,7 @@ Fit2DimDialog::Fit2DimDialog(TH2 * hist, Int_t type, Int_t interactive)
 //____________________________________________________________________________________
 //____________________________________________________________________________________
 
-void Fit2DimDialog::DisplayMenu(Int_t type)
+void Fit2DimDialog::DisplayMenu(Int_t /*type*/)
 {
 static const Char_t helptext_gaus[] =
 "This widget allows fitting of a \n\
@@ -485,7 +485,7 @@ void Fit2DimDialog::GausExecute(Int_t draw_only)
    gPad->Update();
 }
 //____________________________________________________________________________________
-
+/*
 void Fit2DimDialog::GetGaussEstimate(TH2 * h, Double_t fromX, Double_t toX,
                                               Double_t fromY, Double_t toY,
                                        Double_t bg, TArrayD &par)
@@ -513,10 +513,10 @@ void Fit2DimDialog::GetGaussEstimate(TH2 * h, Double_t fromX, Double_t toX,
       par[1] = 0.5 * (toX + fromX);
       par[2] = 1;
    }
-}
+}*/
 //____________________________________________________________________________________
 
-Int_t Fit2DimDialog::GetMaxBin(TH2 * h1, Int_t binlX, Int_t binuX, 
+/*Int_t Fit2DimDialog::GetMaxBin(TH2 * h1, Int_t binlX, Int_t binuX, 
                                          Int_t binlY, Int_t binuY)
 {
    Double_t maxcont = 0.;
@@ -534,7 +534,7 @@ Int_t Fit2DimDialog::GetMaxBin(TH2 * h1, Int_t binlX, Int_t binuX,
    };
 //  cout << "MaxBin " << bin  << endl;
    return bin;
-};
+};*/
 //____________________________________________________________________________________
 void Fit2DimDialog::PrintMarkers()
 {
@@ -803,7 +803,7 @@ void Fit2DimDialog::CloseDialog()
 }
 //_______________________________________________________________________
 
-void Fit2DimDialog::CloseDown(Int_t wid)
+void Fit2DimDialog::CloseDown(Int_t /*wid*/)
 {
 //   cout << "Fit2DimDialog::CloseDown() " << endl;
    SaveDefaults();

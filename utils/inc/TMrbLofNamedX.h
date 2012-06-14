@@ -75,15 +75,15 @@ class TMrbLofNamedX: public TObjArray {
 							UInt_t FindMode = TMrbLofNamedX::kFindExact,
 							const Char_t * Delim = "") const;
 
-		UInt_t CheckPattern(const Char_t * ClassName, const Char_t * Method, const Char_t * IndexString,	// check index string
+		UInt_t CheckPattern(const Char_t * ClassNameL, const Char_t * Method, const Char_t * IndexString,	// check index string
 							const SMrbNamedX * NamedX = NULL,
 							UInt_t Mode = TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase);
 
-		inline UInt_t CheckPatternShort(const Char_t * ClassName, const Char_t * Method, const Char_t * IndexString,
+		inline UInt_t CheckPatternShort(const Char_t * ClassNameL, const Char_t * Method, const Char_t * IndexString,
 							const SMrbNamedXShort * NamedX = NULL,
 							UInt_t Mode = TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase) {
 			if (NamedX != NULL) this->AddNamedX(NamedX);
-			return(this->CheckPattern(ClassName, Method, IndexString, NULL, Mode));
+			return(this->CheckPattern(ClassNameL, Method, IndexString, NULL, Mode));
 		};
 
 		const Char_t * Pattern2String(TString & IndexString, UInt_t Pattern, const Char_t * Delim = ":") const;

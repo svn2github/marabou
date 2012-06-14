@@ -488,7 +488,7 @@ void SetColorModeDialog::SliderClosed(TObject *obj)
 }
 //___________________________________________________________________
 
-void SetColorModeDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void SetColorModeDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/)
 {
 //   TCanvas *canvas = (TCanvas *)obj;
 //  cout << " SetColorModeDialog::CRButtonPressed(" << wid<< ", " <<bid;

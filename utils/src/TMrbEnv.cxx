@@ -41,7 +41,7 @@ TMrbEnv::TMrbEnv(const Char_t * ResourceFile, const Char_t * DefaultsFile) {
 // Arguments:      Char_t * ResourceFile   -- resource file
 //                 Char_t * DefaultFile    -- file containing defaults
 // Results:        --
-// Exceptions:
+// Exceptions:   
 // Description:    Class constructor
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

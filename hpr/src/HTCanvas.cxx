@@ -191,7 +191,7 @@ void HTCanvas::DoSaveLegendStats()
 	}
 	if ( leg ) {
 		TString res;
-		TEnv env(".hprrc");
+//		TEnv env(".hprrc");
 		res = envn + "X1";
 		env.SetValue(res, leg->GetX1NDC());
 		res = envn + "X2";

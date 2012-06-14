@@ -223,7 +223,7 @@ void WhatToShowDialog::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void WhatToShowDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void WhatToShowDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
 //   cout << "CRButtonPressed(" << wid<< ", " <<bid;

@@ -35,8 +35,8 @@ public:
    void    FeynmanSolidLine();
    void    FeynmanDashedLine();
    void    FeynmanLine(Style_t);
-	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
-	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
+	void    ObjCreated(Int_t /*px*/, Int_t /*py*/, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t /*px*/, Int_t /*py*/, TObject */*obj*/) { };
    void    SaveDefaults();
    void    RestoreDefaults();
    void    RecursiveRemove(TObject * obj);

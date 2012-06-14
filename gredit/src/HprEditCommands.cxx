@@ -8,7 +8,7 @@ namespace std {} using namespace std;
 
 ClassImp(HprEditCommands)
 
-HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width, 
+HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t /*win_width*/, 
                  TObject * calling_class, const char * cname,
                  TList * labels, TList * methods):
 							    TGTransientFrame(gClient->GetRoot(), Win, 10, 10)

@@ -309,16 +309,16 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          Double_t * y = gr->GetY();
 //         either first or last point
          b->GetControlGraph()->SetParent(b);
-         Double_t* xt = new Double_t[gr->GetN()];
-         Double_t* yt = new Double_t[gr->GetN()];
+         Double_t* xtt = new Double_t[gr->GetN()];
+         Double_t* ytt = new Double_t[gr->GetN()];
          for (Int_t i = 0; i < gr->GetN(); i++) {
-            Transform(x[i], y[i], xoff,yoff, scaleG, &xt[i], &yt[i]);
+            Transform(x[i], y[i], xoff,yoff, scaleG, &xtt[i], &ytt[i]);
  //           xt[i] = x[i] + xoff;
  //          yt[i] = y[i] + yoff;
          }
-         b->SetAllControlPoints(gr->GetN(), xt, yt);
-         delete [] xt;
-         delete [] yt;
+         b->SetAllControlPoints(gr->GetN(), xtt, ytt);
+         delete [] xtt;
+         delete [] ytt;
 
       } else if (clone->InheritsFrom("TGraph")) {
          TGraph * b = (TGraph *)clone;

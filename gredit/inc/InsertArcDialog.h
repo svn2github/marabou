@@ -42,14 +42,14 @@ public:
                        Double_t *xcenter, Double_t *ycenter,
                        Double_t *phimin, Double_t *phimax);
    Double_t GetRatioXY();
-	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
-	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
+	void    ObjCreated(Int_t /*px*/, Int_t /*py*/, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t /*px*/, Int_t /*py*/, TObject */*obj*/) { };
    void    SaveDefaults();
    void    RestoreDefaults();
    void    RecursiveRemove(TObject * obj);
    void    CloseDialog();
    void    CloseDown(Int_t wid);
-   void    CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) {};
+   void    CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/) {};
 
 ClassDef(InsertArcDialog,0)
 };

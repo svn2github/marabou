@@ -147,7 +147,7 @@ void HprPlaneManager::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void HprPlaneManager::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void HprPlaneManager::CRButtonPressed(Int_t wid, Int_t bid, TObject */*obj*/)
 {
    cout << "CRButtonPressed(" << wid<< ", " <<bid  << " " 
 	<< fBidCurrentActive << " " <<fCurrentActive << endl;

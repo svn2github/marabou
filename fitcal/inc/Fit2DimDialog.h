@@ -85,10 +85,10 @@ public:
    TH1  *FindHistInPad();
    void PrintCorrelation();
    void SetFitOptions(){};
-   Int_t GetMaxBin(TH2 * h1, Int_t binlX, Int_t binuX, Int_t binlY, Int_t binuY);
-   void GetGaussEstimate(TH2 *h, Double_t fromX, Double_t toX,
+//   Int_t GetMaxBin(TH2 * h1, Int_t binlX, Int_t binuX, Int_t binlY, Int_t binuY);
+/*   void GetGaussEstimate(TH2 *h, Double_t fromX, Double_t toX,
                                  Double_t fromY, Double_t toY,
-                                 Double_t bg,TArrayD & par);
+                                 Double_t bg,TArrayD & par);*/
 //   void DetLinearBackground();
    Int_t GetMarkers();
    void ClearMarkers();

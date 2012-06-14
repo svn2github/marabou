@@ -240,7 +240,7 @@ void FeynmanDiagramDialog::RestoreDefaults()
 }
 //______________________________________________________________________
 
-void FeynmanDiagramDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void FeynmanDiagramDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/)
 {
 //   TCanvas *canvas = (TCanvas *)obj;
 //  cout << " FeynmanDiagramDialog::CRButtonPressed(" << wid<< ", " <<bid;

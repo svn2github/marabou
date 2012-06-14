@@ -703,7 +703,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 				cout << setred << "WARNING: More than 1 actice cut" << setblack << endl;
 			TCutG *cut = (TCutG*)fActiveCuts->At(0);
 			Int_t np = cut->GetN();
-			Double_t xmin = 1e12,  xmax = -1e12;
+			xmin = 1e12,  xmax = -1e12;
 			Double_t x, y;
 			Double_t cor_limit = GeneralAttDialog::fVertAdjustLimit *
 										fithist->GetBinWidth(1);
@@ -820,7 +820,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       FhMarker *p;
       TIter next(fMarkers);
       double mean = 0., entries = 0.;
-      TAxis *xaxis = fSelHist->GetXaxis();
+      xaxis = fSelHist->GetXaxis();
       xmin = xaxis->GetXmin();
       xmax = xaxis->GetXmax();
       while ( (p = (FhMarker *) next()) ) {
@@ -994,7 +994,7 @@ void FitHist::EditFitMacro()
       	if (retval < 0) {
          	return;
       	}
-      	Bool_t ok = kFALSE;
+      	ok = kFALSE;
       	for (Int_t i = 0; i < nFitTemplates; i++) {
          	if (flags[i] == 1) {
             	tmpfile << FitMacroTemplates[i];
@@ -1178,7 +1178,7 @@ void FitHist::ExecFitSliceYMacro()
             hname = fSelHist->GetName();
             hname += "_";
             hname += ipar;
-            TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
+            parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
             if (parhist){
                hname.Prepend("Memory ");
                hname += " ";

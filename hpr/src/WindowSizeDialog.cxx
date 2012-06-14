@@ -196,7 +196,7 @@ void WindowSizeDialog::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void WindowSizeDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void WindowSizeDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/)
 {
 //   TCanvas *canvas = (TCanvas *)obj;
 //  cout << "CRButtonPressed(" << wid<< ", " <<bid;

@@ -179,7 +179,7 @@ void HprTh3Dialog::CloseDown(Int_t wid)
 }
 //__________________________________________________________________
 
-void HprTh3Dialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void HprTh3Dialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
 {
    
 //   cout << "CRButtonPressed: wid "  << wid<< " bid " <<bid

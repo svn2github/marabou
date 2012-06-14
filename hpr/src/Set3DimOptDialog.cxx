@@ -369,7 +369,7 @@ void Set3DimOptDialog::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void Set3DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
 //   cout << "CRButtonPressed(" << wid<< ", " <<bid;

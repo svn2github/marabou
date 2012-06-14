@@ -75,7 +75,7 @@ class TMrbLofMacros: public TMrbLofNamedX {
 		Bool_t AskForArgs(const Char_t * MacroName) const {return kTRUE;};		// interactively ask for macro args
 
 		inline TMrbNamedX * FirstMacro() const { return((TMrbNamedX *) First()); };		// loop thru list of macros
-		inline TMrbNamedX * NextMacro(TMrbNamedX * Last) const { return((TMrbNamedX *) After(Last)); };
+		inline TMrbNamedX * NextMacro(TMrbNamedX * LastL) const { return((TMrbNamedX *) After(LastL)); };
 
 		inline TMrbLofNamedX * GetLofEnvNames() { return(&fLofEnvNames); }; 		// list of legal environment names
 		Bool_t CheckEnvName(const Char_t * EnvName, Bool_t IsArgEnv = kTRUE) const;		// check env name

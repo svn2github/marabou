@@ -109,7 +109,7 @@ Double_t  TCurlyLineWithArrow::GetDistToArrow(Int_t where)
 }
 //________________________________________________________________________
 
-void TCurlyLineWithArrow::Paint(const Option_t *opt)
+void TCurlyLineWithArrow::Paint(const Option_t */*opt*/)
 {
 //   TCurlyLine::Paint();
    Double_t x1, x2, y1, y2;

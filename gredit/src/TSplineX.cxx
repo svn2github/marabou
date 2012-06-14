@@ -1111,7 +1111,7 @@ void TSplineX::Print (Option_t * opt) const
 }
 //_____________________________________________________________________________________
 
-void TSplineX::Paint(Option_t * opt)
+void TSplineX::Paint(Option_t * /*optin*/)
 {
 //
 // This is the complicated part: compute the spline,
@@ -1119,7 +1119,6 @@ void TSplineX::Paint(Option_t * opt)
 // If required fill the space between rails or inside the
 // spline.
 	//cout << "TSplineX::Paint " << fComputeDone << endl;
-   if (opt) ; // keep compiler quiet
    if (!fComputeDone) ComputeSpline();
    Bool_t aas = fPaintArrowAtStart;
    Bool_t aae = fPaintArrowAtEnd;
@@ -1457,7 +1456,7 @@ Double_t TSplineX::GetLengthOfText(HprText *t, Double_t csep, Int_t start, Int_t
       tt.GetTextExtent(w, h, subs.Data());
       Double_t x, y;
 		Double_t phirad = GetPhiXY(s, x, y);
-      Double_t clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
+      clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
       Double_t co = TMath::Cos(phirad);
       Double_t si = TMath::Sin(phirad);
       Double_t xylen = TMath::Sqrt(co*co + yx*yx*si*si);
@@ -1517,8 +1516,8 @@ void TSplineX::PaintText()
    Double_t direction = 1;
    if ( xp[0] > xp[np-1] )
       direction = -1;
-   for (Int_t i = 0; i < fTextList->GetSize(); i++) {
-      HprText *t = (HprText*)fTextList->At(i);
+   for (Int_t it = 0; it < fTextList->GetSize(); it++) {
+      HprText *t = (HprText*)fTextList->At(it);
       THprLatex latex;
       latex.SetTextSize(t->GetTextSize());
       latex.SetTextFont(t->GetTextFont());
@@ -1603,9 +1602,9 @@ void TSplineX::PaintText()
 			if ( chShift != 0 ) {
 				Endpoint(phi, x, y, chShift, &a, &b);
 			}
-         Double_t co = TMath::Cos(phi);
-         Double_t si = TMath::Sin(phi);
-         Double_t xylen = TMath::Sqrt(co*co + yx*yx*si*si);
+         co = TMath::Cos(phi);
+         si = TMath::Sin(phi);
+         xylen = TMath::Sqrt(co*co + yx*yx*si*si);
 			phi  *=  (180 / TMath::Pi());
          if ( direction < 0 ) {
             phi += 180;
@@ -1740,9 +1739,9 @@ void TSplineX::PaintArrow(Int_t where)
       Double_t px1o = x[1];
       Double_t py1o = y[1];
       x[0] = px2;
-      Double_t* xp;
-      Double_t* yp;
-      GetResult(xp, yp);
+//      Double_t* xp;
+//      Double_t* yp;
+//      GetResult(xp, yp);
       y[0] = py2;
       x[1] = px3;
       y[1] = py3;

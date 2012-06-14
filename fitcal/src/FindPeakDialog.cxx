@@ -472,7 +472,7 @@ void FindPeakDialog::CloseDialog()
 }
 //_______________________________________________________________________
 
-void FindPeakDialog::CloseDown(Int_t wid)
+void FindPeakDialog::CloseDown(Int_t /*wid*/)
 {
 //   cout << "FindPeakDialog::CloseDown() " << wid<< endl;
    SaveDefaults();
@@ -480,7 +480,7 @@ void FindPeakDialog::CloseDown(Int_t wid)
 }
 //_______________________________________________________________________
 
-void FindPeakDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) 
+void FindPeakDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/) 
 {
    if (bid == fUseTSpectrumEntry || bid == fUseSQWaveFoldEntry) {
 		if (fUseTSpectrum) {

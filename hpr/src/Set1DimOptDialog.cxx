@@ -491,7 +491,7 @@ void Set1DimOptDialog::LinLogChanged(TObject* o)
 }
 //____________________________________________________________
 
-void Set1DimOptDialog::SetAtt(TH1* hist)
+void Set1DimOptDialog::SetAtt(TH1* /*hist*/)
 {
 //	cout << "Set1DimOptDialog::SetAtt:fDrawOpt1Dim " << fDrawOpt << endl;
 //			<< " hist: " << hist->GetName()
@@ -734,7 +734,7 @@ void Set1DimOptDialog::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void Set1DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void Set1DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
 //  cout << "CRButtonPressed(" << wid<< ", " <<bid;

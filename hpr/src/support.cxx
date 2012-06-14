@@ -32,7 +32,7 @@
 #include "SetColor.h"
 
 #include "support.h"
-#include "TMrbString.h"
+//#include "TMrbString.h"
 #include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
 #include "TMrbStatistics.h"
@@ -47,7 +47,7 @@ TSocket * gSocket = 0;
 //-----------------------------------------------------------------------
 //  a command button
 
-int GetBPars(const char *cmd, TObject * cc, int xpos, int ypos, float dx,
+int GetBPars(const char *cmd, TObject * /*cc*/, int xpos, int ypos, float dx,
              float dy, TString *tmp, float *x0, float *x1, float *y0,
              float *y1)
 {
@@ -1265,9 +1265,9 @@ Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads)
 	}
 	// look for subpads
 	TIter next1(ca->GetListOfPrimitives());
-	while (TObject * obj = next1()) {
-		if (obj->InheritsFrom("TPad")) {
-			TPad * p = (TPad*)obj;
+	while (TObject * obj1 = next1()) {
+		if (obj1->InheritsFrom("TPad")) {
+			TPad * p = (TPad*)obj1;
 			TIter next2(p->GetListOfPrimitives());
 			while (TObject * obj = next2()) {
 				if (obj->InheritsFrom("TGraph")) {
@@ -1295,14 +1295,14 @@ Int_t FindObjs(TVirtualPad * ca, TList * logr, TList * pads, const char * oname)
    }
 // look for subpads
    TIter next1(ca->GetListOfPrimitives());
-   while (TObject * obj = next1()) {
-      if (obj->InheritsFrom("TPad")) {
-          TPad * p = (TPad*)obj;
+   while (TObject * obj1 = next1()) {
+      if (obj1->InheritsFrom("TPad")) {
+          TPad * p = (TPad*)obj1;
           TIter next2(p->GetListOfPrimitives());
-          while (TObject * obj = next2()) {
-             if (obj->InheritsFrom(oname)) {
+          while (TObject * obj2 = next2()) {
+             if (obj2->InheritsFrom(oname)) {
                 ngr++;
-                if (logr) logr->Add(obj);
+                if (logr) logr->Add(obj2);
                 if (pads) pads->Add(p);
              }
           }
@@ -1326,14 +1326,14 @@ Int_t FindPaveStats(TVirtualPad * ca, TList * lops, TList * pads)
    }
 // look for subpads
    TIter next1(ca->GetListOfPrimitives());
-   while (TObject * obj = next1()) {
-      if (obj->InheritsFrom("TPad")) {
-          TPad * p = (TPad*)obj;
+   while (TObject * obj1 = next1()) {
+      if (obj1->InheritsFrom("TPad")) {
+          TPad * p = (TPad*)obj1;
           TIter next2(p->GetListOfPrimitives());
-          while (TObject * obj = next2()) {
-             if (obj->InheritsFrom("TPaveStat")) {
+          while (TObject * obj2 = next2()) {
+             if (obj2->InheritsFrom("TPaveStat")) {
                 nps++;
-                if (lops) lops->Add(obj);
+                if (lops) lops->Add(obj2);
                 if (pads) pads->Add(p);
              }
           }
@@ -1563,7 +1563,7 @@ void DrawLineStyles()
 }
 //______________________________________________________________________________________
 
-Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
+Bool_t CreateDefaultsDir(TRootCanvas * /*mycanvas*/, Bool_t checkonly)
 {
    TString defname("default/Last");
    Bool_t fok = kFALSE;
@@ -2188,7 +2188,7 @@ void SetAxisHistX(TCanvas *c, TAxis * xa)
 }
 //_______________________________________________________________________________________
 
-void ConvertTimeToString(time_t t, TAxis * a, TString * string)
+void ConvertTimeToString(time_t t, TAxis * /*a*/, TString * string)
 {
    if (t == 0) *string = "";
    TDatime dt;
@@ -2197,7 +2197,7 @@ void ConvertTimeToString(time_t t, TAxis * a, TString * string)
 }
 //_______________________________________________________________________________________
 
-Double_t ConvertToTimeOrDouble(const char * string, TAxis * a)
+Double_t ConvertToTimeOrDouble(const char * string, TAxis * /*a*/)
 {
    Int_t yy, mm, dd, hh, mi, ss;
    TString s(string);

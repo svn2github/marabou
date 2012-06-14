@@ -107,9 +107,9 @@ void GEdit::ShowToolBar(Bool_t show)
 		return;
 	}
    if (show && !fToolBar) {
-      TGLayoutHints *fHorizontal1Layout = new TGLayoutHints(kLHintsTop | kLHintsExpandX);
+      fHorizontal1Layout = new TGLayoutHints(kLHintsTop | kLHintsExpandX);
       fToolBarSep = new TGHorizontal3DLine(fRootCanvas);
-		TGLayoutHints *fToolBarLayout = new TGLayoutHints(kLHintsTop |  kLHintsExpandX);
+		fToolBarLayout = new TGLayoutHints(kLHintsTop |  kLHintsExpandX);
 		fToolDock->AddFrame(fToolBarSep, fToolBarLayout);
       fToolBar = new TGToolBar(fToolDock, 60, 20, kHorizontalFrame);
       fToolDock->AddFrame(fToolBar, fHorizontal1Layout);

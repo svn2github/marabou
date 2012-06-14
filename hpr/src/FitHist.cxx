@@ -499,7 +499,7 @@ void FitHist::RecursiveRemove(TObject * obj)
 
 //________________________________________________________________
 
-void FitHist::SaveDefaults(Bool_t recalculate)
+void FitHist::SaveDefaults(Bool_t /*recalculate*/)
 {
    if (!gHpr) return;      // not called from  Histpresenter
 	if (!GeneralAttDialog::fRememberLastSet &&  !GeneralAttDialog::fRememberZoom) return;
@@ -953,7 +953,7 @@ void FitHist::handle_mouse()
       if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")
          ||  (select->InheritsFrom("TCanvas") && IsInsideFrame(fCanvas, px, py))){
          if (select->InheritsFrom("TH3")) return;
-         Int_t px = gPad->GetEventX();
+         px = gPad->GetEventX();
          Axis_t xx = gPad->AbsPixeltoX(px);
          Axis_t yy = gPad->AbsPixeltoY(py);
          Int_t binX = hist->GetXaxis()->FindBin(xx);
@@ -1059,7 +1059,7 @@ void FitHist::handle_mouse()
                	gPad->Modified();
                	gPad->Update();
                	gPad->GetCanvas()->GetFrame()->SetBit(TBox::kCannotMove);
-						Double_t chi2 = gFitGauss->GetChisquare() / (Double_t)TMath::Max(gFitGauss->GetNDF(),1);
+						chi2 = gFitGauss->GetChisquare() / (Double_t)TMath::Max(gFitGauss->GetNDF(),1);
 
 						if ( fLiveBG ) {
 							Double_t a = gFitGauss->GetParameter(0);
@@ -1533,7 +1533,7 @@ void FitHist::AddAxis(Int_t where)
 }
 //_______________________________________________________________________________________
 
-void FitHist::ObjMoved(Int_t px, Int_t py, TObject *obj)
+void FitHist::ObjMoved(Int_t /*px*/, Int_t /*py*/, TObject *obj)
 {
 	if ( gDebug > 0 )
 		cout << "ObjMoved: " << obj->ClassName() <<endl;
@@ -2847,8 +2847,8 @@ void FitHist::ExpandProject(Int_t what)
 //                 cout << i << " " << j << " "<< irebin << " "<< jrebin << endl;
 //                 cout << xcent << " " << ycent << " " << oldcont << " " << cont<< endl;
                oldcont += cont;
-               Axis_t xcent = xa->GetBinCenter(irebin);
-               Axis_t ycent = ya->GetBinCenter(jrebin);
+               xcent = xa->GetBinCenter(irebin);
+               ycent = ya->GetBinCenter(jrebin);
 
                fSelHist->SetCellContent(irebin, jrebin, 0);
                TH2 *ph2 = (TH2 *) fSelHist;

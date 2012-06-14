@@ -549,11 +549,11 @@ void TextBox::TransformPave(TPave *p, Short_t align)
       TextBoxMember *mobj;
       TObject *obj;
       while ( (mobj = (TextBoxMember*)next()) ) {
-         TPave *p = NULL;
+         TPave *pp = NULL;
          obj = mobj->GetObject();
      	   if (obj->InheritsFrom("TPave")) {
-            p = (TPave*)obj;
-            if (distance(p->GetX1(), p->GetY1(), x, y) < fSmall) {
+            pp = (TPave*)obj;
+            if (distance(pp->GetX1(), pp->GetY1(), x, y) < fSmall) {
                if (halign == 3)
                   x -= dx;
                else

@@ -27,8 +27,8 @@ private:
 public:
    MarkerLineDialog();
    virtual ~MarkerLineDialog();
-	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
-	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
+	void    ObjCreated(Int_t /*px*/, Int_t /*py*/, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t /*px*/, Int_t /*py*/, TObject */*obj*/) { };
    void    Arrow();
    void    SimpleLine();
    void    PolyLine();

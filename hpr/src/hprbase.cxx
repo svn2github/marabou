@@ -800,7 +800,7 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	}
 	
 	if ( lLegend != 0 ) {
-		TEnv env(".hprrc");
+//		TEnv env(".hprrc");
 		Double_t x1 = env.GetValue("SuperImposeHist.fLegendX1", 0.11);
 		Double_t x2 = env.GetValue("SuperImposeHist.fLegendX2", 0.3);
 		Double_t y1 = env.GetValue("SuperImposeHist.fLegendY1", 0.8);
