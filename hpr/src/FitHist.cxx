@@ -1220,11 +1220,12 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		fCanvas->SetLogx(fLogx);
 		fCanvas->SetLogy(fLogy);
 		if (gDebug > 0) {
-			cout<< "fCanvas->GetLogy(): " ;
+			cout<< "DisplayHist:: fCanvas->GetLogy(): " ;
 			if (fCanvas->GetLogy()) 
 				cout << "true";
 			else
 				cout << "false";
+			cout << " StatY " << gStyle->GetStatY() << " StatH " << gStyle->GetStatH();
 			cout << endl;
 		}
 		fCanvas->GetHandleMenus()->SetLog(fLogy);
@@ -3150,15 +3151,15 @@ void FitHist::Draw1Dim()
    }
    DrawDate();
 	TPaveStats * st = (TPaveStats *)fCanvas->GetPrimitive("stats");
-	if ( st && GeneralAttDialog::fRememberLastSet ) {
+	if ( st && GeneralAttDialog::fRememberStatBox ) {
 		TEnv env(".hprrc");
 		if ( env.Lookup("StatBox1D.fX1") ) {
-			st->SetX1NDC(env.GetValue("StatBox1D.fX1", 0.78));
-			st->SetX2NDC(env.GetValue("StatBox1D.fX2", 0.98));
-			st->SetY1NDC(env.GetValue("StatBox1D.fY1", 0.835));
-			st->SetY2NDC(env.GetValue("StatBox1D.fY2", 0.995));
+			st->SetX1NDC(env.GetValue("StatBox1D.fX1", 0.7));
+			st->SetX2NDC(env.GetValue("StatBox1D.fX2", 0.9));
+			st->SetY1NDC(env.GetValue("StatBox1D.fY1", 0.74));
+			st->SetY2NDC(env.GetValue("StatBox1D.fY2", 0.9));
 			if (gDebug > 0) {
-				cout << "Draw1Dim() StatBox1D.fX1: " << st->GetX1NDC() << endl;
+				cout << "Draw1Dim() StatBox1D.fY1, 2: " << st->GetY1NDC() << " " << st->GetY2NDC() << endl;
 			}
 		}	
 	}
@@ -3314,7 +3315,7 @@ void FitHist::Draw2Dim()
    fCanvas->Update();
 	TPaveStats * st = (TPaveStats *)fCanvas->GetPrimitive("stats");
 //   cout << "Draw2Dim: st " << st << endl;
-	if ( st && GeneralAttDialog::fRememberLastSet ) {
+	if ( st && GeneralAttDialog::fRememberStatBox ) {
 		TEnv env(".hprrc");
 		if ( env.Lookup("StatBox2D.fX1") ) {
 			st->SetX1NDC(env.GetValue("StatBox2D.fX1", 0.78));

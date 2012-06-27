@@ -514,7 +514,10 @@ again:
                //       gClient->GetPicture("/home/rg/schaileo/myroot/xpm/rquit.xpm"),
                       icontype, buttons, &retval);
                      if(retval == kMBYes){
-                        if(fHistPresent)fHistPresent->CloseAllCanvases();
+                        if( fHistPresent ) {
+									fHistPresent->CloseAllCanvases();
+									fHistPresent->SaveOptions();
+								}
                         gApplication->Terminate(0);
                      }
                      }

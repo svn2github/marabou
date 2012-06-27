@@ -73,6 +73,18 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 	The position or size of the StatBox may also be adjust by the mouse.\n\
 	Values are remembered within or between sessions. This behaviour is\n\
 	controlled from \"Various HistPresent Options\" menu.\n\
+	Warning:\n\
+	If option: \"Remmember StatBox position\" is not used, Root itself will\n\
+	adjust width and size of the statbox as follows:\n\
+	\n\
+	Double_t  statw  = gStyle->GetStatW();\n\
+	if (fit) statw   = 1.8*gStyle->GetStatW();\n\
+		\\nlines number of entries like cont, mean, sigma, etc\n\
+		\\nlinesf for fitting parameters\n\
+		Double_t  stath  = (nlines+nlinesf)*gStyle->GetStatFontSize();\n\
+		if (stath <= 0 || 3 == (gStyle->GetStatFont()%10)) {\n\
+			stath = 0.25*(nlines+nlinesf)*gStyle->GetStatH();\n\
+		}\n\
 	\n\
 	Note: Changeing options only influences the current histogram\n\
 	To make them active for subsequently displayed histograms\n\
@@ -118,7 +130,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 	}
    RestoreDefaults();
 	GetValuesFromHist();
-	cout << "SetHistOptDialog, nh1, nh2 " << nh1 << " " << nh2 << endl;
+// 	cout << "SetHistOptDialog, nh1, nh2 " << nh1 << " " << nh2 << endl;
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
 //   static void *fValp[100];
@@ -374,6 +386,8 @@ void SetHistOptDialog::SetHistAttNow(TCanvas *canvas, Int_t bid)
 void SetHistOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 {
    if (!canvas) return;
+   if (gDebug > 0)
+		cout << "SetHistOptDialog::SetHistAtt" << endl;
 	Bool_t mod_statbox =
      gStyle->GetOptStat() && ((bid == 999) || (bid >= fStatCmd1 && bid <= fStatCmd2));
 	Bool_t mod_titlebox =
@@ -545,6 +559,8 @@ void SetHistOptDialog::SetTitleBoxAttr(TStyle *sty)
 void SetHistOptDialog::SetStatBoxAttr(TStyle *sty)
 {
 	TEnv env(".hprrc");
+	if (gDebug > 0)
+		cout << "SetHistOptDialog::SetStatBoxAttr" << endl;
 	if ( fCanvas ) {
 		TIter next=fCanvas->GetListOfPrimitives();
 		TObject *obj;
@@ -577,10 +593,10 @@ void SetHistOptDialog::SetStatBoxAttr(TStyle *sty)
 			pt->SetFillStyle(fStatStyle);
 			pt->SetTextFont  (fStatFont);
 			pt->SetBorderSize(fStatBorderSize);
-			pt->SetX1NDC         (fStatX         );
-			pt->SetY1NDC         (fStatY         );
-			pt->SetX2NDC         (fStatX + fStatW );
-			pt->SetY2NDC         (fStatY + fStatH );
+			pt->SetX2NDC         (fStatX         );
+			pt->SetY2NDC         (fStatY         );
+			pt->SetX1NDC         (fStatX - fStatW );
+			pt->SetY1NDC         (fStatY - fStatH );
 			sty->SetStatColor     (fStatFillColor );
 			sty->SetLineColor     (fStatLineColor );
 			sty->SetStatColor     (fStatFillColor );
@@ -590,11 +606,12 @@ void SetHistOptDialog::SetStatBoxAttr(TStyle *sty)
 			sty->SetStatFontSize  (fStatFontSize  );
 			sty->SetStatStyle     (fStatStyle     );
 			sty->SetStatFormat    (fStatFormat    );
-			fStatX         = pt->GetX1NDC();
-			fStatY         = pt->GetY1NDC();
+			fStatX         = pt->GetX2NDC();
+			fStatY         = pt->GetY2NDC();
 			fStatW         = pt->GetX2NDC() - pt->GetX1NDC();
 			fStatH         = pt->GetY2NDC() - pt->GetY1NDC();
-		//	 cout << "pt->GetY2NDC() " <<pt->GetY2NDC() << " pt->GetY1NDC() " << pt->GetY1NDC()<< endl;
+//			cout << "SetHistOptDialog::SetStatBoxAttr pt->GetY2NDC() " 
+//			 <<pt->GetY2NDC() << " pt->GetY1NDC() " << pt->GetY1NDC()<< endl;
 			sty->SetStatX         (fStatX);
 			sty->SetStatY         (fStatY);
 			sty->SetStatW         (fStatW);
@@ -877,8 +894,8 @@ void SetHistOptDialog::RestoreDefaults(Int_t resetall)
 	fStatFormat=    env.GetValue("SetHistOptDialog.fStatFormat",  "6.2g");
    fStatFontSize=  env.GetValue("SetHistOptDialog.StatFontSize",   0.02);
    fStatStyle=     env.GetValue("SetHistOptDialog.StatStyle",         0);
-   fStatX=         env.GetValue("SetHistOptDialog.StatX",          0.98);
-   fStatY=         env.GetValue("SetHistOptDialog.StatY",         0.995);
+   fStatX=         env.GetValue("SetHistOptDialog.StatX",           0.9);
+   fStatY=         env.GetValue("SetHistOptDialog.StatY",           0.9);
    fStatW=         env.GetValue("SetHistOptDialog.StatW",           0.2);
    fStatH=         env.GetValue("SetHistOptDialog.StatH",          0.16);
    fTitleFillColor = env.GetValue("SetHistOptDialog.TitleColor",      0);
@@ -946,10 +963,12 @@ void SetHistOptDialog::GetValuesFromHist()
 			fStatFontSize  = pt->GetTextSize();
 			fStatStyle     = pt->GetFillStyle();
 			fStatFormat    = gStyle->GetStatFormat();
-			fStatX         = pt->GetX1NDC();
-			fStatY         = pt->GetY1NDC();
-			fStatW         = gStyle->GetStatW();
-			fStatH         = gStyle->GetStatH();
+			fStatX         = pt->GetX2NDC();
+			fStatY         = pt->GetY2NDC();
+			fStatW         = pt->GetX2NDC() - pt->GetX1NDC();
+			fStatH         = pt->GetY2NDC() - pt->GetY1NDC();
+//			fStatW         = gStyle->GetStatW();
+//			fStatH         = gStyle->GetStatH();
 		}
 	}
 	TPaveText *tit = (TPaveText*)fCanvas->GetListOfPrimitives()->FindObject("title");
@@ -1028,15 +1047,10 @@ void SetHistOptDialog::SetDefaults()
    gStyle->SetStatFont       (env.GetValue("SetHistOptDialog.StatFont",         62));
    gStyle->SetStatFontSize   (env.GetValue("SetHistOptDialog.StatFontSize",   0.02));
    gStyle->SetStatStyle      (env.GetValue("SetHistOptDialog.StatStyle",      1001));
-	// X + Y of upper right corner
-	Double_t xur = env.GetValue("SetHistOptDialog.StatX",0.7)
-	             + env.GetValue("SetHistOptDialog.StatW",0.2);
-	Double_t yur = env.GetValue("SetHistOptDialog.StatY",0.7)
-	             + env.GetValue("SetHistOptDialog.StatH",0.2);
-   gStyle->SetStatX          (xur);
-   gStyle->SetStatY          (yur);
-   gStyle->SetStatW          (env.GetValue("SetHistOptDialog.StatW",           0.2));
-   gStyle->SetStatH          (env.GetValue("SetHistOptDialog.StatH",          0.16));
+   gStyle->SetStatX          (env.GetValue("SetHistOptDialog.StatX",           0.9));
+   gStyle->SetStatY          (env.GetValue("SetHistOptDialog.StatY",           0.9));
+	gStyle->SetStatW          (env.GetValue("SetHistOptDialog.StatW",           0.2));
+	gStyle->SetStatH          (env.GetValue("SetHistOptDialog.StatH",           0.16));
 	fTitleCenterX  =           env.GetValue("SetHistOptDialog.fTitleCenterX",      1);
 	fTitleCenterY  =           env.GetValue("SetHistOptDialog.fTitleCenterY",      1);
 	fTitleCenterZ  =           env.GetValue("SetHistOptDialog.fTitleCenterZ",      1);

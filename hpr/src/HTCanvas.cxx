@@ -194,12 +194,20 @@ void HTCanvas::DoSaveLegendStats()
 //		TEnv env(".hprrc");
 		res = envn + "X1";
 		env.SetValue(res, leg->GetX1NDC());
+		if (gDebug > 0) 
+			cout << res << " " << leg->GetX1NDC() << endl;
 		res = envn + "X2";
 		env.SetValue(res, leg->GetX2NDC());
+		if (gDebug > 0) 
+			cout << res << " "  << leg->GetX2NDC() << endl;
 		res = envn + "Y1";
 		env.SetValue(res, leg->GetY1NDC());
+		if (gDebug > 0) 
+			cout << res << " "  << leg->GetY1NDC() << endl;
 		res = envn + "Y2";
 		env.SetValue(res, leg->GetY2NDC());
+		if (gDebug > 0) 
+			cout << res << " "  << leg->GetY2NDC() << endl;
 		env.SaveLevel(kEnvLocal);
 	}
 }
