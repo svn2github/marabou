@@ -12,12 +12,13 @@
 #include "SetColorModeDialog.h"
 #include "hprbase.h"
 #include <iostream>
+#include <iomanip>
 
 namespace std {} using namespace std;
 
 //TString SetColorModeDialog::fDrawOpt2Dim = "COLZ";
-Int_t SetColorModeDialog::fStartColor;
-Int_t SetColorModeDialog::fEndColor;
+Color_t SetColorModeDialog::fStartColor;
+Color_t SetColorModeDialog::fEndColor;
 
 Int_t   SetColorModeDialog::fStartColorIndex = 1;
 Int_t   SetColorModeDialog::fNofTransLevels = 20;
@@ -67,13 +68,13 @@ or HLS (Hue/Lightness/Saturation) transitions\n\
    static TString rgbcmd("SetBrightness()");
    fRow_lab = new TList();
 
-   fRow_lab->Add(new TObjString("RadioButton_Rainbow colors"));
+   fRow_lab->Add(new TObjString("RadioButton_      Rainbow colors"));
    fValp[ind++] = &fMrbow;
    fRow_lab->Add(new TObjString("PlainIntVal+Nof Levels"));
    fValp[ind++] = &fNofTransLevels;
-   fRow_lab->Add(new TObjString("RadioButton_Grey levels, highest=white"));
+   fRow_lab->Add(new TObjString("RadioButton_Grey lev, high=white"));
    fValp[ind++] = &fMbw;
-   fRow_lab->Add(new TObjString( "RadioButton+Grey levels, highest=black)"));
+   fRow_lab->Add(new TObjString("RadioButton+Grey lev, high=black)"));
    fValp[ind++] = &fMbwinv;
    fRow_lab->Add(new TObjString("RadioButton_Color transition HLS"));
    fValp[ind++] = &fMtransHLS;
@@ -83,8 +84,8 @@ or HLS (Hue/Lightness/Saturation) transitions\n\
    fValp[ind++] = &fMtransRGB;
    fRow_lab->Add(new TObjString("CommandButt+Set RGB"));
    fValp[ind++] = &rgbcmd;
-   fRow_lab->Add(new TObjString("PlainIntVal_Start color in RGB trans"));
-   fRow_lab->Add(new TObjString("PlainIntVal-End   color in RGB trans"));
+	fRow_lab->Add(new TObjString("ColorSelect_Start color RGB"));
+	fRow_lab->Add(new TObjString("ColorSelect+End   color RGB"));
    fValp[ind++] = &fStartColor;
    fValp[ind++] = &fEndColor;
 
@@ -92,7 +93,7 @@ or HLS (Hue/Lightness/Saturation) transitions\n\
    fValp[ind++] = &stycmd;
 
    static Int_t ok;
-   Int_t itemwidth = 360;
+   Int_t itemwidth = 420;
    fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
@@ -114,6 +115,7 @@ void SetColorModeDialog::SetColorMode()
       fNofColorLevels = fNofTransLevels;
       fPalette = fTransPaletteRGB;
       fStartColorIndex = 361;
+		SetTransLevelsRGB();
    } else if (fMtransHLS) {
       fNofColorLevels = fNofTransLevels;
       fPalette = fTransPaletteHLS;
@@ -186,8 +188,8 @@ void SetColorModeDialog::AdjustBrightness(Int_t row , Int_t val)
       default:
          return;
    }
-//   cout << "AdjustBrightness: " <<SetColorModeDialog::fEnhenceRed
-//        << " " << SetColorModeDialog::fEnhenceGreen << " " << SetColorModeDialog::fEnhenceBlue << endl;
+   cout << "AdjustBrightness: " <<SetColorModeDialog::fEnhenceRed
+        << " " << SetColorModeDialog::fEnhenceGreen << " " << SetColorModeDialog::fEnhenceBlue << endl;
    SetColorModeDialog::SetTransLevelsRGB();
 //   hp->SetColorPalette(mycanvas);
    UpdateCanvas();
@@ -332,30 +334,33 @@ void SetColorModeDialog::SetTransLevelsRGB()
       rgb[0] *= fEnhenceRed;
       rgb[1] *= fEnhenceGreen;
       rgb[2] *= fEnhenceBlue;
-      for (Int_t jj = 0; jj < 1; jj++) {
+//		cout << "i rgb fEnhenceRed " << rgb[0] << " "  
+//		<< rgb[1] << " "  << rgb[2] << " " << fEnhenceRed << endl; 
+//      for (Int_t jj = 0; jj < 1; jj++) {
          if (rgb[0] > 1.) {
             rgb[1] += 0.5 * (rgb[0] - 1.);
             rgb[2] += 0.5 * (rgb[0] - 1.);
             rgb[0] = 1.;
          } else {
-            rgb[0] = 0;
+//            rgb[0] = 0;
          }
          if (rgb[1] > 1.) {
             rgb[0] += 0.5 * (rgb[1] - 1.);
             rgb[2] += 0.5 * (rgb[1] - 1.);
             rgb[1] = 1.;
          }else {
-            rgb[1] = 0;
+//            rgb[1] = 0;
          }
          if (rgb[2] > 1.) {
             rgb[0] += 0.5 * (rgb[2] - 1.);
             rgb[1] += 0.5 * (rgb[2] - 1.);
             rgb[2] = 1.;
          }else {
-            rgb[2] = 0;
+//            rgb[2] = 0;
          }
-      }
-      color = new TColor(fStartColorIndex + i, rgb[0], rgb[1], rgb[2],"");
+//      }
+//      cout << "o rgb " << rgb[0] << " "  << rgb[1] << " "  << rgb[2] << endl; 
+		color = new TColor(fStartColorIndex + i, rgb[0], rgb[1], rgb[2],"");
 //      color->Print();
       fTransPaletteRGB[i] = fStartColorIndex + i;
       frac_r += step_r;
@@ -507,11 +512,12 @@ void SetColorModeDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject *
 //___________________________________________________________________
 
 TColor * SetColorModeDialog::GetColorByIndex(Int_t index) {
-   TIter next(gROOT->GetListOfColors());
+	return gROOT->GetColor(index);
+/*   TIter next(gROOT->GetListOfColors());
    while (TColor * c = (TColor *)next()) {
       if (c->GetNumber() == index) {
          return c;
       }
    }
-   return NULL;
+   return NULL;*/
 }

@@ -24,8 +24,8 @@ private:
 	static Int_t fMbwinv;
 	static Int_t fMrbow;
    static Int_t fStartColorIndex;
-   static Int_t fStartColor;
-   static Int_t fEndColor;
+   static Color_t fStartColor;
+   static Color_t fEndColor;
    static Int_t fNofTransLevels;
    static Int_t fNofGreyLevels;
    static Int_t   fNofColorLevels;
