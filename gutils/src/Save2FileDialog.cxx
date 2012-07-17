@@ -127,10 +127,9 @@ void Save2FileDialog::ExecuteSave()
       cout <<"fObject->GetName() "  << fObject->GetName() << " fObjName " << fObjName <<endl;
       TNamed *tn = NULL;
 #ifdef MARABOUVERS
-      HTCanvas *htc = NULL;
+		HTCanvas * htc = (HTCanvas*)fObject;
       if ( fObject->InheritsFrom("HTCanvas") ) {
-         HTCanvas *htc = (HTCanvas*)fObject;
-         htc->SetName(fObjName);
+			htc->SetName(fObjName);
       } else {
          tn = (TNamed *)fObject;
          tn->SetName(fObjName);
@@ -178,7 +177,7 @@ void Save2FileDialog::RestoreDefaults()
 }
 //_________________________________________________________________________
 
-void Save2FileDialog::CloseDown(Int_t wid)
+void Save2FileDialog::CloseDown(Int_t /*wid*/)
 {
    cout << "Save2FileDialog::CloseDown()" << endl;
    SaveDefaults();

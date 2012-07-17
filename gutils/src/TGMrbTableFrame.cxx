@@ -41,10 +41,10 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 													TOrdCollection * ColumnLabels,
 													TOrdCollection * RowLabels,
 													TArrayI * Flags, 
-                                        			Int_t Nradio, 
-                                        			const Char_t * HelpText, 
-                                        			const Char_t * ActionText_1,  
-                                        			const Char_t * ActionText_2) :
+													Int_t Nradio, 
+													const Char_t * HelpText, 
+													const Char_t * ActionText_1,  
+													const Char_t * ActionText_2) :
 											TGTransientFrame(gClient->GetRoot(), Window, 10, 10) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -247,14 +247,14 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    fTableFrame->SetLayoutManager(fLMMatrix);
 
 //   cout << "fNrows " << fNrows<< endl;
-   Int_t i = 0;
+   Int_t ind = 0;
    TIter next(Values);
    TObjString * objs;
    TString s;
    while((objs = (TObjString *) next())) {
       s = objs->String();
       if (s.BeginsWith("CheckButton")) {
-         fFlagButton = new TGCheckButton(fTableFrame, new TGHotString(""), i);
+         fFlagButton = new TGCheckButton(fTableFrame, new TGHotString(""), ind);
          if (s.EndsWith("Down")) fFlagButton->SetState(kButtonDown);
          else                    fFlagButton->SetState(kButtonUp);
          fFlagButton->Resize(itemwidth, fFlagButton->GetDefaultHeight());
@@ -279,7 +279,7 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 			   fWidgets->Add(fColLabel);
          }
       }
-      i++;
+      ind++;
    }
 
    if (ColumnLabels) {

@@ -832,7 +832,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       TGNumberEntry * tnentry;
       TGButton * cbutton;
       TGTextBuffer * tbuf;
-      TString s;
+//      TString s;
       TString l;
       TString nl;
       fNrows = RowLabels->GetSize();
@@ -1008,7 +1008,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             hframe->AddFrame(hButtonFrame, loc);
             fLastColorSelect = i;          // TGColor doesnt set Id correctly
          } else if (l.BeginsWith("Mark_Select")) {
-            Style_t fMarker = *(Style_t*)fValPointers[i];
+            fMarker = *(Style_t*)fValPointers[i];
             fMarkerSelect = new TGedMarkerSelect(hButtonFrame, fMarker, i + 1000*kIdMarkS);
             fMarkerSelect->Associate(this);
             fEntries->Add(fMarkerSelect);
@@ -1299,23 +1299,23 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else {
             ifstream selections(History);
             TString line;
-            Int_t id = 0;
+            Int_t idl = 0;
             fListBox = new TGListBox(this,  1000*kIdTextSelect);
             while (1) {
                line.ReadLine(selections);
                if (selections.eof()) break;
-               fListBox->AddEntry(line.Data(), id);
-               if (id == 00 && (Int_t)fTE->GetBuffer()->GetTextLength() == 0) {
+               fListBox->AddEntry(line.Data(), idl);
+               if (idl == 00 && (Int_t)fTE->GetBuffer()->GetTextLength() == 0) {
                   fTE->GetBuffer()->AddText(0, line.Data());
                   if (fText) *fText = fTE->GetBuffer()->GetString();
                   gClient->NeedRedraw(fTE);
                }
-               id++;
+               idl++;
             }
             selections.close();
  //           cout << "Entries: " << id << endl;
             wid = 8 * fTE->GetBuffer()->GetTextLength();
-            fListBox->Resize(TMath::Max(wid,320), TMath::Min(200, id*20));
+            fListBox->Resize(TMath::Max(wid,320), TMath::Min(200, idl*20));
             fListBox->Layout();
             fListBox->Associate(this);
 //            fWidgets->AddFirst(fListBox);
@@ -2064,7 +2064,7 @@ void TGMrbValuesAndText::CloseWindowExt()
 }
 //_______________________________________________________________________________________
 
-void TGMrbValuesAndText::CRButtonPressed(Int_t i, Int_t bid, TObject *obj)
+void TGMrbValuesAndText::CRButtonPressed(Int_t /*i*/, Int_t bid, TObject */*obj*/)
 {
 //   cout << "TGMrbValuesAndText::Emit: CRButtonPressed(" << fWidgetId   <<"," << fButtonId << ")";
 //   cout  << endl << flush;

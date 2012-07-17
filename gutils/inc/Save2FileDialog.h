@@ -30,7 +30,7 @@ public:
    void RestoreDefaults();
    void CloseDown(Int_t wid = 0);
    void CloseDialog();
-   void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) {};
+   void CRButtonPressed(Int_t, Int_t, TObject *) {};
 
 ClassDef(Save2FileDialog,0)
 };
