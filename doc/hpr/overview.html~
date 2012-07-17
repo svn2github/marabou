@@ -12,11 +12,11 @@ simple access to ROOT objects typically used in Accelerator experiments.<br>
 To use HistPresent at Garching on the MLL-Linux-Cluster
 type the following commands:
 <p>
-<b>ini cernlib_new </b>(or <b>ini cernlib</b>) to set PATHs etc.<br>
+<b>set_rootnew </b> to set PATHs etc.<br>
 Execute <b>HistPresent</b> in a directory where your ROOT-files reside.
 <p>
 Outside Garching please consult the installation 
-<a href=http://www.bl.physik.uni-muenchen.de/~schaileo/UpdateHprFromCVS.html>Howto</a>
+<a href=http://www.bl.physik.uni-muenchen.de/~Otto.Schaile/UpdateHprFromCVS.html>Howto</a>
 
 <H2>Browsing objects in files, memory, memory mapped files</H2>
 <UL>  
