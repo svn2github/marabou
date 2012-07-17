@@ -13,6 +13,7 @@
 #include "TList.h"
 #include "TGMsgBox.h"
 #include "TMath.h"
+#include "TPaveStats.h"
 #include "TVirtualFitter.h"
 #include "TVirtualPad.h"
 #include "TGMrbTableFrame.h"
@@ -818,6 +819,10 @@ void FitOneDimDialog::ClearFunctionList()
 {
 	Check4Reselect();
 	TList temp;
+	TPaveStats * stats = (TPaveStats*)fSelHist->GetListOfFunctions()->FindObject("stats");
+	gStyle->SetOptFit(0);
+	if ( stats )
+		delete stats;
    TList *lof = fSelHist->GetListOfFunctions();
    TIter next(lof);
    TObject *obj;
@@ -990,7 +995,7 @@ void FitOneDimDialog::PrintPeakList()
 
 	cout << endl
         << "-------------------------------------" << endl;
-	cout << "Fitting results                      " << endl;
+	cout << "Fitting results for: " << fSelHist->GetName() << endl;
 	cout << "-------------------------------------" << endl;
 	cout << "   Content      Mean     Sigma   Chi2/Ndf" << endl;
 	for (Int_t i = 0; i < np; i++) {
@@ -1377,6 +1382,11 @@ Bool_t FitOneDimDialog::FitGausExecute()
 
       } else {
     //  here fitting is done
+			TPaveStats * stats = (TPaveStats*)fSelHist->GetListOfFunctions()->FindObject("stats");
+			gStyle->SetOptFit(1);
+			if (stats)
+				delete stats;
+//				stats->SetOptFit(1);
          fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "");
          if (!fFitOptNoDraw) {
 				fSelHist->GetListOfFunctions()->Last()->ResetBit(TF1::kNotDraw);
@@ -1525,7 +1535,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 }
 //__________________________________________________________________________
 
-void FitOneDimDialog::AddPeaktoList(TF1 */*func*/)
+void FitOneDimDialog::AddPeaktoList(TF1 *func)
 {
 	cout << "AddPeaktoList " << endl;
 	Double_t sigma, mean, cont, chi2;
@@ -1953,7 +1963,11 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
          }
 
       } else if (fSelHist != NULL) {
-         fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
+			gStyle->SetOptFit(1);
+			TPaveStats *stats = (TPaveStats *)fSelHist->GetListOfFunctions()->FindObject("stats");
+			if ( stats )
+				delete stats;
+			fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
    //     add to ListOfFunctions if requested
          if (fFitOptAddAll) {
             TList *lof = fSelHist->GetListOfFunctions();
@@ -2090,7 +2104,8 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
       }
       if (bound > 0)            fitopt += "B";   // some pars are bound
       if (fGraph != NULL) {
-         fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+			gStyle->SetOptFit(1);
+			fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
    //     add to ListOfFunctions if requested
          if (fFitOptAddAll) {
             TList *lof = fGraph->GetListOfFunctions();
@@ -2102,7 +2117,11 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
          }
 
       } else if (fSelHist != NULL){
-         fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
+			TPaveStats *stats = (TPaveStats *)fSelHist->GetListOfFunctions()->FindObject("stats");
+			gStyle->SetOptFit(1);
+			if ( stats )
+				delete stats;
+			fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
    //     add to ListOfFunctions if requested
          if (fFitOptAddAll) {
             TList *lof = fSelHist->GetListOfFunctions();
@@ -2360,7 +2379,7 @@ void FitOneDimDialog::FillHistRandom()
    TString pn;
    TString newname(fFuncName);
    newname += "_range";
-   fFitFunc = new TF1Range(newname,(const char*)fFormula, fFrom, fTo);
+   TF1Range *fFitFunc = new TF1Range(newname,(const char*)fFormula, fFrom, fTo);
    if (fFitFunc->GetNdim() <= 0) {
       cout << "Something wrong with formula" << endl;
       return;
@@ -2525,7 +2544,7 @@ void FitOneDimDialog::CloseDialog()
 }
 //_______________________________________________________________________
 
-void FitOneDimDialog::CloseDown(Int_t /*wid*/)
+void FitOneDimDialog::CloseDown(Int_t wid)
 {
 //   cout << "FitOneDimDialog::CloseDown() " << endl;
    SaveDefaults();
