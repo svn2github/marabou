@@ -209,8 +209,8 @@ Int_t TMrbHelpBrowser::AddHtmlFile(const char * HtmlFile, Bool_t keep_references
    Bool_t start = kTRUE;
    while(NextLine(rawtext, line, start) >=0){
       start = kFALSE;
-      Int_t start = 0;
-      Int_t tag_start = NextTag(line, tag, start);
+      Int_t tstart = 0;
+      Int_t tag_start = NextTag(line, tag, tstart);
       if(tag_start >= 0) {
          if((tag.Index("<imgSRC=", 8, 0,  TString::kIgnoreCase)) >= 0){
             if(dir.Length() > 1 && tag(9) != '/'){
@@ -828,7 +828,7 @@ void TMrbHelpBrowser::DrawText(const Int_t ind,  Int_t xoff, Int_t yoff)
 
 //________________________________________________________________________________
 
-void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
+void TMrbHelpBrowser::DrawText(const char * hname, Int_t /*xoff*/, Int_t /*yoff*/)
 {
 
 //   This method produces the canvas with the help text:
