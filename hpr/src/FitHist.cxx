@@ -1220,12 +1220,11 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		fCanvas->SetLogx(fLogx);
 		fCanvas->SetLogy(fLogy);
 		if (gDebug > 0) {
-			cout<< "DisplayHist:: fCanvas->GetLogy(): " ;
+			cout<< "fCanvas->GetLogy(): " ;
 			if (fCanvas->GetLogy()) 
 				cout << "true";
 			else
 				cout << "false";
-			cout << " StatY " << gStyle->GetStatY() << " StatH " << gStyle->GetStatH();
 			cout << endl;
 		}
 		fCanvas->GetHandleMenus()->SetLog(fLogy);
@@ -3052,6 +3051,27 @@ void FitHist::Draw1Dim()
 {
    TString drawopt;
 	fCanvas->cd();
+	if (fShowStatBox) {
+		gStyle->SetOptStat(fOptStat);
+		fSelHist->SetStats(1);
+		TEnv env(".hprrc");
+		gStyle->SetStatX(env.GetValue("SetHistOptDialog.StatX",0.9));
+		gStyle->SetStatY(env.GetValue("SetHistOptDialog.StatY",0.9));
+		if ( gDebug > 0 )
+			cout << "Draw1Dim StatY " << gStyle->GetStatY() << endl;
+		gStyle->SetStatW(env.GetValue("SetHistOptDialog.StatW",0.2));
+		gStyle->SetStatH(env.GetValue("SetHistOptDialog.StatH",0.16));
+	} else {
+		fSelHist->SetStats(0);
+		//			 cout << "fSelHist->SetStats(0); " << endl;
+	} 
+//	TPaveStats * st1 = (TPaveStats *)fSelHist->GetListOfFunctions()->FindObject("stats");
+// 	cout << "Draw1Dim() st1 " << st1  << endl;
+	if ( !HasFunctions(fSelHist) ) {
+		gStyle->SetOptFit(0);
+	} else {
+		gStyle->SetOptFit(fShowFitBox);
+	}
    fSelHist->Draw();
    if ( gROOT->GetForceStyle() ) {
 		fCanvas->UseCurrentStyle();
@@ -3100,14 +3120,6 @@ void FitHist::Draw1Dim()
 			 fSelHist->GetYaxis()->CenterTitle(kTRUE);
 		fCanvas->GetFrame()->SetFillStyle(0);
 	 //   Int_t save_optstat = gStyle->GetOptStat();
-		if (fShowStatBox) {
-			 gStyle->SetOptStat(fOptStat);
-			 fSelHist->SetStats(1);
-//			 cout << "fSelHist->SetStats(1); " << fOptStat << endl;
-		} else {
-			 fSelHist->SetStats(0);
-//			 cout << "fSelHist->SetStats(0); " << endl;
-		} 
    }
    if ( gDebug > 0 ) {
 		cout << "Draw1Dim() " << drawopt << " fSelHist->Draw() " 
@@ -3151,18 +3163,18 @@ void FitHist::Draw1Dim()
    }
    DrawDate();
 	TPaveStats * st = (TPaveStats *)fCanvas->GetPrimitive("stats");
-	if ( st && GeneralAttDialog::fRememberStatBox ) {
-		TEnv env(".hprrc");
-		if ( env.Lookup("StatBox1D.fX1") ) {
-			st->SetX1NDC(env.GetValue("StatBox1D.fX1", 0.7));
-			st->SetX2NDC(env.GetValue("StatBox1D.fX2", 0.9));
-			st->SetY1NDC(env.GetValue("StatBox1D.fY1", 0.74));
-			st->SetY2NDC(env.GetValue("StatBox1D.fY2", 0.9));
-			if (gDebug > 0) {
-				cout << "Draw1Dim() StatBox1D.fY1, 2: " << st->GetY1NDC() << " " << st->GetY2NDC() << endl;
-			}
-		}	
+// 	cout << " st " << st << " " << stats << endl;
+	if ( st ) {
+		if ( HasFunctions(fSelHist) ) {
+//		gStyle->SetOptFit(fShowFitBox);
+			st->SetOptFit(1);
+		} else {
+			st->SetOptFit(0);
+		}
 	}
+//	if ( st && GeneralAttDialog::fRememberStatBox ) {
+//		Hpr::ResizeStatBox(st, 1);
+//	}
 	//  add extra axis (channels) at top
    if (fDrawAxisAtTop) {
       if (st) {
@@ -3236,8 +3248,13 @@ void FitHist::Draw2Dim()
    if (fShowStatBox) {
       gStyle->SetOptStat(fOptStat);
       fSelHist->SetStats(1);
-//      cout << "fSelHist->SetStats(1); " << fOptStat << endl;
-   } else {
+		TEnv env(".hprrc");
+		//      cout << "fSelHist->SetStats(1); " << fOptStat << endl;
+		gStyle->SetStatX(env.GetValue("SetHistOptDialog.StatX2D",0.9));
+		gStyle->SetStatY(env.GetValue("SetHistOptDialog.StatY2D",0.9));
+		gStyle->SetStatW(env.GetValue("SetHistOptDialog.StatW2D",0.2));
+		gStyle->SetStatH(env.GetValue("SetHistOptDialog.StatH2D",0.2));
+	} else {
       fSelHist->SetStats(0);
    } 
    fSelHist->Draw(fDrawOpt2Dim);
@@ -3313,21 +3330,12 @@ void FitHist::Draw2Dim()
    DrawDate();
 	fCanvas->Modified();
    fCanvas->Update();
-	TPaveStats * st = (TPaveStats *)fCanvas->GetPrimitive("stats");
+//	TPaveStats * st = (TPaveStats *)fCanvas->GetPrimitive("stats");
 //   cout << "Draw2Dim: st " << st << endl;
-	if ( st && GeneralAttDialog::fRememberStatBox ) {
-		TEnv env(".hprrc");
-		if ( env.Lookup("StatBox2D.fX1") ) {
-			st->SetX1NDC(env.GetValue("StatBox2D.fX1", 0.78));
-			st->SetX2NDC(env.GetValue("StatBox2D.fX2", 0.98));
-			st->SetY1NDC(env.GetValue("StatBox2D.fY1", 0.835));
-			st->SetY2NDC(env.GetValue("StatBox2D.fY2", 0.995));
-			if (gDebug > 0)
-			cout << "Draw2Dim: StatBox2D.fX1 " << env.GetValue("StatBox2D.fX1", 0.78)
-			<< " fTwoDimLogY " << fTwoDimLogY<< endl;
-			fCanvas->Modified();
-		}	
-	}
+//	if ( st && GeneralAttDialog::fRememberStatBox ) {
+//		Hpr::ResizeStatBox(st, 2);
+//		fCanvas->Modified();
+//	}
 	if (!fCanvas->GetAutoExec())
 		fCanvas->ToggleAutoExec();
    fCanvas->Update();
@@ -3376,30 +3384,6 @@ void FitHist::UpdateDrawOptions()
 	fSelPad->cd();
    TString drawopt;
    if (fDimension == 1) {
-/*   	if (fShowContour) {
-      	drawopt = "";
-         if (!HasFunctions(fSelHist)) {
-            if (fSelHist->GetSumw2N()) {
-      	      drawopt = "hist";
-            }
-         }
-      }
-      if ( fErrorMode != "none") {
-         drawopt += fErrorMode;
-         if (fErrorMode == "E1" && gStyle->GetMarkerSize() == 0) {
-            fSelHist->SetMarkerSize(0.01);
-         }
-      }
-      if (fShowContour)
-         drawopt += "hist";
-   	if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
-      	fSelHist->SetFillStyle(fHistFillStyle);
-      	fSelHist->SetFillColor(fHistFillColor);
-   	} else
-      	fSelHist->SetFillStyle(0);
-      cout << "UpdateDrawOptions() " << drawopt.Data() << endl;
-//      fSelHist->SetOption(drawopt.Data());
-      fSelHist->SetDrawOption(drawopt.Data());*/
    } else if (fDimension  == 2) {
       fSelHist->SetOption(fDrawOpt2Dim);
       fSelHist->SetDrawOption(fDrawOpt2Dim);
@@ -3475,135 +3459,4 @@ void FitHist::SetLogy(Int_t state)
 	fCanvas->Modified();
 	fCanvas->Update();
 };
-//    Int_t   fBinX_1, fBinX_2, fBinY_1, fBinY_2;  // lower, upper bin selected
-//    Int_t   fBinlx, fBinux, fBinly, fBinuy;     // lower, upper bin in expanded
-//    Axis_t  fExplx, fExpux, fExply, fExpuy;     // lower, upper edge in expanded
-//    Axis_t  fX_1,   fX_2,   fY_1,   fY_2;     // lower, upper lim selected
-//    Axis_t  fRangeLowX, fRangeUpX, fRangeLowY, fRangeUpY;
-//    Axis_t  fOrigLowX, fOrigUpX, fOrigLowY, fOrigUpY;
-// 	Double_t fFrameX1, fFrameX2,fFrameY1,fFrameY2;
-//    Bool_t fSetRange;
-//    Bool_t fKeepParameters;
-//    Bool_t fCallMinos;
-//    Int_t  fOldMode;
-//    TH1    *fSelHist, *fOrigHist;          // pointer to the selected histogram
-//    TH1    *fCalHist;
-//    FitHist  *fCalFitHist;
-//    TF1      *fCalFunc;
-//    FitOneDimDialog *fFit1DimD;
-//    Fit2DimDialog *fFit2DimD;
-// //   HistPresent* hp;
-//    HTCanvas *fCanvas;
-//    TH1     *fExpHist, *fProjHistX, *fProjHistY;
-//    TString fHname;
-//    TString fCname;
-//    TString fCtitle;
-//    TString fEname;
-//    TString fCutname;
-// 
-//    TVirtualPad *fSelPad;          // pointer to the selected pad
-// 
-//    TList *fActiveFunctions;
-//    TList *fAllFunctions;
-//    TList *fActiveWindows;
-//    TList *fAllWindows;
-//    TList *fAllCuts;
-//    TList *fPeaks;
-//    TList *fActiveCuts;
-//    FhMarkerList *fMarkers;
-//    TObjArray *peaks;
-//    TList *fCmdLine;
-//    Int_t fExpInd;
-//    Int_t fSerialPx;
-//    Int_t fSerialPy;
-//    Int_t fSerialPf;
-//    Int_t fSerialRot;
-//    Int_t fFuncNumb;
-//    Int_t fCutNumber;
-// 	Int_t fProjectedBoth;
-//    Int_t wdw_numb;
-//    Int_t fColSuperimpose;
-//    void ExpandProject(Int_t);
-//    Int_t fLogx;
-//    Int_t fLogy;
-//    Int_t fLogz;
-//    Bool_t fSelInside;
-//    Int_t fUserContourLevels;
-//    Bool_t fSetLevels;
-//    Bool_t fSetColors;
-//    Bool_t fHasExtraAxis;
-// 
-//    Float_t fMax, fMin, fXmax, fXmin, fYmax, fYmin;
-//    TRootCanvas *mycanvas;
-// //   TPaveText *datebox;
-//    Int_t fDimension;
-//    Bool_t fCanvasIsAlive;
-//    TString fXtitle;
-//    TString fYtitle;
-// 	TString fZtitle;
-// 	TString fFitMacroName;
-//    TString fTemplateMacro;
-//    TString fFitSliceYMacroName;
-//    Int_t fFirstUse;
-//    Bool_t fDeleteCalFlag;
-//    HTCanvas * fCutPanel;
-//    TableOfLabels * fTofLabels;
-// 
-//    Int_t fFill1Dim;
-//    Color_t fFillColor;
-//    Color_t fLineColor;
-//    Float_t fLineWidth;
-//    Float_t fMarkerSize;
-// 	Int_t fShowMarkers;
-// 	Int_t fFillStyle;
-//    Int_t fShowContour;
-//    Int_t fShowDateBox;
-//    Int_t fShowStatBox;
-//    Int_t fOptStat;
-//    Int_t fUseTimeOfDisplay;
-//    Int_t fShowTitle;
-//    Int_t fShowFitBox;
-//    Int_t fLiveStat1Dim;
-//    Int_t fLiveStat2Dim;
-//    Int_t fLiveGauss;
-//    Int_t fLiveBG;
-// 	Int_t   fSmoothLine;
-// 	Int_t   fSimpleLine;
-// 	Int_t   fBarChart;
-// 	Int_t   fBarChart3D;
-// 	Int_t   fBarChartH;
-// 	Int_t   fPieChart;
-// 	Int_t   fText;
-// 	Int_t   fTextAngle;
-//    Int_t fShowZScale;
-//    Int_t fDrawAxisAtTop;
-//    TString fDrawOpt2Dim;
-//    Int_t fTitleCenterX;
-//    Int_t fTitleCenterY;
-//    Int_t fTitleCenterZ;
-//    TText * fDateText;
-//    Save2FileDialog *fDialog;
-//    Color_t fHistFillColor2Dim;
-// 	Color_t fHistFillStyle2Dim;
-// 	Color_t fHistLineColor2Dim;
-// 	Color_t fHistLineStyle2Dim;
-// 	Color_t fHistLineWidth2Dim;
-// 	Color_t fMarkerColor2Dim; 
-// 	Color_t f2DimBackgroundColor;
-//    Style_t fMarkerStyle2Dim;  
-//    Size_t  fMarkerSize2Dim; 
-//    TString fErrorMode;
-// 	Int_t   fOneDimLogX;
-// 	Int_t   fOneDimLogY;
-// 	Int_t   fTwoDimLogX;
-// 	Int_t   fTwoDimLogY;
-// 	Int_t   fTwoDimLogZ;
-// 	Int_t   fLabelsTopX;
-// 	Int_t   fLabelsRightY;
-// 	TString fDrawOpt3Dim;
-//    Color_t fHistFillColor3Dim;
-//    Color_t fHistLineColor3Dim;
-//    Color_t fMarkerColor3Dim; 
-// 	Color_t f3DimBackgroundColor;
-//    Style_t fMarkerStyle3Dim;  
-//    Size_t  fMarkerSize3Dim; 
+

@@ -149,49 +149,64 @@ void HTCanvas::HandlePadModified()
 void HTCanvas::DoSaveLegendStats()
 {
 	TEnv env(".hprrc");
-	if (! env.GetValue("GeneralAttDialog.fRememberStatBox", 1) )
+	if ( TCanvas::fUpdating ) {
+		cout << "TCanvas::fUpdating" << endl;
 		return;
-	if ( gDebug > 0 ) 
-		cout << "HTCanvas::DoSaveLegendStats " << this << endl;
-	TPave * leg;
-	TString envn;
+	}
 	TList * lop = this->GetListOfPrimitives();
 	if ( lop == NULL ) {
 		cout << "HTCanvas:: lop == NULL " << endl;
 		return;
 	}
-	leg = (TPave*)lop->FindObject("Legend_SuperImposeGraph");
-	if ( TCanvas::fUpdating ) {
-		cout << "TCanvas::fUpdating" << endl;
-		return;
-	}
-	if (leg ) {
-		envn = "SuperImposeGraph.fLegend";
-	} else {
-		leg = (TPave*)this->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
-		if (leg ) {
-			envn = "SuperImposeHist.fLegend";	
-		} else {
-			TIter next(this->GetListOfPrimitives());
-			TObject *obj;
-			while ( obj = next() ) {
-				if ( obj->InheritsFrom("TH1") ) {
-					leg = (TPave*)((TH1*)obj)->GetListOfFunctions()->FindObject("stats");
-					if (leg ) {
-						envn = "StatBox";	
-						if ( ((TH1*)obj)->GetDimension() == 1 ) {
-							envn += "1D.f";
-						} else if ( ((TH1*)obj)->GetDimension() == 2 ) {
-							envn += "2D.f";
-						}
+	TIter next(lop);
+	TObject *obj;
+	
+	TPave * leg;
+	TString envn;
+	TString res;
+	TString sdim;
+	// look for statistics box	
+	if ( env.GetValue("GeneralAttDialog.fRememberStatBox", 0) ) {
+		while ( obj = next() ) {
+			if ( obj->InheritsFrom("TH1") ) {
+				leg = (TPave*)((TH1*)obj)->GetListOfFunctions()->FindObject("stats");
+				if (leg ) {
+					envn = "SetHistOptDialog.Stat";	
+					if ( ((TH1*)obj)->GetDimension() == 1 ) {
+						sdim =  "";
+					} else if ( ((TH1*)obj)->GetDimension() == 2 ) {
+						sdim = "2D";
 					}
+					res = envn + "X" + sdim;
+					env.SetValue(res, leg->GetX2NDC());
+					res = envn + "Y" + sdim;
+					if (gDebug > 0) 
+						cout <<"DoSaveLegendStats() " <<  res << " "  << leg->GetY1NDC() << endl;
+					env.SetValue(res, leg->GetY2NDC());
 				}
 			}
 		}
+		env.SaveLevel(kEnvLocal);
 	}
-	if ( leg ) {
-		TString res;
-//		TEnv env(".hprrc");
+// look for legend box	
+	if (  env.GetValue("GeneralAttDialog.fRememberLegendBox", 1) ) {
+		leg = (TPave*)lop->FindObject("Legend_SuperImposeHist");
+		if ( leg == NULL ) {
+			envn = "Legend_SuperImposeGraph";
+			leg = (TPave*)lop->FindObject(envn);
+			if ( leg == NULL ) {
+				leg = (TPave*)lop->FindObject("Legend_HprStack");
+				if ( leg == NULL ) {
+					return;
+				} else {
+					envn = "HprStack.fLegend";
+				}
+			} else {
+				envn = "SuperImposeGraph.fLegend";
+			}
+		} else {
+			envn = "SuperImposeHist.fLegend";
+		}
 		res = envn + "X1";
 		env.SetValue(res, leg->GetX1NDC());
 		if (gDebug > 0) 
@@ -203,11 +218,9 @@ void HTCanvas::DoSaveLegendStats()
 		res = envn + "Y1";
 		env.SetValue(res, leg->GetY1NDC());
 		if (gDebug > 0) 
-			cout << res << " "  << leg->GetY1NDC() << endl;
+			cout <<"DoSaveLegendStats() " << res << " "  << leg->GetY1NDC() << endl;
 		res = envn + "Y2";
 		env.SetValue(res, leg->GetY2NDC());
-		if (gDebug > 0) 
-			cout << res << " "  << leg->GetY2NDC() << endl;
 		env.SaveLevel(kEnvLocal);
 	}
 }

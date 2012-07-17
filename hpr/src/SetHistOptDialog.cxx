@@ -15,6 +15,7 @@
 #include "TPaletteAxis.h"
 #include "TPavesText.h"
 #include "TLegend.h"
+#include "hprbase.h"
 #include "SetHistOptDialog.h"
 #include <iostream>
 
@@ -63,7 +64,7 @@ SetHistOptDialog::SetHistOptDialog(Int_t batch)
 }
 //_______________________________________________________________________
 
-SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
+SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
 {
 	static const Char_t helptext[] =
 	"This widget allows adjustment of various graphics attributes\n\
@@ -73,9 +74,9 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 	The position or size of the StatBox may also be adjust by the mouse.\n\
 	Values are remembered within or between sessions. This behaviour is\n\
 	controlled from \"Various HistPresent Options\" menu.\n\
-	Warning:\n\
-	If option: \"Remmember StatBox position\" is not used, Root itself will\n\
-	adjust width and size of the statbox as follows:\n\
+	Caveat:\n\
+	The position of a StatBox is defined by its upper right corner\n\
+	Root itself will adjust width and height of the statbox as follows:\n\
 	\n\
 	Double_t  statw  = gStyle->GetStatW();\n\
 	if (fit) statw   = 1.8*gStyle->GetStatW();\n\
@@ -91,46 +92,25 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 	press: \"Set as global def\"\n\
 	\"Reset all to def\" sets \"factory \" defaults\n\
 	To make these permanent also needs \"Set as global def\"\n\
-	";
-	fWindow = win;
-   TRootCanvas *rc = (TRootCanvas*)win;
-   fCanvas = rc->Canvas();
-// are there 1 dim hists?
-	fHistList = hlist;
-	TIter *next;
-	if (fHistList == NULL) {
-		next= new TIter(fCanvas->GetListOfPrimitives());
-	} else {
-		next = new TIter(fHistList);
-	}
-   TObject *obj;
-   fHist = NULL;
+	\n\
+	If more than 1 histogram is in the canvas one may selected\n\
+	by pressing the middle mouse before this widget is invoked\n\
+	If this widget is already displayed the command \"Reselect\"\n\
+	is needed in addition. The current attributes will be applied\n\
+	to the selected histogram.\n\
+	";	
 	fDialog = NULL;
-	fCustomStyleName = "";  // ???
-//	fNewStyleName    = "";
-	// find histogram, if there are more than 1, prefer the one with the stat box
-   Int_t nh1 = 0, nh2 = 0;
-	TH1* hi;
-   while ( (obj = (*next)()) ) {
-		hi = NULL;
-      if (obj->InheritsFrom("TH1")) {
-			hi = (TH1*)obj;
-			if ( fHist == NULL || hi->GetListOfFunctions()->FindObject("stats") )
-				fHist = hi;
-		}
-      if (obj->InheritsFrom("TGraph")) {
-         hi = fHist = ((TGraph*)obj)->GetHistogram();
-		}
-      if (hi && hi->GetDimension() == 1) nh1++;
-      if (hi && hi->GetDimension()  > 1) nh2++;
-   }
-   
-	if ( fHist == NULL ) {
-	   cout << "No Histogram in Canvas" << endl;
+	fWindow = win;	
+	
+	if ( ! SetPointers() ) {
+		return;
 	}
+	fCustomStyleName = "";  // ???
+	
    RestoreDefaults();
 	GetValuesFromHist();
-// 	cout << "SetHistOptDialog, nh1, nh2 " << nh1 << " " << nh2 << endl;
+	if ( gDebug > 0 ) 
+		cout << "SetHistOptDialog * hd = (SetHistOptDialog *)" << this<< ";" << endl;
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
 //   static void *fValp[100];
@@ -138,7 +118,8 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
    static TString sgdcmd("SetHistAttPermLocal()");
    static TString stycmd("SetCustomStyle()");
    static TString rescmd("SetAllToDefault()");
-   Int_t div = TMath::Abs(fNdivisionsX);
+	static TString relcmd("SetPointers()");
+	Int_t div = TMath::Abs(fNdivisionsX);
    fPdivX = div%100;
    fSdivX = (div/100)%100;
    fTdivX = (div/10000)%100;
@@ -182,8 +163,8 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 	
    fRow_lab->Add(new TObjString("Float_Value_X;0;1"));
    fRow_lab->Add(new TObjString("Float_Value+Y;0;1"));
-	fRow_lab->Add(new TObjString("Float_Value+Wid;0.1;0.9"));
-	fRow_lab->Add(new TObjString("Float_Value+Hei;0.01;0.2"));
+	fRow_lab->Add(new TObjString("Float_Value+Wid;0;0.9"));
+	fRow_lab->Add(new TObjString("Float_Value+Hei;0;0.2"));
 	//   fRow_lab->Add(new TObjString("Float_Value_H"));
 //   fRow_lab->Add(new TObjString("AlignSelect+Align"));
    fValp[ind++] = &fTitleX;
@@ -192,37 +173,48 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 	fValp[ind++] = &fTitleH;
 	//   fValp[ind++] = &fTitleH;
    fTitleCmd2 = ind - 1;
-   fStatCmd1 = ind;
-   fRow_lab->Add(new TObjString("CommentOnly_Statistics / Legend Box "));
-   fValp[ind++] = &fDummy;
-   fRow_lab->Add(new TObjString("Float_Value_X;0;1"));
-   fRow_lab->Add(new TObjString("Float_Value+Y;0;1"));
-   fRow_lab->Add(new TObjString("Float_Value+Wi ;0;1"));
-   fRow_lab->Add(new TObjString("Float_Value+He ;0;1"));
-   fValp[ind++] = &fStatX;
-   fValp[ind++] = &fStatY;
-   fValp[ind++] = &fStatW;
-   fValp[ind++] = &fStatH;
-	
-   fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
-	fRow_lab->Add(new TObjString("ColorSelect+FillCol"));
-	fRow_lab->Add(new TObjString("Fill_Select+FillSty"));
-   fRow_lab->Add(new TObjString("PlainShtVal+BorderSz"));
-   fValp[ind++] = &fStatLineColor;
-	fValp[ind++] = &fStatFillColor;
-	fValp[ind++] = &fStatStyle;
-   fValp[ind++] = &fStatBorderSize;
-	
-   fRow_lab->Add(new TObjString("CfontSelect_TFont"));
-	fRow_lab->Add(new TObjString("ColorSelect+TextCol "));
-   fRow_lab->Add(new TObjString("Float_Value+TSize;0;1  "));
-   fRow_lab->Add(new TObjString("StringValue+Format"));
-   fValp[ind++] = &fStatFont;
-	fValp[ind++] = &fStatTextColor;
-   fValp[ind++] = &fStatFontSize;
-   fValp[ind++] = &fStatFormat;
-   fStatCmd2 = ind - 1;
-
+	fStatCmd1 = fStatCmd2 = 0;
+	if (fStatBox || fLegendBox ) {
+		fStatCmd1 = ind;
+		if ( fStatBox )
+			fRow_lab->Add(new TObjString("CommentOnly_Statistic Box"));
+		else 
+			fRow_lab->Add(new TObjString("CommentOnly_Legend Box"));
+		fValp[ind++] = &fDummy;
+		fRow_lab->Add(new TObjString("Float_Value_X;0;1"));
+		fRow_lab->Add(new TObjString("Float_Value+Y;0;1"));
+		fRow_lab->Add(new TObjString("Float_Value+Wi ;0;1"));
+		fRow_lab->Add(new TObjString("Float_Value+He ;0;1"));
+		if (fHist->GetDimension() == 2 ) {
+			fValp[ind++] = &fStatX2D;
+			fValp[ind++] = &fStatY2D;
+			fValp[ind++] = &fStatW2D;
+			fValp[ind++] = &fStatH2D;
+		} else {
+			fValp[ind++] = &fStatX;
+			fValp[ind++] = &fStatY;
+			fValp[ind++] = &fStatW;
+			fValp[ind++] = &fStatH;
+		}
+		fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
+		fRow_lab->Add(new TObjString("ColorSelect+FillCol"));
+		fRow_lab->Add(new TObjString("Fill_Select+FillSty"));
+		fRow_lab->Add(new TObjString("PlainShtVal+BorderSz"));
+		fValp[ind++] = &fStatLineColor;
+		fValp[ind++] = &fStatFillColor;
+		fValp[ind++] = &fStatStyle;
+		fValp[ind++] = &fStatBorderSize;
+		
+		fRow_lab->Add(new TObjString("CfontSelect_TFont"));
+		fRow_lab->Add(new TObjString("ColorSelect+TextCol "));
+		fRow_lab->Add(new TObjString("Float_Value+TSize;0;1  "));
+		fRow_lab->Add(new TObjString("StringValue+Format"));
+		fValp[ind++] = &fStatFont;
+		fValp[ind++] = &fStatTextColor;
+		fValp[ind++] = &fStatFontSize;
+		fValp[ind++] = &fStatFormat;
+		fStatCmd2 = ind - 1;
+	}
 //    fValp[ind++] = &fStatX;
 //    fValp[ind++] = &fStatY;
 //   fStatFont /= 10;
@@ -265,7 +257,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
    fValp[ind++] = &fTdivY;
    fValp[ind++] = &fOptimizedivY;
    fValp[ind++] = &fTickSideY;
-   if (nh2 > 0) {
+   if (fHist->GetDimension() > 1) {
 		fRow_lab->Add(new TObjString("CommentOnly_Z"));
 		fRow_lab->Add(new TObjString("PlainIntVal+"));
 		fRow_lab->Add(new TObjString("PlainIntVal+"));
@@ -292,7 +284,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
    fRow_lab->Add(new TObjString("PlainIntVal+MaxDigs"));
    fRow_lab->Add(new TObjString("Float_Value_Offset X"));
    fRow_lab->Add(new TObjString("Float_Value+Offset Y"));
-   if (nh2 > 0)
+   if (fHist->GetDimension() > 1)
       fRow_lab->Add(new TObjString("Float_Value+Offset Z"));
    fValp[ind++] =  &fDummy;
    fValp[ind++] = &fLabelColor;
@@ -301,7 +293,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
    fValp[ind++] = &fLabelMaxDigits;
    fValp[ind++] = &fLabelOffsetX;
    fValp[ind++] = &fLabelOffsetY;
-   if (nh2 > 0)
+   if (fHist->GetDimension() > 1)
       fValp[ind++] = &fLabelOffsetZ;
    fRow_lab->Add(new TObjString("CommentOnly_Axis Title Attributes"));
    fRow_lab->Add(new TObjString("ColorSelect_Color"));
@@ -327,35 +319,112 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 	Int_t centz = ind;
 	fValp[ind++] = &fTitleCenterZ;
 
-   fRow_lab->Add(new TObjString("CommandButt_Reset all to def"));
+   fRow_lab->Add(new TObjString("CommandButt_Reset to def"));
    fValp[ind++] = &rescmd;
-   fRow_lab->Add(new TObjString("CommandButt+Set as global def"));
+   fRow_lab->Add(new TObjString("CommandButt+Set global def"));
    fValp[ind++] = &sgdcmd;
    fRow_lab->Add(new TObjString("CommandButt+Custom style"));
    fValp[ind++] = &stycmd;
-
+	if (fNSubPads > 0 ) {
+		fRow_lab->Add(new TObjString("CommandButt+Reselect"));
+		fBidReselect = ind;
+		fValp[ind++] = &relcmd;
+	}
    Int_t itemwidth = 420;
 	fOk = 0;
    fDialog =
-      new TGMrbValuesAndText("Axis Attributes", NULL, &fOk,itemwidth, win,
+      new TGMrbValuesAndText(fObjTitle, NULL, &fOk,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
-	if (nh2 == 0) {
+	if (fHist->GetDimension() == 1) {
 		fDialog->DisableButton(offz);
 		fDialog->DisableButton(centz);
 	}
 
 }
+//______________________________________________________________________
+
+Bool_t SetHistOptDialog::SetPointers()
+{
+	fHist = NULL;
+	fAxisX = NULL;
+	fAxisY = NULL;
+	fAxisZ = NULL;
+	fStatBox  = NULL;
+	fTitleBox = NULL;
+	fLegendBox= NULL;
+	fNSubPads = 0;
+	TRootCanvas *rc = (TRootCanvas*)fWindow;
+	fCanvas = rc->Canvas();
+	fPad = fCanvas;
+	// are there 1 dim hists?
+//	TObject * parent;
+	fParent = NULL;
+	fHist = Hpr::FindHistInPad(fPad, 1, 1, &fParent);
+	// look for subpads
+	// if gPad is one of the pads found take it otherwise take first
+	TPad *pad = NULL;
+	TH1* hist = NULL;
+	if ( fHist == NULL ) {
+		TIter next(fCanvas->GetListOfPrimitives());
+		while (TObject * obj = next()) {
+			if (obj->InheritsFrom("TPad")) {
+				pad  = (TPad*)obj;
+				hist = Hpr::FindHistInPad(pad, 1, 1);
+				if ( hist && fHist == NULL ) {
+					fPad = pad;
+					fHist = hist;
+				}
+//				cout << "Hpr::FindHistInPad, gPad, pad, hist  " << gPad << " " << pad
+//				<< " " << hist << endl;
+				fNSubPads ++;
+				if (hist && (TPad*)obj == gPad ) {
+					fPad = pad;
+					fHist = hist;
+					break;
+				}
+			}
+		}
+	}
+	if ( fHist != NULL ) {
+		fPad->cd();
+		fAxisX = fHist->GetXaxis();
+		fAxisY = fHist->GetYaxis();
+		if (fHist->GetDimension() > 1)
+			fAxisZ = fHist->GetZaxis();
+		fObjTitle = fHist->GetTitle();
+		if ( fParent != NULL && gDebug > 0)
+			cout << "parent->ClassName() " << fParent->ClassName()<< endl;
+		if ( fDialog )
+			fDialog->SetWindowName(fObjTitle.Data());
+	} else {
+		cout << "No Histogram in active Canvas" << endl;
+		return kFALSE;
+	}
+	fStatBox = (TPavesText*)fHist->GetListOfFunctions()->FindObject("stats");
+	fTitleBox = (TPavesText*)fPad->GetListOfPrimitives()->FindObject("title");
+	TIter next1(fCanvas->GetListOfPrimitives());
+	while (TObject * obj = next1()) {
+		if (obj->InheritsFrom("TLegend")) {
+			fLegendBox = (TLegend*)obj;
+		}
+	}
+	return kTRUE;
+}	
 //_______________________________________________________________________
 
 void SetHistOptDialog::RecursiveRemove(TObject * obj)
 {
-   if (obj == fCanvas) {
-//	if (gDebug > 0)
-//      cout << "SetHistOptDialog: RecursiveRemove:obj "  << obj << endl;
-//		Dump();
-      CloseDialog();
-   }
+   if (obj && (obj == fStatBox || obj == fHist 
+		|| obj  == fTitleBox || obj == fLegendBox) ) {
+		if (gDebug > 0) {
+			cout << "SetHistOptDialog: RecursiveRemove:obj "  << obj;
+			if (obj)
+				cout << " " << obj->ClassName();
+			cout << endl;
+		}
+		CloseDialog();
+	}
 }
 //_______________________________________________________________________
 
@@ -370,135 +439,104 @@ void SetHistOptDialog::CloseDialog()
 }
 //_______________________________________________________________________
 
-void SetHistOptDialog::SetHistAttNow(TCanvas *canvas, Int_t bid)
+void SetHistOptDialog::SetHistAttNow(Int_t bid)
 {
-   if (!canvas) return;
    fNdivisionsX  = fTdivX*10000 + fSdivX*100 + fPdivX;
    if (fOptimizedivX == 0) fNdivisionsX *= -1;
    fNdivisionsY  = fTdivY*10000 + fSdivY*100 + fPdivY;
    if (fOptimizedivY == 0) fNdivisionsY *= -1;
    fNdivisionsZ  = fTdivZ*10000 + fSdivZ*100 + fPdivZ;
    if (fOptimizedivZ == 0) fNdivisionsZ *= -1;
-   SetHistOptDialog::SetHistAtt(canvas, bid);
+   SetHistOptDialog::SetHistAtt(bid);
 }
 //_______________________________________________________________________
 
-void SetHistOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
+void SetHistOptDialog::SetHistAtt(Int_t bid)
 {
-   if (!canvas) return;
    if (gDebug > 0)
-		cout << "SetHistOptDialog::SetHistAtt" << endl;
+		cout << "SetHistOptDialog::SetHistAtt "<< bid << endl;
 	Bool_t mod_statbox =
-     gStyle->GetOptStat() && ((bid == 999) || (bid >= fStatCmd1 && bid <= fStatCmd2));
+	gStyle->GetOptStat() && fStatCmd1 > 0 && fStatCmd2 > 0
+	&& ((bid == fBidReselect) || (bid == 999) ||(bid >= fStatCmd1 && bid <= fStatCmd2));
 	Bool_t mod_titlebox =
-     gStyle->GetOptTitle() && ((bid == 999) || (bid <= fTitleCmd2));
+	gStyle->GetOptTitle() && ((bid == fBidReselect) || (bid == 999) ||(bid <= fTitleCmd2));
 	Bool_t mod_axis = ( bid > fStatCmd2 );
-	TIter *next;
-	if (fHistList == NULL) {
-		next= new TIter(fCanvas->GetListOfPrimitives());
-	} else {
-		next = new TIter(fHistList);
-	}
-   TObject *obj;
-   TH1 *hist;
-	TList temp;
-// 	TPaveText *pt = NULL;
-   while ( (obj = (*next)()) ) {
-      if (obj->InheritsFrom("TH1") || obj->InheritsFrom("TGraph")) {
-         if (obj->InheritsFrom("TH1"))
-             hist = (TH1*)obj;
-         if (obj->InheritsFrom("TGraph")) {
-             hist = ((TGraph*)obj)->GetHistogram();
-             if (!hist) continue;
-         }
-			if (mod_statbox)  SetStatBoxAttr(gStyle);
-			if (mod_titlebox) SetTitleBoxAttr(gStyle);
-			if ( !mod_axis )
-				continue;
-         TAxis *xa = hist->GetXaxis();
-         TAxis *ya = hist->GetYaxis();
-         TAxis *za = NULL;
-         if (hist->GetDimension() > 1)
-            za = hist->GetZaxis();
-			xa->SetNdivisions( fNdivisionsX);
-			xa->SetAxisColor(  fAxisColor);
-			xa->SetLabelColor( fLabelColor);
-			xa->SetLabelFont(  fLabelFont);
-			xa->SetLabelOffset(fLabelOffsetX);
-			xa->SetLabelSize(  fLabelSize);
-			xa->SetTickLength( fTickLength);
-			xa->SetTicks(      fTickSideX);
-			xa->SetTitleOffset(fTitleOffsetX);
-			xa->SetTitleSize(  fTitleSize);
-			xa->SetTitleColor( fTitleColorA);
-			xa->SetTitleFont(  fTitleFontA);
-         if (fTitleCenterX)
-            xa->CenterTitle(kTRUE);
-         else
-            xa->CenterTitle(kFALSE);
-//
-			ya->SetNdivisions( fNdivisionsY);
-			ya->SetAxisColor(  fAxisColor);
-			ya->SetLabelColor( fLabelColor);
-			ya->SetLabelFont(  fLabelFont);
-			ya->SetLabelOffset(fLabelOffsetY);
-			ya->SetLabelSize(  fLabelSize);
-			ya->SetTickLength( fTickLength);
-			ya->SetTicks(      fTickSideY);
-			ya->SetTitleOffset(fTitleOffsetY);
-			ya->SetTitleSize  (fTitleSize);
-			ya->SetTitleColor( fTitleColorA);
-			ya->SetTitleFont(  fTitleFontA);
-         if (za != NULL) {
-            TPaletteAxis *pl = (TPaletteAxis*)hist->GetListOfFunctions()->FindObject("palette");
-            if ( pl != NULL ) {
-				   pl->SetLabelColor( fLabelColor);
-				   pl->SetLabelFont(  fLabelFont);
-				   pl->SetLabelOffset(fLabelOffsetZ);
-				   pl->SetLabelSize(fLabelSize);
-            }
-				za->SetNdivisions( fNdivisionsZ);
-				za->SetAxisColor(  fAxisColor);
-				za->SetLabelColor( fLabelColor);
-				za->SetLabelFont(  fLabelFont);
-				za->SetLabelOffset(fLabelOffsetZ);
-				za->SetLabelSize(  fLabelSize);
-				za->SetTickLength( fTickLength);
-				za->SetTicks(      fTickSideZ);
-				za->SetTitleOffset(fTitleOffsetZ);
-				za->SetTitleSize(  fTitleSize);
-				za->SetTitleColor( fTitleColorA);
-				za->SetTitleFont(  fTitleFontA);
-				if (fTitleCenterZ)
-					za->CenterTitle(kTRUE);
-				else
-					za->CenterTitle(kFALSE);
-				}
-			if (fLabelMaxDigits > 0)  {
-//				cout << "SetMaxDigits: " << fLabelMaxDigits<< endl;
-				TGaxis::SetMaxDigits(fLabelMaxDigits);
+	if (fTitleBox && mod_titlebox)
+		SetTitleBoxAttr(gStyle);
+	if (fStatBox &&  mod_statbox) 
+		SetStatBoxAttr(gStyle);
+	else if ( fLegendBox )
+		SetLegendBoxAttr(gStyle);
+	if ( mod_axis ) {
+		fAxisX->SetNdivisions( fNdivisionsX);
+		fAxisX->SetAxisColor(  fAxisColor);
+		fAxisX->SetLabelColor( fLabelColor);
+		fAxisX->SetLabelFont(  fLabelFont);
+		fAxisX->SetLabelOffset(fLabelOffsetX);
+		fAxisX->SetLabelSize(  fLabelSize);
+		fAxisX->SetTickLength( fTickLength);
+		fAxisX->SetTicks(      fTickSideX);
+		fAxisX->SetTitleOffset(fTitleOffsetX);
+		fAxisX->SetTitleSize(  fTitleSize);
+		fAxisX->SetTitleColor( fTitleColorA);
+		fAxisX->SetTitleFont(  fTitleFontA);
+		if (fTitleCenterX)
+			fAxisX->CenterTitle(kTRUE);
+		else
+			fAxisX->CenterTitle(kFALSE);
+
+		fAxisY->SetNdivisions( fNdivisionsY);
+		fAxisY->SetAxisColor(  fAxisColor);
+		fAxisY->SetLabelColor( fLabelColor);
+		fAxisY->SetLabelFont(  fLabelFont);
+		fAxisY->SetLabelOffset(fLabelOffsetY);
+		fAxisY->SetLabelSize(  fLabelSize);
+		fAxisY->SetTickLength( fTickLength);
+		fAxisY->SetTicks(      fTickSideY);
+		fAxisY->SetTitleOffset(fTitleOffsetY);
+		fAxisY->SetTitleSize  (fTitleSize);
+		fAxisY->SetTitleColor( fTitleColorA);
+		fAxisY->SetTitleFont(  fTitleFontA);
+		if ( fAxisZ != NULL) {
+			TPaletteAxis *pl = (TPaletteAxis*)fHist->GetListOfFunctions()->FindObject("palette");
+			if ( pl != NULL ) {
+				pl->SetLabelColor( fLabelColor);
+				pl->SetLabelFont(  fLabelFont);
+				pl->SetLabelOffset(fLabelOffsetZ);
+				pl->SetLabelSize(fLabelSize);
 			}
-         if (fTitleCenterY)
-            ya->CenterTitle(kTRUE);
-         else
-            ya->CenterTitle(kFALSE);
-      }
-   }
-   // remove title and statbox in case they changed,
-   // they will be recomputed
-//	if (temp.GetSize() > 0) {
-//		temp.ls();
-//		temp.Delete("slow");
-//	}
-   canvas->Modified();
-	canvas->Update();
+			fAxisZ->SetNdivisions( fNdivisionsZ);
+			fAxisZ->SetAxisColor(  fAxisColor);
+			fAxisZ->SetLabelColor( fLabelColor);
+			fAxisZ->SetLabelFont(  fLabelFont);
+			fAxisZ->SetLabelOffset(fLabelOffsetZ);
+			fAxisZ->SetLabelSize(  fLabelSize);
+			fAxisZ->SetTickLength( fTickLength);
+			fAxisZ->SetTicks(      fTickSideZ);
+			fAxisZ->SetTitleOffset(fTitleOffsetZ);
+			fAxisZ->SetTitleSize(  fTitleSize);
+			fAxisZ->SetTitleColor( fTitleColorA);
+			fAxisZ->SetTitleFont(  fTitleFontA);
+			if (fTitleCenterZ)
+				fAxisZ->CenterTitle(kTRUE);
+			else
+				fAxisZ->CenterTitle(kFALSE);
+			}
+		if (fLabelMaxDigits > 0)  {
+			TGaxis::SetMaxDigits(fLabelMaxDigits);
+		}
+		if (fTitleCenterY)
+			fAxisY->CenterTitle(kTRUE);
+		else
+			fAxisY->CenterTitle(kFALSE);
+	}
+   fPad->Modified();
+	fPad->Update();
 }
 //______________________________________________________________________
 
 void SetHistOptDialog::SetTitleBoxAttr(TStyle *sty)
 {
-	if ( fCanvas == NULL )
-		return;
 	sty->SetTitleFillColor (fTitleFillColor );
 	sty->SetLineColor      (fTitleLineColor );
 	sty->SetTitleTextColor (fTitleTextColor );
@@ -515,8 +553,7 @@ void SetHistOptDialog::SetTitleBoxAttr(TStyle *sty)
 	if (sty->GetFillColor() == 0) {
 		sty->SetFillColor(1);
 	}
-	TPaveText *pt = (TPaveText*)fCanvas->GetListOfPrimitives()->FindObject("title");
-	if (pt) {
+	if ( fTitleBox ) {
 		if (fTitleW < 0.01) fTitleW = 0.3;
 		if (fTitleH < 0.01) fTitleH = 0.06;
 //		if (fHistTitleSize < 0.001) fHistTitleSize = 0.04;
@@ -524,14 +561,14 @@ void SetHistOptDialog::SetTitleBoxAttr(TStyle *sty)
 		if (fTitleW > 0.8) fTitleW = 0.5;
 		if (fTitleH > 0.4) fTitleH = 0.06;
 		
-		pt->SetTextSize(fHistTitleSize);
-		pt->SetTextColor(fTitleTextColor);
-		pt->SetLineColor(fTitleLineColor);
-		pt->SetFillColor(fTitleFillColor);
-		pt->SetFillStyle(fTitleStyle);
-		pt->SetTextFont  (fTitleFont);
-		pt->SetTextAlign (22);
-		pt->SetBorderSize(fTitleBorderSize);
+		fTitleBox->SetTextSize(fHistTitleSize);
+		fTitleBox->SetTextColor(fTitleTextColor);
+		fTitleBox->SetLineColor(fTitleLineColor);
+		fTitleBox->SetFillColor(fTitleFillColor);
+		fTitleBox->SetFillStyle(fTitleStyle);
+		fTitleBox->SetTextFont  (fTitleFont);
+		fTitleBox->SetTextAlign (22);
+		fTitleBox->SetBorderSize(fTitleBorderSize);
 		
 		Int_t talh = gStyle->GetTitleAlign()/10;
 		if (talh < 1) talh = 1; if (talh > 3) talh = 3;
@@ -547,76 +584,92 @@ void SetHistOptDialog::SetTitleBoxAttr(TStyle *sty)
 		if (talv == 3) ypos = fTitleY - fTitleH;
 		
 		
-		pt->SetX1NDC         (xpos         );
-		pt->SetY1NDC         (ypos         );
-		pt->SetX2NDC         (xpos + fTitleW );
-		pt->SetY2NDC         (ypos + fTitleH );
+		fTitleBox->SetX1NDC         (xpos         );
+		fTitleBox->SetY1NDC         (ypos         );
+		fTitleBox->SetX2NDC         (xpos + fTitleW );
+		fTitleBox->SetY2NDC         (ypos + fTitleH );
 
 	}
 }
 //______________________________________________________________________
 
+void SetHistOptDialog::SetLegendBoxAttr(TStyle *sty)
+{
+	TEnv env(".hprrc");
+	if (gDebug > 0)
+		cout << "SetHistOptDialog::SetLegendBoxAttr"  << fLegendBox<< endl;
+	if ( fLegendBox) {
+		sty->SetLegendBorderSize(fStatBorderSize);
+		fLegendBox->SetBorderSize(fStatBorderSize);
+		fLegendBox->SetFillColor     (fStatFillColor);
+		fLegendBox->SetLineColor     (fStatLineColor);
+		fLegendBox->SetTextColor     (fStatTextColor);
+		fLegendBox->SetFillStyle     (fStatStyle    );
+		if (fStatX < 0 || fStatX > 0.95) fStatX = 0.7;
+		if (fStatY < 0 || fStatY > 0.95) fStatX = 0.8;
+		fLegendBox->SetX2NDC         (fStatX         );
+		fLegendBox->SetY2NDC         (fStatY         );
+		fLegendBox->SetX1NDC         (fStatX - fStatW );
+		fLegendBox->SetY1NDC         (fStatY - fStatH );
+		
+		env.SetValue("HprLegend.fFillColor", fStatFillColor);
+		env.SetValue("HprLegend.fFillStyle", fStatStyle);
+		env.SetValue("HprLegend.fLineColor", fStatLineColor);
+		env.SetValue("HprLegend.fBorderSize",fStatBorderSize);
+		env.SetValue("HprLegend.fTextColor", fStatTextColor);
+		env.SetValue("HprLegend.fTextFont",  fStatFont);
+	}
+}
+	//______________________________________________________________________
+
 void SetHistOptDialog::SetStatBoxAttr(TStyle *sty)
 {
 	TEnv env(".hprrc");
 	if (gDebug > 0)
-		cout << "SetHistOptDialog::SetStatBoxAttr" << endl;
-	if ( fCanvas ) {
-		TIter next=fCanvas->GetListOfPrimitives();
-		TObject *obj;
-		while (obj = next()) {
-			if (obj->InheritsFrom("TLegend")) {
-				sty->SetLegendBorderSize(fStatBorderSize);
-				((TLegend*)obj)->SetBorderSize(fStatBorderSize);
-				((TLegend*)obj)->SetFillColor     (fStatFillColor);
-				((TLegend*)obj)->SetLineColor     (fStatLineColor);
-				((TLegend*)obj)->SetTextColor     (fStatTextColor);
-				((TLegend*)obj)->SetFillStyle     (fStatStyle    );
-				env.SetValue("HprLegend.fFillColor", fStatFillColor);
-				env.SetValue("HprLegend.fFillStyle", fStatStyle);
-				env.SetValue("HprLegend.fLineColor", fStatLineColor);
-				env.SetValue("HprLegend.fBorderSize",fStatBorderSize);
-				env.SetValue("HprLegend.fTextColor", fStatTextColor);
-				env.SetValue("HprLegend.fTextFont",  fStatFont);
-			}
+		cout << "SetHistOptDialog::SetStatBoxAttr" << fStatBox << endl;
+	if (fStatBox) {
+		Float_t statX, statY, statW, statH;
+		if (fHist->GetDimension() == 2) {
+			statX = fStatX2D;
+			statY = fStatY2D;
+			statW = fStatW2D;
+			statH = fStatH2D;
+		} else {
+			statX = fStatX;
+			statY = fStatY;
+			statW = fStatW;
+			statH = fStatH;
 		}
-	}
-	if ( fHist ) {
-		TPavesText *pt = (TPavesText*)fHist->GetListOfFunctions()->FindObject("stats");
-		if (pt) {
-			if (fStatX < 0 || fStatX > 0.95) fStatX = 0.7;
-			if (fStatY < 0 || fStatY > 0.95) fStatX = 0.8;
-			pt->SetTextSize(fStatFontSize);
-			pt->SetTextColor(fStatTextColor);
-			pt->SetLineColor(fStatLineColor);
-			pt->SetFillColor(fStatFillColor);
-			pt->SetFillStyle(fStatStyle);
-			pt->SetTextFont  (fStatFont);
-			pt->SetBorderSize(fStatBorderSize);
-			pt->SetX2NDC         (fStatX         );
-			pt->SetY2NDC         (fStatY         );
-			pt->SetX1NDC         (fStatX - fStatW );
-			pt->SetY1NDC         (fStatY - fStatH );
-			sty->SetStatColor     (fStatFillColor );
-			sty->SetLineColor     (fStatLineColor );
-			sty->SetStatColor     (fStatFillColor );
-			sty->SetStatTextColor (fStatTextColor );
-			sty->SetStatBorderSize(fStatBorderSize);
-			sty->SetStatFont      (fStatFont      );
-			sty->SetStatFontSize  (fStatFontSize  );
-			sty->SetStatStyle     (fStatStyle     );
-			sty->SetStatFormat    (fStatFormat    );
-			fStatX         = pt->GetX2NDC();
-			fStatY         = pt->GetY2NDC();
-			fStatW         = pt->GetX2NDC() - pt->GetX1NDC();
-			fStatH         = pt->GetY2NDC() - pt->GetY1NDC();
-//			cout << "SetHistOptDialog::SetStatBoxAttr pt->GetY2NDC() " 
-//			 <<pt->GetY2NDC() << " pt->GetY1NDC() " << pt->GetY1NDC()<< endl;
-			sty->SetStatX         (fStatX);
-			sty->SetStatY         (fStatY);
-			sty->SetStatW         (fStatW);
-			sty->SetStatH         (fStatH);
-		}
+		if (statX < 0 || statX > 0.95) statX = 0.7;
+		if (statY < 0 || statY > 0.95) statX = 0.8;
+		fStatBox->SetTextSize(fStatFontSize);
+		fStatBox->SetTextColor(fStatTextColor);
+		fStatBox->SetLineColor(fStatLineColor);
+		fStatBox->SetFillColor(fStatFillColor);
+		fStatBox->SetFillStyle(fStatStyle);
+		fStatBox->SetTextFont  (fStatFont);
+		fStatBox->SetBorderSize(fStatBorderSize);
+		fStatBox->SetX2NDC         (statX         );
+		fStatBox->SetY2NDC         (statY         );
+		fStatBox->SetX1NDC         (statX - statW );
+		fStatBox->SetY1NDC         (statY - statH );
+		sty->SetStatColor     (fStatFillColor );
+		sty->SetLineColor     (fStatLineColor );
+		sty->SetStatColor     (fStatFillColor );
+		sty->SetStatTextColor (fStatTextColor );
+		sty->SetStatBorderSize(fStatBorderSize);
+		sty->SetStatFont      (fStatFont      );
+		sty->SetStatFontSize  (fStatFontSize  );
+		sty->SetStatStyle     (fStatStyle     );
+		sty->SetStatFormat    (fStatFormat    );
+// 		fStatX         = fStatBox->GetX2NDC();
+// 		fStatY         = fStatBox->GetY2NDC();
+// 		fStatW         = fStatBox->GetX2NDC() - fStatBox->GetX1NDC();
+// 		fStatH         = fStatBox->GetY2NDC() - fStatBox->GetY1NDC();
+		sty->SetStatX         (fStatX);
+		sty->SetStatY         (fStatY);
+		sty->SetStatW         (fStatW);
+		sty->SetStatH         (fStatH);
 	}
 	env.SaveLevel(kEnvLocal);
 }
@@ -788,7 +841,9 @@ void SetHistOptDialog::SetHistAttPerm(TStyle * style)
 void SetHistOptDialog::SaveDefaults()
 {
    cout << "SetHistOptDialog:: SaveDefaults()" << endl;
-   TEnv env(".hprrc");
+	TString envname;
+	TString resname;
+	TEnv env(".hprrc");
    env.SetValue("SetHistOptDialog.fNdivisionsX",   fNdivisionsX);
    env.SetValue("SetHistOptDialog.fNdivisionsY",   fNdivisionsY);
    env.SetValue("SetHistOptDialog.fNdivisionsZ",   fNdivisionsZ);
@@ -825,18 +880,68 @@ void SetHistOptDialog::SaveDefaults()
    env.SetValue("SetHistOptDialog.TitleW",          fTitleW         );
    env.SetValue("SetHistOptDialog.TitleH",          fTitleH         );
    env.SetValue("SetHistOptDialog.TitleAlign",      fTitleAlign     );
-   env.SetValue("SetHistOptDialog.StatColor",       fStatFillColor  );
-   env.SetValue("SetHistOptDialog.StatLineColor",   fStatLineColor  );
-	env.SetValue("SetHistOptDialog.StatTextColor",   fStatTextColor  );
-	env.SetValue("SetHistOptDialog.StatBorderSize",  fStatBorderSize );
-   env.SetValue("SetHistOptDialog.StatFont",        fStatFont       );
-   env.SetValue("SetHistOptDialog.fStatFormat",     fStatFormat     );
-   env.SetValue("SetHistOptDialog.StatFontSize",    fStatFontSize   );
-   env.SetValue("SetHistOptDialog.StatStyle",       fStatStyle      );
-   env.SetValue("SetHistOptDialog.StatX",           fStatX          );
-   env.SetValue("SetHistOptDialog.StatY",           fStatY          );
-   env.SetValue("SetHistOptDialog.StatW",           fStatW          );
-   env.SetValue("SetHistOptDialog.StatH",           fStatH          );
+	if ( fStatBox ) {
+		env.SetValue("SetHistOptDialog.StatColor",       fStatFillColor  );
+		env.SetValue("SetHistOptDialog.StatLineColor",   fStatLineColor  );
+		env.SetValue("SetHistOptDialog.StatTextColor",   fStatTextColor  );
+		env.SetValue("SetHistOptDialog.StatBorderSize",  fStatBorderSize );
+		env.SetValue("SetHistOptDialog.StatFont",        fStatFont       );
+		env.SetValue("SetHistOptDialog.fStatFormat",     fStatFormat     );
+		env.SetValue("SetHistOptDialog.StatFontSize",    fStatFontSize   );
+		env.SetValue("SetHistOptDialog.StatStyle",       fStatStyle      );
+		Double_t sh = fStatBox->GetY2NDC() - fStatBox->GetY1NDC();
+		Int_t nlines = fStatBox->GetListOfLines()->GetSize();
+		if (nlines <= 0) 
+			nlines = 1;
+		if ( gDebug > 0 )
+			cout << "SetHistOptDialog::SaveDefaults(): sh, nlines " << " " << sh << " " << nlines << endl;
+		sh = 4. * sh / nlines;
+		if (fHist->GetDimension() == 2) {
+			env.SetValue("SetHistOptDialog.StatX2D",      fStatX2D        );
+			env.SetValue("SetHistOptDialog.StatY2D",      fStatY2D        );
+			env.SetValue("SetHistOptDialog.StatW2D",      fStatW2D        );
+			env.SetValue("SetHistOptDialog.StatH2D",      sh        );
+		} else {
+			env.SetValue("SetHistOptDialog.StatX",           fStatX        );
+			env.SetValue("SetHistOptDialog.StatY",           fStatY        );
+			env.SetValue("SetHistOptDialog.StatW",           fStatW        );
+			env.SetValue("SetHistOptDialog.StatH",           sh          );
+		}
+/*		envname = "StatBox";
+		if (fHist && fHist->GetDimension() == 2) {
+			envname += "2D.f";
+		} else {
+			envname += "1D.f";
+		}	
+		resname = envname + "X1";	
+		env.SetValue(resname, fStatX - fStatW);
+		resname = envname + "X2";	
+		env.SetValue(resname, fStatX);
+		resname = envname + "Y1";	
+		env.SetValue(resname, fStatY - fStatH);
+		resname = envname + "Y2";	
+		env.SetValue(resname, fStatY);*/
+		
+	} else if ( fLegendBox ) {
+		TString pavename(fLegendBox->GetName());
+		cout << " SetHistOptDialog::SaveDefaults(): " << pavename << endl;
+		if (pavename == "Legend_SuperImposeHist") {
+			envname = "SuperImposeHist";
+		} else if (pavename == "Legend_SuperImposeGraph") {
+			envname = "SuperImposeGraph";
+		} else {
+			envname = "HprStack";
+		}
+		envname += ".fLegend";
+		resname = envname + "X1";	
+		env.SetValue(resname, fStatX - fStatW);
+		resname = envname + "X2";	
+		env.SetValue(resname, fStatX);
+		resname = envname + "Y1";	
+		env.SetValue(resname, fStatY - fStatH);
+		resname = envname + "Y2";	
+		env.SetValue(resname, fStatY);
+	}
    env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
@@ -892,13 +997,17 @@ void SetHistOptDialog::RestoreDefaults(Int_t resetall)
    fStatFont=      env.GetValue("SetHistOptDialog.StatFont"     ,    62);
 	if (fStatFont < 12 || fStatFont > 123) fStatFont = 62;
 	fStatFormat=    env.GetValue("SetHistOptDialog.fStatFormat",  "6.2g");
-   fStatFontSize=  env.GetValue("SetHistOptDialog.StatFontSize",   0.02);
+   fStatFontSize=  env.GetValue("SetHistOptDialog.StatFontSize",   0.04);
    fStatStyle=     env.GetValue("SetHistOptDialog.StatStyle",         0);
    fStatX=         env.GetValue("SetHistOptDialog.StatX",           0.9);
    fStatY=         env.GetValue("SetHistOptDialog.StatY",           0.9);
    fStatW=         env.GetValue("SetHistOptDialog.StatW",           0.2);
    fStatH=         env.GetValue("SetHistOptDialog.StatH",          0.16);
-   fTitleFillColor = env.GetValue("SetHistOptDialog.TitleColor",      0);
+	fStatX2D=         env.GetValue("SetHistOptDialog.StatX2D",       0.9);
+	fStatY2D=         env.GetValue("SetHistOptDialog.StatY2D",       0.9);
+	fStatW2D=         env.GetValue("SetHistOptDialog.StatW2D",       0.2);
+	fStatH2D=         env.GetValue("SetHistOptDialog.StatH2D",       0.2);
+	fTitleFillColor = env.GetValue("SetHistOptDialog.TitleColor",      0);
 	fTitleLineColor = env.GetValue("SetHistOptDialog.TitleLineColor",  1);
 	fTitleStyle     = env.GetValue("SetHistOptDialog.TitleStyle",      0);
    fTitleTextColor = env.GetValue("SetHistOptDialog.TitleTextColor",  1);
@@ -917,68 +1026,81 @@ void SetHistOptDialog::RestoreDefaults(Int_t resetall)
 
 void SetHistOptDialog::GetValuesFromHist()
 {
-	if ( fHist ) {
-		TAxis *xa = fHist->GetXaxis();
-		TAxis *ya = fHist->GetYaxis();
-		TAxis *za = NULL;
-		if (fHist && fHist->GetDimension() > 1)
-			za = fHist->GetZaxis();
-		fAxisColor    = xa->GetAxisColor  ();
-		fLabelColor   = xa->GetLabelColor ();
-		fLabelFont    = xa->GetLabelFont  ();
-		fLabelSize    = xa->GetLabelSize  ();
-		fTickLength   = xa->GetTickLength ();
-		fTitleSize    = xa->GetTitleSize  ();
-		fTitleColorA  = xa->GetTitleColor ();
-		fTitleFontA   = xa->GetTitleFont  ();
-
-		fNdivisionsX  = xa->GetNdivisions ();
-		fLabelOffsetX = xa->GetLabelOffset();
-		fTickSideX    = xa->GetTicks      ();
-		fTitleOffsetX = xa->GetTitleOffset();
-		fTitleCenterX = xa->GetCenterTitle();
-
-		fNdivisionsY  = ya->GetNdivisions ();
-		fLabelOffsetY = ya->GetLabelOffset();
-		if ( !ya->TestBit(TAxis::kTickPlus) &&
-			!ya->TestBit(TAxis::kTickMinus) )
-			ya->SetTicks("-");
-		fTickSideY    = ya->GetTicks      ();
-		fTitleOffsetY = ya->GetTitleOffset();
-		fTitleCenterY = ya->GetCenterTitle();
-
-		if (za != NULL) {
-			fNdivisionsZ  = za->GetNdivisions ();
-			fLabelOffsetZ = za->GetLabelOffset();
-			fTickSideZ    = za->GetTicks      ();
-			fTitleOffsetZ = za->GetTitleOffset();
-			fTitleCenterZ = za->GetCenterTitle();
-		}
-		TPavesText *pt = (TPavesText*)fHist->GetListOfFunctions()->FindObject("stats");
-		if (pt) {
-			fStatFillColor     = pt->GetFillColor();
-			fStatTextColor = pt->GetTextColor();
-			fStatBorderSize= pt->GetBorderSize();
-			fStatFont      = pt->GetTextFont();
-			fStatFontSize  = pt->GetTextSize();
-			fStatStyle     = pt->GetFillStyle();
-			fStatFormat    = gStyle->GetStatFormat();
-			fStatX         = pt->GetX2NDC();
-			fStatY         = pt->GetY2NDC();
-			fStatW         = pt->GetX2NDC() - pt->GetX1NDC();
-			fStatH         = pt->GetY2NDC() - pt->GetY1NDC();
-//			fStatW         = gStyle->GetStatW();
-//			fStatH         = gStyle->GetStatH();
-		}
+	Int_t dim = 1;
+	if (fHist && fHist->GetDimension() > 1) {
+		fAxisZ = fHist->GetZaxis();
+		dim = 2;
 	}
-	TPaveText *tit = (TPaveText*)fCanvas->GetListOfPrimitives()->FindObject("title");
-	if ( tit ) {
-		fTitleFillColor =   tit->GetFillColor();
-		fTitleStyle =       tit->GetFillStyle();
-		fTitleTextColor =   tit->GetTextColor();
-		fTitleBorderSize =  tit->GetBorderSize();
-		fTitleFont =        tit->GetTextFont();
-		fHistTitleSize =    tit->GetTextSize();
+	fAxisColor    = fAxisX->GetAxisColor  ();
+	fLabelColor   = fAxisX->GetLabelColor ();
+	fLabelFont    = fAxisX->GetLabelFont  ();
+	fLabelSize    = fAxisX->GetLabelSize  ();
+	fTickLength   = fAxisX->GetTickLength ();
+	fTitleSize    = fAxisX->GetTitleSize  ();
+	fTitleColorA  = fAxisX->GetTitleColor ();
+	fTitleFontA   = fAxisX->GetTitleFont  ();
+
+	fNdivisionsX  = fAxisX->GetNdivisions ();
+	fLabelOffsetX = fAxisX->GetLabelOffset();
+	fTickSideX    = fAxisX->GetTicks      ();
+	fTitleOffsetX = fAxisX->GetTitleOffset();
+	fTitleCenterX = fAxisX->GetCenterTitle();
+
+	fNdivisionsY  = fAxisY->GetNdivisions ();
+	fLabelOffsetY = fAxisY->GetLabelOffset();
+	if ( !fAxisY->TestBit(TAxis::kTickPlus) &&
+		!fAxisY->TestBit(TAxis::kTickMinus) )
+		fAxisY->SetTicks("-");
+	fTickSideY    = fAxisY->GetTicks      ();
+	fTitleOffsetY = fAxisY->GetTitleOffset();
+	fTitleCenterY = fAxisY->GetCenterTitle();
+
+	if (fAxisZ != NULL) {
+		fNdivisionsZ  = fAxisZ->GetNdivisions ();
+		fLabelOffsetZ = fAxisZ->GetLabelOffset();
+		fTickSideZ    = fAxisZ->GetTicks      ();
+		fTitleOffsetZ = fAxisZ->GetTitleOffset();
+		fTitleCenterZ = fAxisZ->GetCenterTitle();
+	}
+	if (fStatBox) {
+		fStatFillColor     = fStatBox->GetFillColor();
+		fStatTextColor = fStatBox->GetTextColor();
+		fStatBorderSize= fStatBox->GetBorderSize();
+		fStatFont      = fStatBox->GetTextFont();
+		fStatFontSize  = fStatBox->GetTextSize();
+		fStatStyle     = fStatBox->GetFillStyle();
+		fStatFormat    = gStyle->GetStatFormat();
+		if ( dim == 1 ) {
+			fStatX         = fStatBox->GetX2NDC();
+			fStatY         = fStatBox->GetY2NDC();
+			fStatW         = fStatBox->GetX2NDC() - fStatBox->GetX1NDC();
+			fStatH         = fStatBox->GetY2NDC() - fStatBox->GetY1NDC();
+		} else {
+			fStatX2D         = fStatBox->GetX2NDC();
+			fStatY2D         = fStatBox->GetY2NDC();
+			fStatW2D         = fStatBox->GetX2NDC() - fStatBox->GetX1NDC();
+			fStatH2D         = fStatBox->GetY2NDC() - fStatBox->GetY1NDC();
+		}
+	} else if ( fLegendBox ) {
+		fStatFillColor     = fLegendBox->GetFillColor();
+		fStatTextColor = fLegendBox->GetTextColor();
+		fStatBorderSize= fLegendBox->GetBorderSize();
+		fStatFont      = fLegendBox->GetTextFont();
+		fStatFontSize  = fLegendBox->GetTextSize();
+		fStatStyle     = fLegendBox->GetFillStyle();
+		fStatFormat    = gStyle->GetStatFormat();
+		fStatX         = fLegendBox->GetX2NDC();
+		fStatY         = fLegendBox->GetY2NDC();
+		fStatW         = fLegendBox->GetX2NDC() - fLegendBox->GetX1NDC();
+		fStatH         = fLegendBox->GetY2NDC() - fLegendBox->GetY1NDC();
+	}
+	if ( fTitleBox ) {
+		fTitleFillColor =   fTitleBox->GetFillColor();
+		fTitleStyle =       fTitleBox->GetFillStyle();
+		fTitleTextColor =   fTitleBox->GetTextColor();
+		fTitleBorderSize =  fTitleBox->GetBorderSize();
+		fTitleFont =        fTitleBox->GetTextFont();
+		fHistTitleSize =    fTitleBox->GetTextSize();
 		if ( fHistTitleSize <= 0 ) {
 			TEnv env(".hprrc");
 			fHistTitleSize  = env.GetValue("SetHistOptDialog.HistTitleSize", 0.03);
@@ -1040,15 +1162,14 @@ void SetHistOptDialog::SetDefaults()
    gStyle->SetTitleW         (env.GetValue("SetHistOptDialog.TitleW",           0.));
    gStyle->SetTitleH         (env.GetValue("SetHistOptDialog.TitleH",           0.));
    gStyle->SetTitleAlign     (env.GetValue("SetHistOptDialog.TitleAlign",       23));
-
-   gStyle->SetStatColor      (env.GetValue("SetHistOptDialog.StatColor",        19));
-   gStyle->SetStatTextColor  (env.GetValue("SetHistOptDialog.StatTextColor",     1));
-   gStyle->SetStatBorderSize (env.GetValue("SetHistOptDialog.StatBorderSize",    1));
-   gStyle->SetStatFont       (env.GetValue("SetHistOptDialog.StatFont",         62));
-   gStyle->SetStatFontSize   (env.GetValue("SetHistOptDialog.StatFontSize",   0.02));
-   gStyle->SetStatStyle      (env.GetValue("SetHistOptDialog.StatStyle",      1001));
-   gStyle->SetStatX          (env.GetValue("SetHistOptDialog.StatX",           0.9));
-   gStyle->SetStatY          (env.GetValue("SetHistOptDialog.StatY",           0.9));
+	gStyle->SetStatColor      (env.GetValue("SetHistOptDialog.StatColor",        19));
+	gStyle->SetStatTextColor  (env.GetValue("SetHistOptDialog.StatTextColor",     1));
+	gStyle->SetStatBorderSize (env.GetValue("SetHistOptDialog.StatBorderSize",    1));
+	gStyle->SetStatFont       (env.GetValue("SetHistOptDialog.StatFont",         62));
+	gStyle->SetStatFontSize   (env.GetValue("SetHistOptDialog.StatFontSize",   0.04));
+	gStyle->SetStatStyle      (env.GetValue("SetHistOptDialog.StatStyle",      1001));
+	gStyle->SetStatX          (env.GetValue("SetHistOptDialog.StatX",           0.9));
+	gStyle->SetStatY          (env.GetValue("SetHistOptDialog.StatY",           0.9));
 	gStyle->SetStatW          (env.GetValue("SetHistOptDialog.StatW",           0.2));
 	gStyle->SetStatH          (env.GetValue("SetHistOptDialog.StatH",           0.16));
 	fTitleCenterX  =           env.GetValue("SetHistOptDialog.fTitleCenterX",      1);
@@ -1066,11 +1187,13 @@ void SetHistOptDialog::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void SetHistOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
+void SetHistOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
 {
-   TCanvas *canvas = (TCanvas *)obj;
-//   cout << "CRButtonPressed(" << wid<< ", " <<bid;
+//   TCanvas *canvas = (TCanvas *)obj;
+	if (gDebug > 0 ) {
+		cout << "CRButtonPressed, bid: " << bid;
 //   if (obj) cout  << ", " << canvas->GetName() << ")";
-//   cout << endl;
-   SetHistAttNow(canvas, bid);
+		cout << endl;
+	}
+   SetHistAttNow(bid);
 }

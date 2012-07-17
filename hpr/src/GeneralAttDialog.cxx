@@ -24,7 +24,8 @@ Int_t GeneralAttDialog::fUseRegexp = 0;
 Int_t GeneralAttDialog::fShowListsOnly = 0;
 Int_t GeneralAttDialog::fRememberLastSet = 1;
 Int_t GeneralAttDialog::fRememberZoom = 1;
-Int_t GeneralAttDialog::fRememberStatBox = 1;
+Int_t GeneralAttDialog::fRememberStatBox = 0;
+Int_t GeneralAttDialog::fRememberLegendBox = 1;
 Int_t GeneralAttDialog::fUseAttributeMacro = 0;
 Int_t GeneralAttDialog::fMaxListEntries = 333;
 Int_t GeneralAttDialog::fContentLowLimit = 0;
@@ -83,7 +84,22 @@ Pressing the left mouse button in the scale of a histogram\n\
 and dragging to the required limit allows to zoom\n\
 in the picture. This  option allows to remember these\n\
 settings in later sessions.\n\
-_____________________________________________________________\n\
+____________________________________________________________\n\
+Remember position of StatBox, LegendBox\n\
+--------------------------------------------\n\
+Position / size of StatBox, LegendBox can be adjusted from the\n\
+menu \"Graphic_defaults\". Using there the command \n\
+\"Save as global default\" make these settings persistent\n\
+across sessions.\n\
+The size will be adjusted according to the number of lines\n\
+in the box, e.g. if only name and number of entries of a\n\
+histogram should be displayed the box is smaller than\n\
+if in addition mean and sigma are to be displayed.\n\
+Movements of the boxes by the mouse are not remembered.\n\
+\n\
+If this option is activated position of the boxes\n\
+are remembered when moved with the mouse\n\
+\n\
 Use Attribute Macro \n\
 -------------------\n\
 With this option activ each time after a histogram is\n\
@@ -128,12 +144,12 @@ ____________________________________________________________\n\
 	   style_menu += ((TStyle*)obj)->GetName();
 	}
    RestoreDefaults();
-   fRow_lab->Add(new TObjString("CheckButton_            Force current style"));
+   fRow_lab->Add(new TObjString("CheckButton_              Force current style"));
    fValp[ind++] = &fForceStyle;
    fRow_lab->Add(new TObjString(style_menu));
    fGlobalStyleButton = ind;
    fValp[ind++] = &fGlobalStyle;
-   fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo names"));
+   fRow_lab->Add(new TObjString("CheckButton_  Prepend filename to histo names"));
    fValp[ind++] = &fPrependFilenameToName;
    fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo titles"));
    fValp[ind++] = &fPrependFilenameToTitle;
@@ -147,9 +163,11 @@ ____________________________________________________________\n\
    fValp[ind++] = &fRememberLastSet;
    fRow_lab->Add(new TObjString("CheckButton_Remember Zoomings (by left mouse)"));
    fValp[ind++] = &fRememberZoom;
-   fRow_lab->Add(new TObjString("CheckButton_  Remember positioning of StatBox"));
+   fRow_lab->Add(new TObjString("CheckButton_     Remember position of StatBox"));
    fValp[ind++] = &fRememberStatBox;
-   fRow_lab->Add(new TObjString("CheckButton_              Use Attribute Macro"));
+	fRow_lab->Add(new TObjString("CheckButton_   Remember position of LegendBox"));
+	fValp[ind++] = &fRememberLegendBox;
+	fRow_lab->Add(new TObjString("CheckButton_              Use Attribute Macro"));
    fValp[ind++] = &fUseAttributeMacro;
    fRow_lab->Add(new TObjString("CheckButton_    Use Regular expression syntax"));
    fValp[ind++] = &fUseRegexp;
@@ -162,7 +180,7 @@ ____________________________________________________________\n\
 
    fRow_lab->Add(new TObjString("CommentOnly_Option for stacked hists"));
    fValp[ind++] = &fScaleStack;
-   fRow_lab->Add(new TObjString("CheckButton_Apply scale to stacked hists"));
+   fRow_lab->Add(new TObjString("CheckButton_     Apply scale to stacked hists"));
 	fValp[ind++] = &fScaleStack;
 	fRow_lab->Add(new TObjString("RadioButton_ Really stack"));
 	fValp[ind++] = &fStackedReally;
@@ -211,7 +229,8 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fRememberLastSet", fRememberLastSet);
    env.SetValue("GeneralAttDialog.fRememberZoom", fRememberZoom);
 	env.SetValue("GeneralAttDialog.fRememberStatBox", fRememberStatBox);
-   env.SetValue("GeneralAttDialog.fUseAttributeMacro", fUseAttributeMacro);
+	env.SetValue("GeneralAttDialog.fRememberLegendBox", fRememberLegendBox);
+	env.SetValue("GeneralAttDialog.fUseAttributeMacro", fUseAttributeMacro);
    env.SetValue("GeneralAttDialog.fMaxListEntries", fMaxListEntries);
    env.SetValue("GeneralAttDialog.fVertAdjustLimit", fVertAdjustLimit);
    env.SetValue("GeneralAttDialog.fContentLowLimit", fContentLowLimit);
@@ -240,8 +259,9 @@ void GeneralAttDialog::RestoreDefaults()
    fShowListsOnly = env.GetValue("GeneralAttDialog.fShowListsOnly", 0);
    fRememberLastSet = env.GetValue("GeneralAttDialog.fRememberLastSet", 1);
    fRememberZoom = env.GetValue("GeneralAttDialog.fRememberZoom", 1);
-	fRememberStatBox = env.GetValue("GeneralAttDialog.fRememberStatBox", 1);
-   fUseAttributeMacro = env.GetValue("GeneralAttDialog.fUseAttributeMacro", 0);
+	fRememberStatBox = env.GetValue("GeneralAttDialog.fRememberStatBox", (Int_t)0);
+	fRememberLegendBox = env.GetValue("GeneralAttDialog.fRememberLegendBox", 1);
+	fUseAttributeMacro = env.GetValue("GeneralAttDialog.fUseAttributeMacro", 0);
    fMaxListEntries =
    env.GetValue("GeneralAttDialog.fMaxListEntries", 333);
    fVertAdjustLimit = env.GetValue("GeneralAttDialog.fVertAdjustLimit", 0);

@@ -8,6 +8,7 @@
 #include "TH1.h"
 #include "TStyle.h"
 #include "WhatToShowDialog.h"
+#include "support.h"
 #include <iostream>
 
 namespace std {} using namespace std;
@@ -21,21 +22,23 @@ static const Char_t helptext[] =
 "This determines what to show for a histogram,\n\
 especially which values to display in the statistics box";
 
-
-   gROOT->GetListOfCleanups()->Add(this);
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
 // is it 1 or 2dim
-   fDim = 0;
+	fHist = NULL;
    TIter next(fCanvas->GetListOfPrimitives());
    TObject *obj;
    while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TH1")) 
-        fDim = ((TH1*)obj)->GetDimension();
+		if (obj->InheritsFrom("TH1")) {
+			fHist = (TH1*)obj;
+		}
    }
-   if ( fDim == 0 )
+   if ( fHist == NULL ) {
       cout << "WARNING: No hist found in pad" << endl;
-   fRow_lab = new TList();
+		return;
+	}
+	gROOT->GetListOfCleanups()->Add(this);
+	fRow_lab = new TList();
    
    Int_t ind = 0;
    static Int_t dummy;
@@ -121,8 +124,13 @@ void WhatToShowDialog::SetWhatToShowNow(TCanvas *canvas)
 	    mask *= 10;
 	}
    gStyle->SetOptStat(active_opt);
-   gStyle->SetOptFit(fShowFitBox);
+	if ( fHist && HasFunctions(fHist) ) {
+		gStyle->SetOptFit(fShowFitBox);
+	}
 	gStyle->SetOptTitle(fShowTitle);
+//	TEnv env(".hpprc");
+	// avoid saving of statbox size
+//	Int_t rstatbox = env.GetValue("GeneralAttDialog.fRememberStatBox", 0);
    TIter next(canvas->GetListOfPrimitives());
    TObject *obj;
    while ( (obj = next()) ) {
@@ -146,6 +154,8 @@ void WhatToShowDialog::SetWhatToShowNow(TCanvas *canvas)
    canvas->Modified();
    canvas->Update();
    fOptStat = active_opt;
+//	if ( rstatbox )
+//		env.SetValue("GeneralAttDialog.fRememberStatBox", 1);
 //   gStyle->SetOptStat(save_OptStat);
 //   gStyle->SetOptFit(save_OptFit);
 //   gStyle->SetOptTitle(save_OptTitle);
@@ -156,8 +166,8 @@ void WhatToShowDialog::SetWhatToShowNow(TCanvas *canvas)
 void WhatToShowDialog::SetDefaults()
 {
    TEnv env(".hprrc");
-   gStyle->SetOptStat (env.GetValue("WhatToShowDialog.fOptStat1Dim", 11111));
-   gStyle->SetOptFit  (env.GetValue("WhatToShowDialog.fShowFitBox1Dim", 1));
+   gStyle->SetOptStat (env.GetValue("WhatToShowDialog.fOptStat1Dim", 1111));
+//   gStyle->SetOptFit  (env.GetValue("WhatToShowDialog.fShowFitBox1Dim", 1));
    gStyle->SetOptTitle(env.GetValue("WhatToShowDialog.fShowTitle1Dim", 1));
 }
 //_______________________________________________________________________
@@ -165,8 +175,8 @@ void WhatToShowDialog::SetDefaults()
 void WhatToShowDialog::SaveDefaults()
 {
    TEnv env(".hprrc");
-//   cout << " fOptStat "<< fOptStat<< " dim "  << fDim << endl;
-   if (fDim == 1) {
+//   cout << " fOptStat "<< fOptStat<< " dim "  << fHist->GetDimension() << endl;
+   if (fHist->GetDimension() == 1) {
 //		gStyle->SetOptStat(fOptStat1Dim);
 //		gStyle->SetOptFit(fShowFitBox1Dim);
 //		gStyle->SetOptTitle(fShowTitle1Dim);
@@ -195,8 +205,8 @@ void WhatToShowDialog::SaveDefaults()
 void WhatToShowDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
-   if (fDim == 1) {
-		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat1Dim", 11111);
+   if (fHist->GetDimension() == 1) {
+		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat1Dim", 1111);
 		fShowFitBox       = env.GetValue("WhatToShowDialog.fShowFitBox1Dim", 1);
 		fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle1Dim", 1);
 		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox1Dim", 1);
@@ -210,7 +220,7 @@ void WhatToShowDialog::RestoreDefaults()
 		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox2Dim", 1);
 		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay2Dim", 1);
    }
-   gStyle->SetOptFit(fShowFitBox);
+//   gStyle->SetOptFit(fShowFitBox);
 }
 //______________________________________________________________________
 
@@ -223,7 +233,7 @@ void WhatToShowDialog::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void WhatToShowDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject *obj)
+void WhatToShowDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
 //   cout << "CRButtonPressed(" << wid<< ", " <<bid;

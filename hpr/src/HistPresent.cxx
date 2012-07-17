@@ -3252,7 +3252,7 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* /*title*/)
 {
    TList hl;
    Int_t nsel = hlist->GetSize();
-	cout << "StackSelectedHists  " << nsel << endl;
+//	cout << "StackSelectedHists  " << nsel << endl;
 	for(Int_t i=0; i<nsel; i++) {
       TH1* hist = GetSelHistAt(i, hlist);
 		if (!hist) {

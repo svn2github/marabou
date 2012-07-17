@@ -8,6 +8,8 @@
 #include <iostream>
 //_____________________________________________________________________________________
 
+class TPavesText;
+class TLegend;
 
 class SetHistOptDialog : public TObject {
 
@@ -19,7 +21,17 @@ private:
 	TCollection  *fHistList;
    TGWindow     *fWindow;
 	TH1          *fHist;
-   Int_t        fPdivX;
+	TObject      *fParent;
+	TPad         *fPad;
+	TAxis        *fAxisX;
+	TAxis        *fAxisY;
+	TAxis        *fAxisZ;
+	TPavesText   *fStatBox;
+	TPavesText   *fTitleBox;
+	TLegend      *fLegendBox;
+	TString      fObjTitle;
+	Int_t        fNSubPads;
+	Int_t        fPdivX;
 	Int_t        fSdivX;
 	Int_t        fTdivX;
 	Int_t        fPdivY;
@@ -79,8 +91,13 @@ private:
    Float_t      fStatY;
    Float_t      fStatW;
    Float_t      fStatH;
-   Int_t        fStatCmd1;
+	Float_t      fStatX2D;
+	Float_t      fStatY2D;
+	Float_t      fStatW2D;
+	Float_t      fStatH2D;
+	Int_t        fStatCmd1;
    Int_t        fStatCmd2;
+	Int_t        fBidReselect;
    TString      fCustomStyleName;
    Int_t        fNewStyle;
 	Int_t			 fDummy;
@@ -97,12 +114,14 @@ public:
    ~SetHistOptDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
-   void SetHistAttNow(TCanvas *canvas, Int_t bid = 0);
-   void SetHistAtt(TCanvas *canvas, Int_t bid = 0);
+	Bool_t SetPointers();
+   void SetHistAttNow(Int_t bid = 0);
+   void SetHistAtt(Int_t bid = 0);
    void SetHistAttPermLocal();
    void SetHistAttPerm(TStyle * style = NULL);
    void SetStatBoxAttr(TStyle * style = NULL);
-   void SetTitleBoxAttr(TStyle * style = NULL);
+	void SetLegendBoxAttr(TStyle * style = NULL);
+	void SetTitleBoxAttr(TStyle * style = NULL);
    void SetCustomStyle();
    void SaveDefaults();
    void SetAllToDefault();

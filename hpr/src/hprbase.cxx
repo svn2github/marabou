@@ -3,9 +3,9 @@
 #include "TFile.h"
 #include "TGraphErrors.h"
 #include "TFrame.h"
+#include "THStack.h"
 #include "TString.h"
 #include "TObjString.h"
-#include "TPaveStats.h"
 #include "TSystem.h"
 #include "TList.h"
 #include "TMath.h"
@@ -18,6 +18,7 @@
 #include <fstream>
 #include "hprbase.h"
 #include "HistPresent.h"
+#include "SetColor.h"
 
 using std::cout;
 using std::cerr;
@@ -273,13 +274,21 @@ TH1 * FindHistOfTF1(TVirtualPad * ca, const char * fname, Int_t push_pop)
 };
 //_______________________________________________________________________________________
 
-TH1 * FindHistInPad(TVirtualPad * ca)
+TH1 * FindHistInPad(TVirtualPad * ca, Int_t lfgraph, Int_t lfstack, TObject **parent)
 {
 	if (!ca) return NULL;
 	TIter next(ca->GetListOfPrimitives());
 	while (TObject * obj = next()) {
+		if ( parent )
+			*parent = obj;
 		if (obj->InheritsFrom("TH1")) {
 			return (TH1*)obj;
+		}
+		if (lfgraph && obj->InheritsFrom("TGraph")) {
+			return ((TGraph*)obj)->GetHistogram();
+		}
+		if (lfstack && obj->InheritsFrom("THStack")) {
+			return ((THStack*)obj)->GetHistogram();
 		}
 	}
 	return NULL;
@@ -293,6 +302,19 @@ TGraph * FindGraphInPad(TVirtualPad * ca)
 	while (TObject * obj = next()) {
 		if (obj->InheritsFrom("TGraph")) {
 			return (TGraph*)obj;
+		}
+	}
+	return NULL;
+};
+//_______________________________________________________________________________________
+
+TLegend * FindLegendInPad(TVirtualPad * ca)
+{
+	if (!ca) return NULL;
+	TIter next(ca->GetListOfPrimitives());
+	while (TObject * obj = next()) {
+		if (obj->InheritsFrom("TLegend")) {
+			return (TLegend*)obj;
 		}
 	}
 	return NULL;
@@ -469,7 +491,8 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	for the first histogram\n\
 		\n\
 		";
-	HprLegend * fLegend = (HprLegend*)canvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
+//	HprLegend * fLegend = (HprLegend*)canvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
+	HprLegend * fLegend = (HprLegend*)FindLegendInPad(canvas);
 	TH1 *hist;
 	//   TPaveLabel *tname;
 	//  choose from histo list
@@ -484,7 +507,8 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		hist = Hpr::GetOneHist(selhist);      // look in memory
 	}
 	if ( !hist ) {
-		Hpr::WarnBox("No hist selected");
+//		Hpr::WarnBox("No hist selected");
+		cout << setred << "No histogram selected" << setblack << endl;
 		return;
 	}
 	hist->SetMinimum(-1111);
@@ -929,6 +953,32 @@ TH1 * GetOneHist(TH1 * selhist)
 		  hist = NULL;
 	}
 	return hist;
+}
+//__________________________________________________________________
+
+void ResizeStatBox(TPaveStats * st, Int_t ndim) 
+{
+	TEnv env(".hprrc");
+	TString envname("SetHistOptDialog.Stat");
+	TString sdim;
+	if (ndim == 2)
+		sdim = "2D";
+	TString resname;
+	resname = envname + "X"  + sdim;
+	Float_t statX = env.GetValue(resname, 0.9);
+	st->SetX2NDC(statX);
+	resname = envname + "W"  + sdim;
+	Float_t statW  = env.GetValue(resname, 0.2);
+	st->SetX1NDC(statX - statW);
+	resname = envname + "Y" + sdim;
+	Float_t statY =  env.GetValue(resname, 9);
+	st->SetY2NDC(statY);
+	resname = envname + "H" + sdim;
+	Float_t statH  = env.GetValue(resname, 0.16);
+	st->SetY1NDC(statY - statH);
+	if (gDebug > 0) {
+		cout << " ResizeStatBox statY"  << resname << " " << statY << endl;
+	}	
 }
 
 

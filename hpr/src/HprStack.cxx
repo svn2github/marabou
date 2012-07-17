@@ -187,7 +187,7 @@ void HprStack::BuildCanvas()
    SetAttributes();
    fStack->SetTitle(stitle);
    TLegend * leg = fCanvas->BuildLegend(fLegendX1, fLegendY1, fLegendX2, fLegendY2);
-	leg->SetName("Legend_SuperImposeHist");
+	leg->SetName("Legend_HprStack");
    fCanvas->Modified();
    fCanvas->Update();
 }
@@ -469,10 +469,18 @@ void HprStack::SaveDefaults()
    TEnv env(".hprrc");
    env.SetValue("HprStack.fWindowXWidth", fWindowXWidth);
    env.SetValue("HprStack.fWindowYWidth", fWindowYWidth);
-   env.SetValue("HprStack.fLegendX1", fLegendX1);
+/*	TLegend *leg = (TLegend*)fCanvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
+	if ( leg ) {
+		fLegendX1 = leg->GetX1NDC();
+		//      cout << "fLegendX1 " << fLegendX1<< endl;
+		fLegendX2 = leg->GetX2NDC();
+		fLegendY1 = leg->GetY1NDC();
+		fLegendY2 = leg->GetY2NDC();
+	}*/
+/*	env.SetValue("HprStack.fLegendX1", fLegendX1);
    env.SetValue("HprStack.fLegendX2", fLegendX2);
    env.SetValue("HprStack.fLegendY1", fLegendY1);
-   env.SetValue("HprStack.fLegendY2", fLegendY2);
+   env.SetValue("HprStack.fLegendY2", fLegendY2);*/
    env.SetValue("Set1DimOptDialog.fEndErrorSize" , fEndErrorSize);
    env.SetValue("Set1DimOptDialog.fErrorX",        fErrorX);
    env.SetValue("HprStack.fShowContour", fShowContour);
@@ -516,12 +524,12 @@ void HprStack::CloseDown(Int_t)
    fDialog = NULL;
 }
 //_______________________________________________________________________
-void HprStack::CRButtonPressed(Int_t /*widgetId*/, Int_t /*buttonId*/, TObject */*obj*/)
+void HprStack::CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject */*obj*/)
 {
 //   cout << "HprStack::CRButtonPressed " << widgetId << " " << buttonId << endl;
    fWindowXWidth = (Int_t)fCanvas->GetWindowWidth();
    fWindowYWidth = (Int_t)fCanvas->GetWindowHeight();
-   TLegend *leg = (TLegend*)fCanvas->GetListOfPrimitives()->FindObject("TPave");
+	TLegend *leg = (TLegend*)fCanvas->GetListOfPrimitives()->FindObject("Legend_HprStack");
    if ( leg ) {
       fLegendX1 = leg->GetX1NDC();
 //      cout << "fLegendX1 " << fLegendX1<< endl;
@@ -571,6 +579,8 @@ void HprStack::SetAttributes()
 			} else {
 				hist->SetFillStyle(0);
 				ohist->SetFillStyle(0);
+				hist->SetFillColor(0);
+				ohist->SetFillColor(0);
 			}
 			hist->SetLineColor(fLineColor[i]);
 			hist->SetLineStyle(fLineStyle[i]);

@@ -1425,7 +1425,7 @@ void HandleMenus::BuildMenus()
    fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
    fAttrMenu->AddEntry("Axis / Title / StatBox Attributes", kOptionHist);
    fAttrMenu->AddEntry("Canvas, Pad, Frame", kOptionPad);
-	fAttrMenu->AddEntry("How to display a graph", kOptionGraph);
+//	fAttrMenu->AddEntry("How to display a graph", kOptionGraph);
 	
 //   fAttrMenuDef = new TGPopupMenu(fRootCanvas->GetParent());
 //   fAttrMenuDef->AddEntry("Take and set Stat box defaults", kOptionStatDef);

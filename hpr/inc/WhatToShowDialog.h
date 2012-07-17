@@ -6,6 +6,8 @@
 #include <iostream>
 //_____________________________________________________________________________________
 
+class TH1;
+
 const Int_t kNopts = 7;
 
 class WhatToShowDialog : public TObject {
@@ -15,7 +17,7 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
-   Int_t fDim;
+   TH1          *fHist;
    Int_t fOpts[kNopts];
    Int_t fOptStat;
    Int_t fShowDateBox;
