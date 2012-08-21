@@ -214,6 +214,9 @@ Bool_t sis3302_fillStruct(struct s_sis_3302 * Module, Char_t * SettingsFile) {
 	Module->updInterval = root_env_getval_i("SIS3302.UpdateInterval", 0);
 	Module->updCountDown = 0;
 
+	sprintf(res, "SIS3302.%s.BlockXfer", mname);
+	Module->blockXfer = root_env_getval_i(res, SIS3302_BLT_OFF);
+
 	sprintf(res, "SIS3302.%s.ClockSource", mname);
 	Module->clockSource = root_env_getval_i(res, 7);
 
@@ -396,6 +399,7 @@ Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, Char_t * DumpFile)
 	Int_t chn;
 	Int_t dacValues[kSis3302NofChans];
 	Int_t peakAndGap[2];
+	Char_t *blt;
 
 	if (!Module->dumpRegsOnInit) return(TRUE);
 
@@ -409,6 +413,12 @@ Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, Char_t * DumpFile)
 	sprintf(msg, "[dumpRegisters] [%s]: Dumping settings to file %s", Module->moduleName, DumpFile);
 	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 
+	switch (Module->blockXfer) {
+		case SIS3302_BLT_OFF:		blt = "off"; break;
+		case SIS3302_BLT_NORMAL:	blt = "normal"; break;
+		case SIS3302_BLT_CHAINED:	blt = "chained"; break;
+	}
+	fprintf(dmp, "Block xfer                      : %s\n", blt);
 	fprintf(dmp, "Clock source                    : %d\n", sis3302_getClockSource(Module));
 	fprintf(dmp, "Lemo OUT mode                   : %d\n", sis3302_getLemoOutMode(Module));
 	fprintf(dmp, "Lemo IN mode                    : %d\n", sis3302_getLemoInMode(Module));
@@ -811,23 +821,75 @@ Bool_t sis3302_disarmSampling(struct s_sis_3302 * Module) { return(sis3302_keyAd
 //! \param[in]		Module			-- module address
 ////////////////////////////////////////////////////////////////////////////*/
 
-void sis_3302_enable_bma(struct s_sis_3302 * Module)
+void sis3302_enableBma(struct s_sis_3302 * Module)
 {
-	Module->bma = NULL;
-	Module->bltBuffer = NULL;
-	if (Module->blockTransOn) {
-		if ((Module->bma = bmaAlloc(Module->bufferSize)) == NULL) {
-			sprintf(msg, "[enable_bma] [%s]: %s, turning BlockXfer OFF", Module->moduleName,  sys_errlist[errno]);
+	Int_t bmaError;
+	Int_t startAddr;
+	Int_t chn;
+	Bool_t foundSome;
+
+	if (Module->blockXfer == SIS3302_BLT_NORMAL) {
+		bmaError = bma_open();
+		if (bmaError != 0) {
+			sprintf(msg, "[enableBma] [%s]: %s, turning block xfer OFF - %s (%d)", Module->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			Module->blockTransOn = 0;
-		} else {
-			Module->bltBuffer = (unsigned char *) s->bma->virtBase;
-			sprintf(msg, "[enable_bma] [%s]: turning block xfer ON (mode=CHAINED, buffer=%#lx, size=%d)", Module->moduleName, Module->bltBuffer, Modules->bufferSize);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			Module->blockXfer = SIS3302_BLT_OFF;
+			bma_close();
+			return;
 		}
+
+/* allocate contiguous memory */
+		bmaError = uio_calloc(&Module->bltBuffer, Module->bufferSize * sizeof(uint32_t));
+		if (bmaError != 0) {
+			sprintf(msg, "[enableBma] [%s]: %s, turning block xfer OFF - %s (%d)", Module->moduleName,  sys_errlist[errno], errno);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			Module->blockXfer = SIS3302_BLT_OFF;
+			uio_cfree(&Module->bltBuffer);
+			bma_close();
+			return;
+		}
+
+/* configure VME block size */
+		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_VMESize, BMA_M_Vsz32);
+/* configure word size */
+		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_WordSize, BMA_M_WzD32);
+/* configure AM code */
+		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_AmCode, BMA_M_AmA32U);
+
+#ifdef CPU_TYPE_RIO3
+		foundSome = kFALSE;
+		for (chn = 0; chn < kSis3302NofChans; chn++) {
+			startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
+			Module->bltAddr[chn] = xvme_map(Module->vmeAddr + startAddr, Module->bufferSize, BMA_M_AmA32U, BMA_M_WzD32);
+			if (Module->bltAddr[chn] != -1) {
+				foundSome = kTRUE;
+			} else {
+				sprintf(msg, "[enableBma] [%s]: Can't map XVME page - chn=%d, addr=%#lx", Module->moduleName, chn, Module->vmeAddr + startAddr);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			}
+		}
+#endif
+
+		if (foundSome) {
+			sprintf(msg, "[enableBma] [%s]: turning block xfer ON (mode=NORMAL, size=%d)", Module->moduleName, Module->bufferSize);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		} else {
+			sprintf(msg, "[enableBma] [%s]: Couldn't map any XVME page - turning block xfer OFF", Module->moduleName);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			Module->blockXfer = SIS3302_BLT_OFF;
+			uio_cfree(&Module->bltBuffer);
+			bma_close();
+			return;
+		}
+
+	} else if (Module->blockXfer == SIS3302_BLT_CHAINED) {
+		sprintf(msg, "[enableBma] [%s]: Chained BLT not yet implemented, turning block xfer OFF", Module->moduleName);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		Module->blockXfer = SIS3302_BLT_OFF;
 	} else {
-		  sprintf(msg, "[enable_bma] [%s]: Block xfer is OFF", Module->moduleName);
-		  f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		Module->blockXfer = SIS3302_BLT_OFF;
+		sprintf(msg, "[enableBma] [%s]: Block xfer is OFF", Module->moduleName);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 }
 
@@ -3584,8 +3646,14 @@ void sis3302_startAcquisition(struct s_sis_3302 * Module, Int_t NofEvents) {
 ////////////////////////////////////////////////////////////////////////////*/
 
 void sis3302_stopAcquisition(struct s_sis_3302 * Module) {
+	Int_t chn;
 	sis3302_disarmSampling(Module);
 	sis3302_restoreTraceLength(Module);
+	if (sis3302_blockXferIsOn(Module)) {
+		for (chn = 0; chn < kSis3302NofChans; chn++) xvme_rel(Module->bltAddr[chn], Module->bufferSize);
+		uio_cfree(&Module->bltBuffer);
+		bma_close();
+	}
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -3659,4 +3727,13 @@ void sis3302_setStatus(struct s_sis_3302 * Module, UInt_t Bits) { Module->status
 void sis3302_clearStatus(struct s_sis_3302 * Module, UInt_t Bits) { Module->status &= ~Bits; };
 UInt_t sis3302_getStatus(struct s_sis_3302 * Module) { return Module->status; };
 Bool_t sis3302_isStatus(struct s_sis_3302 * Module, UInt_t Bits) { return ((Module->status & Bits) != 0); };
+
+/*________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Checks if block xfer is on
+//! \param[in]		Module			-- module address
+//! \return 		TRUE or FALSE
+////////////////////////////////////////////////////////////////////////////*/
+
+Bool_t sis3302_blockXferIsOn(struct s_sis_3302 * Module) { return(Module->blockXfer != 0); };
 

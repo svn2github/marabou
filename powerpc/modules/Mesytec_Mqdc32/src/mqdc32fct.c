@@ -817,6 +817,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	uint32_t data;
 	unsigned int i;
 	int bmaError;
+	int bmaCount;
 	int tryIt;
 	int numData;
 
@@ -836,15 +837,20 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	if (s->blockXfer == MQDC32_BLT_NORMAL) {
 #ifdef CPU_TYPE_RIO2
 		bmaError = bma_read(s->vmeAddr + MQDC32_DATA, s->bltBuffer.paddr | 0x80000000, numData, BMA_DEFAULT_MODE);
-#endif
-#ifdef CPU_TYPE_RIO3
-		bmaError = bma_read_count(s->bltAddr + MQDC32_DATA, bma_mem2loc(s->bltBuffer.paddr), numData, BMA_DEFAULT_MODE);
-#endif
 		if (bmaError != 0) {
 			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, sys_errlist[errno], errno, numData);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
+#endif
+#ifdef CPU_TYPE_RIO3
+		bmaCount = bma_read_count(s->bltAddr + MQDC32_DATA, bma_mem2loc(s->bltBuffer.paddr), numData, BMA_DEFAULT_MODE);
+		if (bmaCount == -1) {
+			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, sys_errlist[errno], errno, numData);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			return(0);
+		}
+#endif
 		memcpy(pointer, s->bltBuffer.uaddr, sizeof(uint32_t) * numData);
 		pointer += numData;
 	} else {

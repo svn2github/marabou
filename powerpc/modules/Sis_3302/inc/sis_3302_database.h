@@ -3,6 +3,17 @@
 
 #include "LwrTypes.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include <errno.h>
+#include <stdint.h>
+
+#include <allParam.h>
+#include <ces/uiocmd.h>
+#include <ces/bmalib.h>
+
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			Sis3302_Database.h
@@ -34,20 +45,22 @@ struct s_sis_3302 {
 
 	Char_t moduleName[STRLEN];
 	Char_t prefix[STRLEN];					/* "m_read_meb" (default) or any other */
-	Char_t mpref[10]; 						/* "madc32: " or "" */
+	Char_t mpref[10]; 					/* "sis3302: " or "" */
 
-	Int_t boardId;							/* module info */
+	Int_t boardId;						/* module info */
 	Int_t majorVersion;
 	Int_t minorVersion;
 
-	Int_t serial; 							/* MARaBOU's serial number */
+	Int_t serial; 						/* MARaBOU's serial number */
 
 	Bool_t verbose;
 	Bool_t dumpRegsOnInit;
 
-	struct s_bma * bma; 					/* block mode access */
-	Char_t * bltBuffer;
-	Bool_t blockTransOn;
+	ULong_t bltAddr[NOF_CHANNELS];				/* block xfer */
+	uio_mem_t bltBuffer;
+	Int_t blockXfer;
+
+	Int_t bufferSize;					/* max buffer size */
 
 	UInt_t status;
 
@@ -59,11 +72,9 @@ struct s_sis_3302 {
 
 	Int_t currentSampling;					/* sampling: bank 1 or 2 */
 
-	Bool_t tracingMode;						/* ON:  keep raw and energy tracing length values */
-											/* OFF: save length values, set to zero, restore on stop */
+	Bool_t tracingMode;					/* ON:  keep raw and energy tracing length values */
+								/* OFF: save length values, set to zero, restore on stop */
 	UInt_t activeChannels;					/* pattern of active channels */
-
-	Int_t bufferSize;					/* max buffer size */
 
 	Int_t dacValues[NOF_CHANNELS];
 

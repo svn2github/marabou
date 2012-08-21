@@ -286,10 +286,13 @@ UInt_t sis3302_getStatus(struct s_sis_3302 * Module);
 Bool_t sis3302_ssStatus(struct s_sis_3302 * Module, UInt_t Bits);
 
 /*! enable block mode xfer */
-void sis_3302_enable_bma(struct s_sis_3300 * s);
+void sis3302_enableBma(struct s_sis_3302 * s);
 
 /*! check if reduced address space */
 Bool_t sis3302_checkAddressSpace(struct s_sis_3302 * Module);
 ULong_t ca(struct s_sis_3302 * Module, ULong_t Address);
+
+/*! check if block xfer mode */
+Bool_t sis3302_blockXferIsOn(struct s_sis_3302 * Module);
 
 #endif

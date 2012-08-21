@@ -317,4 +317,10 @@
 /* max number of samples */
 #define SIS3302_MAX_NUMBER_SAMPLES					0x3ffffc
 
+/* block xfer */
+#define SIS3302_BLT_OFF						0
+#define SIS3302_BLT_NORMAL					1
+#define SIS3302_BLT_CHAINED					2
+
+
 #endif

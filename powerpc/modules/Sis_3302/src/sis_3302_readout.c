@@ -39,37 +39,46 @@
 
 Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 {
-	  UInt_t * pointer;
-	  UInt_t * pointerBegin;
-	  UInt_t channelPattern;
-	  Int_t chn;
-	  Int_t grp;
-	  Int_t nxs;
-	  Int_t wc;
-	  Int_t rdl;
-	  Int_t edl;
-	  Int_t evtNo;
-	  Int_t startAddr;
-	  volatile Int_t * mappedAddr;
-	  Int_t i;
-	  UInt_t d;
-	  
-	  Int_t bankFlag, bankShouldBe;
-	  Int_t sampling;
-	  Int_t tryIt;
-	  Bool_t bankOk;
+	UInt_t * pointer;
+	UInt_t * pointerBegin;
+	UInt_t channelPattern;
+	Int_t chn;
+	Int_t grp;
+	Int_t nxs;
+	Int_t wc;
+	Int_t rdl;
+	Int_t edl;
+	Int_t evtNo;
+	Int_t startAddr;
+	volatile Int_t * mappedAddr;
+	Int_t i;
+	UInt_t d;
 
-	  Char_t msg[256];
-	  Char_t * mp;
+	Int_t bankFlag, bankShouldBe;
+	Int_t sampling;
+	Int_t tryIt;
+	Bool_t bankOk;
 
-	  Int_t nofEvents[kSis3302NofChans];
-	  Int_t totalSize;
+	Char_t msg[256];
+	Char_t * mp;
 
-	  memset(nofEvents, 0, kSis3302NofChans * sizeof(Int_t));
+	Int_t nofEvents[kSis3302NofChans];
+	Int_t totalSize;
+	Bool_t dataTruncated;
+	Int_t bmaError;
+	Int_t bmaCount;
 
-	  pointerBegin = Pointer;		/* save pointer to beginning */
-	  pointer = Pointer;			/* where to start */
-	  *pointer++ = 0;			/* lh: wc=0, rh=serial, will be updated later */
+	memset(nofEvents, 0, kSis3302NofChans * sizeof(Int_t));
+	
+	pointerBegin = Pointer;		/* save pointer to beginning */
+	pointer = Pointer;			/* where to start */
+	*pointer++ = 0;			/* lh: wc=0, rh=serial, will be updated later */
+
+	for (grp = 0; grp < kSis3302NofGroups; grp++) {
+		rdl = Module->tracingMode ? Module->rawDataSampleLength[grp] / 2 : 0;
+		edl = Module->tracingMode ? Module->energySampleLength[grp] : 0;
+		*pointer++ = (rdl << 16) | edl;
+	}
 
 	totalSize = 0;
 	channelPattern = Module->activeChannels;
@@ -99,19 +108,18 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 				}
 			} while (++tryIt < 20);
 			if (!bankOk) {
-				sprintf(msg, "[readout] module %s: Bank switching failed for chn %d - bank bit is %d but should be %d", Module->moduleName, chn, bankFlag, bankShouldBe);
+				sprintf(msg, "[readout] [%s]: Bank switching failed for chn %d - bank bit is %d but should be %d", Module->moduleName, chn, bankFlag, bankShouldBe);
 				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			}
 		}
 	}
 
-	if (totalSize > Module->bufferSize) {	/* if data exceed buffer space in the ppc */
+	dataTruncated = (totalSize > Module->bufferSize);
+	if (dataTruncated) {	/* if data exceed buffer space in the ppc */
 		Float_t x = ((Float_t) Module->bufferSize) / totalSize;
 		if (Module->verbose) {
 			f_ut_send_msg("m_read_meb", "--------------------------------------------------------------------------------------------", ERR__MSG_INFO, MASK__PRTT);
-			sprintf(msg, "[readout] module %s:", Module->moduleName);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			sprintf(msg, "[readout] total=%d, buffer=%d, fac=%6.2f ... ", totalSize, Module->bufferSize, x);
+			sprintf(msg, "[readout] [%s]: total=%d, buffer=%d, fac=%6.2f ... ", Module->moduleName, totalSize, Module->bufferSize, x);
 			mp = &msg[strlen(msg)];
 			for (chn = 0; chn < kSis3302NofChans; chn++) {
 				if (nofEvents[chn] > 0) {
@@ -127,7 +135,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 			totalSize += nofEvents[chn] * (wc + 1) * sizeof(Int_t);
 		}
 		if (Module->verbose) {
-			sprintf(msg, "[readout] total=%d, buffer=%d,            ... ", totalSize, Module->bufferSize);
+			sprintf(msg, "[readout] [%s]: total=%d, buffer=%d,            ... ", Module->moduleName, totalSize, Module->bufferSize);
 			mp = &msg[strlen(msg)];
 			for (chn = 0; chn < kSis3302NofChans; chn++) {
 				if (nofEvents[chn] > 0) {
@@ -140,32 +148,65 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 		}
 	}
 
-	channelPattern = Module->activeChannels;
-	for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
-		if (channelPattern & 1) {
-			  startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
-			  mappedAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, startAddr));
-			  if (mappedAddr == NULL) continue;
-			  for (evtNo = 0; evtNo < nofEvents[chn]; evtNo++) {
-				  for (i = 0; i < kSis3302EventHeader; i++) {
-					d = *mappedAddr++;		/* event header: 32bit words */
+	if (Module->blockXfer == SIS3302_BLT_OFF || dataTruncated) {
+		channelPattern = Module->activeChannels;
+		for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
+			if (channelPattern & 1) {
+				nxs = sis3302_readPrevBankSampleAddr(Module, chn);
+				nxs &= 0x3FFFFC;
+				if (nxs == 0) continue;
+				nxs >>= 1;
+				startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
+				mappedAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, startAddr));
+				if (mappedAddr == NULL) continue;
+				evtNo = nofEvents[chn];
+				for (i = 0; i < nxs; i++) {
+					d = *mappedAddr++;
 					if (i == 0) d = (d & 0xFFFF0000) | chn;
 					*pointer++ = d;
-				  }
-			  	grp = chn / 2;
-			 	rdl = Module->tracingMode ? Module->rawDataSampleLength[grp] / 2 : 0;
-			  	edl = Module->tracingMode ? Module->energySampleLength[grp] : 0;
-				  *pointer++ = (rdl << 16) | edl;	/* extra word: lh=raw data length, rh=energy data length */
-				  for (i = 0; i < rdl; i++) *pointer++ = *mappedAddr++;				/* raw data, packed 2 16 bit words in 32 bits */
-				  for (i = 0; i < edl; i++) *pointer++ = *mappedAddr++;				/* event data: 32bit words */
-				  for (i = 0; i < kSis3302EventMinMax; i++) *pointer++ = *mappedAddr++;		/* energy min and max values */
-				  for (i = 0; i < kSis3302EventTrailer; i++) *pointer++ = *mappedAddr++;	/* status, trailer */
-			  }
-		  }
-	  }
+					if (d == 0xdeadbeef) {
+						evtNo--;
+						if (evtNo == 0) break;
+					}
+				}
+			}
+		}
+	} else if (Module->blockXfer == SIS3302_BLT_NORMAL) {
+		channelPattern = Module->activeChannels;
+		for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
+			if (channelPattern & 1) {
+				nxs = sis3302_readPrevBankSampleAddr(Module, chn);
+				nxs &= 0x3FFFFC;
+				if (nxs == 0) continue;
+				nxs >>= 1;
+				startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
+#ifdef CPU_TYPE_RIO2
+				bmaError = bma_read(Module->vmeAddr + startAddr, Module->bltBuffer.paddr | 0x80000000, nxs, BMA_DEFAULT_MODE);
+				if (bmaError != 0) {
+					sprintf(msg, "[readout] [%s]: %s (%d) while reading event data (chn=%d, wc=%d)", Module->moduleName, sys_errlist[errno], errno, chn, nxs);
+					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+					continue;
+				}
+				bmaCount = nxs;
+#endif
+#ifdef CPU_TYPE_RIO3
+				if (Module->bltAddr[chn] > 0) {
+					bmaCount = bma_read_count(Module->bltAddr[chn], bma_mem2loc(Module->bltBuffer.paddr), nxs, BMA_DEFAULT_MODE);
+					if (bmaCount == -1) {
+						sprintf(msg, "[readout] [%s]: %s (%d) while reading event data (chn=%d, wc=%d)", Module->moduleName, sys_errlist[errno], errno, chn, nxs);
+						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						continue;
+					}
+				}
+#endif
+				memcpy(pointer, Module->bltBuffer.uaddr, sizeof(uint32_t) * bmaCount);
+				pointer += bmaCount;
+			}
+		}
+	}
 
-	  wc = (Int_t) (pointer - pointerBegin);
-	  *pointerBegin = (wc << 16) | Module->serial;		/* update 1st word: lh: wc=0, rh=serial */
-	  return (wc);
+	wc = (Int_t) (pointer - pointerBegin);
+	*pointerBegin = (wc << 16) | Module->serial;		/* update 1st word: lh: wc=0, rh=serial */
+	return (wc);
 }
 
