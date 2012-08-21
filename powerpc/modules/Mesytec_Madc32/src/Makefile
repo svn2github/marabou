@@ -7,6 +7,8 @@ MBSINC		=	$(MBSROOT)/inc
 
 CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I../inc -I$(RDOINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
 
+BIN_DIR = ../../../bin/$(GSI_OS_VERSION)
+
 # ------------ Libaries ------------------------------------------------
 
 AR = ar
@@ -41,6 +43,7 @@ madc32:	madc32.o $(LIB_TARGETS)
 			-L ../../../lib/$(GSI_OS_VERSION) \
 			-L /lib/ces \
 			-lMadc32 -lUti -llynx -lvme -lbma -luio -lnetinet
+		mv madc32 $(BIN_DIR)
 
 clean:
 	rm -f *.o core core.* $(LIB_TARGETS)
