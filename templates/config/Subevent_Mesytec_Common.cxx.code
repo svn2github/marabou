@@ -52,34 +52,22 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 		Int_t wc = header & MADC_M_WC;							// extract wc
 		Int_t wcs = (wc + 1) * 2; 								// wc + header
 
-		Bool_t align64 = kFALSE;								// check if 64bit alignment
-		UInt_t * trailer32 = (UInt_t *) dataPtr + wc;
-		if (*trailer32 == 0) {
-			wc--;								// ignore 0-word at end of event
-			align64 = kTRUE;
-		}
+		UShort_t * nextEvent = dataPtr + 2 * wc;
 
-		UShort_t * trailPtr = dataPtr + 2 * (wc - 2);
-
-		UInt_t highTimeStamp = (*trailPtr++ << 16);		// possibly extended timestamp
-		highTimeStamp |= *trailPtr++;
-
-		Int_t trailer = (*trailPtr++ << 16); 	// inspect trailer word
+		Bool_t trailerFound = kTRUE;
+		UShort_t * trailPtr = nextEvent - 2;
+		UInt_t trailer = (*trailPtr++ << 16); 						// inspect trailer word
 		trailer |= *trailPtr++;
-
-		Bool_t hasTrailer = kTRUE;
-
-		if ((trailer & MADC_M_ID) == MADC_D_HDR) {
-			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "HDR instead of EOE", SevtData, origSevtWC);
-			cerr	<< setmagenta
+		if ((trailer & MADC_M_ID) != MADC_D_HDR) {					// test if EOE
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
+			cerr	<< setmagenta									// it is a header!
 					<< this->ClassName() << "::FillSubevent(): [Module "
 					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
-					<< wordsProcessed << "] Expecting EOE, found HDR instead - 0x" << setbase(16) << trailer << setbase(10) << " (recNo=" << recNo << ")"
+					<< wordsProcessed << "] EOE missing, found header instead - 0x" << setbase(16) << trailer << setbase(10)
 					<< setblack << endl;
-			hasTrailer = kFALSE;
-			wc--;				// trailer missing
-			wcs -= 2;
-		} else if ((trailer & MADC_M_ID) != MADC_D_EOE) {
+			trailer = MADC_D_EOE | 0x252525;						// fake the trailer
+			trailerFound = kFALSE;
+		else if ((trailer & MADC_M_ID) != MADC_D_EOE) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
 			cerr	<< setred
 					<< this->ClassName() << "::FillSubevent(): [Module "
@@ -88,20 +76,25 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 					<< setblack << endl;
 			return(kTRUE);
 		}
-		wc--;								// - trailer word
+		wc--;
+		UInt_t lowTimeStamp = trailer & MADC_M_TSLOW;	// extract lower bits of time stamp (bits 0-29)
 
-		Bool_t xts = kFALSE;
+		UShort_t * xtsPtr = nextEvent - 4;				// check if fill word (64bit alignment)
+		UInt_t highTimeStamp = (*xtsPtr++ << 16);		// or extended timestamp
+		highTimeStamp |= *xtsPtr++;
+		if (highTimeStamp == 0) {					// fill word: check for xts again
+			wc--;
+			xtsPtr = nextEvent - 6;
+			highTimeStamp = (*xtsPtr++ << 16);
+			highTimeStamp |= *xtsPtr++;
+		}
+
 		ULong64_t ts64 = 0;
-
 		if ((highTimeStamp & MADC_M_XTS) == MADC_D_XTS) {
 			ts64 = ((Long64_t) (highTimeStamp & MADC_M_TSHIGH)) << 30;
 			wc--;							// - extended ts
-			xts = kTRUE;
 		}
-
-		UInt_t lowTimeStamp = hasTrailer ? (trailer & MADC_M_TSLOW) : 0;	// extract lower bits of time stamp (bits 0-29)
 		ts64 |= lowTimeStamp;
-
 		UShort_t tsArr[3];
 		for (Int_t t = 2; t >= 0; t--) {
 			tsArr[t] = ts64 & 0xFFFF;
@@ -164,9 +157,8 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 			}
 		}
 
-		if (xts) dataPtr += 2;				// compensate for extended ts
-		if (hasTrailer) dataPtr += 2;		// and for trailer
-		if (align64) dataPtr += 2;			// and for 64bit alignment
+		dataPtr = nextEvent;
+		if (!trailerFound) dataPtr -= 2;	// trailer was missing
 
 		SevtWC -= wcs;						// remaining subevent data
 		wordsProcessed += wcs;
