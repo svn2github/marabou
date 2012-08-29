@@ -899,8 +899,11 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 			data = (*dp++ << 16);
 			data |= *dp++;
 			if ((data != 0) && ((data & MQDC32_M_SIGNATURE) == MQDC32_M_DATA)) {
-				data &= 0x1FFF;
-				if (data >= 0 && data <= MQDC32_N_HISTOSIZE) s->histo[data]++;
+				chn = (data >> 16) & 0x1F;
+				if (chn == s->accuChannel) {
+					data &= 0x1FFF;
+					if (data >= 0 && data <= MQDC32_N_HISTOSIZE) s->histo[data]++;
+				}
 			}
 		}
 	}
