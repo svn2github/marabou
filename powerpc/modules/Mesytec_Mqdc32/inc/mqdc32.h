@@ -287,6 +287,7 @@ struct s_mqdc32 {
 
 	int accuChannel;
 	int histo[MQDC32_N_HISTOSIZE];
+	bool_t acqStarted;
 
 	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
 	uint32_t *evtp;

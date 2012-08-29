@@ -50,6 +50,7 @@ struct s_mqdc32 * mqdc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 		s->verbose = FALSE;
 		s->dumpRegsOnInit = FALSE;
 		s->accuChannel = -1;
+		s->acqStarted = FALSE;
 
 		firmware = GET16(s->baseAddr, MQDC32_FIRMWARE_REV);
 		mainRev = (firmware >> 8) & 0xff;
@@ -898,8 +899,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	if (s->accuChannel >= 0) {
 		dp = dataStart;
 		for (i = 0; i < numData; i++) {
-			data = (*dp++ << 16);
-			data |= *dp++;
+			data = *dp++;
 			if ((data != 0) && ((data & MQDC32_M_SIGNATURE) == MQDC32_M_DATA)) {
 				chn = (data >> 16) & 0x1F;
 				if (chn == s->accuChannel) {
@@ -964,10 +964,11 @@ void mqdc32_startAcq(struct s_mqdc32 * s)
 	mqdc32_resetEventBuffer(s);
 	memset(s->histo, 0, MQDC32_N_HISTOSIZE * sizeof(int));
 	if (s->accuChannel >= 0) {
-		sprintf(msg, "[%sstartAcq] %s: Accumulation data for channel %d)", s->mpref, s->moduleName, s->accuChannel);
+		sprintf(msg, "[%sstartAcq] %s: Accumulating data for channel %d)", s->mpref, s->moduleName, s->accuChannel);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 	SET16(s->baseAddr, MQDC32_START_ACQUISITION, 0x1);
+	s->acqStarted = TRUE;
 }
 
 void mqdc32_stopAcq(struct s_mqdc32 * s)
@@ -980,7 +981,7 @@ void mqdc32_stopAcq(struct s_mqdc32 * s)
 	mqdc32_resetFifo(s);
 	mqdc32_resetReadout(s);
 	mqdc32_resetEventBuffer(s);
-	if (s->accuChannel >= 0) {
+	if (s->acqStarted && (s->accuChannel >= 0)) {
 		sprintf(histoFile, "histo_%s_%d.dat", s->moduleName, s->accuChannel);
 		f = fopen(histoFile, "w");
 		for (i = 0; i < MQDC32_N_HISTOSIZE; i++) fprintf(f, "%5d %8d\n", i, s->histo[i]);
@@ -988,6 +989,7 @@ void mqdc32_stopAcq(struct s_mqdc32 * s)
 		sprintf(msg, "[%sstopAcq] %s: File %s written - %d channels)", s->mpref, s->moduleName, histoFile, MQDC32_N_HISTOSIZE);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	}
+	s->acqStarted = FALSE;
 }
 
 void mqdc32_resetFifo(struct s_mqdc32 * s)
