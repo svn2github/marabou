@@ -355,20 +355,23 @@ install-others:
 
 install-html:
 		@echo "Installing html files in $(HTMLURL)"; \
-		$(INSTALLDIR)	html/marabou \
-						html/gutils \
-						html/hpr \
-						html/c_analyze \
-						html/dgfcontrol \
-						html/snake \
-						html/examples; \
-		$(INSTALLDATA) gutils/doc/*.gif html/gutils; \
-		$(INSTALLDATA) doc/hpr/*.html html/hpr; \
-		$(INSTALLDATA) doc/hpr/*.gif html/hpr; \
-		$(INSTALLDATA) c_analyze/doc/*.html html/c_analyze; \
-		$(INSTALLDATA) c_analyze/doc/*.gif html/c_analyze; \
-		$(INSTALLDATA) snake/doc/*.gif html/snake; \
-		$(INSTALLDATA) dgfcontrol/doc/*.gif html/dgfcontrol; \
+		$(INSTALLDIR)	htmldoc \
+				htmldoc/marabou \
+				htmldoc/gutils \
+				htmldoc/hpr \
+				htmldoc/c_analyze \
+				htmldoc/dgfcontrol \
+				htmldoc/snake \
+				htmldoc/examples; \
+		$(INSTALLDATA) gutils/doc/*.gif htmldoc/gutils; \
+		$(INSTALLDATA) doc/hpr/*.html htmldoc/hpr; \
+		$(INSTALLDATA) doc/hpr/*.gif htmldoc/hpr; \
+		$(INSTALLDATA) c_analyze/doc/*.html htmldoc/c_analyze; \
+		$(INSTALLDATA) c_analyze/doc/*.gif htmldoc/c_analyze; \
+		$(INSTALLDATA) snake/doc/*.gif htmldoc/snake; \
+		$(INSTALLDATA) dgfcontrol/doc/*.gif htmldoc/dgfcontrol; \
+		$(INSTALLDATA) html/marabou/MARaBOU.html htmldoc; \
+
 		if [ -z "$(MARABOU_ADMIN)" ]; then echo "MARABOU_ADMIN has to be set first!"; else \
 		echo "[Enter password for $(MARABOU_ADMIN)]"; \
 		$(UPLOADHTML); \
