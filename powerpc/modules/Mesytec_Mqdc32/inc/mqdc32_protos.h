@@ -32,6 +32,8 @@ void mqdc32_reset(struct s_mqdc32 * s);
 
 void mqdc32_initDefaults(struct s_mqdc32 * s);
 
+void mqdc32_enableBma(struct s_mqdc32 * s);
+
 void mqdc32_setThreshold(struct s_mqdc32 * s, uint16_t channel,  uint16_t thresh);
 void mqdc32_setThreshold_db(struct s_mqdc32 * s, uint16_t channel);
 uint16_t mqdc32_getThreshold(struct s_mqdc32 * s, uint16_t channel);

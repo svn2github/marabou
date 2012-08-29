@@ -49,6 +49,7 @@ struct s_mqdc32 * mqdc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 		s->serial = serial;
 		s->verbose = FALSE;
 		s->dumpRegsOnInit = FALSE;
+		s->accuChannel = -1;
 
 		firmware = GET16(s->baseAddr, MQDC32_FIRMWARE_REV);
 		mainRev = (firmware >> 8) & 0xff;
@@ -64,7 +65,7 @@ void mqdc32_initialize(struct s_mqdc32 * s)
 {
 	signal(SIGBUS, catchBerr);
 /*	mqdc32_disableBusError(s);	*/
-	mqdc32_enable_bma(s);
+	mqdc32_enableBma(s);
 	mqdc32_resetReadout(s);
 }
 
@@ -477,6 +478,9 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 	sprintf(res, "MQDC32.%s.BlockXfer", mnUC);
 	s->blockXfer = root_env_getval_i(res, 0);
 
+	sprintf(res, "MQDC32.%s.AccuChannel", mnUC);
+	s->accuChannel = root_env_getval_i(res, -1);
+
 	for (i = 0; i < NOF_CHANNELS; i++) {
 		sprintf(res, "MQDC32.%s.Thresh.%d", mnUC, i);
 		s->threshold[i] = root_env_getval_i(res, MQDC32_THRESHOLD_DEFAULT);
@@ -735,7 +739,7 @@ void mqdc32_printDb(struct s_mqdc32 * s)
 	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
 }
 
-void mqdc32_enable_bma(struct s_mqdc32 * s)
+void mqdc32_enableBma(struct s_mqdc32 * s)
 {
 /* use blocktransfer */
 
@@ -747,7 +751,7 @@ void mqdc32_enable_bma(struct s_mqdc32 * s)
 			case MQDC32_DATA_LENGTH_FORMAT_32: wordSize = BMA_M_WzD32; break;
 			case MQDC32_DATA_LENGTH_FORMAT_64: wordSize = BMA_M_WzD64; break;
 			default:
-				sprintf(msg, "[%senable_bma] %s: Wrong data width - %d (should be 32 or 64), turning block xfer OFF", s->mpref, s->moduleName, s->dataWidth);
+				sprintf(msg, "[%senableBma] %s: Wrong data width - %d (should be 32 or 64), turning block xfer OFF", s->mpref, s->moduleName, s->dataWidth);
 				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 				s->blockXfer = MQDC32_BLT_OFF;
 				return;
@@ -757,7 +761,7 @@ void mqdc32_enable_bma(struct s_mqdc32 * s)
 
 		bmaError = bma_open();
 		if (bmaError != 0) {
-			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
+			sprintf(msg, "[%senableBma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			s->blockXfer = MQDC32_BLT_OFF;
 			bma_close();
@@ -767,7 +771,7 @@ void mqdc32_enable_bma(struct s_mqdc32 * s)
 /* allocate contiguous memory */
 		bmaError = uio_calloc(&s->bltBuffer, s->memorySize * sizeof(uint32_t));
 		if (bmaError != 0) {
-			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
+			sprintf(msg, "[%senableBma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			s->blockXfer = MQDC32_BLT_OFF;
 			uio_cfree(&s->bltBuffer);
@@ -788,7 +792,7 @@ void mqdc32_enable_bma(struct s_mqdc32 * s)
 
 /* map XVME page for RIO3 */
 		if ((s->bltAddr = xvme_map(s->vmeAddr, s->memorySize, BMA_M_AmA32U, wordSize)) == -1) {
-			sprintf(msg, "[%senable_bma] %s: Can't map XVME page, turning block xfer OFF", s->mpref, s->moduleName);
+			sprintf(msg, "[%senableBma] %s: Can't map XVME page, turning block xfer OFF", s->mpref, s->moduleName);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			uio_cfree(&s->bltBuffer);
 			bma_close();
@@ -796,17 +800,17 @@ void mqdc32_enable_bma(struct s_mqdc32 * s)
 		}
 #endif
 
-		sprintf(msg, "[%senable_bma] %s: turning block xfer ON (mode=NORMAL, buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
+		sprintf(msg, "[%senableBma] %s: turning block xfer ON (mode=NORMAL, buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	} else if (s->blockXfer == MQDC32_BLT_CHAINED) {
-		sprintf(msg, "[%senable_bma] %s: Chained BLT not yet implemented, turning block xfer OFF", s->mpref, s->moduleName);
+		sprintf(msg, "[%senableBma] %s: Chained BLT not yet implemented, turning block xfer OFF", s->mpref, s->moduleName);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		s->blockXfer = MQDC32_BLT_OFF;
 	} else {
 		s->blockXfer = MQDC32_BLT_OFF;
 		s->bltBufferSize = 0;
-		sprintf(msg, "[%senable_bma] %s: Block xfer is OFF", s->mpref, s->moduleName);
+		sprintf(msg, "[%senableBma] %s: Block xfer is OFF", s->mpref, s->moduleName);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 }
@@ -887,7 +891,21 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 
 	mqdc32_resetReadout(s);
 
-	return (pointer - dataStart);
+	numData = pointer - dataStart;
+
+	if (s->accuChannel >= 0) {
+		dp = dataStart;
+		for (i = 0; i < numData; i++) {
+			data = (*dp++ << 16);
+			data |= *dp++;
+			if ((data != 0) && ((data & MQDC32_M_SIGNATURE) == MQDC32_M_DATA)) {
+				data &= 0x1FFF;
+				if (data >= 0 && data <= MQDC32_N_HISTOSIZE) s->histo[data]++;
+			}
+		}
+	}
+
+	return (numData);
 }
 
 uint32_t * mqdc32_pushEvent(struct s_mqdc32 * s, uint32_t * pointer) {
@@ -939,15 +957,32 @@ void mqdc32_startAcq(struct s_mqdc32 * s)
 	mqdc32_resetFifo(s);
 	mqdc32_resetReadout(s);
 	mqdc32_resetEventBuffer(s);
+	memset(s->histo, 0, MQDC32_N_HISTOSIZE * sizeof(int));
+	if (s->accuChannel >= 0) {
+		sprintf(msg, "[%sstartAcq] %s: Accumulation data for channel %d)", s->mpref, s->moduleName, s->accuChannel);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	}
 	SET16(s->baseAddr, MQDC32_START_ACQUISITION, 0x1);
 }
 
 void mqdc32_stopAcq(struct s_mqdc32 * s)
 {
+	int i;
+	char histoFile[100];
+	FILE * f;
+
 	SET16(s->baseAddr, MQDC32_START_ACQUISITION, 0x0);
 	mqdc32_resetFifo(s);
 	mqdc32_resetReadout(s);
 	mqdc32_resetEventBuffer(s);
+	if (s->accuChannel >= 0) {
+		sprintf(histoFile, "histo_%s_%d.dat", s->moduleName, s->accuChannel);
+		f = fopen(histoFile, "w");
+		for (i = 0; i < MQDC32_N_HISTOSIZE; i++) fprintf(f, "%5d %8d\n", i, s->histo[i]);
+		fclose(f);
+		sprintf(msg, "[%sstopAcq] %s: File %s written - %d channels)", s->mpref, s->moduleName, histoFile, MQDC32_N_HISTOSIZE);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	}
 }
 
 void mqdc32_resetFifo(struct s_mqdc32 * s)

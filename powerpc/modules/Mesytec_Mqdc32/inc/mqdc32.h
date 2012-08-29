@@ -214,6 +214,7 @@
 
 #define MQDC32_M_SIGNATURE					0xC0000000
 #define MQDC32_M_HEADER						0x40000000
+#define MQDC32_M_DATA						0x00000000
 #define MQDC32_M_TRAILER					0xC0000000
 #define MQDC32_M_EOB						0x80000000
 #define MQDC32_M_WC							0x00000FFF
@@ -222,6 +223,7 @@
 #define MQDC32_BLT_NORMAL					1
 #define MQDC32_BLT_CHAINED					2
 
+#define MQDC32_N_HISTOSIZE					4096
 
 /*____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////
@@ -282,6 +284,9 @@ struct s_mqdc32 {
 	uio_mem_t bltBuffer;
 	uint32_t bltBufferSize;
 	int blockXfer;
+
+	int accuChannel;
+	int histo[MQDC32_N_HISTOSIZE];
 
 	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
 	uint32_t *evtp;
