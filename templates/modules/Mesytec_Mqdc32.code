@@ -102,7 +102,7 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-								mqdc32_stopAcq(s_$moduleName); 	/* start module $moduleName */
+								mqdc32_stopAcq(s_$moduleName);
 								mqdc32_resetFifo(s_$moduleName);  	/* reset fifo */
 								mqdc32_startAcq(s_$moduleName); 	/* start module $moduleName */
 %%EndOfCode%%
