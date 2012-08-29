@@ -818,12 +818,14 @@ void mqdc32_enableBma(struct s_mqdc32 * s)
 int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 {
 	uint32_t * dataStart;
+	uint32_t * dp;
 	uint32_t data;
 	unsigned int i;
 	int bmaError;
 	int bmaCount;
 	int tryIt;
 	int numData;
+	int chn;
 
 	tryIt = 20;
 	while (tryIt-- && !mqdc32_dataReady(s)) { usleep(1000); }
