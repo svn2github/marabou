@@ -58,7 +58,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 		UShort_t * trailPtr = nextEvent - 2;
 		UInt_t trailer = (*trailPtr++ << 16); 						// inspect trailer word
 		trailer |= *trailPtr++;
-		if ((trailer & MADC_M_ID) != MADC_D_HDR) {					// test if EOE
+		if ((trailer & MADC_M_ID) != MADC_D_EOE) {					// test if EOE
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
 			cerr	<< setmagenta									// it is a header!
 					<< this->ClassName() << "::FillSubevent(): [Module "
