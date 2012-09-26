@@ -491,7 +491,7 @@ void TGMrbLabelEntry::SetText(Int_t Value, Int_t EntryNo) {
 			s = Form("%*d", fWidth, Value);
 			break;
 		case 16:
-			s = Form("%*x", fWidth, Value);
+			s = Form("%#*x", fWidth, Value);
 			break;
 	}
 	fEntry[EntryNo]->SetText(s.Data());
