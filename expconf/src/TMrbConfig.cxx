@@ -706,7 +706,10 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		UpdateTriggerTable();									// initialize trigger table
 
 		fSevtSize = kMbsSevtSize;
-		fPipeSegLength = kMbsPipeSegLength;
+		TString procType = gEnv->GetValue("TMbsSetup.ProcType", "RIO2");
+		if (procType == "RIO2" || procType == "PPC") fPipeSegLength = kMbsPipeSegLength_RIO2;
+		else if (procType == "RIO3") fPipeSegLength = kMbsPipeSegLength_RIO3;
+		else if (procType == "RIO4") fPipeSegLength = kMbsPipeSegLength_RIO4;
 
 		fLofUserHistograms.Delete();							// init list of user-defined histograms
 		fLofHistoArrays.Delete();								// init list of histogram arrays
@@ -3815,7 +3818,8 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							<< "                               >>> "
 							<< setblack
 							<< "if (this->TreeToBeWritten()) fTreeOut->Fill();" << setmagenta << " <<<" << endl
-							<< "                               somewhere in your Analyze() code" << endl;
+							<< "                               somewhere in your analysis code" << endl
+							<< "                               (don't care about if you are writing MED/Cern data)" << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 		}
 	}
@@ -7535,22 +7539,30 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	mbsSetup->ReadoutProc(0)->SetCratesToBeRead(c[0], c[1], c[2], c[3], c[4]);
 
 	if (fSevtSize > 0) {
-		if (fPipeSegLength > kMbsPipeSegLength) {
-			gMrbLog->Wrn() << "Pipe segment length may be too large - 0x" << setbase(16) << fPipeSegLength << " (max 0x" << kMbsPipeSegLength << setbase(10) << " is recommended)" << endl;
-			gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
+		Int_t psl;
+		TString procType = gEnv->GetValue("TMbsSetup.ProcType", "RIO2");
+		if (procType == "RIO2" || procType == "PPC") psl = kMbsPipeSegLength_RIO2;
+		else if (procType == "RIO3") psl = kMbsPipeSegLength_RIO3;
+		else if (procType == "RIO4") psl = kMbsPipeSegLength_RIO4;
+		if (fPipeSegLength > 0 && fPipeSegLength != psl) {
+			if (fPipeSegLength > psl) {
+				gMrbLog->Wrn()	<< "Pipe segment length may be too large - 0x" << setbase(16) << fPipeSegLength
+								<< " (0x" << psl << setbase(10) << " is recommended for a " << procType << " cpu)" << endl;
+				gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
+			}
+			Int_t pipeLength = (fPipeSegLength - 2 * fSevtSize) / 20 - 1;
+			if (pipeLength > kMbsPipeLengthMax)  pipeLength = kMbsPipeLengthMax;
+			if (pipeLength < kMbsPipeLengthMin) {
+				fSevtSize = (fPipeSegLength - (kMbsPipeLengthMin + 1) * 20) / 2;
+				gMrbLog->Err()	<< "Pipe length (= number of subevents in pipe) too small - " << pipeLength
+								<< ", set to " << kMbsPipeLengthMin << ", therefore subevent size = " << fSevtSize << endl;
+				gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
+				pipeLength = kMbsPipeLengthMin;
+			}
+			mbsSetup->ReadoutProc(0)->SetPipeSegLength(fPipeSegLength);
+			mbsSetup->ReadoutProc(0)->SetPipeLength(pipeLength);
 		}
-		Int_t pipeLength = (fPipeSegLength - 2 * fSevtSize) / 20 - 1;
-		if (pipeLength > kMbsPipeLengthMax)  pipeLength = kMbsPipeLengthMax;
-		if (pipeLength < kMbsPipeLengthMin) {
-			fSevtSize = (fPipeSegLength - (kMbsPipeLengthMin + 1) * 20) / 2;
-			gMrbLog->Err()	<< "Pipe length (= number of subevents in pipe) too small - " << pipeLength
-					<< ", set to " << kMbsPipeLengthMin << ", therefore subevent size = " << fSevtSize << endl;
-			gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
-			pipeLength = kMbsPipeLengthMin;
-		}
-		mbsSetup->ReadoutProc(0)->SetPipeSegLength(fPipeSegLength);
-		mbsSetup->ReadoutProc(0)->SetPipeLength(pipeLength);
-		TMrbEvent * evt = (TMrbEvent *) fLofEvents.First();
+		TMrbEvent * evt;
 		TIterator * evtIter = fLofEvents.MakeIterator();
 		while (evt = (TMrbEvent *) evtIter->Next()) mbsSetup->ReadoutProc(0)->SetSevtSize(evt->GetTrigger(), fSevtSize);
 	}
