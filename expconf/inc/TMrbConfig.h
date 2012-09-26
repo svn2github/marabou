@@ -556,7 +556,9 @@ class TMrbConfig : public TNamed {
 		enum					{	kRdoHeaderBit		=	BIT(31)	};
 
 		enum					{	kMbsSevtSize		=	0x1000 };
-		enum					{	kMbsPipeSegLength	=	0x2000000 };	// 16MB
+		enum					{	kMbsPipeSegLength_RIO2	=	0x0100000 };	// 1MB
+		enum					{	kMbsPipeSegLength_RIO3	=	0x2000000 };	// 16MB
+		enum					{	kMbsPipeSegLength_RIO4	=	0x8000000 };	// 64MB
 		enum					{	kMbsPipeLengthMax	=	1000 };
 		enum					{	kMbsPipeLengthMin	=	100 };
 		enum					{	kMbsEventBufferSize	=	0x4000 };
@@ -613,7 +615,7 @@ class TMrbConfig : public TNamed {
 		Bool_t CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag = kTRUE) const;	// compile readout code
 		Bool_t CompileAnalyzeCode(Bool_t CleanFlag = kTRUE) const;						// compile analysis code
 
-		inline void SetSevtSize(Int_t Size = kMbsSevtSize, Int_t PipeSegLength = kMbsPipeSegLength) { fSevtSize = Size; fPipeSegLength = PipeSegLength; }; 	// set size of subevent (for all events/triggers)
+		inline void SetSevtSize(Int_t Size = kMbsSevtSize, Int_t PipeSegLength = -1) { fSevtSize = Size; fPipeSegLength = PipeSegLength; }; 	// set size of subevent (for all events/triggers)
 		inline Int_t GetSevtSize() { return(fSevtSize); }
 
 		inline void SetMbsBuffers(Int_t Size = kMbsEventBufferSize, Int_t NofBuffers = kMbsNofEventBuffers, Int_t NofStreams = kMbsNofStreams) {
