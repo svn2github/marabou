@@ -640,7 +640,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    }
    Int_t ngood = 0;
    for (Int_t i = 0; i < fNpeaks; i++) {
-//	   cout << "i " <<i << " fUse[i] " <<fUse[i] << "  fCont[i] " <<   fCont[i]<< endl;
+	   cout << "i " <<i << " fUse[i] " <<fUse[i] << "  fCont[i] " <<   fCont[i]<< endl;
       if (fUse[i] > 0  && fCont[i] > maxcont * fContThresh) ngood++;
    }
    if (ngood <= 1) {
@@ -693,6 +693,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 			}
       }
    }
+
    if (best < 2) {
 
       cout << " No or only 1 match found, you might need to lower Nbins in testbed histogram" << endl;
@@ -700,7 +701,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    }
    if (fVerbose) {
       std::cout << "Best match: Hits, offset, gain " <<  best << " " << best_off << " " << best_gain<< std::endl;
-//      cout << "Checking for ambiguities (should be 1 line only)" << endl;
+      cout << "Checking for ambiguities (should be 1 line only)" << endl;
    }
    Int_t namb = 0;
    for (Int_t io = 1; io <= hscan->GetNbinsX(); io++) {
@@ -783,23 +784,25 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
             printf("\n");
       }
    }
+
 // remove text and lines of possible previous selection
-   TList temp;
-	TList *lop = fSelCanvas->GetListOfPrimitives();
-	TIter next3(lop);
-	TObject *obj;
-	while ( (obj = next3()) ) {
-	   if (obj->InheritsFrom("TText"))
-		   temp.Add(obj);
-	   if (obj->InheritsFrom("TLine"))
-		   temp.Add(obj);
-	}
-	TIter next2((&temp));
-	while ( (obj = next2()) ) {
-	   lop->Remove(obj);
-//		delete obj;
-	}
-   temp.Delete("slow");
+   if (fSelCanvas) {
+	  TList temp;
+	  TList *lop = fSelCanvas->GetListOfPrimitives();
+	  TIter next3(lop);
+	  TObject *obj;
+	  while ( (obj = next3()) ) {
+		if (obj->InheritsFrom("TText"))
+			temp.Add(obj);
+		if (obj->InheritsFrom("TLine"))
+			temp.Add(obj);
+	  }
+	  TIter next2((&temp));
+	  while ( (obj = next2()) ) {
+		lop->Remove(obj);
+	  }
+	  temp.Delete("slow");
+   }
 	Double_t prev_y = 0;
 	for (Int_t i = 0; i < fNpeaks; i++) {
 		best = fAssigned[i];
