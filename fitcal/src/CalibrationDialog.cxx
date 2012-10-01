@@ -511,7 +511,8 @@ Int_t CalibrationDialog::ReadGaugeFile()
 void CalibrationDialog::AutoSelectDialog()
 {
 static const Char_t helptext[] =
-"  Vary gain and offset and find the best match\n\
+"  Vary gain and offset according to the values of \n\
+   \"GainMin, GainMax,etc\" and find the best match\n\
    between the (fitted) peaks in the measured spectrum\n\
    and the gauge peaks. \"Xlow\" and \"Xup\" define the range\n\
    of the testbed histogram. Units are those of the \n\
@@ -521,14 +522,14 @@ static const Char_t helptext[] =
    Gain/Offset Steps.\n\
    Smaller \"Nbins\" leads to a wider binwidth of the \n\
    test histogram resulting in more likely matches\n\
-   but finally lead to ambiguities.\n\
+   but finally may lead to ambiguities.\n\
    The binwidths should be typically 2-4 times the peakwidth\n\
    \"Accept Limits\" defines the maximum allowed difference in\n\
    the position of the calibrated and gauge peak __after__\n\
    the matching process.\n\
    Peaks with small (gauss)content may be suppressed by\n\
    \"ContentThresh\" measured as fraction of the max peak.\n\
-   Watch out, this may suppress real peaks.\n\
+   Watch out, this may discard real peaks.\n\
  ";
    if ( !fInteractive ) {
       cout << setred << "AutoSelectDialog() only useful in interactive mode "
@@ -733,13 +734,11 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
          continue;
       }
 	   Double_t e = best_off + best_gain*fX[i];
-      Double_t ecal = 0;
       Double_t closest = 10000;
 
  	   for (Int_t j = 0; j < fGaugeNpeaks; j++) {
 			if (TMath::Abs(e - fGaugeEnergy[j]) < closest) {
             closest = TMath::Abs(e - fGaugeEnergy[j]);
-            ecal = e;
             best = j;
          }
       }
@@ -802,39 +801,39 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 		lop->Remove(obj);
 	  }
 	  temp.Delete("slow");
-   }
-	Double_t prev_y = 0;
-	for (Int_t i = 0; i < fNpeaks; i++) {
-		best = fAssigned[i];
-		if ( best < 0 ) continue;
-		Int_t bin = fSelHist->FindBin(fX[i]);
-		Double_t yv = fSelHist->GetBinContent(bin);
-		Double_t yr = fSelHist->GetMaximum();
-		Double_t xr = fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetLast())
-						- fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetFirst());
-	   Double_t yn = yv + 0.025*yr;
-		if ( prev_y != 0 && TMath::Abs(yn - prev_y) < 0.02*yr ) {
-		    yn  -= 0.02*yr;
+		Double_t prev_y = 0;
+		for (Int_t i = 0; i < fNpeaks; i++) {
+			best = fAssigned[i];
+			if ( best < 0 ) continue;
+			Int_t bin = fSelHist->FindBin(fX[i]);
+			Double_t yv = fSelHist->GetBinContent(bin);
+			Double_t yr = fSelHist->GetMaximum();
+			Double_t xr = fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetLast())
+							- fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetFirst());
+			Double_t yn = yv + 0.025*yr;
+			if ( prev_y != 0 && TMath::Abs(yn - prev_y) < 0.02*yr ) {
+				yn  -= 0.02*yr;
+			}
+			prev_y = yn;
+			TLine * l = new TLine(fX[i] + 0.025 * xr, yn, fX[i], yv);
+			l->SetLineWidth(2);
+			l->Draw();
+
+			TString t;
+			TObjString *gn = (TObjString*)fGaugeName.At(best);
+			t = gn->String();
+
+			Int_t ie = (Int_t) fGaugeEnergy[best];
+			t +=  "(";
+			t += ie;
+			t += ")";
+			TLatex latex;
+			latex.SetTextSize(0.02);
+			latex.SetTextColor(kBlue);
+			latex.DrawLatex(fX[i] + 0.025 * xr, yn, t);
+			gPad->Modified();
+			gPad->Update();
 		}
-	   prev_y = yn;
-		TLine * l = new TLine(fX[i] + 0.025 * xr, yn, fX[i], yv);
-		l->SetLineWidth(2);
-		l->Draw();
-
-		TString t;
-		TObjString *gn = (TObjString*)fGaugeName.At(best);
-		t = gn->String();
-
-		Int_t ie = (Int_t) fGaugeEnergy[best];
-		t +=  "(";
-		t += ie;
-		t += ")";
-		TLatex latex;
-		latex.SetTextSize(0.02);
-		latex.SetTextColor(kBlue);
-		latex.DrawLatex(fX[i] + 0.025 * xr, yn, t);
-		gPad->Modified();
-		gPad->Update();
 	}
    TIter next(&fPeakList);
    FhPeak * p;
