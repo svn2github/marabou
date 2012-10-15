@@ -69,22 +69,23 @@
 
 // Fill histograms randomly
   gRandom->SetSeed();
-  Float_t px, py, pz, pu;
+  Float_t px, py, pz, pu, pxlin;
   Float_t px1, py1, pz1;
   const Int_t kUPDATE = 1000;
   for (Int_t i = 0; i < 50000; i++) {
      gRandom->Rannor(px,py);
      gRandom->Rannor(px1,py1);
-     pz1 = px;
+	  pxlin = gRandom->Rndm();
+	  pz1 = px;
      pz = px*px + py*py;
      Float_t random = gRandom->Rndm(1);
-     hpx1->Fill(px);
+	  hpx1->Fill(px);
      hpx2->Fill(2 * py);
-	  hpx3->Fill(3 * px1);
+	  hpx3->Fill(3 * px1, (3 * px1 + 4.));
 	  hp2_2p->Fill(0.3 * px + 1, 0.7 * py+0.5);
      hp2_2p->Fill(0.5 * px - 1, 0.5 * py-0.5);
 
-     hp2_1p->Fill(px,-px + 0.5 * py - 1);
+	  hp2_1p->Fill(8 * (pxlin - 0.5), -2* pxlin + 0.5 * py, 8 *( pxlin));
      hpxpz->Fill(px,pz);
      hprof->Fill(px,pz);
      ntuple->Fill(px,py,pz,random,(Float_t)i);
