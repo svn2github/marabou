@@ -14,7 +14,7 @@ private:
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
 	Int_t        fGlobalStyleButton;
-
+	Int_t        fAdjustMinYButton;
 public:
 	static Int_t fPrependFilenameToName;
 	static Int_t fPrependFilenameToTitle;
@@ -31,6 +31,7 @@ public:
    static Int_t fMaxListEntries;
    static Int_t fContentLowLimit;
    static Int_t fVertAdjustLimit;
+   static Int_t fAdjustMinY;
 	static Int_t fScaleStack;
    static Int_t fStackedReally;
    static Int_t fStackedNostack;

@@ -231,7 +231,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 //   cout << "FitMacroName " << fFitMacroName.Data()<< endl;
 
    fTemplateMacro = "TwoGaus";
-   fFill1Dim      = env.GetValue("Set1DimOptDialog.fFill1Dim",      0);
+	fAdjustMinY    = env.GetValue("GeneralAttDialog.fAdjustMinY",1);
+   fFill1Dim      = env.GetValue("Set1DimOptDialog.fFill1Dim",  0);
    fFillColor     = env.GetValue("Set1DimOptDialog.fFillColor", 1);
    fLineColor     = env.GetValue("Set1DimOptDialog.fLineColor", 1);
    fLineWidth     = env.GetValue("Set1DimOptDialog.fLineWidth", 1);
@@ -271,7 +272,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fShowZScale        = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
 	if ( fShowZScale != 0 && !fDrawOpt2Dim.Contains("GL") )fDrawOpt2Dim += "Z";
    if ( fSelHist->GetDimension() == 1 ) {
-		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat1Dim", 1);
+		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat1Dim", 11111);
 		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox1Dim", 1);
 		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox1Dim", 1);
 		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay1Dim", 1);
@@ -330,6 +331,11 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	if (fDimension == 1) {
 		fLogx = fOneDimLogX;
 		fLogy = fOneDimLogY;
+		if ( fAdjustMinY == 0 && fLogy == 0 ) 
+			fSelHist->SetMinimum(TMath::Min(0.0, fSelHist->GetMinimum()));
+	}
+	if (fDimension == 3) {
+		gStyle->SetFrameFillColor(0); // make sure we can superimpose
 	}
 	TObject * obj = fSelHist->GetListOfFunctions()->FindObject("palette");
    if (obj) {
@@ -1218,7 +1224,8 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		Draw2Dim();
    } else {
 		fCanvas->SetLogx(fLogx);
-		fCanvas->SetLogy(fLogy);
+//		fCanvas->SetLogy(fLogy);
+		this->SetLogy(fLogy);
 		if (gDebug > 0) {
 			cout<< "fCanvas->GetLogy(): " ;
 			if (fCanvas->GetLogy()) 
@@ -1591,7 +1598,7 @@ void FitHist::PictToLP()
    if (fSelHist) {
       TString cmd = "lpr -P";
       cmd += gSystem->Getenv("PRINTER");
-      TEnv env(".rootrc");      // inspect ROOT's environment
+      TEnv env(".hprrc");      // inspect ROOT's environment
       const char *ccmd =
           env.GetValue("HistPresent.PrintCommand", cmd.Data());
       cmd = ccmd;
@@ -3032,7 +3039,8 @@ void FitHist::ExecDefMacro()
 
 void FitHist::Draw3Dim()
 {
-//   TString drawopt("iso");
+//   TString drawopt("iso");	
+
 	cout << "fDrawOpt3Dim " << fDrawOpt3Dim << endl;
    fSelHist->SetDrawOption(fDrawOpt3Dim);
    fSelHist->SetOption(fDrawOpt3Dim);
@@ -3455,6 +3463,8 @@ void FitHist::SetLogx(Int_t state)
 void FitHist::SetLogy(Int_t state)
 {
 	fLogy = state;
+	if (state != 0)
+		fSelHist->SetMinimum(-1111);
 	fCanvas->SetLogy(state);
 	fCanvas->Modified();
 	fCanvas->Update();

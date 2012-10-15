@@ -253,7 +253,7 @@ Int_t CheckList(TList * list, const char *name)
    entries = list->GetSize();
    if (entries == old_entries) {
       cout << "Infinite loop: " << entries << endl;
-//      list->Print();
+      list->Print();
       return entries;
    }
    if (entries > 0) {
@@ -266,7 +266,7 @@ Int_t CheckList(TList * list, const char *name)
              obj->TestBit(0xf0000000)) {
             cout << " remove deleted " << obj << " name: " << name <<
                 " at " << i << " in " << list << endl;
-//            obj->Dump();
+            obj->Dump();
             list->RemoveAt(i);
 
             goto loop;
@@ -775,7 +775,7 @@ a shift value of 10 will only shift by 5 cm";
    static Int_t    view_ps;
    static Int_t    remove_picture = 0;
 
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    xpaper = env.GetValue("HistPresent.PaperSizeX", 20.);
    ypaper = env.GetValue("HistPresent.PaperSizeY", 26.);
    xshift = env.GetValue("HistPresent.PrintShiftX", 0.);
@@ -958,7 +958,7 @@ TEnv *GetDefaults(const char * hname, Bool_t mustexist, Bool_t renew)
 {
    TEnv *lastset = 0;
    TString defname("default/Last");
-   TEnv env(".rootrc");         // inspect ROOT's environment
+   TEnv env(".hprrc");         // inspect ROOT's environment
    defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
 //   cout << "Got : " << defname.Data() << endl;
    if (defname.Length() > 0) {
@@ -1567,7 +1567,7 @@ Bool_t CreateDefaultsDir(TRootCanvas * /*mycanvas*/, Bool_t checkonly)
 {
    TString defname("default/Last");
    Bool_t fok = kFALSE;
-   TEnv env(".rootrc");         // inspect ROOT's environment
+   TEnv env(".hprrc");         // inspect ROOT's environment
    defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
    if (env.Lookup("HistPresent.LastSettingsName") == NULL) {
       cout << "Setting defaults dir/name to: " << defname.Data() << endl;

@@ -11,6 +11,7 @@
 #include "TStyle.h"
 #include "TSystem.h"
 #include "GeneralAttDialog.h"
+#include "SetColor.h"
 #include <iostream>
 
 namespace std {} using namespace std;
@@ -30,6 +31,7 @@ Int_t GeneralAttDialog::fUseAttributeMacro = 0;
 Int_t GeneralAttDialog::fMaxListEntries = 333;
 Int_t GeneralAttDialog::fContentLowLimit = 0;
 Int_t GeneralAttDialog::fVertAdjustLimit =0;
+Int_t GeneralAttDialog::fAdjustMinY      =0;
 Int_t GeneralAttDialog::fStackedReally = 1;
 Int_t GeneralAttDialog::fScaleStack = 1;
 Int_t GeneralAttDialog::fStackedNostack = 0;
@@ -173,6 +175,9 @@ ____________________________________________________________\n\
    fValp[ind++] = &fUseRegexp;
    fRow_lab->Add(new TObjString("PlainIntVal_            Max Entriess in Lists"));
    fValp[ind++] = &fMaxListEntries;
+	fRow_lab->Add(new TObjString("CheckButton_ Adjust min Y to min cont, (1dim)"));
+   fAdjustMinYButton = ind;
+	fValp[ind++] = &fAdjustMinY;
 	fRow_lab->Add(new TObjString("PlainIntVal_            Fit2Dim Content Limit"));
 	fValp[ind++] = &fContentLowLimit;
 	fRow_lab->Add(new TObjString("PlainIntVal_    Fit2Dim Vertical Adjust Limit"));
@@ -221,33 +226,35 @@ void GeneralAttDialog::CloseDialog()
 void GeneralAttDialog::SaveDefaults()
 {
    TEnv env(".hprrc");
-   env.SetValue("GeneralAttDialog.fForceStyle", fForceStyle);
-   env.SetValue("GeneralAttDialog.fShowPSFile", fShowPSFile);
-   env.SetValue("GeneralAttDialog.fSuppressWarnings", fSuppressWarnings);
-   env.SetValue("GeneralAttDialog.fUseRegexp", fUseRegexp);
-   env.SetValue("GeneralAttDialog.fShowListsOnly", fShowListsOnly);
-   env.SetValue("GeneralAttDialog.fRememberLastSet", fRememberLastSet);
-   env.SetValue("GeneralAttDialog.fRememberZoom", fRememberZoom);
-	env.SetValue("GeneralAttDialog.fRememberStatBox", fRememberStatBox);
+   env.SetValue("GeneralAttDialog.fGlobalStyle",       fGlobalStyle);
+   env.SetValue("GeneralAttDialog.fForceStyle",        fForceStyle);
+   env.SetValue("GeneralAttDialog.fShowPSFile",        fShowPSFile);
+   env.SetValue("GeneralAttDialog.fSuppressWarnings",  fSuppressWarnings);
+   env.SetValue("GeneralAttDialog.fUseRegexp",         fUseRegexp);
+   env.SetValue("GeneralAttDialog.fShowListsOnly",     fShowListsOnly);
+   env.SetValue("GeneralAttDialog.fRememberLastSet",   fRememberLastSet);
+   env.SetValue("GeneralAttDialog.fRememberZoom",      fRememberZoom);
+	env.SetValue("GeneralAttDialog.fRememberStatBox",   fRememberStatBox);
 	env.SetValue("GeneralAttDialog.fRememberLegendBox", fRememberLegendBox);
 	env.SetValue("GeneralAttDialog.fUseAttributeMacro", fUseAttributeMacro);
-   env.SetValue("GeneralAttDialog.fMaxListEntries", fMaxListEntries);
-   env.SetValue("GeneralAttDialog.fVertAdjustLimit", fVertAdjustLimit);
-   env.SetValue("GeneralAttDialog.fContentLowLimit", fContentLowLimit);
-   env.SetValue("GeneralAttDialog.fStackedReally" , fStackedReally );
-	env.SetValue("GeneralAttDialog.fScaleStack" , fScaleStack );
-	env.SetValue("GeneralAttDialog.fStackedNostack", fStackedNostack);
-   env.SetValue("GeneralAttDialog.fStackedPads"   , fStackedPads   );
+   env.SetValue("GeneralAttDialog.fMaxListEntries",    fMaxListEntries);
+   env.SetValue("GeneralAttDialog.fVertAdjustLimit",   fVertAdjustLimit);
+   env.SetValue("GeneralAttDialog.fAdjustMinY",        fAdjustMinY);
+   env.SetValue("GeneralAttDialog.fContentLowLimit",   fContentLowLimit);
+   env.SetValue("GeneralAttDialog.fStackedReally" ,    fStackedReally );
+	env.SetValue("GeneralAttDialog.fScaleStack" ,       fScaleStack );
+	env.SetValue("GeneralAttDialog.fStackedNostack",    fStackedNostack);
+   env.SetValue("GeneralAttDialog.fStackedPads"   ,    fStackedPads   );
 	env.SetValue("GeneralAttDialog.fPrependFilenameToTitle", fPrependFilenameToTitle);
-	env.SetValue("GeneralAttDialog.fPrependFilenameToName", fPrependFilenameToName);
+	env.SetValue("GeneralAttDialog.fPrependFilenameToName",  fPrependFilenameToName);
 	env.SaveLevel(kEnvLocal);
 }
-
 //______________________________________________________________________
 
 void GeneralAttDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
+   fGlobalStyle = env.GetValue("GeneralAttDialog.fGlobalStyle", "Plain");
    fForceStyle = env.GetValue("GeneralAttDialog.fForceStyle", 1);
    if (fForceStyle) gROOT->ForceStyle(kTRUE);
    else             gROOT->ForceStyle(kFALSE);
@@ -265,13 +272,33 @@ void GeneralAttDialog::RestoreDefaults()
    fMaxListEntries =
    env.GetValue("GeneralAttDialog.fMaxListEntries", 333);
    fVertAdjustLimit = env.GetValue("GeneralAttDialog.fVertAdjustLimit", 0);
+   fAdjustMinY      = env.GetValue("GeneralAttDialog.fAdjustMinY",      1);
    fContentLowLimit = env.GetValue("GeneralAttDialog.fContentLowLimit", 0);
-   fScaleStack      = env.GetValue("GeneralAttDialog.fScaleStack" , 0);
+   fScaleStack      = env.GetValue("GeneralAttDialog.fScaleStack" ,     0);
 	fStackedReally   = env.GetValue("GeneralAttDialog.fStackedReally" , 1);
 	fStackedNostack  = env.GetValue("GeneralAttDialog.fStackedNostack", 0);
    fStackedPads     = env.GetValue("GeneralAttDialog.fStackedPads"   , 0);
 	fPrependFilenameToTitle = env.GetValue("GeneralAttDialog.fPrependFilenameToTitle"   , 0);
 	fPrependFilenameToName = env.GetValue("GeneralAttDialog.fPrependFilenameToName", 1);
+	
+	if (fAdjustMinY == 0 ) {
+		cout << setred
+		<< "Warning: Y scale of 1dim hists is forced to 0 (or smaller)"<< endl
+		<< "         Be careful when setting log Y scale,"<< endl
+		<< "         dont use popup menu with right mouse in canvas"<< endl
+		<< "         to set log Y" << setblack << endl;
+	}
+	cout << "Set style to: " << fGlobalStyle << endl;
+	gROOT->SetStyle(fGlobalStyle);
+	gStyle->SetPalette(1,NULL);
+	// make sure text precission is 2 (not 3)
+	Int_t tp = gStyle->GetTextFont();
+	if ( tp % 10 != 2 ) {
+		cout << "Resetting text font from " << tp;
+		tp = tp % 10 + 2;
+		gStyle->SetTextFont(tp);
+		cout << " to  " << tp << endl;
+	}
 }
 //______________________________________________________________________
 
@@ -294,7 +321,21 @@ void GeneralAttDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*
 	   cout << "Set style to: " << fGlobalStyle << endl;
 		gROOT->SetStyle(fGlobalStyle);
 		gStyle->SetPalette(1,NULL);
+		Int_t tp = gStyle->GetTextFont();
+		if ( tp % 10 != 2 ) {
+			cout << "Resetting text font from " << tp;
+			tp = tp % 10 + 2;
+			gStyle->SetTextFont(tp);
+			cout << " to  " << tp << endl;
+		}
    }
+   if (bid == fAdjustMinYButton && fAdjustMinY == 0 ) {
+		cout << setred
+		<< "Warning: Y scale of 1dim hists is forced to 0 (or smaller)"<< endl
+		<< "         Be careful when setting log Y scale,"<< endl
+		<< "         dont use popup menu with right mouse in canvas"<< endl
+		<< "         to set log Y" << setblack << endl;
+	}
    if (fForceStyle) gROOT->ForceStyle(kTRUE);
    else             gROOT->ForceStyle(kFALSE);
    if (fSuppressWarnings) gErrorIgnoreLevel=kError;

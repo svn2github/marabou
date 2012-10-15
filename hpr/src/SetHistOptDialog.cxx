@@ -56,11 +56,22 @@ Int_t    SetHistOptDialog::fTitleCenterZ = 1;
 
 //_______________________________________________________________________
 
-SetHistOptDialog::SetHistOptDialog(Int_t batch)
+SetHistOptDialog::SetHistOptDialog(Int_t /*batch*/)
 {
-	if (batch);
 	cout << "ctor SetHistOptDialog, non interactive" <<endl;
 	fDialog = NULL;
+	fCanvas = NULL;
+	fHistList = NULL;
+	fWindow = NULL;
+	fHist = NULL;
+	fParent = NULL;
+	fPad = NULL;
+	fAxisX = NULL;
+	fAxisY = NULL;
+	fAxisZ = NULL;
+	fStatBox = NULL;
+	fTitleBox = NULL;
+	fLegendBox = NULL;
 }
 //_______________________________________________________________________
 
@@ -100,6 +111,19 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
 	to the selected histogram.\n\
 	";	
 	fDialog = NULL;
+	fCanvas = NULL;
+	fHistList = NULL;
+	fWindow = NULL;
+	fHist = NULL;
+	fParent = NULL;
+	fPad = NULL;
+	fAxisX = NULL;
+	fAxisY = NULL;
+	fAxisZ = NULL;
+	fStatBox = NULL;
+	fTitleBox = NULL;
+	fLegendBox = NULL;
+	
 	fWindow = win;	
 	
 	if ( ! SetPointers() ) {

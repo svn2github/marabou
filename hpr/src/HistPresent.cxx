@@ -1376,6 +1376,14 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
 
 void HistPresent::ComposeList(const char* /*bp*/)
 {
+	static const Char_t helptext[] =
+	"Put selected histograms into list\n\
+	With option \"Full path name\",i.e. filename + histonames\n\
+	are written the list file will be displayed\n\
+	With histnames only the histograms in the list\n\
+	will be shown when the content of corresponding file\n\
+	is displayed.\n\
+	";
    Int_t nselect=fSelectHist->GetSize();
    if (nselect < 1) {
       WarnBox("No selection");
@@ -1391,7 +1399,7 @@ void HistPresent::ComposeList(const char* /*bp*/)
 		}
 	}
    fname.Resize(pp);
-   Bool_t put_file = kFALSE;
+//   Bool_t put_file = kFALSE;
    TString listname  =  fname;
    if      (fname.Contains(".root")) {
       TRegexp rname("\\.root");
@@ -1400,10 +1408,27 @@ void HistPresent::ComposeList(const char* /*bp*/)
       TRegexp rname("\\.map");
       listname(rname) = fHlistSuffix;
    }
-   Bool_t ok;
-   listname=GetString("Name of list:",listname.Data(), &ok, fRootCanvas);
-   if (!ok) return;
+   Int_t lFullPath = 1, lHistOnly = 0;
+	void * Valp[10];
+	TList * row_lab = new TList();
+	Int_t ind = 0;
+	row_lab->Add(new TObjString("StringValue_Name of list"));
+	Valp[ind++] = &listname;
+	row_lab->Add(new TObjString("RadioButton_Full pathname"));
+	Valp[ind++] = &lFullPath;
+	row_lab->Add(new TObjString("RadioButton_Hist name only"));
+	Valp[ind++] = &lHistOnly;
+//   listname=GetString("Name of list:",listname.Data(), &ok, fRootCanvas);
+	Int_t itemwidth = 420;
+	static Int_t ok = -2;   // wait until closed
+	new TGMrbValuesAndText ("ComposeList", NULL, &ok, itemwidth,
+										NULL, NULL, NULL, row_lab, Valp,
+										NULL, NULL, helptext);
+//
 //   listname += fHlistSuffix;
+	cout << "ok " << ok << " " << listname << endl;
+	if ( ok < 0) return;
+	
    if (!gSystem->AccessPathName(listname)) {
       TString question=listname;
       question += " exists, Overwrite?";
@@ -1420,15 +1445,30 @@ void HistPresent::ComposeList(const char* /*bp*/)
 	}
    for(Int_t i = 0; i < nselect; i++) {
       TString hname  = ((TObjString *)fSelectHist->At(i))->String();
-		cout << hname << endl;
-      pp = hname.Index(" ");
-      hname.Remove(0,pp+1);
+		pp = hname.Index(",");
+		if (pp < 0) {
+			pp = hname.Index(" ");
+			if (pp < 0 ) {
+				cout << "ComposeList cant isolate file name: " << fname << endl;
+				return;
+			}
+		}
+		fname = hname(0,pp);
+		hname = hname(pp+1, hname.Length());
+		cout << fname << " " << hname << endl;
+//      pp = hname.Index(" ");
+//      hname.Remove(0,pp+1);
 		TRegexp vers(";[0-9]*");
+		TRegexp comma(",");
 		hname(vers) = "";
-      if (put_file) wstream << fname.Data() << " ";
+		hname(comma) = "";
+		hname(comma) = "";
+      if (lFullPath)
+			wstream << fname.Data() << " ";
       wstream << hname.Data() << endl;
    }
    wstream.close();
+	delete row_lab;
 };
 //_______________________________ShowList_________________________________________________________
 // Show List

@@ -143,6 +143,7 @@ private:
 	Int_t   fText;
 	Int_t   fTextAngle;
    Int_t fShowZScale;
+	Int_t fAdjustMinY;
    Int_t fDrawAxisAtTop;
    TString fDrawOpt2Dim;
    Int_t fTitleCenterX;

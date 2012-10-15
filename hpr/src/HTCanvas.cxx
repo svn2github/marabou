@@ -123,7 +123,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 		if (!pad) return;
 		gPad = pad;   // don't use cd() because we won't draw in pad
 		// we will only use its coordinate system
-		if (fSelected->InheritsFrom("TH1") || fSelected->InheritsFrom("TGraph") ) {
+		if (gDebug > 0 && (fSelected->InheritsFrom("TH1") || fSelected->InheritsFrom("TGraph")) ) {
 			cout << "Select: " << fSelected->ClassName()<< " " << fSelected->GetName() << endl;
 		}
 	}

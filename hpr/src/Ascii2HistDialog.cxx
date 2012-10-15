@@ -205,48 +205,6 @@ void Ascii2HistDialog::Read_Input()
 		}
 	}
 	infile.close();
-/*	
-	while ( 1 ) {
-      Int_t i = 0;
-      while (i < nval) {
-         infile >> x[i];
-	      if (infile.eof()) {
-             if (i != 0) {
-               cout << "Warning: Number of input data not multiple of: " << nval << endl;
-               cout << "Discard the " << i << " value(s) at end of file " << endl;
-               cout << ": " << x[0] << endl;
-               if (i > 1) cout << ": " << x[1] << endl;
-               if (i > 2) cout << ": " << x[2] << endl;
-               if (i > 3) cout << ": " << x[3] << endl;
-               if (i > 4) cout << ": " << x[4] << endl;
-             }
-             ok = kFALSE;
-			    break;
-		   }
-         if (!infile.good()) {
-//          discard non white space separator,comma etc.
-            infile.clear();
-            infile >> line;
-            continue;
-         }
-         if      (i == 0) fXval.AddAt(x[i], fNvalues);
-         else if (i == 1) fYval.AddAt(x[i], fNvalues);
-         else if (i == 2) fZval.AddAt(x[i], fNvalues);
-         else if (i == 3) fWval.AddAt(x[i], fNvalues);
-         i++;
-      }
-      if (!ok) break;
-      fNvalues++;
-//      cout << fNvalues<< " " << fXval.GetSize()<< endl;
-      if (fNvalues >= fXval.GetSize()){
-                       fXval.Set(fNvalues+100);
-         if (nval > 1) fYval.Set(fNvalues+100);
-         if (nval > 2) fZval.Set(fNvalues+100);
-         if (nval > 3) fWval.Set(fNvalues+100);
-      }
-   }
-   infile.close();
-*/
 	if ( !ok ) {
 		cout << "Illegal input data found" << endl;
 //		return;

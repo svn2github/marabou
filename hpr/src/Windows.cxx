@@ -303,6 +303,8 @@ void FitHist::EditWindow(const char * name, const char */*bp*/)
          wdw->SetX2(xyvals[1]);
          wdw->SetY1(xyvals[2]);
          wdw->SetY2(xyvals[3]);
+			fCanvas->Modified();
+			fCanvas->Update();
       }
 //      if (xyvals) delete [] xyvals;
       if(row_lab){ row_lab->Delete(); delete row_lab;}
@@ -350,9 +352,9 @@ void  FitHist::WriteOutCut(){
    if(Ncuts() > 0){
       if (Ncuts() == 1) {
          TMrbWindow* wdw = (TMrbWindow*)fActiveCuts->At(0);
-         new Save2FileDialog(wdw);
+         new Save2FileDialog(wdw, NULL, mycanvas);
       } else {
-         new Save2FileDialog(fActiveCuts);
+         new Save2FileDialog(fActiveCuts, NULL, mycanvas);
       }
    } else {
      WarnBox("No cuts active");
@@ -593,6 +595,8 @@ void FitHist::EditCut(const char * name, const char */*bp*/)
 //         make sure contour is closed
          xyvals[n-1]   =  xyvals[0];
          xyvals[2*n] =  xyvals[n+1];
+			fCanvas->Modified();
+			fCanvas->Update();
       }
 //      if (xyvals) delete [] xyvals;
       if(row_lab){ row_lab->Delete(); delete row_lab;}

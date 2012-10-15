@@ -62,7 +62,7 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 	Double_t offsetX = 0;
 	Double_t slope = 1;
 //	Int_t dummy;
-   static Int_t suppress_zeros = 1;
+   static Int_t suppress_zeros = 0;
 	TFile *rfile = NULL;
 	TGraphErrors *graph = NULL;
    TString fname;

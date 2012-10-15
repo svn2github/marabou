@@ -641,11 +641,24 @@ void GroupOfHists::ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t 
       return;
    }
 //   cout << "ShowAllAsSelected " << href->GetName()<< endl;
-   TAxis *xa = href->GetXaxis();
-   Axis_t lowedge = xa->GetBinLowEdge(xa->GetFirst());
-   Axis_t upedge = xa->GetBinLowEdge(xa->GetLast()) +
-       xa->GetBinWidth(xa->GetLast());
-   Axis_t min = 0, max = 0;
+   TAxis *ax = href->GetXaxis();
+   Axis_t lowedgeX = ax->GetBinLowEdge(ax->GetFirst());
+	Axis_t upedgeX = ax->GetBinLowEdge(ax->GetLast()) +
+       ax->GetBinWidth(ax->GetLast());
+	Axis_t lowedgeY = 0, upedgeY = 0,  lowedgeZ = 0, upedgeZ = 0;
+	if ( href->GetDimension() > 1 ) {
+		ax = href->GetYaxis();
+		lowedgeY = ax->GetBinLowEdge(ax->GetFirst());
+		upedgeY = ax->GetBinLowEdge(ax->GetLast()) +
+		ax->GetBinWidth(ax->GetLast());
+	}	
+	if ( href->GetDimension() > 2 ) {
+		ax = href->GetZaxis();
+		lowedgeZ = ax->GetBinLowEdge(ax->GetFirst());
+		upedgeZ = ax->GetBinLowEdge(ax->GetLast()) +
+		ax->GetBinWidth(ax->GetLast());
+	}	
+	Axis_t min = 0, max = 0;
    if (mode > 0) {
       min = href->GetMinimum();
       max = href->GetMaximum();
@@ -657,8 +670,12 @@ void GroupOfHists::ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t 
          TPad *p = (TPad *) obj;
          TH1 *hist = GetTheHist(p);
          if (hist) {
-            hist->GetXaxis()->SetRangeUser(lowedge, upedge);
-            p->SetLogy(pad->GetLogy());
+				hist->GetXaxis()->SetRangeUser(lowedgeX, upedgeX);
+				if (hist->GetDimension() > 1 && (lowedgeY != 0 || upedgeY != 0) ) 
+					hist->GetYaxis()->SetRangeUser(lowedgeY, upedgeY);
+				if (hist->GetDimension() > 2&& (lowedgeZ != 0 || upedgeZ != 0) ) 
+					hist->GetZaxis()->SetRangeUser(lowedgeZ, upedgeZ);
+				p->SetLogy(pad->GetLogy());
             if (mode > 0 && pad->GetLogy() == 0) {
                hist->SetMinimum(min);
                hist->SetMaximum(max);

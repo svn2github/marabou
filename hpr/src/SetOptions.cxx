@@ -119,6 +119,7 @@ void HistPresent::RestoreOptions()
    else                 gROOT->ForceStyle(kFALSE);
 
    gEnv->SetValue("Root.Stacktrace", 0);
+	gStyle->SetFrameBorderMode(0);    // magic, otherwise superimpose 3dim fails
 }
 
 //_______________________________________________________________________

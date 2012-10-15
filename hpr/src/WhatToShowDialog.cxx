@@ -166,7 +166,7 @@ void WhatToShowDialog::SetWhatToShowNow(TCanvas *canvas)
 void WhatToShowDialog::SetDefaults()
 {
    TEnv env(".hprrc");
-   gStyle->SetOptStat (env.GetValue("WhatToShowDialog.fOptStat1Dim", 1111));
+   gStyle->SetOptStat (env.GetValue("WhatToShowDialog.fOptStat1Dim", 1001111));
 //   gStyle->SetOptFit  (env.GetValue("WhatToShowDialog.fShowFitBox1Dim", 1));
    gStyle->SetOptTitle(env.GetValue("WhatToShowDialog.fShowTitle1Dim", 1));
 }
@@ -206,7 +206,7 @@ void WhatToShowDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
    if (fHist->GetDimension() == 1) {
-		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat1Dim", 1111);
+		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat1Dim", 1001111);
 		fShowFitBox       = env.GetValue("WhatToShowDialog.fShowFitBox1Dim", 1);
 		fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle1Dim", 1);
 		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox1Dim", 1);
