@@ -123,54 +123,38 @@ void Save2FileDialog::ExecuteSave()
          fList->Write();
       outfile->Close();
    } else {
-      TString sname(fObject->GetName());
-      cout <<"fObject->GetName() "  << fObject->GetName() << " fObjName " << fObjName <<endl;
-      TNamed *tn = NULL;
-#ifdef MARABOUVERS
-		HTCanvas * htc = (HTCanvas*)fObject;
-      if ( fObject->InheritsFrom("HTCanvas") ) {
-			htc->SetName(fObjName);
-      } else {
-         tn = (TNamed *)fObject;
-         tn->SetName(fObjName);
-      }
-#endif
-		cout << "Saving " << fObject->GetName() << " to: "
-        << gDirectory->GetPath() <<endl;
-//		fObject->Dump();
+      TString sname;
+		TNamed * tn = NULL;
+		if ( fObject->InheritsFrom("TNamed") ) {
+			sname = fObject->GetName();
+			if ( sname != fObjName) {
+				tn = (TNamed *)fObject;
+				tn->SetName(fObjName);
+			}
+		}
 		fObject->Write();
-//      fObject->Write(fObjName);
       outfile->Close();
-#ifdef MARABOUVERS
-      if ( htc )
-         htc->SetName(sname);
-#endif
-      if ( tn )
-         tn->SetName(sname);
-   }
-//   if (fKeepDialog <= 0) {
-//      SaveDefaults();
-//      fWidget->CloseWindowExt();
-//      delete fWidget;
-//      delete this;
-//  }
+		if ( tn ) {
+			tn->SetName(sname);
+		}
+	}
 };
 //_________________________________________________________________________
 
 void Save2FileDialog::SaveDefaults()
 {
 //   cout << "Save2FileDialog::SaveDefaults() " << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
 	env.SetValue("Save2FileDialog.FileName", fFileName);
 	env.SetValue("Save2FileDialog.Dir",      fDir);
 	env.SetValue("Save2FileDialog.AsList",   fAsList);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 
 void Save2FileDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
 	fFileName = env.GetValue("Save2FileDialog.FileName", "workfile.root");
 	fDir = env.GetValue("Save2FileDialog.Dir", "");
    fAsList = env.GetValue("Save2FileDialog.AsList", 0);
