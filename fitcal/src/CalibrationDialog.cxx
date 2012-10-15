@@ -96,11 +96,17 @@ The procedure to use previously fitted peaks is as follows:\n\
     fitted to this graph to evaluate the parameters\n\
   - The parameters for the \"Calibrated Hist\" (Nbins,\n\
     Xlow, Xup) should be adjusted to reasonable values.\n\
+\n\
   - Execute \"Fill Calibrated Hist\". A new histogram will be\n\
     created and filled according to the calibration function\n\
     Note: Each entry in the original histogram is randomly \n\
           shifted within its bin before the calibration is\n\
           applied to avoid binning effects.\n\
+    This histogram has not the extra popup menus of HistPresent\n\
+    because the functions of this calibration package may be used\n\
+    independently of HistPresent.\n\
+    To use HistPresent with it you should save the histogram\n\
+    to a file from the \"File\" menu and redisplay the FileList\n\
 \n\
 - The Calibration function may be any legal \"TFormula\"\n\
   in practice polynomials of 1. or 2. degree (pol1, pol2)\n\
@@ -334,6 +340,7 @@ The following options are provided:\n\
     The selected values must correspond to the\n\
     fitted and selected ones: i.e. One has to activate\n\
     the checkbuttons correctly in both tables.\n\
+    The number of checked entries must be equal\n\
   - Press \"Auto select\":\n\
     The program will vary gain and offset and find\n\
     the best match between the (fitted) peaks in the\n\
@@ -443,11 +450,12 @@ Int_t CalibrationDialog::ReadGaugeFile()
    Int_t n = 0;
    TString line;
    TString val;
-   TString del(" ,");
+   TString del(" ,\t");
    TObjArray * oa;
    fGaugeEnergy.Set(100);
    fGaugeError.Set(100);
    fGaugeIntensity.Set(100);
+	fGaugeName.Delete();
   	while ( 1 ) {
 		line.ReadLine(infile);
 		if (infile.eof()) break;
@@ -530,7 +538,17 @@ static const Char_t helptext[] =
    Peaks with small (gauss)content may be suppressed by\n\
    \"ContentThresh\" measured as fraction of the max peak.\n\
    Watch out, this may discard real peaks.\n\
- ";
+   Choosing the option \"Verbose Print\" will give descriptive\n\
+   printout during the matching process and 2 histograms:\n\
+   A 2-dim histogram representing the matches in the testbed: \n\
+   It contains the number of matches for each gain-offset pair\n\
+   leading to bands in this 2-dim histogram.\n\
+   The point, where ideally all of bands belonging to the\n\
+   gauge source cross, is the sought after gain-offset value.\n\
+   A 1-dim histogram shows the ratio of the measured intensity\n\
+   to the expected from the literature. It should show the\n\
+   the efficiency of the detector as a function of energy.\n\
+";
    if ( !fInteractive ) {
       cout << setred << "AutoSelectDialog() only useful in interactive mode "
            << setblack << endl;
@@ -662,7 +680,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
       gDirectory->GetList()->Remove(hscan);
       delete hscan;
    }
-   hscan = new TH2C("hscan", "Matches vs offset and gain;Offset;Gain",
+   hscan = new TH2C("hscan", "Number of Matches;Offset;Gain",
                  nbscanX, fOffMin - 0.5*fOffStep, fOffMax + 0.5*fOffStep,
                  nbscanY,fGainMin- 0.5*fGainStep, fGainMax + 0.5*fGainStep);
    for (off = fOffMin; off <= fOffMax; off += fOffStep) {
@@ -861,6 +879,10 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    }
    if (fVerbose) {
 		fScanCanvas = new TCanvas("cscan", "cscan", 500, 500, 500, 500);
+		hscan->GetYaxis()->SetTitleSize(0.04);
+		hscan->GetYaxis()->SetTitleOffset(1);
+		hscan->GetYaxis()->CenterTitle();
+		hscan->GetXaxis()->CenterTitle();
 		hscan->Draw("col");
 		fScanCanvas->Update();
 		cout << "Compare measured intensity with published values" << endl;
@@ -886,7 +908,9 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 		}
 		fEffCanvas  = new TCanvas("effec", "Efficiency", 200, 600, 500, 200);
 		fEffCanvas->Draw();
-		eff->Draw("A*");
+		eff->SetMarkerStyle(8);
+		eff->SetMarkerSize(1);
+		eff->Draw("AP");
 		eff->GetHistogram()->GetXaxis()->SetLabelSize(0.1);
 		eff->GetHistogram()->GetYaxis()->SetLabelSize(0.1);
 		fEffCanvas->Update();
