@@ -419,7 +419,6 @@
 #include "TSpectrum.h"
 #include "TPolyMarker.h"
 #include "TGMrbMacroBrowser.h"
-#include "TMrbLogger.h"
 #include "FhPeak.h"
 #include "FindPeakDialog.h"
 #include "FitOneDimDialog.h"
@@ -1211,7 +1210,7 @@ void CloseEnvFiles() {
 	TIterator * iter = lofEntries->MakeIterator();
 	TEnvRec * r;
 	Int_t nh = 0;
-	while (r = (TEnvRec *) iter->Next()) {
+	while ((Bool_t) (r = (TEnvRec *) iter->Next())) {
 		TString e = r->GetName();
 		if (e.Contains(".Xmin")) nh++;
 	}
@@ -1252,7 +1251,7 @@ Int_t GetNofHistosCalibrated() {
 	TIterator * iter = lofEntries->MakeIterator();
 	TEnvRec * r;
 	Int_t nh = 0;
-	while (r = (TEnvRec *) iter->Next()) {
+	while ((Bool_t) (r = (TEnvRec *) iter->Next())) {
 		TString e = r->GetName();
 		if (e.Contains(".Xmin")) nh++;
 	}
@@ -1328,7 +1327,7 @@ Bool_t FindPeaks() {
 		fPeakList->SetName("spectrum_peaklist");
 		TIterator * pIter = pfList->MakeIterator();
 		FhPeak * p;
-		while (p = (FhPeak *) pIter->Next()) fPeakList->Add(p);
+		while ((Bool_t) (p = (FhPeak *) pIter->Next())) fPeakList->Add(p);
 		fCurHisto->GetListOfFunctions()->Add(fPeakList);
 		TPolyMarker * pm = (TPolyMarker *) pfHisto->GetListOfFunctions()->FindObject("TPolyMarker");
 		TArrayD y(pm->GetN());
@@ -1415,7 +1414,7 @@ Bool_t Calibrate() {
 		Int_t npg = 0;
 		fFitList = fCalibration->UpdatePeakList();
 		pIter = fFitList->MakeIterator();
-		while (p = (FhPeak *) pIter->Next()) {
+		while ((Bool_t) (p = (FhPeak *) pIter->Next())) {
 			if (np < fNofPeaks - fNofPeaksNeeded) {
 				p->SetUsed(0);
 				fCalibration->SetGaugePoint(np, 0);
@@ -1446,7 +1445,7 @@ Bool_t Calibrate() {
 	fNofPeaksUsed = 0;
 	Double_t xFirst = 0;
 	Double_t xLast;
-	while (p = (FhPeak *) pIter->Next()) {
+	while ((Bool_t) (p = (FhPeak *) pIter->Next())) {
 		if (p->GetUsed()) {
 			if (xFirst == 0) xFirst = p->GetMean();
 			xLast = p->GetMean();
@@ -1464,7 +1463,7 @@ Bool_t Calibrate() {
 	if (!fMatchFlag) {
 		fMainCanvas->cd(1);
 		pIter = fFitList->MakeIterator();
-		while (p = (FhPeak *) pIter->Next()) {
+		while ((Bool_t) (p = (FhPeak *) pIter->Next())) {
 			if (p->GetUsed()) MarkPeak(p->GetMean(), p->GetNominalEnergy(), p->GetGaugeName());
 		}
 	}
@@ -1671,7 +1670,7 @@ void ShowResults2dim() {
 	TObjArray lofCalibs;
 	Double_t emin = 1000000;
 	Double_t emax = 0;
-	while (r = (TEnvRec *) iter->Next()) {
+	while ((Bool_t) (r = (TEnvRec *) iter->Next())) {
 		TString str = r->GetName();
 		TObjArray * a = str.Tokenize(".");
 		TString hn = ((TObjString *) a->At(1))->GetString();
@@ -1742,7 +1741,7 @@ void ShowThumbNails() {
 
 	TIterator * hIter = fLofHistos.MakeIterator();
 	TObjString * oh = NULL;
-	while (oh = (TObjString *) hIter->Next()) {
+	while ((Bool_t) (oh = (TObjString *) hIter->Next())) {
 		if (WithinHistoMask(oh->GetString())) lofHistos.Add(new TObjString(oh->GetString()));
 	}
 	Int_t nh = lofHistos.GetEntriesFast();
@@ -1762,7 +1761,7 @@ void ShowThumbNails() {
 				if (WithinHistoMask(hName.Data())) {
 					TH1F * fThumbHisto = (TH1F *) fHistoFile->Get(hName.Data());
 					if (fThumbHisto) {
-						TString cmd(Form("PopupHisto((TH1F*) %#x);", fThumbHisto)); 
+						TString cmd(Form("PopupHisto((TH1F*) %#lx);", (long unsigned int) fThumbHisto)); 
 						gPad->SetToolTipText(hName.Data(), 250);
 						gPad->AddExec("popupHisto", cmd.Data());
 						fThumbHisto->Draw();
@@ -1908,22 +1907,22 @@ void GetArguments(TGMrbMacroFrame * GuiPtr) {
 		GuiPtr->GetArgValue("MatchOffset", fMatchOffsetStep, 1);
 		GuiPtr->GetArgValue("MatchOffset", fMatchOffsetMax, 2);
 		if ((fMatchOffsetMax - fMatchOffsetMin) <= 0) {
-			OutputMessage("GetArguments", Form("Wrong offset range - [%d,%d]", fMatchOffsetMin, fMatchOffsetMax), "e");
+			OutputMessage("GetArguments", Form("Wrong offset range - [%g,%g]", fMatchOffsetMin, fMatchOffsetMax), "e");
 			fMatchFlag = kFALSE;
 		}
 		if (fMatchOffsetStep <= 0) {
-			OutputMessage("GetArguments", Form("Wrong offset step size - %d", fMatchOffsetStep), "e");
+			OutputMessage("GetArguments", Form("Wrong offset step size - %g", fMatchOffsetStep), "e");
 			fMatchFlag = kFALSE;
 		}
 		GuiPtr->GetArgValue("MatchGain", fMatchGainMin, 0);
 		GuiPtr->GetArgValue("MatchGain", fMatchGainStep, 1);
 		GuiPtr->GetArgValue("MatchGain", fMatchGainMax, 2);
 		if ((fMatchGainMax - fMatchGainMin) <= 0) {
-			OutputMessage("GetArguments", Form("Wrong gain range - [%d,%d]", fMatchGainMin, fMatchGainMax), "e");
+			OutputMessage("GetArguments", Form("Wrong gain range - [%g,%g]", fMatchGainMin, fMatchGainMax), "e");
 			fMatchFlag = kFALSE;
 		}
 		if (fMatchGainStep <= 0) {
-			OutputMessage("GetArguments", Form("Wrong gain step size - %d", fMatchGainStep), "e");
+			OutputMessage("GetArguments", Form("Wrong gain step size - %g", fMatchGainStep), "e");
 			fMatchFlag = kFALSE;
 		}
 		GuiPtr->GetArgValue("MatchAccept", fMatchAccept);
@@ -2220,7 +2219,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 	ResetLofHistos();
 	TH1F * h;
 	fNextHisto = kNextHisto;
-	while (h = GetNextHisto()) {
+	while ((Bool_t) (h = GetNextHisto())) {
 
 		GetArguments(GuiPtr);
 
