@@ -784,8 +784,8 @@ Bool_t WithinHistoMask(const Char_t * HistoName) {
 		}
 	}
 	return(kFALSE);
-}			
-			
+}
+
 
 
 
@@ -1137,8 +1137,8 @@ Bool_t SetCalSource() {
 		delete fEnvEnergies;
 		fEnvEnergies = NULL;
 		return(kFALSE);
-	}	
-		
+	}
+
 	fNofCalibrationLines = fEnvEnergies->GetValue(Form("Calib.%s.NofLines", fSourceName.Data()), 0);
 	fNofPeaksNeeded = fNofCalibrationLines;
 	if (fNofPeaksNeeded == 0) {
@@ -1149,7 +1149,7 @@ Bool_t SetCalSource() {
 		fEnvEnergies = NULL;
 		return(kFALSE);
 	}
-	
+
 	fEnableCalib = WriteGaugeFile();
 
 	return(kTRUE);
@@ -1386,7 +1386,7 @@ Bool_t Calibrate() {
 
 	if (!fEnableCalib) return(kFALSE);
 
-	if (fNofPeaks < fNofPeaksNeeded) { 
+	if (fNofPeaks < fNofPeaksNeeded) {
 		OutputMessage("Calibrate", Form("Too few peaks - %d (%s calibration needs at least %d peaks)", fNofPeaks, fSourceName.Data(), fNofPeaksNeeded), "w");
 		SetFitStatus(kFitDiscard, "Too few peaks");
 	}
@@ -1468,13 +1468,13 @@ Bool_t Calibrate() {
 		}
 	}
 	ClearCanvas(2);
-	TGraphErrors * gr = new TGraphErrors(fNofPeaksUsed, x.GetArray(), y.GetArray(), xerr.GetArray(), yerr.GetArray()); 
+	TGraphErrors * gr = new TGraphErrors(fNofPeaksUsed, x.GetArray(), y.GetArray(), xerr.GetArray(), yerr.GetArray());
 	gr->SetMarkerStyle(4);
 	gr->SetMarkerSize(1);
 	gr->Draw("A*");
 	if (fCalibFct) {
 		fCalibFct->SetRange(xFirst, xLast);
-		fCalibFct->Draw("SAME"); 
+		fCalibFct->Draw("SAME");
 		fCalibFct->SetLineWidth(2);
 		fCalibFct->SetLineColor(4);
 		TString grName = Form("%s Calibration, histo %s: %g + %g * x",
@@ -1507,19 +1507,19 @@ void MarkPeak(Double_t X, Double_t E, const Char_t * GaugeName) {
 	Int_t bin = fCurHisto->FindBin(X);
 	Double_t yv = fCurHisto->GetBinContent(bin);
 	Double_t yr = fCurHisto->GetMaximum();
-	Double_t xr = fCurHisto->GetBinCenter(fCurHisto->GetXaxis()->GetLast()) 
+	Double_t xr = fCurHisto->GetBinCenter(fCurHisto->GetXaxis()->GetLast())
 					- fCurHisto->GetBinCenter(fCurHisto->GetXaxis()->GetFirst());
 	TLine * l = new TLine(X + 0.025 * xr, yv + 0.025*yr, X, yv);
 	l->SetLineWidth(2);
 	l->Draw();
-         
+
 	TString t = GaugeName;
 
 	Int_t ie = (Int_t) E;
 	t +=  "(";
 	t += ie;
 	t += ")";
-	TLatex latex; 
+	TLatex latex;
 	latex.SetTextSize(0.05);
 	latex.SetTextColor(kBlue);
 	latex.DrawLatex(X + 0.025 * xr, yv + 0.025*yr, t);
@@ -1759,9 +1759,9 @@ void ShowThumbNails() {
 				TString hName = ((TObjString *) lofHistos[nc - 1])->GetString();
 				fThumbCanvas->cd(nc++);
 				if (WithinHistoMask(hName.Data())) {
-					TH1F * fThumbHisto = (TH1F *) fHistoFile->Get(hName.Data());
+					fThumbHisto = (TH1F *) fHistoFile->Get(hName.Data());
 					if (fThumbHisto) {
-						TString cmd(Form("PopupHisto((TH1F*) %#lx);", (long unsigned int) fThumbHisto)); 
+						TString cmd(Form("PopupHisto((TH1F*) %#lx);", (long unsigned int) fThumbHisto));
 						gPad->SetToolTipText(hName.Data(), 250);
 						gPad->AddExec("popupHisto", cmd.Data());
 						fThumbHisto->Draw();
@@ -1783,7 +1783,7 @@ void ShowThumbNails() {
 		ofstream hl(hlName.Data());
 		for (Int_t i = 0; i < nh; i++) hl << ((TObjString *) lofHistos[i])->GetString() << endl;
 		hl.close();
-	} 
+	}
 }
 
 void PopupHisto(TH1F * Histo) {
