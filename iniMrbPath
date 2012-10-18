@@ -72,6 +72,8 @@ then
 	test -d bin || mkdir bin
 	test -d lib || mkdir lib
 	test -d obj || mkdir obj
+	test -d include || mkdir include 
+	test -d cint || mkdir cint
 
 	DIR1="analyze bin build c_analyze cint config expconf gutils helpbrowser hpr icons include lib macrobrowser macros obj templates tools utils"
 	DIR2="camcli esone mbsio mbssetup transport"
