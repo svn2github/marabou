@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 #include <allParam.h>
-#include <ces/uiocmd.h>
+#include <ces/vmelib.h>
 #include <ces/bmalib.h>
 
 /*_______________________________________________________________[HEADER FILE]
@@ -56,9 +56,10 @@ struct s_sis_3302 {
 	Bool_t verbose;
 	Bool_t dumpRegsOnInit;
 
-	ULong_t bltAddr[NOF_CHANNELS];				/* block xfer */
-	uio_mem_t bltBuffer;
-	Int_t blockXfer;
+	Int_t blockXfer;					/* block xfer */
+#ifdef CPU_TYPE_RIO2
+	struct dmachain bltChain;
+#endif
 
 	Int_t bufferSize;					/* max buffer size */
 

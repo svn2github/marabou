@@ -15,7 +15,6 @@
 #include <string.h>
 #include <allParam.h>
 #include <ces/vmelib.h>
-#include <ces/bmalib.h>
 #include <errno.h>
 
 
@@ -838,6 +837,7 @@ void sis3302_enableBma(struct s_sis_3302 * Module)
 			return;
 		}
 
+#if 0
 /* allocate contiguous memory */
 		bmaError = uio_calloc(&Module->bltBuffer, Module->bufferSize * sizeof(uint32_t));
 		if (bmaError != 0) {
@@ -848,6 +848,7 @@ void sis3302_enableBma(struct s_sis_3302 * Module)
 			bma_close();
 			return;
 		}
+#endif
 
 /* configure VME block size */
 		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_VMESize, BMA_M_Vsz32);
@@ -855,32 +856,6 @@ void sis3302_enableBma(struct s_sis_3302 * Module)
 		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_WordSize, BMA_M_WzD32);
 /* configure AM code */
 		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_AmCode, BMA_M_AmA32U);
-
-#ifdef CPU_TYPE_RIO3
-		foundSome = kFALSE;
-		for (chn = 0; chn < kSis3302NofChans; chn++) {
-			startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
-			Module->bltAddr[chn] = xvme_map(Module->vmeAddr + startAddr, Module->bufferSize, BMA_M_AmA32U, BMA_M_WzD32);
-			if (Module->bltAddr[chn] != -1) {
-				foundSome = kTRUE;
-			} else {
-				sprintf(msg, "[enableBma] [%s]: Can't map XVME page - chn=%d, addr=%#lx", Module->moduleName, chn, Module->vmeAddr + startAddr);
-				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			}
-		}
-#endif
-
-		if (foundSome) {
-			sprintf(msg, "[enableBma] [%s]: turning block xfer ON (mode=NORMAL, size=%d)", Module->moduleName, Module->bufferSize);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-		} else {
-			sprintf(msg, "[enableBma] [%s]: Couldn't map any XVME page - turning block xfer OFF", Module->moduleName);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			Module->blockXfer = SIS3302_BLT_OFF;
-			uio_cfree(&Module->bltBuffer);
-			bma_close();
-			return;
-		}
 
 	} else if (Module->blockXfer == SIS3302_BLT_CHAINED) {
 		sprintf(msg, "[enableBma] [%s]: Chained BLT not yet implemented, turning block xfer OFF", Module->moduleName);
@@ -3649,11 +3624,7 @@ void sis3302_stopAcquisition(struct s_sis_3302 * Module) {
 	Int_t chn;
 	sis3302_disarmSampling(Module);
 	sis3302_restoreTraceLength(Module);
-	if (sis3302_blockXferIsOn(Module)) {
-		for (chn = 0; chn < kSis3302NofChans; chn++) xvme_rel(Module->bltAddr[chn], Module->bufferSize);
-		uio_cfree(&Module->bltBuffer);
-		bma_close();
-	}
+	if (sis3302_blockXferIsOn(Module)) bma_close();
 }
 
 /*________________________________________________________________[C FUNCTION]

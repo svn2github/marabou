@@ -66,7 +66,6 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	Int_t totalSize;
 	Bool_t dataTruncated;
 	Int_t bmaError;
-	Int_t bmaCount;
 
 	memset(nofEvents, 0, kSis3302NofChans * sizeof(Int_t));
 	
@@ -180,27 +179,28 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 				if (nxs == 0) continue;
 				nxs >>= 1;
 				startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
+
+				if ((((UInt_t) pointer) % 8) != 0) *pointer++ = 0x0d640d64;	/* align to 64 bit */
 #ifdef CPU_TYPE_RIO2
-				bmaError = bma_read(Module->vmeAddr + startAddr, Module->bltBuffer.paddr | 0x80000000, nxs, BMA_DEFAULT_MODE);
+            			if ((bmaError = vmtopm(getpid(), &Module->bltChain, (char*) pointer, nxs * sizeof(UInt_t))) == -1)
+					sprintf(msg, "[readout] [%s]: vmtopm call failed (chn=%d, wc=%d)", Module->moduleName, chn, nxs);
+					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+					continue;
+				}
+
+				bmaError = bma_read(Module->vmeAddr + startAddr, Module->bltChain.address | 0x0, nxs, BMA_DEFAULT_MODE);
 				if (bmaError != 0) {
 					sprintf(msg, "[readout] [%s]: %s (%d) while reading event data (chn=%d, wc=%d)", Module->moduleName, sys_errlist[errno], errno, chn, nxs);
 					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 					continue;
 				}
-				bmaCount = nxs;
 #endif
+
 #ifdef CPU_TYPE_RIO3
-				if (Module->bltAddr[chn] > 0) {
-					bmaCount = bma_read_count(Module->bltAddr[chn], bma_mem2loc(Module->bltBuffer.paddr), nxs, BMA_DEFAULT_MODE);
-					if (bmaCount == -1) {
-						sprintf(msg, "[readout] [%s]: %s (%d) while reading event data (chn=%d, wc=%d)", Module->moduleName, sys_errlist[errno], errno, chn, nxs);
-						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-						continue;
-					}
-				}
+				bmaError = bma_read(Module->vmeAddr + startAddr, (UInt_t) ((UInt_t) pointer & 0x0FFFFFFF) | 0x0, nxs , BMA_DEFAULT_MODE);
+
 #endif
-				memcpy(pointer, Module->bltBuffer.uaddr, sizeof(uint32_t) * bmaCount);
-				pointer += bmaCount;
+				pointer += nxs;
 			}
 		}
 	}
