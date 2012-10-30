@@ -1166,7 +1166,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("StringValue")) {
             TString scol;
             scol = *(TString*)fValPointers[i];
-            tentry = new TGTextEntry(hButtonFrame, tbuf = new TGTextBuffer(100), i + 1000*kIdText);
+            tentry = new TGTextEntry(hButtonFrame, tbuf = new TGTextBuffer(15), i + 1000*kIdText);
             tentry->GetBuffer()->AddText(0, (const char *)scol);
             hButtonFrame->AddFrame(tentry, loc);
             hframe->AddFrame(hButtonFrame, loc);
