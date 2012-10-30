@@ -365,16 +365,15 @@ HOWTOS contain useful examples.";
 const char Help_SelectionMask_text[]=
 "Selection mask may be defined in 3 different ways:\n\
 \n\
-If option 'Use regular expression syntax' is active:\n\
+If option 'Use Regexp' is active:\n\
 \n\
-Use a  regular expression as Selection Mask.\n\
+Use regular expression as Selection Mask.\n\
  \n\
 Examples: ^M:    all  starting with M\n\
           w$:    all  ending with w\n\
           [0-9]  all containing a number\n\
 \n\
-If option 'Use regular expression syntax' \n\
-is n o t active:\n\
+If option 'Use Regexp' is n o t active:\n\
 Use wild card expression:\n\
 \n\
 Examples: *mxy*  all containing mxy\n\

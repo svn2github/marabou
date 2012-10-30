@@ -25,5 +25,6 @@ namespace Hpr
 	void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode);
 	TH1 * GetOneHist(TH1 * selhist);
 	void ResizeStatBox(TPaveStats * st, Int_t ndim); 
+	Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp);
 }
 #endif

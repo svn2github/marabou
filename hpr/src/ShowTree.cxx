@@ -20,7 +20,7 @@
 #include "TMrbStatistics.h"
 #include "HTCanvas.h"
 #include "SetColor.h"
-//#include "TMrbWdw.h"
+#include "hprbase.h"
 //#include "TMrbVarWdwCommon.h"
 #include "TMrbHelpBrowser.h"
 #include "CmdListEntry.h"
@@ -61,18 +61,20 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 //  const Int_t MAXLEAF=33;
   if (fRootFile) fRootFile->Close();
 //  fRootFile=new TFile(fname);
-  fRootFile=TFile::Open(fname);
-  if ( fRootFile && gDebug > 1 )
-     fRootFile->ls();
-  if (strlen(dir) > 0) fRootFile->cd(dir);
-  TTree *tree = (TTree*)gDirectory->Get(tname);
-   TObjArray *leaves = tree->GetListOfLeaves();
-   Int_t nleaves = leaves->GetEntriesFast();
+	fRootFile=TFile::Open(fname);
+	if ( fRootFile && gDebug > 1 )
+		fRootFile->ls();
+	if (strlen(dir) > 0) fRootFile->cd(dir);
+	TTree *tree = (TTree*)gDirectory->Get(tname);
+	TObjArray *leaves = tree->GetListOfLeaves();
+	Int_t nleaves = leaves->GetEntriesFast();
    if (nleaves <=0) {
        cout << "No leaves" << endl;
 		 gDirectory = gROOT;
        return;
-   }
+   } else {
+		cout<< endl << "Number of leaves in " << tname << " " << nleaves << endl;
+	}	
 
    fSelectLeaf->Delete();
    *fLeafCut="";
@@ -124,55 +126,11 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
       } else {
          len = leaf->GetLen();
 //  apply selection if needed
-         if (fHistSelMask->Length() > 0) {
-            TString tn(leaf->GetName());
-            if        (fHistSelOp == kHsOp_None) {
-               TRegexp re((const char *)*fHistSelMask, !GeneralAttDialog::fUseRegexp);
-               if (tn.Index(re) <0) continue;
-            } else if (GeneralAttDialog::fUseRegexp) {
-               TRegexp re1((const char *)*fHistSelMask_1);
-               TRegexp re2((const char *)*fHistSelMask_2);
-               if (fHistSelOp == kHsOp_And) {
-                  if (tn.Index(re1) < 0 ||
-                     tn.Index(re2) < 0) continue;
-               } else if (fHistSelOp == kHsOp_Or) {
-                  if (tn.Index(re1) < 0 &&
-                     tn.Index(re2) < 0) continue;
-               } else if (fHistSelOp == kHsOp_Not) {
-                  if (( fHistSelMask_1->Length() > 0 &&
-                     tn.Index(re1) < 0) ||
-                    (tn.Index(re2) >=0)) continue;
-               }
-            } else {
-               if (fHistSelOp == kHsOp_And) {
-                  if (!tn.Contains(fHistSelMask_1->Data()) ||
-                     !tn.Contains(fHistSelMask_2->Data())) continue;
-               } else if (fHistSelOp == kHsOp_Or) {
-                  if (!tn.Contains(fHistSelMask_1->Data()) &&
-                     !tn.Contains(fHistSelMask_2->Data())) continue;
-               } else if (fHistSelOp == kHsOp_Not) {
-                  if (( fHistSelMask_1->Length() > 0 &&
-                    !tn.Contains(fHistSelMask_1->Data())) ||
-                     (tn.Contains(fHistSelMask_2->Data()))) continue;
-               }
-            }
+         if (fLeafSelMask.Length() > 0) {
+				if ( ! Hpr::IsSelected(leaf->GetName(), &fLeafSelMask, fLeafUseRegexp ) )
+					continue;
          }
 
-//	   	cout << "Branchname: " << branch->GetName();
-//         TLeafObject * leafobj = (TLeafObject*)leaf;
-//	   	cout << " Leaf type/name : " << leafobj->GetTypeName() << " "
-//			     <<leafobj->GetName() << endl;
-/*
-
-		   static Int_t firsttime = 1;
-			TString ltype = leafobj->GetTypeName();
-			if (ltype.BeginsWith("vector")) {
-			   if (firsttime) {
-				   leaf->Dump();
-					firsttime = 0;
-			   }
-		   }
-*/
 			if (fCmdLine->GetSize() >= GeneralAttDialog::fMaxListEntries) {
 				showit = kFALSE;
 				not_shown++;
@@ -205,12 +163,35 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
          }
       }
    }
+   if ( var_list->GetSize() == 0 && fLeafSelMask.Length() > 0 ) {
+		cout << setred << "Warning: No entries found satisfying LeafSelMask: " 
+		<< fLeafSelMask << setblack << endl;
+	}
    if ( not_shown > 0) {
 		cout << setred << "Too many entries in list" << endl;
-		cout << "this might crash X, please use or tighten selection mask"<< endl;
+		cout << "this might crash X, please use \"Leaf selection mask\""<< endl;
 		cout << "to reduce number of entries below: " <<  GeneralAttDialog::fMaxListEntries  << endl;
 		cout << "On your own risk you may increase value beyond: " << GeneralAttDialog::fMaxListEntries << endl;
 		cout << "WARNING: branches not shown: " << not_shown << setblack << endl;
+	}
+	if ( not_shown > 0 || fWriteLeafNamesToFile) { 
+		TString fn("TREE_");
+		fn  += tname;
+		Int_t pp = fn.Index(";");
+		if (pp>0) fn.Resize(pp);
+		fn += ".list";
+		ofstream lfile(fn);
+		for (l=0;l<nleaves;l++) {
+			TLeaf *leaf = (TLeaf*)leaves->UncheckedAt(l);
+			lfile << leaf->GetName();
+			if ( fWriteLeafMinMaxtoFile ) {
+				lfile << "    [" 
+				<< tree->GetMinimum(leaf->GetName()) << ", "
+				<< tree->GetMaximum(leaf->GetName()) << "]" ;
+			}
+			lfile << endl;
+		}
+		cout << setblue << endl << "Names of leaves written to: " << fn << setblack << endl;
 	}
    cmd = "mypres->EditLeafCut(\"";
 	ostringstream buf;
@@ -987,13 +968,25 @@ void HistPresent::SetShowTreeOptionsCint(const char *pointer)
 }
 //_______________________________________________________________________
 
-void HistPresent::SetShowTreeOptions(TGWindow * win, FitHist * /*fh*/)
+void HistPresent::SetShowTreeOptions(TGWindow * win)
 {
 // *INDENT-OFF*
 static const char helptext[] =
 "\n\
 ____________________________________________________________\n\
 The following options apply when  showing trees\n\
+____________________________________________________________\n\
+Always write leaf names to file\n\
+-------------------------------\n\
+Leaf names are written to a file name TREE_nameoftree.list\n\
+This file is also written if too many entries are in the tree\n\
+to help to find a suitable selection mask\n\
+____________________________________________________________\n\
+Also write leaf [ Min,  Max]\n\
+----------------------------\n\
+In addition to leaf names also write the minimum and maximum\n\
+(tree->GetMinumum(leafname)). This can take time for a tree\n\
+with many entries as in case of Atlas D3PDs.\n\
 ____________________________________________________________\n\
 Remember hist limits\n\
 --------------------\n\
@@ -1016,6 +1009,10 @@ Keep all hists (add version# to name)\n\
 -------------------------------------\n\
 As default histograms for the same leaf are overwritten\n\
 if they are shown again\n\
+____________________________________________________________\n\
+Leaf Select Mask\n\
+----------------\n\
+See help for \"Histo/Leaf/Canvas mask\" on main window\n\
 ";
 // *INDENT-ON*
    TList *row_lab = new TList();
@@ -1024,27 +1021,37 @@ if they are shown again\n\
    static Int_t dummy;
    row_lab->Add(new TObjString("CommentOnly_Options when showing trees:"));
    valp[ind++] = &dummy;
-   row_lab->Add(new TObjString("CheckButton_Remember histogram limits"));
+	row_lab->Add(new TObjString("CheckButton_  Always write leaf names to file"));
+	valp[ind++] = &fWriteLeafNamesToFile;
+	row_lab->Add(new TObjString("CheckButton_     Also write leaf [ Min,  Max]"));
+	valp[ind++] = &fWriteLeafMinMaxtoFile;
+   row_lab->Add(new TObjString("CheckButton_        Remember histogram limits"));
    valp[ind++] = &fRememberTreeHists;
-   row_lab->Add(new TObjString("CheckButton_Always ask for hist limits"));
+   row_lab->Add(new TObjString("CheckButton_       Always ask for hist limits"));
    valp[ind++] = &fAlwaysRequestLimits;
-   row_lab->Add(new TObjString("CheckButton_Always recalculate hist limits"));
+   row_lab->Add(new TObjString("CheckButton_   Always recalculate hist limits"));
    valp[ind++] = &fAlwaysFindLimits;
-   row_lab->Add(new TObjString("CheckButton_Keep all hists (add vers# to name)"));
+   row_lab->Add(new TObjString("CheckButton_Keep all hists(add vers# to name)"));
    valp[ind++] = &fNtupleVersioning;
-	row_lab->Add(new TObjString("CheckButton_Prepend tree name"));
+	row_lab->Add(new TObjString("CheckButton_        Prepend tree name to vars"));
 	valp[ind++] = &fNtuplePrependTN;
-	row_lab->Add(new TObjString("CheckButton_Prepend file name"));
+	row_lab->Add(new TObjString("CheckButton_        Prepend file name to vars"));
 	valp[ind++] = &fNtuplePrependFN;
-	row_lab->Add(new TObjString("CheckButton_Show 2dim as graph"));
+	row_lab->Add(new TObjString("CheckButton_               Show 2dim as graph"));
    valp[ind++] = &f2dimAsGraph;
    row_lab->Add(new TObjString("Mark_Select_MarkStyle"));
    valp[ind++] = &fMarkStyle;
-   row_lab->Add(new TObjString("ColorSelect+MarkColor"));
+   row_lab->Add(new TObjString("ColorSelect+Color"));
    valp[ind++] = &fMarkColor;
-   row_lab->Add(new TObjString("Float_Value_MarkSize"));
+   row_lab->Add(new TObjString("Float_Value+Size"));
    valp[ind++] = &fMarkSize;
-
+	row_lab->Add(new TObjString("StringValue_Leaf Select Mask"));
+	valp[ind++] = &fLeafSelMask;
+	row_lab->Add(new TObjString("CheckButton_Use Regexp"));
+	valp[ind++] = &fLeafUseRegexp;
+	TGWindow *w = win;
+	if ( w == NULL)
+		w = fRootCanvas;
    static Int_t ok;
    Int_t itemwidth = 280;
    fDialogShowTree =

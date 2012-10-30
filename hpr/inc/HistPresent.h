@@ -25,7 +25,6 @@
 namespace std {} using namespace std;
 
 
-enum e_HsOp {kHsOp_None, kHsOp_And, kHsOp_Or, kHsOp_Not};
 const Int_t MAXCAN=10;
 class FitHist;
 class GroupOfHists;
@@ -56,12 +55,15 @@ protected:
    TString *fCutVarX;
    TString *fCutVarY;
    TString *fExpression;
-   TString *fFileSelMask;
-   TString *fHistSelMask;
-   TString *fHistSelMask_1;
-   TString *fHistSelMask_2;
-   Int_t   fHistSelOp;
-   Bool_t fApplyLeafCut;
+   TString fFileSelMask;
+   TString fHistSelMask;
+	TString fLeafSelMask;
+	TString fCanvasSelMask;
+	Int_t fFileUseRegexp;
+	Int_t fHistUseRegexp;
+	Int_t fLeafUseRegexp;
+	Int_t fCanvasUseRegexp;
+	Bool_t fApplyLeafCut;
    Bool_t fUseHist;
    Bool_t fApplyGraphCut;
    Bool_t fApplyExpression;
@@ -97,6 +99,8 @@ protected:
 	Int_t fNtuplePrependFN;
 	Int_t fNtuplePrependTN;
 	Int_t f2dimAsGraph;
+	Int_t fWriteLeafMinMaxtoFile;
+	Int_t fWriteLeafNamesToFile;
    Style_t fMarkStyle;
    Size_t  fMarkSize;
    Color_t fMarkColor;
@@ -171,7 +175,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void OperateHist(Int_t);               //
    void SetOperateVal();               //
    void ListSelect();
-   void SetShowTreeOptions(TGWindow * win = 0, FitHist * fh = 0);
+   void SetShowTreeOptions(TGWindow * win = 0);
    void SetShowTreeOptionsCint(const char *pointer = 0);
 
    void CRButtonPressed(Int_t, Int_t, TObject*);
@@ -179,11 +183,11 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
 //   void CheckAutoExecFiles();
    void ClearSelect();
    void ShowMain();               //
-   Bool_t IsSelected(const char * name);
+//   Bool_t IsSelected(const char * name);
    void ListMacros(const char* bp =0);               //
    void GetFileSelMask(const char* bp =0);               //
    void GetHistSelMask(const char* bp =0);               //
-   void SetHistSelMask();               //
+//   void SetHistSelMask();               //
    void SelectCut(const char* , const char*, const char* bp =0);
    void SelectContour(const char* , const char*, const char* bp =0);
    void SelectGraph(const char*  , const char* dir, const char*, const char* bp =0);

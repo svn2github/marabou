@@ -980,6 +980,72 @@ void ResizeStatBox(TPaveStats * st, Int_t ndim)
 		cout << " ResizeStatBox statY"  << resname << " " << statY << endl;
 	}	
 }
+//__________________________________________________________________
 
+Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp)
+{
+	enum e_HsOp {kHsOp_None, kHsOp_And, kHsOp_Or, kHsOp_Not};
+	Int_t SelOp;
+	Bool_t wildcard = kTRUE;
+	if ( use_regexp > 0)
+		wildcard = kFALSE;
+	if ( mask->Length() <= 0 )
+		return kTRUE;
+	TString mask_1;
+	TString mask_2;
+	if      (mask->Contains("&")) {
+		SelOp = kHsOp_And;
+		Int_t indop = mask->Index("&");
+		mask_1 = (*mask)(0, indop);
+		mask_2 = (*mask)(indop+1, mask->Length());
+	} else if (mask->Contains("|")) {
+		SelOp = kHsOp_Or;
+		Int_t indop = mask->Index("|");
+		mask_1 = (*mask)(0, indop);
+		mask_2 = (*mask)(indop+1, mask->Length());
+	} else if (mask->Contains("!")) {
+		SelOp = kHsOp_Not;
+		Int_t indop = mask->Index("!");
+		mask_1 = (*mask)(0, indop);
+		mask_2 = (*mask)(indop+1, mask->Length());
+	} else  {
+		SelOp = kHsOp_None;
+	}
+	mask_1 = mask_1.Strip(TString::kBoth);
+	mask_2 = mask_2.Strip(TString::kBoth);
+	TString sname(name);
+	if        (SelOp == kHsOp_None) {
+		TRegexp re((const char *)*mask, wildcard);
+		if (sname.Index(re) <0) return kFALSE;
+		
+	} else if ( wildcard == 0 ) {
+		TRegexp re1((const char *)mask_1);
+		TRegexp re2((const char *)mask_2);
+		if (SelOp == kHsOp_And) {
+			if (sname.Index(re1) < 0 ||
+				sname.Index(re2) < 0)  return kFALSE;
+		} else if (SelOp == kHsOp_Or) {
+			if (sname.Index(re1) < 0 &&
+				sname.Index(re2) < 0)  return kFALSE;
+		} else if (SelOp == kHsOp_Not) {
+			if (( mask_1.Length() > 0 &&
+				sname.Index(re1) < 0) ||
+				(sname.Index(re2) >=0))  return kFALSE;
+		}
+	} else {
+		if (SelOp == kHsOp_And) {
+			if (!sname.Contains(mask_1.Data()) ||
+				!sname.Contains(mask_2.Data()))  return kFALSE;
+		} else if (SelOp == kHsOp_Or) {
+			if (!sname.Contains(mask_1.Data()) &&
+				!sname.Contains(mask_2.Data()))  return kFALSE;
+		} else if (SelOp == kHsOp_Not) {
+			if (( mask_1.Length() > 0 &&
+				!sname.Contains(mask_1.Data())) ||
+				(sname.Contains(mask_2.Data())))  return kFALSE;
+		}
+	}
+	return kTRUE;
+}
 
 }   // end namespace Hpr

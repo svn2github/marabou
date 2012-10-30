@@ -117,6 +117,7 @@ enum ERootCanvasCommands {
    kOptionHpr,
 	kOptionResetAll,
    kOptionWin,
+   kOptionTree,
    kFHMarks,
    kFHMarkon,
    kFHMarkoff,
@@ -698,7 +699,13 @@ again:
                      new WindowSizeDialog(fRootCanvas);
                      }
                      break;
-                  case kOptionResetAll:
+						case kOptionTree:
+						{
+							if ( gHpr )
+								gHpr->SetShowTreeOptions(fRootCanvas);
+						}
+						break;
+						case kOptionResetAll:
                      {
                      SetHistOptDialog * shod = new SetHistOptDialog(1);
 							shod->RestoreDefaults(1);  // force defaults
@@ -1401,7 +1408,8 @@ void HandleMenus::BuildMenus()
    if(!fGraph && !fFitHist) {
       fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
 		fOptionMenu->AddEntry("Default window sizes", kOptionWin);
-      fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
+		fOptionMenu->AddEntry("Options when showing trees", kOptionTree);
+		fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
 
    }
    if (!fGraph && fFitHist) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);

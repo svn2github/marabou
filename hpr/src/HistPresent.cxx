@@ -266,13 +266,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fCutVarY = new TString();
    fLeafCut = new TString();
    fExpression = new TString();
-   fFileSelMask = new TString();
-   fHistSelMask = new TString();
-   fHistSelMask_1 = new TString();
-   fHistSelMask_2 = new TString();
-//   fAutoExecName_1 = new TString();
-//   fAutoExecName_2 = new TString();
-   fHelpDir        = new TString();
+   fHelpDir    = new TString();
 	fAutoUpdateDelay = 5;
    fHostToConnect  = new TString("localhost");
    fComSocket       = 0;
@@ -566,9 +560,9 @@ void HistPresent::ShowFiles(const char *how, const char */*bp*/)
          sname.Index(endwithmap) >= 0) {
          if (sname.Index(endwithlist) >= 0 &&
             contains_filenames(fname) <= 0) continue;
-         if (fFileSelMask->Length() > 0) {
-            TRegexp re((const char *)*fFileSelMask, !GeneralAttDialog::fUseRegexp);
-            if (sname.Index(re) <0) continue;
+         if (fFileSelMask.Length() > 0 ) {
+            if ( !Hpr::IsSelected(fname, &fFileSelMask, fFileUseRegexp) )
+					continue;
          }
          Long_t  id, flags, modtime;
          Long64_t size;
@@ -946,7 +940,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       TMrbStatEntry * stent;
       TIter nextentry(st->GetListOfEntries());
       while ( (stent = (TMrbStatEntry*)nextentry()) ) {
-			if ( !IsSelected( stent->GetName() ) )
+			if ( !Hpr::IsSelected( stent->GetName(), &fHistSelMask, fHistUseRegexp ) )
 				continue;
 			TString shn(stent->GetName());
 			if (shn.Contains(" ")) {
@@ -1091,7 +1085,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
 				title = objs->String();
-				if ( !IsSelected( title.Data() ) )
+				if ( !Hpr::IsSelected( title.Data(), &fCanvasSelMask, fCanvasUseRegexp ) )
 					continue;
 				cmd = fname;
             cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
@@ -1162,7 +1156,12 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       }
    //  trees
       if (lofT.GetSize() > 0) {
-         TIter next(&lofT);
+			cmd = "gHpr->SetShowTreeOptionsCint()";
+			title = "Tree display options";
+			hint = "Popup Tree display options menu";
+			sel.Resize(0);
+			fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+			TIter next(&lofT);
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
@@ -1237,46 +1236,6 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    fCmdLine->Delete();
    if (st) delete st;
    gDirectory=gROOT;
-}
-//_______________________________________________________________________
-
-Bool_t HistPresent::IsSelected(const char * name) {
-
-	if (fHistSelMask->Length() <=  0)
-		return kTRUE;
-
-	TString tn(name);
-	if        (fHistSelOp == kHsOp_None) {
-		TRegexp re((const char *)*fHistSelMask, !GeneralAttDialog::fUseRegexp);
-		if (tn.Index(re) <0) return kFALSE;
-	} else if (GeneralAttDialog::fUseRegexp) {
-		TRegexp re1((const char *)*fHistSelMask_1);
-		TRegexp re2((const char *)*fHistSelMask_2);
-		if (fHistSelOp == kHsOp_And) {
-			if (tn.Index(re1) < 0 ||
-				tn.Index(re2) < 0)  return kFALSE;
-		} else if (fHistSelOp == kHsOp_Or) {
-			if (tn.Index(re1) < 0 &&
-				tn.Index(re2) < 0)  return kFALSE;
-		} else if (fHistSelOp == kHsOp_Not) {
-			if (( fHistSelMask_1->Length() > 0 &&
-				tn.Index(re1) < 0) ||
-				(tn.Index(re2) >=0))  return kFALSE;
-		}
-	} else {
-		if (fHistSelOp == kHsOp_And) {
-			if (!tn.Contains(fHistSelMask_1->Data()) ||
-				!tn.Contains(fHistSelMask_2->Data()))  return kFALSE;
-		} else if (fHistSelOp == kHsOp_Or) {
-			if (!tn.Contains(fHistSelMask_1->Data()) &&
-				!tn.Contains(fHistSelMask_2->Data()))  return kFALSE;
-		} else if (fHistSelOp == kHsOp_Not) {
-			if (( fHistSelMask_1->Length() > 0 &&
-				!tn.Contains(fHistSelMask_1->Data())) ||
-				(tn.Contains(fHistSelMask_2->Data())))  return kFALSE;
-		}
-	}
-	return kTRUE;
 }
 //________________________________________________________________________________________
 
@@ -1623,51 +1582,47 @@ void HistPresent::ShowInOneCanvas(const char *bp)
 }
 //________________________________________________________________________________________
 
-void HistPresent::GetFileSelMask(const char* /*bp*/)
+void HistPresent::GetFileSelMask(const char* bp)
 {
-    Bool_t ok;
-    *fFileSelMask = GetString(
-    "Edit File Selection Mask",(const char *)*fFileSelMask, &ok, fRootCanvas);
+	GetHistSelMask(bp);
 }
 //________________________________________________________________________________________
 
 void HistPresent::GetHistSelMask(const char* /*bp*/)
 {
-    Bool_t yesno = kFALSE;
-    if (GeneralAttDialog::fUseRegexp) yesno=kTRUE;
-    Bool_t ok;
-    *fHistSelMask=GetString(
-                  "Edit Hist Selection Mask",(const char *)*fHistSelMask, &ok,
-                  fRootCanvas, "Use Regexp syntax", &yesno,
-                  Help_SelectionMask_text);
-	if (!ok) return;
-	if (yesno) GeneralAttDialog::fUseRegexp = 1;
-	else        GeneralAttDialog::fUseRegexp = 0;
-	SetHistSelMask();
+	Bool_t yesno = kFALSE;
+	if (GeneralAttDialog::fUseRegexp) yesno=kTRUE;
+	void * Valp[20];
+	TList * row_lab = new TList();
+	Int_t ind = 0;
+	row_lab->Add(new TObjString("StringValue_       Files"));
+	Valp[ind++] = &fFileSelMask;
+	row_lab->Add(new TObjString("CheckButton-Use Regexp"));
+	Valp[ind++] = &fFileUseRegexp;
+	row_lab->Add(new TObjString("StringValue_  Histograms"));
+	Valp[ind++] = &fHistSelMask;
+	row_lab->Add(new TObjString("CheckButton-Use Regexp"));
+	Valp[ind++] = &fHistUseRegexp;
+	row_lab->Add(new TObjString("StringValue_ Branch Leaf"));
+	Valp[ind++] = &fLeafSelMask;
+	row_lab->Add(new TObjString("CheckButton-Use Regexp"));
+	Valp[ind++] = &fLeafUseRegexp;
+	row_lab->Add(new TObjString("StringValue_    Canvases"));
+	Valp[ind++] = &fCanvasSelMask;
+	row_lab->Add(new TObjString("CheckButton-Use Regexp"));
+	Valp[ind++] = &fCanvasUseRegexp;
+	Int_t itemwidth = 420;
+	static Int_t ok = -2;   // wait until closed
+	new TGMrbValuesAndText ("Edit Selection Masks", NULL, &ok, itemwidth,
+									fRootCanvas, NULL, NULL, row_lab, Valp,
+									NULL, NULL, Help_SelectionMask_text);
+	delete row_lab;
 }
 //________________________________________________________________________________________
 
-void HistPresent::SetHistSelMask()
-{
-	if      (fHistSelMask->Contains("&")) {
-		fHistSelOp = kHsOp_And;
-		Int_t indop = fHistSelMask->Index("&");
-		*fHistSelMask_1 = (*fHistSelMask)(0, indop);
-		*fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
-	} else if (fHistSelMask->Contains("|")) {
-		fHistSelOp = kHsOp_Or;
-		Int_t indop = fHistSelMask->Index("|");
-		*fHistSelMask_1 = (*fHistSelMask)(0, indop);
-		*fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
-	} else if (fHistSelMask->Contains("!")) {
-		fHistSelOp = kHsOp_Not;
-		Int_t indop = fHistSelMask->Index("!");
-		*fHistSelMask_1 = (*fHistSelMask)(0, indop);
-		*fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
-	} else                                 fHistSelOp = kHsOp_None;
-	*fHistSelMask_1 = fHistSelMask_1->Strip(TString::kBoth);
-	*fHistSelMask_2 = fHistSelMask_2->Strip(TString::kBoth);
-}
+//void HistPresent::SetHistSelMask()
+//{
+//}
 //________________________________________________________________________________________
 // Save histograms from mapped file
 

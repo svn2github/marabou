@@ -48,22 +48,29 @@ void HistPresent::RestoreOptions()
    fGraphFile =
        env.GetValue("HistPresent.GraphFile", "gdata.asc");
 
-   fRememberTreeHists = env.GetValue("HistPresent.RememberTreeHists", 0);
-   fNtupleVersioning  = env.GetValue("HistPresent.NtupleVersioning", 1);
-	fNtuplePrependTN   = env.GetValue("HistPresent.fNtuplePrependTN", 0);
-	fNtuplePrependFN   = env.GetValue("HistPresent.fNtuplePrependFN", 0);
-	fAlwaysRequestLimits = env.GetValue("HistPresent.AlwaysRequestLimits", 1);
+   fRememberTreeHists  = env.GetValue("HistPresent.RememberTreeHists", 0);
+   fNtupleVersioning   = env.GetValue("HistPresent.NtupleVersioning", 1);
+	fNtuplePrependTN    = env.GetValue("HistPresent.fNtuplePrependTN", 0);
+	fNtuplePrependFN    = env.GetValue("HistPresent.fNtuplePrependFN", 0);
+	fAlwaysRequestLimits= env.GetValue("HistPresent.AlwaysRequestLimits", 1);
    fAlwaysFindLimits   = env.GetValue("HistPresent.AlwaysFindLimits", 1);
+	fWriteLeafMinMaxtoFile = env.GetValue("HistPresent.fWriteLeafMinMaxtoFile", 0);
+	fWriteLeafNamesToFile  = env.GetValue("HistPresent.fWriteLeafNamesToFile", 0);
    f2dimAsGraph        = env.GetValue("HistPresent.f2dimAsGraph", 0);
    fMarkStyle          = env.GetValue("HistPresent.fMarkStyle", 20);
    fMarkSize           = env.GetValue("HistPresent.fMarkSize", 1);
    fMarkColor          = env.GetValue("HistPresent.fMarkColor", 1);
-   *fHistSelMask       = env.GetValue("HistPresent.fHistSelMask", "");
-   *fFileSelMask       = env.GetValue("HistPresent.fFileSelMask", "");
-	SetHistSelMask();
-   fRealStack         = env.GetValue("HistPresent.fRealStack", 1);
-   fLogScaleMin		= atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
-   fLinScaleMin		= atof(env.GetValue("HistPresent.LinScaleMin", "0"));
+   fHistSelMask        = env.GetValue("HistPresent.fHistSelMask", "");
+   fFileSelMask        = env.GetValue("HistPresent.fFileSelMask", "");
+	fLeafSelMask        = env.GetValue("HistPresent.fLeafSelMask", "");
+	fCanvasSelMask      = env.GetValue("HistPresent.fCanvasSelMask", "");
+	fHistUseRegexp      = env.GetValue("HistPresent.fHistUseRegexp", 0);
+	fFileUseRegexp      = env.GetValue("HistPresent.fFileUseRegexp", 0);
+	fLeafUseRegexp      = env.GetValue("HistPresent.fLeafUseRegexp", 0);
+	fCanvasUseRegexp    = env.GetValue("HistPresent.fCanvasUseRegexp", 0);
+	fRealStack          = env.GetValue("HistPresent.fRealStack", 1);
+   fLogScaleMin        = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
+   fLinScaleMin		  = atof(env.GetValue("HistPresent.LinScaleMin", "0"));
 
    *fHostToConnect =
        env.GetValue("HistPresent.HostToConnect", fHostToConnect->Data());
@@ -132,11 +139,22 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.AlwaysRequestLimits", fAlwaysRequestLimits);
    env.SetValue("HistPresent.AlwaysFindLimits", fAlwaysFindLimits);
    env.SetValue("HistPresent.f2dimAsGraph", f2dimAsGraph);
-   env.SetValue("HistPresent.fMarkStyle",fMarkStyle);
+	env.SetValue("HistPresent.fWriteLeafMinMaxtoFile", fWriteLeafMinMaxtoFile);
+	env.SetValue("HistPresent.fWriteLeafNamesToFile", fWriteLeafNamesToFile);
+	env.SetValue("HistPresent.fMarkStyle",fMarkStyle);
    env.SetValue("HistPresent.fMarkSize", fMarkSize );
    env.SetValue("HistPresent.fMarkColor",fMarkColor);
-   env.SetValue("HistPresent.fHistSelMask",fHistSelMask->Data());
-   env.SetValue("HistPresent.NtupleVersioning", fNtupleVersioning);
+   env.SetValue("HistPresent.fHistSelMask",fHistSelMask);
+	env.SetValue("HistPresent.fLeafSelMask",fLeafSelMask);
+	env.SetValue("HistPresent.fFileSelMask",fFileSelMask);
+	env.SetValue("HistPresent.fCanvasSelMask",fCanvasSelMask);
+	
+	env.SetValue("HistPresent.fHistUseRegexp",fHistUseRegexp);
+	env.SetValue("HistPresent.fLeafUseRegexp",fLeafUseRegexp);
+	env.SetValue("HistPresent.fFileUseRegexp",fFileUseRegexp);
+	env.SetValue("HistPresent.fCanvasUseRegexp",fCanvasUseRegexp);
+	
+	env.SetValue("HistPresent.NtupleVersioning", fNtupleVersioning);
 	env.SetValue("HistPresent.fNtuplePrependTN", fNtuplePrependTN);
 	env.SetValue("HistPresent.fNtuplePrependFN", fNtuplePrependFN);
 	env.SetValue("HistPresent.GraphFile", fGraphFile.Data());
@@ -166,8 +184,6 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.EditPoXwidth", fEditPoXwidth);
    env.SetValue("HistPresent.EditPoYwidth", fEditPoYwidth);
    env.SetValue("HistPresent.EditPoXRange", fEditPoXRange);
-   env.SetValue("HistPresent.fHistSelMask", *fHistSelMask);
-   env.SetValue("HistPresent.fFileSelMask", *fFileSelMask);
    env.SaveLevel(kEnvLocal);
    GeneralAttDialog::SaveDefaults();
    cout << "env.SaveLevel(kEnvLocal) " << endl;
