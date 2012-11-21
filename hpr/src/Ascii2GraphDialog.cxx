@@ -233,7 +233,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 		return;
 	}
    Int_t n = 0;
-   Double_t x[6];
+   TArrayD x(6);
 
    TString line;
    TString del(" ,\t");
@@ -242,26 +242,34 @@ void Ascii2GraphDialog::Draw_The_Graph()
 	while ( 1 ) {
 		line.ReadLine(infile);
 		if (infile.eof()) break;
+		if (line.BeginsWith("#") ) 
+			continue;
 		oa = line.Tokenize(del);
 		Int_t nent = oa->GetEntries();
       if (nent < 2) {
          cout << "Not enough entries at: " << n+1 << endl;
          break;
       }
-      for ( Int_t i = 0; i < 6; i++ )
-         x[i] = 0;
+      if ( nent > x.GetSize() ) { 
+			x.Set(nent);
+		}
 		for (Int_t i = 0; i < nent; i++) {
 			TString val = ((TObjString*)oa->At(i))->String();
 			if (!val.IsFloat()) {
 				cout << "Illegal double: " << val << " at line: " << n+1 << endl;
+				x[i] = 0;
 			   break;
          }
 			x[i] = val.Atof();
 		}
       if (fGraphColSelect) {
-        if ( fGraphColSel1 > nent || fGraphColSel2 > nent) {
-            cout << "Not enough entries at: " << n << endl;
-            break;
+			if ( fGraphColSel1 <= 0 || fGraphColSel2 <= 0) {
+				cout << "Columns are numbered from 1 " << n << endl;
+				return;
+         }
+			if ( fGraphColSel1 > nent || fGraphColSel2 > nent) {
+				cout << "Not enough entries " << nent << " at: " << n << endl;
+				break;
          }
          xval.AddAt(x[fGraphColSel1-1], n);
 			if (x[fGraphColSel1-1] < xmin_val) xmin_val = x[0];
