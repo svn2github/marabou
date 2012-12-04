@@ -28,31 +28,87 @@
 %C%		Int_t origSevtWC = SevtWC;				// save original subevent wc
 %C%		if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
 %C%		Int_t wordsProcessed = 0; 			// words processed so far
-%C%		ULong_t * dataPtr = (ULong_t *) SevtData;
+%C%		UShort_t * dataPtr = (UShort_t *) SevtData;
 %C%		Int_t eventsProcessed = 0;
 %C%
-%C%		while (SevtWC > 0) {									// subevent may contain several CAEN modules
+%C%		while (SevtWC > 0) {									// subevent may contain several madc modules
 %C%			UInt_t header = *dataPtr++;
+%C%			header = (*dataPtr++ << 16);
+%C%			header |= *dataPtr++;
+%C%			if (header == 0xaffec0c0) {
+%C%				cerr	<< setred
+%C%						<< this->ClassName() << "::FillSubevent(): Data not ready (affec0c0) - restart"
+%C%						<< setblack << endl;
+%C%				return(kTRUE);
+%C%			}
 %C%			if ((header & MADC_M_ID) != MADC_D_HDR) {
 %C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
 %C%				cerr	<< setred
 %C%						<< this->ClassName() << "::FillSubevent() [sevtWC="
-%C%						<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10)
+%C%						<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10) << " (recNo=" << recNo << ")"
 %C%						<< setblack << endl;
 %C%				return(kTRUE);
 %C%			}
 %C%
 %C%			Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
 %C%			Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
-%C%			UInt_t dmask = 0x7FF;
-%C%			if (res >= kMrbMadcRes4k) dmask = 0xFFF;
-%C%			if (res >= kMrbMadcRes8k) dmask = 0x1FFF;
+%C%			UInt_t dmask = MADC_M_RES2K;
+%C%			if (res >= kMrbMadcRes4k) dmask = MADC_M_RES4K;
+%C%			if (res >= kMrbMadcRes8k) dmask = MADC_M_RES8K;
 %C%
 %C%			Int_t wc = header & MADC_M_WC;		// extract wc
-%C%			Int_t wcs = wc;
+%C%			Int_t wcs = (wc + 1) * 2; 			// wc + header
 %C%
-%C%			wc--;								// - trailer word
-%C%			wcs++;								// + header word
+%C%			UShort_t * nextEvent = dataPtr + 2 * wc;
+%C%
+%C%			Bool_t trailerFound = kTRUE;
+%C%			UShort_t * trailPtr = nextEvent - 2;
+%C%			UInt_t trailer = (*trailPtr++ << 16); 						// inspect trailer word
+%C%			trailer |= *trailPtr++;
+%C%			if ((trailer & MADC_M_ID) == MADC_D_HDR) {					// test if EOE
+%C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
+%C%				cerr	<< setmagenta									// it is a header!
+%C%						<< this->ClassName() << "::FillSubevent(): [Module "
+%C%						<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C%						<< wordsProcessed << "] EOE missing, found header instead - 0x" << setbase(16) << trailer << setbase(10)
+%C%						<< setblack << endl;
+%C%				trailer = MADC_D_EOE | 0x252525;						// fake trailer word
+%C%				trailerFound = kFALSE;
+%C%			} else if ((trailer & MADC_M_ID) != MADC_D_EOE) {
+%C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
+%C%				cerr	<< setred
+%C%						<< this->ClassName() << "::FillSubevent(): [Module "
+%C%						<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C%						<< wordsProcessed << "] Wrong EOE - 0x" << setbase(16) << trailer << setbase(10)
+%C%						<< setblack << endl;
+%C%				return(kTRUE);
+%C%			}
+%C%			wc--;
+%C%			UInt_t lowTimeStamp = trailer & MADC_M_TSLOW;	// extract lower bits of time stamp (bits 0-29)
+%C%
+%C%			UShort_t * xtsPtr = nextEvent - 4;				// check if fill word (64bit alignment)
+%C%			UInt_t highTimeStamp = (*xtsPtr++ << 16);		// or extended timestamp
+%C%			highTimeStamp |= *xtsPtr++;
+%C%			if (highTimeStamp == 0) {						// fill word: check for xts again
+%C%				wc--;
+%C%				xtsPtr = nextEvent - 6;
+%C%				highTimeStamp = (*xtsPtr++ << 16);
+%C%				highTimeStamp |= *xtsPtr++;
+%C%			}
+%C%
+%C%			if (!trailerFound) highTimeStamp = 0;			// doesn't make sense if trailer (and therefore lower time stamp) is missing
+%C%
+%C%			ULong64_t ts64 = 0;
+%C%			if ((highTimeStamp & MADC_M_XTS) == MADC_D_XTS) {
+%C%				ts64 = ((Long64_t) (highTimeStamp & MADC_M_TSHIGH)) << 30;
+%C%				wc--;							// - extended ts
+%C%			}
+%C%			ts64 |= lowTimeStamp;
+%C%			UShort_t tsArr[3];
+%C%			for (Int_t t = 2; t >= 0; t--) {
+%C%				tsArr[t] = ts64 & 0xFFFF;
+%C%				ts64 >>= 16;
+%C%			}
 %C%
 %C%			TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
 %C%			if (mle == NULL) {
@@ -74,7 +130,6 @@
 %C%			}
 %C%			if (this->GetNofModules() == 1) this->Reset();					// reset data if subevent houses one module only
 %C%
-%C%			UShort_t evtData[2];
 %C%			for (; wc; wc--) {
 %C%				Int_t data = *dataPtr++;
 %C%				if ((data & MADC_M_ID) != MADC_D_DATA) {
@@ -86,7 +141,7 @@
 %C%								<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC=" << wordsProcessed
 %C%								<< "] Unexpected EOB - remaining wc=" << wc << " ignored. Continuing with next event."
 %C%								<< setblack << endl;
-%C%						dataPtr--;
+%C%						dataPtr -= 2;
 %C%						wcs -= wc;
 %C%						break;
 %C%					} else {
@@ -122,19 +177,13 @@
 %C%					return(kTRUE);
 %C% 			}
 %C% 		}
-%C% 		Int_t trailer = *dataPtr++; 	 	// inspect trailer word
-%C% 		if ((trailer & MADC_M_ID) != MADC_D_EOE) {
-%C% 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
-%C% 			cerr	<< setred
-%C% 					<< this->ClassName() << "::FillSubevent(): [Module "
-%C% 					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
-%C% 					<< wordsProcessed << "] Wrong EOB - 0x" << setbase(16) << trailer << setbase(10)
-%C% 					<< setblack << endl;
-%C% 			return(kTRUE);
-%C% 		}
 %C%
 %C%			mle->IncrEventHits();						// count this event (total count)
 %C%			mle->IncrEventsPerTrigger();				// ... (per trigger)
+%C%
+%C%			dataPtr = nextEvent;
+%C%			if (!trailerFound) dataPtr -= 2;	// trailer was missing
+%C%
 %C% 		SevtWC -= wcs;								// remaining subevent data
 %C% 		wordsProcessed += wcs;
 %C% 		eventsProcessed++;
