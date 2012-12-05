@@ -3579,6 +3579,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							TIterator * sevtIter = fLofSubevents.MakeIterator();
 							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+								TString ccf = sevt->GetCommonCodeFile();
 								if (onceOnly.FindObject(sevt->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, sevt, sevt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}

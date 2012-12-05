@@ -602,11 +602,11 @@ TEnv * TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 
 	Int_t res = this->GetAdcResolution();		// calc actual histo range
 	switch (res) {
-		case kAdcRes2k: 		fRange = 1 << 11; break;
+		case kAdcRes2k: 		fRange = 1 << 11; this->SetXmax(2048.); break;
 		case kAdcRes4k:
-		case kAdcRes4kHiRes: 	fRange = 1 << 12; break;
+		case kAdcRes4kHiRes: 	fRange = 1 << 12; this->SetXmax(4096.); break;
 		case kAdcRes8k:
-		case kAdcRes8kHiRes: 	fRange = 1 << 13; break;
+		case kAdcRes8kHiRes: 	fRange = 1 << 13; this->SetXmax(8192.); break;
 	}
 	fXmax = fRange;
 	fBinRange = fRange;
