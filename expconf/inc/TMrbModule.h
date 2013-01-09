@@ -182,6 +182,9 @@ class TMrbModule : public TNamed {
 
 		virtual inline Char_t * GetDeviceStruct() { return(NULL); };
 
+		Bool_t SetMbsFctName(const Char_t * FctName, TMrbConfig::EMrbModuleFunction Fct);
+		const Char_t * GetMbsFctName(TString & FctName, TMrbConfig::EMrbModuleFunction Fct);
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -230,6 +233,8 @@ class TMrbModule : public TNamed {
 		TString fHistoArrayName;				// name of histo array / .histlist file
 
 		TObjArray fChannelSpec;					// channel specifications (type TMrbModuleChannel *)
+
+		TObjArray fLofMbsFctNames;				// define indiviual function names to be used with MBS
 
 	ClassDef(TMrbModule, 1) 	// [Config] Base class describing a module (CAMAC or VME)
 };

@@ -183,8 +183,10 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %B%// book histograms defined by user
 %UD1%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
 %UD2%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
+%UD3%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY, $binSizeZ, $lowerZ, $upperZ);
 %UD1C%	if (($hName == NULL) && ($condition)) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
 %UD2C%	if (($hName == NULL) && ($condition)) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
+%UD3C%	if (($hName == NULL) && ($condition)) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY, $binSizeZ, $lowerZ, $upperZ);
 %UDS%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $args);
 %UDSC%	if (($hName == NULL) && ($condition)) $hName = new $hType("$hName", "$hTitle", $args);
 %%EndOfCode%%

@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.26 2010-12-16 13:12:43 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbModule.cxx,v 1.26 2010-12-16 13:12:43 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -59,7 +59,7 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 	TString pos;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (gMrbConfig == NULL) {
 		gMrbLog->Err() << "No config defined" << endl;
 		gMrbLog->Flush(this->ClassName());
@@ -610,7 +610,7 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 	TString line;
 	TMrbTemplate anaTmpl;
 	TMrbNamedX * analyzeTag;
-	
+
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;
 	mnemoUC.ToUpper();
@@ -685,7 +685,7 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 		gMrbLog->Out()  << "[" << moduleNameLC << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 	}
-	
+
 	anaTemplateFile = fileSpec;
 
 	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) return(kFALSE);
@@ -833,4 +833,49 @@ Bool_t TMrbModule::SetMbsBranch(Int_t MbsBranchNo, const Char_t * MbsBranchName)
 		return(kFALSE);
 	}
 	return(kTRUE);
+}
+
+Bool_t TMrbModule::SetMbsFctName(const Char_t * FctName, TMrbConfig::EMrbModuleFunction Fct) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModule::SetMbsFctName
+// Purpose:        Define a function name to be used within MBS
+// Arguments:      Char_t * FctName        -- function name
+//                 EMrbModuleFunction Fct  -- function index
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Defines a function name.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Fct >= 0 && Fct < TMrbConfig::kNofModuleFunctions) {
+		fLofMbsFctNames[Fct] = new TObjString(FctName);
+		return(kTRUE);
+	} else {
+		gMrbLog->Err() << this->GetName() << ": Illegal function index - " << Fct << " (should be in [0," << TMrbConfig::kNofModuleFunctions << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetFunctionName");
+		return(kFALSE);
+	}
+}
+
+const Char_t * TMrbModule::GetMbsFctName(TString & FctName, TMrbConfig::EMrbModuleFunction Fct) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModule::GetMbsFctName
+// Purpose:        Return a function name to be used with MBS
+// Arguments:      EMrbModuleFunction Fct  -- function index
+// Results:        Char_t * FctName        -- function name
+// Exceptions:
+// Description:    Returns a function name.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Fct >= 0 && Fct < TMrbConfig::kNofModuleFunctions) {
+		FctName = ((TObjString *) fLofMbsFctNames[Fct])->GetString().Data();
+		return(FctName.Data());
+	} else {
+		gMrbLog->Err() << this->GetName() << ": Illegal function index - " << Fct << " (should be in [0," << TMrbConfig::kNofModuleFunctions << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetFunctionName");
+		return(NULL);
+	}
 }

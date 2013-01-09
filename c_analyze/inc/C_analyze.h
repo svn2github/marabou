@@ -25,17 +25,7 @@ enum M_status {M_ABSENT, M_STARTING, M_RUNNING,
                M_CONFIGURED, M_CONFIGURING};
 const Int_t MAXTIMEOUT = 50;
 
-static const Int_t MBSV = 2, TRIGS = 2;
-
-#ifdef PPC_NEW_ADDRESS
-Char_t * defaultMasters = "gar-ex-ppc01:gar-ex-ppc02:gar-ex-ppc03:gar-ex-ppc04:gar-ex-ppc05:gar-ex-ppc06:gar-ex-ppc07:gar-ex-ppc08:gar-ex-ppc09:gar-ex-ppc10:gar-ex-ppc11:gar-ex-ppc12:gar-ex-ppc13:gar-ex-ppc14:gar-ex-ppc15:gar-ex-ppc16:gar-ex-ppc17:gar-ex-ppc18:gar-ex-ppc19:gar-ex-ppc20:gar-ex-ppc21:gar-ex-ppc22:gar-ex-ppc23";
-Char_t * defaultSlaves = "gar-ex-ppc01:gar-ex-ppc02:gar-ex-ppc03:gar-ex-ppc04:gar-ex-ppc05:gar-ex-ppc06:gar-ex-ppc07:gar-ex-ppc08:gar-ex-ppc09:gar-ex-ppc10:gar-ex-ppc11:gar-ex-ppc12:gar-ex-ppc13:gar-ex-ppc14:gar-ex-ppc15:gar-ex-ppc16:gar-ex-ppc17:gar-ex-ppc18:gar-ex-ppc19:gar-ex-ppc20:gar-ex-ppc21:gar-ex-ppc22:gar-ex-ppc23";
-#else
-Char_t * defaultMasters = "ppc-0:ppc-1:ppc-2:ppc-3:ppc-4:ppc-5:ppc-6:ppc-7:ppc-8:ppc-1:ppc-3:ppc-5:ppc-7:ppc-10:ppc-11:ppc-12:ppc-13:ppc-14:ppc-15:ppc-16:ppc-17:ppc-18:ppc-19:ppc-20:ppc-21:ppc-22:ppc-23";
-Char_t * defaultSlaves  = "ppc-0:ppc-0:ppc-2:ppc-2:ppc-4:ppc-4:ppc-6:ppc-6:ppc-8:ppc-1:ppc-3:ppc-5:ppc-7:ppc-10:ppc-11:ppc-12:ppc-13:ppc-14:ppc-15:ppc-16:ppc-17:ppc-18:ppc-19:ppc-20:ppc-21:ppc-22:ppc-23";
-#endif
-
-static const Char_t * triggers[]  = {"VME", "CAMAC"};
+static const Int_t MBSV = 2, TRIGS = 2, NOF_PPCS = 30;
 
 static const Int_t  MINSOCKET = 9090, MAXSOCKET = 9095;
 
@@ -50,39 +40,46 @@ private:
    TGCompositeFrame   *fHFr, *fHFrHalf,*fLabelFr;
    TRootEmbeddedCanvas *fRateHist;
    TGTextButton        *fConfigButton, *fStartStopButton, *fClearButton,
-                      *fPauseButton, *fResetButton, *fQuitButton,
+                      *fPauseButton, *fResetButton, *fSaveSetupButton,
                       *fSaveMapButton,
                       *fParButton , *fMbsSetupButton, *fWhichHistButton;
    TGLabel            *fLabel, *fOutSize, *fRunTime, *fTotalEvents, *fRate,
                       *fStartTime, *fDeadTime, *fStatus, *fNev, *fTbSockNr;
 
-   TGTextEntry        *fTeFile,
-                      *fTeRootFile, *fTeHistFile,*fTeRunNr,
+   TGTextEntry        *fTeInputFile,
+                      *fTeOutputFile, *fTeHistFile,*fTeRunNr,
                       *fTeComment, *fTeParFile,
                       *fTeDir;
-   TGTextBuffer       *fTbFile,
-                      *fTbRootFile, *fTbHistFile, *fTbRunNr,
+   TGTextBuffer       *fTbInputFile,
+                      *fTbOutputFile, *fTbHistFile, *fTbRunNr,
                       *fTbComment, *fTbParFile,
                       *fTbFileList,
                       *fTbDir,*fTbConvTime;
    TGLayoutHints      *fLO1, *fLO2, *fLO3, *fLO4, *fLO5, *fLR1;
 
-   TGComboBox         *fCbTrigger, *fCbMaster, *fCbReadout, *fCbMbsVersion;
+   TGComboBox         *fCbConnect, *fCbMbsVersion;
 
    TGRadioButton      *fRFake, *fRFile, *fRFileList, *fRNet, *fRActive,*fRAuto, *fRPassive;
 
    TGMenuBar          *fMenuBar;
-   TGPopupMenu        *fMenuParameters, *fMenuHist, *fMenuEvent, *fMenuHelp
-                      , *fMenuMbs, *fMenuSave;
+   TGPopupMenu        *fMenuFile, *fMenuParameters, *fMenuHist, *fMenuEvent, *fMenuHelp,
+                      *fMenuMbs;
    TGLayoutHints      *fMenuBarLayout, *fMenuBarItemLayout, *fMenuBarHelpLayout;
 
-   TString *fInputFile, *fOutputFile,
-           *fHistList, *fRootFile, *fHistFile, *fDefFile, *fInputSource,
-           *fRunNr, *fOldRunNr, *fComment, *fPar,
-           *fMbsVersion, *fDir, *fMaster, *fReadout,
-           *fTrigger, *fCodeName, *fFromTime, *fToTime,
-           *fResetList, *fOurPidFile, *fHelpFile,
-           *fSoundFile, *fSoundPlayer;
+   TString	*fInputFile, *fActualInputFile,
+			*fOutputFile, *fActualOutputFile,
+			*fHistFile, *fActualHistFile,
+			*fParFile, *fActualParFile,
+			*fHistList,
+			*fDefFile,
+			*fInputSource,
+			*fRunNr, *fOldRunNr,
+			*fComment, *fPar,
+			*fMbsVersion, *fDir,
+			*fConnect, *fCodeName,
+			*fFromTime, *fToTime,
+			*fResetList, *fOurPidFile, *fHelpFile,
+			*fSoundFile, *fSoundPlayer;
 
    TString *fSaveMap;
    Bool_t  fWriteOutput, fAutoSave, fSelectTime, fSelectNumber, fAutoSetup,
@@ -155,6 +152,8 @@ public:
    Int_t IsAnalyzeRunning(Int_t);
    Int_t MessageToM_analyze(const char *);
    TGTextEntry * GetDirText(){return fTeDir;};
+   const Char_t * ExpandName(TString * Result, const Char_t * Format);
+   void ResetToolTips();
 };
 #endif
 

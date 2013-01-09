@@ -62,8 +62,8 @@
 //Bool_t kUseMap = kTRUE;
 // #include "/usr/local/include/uti/psinfo.h"
 
-TObjArray * masters;
-TObjArray * slaves;
+TObjArray * ppcArray;
+Int_t nofPPCs;
 
 static const char sepline[] =
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
@@ -419,7 +419,7 @@ trying to attach?",
    if (!gSystem->AccessPathName(fHelpFile->Data()))
      fHelpBrowser = new TMrbHelpBrowser(fHelpFile->Data());
 
-   fOutputFile = new TString("");
+   fActualOutputFile = new TString("");
    fHistList = new TString("*");
    fStopwatch = new TStopwatch();
    fTotal_time_no_event = 0; fEvents_before = 0;
@@ -449,14 +449,11 @@ trying to attach?",
    fClient->GetColorByName("yellow", yellowp);
    fYellowTextGC.SetForeground(yellowp);
 
-   fLO1 = new TGLayoutHints(kLHintsTop | kLHintsExpandX,
-                           2, 2, 2, 2);
-   fLO2 = new TGLayoutHints(kLHintsLeft | kLHintsCenterY | kLHintsExpandX|kRaisedFrame,
-                           2, 2, 2, 2);
-   fLO3 = new TGLayoutHints(kLHintsRight | kLHintsExpandX|kRaisedFrame,
-                           2, 2, 2, 2);
-   fLO4 = new TGLayoutHints(kLHintsLeft,
-                           2, 2, 2, 2);
+   fLO1 = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 2, 2, 2, 2);
+   fLO2 = new TGLayoutHints(kLHintsLeft | kLHintsCenterY | kLHintsExpandX|kRaisedFrame, 2, 2, 2, 2);
+   fLO3 = new TGLayoutHints(kLHintsRight | kLHintsExpandX|kRaisedFrame, 2, 2, 2, 2);
+   fLO4 = new TGLayoutHints(kLHintsLeft, 2, 2, 2, 2);
+
 //  ------------- menu bar at top
    fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX,
                                       0, 0, 1, 1);
@@ -465,6 +462,8 @@ trying to attach?",
 
 //   fHFr     = new TGCompositeFrame(this, 100, 20, kHorizontalFrame|kRaisedFrame);
 
+   fMenuFile = new TGPopupMenu(fClient->GetRoot());
+   fMenuFile->AddEntry("Exit", M_QUIT);
    fMenuParameters = new TGPopupMenu(fClient->GetRoot());
    fMenuParameters->AddEntry("No Event Warning Time", M_NOEVENT);
    fMenuParameters->AddEntry("Maximum output file size", M_MAXFILESIZE);
@@ -533,9 +532,6 @@ trying to attach?",
    fMenuEvent->AddEntry("From (Time)",          M_FROMTIME);
    fMenuEvent->AddEntry("To   (Time)",          M_TOTIME);
 
-   fMenuSave = new TGPopupMenu(fClient->GetRoot());
-   fMenuSave->AddEntry("Save current settings", M_SAVESETUP);
-
    fMenuHelp = new TGPopupMenu(fClient->GetRoot());
    fMenuHelp->AddEntry("Help on C_analyze (old style)", M_HELPC);
    fMenuHelp->AddEntry("HelpBrowser", M_HELPBR);
@@ -544,20 +540,20 @@ trying to attach?",
 
    // Menu button messages are handled by the main frame (i.e. "this")
    // ProcessMessage() method.
+   fMenuFile->Associate(this);
    fMenuParameters->Associate(this);
    fMenuMbs->Associate(this);
    fMenuHist->Associate(this);
    fMenuEvent->Associate(this);
-   fMenuSave->Associate(this);
    fMenuHelp->Associate(this);
 
    fMenuBar = new TGMenuBar(this, 1, 1, kHorizontalFrame);
 
+   fMenuBar->AddPopup("File", fMenuFile, fMenuBarItemLayout);
    fMenuBar->AddPopup("Parameters", fMenuParameters, fMenuBarItemLayout);
    fMenuBar->AddPopup("Mbs Control", fMenuMbs, fMenuBarItemLayout);
    fMenuBar->AddPopup("Histograms", fMenuHist, fMenuBarItemLayout);
    fMenuBar->AddPopup("Event Select", fMenuEvent, fMenuBarItemLayout);
-   fMenuBar->AddPopup("Save Setup", fMenuSave, fMenuBarItemLayout);
    fMenuBar->AddPopup("Help", fMenuHelp, fMenuBarHelpLayout);
    fMenuBar->ChangeBackground(lightblue);
 
@@ -579,6 +575,7 @@ trying to attach?",
    fTeRunNr->Resize(60, fTeRunNr->GetDefaultHeight());
    fHFr->AddFrame(fTeRunNr,fLO2);
    fTeRunNr->Associate(this);
+   fTeRunNr->SetToolTipText(Form("$R -> %s", fRunNr->Data()));
 //  Status label
    fLabelFr = new TGCompositeFrame(fHFr, 60, 20, kHorizontalFrame);
    fLabel      = new TGLabel(fLabelFr, new TGString("Status:"));
@@ -707,13 +704,22 @@ trying to attach?",
    fHFr->AddFrame(fHFrHalf,fLO2);
 //
 
-   fTeFile   = new TGTextEntry(fHFr, fTbFile = new TGTextBuffer(100), M_INPUT);
-   fTbFile->AddText(0, fInputFile->Data());
-//   fTeFile->Resize(300, fTeFile->GetDefaultHeight());
-   fTeFile->Resize(fTeFile->GetDefaultWidth(), fTeFile->GetDefaultHeight());
-   fHFr->AddFrame(fTeFile,fLO3);
+	fTeInputFile   = new TGTextEntry(fHFr, fTbInputFile = new TGTextBuffer(100), M_INPUT);
+	fTbInputFile->Clear();
+	if (*fInputSource == "TcpIp") {
+		fTbInputFile->AddText(0, "not used");
+		fTeInputFile->SetToolTipText("no input file possible");
+	} else if (*fInputSource == "File" || *fInputSource == "FileList") {
+		fTbInputFile->AddText(0, fInputFile->Data());
+		fTeInputFile->SetToolTipText(Form("%s - will be expanded to %s", fInputFile->Data(), this->ExpandName(fActualInputFile, fInputFile->Data())));
+	} else if (*fInputSource == "Fake") {
+		fTbInputFile->AddText(0, "fake.root");
+		fTeInputFile->SetToolTipText("fake.root");
+	}
+   fTeInputFile->Resize(fTeInputFile->GetDefaultWidth(), fTeInputFile->GetDefaultHeight());
+   fHFr->AddFrame(fTeInputFile,fLO3);
    this->AddFrame(fHFr,fLO1);                // third line
-   fTeFile->Associate(this);
+   fTeInputFile->Associate(this);
 
 //  Label Mbs setup
    fHFr     = new TGCompositeFrame(this, 100, 10, kHorizontalFrame);
@@ -729,101 +735,52 @@ trying to attach?",
 
 // user may define his own ppc names
 
-   TString ppcNames = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "");
-   if (ppcNames.IsNull()) ppcNames = gEnv->GetValue("TMrbAnalyze.PPCNames", "");
-   if (ppcNames.IsNull()) {
-	 TString s = defaultMasters;
-	 masters = s.Tokenize(":");
-	 s = defaultSlaves;
-	 slaves = s.Tokenize(":");
-   } else {
-	 masters = ppcNames.Tokenize(":");
-	 slaves = ppcNames.Tokenize(":");
-   }
-   Int_t nofPPCs = masters->GetEntriesFast();
+	TString ppcNames = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "");
+	if (ppcNames.IsNull()) ppcNames = gEnv->GetValue("TMrbAnalyze.PPCNames", "");
+	if (ppcNames.IsNull()) {
+	  ppcNames = "";
+	  Bool_t shortNames = gEnv->GetValue("TMrbAnalyze.UseShortPPCNames", kFALSE);
+	  if (shortNames) {
+		  for (Int_t n = 0; n < NOF_PPCS; n++) {
+			  if (n != 0) ppcNames += ":";
+			  ppcNames += Form("ppc-%d", n);
+		  }
+	  } else {
+		  for (Int_t n = 1; n <= NOF_PPCS; n++) {
+			  if (n > 1) ppcNames += ":";
+			  ppcNames += Form("gar-ex-ppc%02d", n);
+		  }
+	  }
+	}
+	ppcArray = ppcNames.Tokenize(":");
+	nofPPCs = ppcArray->GetEntriesFast();
 
-//  Master
-   fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
-   fLabel      = new TGLabel(fLabelFr, new TGString("Master"));
+//  Connect to
+   fLabelFr = new TGCompositeFrame(fHFr, 50, 20, kHorizontalFrame);
+   fLabel      = new TGLabel(fLabelFr, new TGString("Connect to"));
    fLabelFr->AddFrame(fLabel,fLO2);
-   fHFr->AddFrame(fLabelFr,fLO2);
+   fHFr->AddFrame(fLabelFr,fLO4);
 
-   fCbMaster = new TGComboBox(fHFr, C_MASTER);
-   fHFr->AddFrame(fCbMaster,fLO2);
+   fCbConnect = new TGComboBox(fHFr, C_MASTER);
+   fHFr->AddFrame(fCbConnect,fLO4);
    for(Int_t k=0; k<nofPPCs; k++){
-      fCbMaster->AddEntry(((TObjString *) masters->At(k))->GetString(), k+1);
+      fCbConnect->AddEntry(((TObjString *) ppcArray->At(k))->GetString(), k+1);
    }
-   Bool_t gotit = kFALSE;
-   *fMaster = fMaster->Strip(TString::kBoth);
-#ifdef PPC_NEW_ADDRESS
-	if (fMaster->Length() == 0) *fMaster = "gar-ex-ppc01";
-#else
-	if (fMaster->Length() == 0) *fMaster = "ppc-0";
-#endif
-   for(Int_t k=0; k<nofPPCs; k++){
-     if (!strcmp(fMaster->Data(), ((TObjString *) masters->At(k))->GetString())) {
-         fCbMaster->Select(k+1);
-         gotit = kTRUE;
+   for (Int_t k = 0; k < nofPPCs; k++) {
+	  if (!strcmp(fConnect->Data(), ((TObjString *) ppcArray->At(k))->GetString())) {
+         fCbConnect->Select(k+1);
       }
    }
-   if (!gotit) {
-      fCbMaster->AddEntry(fMaster->Data(), nofPPCs+1);
-      fCbMaster->Select(nofPPCs+1);
-    }
-   fCbMaster->Resize(300, 20);
-   fCbMaster->Associate(this);
-//  Readout
-   fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
-   fLabel      = new TGLabel(fLabelFr, new TGString("Readout"));
-   fLabelFr->AddFrame(fLabel,fLO2);
-   fHFr->AddFrame(fLabelFr,fLO2);
+   fCbConnect->Resize(130, 20);
+   fCbConnect->Associate(this);
 
-   fCbReadout = new TGComboBox(fHFr, C_READOUT);
-   fHFr->AddFrame(fCbReadout,fLO2);
-   for(Int_t k=0; k<nofPPCs; k++){
-      fCbReadout->AddEntry(((TObjString *) slaves->At(k))->GetString(), k+1);
-   }
-   gotit = kFALSE;
-   *fReadout = fReadout->Strip(TString::kBoth);
-   if (fReadout->Length() == 0) *fReadout = *fMaster;
-   for (Int_t k=0; k<nofPPCs; k++) {
-      if (!strcmp(*fReadout, ((TObjString *) slaves->At(k))->GetString())) {
-         fCbReadout->Select(k+1);
-         gotit = kTRUE;
-      }
-   }
-   if (!gotit) {
-      fCbReadout->AddEntry(fReadout->Data(), nofPPCs+1);
-      fCbReadout->Select(nofPPCs+1);
-  }
-   fCbReadout->Resize(300, 20);
-
-//  Trigger
-   fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
-   fLabel      = new TGLabel(fLabelFr, new TGString("Trigger"));
-   fLabelFr->AddFrame(fLabel,fLO2);
-   fHFr->AddFrame(fLabelFr,fLO2);
-
-   fCbTrigger = new TGComboBox(fHFr, C_TRIGGER);
-   fHFr->AddFrame(fCbTrigger,fLO2);
-   for(Int_t k=0; k<TRIGS; k++){
-      fCbTrigger->AddEntry(triggers[k], k+1);
-   }
-   for(Int_t k=0; k<TRIGS; k++){
-      if(!strcmp(*fTrigger, triggers[k]))fCbTrigger->Select(k+1);
-   }
-   fCbTrigger->Resize(150, 20);
-
-   this->AddFrame(fHFr,fLO1);                // new line
-
-   fHFr            = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
 //  Directory
-   fLabelFr = new TGCompositeFrame(fHFr, 200, 20, kHorizontalFrame);
+   fLabelFr = new TGCompositeFrame(fHFr, 20, 20, kHorizontalFrame);
    fLabel      = new TGLabel(fLabelFr, new TGString("Directory"));
    fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO4);
 
-   fTeDir = new TGTextEntry(fHFr, fTbDir = new TGTextBuffer(100), M_DIR);
+   fTeDir = new TGTextEntry(fHFr, fTbDir = new TGTextBuffer(50), M_DIR);
    fTbDir->AddText(0,fDir->Data());
    fTeDir->Resize(60, fTeDir->GetDefaultHeight());
    fHFr->AddFrame(fTeDir,fLO2);
@@ -831,7 +788,7 @@ trying to attach?",
    this->AddFrame(fHFr,fLO1);                // another line
    fTeDir->Associate(this);
 
-//  Label Memory mapped File
+// File for Histgrams
    fHFr     = new TGCompositeFrame(this, 100, 10, kHorizontalFrame);
    fLabelFr = new TGCompositeFrame(fHFr, 150, 10, kHorizontalFrame);
    fLabel      = new TGLabel(fLabelFr, new TGString("File for Histgrams"));
@@ -840,8 +797,6 @@ trying to attach?",
    fHFr->AddFrame(fLabelFr,fLO2);
    this->AddFrame(fHFr,fLO1);                // another  line
 
-
-//   root file for histos
    fHFr     = new TGCompositeFrame(this, 100, 10, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
    fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
@@ -852,8 +807,7 @@ trying to attach?",
    fHFrHalf->AddFrame(fSaveMapButton, fLO1);
    fSaveMapButton->SetState(kButtonDisabled);
 
-   fLabel  = new TGLabel(fLabelFr,
-                new TGString("File for saved histos"));
+   fLabel  = new TGLabel(fLabelFr, new TGString("File for saved histos"));
    fLabelFr->AddFrame(fLabel,fLO2);
    fHFrHalf->AddFrame(fLabelFr,fLO2);
    fHFr->AddFrame(fHFrHalf,fLO2);
@@ -864,6 +818,7 @@ trying to attach?",
    fHFr->AddFrame(fTeHistFile,fLO2);
    this->AddFrame(fHFr,fLO1);                //  output file line
    fTeHistFile->Associate(this);
+   fTeHistFile->SetToolTipText(Form("%s - will be expanded to %s", fHistFile->Data(), this->ExpandName(fActualHistFile, fHistFile->Data())));
 
 //  Output file
 //  Label Output file
@@ -903,13 +858,13 @@ trying to attach?",
    }
    fRActive->Associate(this);
 
-   fTeRootFile   = new TGTextEntry(fHFr,
-                       fTbRootFile = new TGTextBuffer(100), M_ROOTF);
-   fTbRootFile->AddText(0,(const char *)*fRootFile);
-   fTeRootFile->Resize(300, fTeRootFile->GetDefaultHeight());
-   fHFr->AddFrame(fTeRootFile,fLO2);
+   fTeOutputFile   = new TGTextEntry(fHFr, fTbOutputFile = new TGTextBuffer(100), M_ROOTF);
+   fTbOutputFile->AddText(0,(const char *)*fOutputFile);
+   fTeOutputFile->Resize(300, fTeOutputFile->GetDefaultHeight());
+   fHFr->AddFrame(fTeOutputFile,fLO2);
    this->AddFrame(fHFr,fLO1);                //  output file line
-   fTeRootFile->Associate(this);
+   fTeOutputFile->Associate(this);
+   fTeOutputFile->SetToolTipText(Form("%s - will be expanded to %s", fOutputFile->Data(), this->ExpandName(fActualOutputFile, fOutputFile->Data())));
 //  reload parameter file
    fHFr  = new TGCompositeFrame(this, 60, 20, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
@@ -926,13 +881,13 @@ trying to attach?",
    fHFrHalf->AddFrame(fLabelFr,fLO2);
    fHFr->AddFrame(fHFrHalf, fLO2);
 
-   fTeParFile = new TGTextEntry(fHFr,
-                    fTbParFile = new TGTextBuffer(100), M_PARF);
-   fTbParFile->AddText(0,(const char *)*fPar);
+   fTeParFile = new TGTextEntry(fHFr, fTbParFile = new TGTextBuffer(100), M_PARF);
+   fTbParFile->AddText(0,(const char *)*fParFile);
    fTeParFile->Resize(300, fTeParFile->GetDefaultHeight());
    fHFr->AddFrame(fTeParFile, fLO2);
    this->AddFrame(fHFr,fLO1);
    fTeParFile->Associate(this);
+   fTeParFile->SetToolTipText(Form("%s - will be expanded to %s", fParFile->Data(), this->ExpandName(fActualParFile, fParFile->Data())));
 //  comment
 
    fHFr = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
@@ -950,11 +905,10 @@ trying to attach?",
    fHFrHalf->AddFrame(fLabelFr,fLO4);
    fHFr->AddFrame(fHFrHalf, fLO2);
 
-   fTeComment   = new TGTextEntry(fHFr,
-                       fTbComment = new TGTextBuffer(100));
+   fTeComment   = new TGTextEntry(fHFr, fTbComment = new TGTextBuffer(100));
    fTbComment->AddText(0,(const char *)*fComment);
    fTeComment->Resize(450, fTeComment->GetDefaultHeight());
-
+	fTeComment->SetToolTipText("short description");
    fHFr->AddFrame(fTeComment,fLO3);
    this->AddFrame(fHFr,fLO1);                //  output file line
 //  rate histos
@@ -1017,11 +971,11 @@ trying to attach?",
    fResetButton->Associate(this);
    fHFr->AddFrame(fResetButton, fLO1);
 
-   fQuitButton = new TGTextButton( fHFr, "Quit", M_QUIT, fYellowTextGC());
-   fQuitButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
-   fQuitButton->ChangeBackground(blue);
-   fQuitButton->Associate(this);
-   fHFr->AddFrame(fQuitButton, fLO1);
+   fSaveSetupButton = new TGTextButton( fHFr, "Save Setup", M_SAVESETUP, fYellowTextGC());
+   fSaveSetupButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
+   fSaveSetupButton->ChangeBackground(blue);
+   fSaveSetupButton->Associate(this);
+   fHFr->AddFrame(fSaveSetupButton, fLO1);
 
    this->AddFrame(fHFr,fLO1);
 
@@ -1163,21 +1117,7 @@ void FhMainFrame::StopMessage(){
       gClient->NeedRedraw(fTeRunNr);
    }
 }
-//_____________________________________________________________________________________
-//
-// Set time string
 
-void FhMainFrame::SetTime(){
-   TDatime* tt = new TDatime();
-//   cout << tt->AsString() << endl;
-   TString* datime= new TString(tt->AsString());
-   datime->Remove(19,5);
-   datime->Remove(0,11);
-   fStartTime->SetText(new TGString(datime->Data()));
-   gClient->NeedRedraw(fStartTime);
-   delete tt;
-   delete datime;
-}
 //_____________________________________________________________________________________
 
 void FhMainFrame::SetButtonsToDefaults()
@@ -1271,9 +1211,8 @@ Bool_t FhMainFrame::AskforRemove(const char * fname){
 //_____________________________________________________________________________________
 //
 Bool_t FhMainFrame::CheckHostsUp(){
-   Bool_t mok = CheckOneHostUp(((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString());
-   Bool_t sok = CheckOneHostUp(((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString());
-   return mok && sok;
+   Bool_t mok = CheckOneHostUp(((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString());
+   return mok;
 }
 //_____________________________________________________________________________________
 //
@@ -1334,7 +1273,7 @@ Bool_t FhMainFrame::CheckParams()
       if(!CheckHostsUp()) ok = kFALSE;
    } else {
       if(*fInputSource == "FileList"){
-         TString temp = fTbFile->GetString();
+         TString temp = fTbInputFile->GetString();
          if(!temp.Contains(".list")){
             WarnBox("FileList must end with: .list", this);
             return kFALSE;
@@ -1343,39 +1282,42 @@ Bool_t FhMainFrame::CheckParams()
          gSystem->Exec("touch fake.root");
       }
    }
-   TString fname;
-   TString fname1;
+   TString fin;
+   TString fout;
    *fRunNr = fTbRunNr->GetString();
-   TRegexp run="RUN";
    if(fRActive->GetState() == kButtonDown){
-      fname = fTbRootFile->GetString();
+      fout = fTbOutputFile->GetString();
+	  this->ExpandName(&fout, fout.Data());
+	  fTeOutputFile->SetToolTipText(fout.Data());
 
-      Int_t error = chkquota(fname, fHardHWM, fWarnHWM, fVerbLevel);
+      Int_t error = chkquota(fout, fHardHWM, fWarnHWM, fVerbLevel);
       if(error == -1)ok = kFALSE;
       if(error == -2)WarnBox("Filespace/quota low, watch out", this);
-//      if(error == -4)WarnBox("Could not check quota, watch out", this);
 
-      fname1 = fTbFile->GetString();
-      fname = fname.Strip(TString::kBoth);
-      fname1 = fname1.Strip();
-      if(!strcmp(fname.Data(),fname1.Data())){
-         WarnBox("Oh Oh: Input file == Output file", this);
+      fin = fTbInputFile->GetString();
+	  this->ExpandName(&fin, fin.Data());
+	  fTeInputFile->SetToolTipText(fin.Data());
+      if(!strcmp(fin.Data(),fout.Data())){
+		 this->ResetToolTips();
+		 WarnBox("Input file == Output file", this);
          ok = kFALSE;
       } else {
-//         fname = fTbRootFile->GetString();
-         fname(run) = fRunNr->Data();
-         if(!gSystem->AccessPathName(fname.Data())){
-            if(!AskforRemove(fname.Data())) ok = kFALSE;
+         if(!gSystem->AccessPathName(fout.Data())){
+            if(!AskforRemove(fout.Data())) {
+				ok = kFALSE;
+				this->ResetToolTips();
+			}
          }
       }
    }
    if(fRFile->GetState() == kButtonDown){
-      fname = fTbFile->GetString();
-      fname(run) = fRunNr->Data();
-      fname = fname.Strip(TString::kBoth);
-      if(gSystem->AccessPathName(fname.Data())){
-         fname += " does not exist";
-         WarnBox((const char *)fname, this);
+      fin = fTbInputFile->GetString();
+	  this->ExpandName(&fin, fin.Data());
+	  fTeInputFile->SetToolTipText(fin.Data());
+      if(gSystem->AccessPathName(fin.Data())){
+         fin += " does not exist";
+		 this->ResetToolTips();
+         WarnBox((const char *)fin, this);
          ok = kFALSE;
       }
    }
@@ -1397,7 +1339,7 @@ last event < first event", this);
 }
 //_____________________________________________________________________________________
 Bool_t FhMainFrame::MbsStatus(){
-   if(!fMbsControl) fMbsControl = new TMbsControl(((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString(),
+   if(!fMbsControl) fMbsControl = new TMbsControl(((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString(),
                                                   fMbsVersion->Data(),
                                                   fTbDir->GetString());
    cout << sepline << endl;
@@ -1460,7 +1402,7 @@ Bool_t FhMainFrame::Configure()
       gSystem->ProcessEvents();
       fC_Status = M_CONFIGURING;
 
-      TString mproc =  ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
+      TString mproc =  ((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString();
       if (mproc.IsNull()) {
       	WarnBox("No master proc given", this);
         return(kTRUE);
@@ -1534,7 +1476,7 @@ Try Clear MBS",this);
          TMrbNamedX * nx = fSetup->ReadoutProc(0)->TriggerModule()->GetTriggerMode();
          if(fMbsControl->StartMbs(nx->GetIndex())){
 //    start Message server
-         TString mproc =  ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
+         TString mproc =  ((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString();
          if (mproc.IsNull()) {
       	   WarnBox("No master proc given", this);
            return(kTRUE);
@@ -1549,10 +1491,10 @@ Try Clear MBS",this);
                   TString prnode(fMbsControl->PrompterNode()->GetName());
 //                  prnode.Prepend("^");
 //                 TRegexp rprnode(prnode);
-                  *fMaster = ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
-                  if(fMaster->Index(prnode, 0, TString::kIgnoreCase) != 0){
+                  *fConnect = ((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString();
+                  if(fConnect->Index(prnode, 0, TString::kIgnoreCase) != 0){
                      cout << sepline << endl;
-                     cout << setred << "c_ana: Mbs Master node   " <<  fMaster->Data() << endl;
+                     cout << setred << "c_ana: Mbs Master node   " <<  fConnect->Data() << endl;
                      cout << "c_ana: Mbs Prompter node " << fMbsControl->PrompterNode()->GetName() << endl;
                      cout << "c_ana: should be the same" << setblack << endl;
                      WarnBox("Inconsistent Lynx nodes, watch terminal output",this);
@@ -1605,12 +1547,11 @@ Bool_t FhMainFrame::MbsSetup()
 	   }
     }
 
-	TString mproc = ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
-	TString sproc = ((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString();
-	cout << "mproc: " << mproc << " sproc: " << sproc << endl;
+	TString mproc = ((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString();
+	TString sproc = mproc;
 
 	fSetup->EvtBuilder()->SetProcName(mproc.Data()); // Char_t *, name des master ppcs
-	
+
 	TString remoteHome = fSetup->RemoteHomeDir();
 	if(remoteHome.IsNull()) {
 		WarnBox("No .rhosts on Lynx home directory", this);
@@ -1618,7 +1559,7 @@ Bool_t FhMainFrame::MbsSetup()
 	} else {
    		cout << "remoteHome " << remoteHome.Data() << endl;
 	}
-	
+
 	fSetup->SetNofReadouts(1);				      // momentan nur 1 readout proc
 	fSetup->SetPath(fTbDir->GetString());                 // Char_t *, relativer pfad zum homeDir am ppc
 
@@ -1628,14 +1569,10 @@ Bool_t FhMainFrame::MbsSetup()
 	} else {
 		fSetup->SetMode(kModeMultiProc);
 	}
-	
-	if(fCbTrigger->GetSelected() == 1)
-	    fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleVME);
-	else
-		fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleCAMAC);
-		
+
+	fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleVME);
 	fSetup->ReadoutProc(0)->TriggerModule()->SetConversionTime(fGateLength);
-	
+
 	Bool_t ok = fSetup->MakeSetupFiles();		// erfindet alle files
 
 	if(fSetup) fSetup->Save();
@@ -1683,7 +1620,7 @@ Bool_t FhMainFrame::ClearMbs()
       if(!confirm("Really Clear MBS in this state?",this))return kFALSE;
    }
    if(!CheckHostsUp())return kFALSE;
-   if(!fMbsControl) fMbsControl = new TMbsControl( ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString(),
+   if(!fMbsControl) fMbsControl = new TMbsControl( ((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString(),
                                                  fMbsVersion->Data(),
                                                   fTbDir->GetString());
    fM_Status = M_ABSENT;
@@ -1745,25 +1682,18 @@ Bool_t FhMainFrame::StartDAQ()
       gClient->NeedRedraw(fStatus);
       gSystem->ProcessEvents();
       fC_Status = M_STARTING;
-//      TString StartCmd = "M_analyze ";
-//      TString buf;
       TString startCmd(" ");
-//      start command will be added later
-//      buf << "./M_analyze ";
-//     Input source File | FileList | TcpIp
 
-      TRegexp run = "RUN";    // replace RUN by Run number
-      if(*fInputSource == "File" || *fInputSource == "FileList"){
-         *fInputFile = fTbFile->GetString();
-         (*fInputFile)(run)=fRunNr->Data();
-         *fInputFile = fInputFile->Strip(TString::kBoth);
-         startCmd += fInputFile->Data();
+	  if(*fInputSource == "File" || *fInputSource == "FileList"){
+		 this->ExpandName(fActualInputFile, fTbInputFile->GetString());
+		 fTeInputFile->SetToolTipText(fActualInputFile->Data());
+         startCmd += fActualInputFile->Data();
          if(*fInputSource == "File") startCmd += " F ";
          else                        startCmd += " L ";
       } else if (*fInputSource == "Fake") {
          startCmd += "fake.root F ";
       } else {
-         startCmd += ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
+         startCmd += ((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString();
          startCmd +=  " S ";
       }
 //     Start event, Stop Event | Start time , Stop time
@@ -1797,9 +1727,8 @@ Bool_t FhMainFrame::StartDAQ()
       startCmd += fDownscale;
       startCmd += " ";
       if(fRActive->GetState() == kButtonDown){
-         *fOutputFile = fTbRootFile->GetString();
-         (*fOutputFile)(run) = fRunNr->Data();
-         *fOutputFile = fOutputFile->Strip(TString::kBoth);
+		 this->ExpandName(fActualOutputFile, fTbOutputFile->GetString());
+		 fTeOutputFile->SetToolTipText(fActualOutputFile->Data());
          startCmd += fOutputFile->Data();
          startCmd += " ";
          startCmd += fMaxFileSize;
@@ -1808,19 +1737,18 @@ Bool_t FhMainFrame::StartDAQ()
          startCmd += "none 0 ";
       }
 //     parameter file, histogram file
-      TString spar(fTbParFile->GetString());
-      spar = spar.Strip(TString::kBoth);
-      if (spar.Length() > 0) {
-          startCmd += spar.Data();
+	  this->ExpandName(fActualParFile, fTbParFile->GetString());
+	  fTeParFile->SetToolTipText(fActualParFile->Data());
+      if (fActualParFile->Length() > 0) {
+          startCmd += fActualParFile->Data();
           startCmd += " ";
       } else {
           startCmd += "none ";
       }
 //      if(fRAuto->GetState() == kButtonDown){
-      *fHistFile = fTbHistFile->GetString();
-      (*fHistFile)(run) = fRunNr->Data();
-      *fHistFile = fHistFile->Strip(TString::kBoth);
-      startCmd += fHistFile->Data();
+	  this->ExpandName(fActualHistFile, fTbHistFile->GetString());
+	  fTeHistFile->SetToolTipText(fActualHistFile->Data());
+      startCmd += fActualHistFile->Data();
 //		was memory mapped file
       startCmd += " none 0 ";
 //     socket for communication
@@ -1969,6 +1897,8 @@ Bool_t FhMainFrame::StopDAQ(){
    fStatus->ChangeBackground(cyan);
    gClient->NeedRedraw(fStatus);
 
+   this->ResetToolTips();
+
    gSystem->ProcessEvents();
    fC_Status = M_STOPPING;
    if(*fInputSource == "TcpIp"){
@@ -2040,6 +1970,7 @@ Bool_t FhMainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 //   int buttons= kMBOk | kMBDismiss, retval=0;
 //   EMsgBoxIcon icontype = kMBIconQuestion;
 //   cout << "ProcessMessage: " << msg << " " << parm1 << " " << parm2 << endl;
+   TString dmy;
    Bool_t ok;
    switch(GET_MSG(msg)) {
       case kC_TEXTENTRY:
@@ -2047,45 +1978,49 @@ Bool_t FhMainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
             case kTE_TEXTCHANGED:
                switch (parm1) {
                   case M_INPUT:
-                     if(RemoveBlanks(fTeFile))
-                      cout << setred << "Removed blanks from: "
-                      <<fTeFile->GetText() << setblack << endl;
-                     break;
+					  if(RemoveBlanks(fTeInputFile)) cout << setred << "Removed blanks from: " << fTeInputFile->GetText() << setblack << endl;
+					  *fInputFile = fTeInputFile->GetText();
+					  fTeInputFile->SetToolTipText(Form("%s - will be expanded to %s", fInputFile->Data(), this->ExpandName(&dmy, fInputFile->Data())));
+					  break;
                   case M_ROOTF:
-                     if(RemoveBlanks(fTeRootFile))
-                      cout << setred << "Removed blanks from: "
-                      <<fTeRootFile->GetText() << setblack << endl;
-                     break;
+					  if(RemoveBlanks(fTeOutputFile)) cout << setred << "Removed blanks from: " << fTeOutputFile->GetText() << setblack << endl;
+					  *fOutputFile = fTeOutputFile->GetText();
+					  fTeOutputFile->SetToolTipText(Form("%s - will be expanded to %s", fOutputFile->Data(), this->ExpandName(&dmy, fOutputFile->Data())));
+					  break;
                   case M_HISTF:
-                     if(RemoveBlanks(fTeHistFile))
-                      cout << setred << "Removed blanks from: "
-                      <<fTeHistFile->GetText() << setblack << endl;
-                     break;
+					  if(RemoveBlanks(fTeHistFile)) cout << setred << "Removed blanks from: " << fTeHistFile->GetText() << setblack << endl;
+					  *fHistFile = fTeHistFile->GetText();
+					  fTeHistFile->SetToolTipText(Form("%s - will be expanded to %s", fHistFile->Data(), this->ExpandName(&dmy, fHistFile->Data())));
+					  break;
                   case M_RUNNR:
-                     if(RemoveBlanks(fTeRunNr))
-                      cout << setred << "Removed blanks from: "
-                      <<fTeRunNr->GetText() << setblack << endl;
+					  if(RemoveBlanks(fTeRunNr)) cout << setred << "Removed blanks from: " << fTeRunNr->GetText() << setblack << endl;
+					  *fRunNr = fTeRunNr->GetText();
+					  fTeRunNr->SetToolTipText(Form("$R -> %s", fRunNr->Data()));
+					  this->ResetToolTips();
                      break;
                   case M_PARF:
-                     if(RemoveBlanks(fTeParFile))
-                      cout << setred << "Removed blanks from: "
-                      <<fTeParFile->GetText() << setblack << endl;
-                     break;
+					  if(RemoveBlanks(fTeParFile)) cout << setred << "Removed blanks from: " << fTeParFile->GetText() << setblack << endl;
+					  *fParFile = fTeParFile->GetText();
+					  fTeParFile->SetToolTipText(Form("%s - will be expanded to %s", fParFile->Data(), this->ExpandName(&dmy, fParFile->Data())));
+					  break;
                   case M_DIR:
-                     if(RemoveBlanks(fTeDir))
-                      cout << setred << "Removed blanks from: "
-                      <<fTeDir->GetText() << setblack << endl;
+                     if(RemoveBlanks(fTeDir)) cout << setred << "Removed blanks from: " << fTeDir->GetText() << setblack << endl;
                      break;
                }
                break;
             case kTE_ENTER:
                switch (parm1) {
                   case M_RUNNR:
-                     cout << "ENTER: " << fTeRunNr->GetText() << endl;
-                     break;
+					  cout << "ENTER: " << fTeRunNr->GetText() << endl;
+					  *fRunNr = fTeRunNr->GetText();
+					  fTeRunNr->SetToolTipText(Form("$R -> %s", fRunNr->Data()));
+					  this->ResetToolTips();
+					  break;
                   case  M_INPUT:
-                     cout << "ENTER: " << fTeFile->GetText() << endl;
-                     break;
+					  cout << "ENTER: " << fTeInputFile->GetText() << endl;
+					  *fInputFile = fTeInputFile->GetText();
+					  fTeInputFile->SetToolTipText(Form("%s - will be expanded to %s", fInputFile->Data(), this->ExpandName(&dmy, fInputFile->Data())));
+					  break;
                }
                break;
          }
@@ -2094,9 +2029,8 @@ Bool_t FhMainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
          switch(GET_SUBMSG(msg)) {
            case kCM_MENU:
                switch(parm1) {
-                  case M_SAVESETUP:
-                     cout << "Saving setup" << endl;
-                     PutDefaults();
+                  case M_QUIT:
+					  this->CloseWindow();
                   break;
                   case M_HELPC:
                      new TGMrbHelpWindow(this, "Help on C_analyze...",
@@ -2299,7 +2233,7 @@ Note: Unit is 100 ns for historical reasons";
                       else       fMaxRunTime = bs;
                       }
                       break;
-					   case M_AUTORESTART:
+				  case M_AUTORESTART:
 						    if (fAutoRestart) {
 							    fMenuParameters->UnCheckEntry(M_AUTORESTART);
 								 fAutoRestart = kFALSE;
@@ -2308,7 +2242,7 @@ Note: Unit is 100 ns for historical reasons";
 								 fAutoRestart = kTRUE;
 							 }
 							 break;
-					   case M_AUTORESTART_RUNTIME:
+				  case M_AUTORESTART_RUNTIME:
 						    if (fAutoRestartRT) {
 							    fMenuParameters->UnCheckEntry(M_AUTORESTART_RUNTIME);
 								 fAutoRestartRT = kFALSE;
@@ -2337,10 +2271,10 @@ Note: Unit is 100 ns for historical reasons";
                       break;
                    case M_CHKQUOTA:
                       {
-                        chkquota(fTbRootFile->GetString(), fHardHWM, fWarnHWM, fVerbLevel);
+                        chkquota(fTbOutputFile->GetString(), fHardHWM, fWarnHWM, fVerbLevel);
                       }
                       break;
-					   case M_PLAYSOUND:
+				  case M_PLAYSOUND:
                       {
                       TEnv env(".rootrc");
 						    if (fPlaySound) {
@@ -2489,10 +2423,6 @@ Note: Unit is 100 ns for historical reasons";
            case kCM_BUTTON:
                switch(parm1) {
 
-                  case M_QUIT:
-                     this->CloseWindow();
-                     break;
-
                   case M_CLEAR:
                      if(*fInputSource == "TcpIp")ok = ClearMbs();
                      else WarnBox("Only possible with TcpIp as Input",this);
@@ -2522,6 +2452,11 @@ Note: Unit is 100 ns for historical reasons";
 //                     break;
 //                  case M_STOP:
                      break;
+
+                  case M_SAVESETUP:
+                     cout << "Saving setup" << endl;
+                     PutDefaults();
+					 break;
 
                   case M_PAUSE:
                      {
@@ -2631,52 +2566,55 @@ force Resume", this);
             case kCM_RADIOBUTTON:
                switch (parm1) {
                   case R_FAKE:
-//                     if(fRNet->GetState() == kButtonDown){
                         *fInputSource = "Fake";
                         fRFile->SetState(kButtonUp);
                         fRNet->SetState(kButtonUp);
                         fRFileList->SetState(kButtonUp);
-                        fStartStopButton->SetState(kButtonUp);
+						fTbInputFile->Clear();
+						fTbInputFile->AddText(0, "fake.root");
+						fTeInputFile->SetToolTipText("fake.root");
+						gClient->NeedRedraw(fTeInputFile);
+						fStartStopButton->SetState(kButtonUp);
                         fClearButton->SetState(kButtonDisabled);
                         fConfigButton->SetState(kButtonDisabled);
-//                        fMbsSetupButton->SetState(kButtonDisabled);
-//                     }
-                     break;
                   case R_FILELIST:
-//                     if(fRNet->GetState() == kButtonDown){
                         *fInputSource = "FileList";
                         fRFake->SetState(kButtonUp);
                         fRNet->SetState(kButtonUp);
                         fRFile->SetState(kButtonUp);
+						fTbInputFile->Clear();
+						fTbInputFile->AddText(0, fInputFile->Data());
+						fTeInputFile->SetToolTipText(this->ExpandName(fActualInputFile, fInputFile->Data()));
+						gClient->NeedRedraw(fTeInputFile);
                         fStartStopButton->SetState(kButtonUp);
                         fClearButton->SetState(kButtonDisabled);
                         fConfigButton->SetState(kButtonDisabled);
-//                       fMbsSetupButton->SetState(kButtonDisabled);
-//                    }
                      break;
                   case R_FILE:
-//                     if(fRNet->GetState() == kButtonDown){
                         *fInputSource = "File";
                         fRFake->SetState(kButtonUp);
                         fRNet->SetState(kButtonUp);
                         fRFileList->SetState(kButtonUp);
+						fTbInputFile->Clear();
+						fTbInputFile->AddText(0, fInputFile->Data());
+						fTeInputFile->SetToolTipText(this->ExpandName(fActualInputFile, fInputFile->Data()));
+						gClient->NeedRedraw(fTeInputFile);
                         fStartStopButton->SetState(kButtonUp);
                         fClearButton->SetState(kButtonDisabled);
                         fConfigButton->SetState(kButtonDisabled);
-//                        fMbsSetupButton->SetState(kButtonDisabled);
-//                     }
                      break;
                   case R_NET:
-//                     if(fRFile->GetState() == kButtonDown){
                         fRFake->SetState(kButtonUp);
                         fRFile->SetState(kButtonUp);
                         fRFileList->SetState(kButtonUp);
                         *fInputSource = "TcpIp";
+						fTbInputFile->Clear();
+						fTbInputFile->AddText(0, "not used");
+						fTeInputFile->SetToolTipText("no input file possible");
+						gClient->NeedRedraw(fTeInputFile);
                         fStartStopButton->SetState(kButtonDisabled);
                         fClearButton->SetState(kButtonUp);
                         fConfigButton->SetState(kButtonUp);
-//                        fMbsSetupButton->SetState(kButtonUp);
-//                     }
                      break;
                   case R_ACTIVE:
                      if(fWriteOutput){
@@ -2689,10 +2627,9 @@ force Resume", this);
                         fRActive->ChangeBackground(green);
                         fWriteOutput = kTRUE;
                         fRActive->SetToolTipText("Output file enabled");
-//                        fTeRootFile->IsMapped();
-                        fTeRootFile->SetFocus();
-                        TString temp = fTeRootFile->GetText();
-                        fTeRootFile->SetText(temp.Data());
+                        fTeOutputFile->SetFocus();
+                        TString temp = fTeOutputFile->GetText();
+                        fTeOutputFile->SetText(temp.Data());
 
                      }
                      gClient->NeedRedraw(fRActive);
@@ -2701,13 +2638,6 @@ force Resume", this);
             case kCM_CHECKBUTTON:
                break;
             case kCM_COMBOBOX:
-  //             cout << "Combo " << parm1 << " " << parm2 << endl;
-               switch (parm1) {
-                  case C_MASTER:
-                     fCbReadout->Select(parm2);
-                     gClient->NeedRedraw(fCbReadout);
-                     break;
-               }
                break;
 
             default:
@@ -2750,28 +2680,22 @@ Bool_t FhMainFrame::PutDefaults(){
 		   return(kFALSE);
 	}
    TString wout = "FALSE";
-   wstream << "INPUTFILE:  "  <<  fTbFile->GetString()    << endl;
+   wstream << "INPUTFILE:  "  <<  fTbInputFile->GetString()    << endl;
    wstream << "INPUTSOURCE:"  <<  *fInputSource           << endl;
    if(fAutoSave) wout = "TRUE";
    else          wout = "FALSE";
    wstream << "AUTOSAVE:   "  <<  wout                  << endl;
    wstream << "RUNNR:      "  <<  fTbRunNr->GetString() << endl;
-//   wstream << "DOWNSCALE:  "  <<  fTbDownscale->GetString()  << endl;
    wstream << "HISTFILE: "    <<  fTbHistFile->GetString()  << endl;
    wstream << "HELPFILE: "    <<  fHelpFile->Data()  << endl;
-   wstream << "OUTPUTFILE: "  <<  fTbRootFile->GetString()  << endl;
+   wstream << "OUTPUTFILE: "  <<  fTbOutputFile->GetString()  << endl;
    wstream << "PARFILE: "     <<  fTbParFile->GetString()  << endl;
    wstream << "COMMENT: "     <<  fTbComment->GetString()  << endl;
-   Int_t ppcSelected = fCbMaster->GetSelected();
-   if (ppcSelected > masters->GetEntriesFast()) ppcSelected = 1;
-   wstream << "MASTER:  "     <<  ((TObjString *) masters->At(ppcSelected-1))->GetString() << endl;
-   ppcSelected = fCbReadout->GetSelected();
-   if (ppcSelected > slaves->GetEntriesFast()) ppcSelected = 1;
-   wstream << "READOUT:  "    <<  ((TObjString *) slaves->At(ppcSelected-1))->GetString() << endl;
+   Int_t ppcSelected = fCbConnect->GetSelected();
+   if (ppcSelected < 0 || ppcSelected > ppcArray->GetEntriesFast()) ppcSelected = 1;
+   wstream << "CONNECT: "     <<  ((TObjString *) ppcArray->At(ppcSelected-1))->GetString() << endl;
    wstream << "DIR: "         <<  fTbDir->GetString()      << endl;
-   if(fCbTrigger->GetSelected() == 1)*fTrigger = "VME";
-   else                              *fTrigger = "CAMAC";
-   wstream << "TRIGGER: "     <<  triggers[fCbTrigger->GetSelected()-1] << endl;
+   wstream << "TRIGGER: VME"  << endl;
    wstream << "DOWNSCALE:  "  <<  fDownscale           << endl;
    wstream << "GATELENGTH: "  <<  fGateLength          << endl;
    wstream << "BUFSIZE: "     <<  fBufSize             << endl;
@@ -2814,11 +2738,12 @@ Bool_t FhMainFrame::PutDefaults(){
 		    fSetup = new TMbsSetup();
 	    }
       }
-      TString mproc = ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
-      if (!mproc.IsNull()) fSetup->EvtBuilder()->SetProcName(mproc.Data());
-      TString sproc = ((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString();
-      if (!sproc.IsNull()) fSetup->ReadoutProc(0)->SetProcName(sproc.Data());
-      fSetup->Save();
+      TString mproc = ((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString();
+      if (!mproc.IsNull()) {
+		  fSetup->EvtBuilder()->SetProcName(mproc.Data());
+		  fSetup->ReadoutProc(0)->SetProcName(mproc.Data());
+	  }
+     fSetup->Save();
    }
 
   return kTRUE;
@@ -2836,9 +2761,16 @@ Bool_t FhMainFrame::GetDefaults(){
    infile = *fDefFile;
    infile.Strip(TString::kBoth);
 
-   fInputFile   = new TString("Nothing");
-   fRootFile    = new TString("runRUN.root");
-   fHistFile    = new TString("histsRUN.root");
+   fInputFile   = new TString("run$R.root");
+   fOutputFile	= new TString("run$R.root");
+   fHistFile    = new TString("hists$R.root");
+   fParFile     = new TString("none");
+
+   fActualInputFile = new TString();
+   fActualOutputFile = new TString();
+   fActualHistFile = new TString();
+   fActualParFile = new TString();
+
    fInputSource = new TString("File");
    fHelpFile    = new TString(gSystem->Getenv("MARABOU"));
    *fHelpFile   += "/doc/c_analyze";
@@ -2853,16 +2785,12 @@ Bool_t FhMainFrame::GetDefaults(){
    }
    fRunNr       = new TString("001");
    fOldRunNr    = new TString("001");
-   fComment     = new TString("Short description of run");
-   fPar         = new TString("none");
-#ifdef PPC_NEW_ADDRESS
-   fMaster       = new TString("gar-ex-ppc02");
-   fReadout      = new TString("gar-ex-ppc01");
-#else
-   fMaster       = new TString("ppc-1");
-   fReadout      = new TString("ppc-0");
-#endif
-   fMbsVersion   = new TString(gEnv->GetValue("TMbsSetup.MbsVersion", ""));
+   fComment     = new TString("");
+
+	Bool_t shortNames = gEnv->GetValue("TMrbAnalyze.UseShortPPCNames", kFALSE);
+	fConnect       = shortNames ? new TString("ppc-0") : new TString("gar-ex-ppc02");
+
+	fMbsVersion   = new TString(gEnv->GetValue("TMbsSetup.MbsVersion", ""));
 	if (fMbsVersion->Contains(".")) {
 		fMbsVersion->ReplaceAll(".", "");
 		fMbsVersion->Prepend("v");
@@ -2876,7 +2804,6 @@ Bool_t FhMainFrame::GetDefaults(){
    }
 
    fDir          = new TString("ppc");
-   fTrigger      = new TString("VME");
    fCodeName        = new TString("");
    fFromTime        = new TString(":000");
    fToTime          = new TString(":000");
@@ -2962,16 +2889,14 @@ Bool_t FhMainFrame::GetDefaults(){
          	if(parName == "INPUTFILE")  *fInputFile   = parValue;
          	if(parName == "INPUTSOURCE")*fInputSource = parValue;
          	if(parName == "RUNNR")      *fRunNr       = parValue;
-         	if(parName == "OUTPUTFILE") *fRootFile    = parValue;
+         	if(parName == "OUTPUTFILE") *fOutputFile    = parValue;
          	if(parName == "HISTFILE")  *fHistFile    = parValue;
          	if(parName == "HELPFILE")  *fHelpFile    = parValue;
-         	if(parName == "PARFILE")    *fPar         = parValue;
+         	if(parName == "PARFILE")    *fParFile		= parValue;
          	if(parName == "COMMENT")    *fComment     = parValue;
-         	if(parName == "MASTER")     *fMaster      = parValue;
-         	if(parName == "READOUT")    *fReadout     = parValue;
+         	if(parName == "CONNECT")     *fConnect      = parValue;
          	if(parName == "MBSVERS")    *fMbsVersion  = parValue;
          	if(parName == "DIR")        *fDir         = parValue;
-         	if(parName == "TRIGGER")    *fTrigger     = parValue;
          	if(parName == "RESETLIST")  *fResetList   = parValue;
          	if(parName == "DOWNSCALE")  fDownscale    = atoi(parValue.Data());
          	if(parName == "GATELENGTH") fGateLength   = atoi(parValue.Data());
@@ -3014,10 +2939,9 @@ Bool_t FhMainFrame::GetDefaults(){
       cout << setred << "File for defaults not found" << setblack << endl;
       ok = kFALSE;
    }
-   if (!ok) {
-      cout << setred <<  "Couldn't read C_analyze.def" << setblack << endl;
-   }
-   if (!gSystem->AccessPathName(".mbssetup")) {
+   if (!ok) cout << setred <<  "Couldn't read C_analyze.def" << setblack << endl;
+
+if (!gSystem->AccessPathName(".mbssetup")) {
       cout << setblue << "Looking up setup data in .mbssetup" << setblack << endl;
 	  if(fSetup == NULL) {
 	    if (!gSystem->AccessPathName(".mbssetup")) {
@@ -3026,14 +2950,14 @@ Bool_t FhMainFrame::GetDefaults(){
 		    fSetup = new TMbsSetup();
 	    }
       }
-      TMrbNamedX temp;
-      fSetup->Get(*fMaster,  "EvtBuilder.Name",             fMaster->Data());
-      fSetup->Get(*fReadout, "Readout0.Name",               fReadout->Data());
-      fSetup->Get(temp,      "Readout0.TriggerModule.Type", fTrigger->Data());
-      cout << "EvtBuilder      : "  << fMaster->Data() << endl;
-      cout << "Readout0/Master : "  << fReadout->Data() << endl;
+      TMrbNamedX master, slave, trigger;
+      fSetup->Get(master,   "EvtBuilder.Name",             fConnect->Data());
+      fSetup->Get(slave,    "Readout0.Name",               fConnect->Data());
+      fSetup->Get(trigger,  "Readout0.TriggerModule.Type", "VME");
+      cout << "EvtBuilder      : "  << fConnect->Data() << endl;
+      cout << "Readout0/Master : "  << fConnect->Data() << endl;
       cout << "Readout1/Slave  : "  << endl;
-      cout << "TriggerModule   : " << temp.GetName() << "(" << temp.GetIndex() << ")" << endl;
+      cout << "TriggerModule   : " << trigger.GetName() << "(" << trigger.GetIndex() << ")" << endl;
    } else {
       cout << "No .mbssetup in cwd" << endl;
    }
@@ -3216,6 +3140,9 @@ void FhMainFrame::Runloop(){
    TMessage * message;
    Int_t nobs;
    fM_Status = IsAnalyzeRunning(0);
+
+   if (fM_Status != M_RUNNING) this->SetTime();
+
 //   cout << "fM_Status " << fM_Status<< endl;
    if(fM_Status == M_RUNNING && (!fForcedStop && fWriteOutput && fOutputFile->Length() > 1)){
       Int_t sts = gSystem->GetPathInfo(fOutputFile->Data(), &id, &size, &flags, &modtime);
@@ -3525,12 +3452,51 @@ void FhMainFrame::Runloop(){
    }
    fM_OldStatus=fM_Status;
 };
+
+//_____________________________________________________________________________________
+// Set time string
+
+void FhMainFrame::SetTime(){
+ 	time_t now = time(NULL);
+	Char_t result[200];
+	strftime(result, 200, "%T", localtime(&now));
+	fStartTime->SetText(new TGString(result));
+	gClient->NeedRedraw(fStartTime);
+}
+
+//________________________________________________________________________________
+
+const Char_t * FhMainFrame::ExpandName(TString * Result, const Char_t * Format) {
+
+ 	time_t now = time(NULL);	// replace date & time place holders
+	TString fmt = Format;
+
+	TRegexp run = "$R";			// replace $R by run number
+	fmt(run) = fRunNr->Data();
+	TRegexp start = "$S";		// replace $S by "dd-mm-HHMM"
+	fmt(start) = "%d-%m-%H%M";
+	Char_t result[200];
+	strftime(result, 200, fmt.Data(), localtime(&now));
+	*Result = result;
+	*Result = Result->Strip(TString::kBoth);
+	return(Result->Data());
+}
+
+//________________________________________________________________________________
+
+void FhMainFrame::ResetToolTips() {
+	TString dmy;
+	fTeInputFile->SetToolTipText(Form("%s - will be expanded to %s", fInputFile->Data(), this->ExpandName(&dmy, fInputFile->Data())));
+	fTeOutputFile->SetToolTipText(Form("%s - will be expanded to %s", fOutputFile->Data(), this->ExpandName(&dmy, fOutputFile->Data())));
+	fTeHistFile->SetToolTipText(Form("%s - will be expanded to %s", fHistFile->Data(), this->ExpandName(&dmy, fHistFile->Data())));
+	fTeParFile->SetToolTipText(Form("%s - will be expanded to %s", fParFile->Data(), this->ExpandName(&dmy, fParFile->Data())));
+}
+
 //_____________________________________________________________________________________
 
 int main(int argc, char **argv)
 {
    TApplication theApp("App", &argc, argv);
-//   gROOT->Reset();
    Int_t attachid = 0;
    Int_t attachsock = 0;
    if (argc > 2) {

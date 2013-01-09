@@ -456,9 +456,6 @@ Bool_t TMrbEvent::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag
 	Int_t crate;
 	TMrbNamedX * cType;
 
-	TMrbModule * dtSca;
-	TString dtFct;
-
 	trigNameUC = this->GetName();
 	trigNameUC(0,1).ToUpper();
 
@@ -485,12 +482,11 @@ Bool_t TMrbEvent::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag
 				Template.WriteCode(RdoStrm);
 				if (!wtstmpFlag && gMrbConfig->DeadTimeToBeWritten()) {
 					Template.InitializeCode("%CD%");
-					dtSca = (TMrbModule *) gMrbConfig->GetDeadTimeScaler();
+					TMrbModule * dtSca = gMrbConfig->GetDeadTimeScaler();
 					Template.Substitute("$dtScaler", dtSca->GetName());
 					Template.Substitute("$dtInterval", gMrbConfig->GetDeadTimeInterval());
-					dtFct = (dtSca->GetType()->GetIndex() & TMrbConfig::kModuleCamac) ?
-										((TMrbCamacScaler *) dtSca)->GetFunctionName(TMrbConfig::kScalerFctDeadTime) :
-										((TMrbVMEScaler *) dtSca)->GetFunctionName(TMrbConfig::kScalerFctDeadTime);
+					TString dtFct;
+					dtSca->GetMbsFctName(dtFct, TMrbConfig::kModuleFctRead);
 					Template.Substitute("$scaRead", dtFct.Data());
 					Template.WriteCode(RdoStrm);
 					if (gMrbConfig->TimeStampToBeWritten()) {

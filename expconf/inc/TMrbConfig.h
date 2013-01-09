@@ -442,6 +442,7 @@ class TMrbConfig : public TNamed {
 
 		enum EMrbHistoType  	{	kHistoTH1			=	BIT(10), 	// histogram types
 									kHistoTH2			=	BIT(11),
+									kHistoTH3			=	BIT(12),
 									kHistoTHC			=	BIT(1),
 									kHistoTHS			=	BIT(2),
 									kHistoTHF			=	BIT(3),
@@ -455,6 +456,10 @@ class TMrbConfig : public TNamed {
 									kHistoTH2S			=	kHistoTH2 | kHistoTHS,
 									kHistoTH2F			=	kHistoTH2 | kHistoTHF,
 									kHistoTH2D			=	kHistoTH2 | kHistoTHD,
+									kHistoTH3C			=	kHistoTH3 | kHistoTHC,
+									kHistoTH3S			=	kHistoTH3 | kHistoTHS,
+									kHistoTH3F			=	kHistoTH3 | kHistoTHF,
+									kHistoTH3D			=	kHistoTH3 | kHistoTHD,
 									kHistoRate			=	kHistoTH1 | kHistoTHF | kHistoTHR
 								};
 
@@ -545,13 +550,12 @@ class TMrbConfig : public TNamed {
 									kScalerExternalGate =	BIT(9)
 								};
 
-		enum EMrbScalerFunction {	kScalerFctInit		=	0,		// scaler functions
-									kScalerFctClear 	=	1,
-									kScalerFctRead		=	2,
-									kScalerFctDeadTime	=	3,
-									kScalerFctWrite		=	4
+		enum EMrbModuleFunction {	kModuleFctInit		=	0,		// module functions
+									kModuleFctClear,
+									kModuleFctRead,
+									kModulerFctWrite,
+									kNofModuleFunctions
 								};
-		enum					{	kNofScalerFunctions =	kScalerFctWrite + 1 };
 
 		enum					{	kRdoHeaderBit		=	BIT(31)	};
 
@@ -732,7 +736,7 @@ class TMrbConfig : public TNamed {
 		Bool_t WriteDeadTime(const Char_t * Scaler, Int_t Interval = 1000);				// write a dead time events
 		inline Bool_t DeadTimeToBeWritten() const { return(fDeadTimeInterval > 0); }; 	// check if dead time enabled
 		inline Int_t GetDeadTimeInterval() const { return(fDeadTimeInterval); };			// get interval
-		inline TMrbScaler * GetDeadTimeScaler() const { return(fDeadTimeScaler); };			// get scaler def
+		inline TMrbModule * GetDeadTimeScaler() const { return(fDeadTimeScaler); };			// get scaler def
 
 																					// include user-specific code
 		Bool_t IncludeUserCode(const Char_t * IclPath, const Char_t * UserFile, Bool_t AutoGenFlag = kFALSE);
@@ -803,6 +807,15 @@ class TMrbConfig : public TNamed {
 		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 									Int_t Xbin, Double_t Xlow, Double_t Xup,
 									Int_t Ybin, Double_t Ylow, Double_t Yup, const Char_t * Condition = NULL);
+
+		Bool_t BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
+									Int_t Xbin, Double_t Xlow, Double_t Xup,
+									Int_t Ybin, Double_t Ylow, Double_t Yup,
+									Int_t Zbin, Double_t Zlow, Double_t Zup, const Char_t * Condition = NULL);
+		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
+									Int_t Xbin, Double_t Xlow, Double_t Xup,
+									Int_t Ybin, Double_t Ylow, Double_t Yup,
+									Int_t Zbin, Double_t Zlow, Double_t Zup, const Char_t * Condition = NULL);
 
 		Bool_t BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 									const Char_t * Args, const Char_t * Condition);
@@ -952,7 +965,7 @@ class TMrbConfig : public TNamed {
 		Bool_t fWriteTimeStamp; 			// kTRUE if user wants a time stamp to be added to each event
 
 		Int_t fDeadTimeInterval;			// number of events a new dead time event will be created
-		TMrbScaler * fDeadTimeScaler;	 		// dead-time scaler
+		TMrbModule * fDeadTimeScaler;	 	// dead-time scaler
 
 		TString fCreationDate;				// creation date & time
 		TString fUser;						// user name

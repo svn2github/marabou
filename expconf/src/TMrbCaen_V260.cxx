@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbCaen_V260.cxx
 // Purpose:        MARaBOU configuration: CAEN modules
-// Description:    Implements class methods to handle a CAEN scaler type V260 
+// Description:    Implements class methods to handle a CAEN scaler type V260
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V260.cxx,v 1.9 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbCaen_V260.cxx,v 1.9 2008-12-04 14:53:11 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -54,7 +54,7 @@ TMrbCaen_V260::TMrbCaen_V260(const Char_t * ModuleName, UInt_t BaseAddr) :
 	TString mType;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -78,7 +78,7 @@ TMrbCaen_V260::TMrbCaen_V260(const Char_t * ModuleName, UInt_t BaseAddr) :
 				fNofShortsPerDatum = 2;
 				fNofDataBits = 24;
 
-				this->SetFunctionName("caen_v260_dead_time", TMrbConfig::kScalerFctDeadTime);
+				this->SetMbsFctName("caen_v260_dead_time", TMrbConfig::kModuleFctRead);
 
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gMrbConfig->AddScaler(this);				// and to list of scalers

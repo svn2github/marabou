@@ -111,6 +111,10 @@ const SMrbNamedX kMrbLofHistoTypes[] =
 								{TMrbConfig::kHistoTH2D,		"TH2D", "2-dim histogram with one double per channel"	},
 								{TMrbConfig::kHistoTH2F,		"TH2F", "2-dim histogram with one float per channel"	},
 								{TMrbConfig::kHistoTH2S,		"TH2S", "2-dim histogram with one short per channel"	},
+								{TMrbConfig::kHistoTH3C,		"TH3C", "3-dim histogram with one byte per channel"		},
+								{TMrbConfig::kHistoTH3D,		"TH3D", "3-dim histogram with one double per channel"	},
+								{TMrbConfig::kHistoTH3F,		"TH3F", "3-dim histogram with one float per channel"	},
+								{TMrbConfig::kHistoTH3S,		"TH3S", "3-dim histogram with one short per channel"	},
 								{TMrbConfig::kHistoRate,		"Rate", "rate histogram"								},
 								{0, 							NULL			}
 							};
@@ -3464,10 +3468,17 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									}
 								} else {
 									if (cnd == NULL) {
-										anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1%" : "%UD2%");
+										switch (h->GetIndex() & (TMrbConfig::kHistoTH1|TMrbConfig::kHistoTH2|TMrbConfig::kHistoTH3)) {
+										  case TMrbConfig::kHistoTH1: anaTmpl.InitializeCode("%UD1%"); break;
+										  case TMrbConfig::kHistoTH2: anaTmpl.InitializeCode("%UD2%"); break;
+										  case TMrbConfig::kHistoTH3: anaTmpl.InitializeCode("%UD3%"); break;
+										}
 									} else {
-										anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1C%" : "%UD2C%");
-										anaTmpl.Substitute("$condition", cnd->GetTitle());
+										switch (h->GetIndex() & (TMrbConfig::kHistoTH1|TMrbConfig::kHistoTH2|TMrbConfig::kHistoTH3)) {
+										  case TMrbConfig::kHistoTH1: anaTmpl.InitializeCode("%UD1C%"); break;
+										  case TMrbConfig::kHistoTH2: anaTmpl.InitializeCode("%UD2C%"); break;
+										  case TMrbConfig::kHistoTH3: anaTmpl.InitializeCode("%UD3C%"); break;
+										}
 									}
 								}
 								anaTmpl.Substitute("$hName", h->GetName());
@@ -3483,10 +3494,15 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$binSizeX", (Int_t) *ap++);
 									anaTmpl.Substitute("$lowerX", *ap++);
 									anaTmpl.Substitute("$upperX", *ap++);
-									if (h->GetIndex() & TMrbConfig::kHistoTH2) {
+									if (h->GetIndex() & (TMrbConfig::kHistoTH2|TMrbConfig::kHistoTH3)) {
 										anaTmpl.Substitute("$binSizeY", (Int_t) *ap++);
 										anaTmpl.Substitute("$lowerY", *ap++);
 										anaTmpl.Substitute("$upperY", *ap++);
+									}
+									if (h->GetIndex() & TMrbConfig::kHistoTH3) {
+										anaTmpl.Substitute("$binSizeZ", (Int_t) *ap++);
+										anaTmpl.Substitute("$lowerZ", *ap++);
+										anaTmpl.Substitute("$upperZ", *ap++);
 									}
 								}
 								anaTmpl.WriteCode(anaStrm);
@@ -5066,7 +5082,7 @@ Bool_t TMrbConfig::WriteDeadTime(const Char_t * Scaler, Int_t Interval) {
 	TMrbScaler * sca = (TMrbScaler *) module;
 	sca->SetDTScaler();
 	fDeadTimeInterval = Interval;
-	fDeadTimeScaler = sca;
+	fDeadTimeScaler = module;
 	return(kTRUE);
 }
 
@@ -5396,7 +5412,8 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 	TString userPath = IclPath;
 	TString userLib = UserLib;
 
-	Bool_t verboseMode = (this->IsVerbose() || (this->GetConfigOptions() & kCfgOptVerbose) != 0);
+	Bool_t verboseMode = ((GetConfigOptions() & kCfgOptVerbose) != 0);
+	if (IsVerbose()) cout << "@@@ verbose" << endl;
 
 	TRegexp rxlib("^lib");
 	TRegexp rxso("\\.so$");
@@ -6940,6 +6957,114 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 }
 
 Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
+																Int_t Xbin, Double_t Xlow, Double_t Xup,
+																Int_t Ybin, Double_t Ylow, Double_t Yup,
+																Int_t Zbin, Double_t Zlow, Double_t Zup,
+																const Char_t * Condition) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::BookHistogram
+// Purpose:        Define a histogram to be booked
+// Arguments:      Char_t * HistoType      -- histo type (TH1X, TH2X)
+//                 Char_t * HistoName      -- name
+//                 Char_t * HistoTitle     -- title
+//                 Int_t Xbin              -- bins in X
+//                 Double_t Xlow           -- lower edge X
+//                 Double_t Xup            -- upper edge X
+//                 Int_t Ybin              -- bins in Y
+//                 Double_t Ylow           -- lower edge Y
+//                 Double_t Yup            -- upper edge Y
+//                 Int_t Zbin              -- bins in Z
+//                 Double_t Zlow           -- lower edge Z
+//                 Double_t Zup            -- upper edge Z
+//                 Char_t * Condition      -- booking condition
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Books user-defined histograms.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString hType;
+	TArrayD argList(9);
+
+	if (fLofUserHistograms.FindObject(HistoName)) {
+		gMrbLog->Err() << "Histogram already booked - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
+	hType = HistoType;
+	hType.ToUpper();
+	TMrbNamedX * histoType = fLofHistoTypes.FindByName(hType.Data());
+	if (histoType == NULL) {
+		gMrbLog->Err() << "[" << HistoName << "] Illegal histogram type - " << HistoType << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
+	if ((histoType->GetIndex() & TMrbConfig::kHistoTH3) == 0) {
+		gMrbLog->Err() << "[" << HistoName << "] Illegal arg list - not a TH3" << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
+	argList[0] = (Double_t) Xbin;
+	argList[1] = Xlow;
+	argList[2] = Xup;
+	argList[3] = (Double_t) Ybin;
+	argList[4] = Ylow;
+	argList[5] = Yup;
+	argList[6] = (Double_t) Zbin;
+	argList[7] = Zlow;
+	argList[8] = Zup;
+
+	TMrbNamedArrayD * a = new TMrbNamedArrayD(histoType->GetName(), histoType->GetTitle(), 9, argList.GetArray());
+	fLofUserHistograms.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, HistoTitle, a));
+	if (Condition != NULL && *Condition != '\0') fLofHistoConditions.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, Condition));
+	return(kTRUE);
+}
+
+Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
+																Int_t Xbin, Double_t Xlow, Double_t Xup,
+																Int_t Ybin, Double_t Ylow, Double_t Yup,
+																Int_t Zbin, Double_t Zlow, Double_t Zup,
+																const Char_t * Condition) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::BookHistogram
+// Purpose:        Define a histogram to be booked
+// Arguments:      Char_t *  ArrayName     -- name of histo array
+//                 Char_t * HistoType      -- histo type (TH1X, TH2X)
+//                 Char_t * HistoName      -- name
+//                 Char_t * HistoTitle     -- title
+//                 Int_t Xbin              -- bins in X
+//                 Double_t Xlow           -- lower edge X
+//                 Double_t Xup            -- upper edge X
+//                 Int_t Ybin              -- bins in Y
+//                 Double_t Ylow           -- lower edge Y
+//                 Double_t Yup            -- upper edge Y
+//                 Int_t Zbin              -- bins in Z
+//                 Double_t Zlow           -- lower edge Z
+//                 Double_t Zup            -- upper edge Z
+//                 Char_t * Condition      -- booking condition
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Books user-defined histograms.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+
+	if (fLofUserHistograms.FindObject(HistoName)) {
+		gMrbLog->Err() << "Histogram already booked - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
+	if (this->AddHistoToArray(ArrayName, HistoName) == NULL) return(kFALSE);
+	return(this->BookHistogram(HistoType, HistoName, HistoTitle, Xbin, Xlow, Xup, Ybin, Ylow, Yup, Zbin, Zlow, Zup, Condition));
+}
+
+Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 																const Char_t * Args,
 																const Char_t * Condition) {
 //________________________________________________________________[C++ METHOD]
@@ -6984,6 +7109,10 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 		return(kFALSE);
 	} else if ((histoType->GetIndex() & TMrbConfig::kHistoTH2) && (nargs != 6)) {
 		gMrbLog->Err() << "[" << HistoName << "] Illegal number of args (" << nargs << ") - not a TH2" << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	} else if ((histoType->GetIndex() & TMrbConfig::kHistoTH3) && (nargs != 9)) {
+		gMrbLog->Err() << "[" << HistoName << "] Illegal number of args (" << nargs << ") - not a TH3" << endl;
 		gMrbLog->Flush(this->ClassName(), "BookHistogram");
 		return(kFALSE);
 	}

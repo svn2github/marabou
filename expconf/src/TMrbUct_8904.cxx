@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbUct_8904.cxx,v 1.9 2008-12-10 12:13:50 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbUct_8904.cxx,v 1.9 2008-12-10 12:13:50 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -52,7 +52,7 @@ TMrbUct_8904::TMrbUct_8904(const Char_t * ScalerName, const Char_t * ScalerPosit
 	TString mType;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -76,11 +76,10 @@ TMrbUct_8904::TMrbUct_8904(const Char_t * ScalerName, const Char_t * ScalerPosit
 				fNofShortsPerDatum = 2;
 				fNofDataBits = 24;
 
-				this->SetFunctionName("uct_init", TMrbConfig::kScalerFctInit);
-				this->SetFunctionName("uct_read", TMrbConfig::kScalerFctRead);
-				this->SetFunctionName("uct_read", TMrbConfig::kScalerFctDeadTime);
+				this->SetMbsFctName("uct_init", TMrbConfig::kModuleFctInit);
+				this->SetMbsFctName("uct_read", TMrbConfig::kModuleFctRead);
 
-				gMrbConfig->AddModule(this); 	// insert scaler in lists	
+				gMrbConfig->AddModule(this); 	// insert scaler in lists
 				gMrbConfig->AddScaler(this);
 
 				gDirectory->Append(this);
