@@ -38,7 +38,7 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(CptmCH))
 INCLUDEFILES += $(CptmCDEP)
 
 ##### extra libs needed #####
-OCptmCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbC2Lynx -lTMrbEsone -lEsoneClient \
+OCptmCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbEsone -lTMrbC2Lynx -lEsoneClient \
                  -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser -lGrEdit -lFitCal
 
 ##### local rules #####
