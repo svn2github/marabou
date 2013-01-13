@@ -1729,7 +1729,7 @@ Bool_t FhMainFrame::StartDAQ()
       if(fRActive->GetState() == kButtonDown){
 		 this->ExpandName(fActualOutputFile, fTbOutputFile->GetString());
 		 fTeOutputFile->SetToolTipText(fActualOutputFile->Data());
-         startCmd += fOutputFile->Data();
+         startCmd += fActualOutputFile->Data();
          startCmd += " ";
          startCmd += fMaxFileSize;
          startCmd += " ";
