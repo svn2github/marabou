@@ -120,7 +120,7 @@
 void vulom_module_info(volatile unsigned char * module) {
 	 char str[256];
 	 unsigned int version;
-	 version = *(module + VULOM_TBOX_VERSION);
+	 version = *((unsigned int *) (module + VULOM_TBOX_VERSION));
 	 sprintf(str, "  VULOM module info: %lx", version);
 	 f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
 }
