@@ -1247,6 +1247,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 	fFrameX2 = fCanvas->GetFrame()->GetX2();
 	fFrameY1 = fCanvas->GetFrame()->GetY1();
 	fFrameY2 = fCanvas->GetFrame()->GetY2();
+	gStyle->SetCanvasPreferGL(kFALSE);
 };
 
 //------------------------------------------------------
