@@ -41,6 +41,7 @@ Int_t   SetColorModeDialog::fMtransHLS;
 Int_t   SetColorModeDialog::fMbw;
 Int_t   SetColorModeDialog::fMbwinv;
 Int_t   SetColorModeDialog::fMrbow;
+//__________________________________________________________________
 
 ClassImp(SetColorModeDialog)
 //__________________________________________________________________
@@ -129,11 +130,13 @@ void SetColorModeDialog::SetColorMode()
       fPalette = NULL;
       fStartColorIndex = 51;
    }
-//   cout << "SetColorPalette: fStartColorIndex "
- //       <<  fStartColorIndex<< "fPalette  " << fPalette;
-//         if (fPalette) cout << " " <<  fPalette[0]  << " "
-//         <<  fPalette[1]  << " "   <<  fPalette[2];
-//    cout   << endl;
+   if (gDebug > 0 ) {
+		cout << "SetColorPalette: fStartColorIndex "
+			<<  fStartColorIndex<< " fPalette  " << fPalette;
+				if (fPalette) cout << " " <<  fPalette[0]  << " "
+				<<  fPalette[1]  << " "   <<  fPalette[2];
+		cout   << endl;
+	}
    if ( fMrbow ) {
       gStyle->SetPalette(1, NULL);
 	} else {
@@ -299,9 +302,12 @@ void SetColorModeDialog::SetGreyLevels()
 void SetColorModeDialog::SetTransLevelsRGB()
 {
    if (fNofTransLevels < 2) fNofTransLevels = 2;
-   if (fTransPaletteRGB) delete [] fTransPaletteRGB;
+   if (fTransPaletteRGB) {
+		delete [] fTransPaletteRGB;
+		fTransPaletteRGB = NULL;
+	}
    fTransPaletteRGB    = new Int_t[fNofTransLevels];
-   TColor * color;
+	TColor * color;
    TColor * sc = GetColorByIndex(fStartColor);
    TColor * ec = GetColorByIndex(fEndColor);
    Float_t start_r = sc->GetRed();
@@ -373,7 +379,10 @@ void SetColorModeDialog::SetTransLevelsRGB()
 void SetColorModeDialog::SetTransLevelsHLS()
 {
    if (fNofTransLevels < 2) fNofTransLevels = 2;
-   if (fTransPaletteHLS) delete [] fTransPaletteHLS;
+   if (fTransPaletteHLS) {
+		delete [] fTransPaletteHLS;
+		fTransPaletteHLS = NULL;
+	}
    fTransPaletteHLS    = new Int_t[fNofTransLevels];
    TColor * color;
 

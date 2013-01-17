@@ -82,6 +82,11 @@
 
 extern HistPresent *gHpr;
 extern Int_t nHists;
+extern Double_t gTranspThresh;
+extern Double_t gTranspAbove;
+extern Double_t gTranspBelow;
+
+extern Double_t my_transfer_function(const Double_t *x, const Double_t * /*param*/);
 
 enum dowhat { expand, projectx, projecty, statonly, projectf,
        projectboth , profilex, profiley};
@@ -296,6 +301,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fTwoDimLogZ = env.GetValue("Set2DimOptDialog.fTwoDimLogZ", 0);
 	
    fDrawOpt3Dim   = env.GetValue("Set3DimOptDialog.fDrawOpt3Dim", "");
+	fApplyTranspCut    = env.GetValue("Set3DimOptDialog.fApplyTranspCut",    0);
    f3DimBackgroundColor = env.GetValue("Set3DimOptDialog.f3DimBackgroundColor", 0);
 	fHistFillColor3Dim = env.GetValue("Set3DimOptDialog.fHistFillColor3Dim", 1);
 	fHistLineColor3Dim = env.GetValue("Set3DimOptDialog.fHistLineColor3Dim", 1);
@@ -3042,6 +3048,19 @@ void FitHist::Draw3Dim()
 //   TString drawopt("iso");	
 
 	cout << "fDrawOpt3Dim " << fDrawOpt3Dim << endl;
+	TList * lof = fSelHist->GetListOfFunctions();
+	TObject * trf= lof->FindObject("TransferFunction");
+	if ( fDrawOpt3Dim.Contains("GL") && fApplyTranspCut ) {
+		if ( !trf ) {
+			TF1 * tf = new TF1("TransferFunction", my_transfer_function);
+			lof->Add(tf);
+		}
+	} else {
+		if (trf) {
+			lof->Remove(trf);
+			delete trf;
+		}
+	}
    fSelHist->SetDrawOption(fDrawOpt3Dim);
    fSelHist->SetOption(fDrawOpt3Dim);
    fSelHist->Draw(fDrawOpt3Dim);

@@ -175,6 +175,7 @@ private:
 	Color_t f3DimBackgroundColor;
    Style_t fMarkerStyle3Dim;  
    Size_t  fMarkerSize3Dim; 
+	Int_t   fApplyTranspCut;
 	
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,

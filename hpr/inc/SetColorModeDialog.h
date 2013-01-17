@@ -5,6 +5,7 @@
 #include "TGMrbValuesAndText.h"
 #include "TGMrbSliders.h"
 #include <iostream>
+
 //_____________________________________________________________________________________
 
 class SetColorModeDialog : public TObject {
@@ -28,7 +29,7 @@ private:
    static Color_t fEndColor;
    static Int_t fNofTransLevels;
    static Int_t fNofGreyLevels;
-   static Int_t   fNofColorLevels;
+   static Int_t fNofColorLevels;
    static Int_t *fPalette;
    static Int_t *fGreyPalette;
    static Int_t *fGreyPaletteInv;

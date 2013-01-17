@@ -1417,10 +1417,11 @@ void HandleMenus::BuildMenus()
       fOptionMenu->AddEntry("How to display a 1-dim histogram", kOption1Dim);
    if ( graph2d || (fFitHist && fFitHist->Its2dim())) {
       fOptionMenu->AddEntry("How to display a 2-dim histogram ", kOption2Dim);
-      fOptionMenu->AddEntry("Color mode of 2-dim histogram", kOption2DimCol);
+      fOptionMenu->AddEntry("Color Palette", kOption2DimCol);
    }
    if ( graph3d || nDim == 3) {
       fOptionMenu->AddEntry("How to display a 3-dim histogram ", kOption3Dim);
+      fOptionMenu->AddEntry("Color Palette", kOption2DimCol);
    }
    if ( graph1d ) {
 		fOptionMenu->AddEntry("How to display a graph", kOptionGraph);

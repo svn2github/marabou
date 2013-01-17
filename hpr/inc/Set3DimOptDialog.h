@@ -35,6 +35,7 @@ private:
 	Int_t   fBidLineColor;
 	Int_t   fBidFillColor;
 	Int_t   fUseGL;
+	Int_t   fApplyTranspCut;
 	
 public:
 

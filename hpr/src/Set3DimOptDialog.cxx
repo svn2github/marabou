@@ -8,12 +8,29 @@
 #include "TObject.h"
 #include "TEnv.h"
 #include "TGraph.h"
+#include "TF1.h"
 #include "TH1.h"
 #include "TH3.h"
 #include "TStyle.h"
 #include "TSystem.h"
 #include "Set3DimOptDialog.h"
 #include <iostream>
+
+Double_t gTranspThresh = 1;
+Double_t gTranspAbove = 0.4;
+Double_t gTranspBelow = 0.005;
+
+Double_t my_transfer_function(const Double_t *x, const Double_t * /*param*/)
+{
+   // Bin values in our example range from -2 to 1.
+   // Let's make values from -2. to -1.5 more transparent:
+   if (*x < gTranspThresh) {
+      return gTranspBelow;
+	} else{
+		return gTranspAbove;
+	}
+}
+
 
 namespace std {} using namespace std;
 
@@ -50,55 +67,26 @@ ISO   :	Draw a Gouraud shaded 3d iso surface through a 3d histogram.\n\
 \n\
 Option GL:\n\
 Use OpenGL to display histogram together with BOX, BOX1 or ISO options\n\
+With BOX options axis are displayed\n\
+To enhance part of the plot the transparency of the bins may be adjusted\n\
+according to their bin content. Typically the treshold is set to one\n\
+the transparency \"below\" to a small value (tranparent) and a \"above\"\n\
+to e.g. 0.5. In this way non filled bin are invisible.\n\
 \n\
-Interaction with the OpenGL plots \n\
-Selectable parts\n\
-Different parts of the plot can be selected:\n\
+Caveat: When switching between GL and non GL the histogram should be\n\
+redisplayed. I.e. Set the option, \"Set as global default\" and then\n\
+display the histogram again.\n\
 \n\
-    * xoz, yoz, xoy back planes: When such a plane selected, it's highlighted\n\
-	 * in green if the dynamic slicing by this plane is supported, and it's highlighted in red,\n\
-	 * if the dynamic slicing is not supported.\n\
-    * The plot itself: On surfaces, the selected surface is outlined in red.\n\
-	 * (TF3 and ISO are not outlined).\n\
-	 * On lego plots, the selected bin is highlighted.\n\
-	 * The bin number and content are displayed in pad's status bar.\n\
-	 * In box plots, the box or sphere is highlighted and the bin info is displayed\n\
-	 * in pad's status bar.\n\
-\n\
-Rotation and zooming\n\
-\n\
-    * Rotation: When the plot is selected, it can be rotated by pressing and holding\n\
-	 * the left mouse button and move the cursor.\n\
-    * Zoom/Unzoom: Mouse wheel or 'j', 'J', 'k', 'K' keys. \n\
-\n\
-Panning\n\
-The selected plot can be moved in a pad's area by pressing and holding the left mouse button\n\
-and the shift key.\n\
-\n\
-Box cut\n\
-Surface, iso, box, TF3 and parametric painters support box cut by pressing the 'c' or 'C' key\n\
-when the mouse cursor is in a plot's area. That will display a transparent box, \n\
-cutting away part of the surface (or boxes) in order to show internal part of plot. \n\
-This box can be moved inside the plot's area (the full size of the box is equal to the\n\
-plot's surrounding box) by selecting one of the box cut axes and pressing the left mouse\n\
-button to move it.\n\
-\n\
-Plot specific interactions (dynamic slicing etc.)\n\
-Currently, all gl-plots support some form of slicing. When back plane is selected \n\
-(and if it's highlighted in green) you can press and hold left mouse button and shift key \n\
-and move this back plane inside plot's area, creating the slice. During this \"slicing\" \n\
-plot becomes semi-transparent. To remove all slices (and projected curves for surfaces)\n\
-double click with left mouse button in a plot's area.\n\
-\n\
-Surface with option \"GLSURF\"\n\
-The surface profile is displayed on the slicing plane. The profile projection is drawn\n\
-on the back plane by pressing 'p' or 'P' key.\n\
 For further details contact ROOTs documentation.\n\
 ";
 
    const char *fDrawOpt3[4] =
    {"SCAT", "BOX0", "BOX1", " ISO"};
-	 
+	
+//	gTranspThresh = 1;
+//	gTranspAbove = 0.4;
+//	gTranspBelow = 0.005;
+	fApplyTranspCut = 0;
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
    fHist = NULL;
@@ -173,9 +161,17 @@ For further details contact ROOTs documentation.\n\
 	
 	fRow_lab->Add(new TObjString("CheckButton_Use GL"));
 	fValp[ind++] = &fUseGL;
+	fRow_lab->Add(new TObjString("CheckButton+Apply Transp"));
+	fValp[ind++] = &fApplyTranspCut;
+   fRow_lab->Add(new TObjString("DoubleValue+Threshold"));
+   fValp[ind++] = &gTranspThresh;
+   fRow_lab->Add(new TObjString("DoubleValue_Transp below"));
+   fValp[ind++] = &gTranspBelow;
+   fRow_lab->Add(new TObjString("DoubleValue+Transp above"));
+   fValp[ind++] = &gTranspAbove;
 
 
-   fRow_lab->Add(new TObjString("CommandButt+Set as global default"));
+   fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
    fRow_lab->Add(new TObjString("CommandButt+Reset all to default"));
    fValp[ind++] = &sadcmd;
@@ -215,7 +211,7 @@ void Set3DimOptDialog::SetHistAttNow(TCanvas *canvas)
 //			cout << "fDrawOpt3DimArray[" << i << "]" << endl;
          fDrawOpt3Dim = fDrawOpt3DimArray[i];
         if (fUseGL && !fDrawOpt3Dim.Contains("GL"))
-			  fDrawOpt3Dim.Prepend("GL");
+			  fDrawOpt3Dim.Prepend("GLCOL");
       }
    }
    if (!canvas) return;
@@ -231,7 +227,7 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
    TObject *obj;
    fDrawOpt = fDrawOpt3Dim;
 	if (fUseGL && ( fDrawOpt.Contains("BOX") ||fDrawOpt.Contains("ISO"))) {
-		fDrawOpt.Prepend("GL");
+		fDrawOpt.Prepend("GLCOL");
 		gStyle->SetCanvasPreferGL(kTRUE);
 
 	} else {
@@ -242,6 +238,19 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
       if (obj->InheritsFrom("TGraph2D")) {
          ((TGraph2D*)obj)->SetDrawOption(fDrawOpt);
       } else if (obj->InheritsFrom("TH3")) {
+			TList * lof = ((TH3*)obj)->GetListOfFunctions();
+			TObject * trf= lof->FindObject("TransferFunction");
+			if ( fApplyTranspCut ) {
+				if ( !trf ) {
+					TF1 * tf = new TF1("TransferFunction", my_transfer_function);
+					lof->Add(tf);
+				}
+			} else {
+				if (trf) {
+					lof->Remove(trf);
+					delete trf;
+				}
+			}
          ((TH3*)obj)->SetDrawOption(fDrawOpt);
          ((TH3*)obj)->SetOption(fDrawOpt);
 			((TH3*)obj)->SetFillColor(fHistFillColor3Dim);
@@ -304,6 +313,7 @@ void Set3DimOptDialog::SetHistAttPerm()
 	env.SetValue("Set3DimOptDialog.fMarkerStyle3Dim",  fMarkerStyle3Dim  );
 	env.SetValue("Set3DimOptDialog.fMarkerSize3Dim",   fMarkerSize3Dim   );
 	env.SetValue("Set3DimOptDialog.fUseGL",            fUseGL            );
+	env.SetValue("Set3DimOptDialog.fApplyTranspCut",   fApplyTranspCut   );
 	
 	env.SaveLevel(kEnvLocal);
 }
@@ -320,6 +330,7 @@ void Set3DimOptDialog::SaveDefaults()
 	env.SetValue("Set3DimOptDialog.fMarkerStyle3Dim",  fMarkerStyle3Dim  );
 	env.SetValue("Set3DimOptDialog.fMarkerSize3Dim",   fMarkerSize3Dim   );
 	env.SetValue("Set3DimOptDialog.fUseGL",            fUseGL            );
+	env.SetValue("Set3DimOptDialog.fApplyTranspCut",   fApplyTranspCut   );
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -341,7 +352,7 @@ void Set3DimOptDialog::GetValuesFromHist()
 
 void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
 {
-   cout << "Set2DimOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
+   cout << "Set3DimOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
 	TString envname;
 	if (resetall == 0 ) {
 		envname = ".hprrc";
@@ -357,6 +368,7 @@ void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
 	fMarkerStyle3Dim   = env.GetValue("Set3DimOptDialog.fMarkerStyle3Dim",   1);
 	fMarkerSize3Dim    = env.GetValue("Set3DimOptDialog.fMarkerSize3Dim",    1);
 	fUseGL             = env.GetValue("Set3DimOptDialog.fUseGL",             0);
+	fApplyTranspCut    = env.GetValue("Set3DimOptDialog.fApplyTranspCut",    0);
 }
 //______________________________________________________________________
 
