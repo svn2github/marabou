@@ -240,7 +240,7 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
       } else if (obj->InheritsFrom("TH3")) {
 			TList * lof = ((TH3*)obj)->GetListOfFunctions();
 			TObject * trf= lof->FindObject("TransferFunction");
-			if ( fApplyTranspCut ) {
+			if ( fUseGL && fApplyTranspCut ) {
 				if ( !trf ) {
 					TF1 * tf = new TF1("TransferFunction", my_transfer_function);
 					lof->Add(tf);
