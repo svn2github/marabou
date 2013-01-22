@@ -76,7 +76,16 @@ private:
    Color_t fHistLineColor; 
    Style_t fHistLineStyle;
    Width_t fHistLineWidth;
-   Int_t   fShowContour;   
+   Int_t   fShowContour; 
+	Int_t   fShowZScale;
+	Int_t   fOptStat1Dim;
+	Int_t   fOptStat2Dim;
+	Int_t   fShowStatBox1Dim;
+	Int_t   fShowStatBox2Dim;
+	Double_t   fPadBottomMargin;
+	Double_t   fPadTopMargin;  
+	Double_t   fPadLeftMargin;
+	Double_t   fPadRightMargin;
    TString fErrorMode;    
    TString fDrawOpt2Dim;
   

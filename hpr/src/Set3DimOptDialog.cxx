@@ -13,6 +13,8 @@
 #include "TH3.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "TPolyMarker3D.h"
+//#include "HistPresent.h"
 #include "Set3DimOptDialog.h"
 #include <iostream>
 
@@ -73,15 +75,16 @@ according to their bin content. Typically the treshold is set to one\n\
 the transparency \"below\" to a small value (tranparent) and a \"above\"\n\
 to e.g. 0.5. In this way non filled bin are invisible.\n\
 \n\
-Caveat: When switching between GL and non GL the histogram should be\n\
-redisplayed. I.e. Set the option, \"Set as global default\" and then\n\
-display the histogram again.\n\
+Caveat: When switching between GL and non GL the histogram must be\n\
+redisplayed.\n\
 \n\
 For further details contact ROOTs documentation.\n\
 ";
 
    const char *fDrawOpt3[4] =
-   {"SCAT", "BOX0", "BOX1", " ISO"};
+   {"SCAT", "BOX0", "GLCOL", "PolyM"};
+   const char *fDrawOpt3Title[4] =
+   {"Scatter", "BOX", "OpenCL", "3D PolyM"};
 	
 //	gTranspThresh = 1;
 //	gTranspAbove = 0.4;
@@ -108,13 +111,15 @@ For further details contact ROOTs documentation.\n\
 	   cout << "No Histogram in Canvas" << endl;
 	}
    RestoreDefaults();
-	GetValuesFromHist();
+//   cout << "Set3DimOptDialog::ctor RestoreDefaults|"<<fDrawOpt3Dim<<"|" << endl;
+//	GetValuesFromHist();
    Int_t selected = -1;
    for (Int_t i = 0; i < 4; i++) {
       fDrawOpt3DimArray[i] = fDrawOpt3[i];
 		TString temp(fDrawOpt3[i]);
 		temp = temp.Strip(TString::kBoth);
-      if (fDrawOpt3Dim.Contains(temp) ) {
+//		cout << "Set3DimOptDialog::ctor temp|" << temp << "|"<< endl;
+      if (fDrawOpt3Dim.Contains(temp.Data(), TString::kIgnoreCase) ) {
          if (selected < 0) {
 				fOptRadio[i] = 1;
             selected = i;
@@ -130,17 +135,18 @@ For further details contact ROOTs documentation.\n\
    Int_t ind = 0;
    Int_t indopt = 0;
 //    static Int_t dummy;
-   static TString stycmd("SetHistAttPermLocal()");
+   static TString stycmd("SaveDefaults()");
    static TString sadcmd("SetAllToDefault()");
 
-	fBidSCAT = 1;
-	fBidBOX  = 2;
-	fBidBOX1 = 3;
+	fBidSCAT = 0;
+	fBidBOX  = 1;
+	fBidGL   = 2;
+	fBidPolyM  = 3;
    for (Int_t i = 0; i < 4; i++) {
        TString text("RadioButton");
        if (i == 0)text += "_";
        else       text += "+";
-       text += fDrawOpt3DimArray[indopt];
+       text += fDrawOpt3Title[i];
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
    }
@@ -159,15 +165,16 @@ For further details contact ROOTs documentation.\n\
    fRow_lab->Add(new TObjString("Float_Value+MSize"));
    fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize3Dim;
 	
-	fRow_lab->Add(new TObjString("CheckButton_Use GL"));
-	fValp[ind++] = &fUseGL;
-	fRow_lab->Add(new TObjString("CheckButton+Apply Transp"));
+//	fRow_lab->Add(new TObjString("CheckButton_Use GL"));
+//	fValp[ind++] = &fUseGL;
+	fRow_lab->Add(new TObjString("CheckButton_Apply Transp"));
 	fValp[ind++] = &fApplyTranspCut;
    fRow_lab->Add(new TObjString("DoubleValue+Threshold"));
    fValp[ind++] = &gTranspThresh;
    fRow_lab->Add(new TObjString("DoubleValue_Transp below"));
    fValp[ind++] = &gTranspBelow;
    fRow_lab->Add(new TObjString("DoubleValue+Transp above"));
+	fBidTranspAbove = ind;
    fValp[ind++] = &gTranspAbove;
 
 
@@ -206,14 +213,14 @@ void Set3DimOptDialog::CloseDialog()
 
 void Set3DimOptDialog::SetHistAttNow(TCanvas *canvas)
 {
-   for (Int_t i = 0; i < 4; i++) {
-      if (fOptRadio[i] == 1) {
-//			cout << "fDrawOpt3DimArray[" << i << "]" << endl;
-         fDrawOpt3Dim = fDrawOpt3DimArray[i];
-        if (fUseGL && !fDrawOpt3Dim.Contains("GL"))
-			  fDrawOpt3Dim.Prepend("GLCOL");
-      }
-   }
+	if (gDebug > 0) 
+		cout << "SetHistAttNow fDrawOpt3Dim " << fDrawOpt3Dim << endl;
+	
+//	if (!fDrawOpt3Dim.Contains("GL")){
+//		cout << "switching from non GL" << endl;
+//		fDrawOpt3Dim.Prepend("GLCOL");
+//		return;       // when switching from non GL redraw of canvas is needed
+//	}
    if (!canvas) return;
    Set3DimOptDialog::SetHistAtt(canvas);
 }
@@ -226,13 +233,13 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 	TIter next(canvas->GetListOfPrimitives());
    TObject *obj;
    fDrawOpt = fDrawOpt3Dim;
-	if (fUseGL && ( fDrawOpt.Contains("BOX") ||fDrawOpt.Contains("ISO"))) {
-		fDrawOpt.Prepend("GLCOL");
-		gStyle->SetCanvasPreferGL(kTRUE);
-
-	} else {
-		gStyle->SetCanvasPreferGL(kFALSE);
-	}
+// 	if (fUseGL && ( fDrawOpt.Contains("BOX") ||fDrawOpt.Contains("ISO"))) {
+// 		fDrawOpt.Prepend("GLCOL");
+// 		gStyle->SetCanvasPreferGL(kTRUE);
+// 
+// 	} else {
+// 		gStyle->SetCanvasPreferGL(kFALSE);
+// 	}
 		
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("TGraph2D")) {
@@ -240,7 +247,7 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
       } else if (obj->InheritsFrom("TH3")) {
 			TList * lof = ((TH3*)obj)->GetListOfFunctions();
 			TObject * trf= lof->FindObject("TransferFunction");
-			if ( fUseGL && fApplyTranspCut ) {
+			if ( fDrawOpt.Contains("GL") && fApplyTranspCut ) {
 				if ( !trf ) {
 					TF1 * tf = new TF1("TransferFunction", my_transfer_function);
 					lof->Add(tf);
@@ -260,7 +267,16 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 			((TH3*)obj)->SetFillStyle(0);
 			((TH3*)obj)->SetMarkerColor(fMarkerColor3Dim);  
 			((TH3*)obj)->SetMarkerStyle(fMarkerStyle3Dim);  
-			((TH3*)obj)->SetMarkerSize (fMarkerSize3Dim);   			
+			((TH3*)obj)->SetMarkerSize (fMarkerSize3Dim); 
+			if (fDrawOpt.Contains("PolyM")){
+				TIter next2(canvas->GetListOfPrimitives());
+				TObject *obj2;
+				while ( (obj2 = next2()) ) {
+					if (obj2->InheritsFrom("TPolyMarker3D"))
+					((TPolyMarker3D*)obj2)->SetMarkerSize (fMarkerSize3Dim); 
+            }
+         }
+
       } else if ((obj->InheritsFrom("TPad"))) {
          TPad *pad = (TPad*)obj;
          TIter next1(pad->GetListOfPrimitives());
@@ -292,7 +308,7 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 	canvas->Update();
 }
 //______________________________________________________________________
-
+/*
 void Set3DimOptDialog::SetHistAttPermLocal()
 {
 //   cout << "Set3DimOptDialog:: SetHistAttPerm()" << endl;
@@ -316,11 +332,13 @@ void Set3DimOptDialog::SetHistAttPerm()
 	env.SetValue("Set3DimOptDialog.fApplyTranspCut",   fApplyTranspCut   );
 	
 	env.SaveLevel(kEnvLocal);
-}
+}*/
 //______________________________________________________________________
 
 void Set3DimOptDialog::SaveDefaults()
 {
+	if (gDebug > 0) 
+		cout << "Set3DimOptDialog::SaveDefaults()  "<< endl;
    TEnv env(".hprrc");
    env.SetValue("Set3DimOptDialog.fDrawOpt3Dim",      fDrawOpt3Dim);
 	env.SetValue("Set3DimOptDialog.f3DimBackgroundColor",f3DimBackgroundColor);
@@ -329,7 +347,7 @@ void Set3DimOptDialog::SaveDefaults()
 	env.SetValue("Set3DimOptDialog.fMarkerColor3Dim",  fMarkerColor3Dim  );
 	env.SetValue("Set3DimOptDialog.fMarkerStyle3Dim",  fMarkerStyle3Dim  );
 	env.SetValue("Set3DimOptDialog.fMarkerSize3Dim",   fMarkerSize3Dim   );
-	env.SetValue("Set3DimOptDialog.fUseGL",            fUseGL            );
+//	env.SetValue("Set3DimOptDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set3DimOptDialog.fApplyTranspCut",   fApplyTranspCut   );
 	env.SaveLevel(kEnvLocal);
 }
@@ -338,6 +356,7 @@ void Set3DimOptDialog::SaveDefaults()
 
 void Set3DimOptDialog::SetAllToDefault()
 {
+   cout << "Set3DimOptDialog::SetAllToDefault()  "<< endl;
 	RestoreDefaults(1);
 }
 //______________________________________________________________________
@@ -352,7 +371,8 @@ void Set3DimOptDialog::GetValuesFromHist()
 
 void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
 {
-   cout << "Set3DimOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
+	if (gDebug > 0) 
+		cout << "Set3DimOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
 	TString envname;
 	if (resetall == 0 ) {
 		envname = ".hprrc";
@@ -361,13 +381,14 @@ void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
 		gSystem->TempFileName(envname);
 	}
    TEnv env(envname);
+	fDrawOpt3Dim       = env.GetValue("Set3DimOptDialog.fDrawOpt3Dim",     "BOX");
 	f3DimBackgroundColor = env.GetValue("Set3DimOptDialog.f3DimBackgroundColor", 0);
 	fHistFillColor3Dim = env.GetValue("Set3DimOptDialog.fHistFillColor3Dim", 1);
 	fHistLineColor3Dim = env.GetValue("Set3DimOptDialog.fHistLineColor3Dim", 1);
 	fMarkerColor3Dim   = env.GetValue("Set3DimOptDialog.fMarkerColor3Dim",   1);
 	fMarkerStyle3Dim   = env.GetValue("Set3DimOptDialog.fMarkerStyle3Dim",   1);
 	fMarkerSize3Dim    = env.GetValue("Set3DimOptDialog.fMarkerSize3Dim",    1);
-	fUseGL             = env.GetValue("Set3DimOptDialog.fUseGL",             0);
+//	fUseGL             = env.GetValue("Set3DimOptDialog.fUseGL",             0);
 	fApplyTranspCut    = env.GetValue("Set3DimOptDialog.fApplyTranspCut",    0);
 }
 //______________________________________________________________________
@@ -381,12 +402,25 @@ void Set3DimOptDialog::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject *obj)
+void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
-//   cout << "CRButtonPressed(" << wid<< ", " <<bid;
-//   if (obj) cout  << ", " << canvas->GetName() << ")";
-//   cout << endl;
-   SetHistAttNow(canvas);
+   for (Int_t i = 0; i < 4; i++) {
+      if (fOptRadio[i] == 1) {
+			fDrawOpt3Dim = fDrawOpt3DimArray[i];
+		}
+	}
+	if (gDebug > 0) {
+		cout << "CRButtonPressed fDrawOpt3Dim " << fDrawOpt3Dim << endl;
+		if (obj) cout  << ", " << canvas->GetName() << ")";
+		cout << endl;
+	}
+	if ( bid > fBidPolyM && bid <= fBidTranspAbove )
+		SetHistAttNow(canvas);
+	if (bid >= fBidSCAT && bid <= fBidPolyM ) {
+		SaveDefaults();
+		delete fCanvas;
+//		gHpr->ShowHist(fHist);
+	}
 }
 

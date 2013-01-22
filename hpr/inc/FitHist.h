@@ -176,6 +176,7 @@ private:
    Style_t fMarkerStyle3Dim;  
    Size_t  fMarkerSize3Dim; 
 	Int_t   fApplyTranspCut;
+	Int_t   f3DimPolyMarker;
 	
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
@@ -190,7 +191,8 @@ public:
    void Draw1Dim();                      //
    void Draw2Dim();                      //
    void Draw3Dim();                      //
-   const Char_t * GetCanvasName(){return fCname.Data();};             //
+   void Draw3DimPolyMarker();
+	const Char_t * GetCanvasName(){return fCname.Data();};             //
    TRootCanvas* GetMyCanvas(){return mycanvas;};
    HTCanvas* GetCanvas(){return fCanvas;};
    void  SetMyCanvas(TRootCanvas *myc){mycanvas = myc;};

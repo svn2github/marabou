@@ -42,8 +42,8 @@ public:
    ~GeneralAttDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
-   static
-	void SaveDefaults();
+	static void GetCustomStyles();
+   static void SaveDefaults();
    static void RestoreDefaults();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);

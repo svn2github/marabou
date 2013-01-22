@@ -115,8 +115,6 @@ masks. One may switch to the more powerful Regular expression\n\
 For details consult a book on Unix.\n\
 ____________________________________________________________\n\
 ";
-
-
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
    gROOT->GetListOfCleanups()->Add(this);
@@ -124,21 +122,8 @@ ____________________________________________________________\n\
 
    Int_t ind = 0;
 //   static Int_t dummy;
+	GetCustomStyles();
 	TObject *obj;
-	if (!gSystem->AccessPathName("hpr_custom_styles.root", kFileExists)) {
-	   TFile *cstyle = new TFile("hpr_custom_styles.root");
-		TIter n1(gDirectory->GetListOfKeys());
-		TKey* key;
-		while( (key = (TKey*)n1()) ){
-		   if(!strncmp(key->GetClassName(),"TStyle",6)) {
-		      TStyle *sty = (TStyle*)cstyle->Get(key->GetName());
-				cout << "key->GetName() " << key->GetName()<< endl;
-				if (!gROOT->GetListOfStyles()->FindObject(key->GetName()))
-			      gROOT->GetListOfStyles()->Add(sty);
-		   }
-		}
-		cstyle->Close();
-	}
    TString style_menu ("ComboSelect_         Set global style");
    TIter next(gROOT->GetListOfStyles());
 	while ( (obj = next()) ) {
@@ -202,6 +187,24 @@ ____________________________________________________________\n\
                       NULL, NULL, helptext, this, this->ClassName());
 }
 //_______________________________________________________________________
+void GeneralAttDialog::GetCustomStyles()
+{
+	if (!gSystem->AccessPathName("hpr_custom_styles.root", kFileExists)) {
+	   TFile *cstyle = new TFile("hpr_custom_styles.root");
+		TIter n1(gDirectory->GetListOfKeys());
+		TKey* key;
+		while( (key = (TKey*)n1()) ){
+		   if(!strncmp(key->GetClassName(),"TStyle",6)) {
+		      TStyle *sty = (TStyle*)cstyle->Get(key->GetName());
+				cout << "key->GetName() " << key->GetName()<< endl;
+				if (!gROOT->GetListOfStyles()->FindObject(key->GetName()))
+			      gROOT->GetListOfStyles()->Add(sty);
+		   }
+		}
+		cstyle->Close();
+	}
+}
+//_______________________________________________________________________
 
 void GeneralAttDialog::RecursiveRemove(TObject * obj)
 {
@@ -253,6 +256,7 @@ void GeneralAttDialog::SaveDefaults()
 
 void GeneralAttDialog::RestoreDefaults()
 {
+	GetCustomStyles();
    TEnv env(".hprrc");
    fGlobalStyle = env.GetValue("GeneralAttDialog.fGlobalStyle", "Plain");
    fForceStyle = env.GetValue("GeneralAttDialog.fForceStyle", 1);

@@ -26,17 +26,19 @@ private:
    Size_t  fMarkerSize3Dim; 
 	Int_t   fBidSCAT;
 	Int_t   fBidBOX;
-	Int_t   fBidBOX1;
+	Int_t   fBidGL;
+	Int_t   fBidPolyM;
 	Int_t   fBidARR;
 	Int_t   fBidTEXT;
+	Int_t   fBidFillColor;
+	Int_t   fBidLineColor;
 	Int_t   fBidMarkerColor;
 	Int_t   fBidMarkerStyle;
 	Int_t   fBidMarkerSize;
-	Int_t   fBidLineColor;
-	Int_t   fBidFillColor;
-	Int_t   fUseGL;
+	Int_t   fBidApplyTransp;
+	Int_t   fBidTranspBelow;
+	Int_t   fBidTranspAbove;
 	Int_t   fApplyTranspCut;
-	
 public:
 
    Set3DimOptDialog(TGWindow * win = NULL);
@@ -46,8 +48,8 @@ public:
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);
    void SetHistAtt(TCanvas *canvas);
-   void SetHistAttPermLocal();
-   void SetHistAttPerm();
+//   void SetHistAttPermLocal();
+//   void SetHistAttPerm();
    void SaveDefaults();
    void SetAllToDefault();
    void RestoreDefaults(Int_t resetall = 0);

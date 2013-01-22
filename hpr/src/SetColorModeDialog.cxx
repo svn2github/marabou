@@ -277,20 +277,19 @@ void SetColorModeDialog::SetGreyLevels()
 //   cout << " SetColorModeDialog::SetGreyLevels() fGreyPalette: " <<  fGreyPalette
 //        << " fGreyPaletteInv: " <<  fGreyPaletteInv  << endl;
    static Int_t mono = 0;
-   TColor *color;
+//   TColor *color;
    if (mono == 0) {
       mono = 1;
       Float_t frac = 1 / (Float_t) fNofGreyLevels;
       for (Int_t i = 0; i < fNofGreyLevels; i++) {
          Float_t x = (Float_t) i;
          fStartColorIndex = 331;
-         color =
-             new TColor(fStartColorIndex + i, 1 - x * frac, 1 - x * frac, 1 - x * frac,
+         new TColor(fStartColorIndex + i, 1 - x * frac, 1 - x * frac, 1 - x * frac,
                         "");
          fGreyPaletteInv[i] = fStartColorIndex + i;
 
          fStartColorIndex = 301;
-         color = new TColor(fStartColorIndex + i, x * frac, x * frac, x * frac, "");
+         new TColor(fStartColorIndex + i, x * frac, x * frac, x * frac, "");
          fGreyPalette[i] = fStartColorIndex + i;
       }
    }
@@ -309,7 +308,15 @@ void SetColorModeDialog::SetTransLevelsRGB()
    fTransPaletteRGB    = new Int_t[fNofTransLevels];
 	TColor * color;
    TColor * sc = GetColorByIndex(fStartColor);
+	if ( !sc ) {
+		cout << "SetColorModeDialog::SetTransLevelsRGB Cant get color for index: " << fStartColor;
+		return;
+	}
    TColor * ec = GetColorByIndex(fEndColor);
+	if ( !ec ) {
+		cout << "SetColorModeDialog::SetTransLevelsRGB Cant get color for index: " << fStartColor;
+		return;
+	}
    Float_t start_r = sc->GetRed();
    Float_t step_r = (ec->GetRed() - start_r) / (Float_t)(fNofTransLevels - 1);
    Float_t frac_r = 0;

@@ -116,6 +116,10 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*tit
 void GroupOfHists::BuildCanvas()
 {
    Int_t nsel = fHList->GetSize();
+	gStyle->SetPadLeftMargin(fPadLeftMargin);
+	gStyle->SetPadRightMargin(fPadRightMargin);
+	gStyle->SetPadBottomMargin(fPadBottomMargin);
+	gStyle->SetPadTopMargin(fPadTopMargin);
    if ( fCanvas  == NULL ) {
       fCanvas =  new HTCanvas(GetName(), "GroupOfHists",
               WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, fWindowXWidth, fWindowYWidth);
@@ -128,11 +132,7 @@ void GroupOfHists::BuildCanvas()
 //       fHistPresent->fCanvasList->Add(fCanvas);
    } else {
       fCanvas->Clear();
-      fCanvas->SetLeftMargin(gStyle->GetPadLeftMargin());
-      fCanvas->SetRightMargin(gStyle->GetPadRightMargin());
-      fCanvas->SetBottomMargin(gStyle->GetPadBottomMargin());
-      fCanvas->SetTopMargin(gStyle->GetPadTopMargin());
-   }
+	}
 
    Double_t mx, my;
    if (fNoSpace ) {
@@ -239,6 +239,9 @@ void GroupOfHists::BuildCanvas()
       }
 
       if (hist->GetDimension() == 2) {
+			hist->SetStats(fShowStatBox2Dim);
+			if (fShowStatBox2Dim)
+				gStyle->SetOptStat(fOptStat2Dim);
          hist->Draw(fDrawOpt2Dim);
          if (lastset) {
             if (lastset->GetValue("LogZ", 0) )p->SetLogz();
@@ -255,6 +258,9 @@ void GroupOfHists::BuildCanvas()
          }
       } else {
          if (lastset && lastset->GetValue("LogY", 0) )p->SetLogy();
+			hist->SetStats(fShowStatBox1Dim);
+			if (fShowStatBox1Dim)
+				gStyle->SetOptStat(fOptStat1Dim);
          TString drawopt;
          hist->Draw(drawopt.Data());
 //         gStyle->SetOptTitle(fHistPresent->GetShowTitle());
@@ -755,9 +761,21 @@ or as tiles\n\
    fValp[ind++] = &fWindowXWidth;
    fRow_lab->Add(new TObjString("PlainIntVal+Window Y Width"));
    fValp[ind++] = &fWindowYWidth;
-   fRow_lab->Add(new TObjString("CheckButton_No Space between pads"));
+	fRow_lab->Add(new TObjString("DoubleValue_Top margin"));
+	fValp[ind++] = &fPadTopMargin;
+	fRow_lab->Add(new TObjString("DoubleValue+Bottom margin"));
+	fValp[ind++] = &fPadBottomMargin;
+	fRow_lab->Add(new TObjString("DoubleValue_Left margin"));
+	fValp[ind++] = &fPadLeftMargin;
+	fRow_lab->Add(new TObjString("DoubleValue+Right margin"));
+	fValp[ind++] = &fPadRightMargin;
+   fRow_lab->Add(new TObjString("CheckButton_No Spc betw pads"));
    fNoSpaceButton = ind;
    fValp[ind++] = &fNoSpace;
+   fRow_lab->Add(new TObjString("CheckButton+StatBox 1 dim"));
+   fValp[ind++] = &fShowStatBox1Dim;
+   fRow_lab->Add(new TObjString("CheckButton+StatBox 2 dim"));
+   fValp[ind++] = &fShowStatBox2Dim;
    fRow_lab->Add(new TObjString("DoubleValue_Label Magnification"));
    fMagFacButton = ind;
    fValp[ind++] = &fMagFac;
@@ -805,6 +823,19 @@ void GroupOfHists::RestoreDefaults()
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
    fErrorMode    = env.GetValue("Set1DimOptDialog.fErrorMode", "e");
    fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
+	fShowZScale   = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
+	fShowStatBox2Dim	= env.GetValue("GroupOfHists.fShowStatBox2Dim", 0);
+	fShowStatBox1Dim  = env.GetValue("GroupOfHists.fShowStatBox1Dim", 0);
+	if (fShowZScale)
+		fDrawOpt2Dim += "Z";
+	fOptStat1Dim    = env.GetValue("WhatToShowDialog.fOptStat1Dim ", 1000001);
+	fOptStat2Dim    = env.GetValue("WhatToShowDialog.fOptStat1Dim ", 1000001);
+
+	fPadBottomMargin	= env.GetValue("GroupOfHists.fPadBottomMargin",     0.1);
+	fPadTopMargin	   = env.GetValue("GroupOfHists.fPadTopMargin",        0.1);
+	fPadLeftMargin  	= env.GetValue("GroupOfHists.fPadLeftMargin",       0.1);
+	fPadRightMargin	= env.GetValue("GroupOfHists.fPadRightMargin",      0.15);
+
 }
 //_______________________________________________________
 void GroupOfHists::SaveDefaults()
@@ -820,6 +851,12 @@ void GroupOfHists::SaveDefaults()
    env.SetValue("GroupOfHists.fArrangeOnTop", fArrangeOnTop);
    env.SetValue("GroupOfHists.fArrangeSideBySide", fArrangeSideBySide);
    env.SetValue("GroupOfHists.fArrangeAsTiles", fArrangeAsTiles);
+	env.SetValue("GroupOfHists.fShowStatBox2Dim", fShowStatBox2Dim);
+	env.SetValue("GroupOfHists.fShowStatBox1Dim", fShowStatBox1Dim);
+	env.SetValue("GroupOfHists.fPadBottomMargin",    fPadBottomMargin	);
+	env.SetValue("GroupOfHists.fPadTopMargin",       fPadTopMargin	   );
+	env.SetValue("GroupOfHists.fPadLeftMargin",      fPadLeftMargin  	);
+	env.SetValue("GroupOfHists.fPadRightMargin",     fPadRightMargin	);
    env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
@@ -840,6 +877,12 @@ void GroupOfHists::CRButtonPressed(Int_t /*widgetId*/, Int_t buttonId, TObject *
    if (buttonId == fNoSpaceButton || buttonId == fMagFacButton) {
       BuildCanvas();
    }
+   if (buttonId >= 2 && buttonId <=5) {
+		fCanvas->SetLeftMargin(fPadLeftMargin);
+		fCanvas->SetRightMargin(fPadRightMargin);
+		fCanvas->SetBottomMargin(fPadBottomMargin);
+		fCanvas->SetTopMargin(fPadTopMargin);
+	}
    SaveDefaults();
    fCanvas->Modified();
    fCanvas->Update();
