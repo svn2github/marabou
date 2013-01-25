@@ -828,18 +828,19 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	int numData;
 	int chn;
 
-	tryIt = 20;
+/*	tryIt = 20;
 	while (tryIt-- && !mqdc32_dataReady(s)) { usleep(1000); }
 	if (tryIt <= 0) {
 		*pointer++ = 0xaffec0c0;
 		mqdc32_resetFifo(s);
 		mqdc32_startAcq(s);
 		return (pointer - dataStart);
-	}
+	} */
 
 	dataStart = pointer;
 
 	numData = (int) mqdc32_getFifoLength(s);
+	if (numData == 0) return(0);
 
 	if (s->blockXfer == MQDC32_BLT_NORMAL) {
 #ifdef CPU_TYPE_RIO2

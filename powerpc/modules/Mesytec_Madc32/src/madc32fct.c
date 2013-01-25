@@ -858,16 +858,17 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 
 	dataStart = pointer;
 
-	tryIt = 20;
+/*	tryIt = 20;
 	while (tryIt-- && !madc32_dataReady(s)) { usleep(1000); }
 	if (tryIt <= 0) {
 		*pointer++ = 0xaffec0c0;
 		madc32_resetFifo(s);
 		madc32_startAcq(s);
 		return (pointer - dataStart);
-	}
+	} */
 
 	numData = (int) madc32_getFifoLength(s);
+	if (numData == 0) return(0);
 
 	if (s->blockXfer == MADC32_BLT_NORMAL) {
 #ifdef CPU_TYPE_RIO2
