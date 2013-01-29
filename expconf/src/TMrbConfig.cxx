@@ -715,6 +715,10 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		else if (procType == "RIO3") fPipeSegLength = kMbsPipeSegLength_RIO3;
 		else if (procType == "RIO4") fPipeSegLength = kMbsPipeSegLength_RIO4;
 
+		fEventBufferSize = kMbsEventBufferSize;
+		fNofEventBuffers = kMbsNofEventBuffers;
+		fNofStreams = kMbsNofStreams;
+
 		fLofUserHistograms.Delete();							// init list of user-defined histograms
 		fLofHistoArrays.Delete();								// init list of histogram arrays
 		fLofHistoConditions.Delete();							// init list of histogram booking conds
@@ -7695,6 +7699,8 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 		TMrbEvent * evt;
 		TIterator * evtIter = fLofEvents.MakeIterator();
 		while (evt = (TMrbEvent *) evtIter->Next()) mbsSetup->ReadoutProc(0)->SetSevtSize(evt->GetTrigger(), fSevtSize);
+
+		mbsSetup->EvtBuilder()->SetBuffers(fEventBufferSize, fNofEventBuffers, fNofStreams);
 	}
 
 	mbsSetup->Save();
