@@ -1917,6 +1917,9 @@ Bool_t FhMainFrame::StopDAQ(){
          if(*fInputSource == "TcpIp"){
            cout << setblue << "c_ana: Reinitialize Mbs" << setblack<< endl;
            if(fMbsControl->InitMbs()){
+		if (gEnv->GetValue("TMrbAnalyze.ReloadReadoutOnStop", kFALSE)) {
+			if(!fMbsControl->Reload(fMbsDebug)) WarnBox("Something went wrong with reload", this);
+		}
                fM_Status = M_CONFIGURED;
                fPauseButton->SetState(kButtonDisabled);
                fStartStopButton->SetState(kButtonUp);
@@ -3144,13 +3147,13 @@ void FhMainFrame::Runloop(){
    if (fM_Status != M_RUNNING) this->SetTime();
 
 //   cout << "fM_Status " << fM_Status<< endl;
-   if(fM_Status == M_RUNNING && (!fForcedStop && fWriteOutput && fOutputFile->Length() > 1)){
-      Int_t sts = gSystem->GetPathInfo(fOutputFile->Data(), &id, &size, &flags, &modtime);
+   if(fM_Status == M_RUNNING && (!fForcedStop && fWriteOutput && fActualOutputFile->Length() > 1)){
+      Int_t sts = gSystem->GetPathInfo(fActualOutputFile->Data(), &id, &size, &flags, &modtime);
       if (sts == 0) {
          fOutSize->SetText(new TGString(Form("%lld", size)));
          gClient->NeedRedraw(fOutSize);
          if (fMaxFileSize > 0 && size/1000000 > fMaxFileSize) {
-            cout << setred << fOutputFile << ": size of output file = " << size/1000000
+            cout << setred << fActualOutputFile << ": size of output file = " << size/1000000
                  << "MB exceeds MaxFileSize = " << fMaxFileSize << " MB" << endl;
             cout << "force StopDAQ" << setblack << endl;
             fForcedStop = kTRUE;
@@ -3390,7 +3393,7 @@ void FhMainFrame::Runloop(){
           fM_OldStatus  == -1 )){
          if(fWriteOutput && *fInputSource == "TcpIp"){
             TString chmodCmd = "chmod -w ";
-            chmodCmd += *fOutputFile;
+            chmodCmd += *fActualOutputFile;
             cout << setgreen << "For your info: " << chmodCmd.Data()
                  << setblack << endl;
             gSystem->Exec(chmodCmd.Data());
