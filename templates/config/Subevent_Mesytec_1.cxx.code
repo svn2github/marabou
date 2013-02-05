@@ -32,8 +32,7 @@
 %C%		Int_t eventsProcessed = 0;
 %C%
 %C%		while (SevtWC > 0) {									// subevent may contain several madc modules
-%C%			UInt_t header = *dataPtr++;
-%C%			header = (*dataPtr++ << 16);
+%C%			UInt_t header = (*dataPtr++ << 16);
 %C%			header |= *dataPtr++;
 %C%			if (header == 0xaffec0c0) {
 %C%				cerr	<< setred
@@ -131,7 +130,8 @@
 %C%			if (this->GetNofModules() == 1) this->Reset();					// reset data if subevent houses one module only
 %C%
 %C%			for (; wc; wc--) {
-%C%				Int_t data = *dataPtr++;
+%C%				Int_t data = (*dataPtr++ << 16);
+%C%				data |= *dataPtr++;
 %C%				if ((data & MADC_M_ID) != MADC_D_DATA) {
 %C%					if ((data & MADC_M_XTS) == MADC_D_XTS) continue;	/* skip extended time stamp */
 %C%					if ((data & MADC_M_ID) == MADC_D_EOE) {

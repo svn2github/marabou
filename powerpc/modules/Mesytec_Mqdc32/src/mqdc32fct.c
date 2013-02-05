@@ -828,16 +828,10 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	int numData;
 	int chn;
 
-/*	tryIt = 20;
-	while (tryIt-- && !mqdc32_dataReady(s)) { usleep(1000); }
-	if (tryIt <= 0) {
-		*pointer++ = 0xaffec0c0;
-		mqdc32_resetFifo(s);
-		mqdc32_startAcq(s);
-		return (pointer - dataStart);
-	} */
-
 	dataStart = pointer;
+
+/* 	tryIt = 20;
+ 	while (tryIt-- && !mqdc32_dataReady(s)) { usleep(1000); } */
 
 	numData = (int) mqdc32_getFifoLength(s);
 	if (numData == 0) return(0);
@@ -863,7 +857,8 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 		pointer += numData;
 	} else {
 		s->blockXfer = MQDC32_BLT_OFF;
-		for (i = 0; i < numData; i++) {
+		for (i = 0; i < numData; i++) *pointer++ = GET32(s->baseAddr, MQDC32_DATA);
+/*		for (i = 0; i < numData; i++) {
 			data = GET32(s->baseAddr, MQDC32_DATA);
 			if (data == 0) {
 				s->evtp++; *s->evtp = (MQDC32_M_TRAILER | 0x00525252);
@@ -890,7 +885,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 				if (s->skipData) continue;
 				s->evtp++; *s->evtp = data;
 			}
-		}
+		} */
 	}
 
 	mqdc32_resetReadout(s);
@@ -905,7 +900,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 				chn = (data >> 16) & 0x1F;
 				if (chn == s->accuChannel) {
 					data &= 0x1FFF;
-					if (data >= 0 && data <= MQDC32_N_HISTOSIZE) s->histo[data]++;
+					if (data >= 0 && data < MQDC32_N_HISTOSIZE) s->histo[data]++;
 				}
 			}
 		}
