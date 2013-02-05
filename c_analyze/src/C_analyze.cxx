@@ -3153,7 +3153,7 @@ void FhMainFrame::Runloop(){
          fOutSize->SetText(new TGString(Form("%lld", size)));
          gClient->NeedRedraw(fOutSize);
          if (fMaxFileSize > 0 && size/1000000 > fMaxFileSize) {
-            cout << setred << fActualOutputFile << ": size of output file = " << size/1000000
+            cout << setred << fActualOutputFile->Data() << ": size of output file = " << size/1000000
                  << "MB exceeds MaxFileSize = " << fMaxFileSize << " MB" << endl;
             cout << "force StopDAQ" << setblack << endl;
             fForcedStop = kTRUE;
