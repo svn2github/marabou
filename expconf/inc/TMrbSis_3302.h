@@ -65,6 +65,8 @@ class TMrbSis_3302 : public TMrbVMEModule {
 		inline void SetMaxEvents(Int_t Events) { fMaxEvents = Events; };
 		inline Int_t GetMaxEvents() { return(fMaxEvents); };
 
+		inline Bool_t HasBlockXfer() const { return(kTRUE); };			// module is capable of using BLT
+
 		TEnv * UseSettings(const Char_t * SettingsFile = NULL);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };

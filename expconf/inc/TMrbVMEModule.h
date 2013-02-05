@@ -62,6 +62,8 @@ class TMrbVMEModule : public TMrbModule {
 
 		virtual inline Bool_t UseLVME() const { return(kFALSE); };				// connect via LVME interface
 
+		virtual inline Bool_t HasBlockXfer() const { return(kFALSE); };			// module is capable of using BLT
+
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate readout code
 												TMrbTemplate & Template, const Char_t * Prefix = NULL);
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel

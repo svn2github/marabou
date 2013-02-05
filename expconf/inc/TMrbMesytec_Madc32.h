@@ -302,7 +302,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
 		inline const Char_t * GetPrivateCodeFile() const { return("Module_Madc"); };
 
- 		virtual Bool_t CheckSubeventType(TMrbSubevent * Subevent) const;		// check if subevent type is [10,8x]
+		inline Bool_t HasBlockXfer() const { return(kTRUE); };			// module is capable of using BLT
+
+		virtual Bool_t CheckSubeventType(TMrbSubevent * Subevent) const;		// check if subevent type is [10,8x]
 
 		inline Char_t * GetDeviceStruct() { return(Form("s_%s", this->GetName())); };
 
