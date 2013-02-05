@@ -1,11 +1,11 @@
-CC = gcc 
+CC = gcc
 
 PPCINC 		=	../../../include
 CESINC		=	/usr/include/ces
-RDOINC		=	../../../readout/inc
+UTIINC		=	../../../utils/inc
 MBSINC		=	$(MBSROOT)/inc
 
-CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I../inc -I$(RDOINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
+CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I../inc -I$(UTIINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
 
 # ------------ Libaries ------------------------------------------------
 
@@ -16,7 +16,7 @@ ARFLAG = -rv
 
 LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libSis_3300.a
 
-libSis_3300.OBJS = sis_3300_fct.o sis_3300_readout.o block.o
+libSis_3300.OBJS = sis_3300_fct.o sis_3300_readout.o
 
 # ------------ Suffix Rules -------------------------------------------
 
@@ -24,13 +24,13 @@ libSis_3300.OBJS = sis_3300_fct.o sis_3300_readout.o block.o
 
 # ----- C Code ---------
 %.o: %.c
-	$(CC) $< -c $(CFLAGS) -o $@ 
+	$(CC) $< -c $(CFLAGS) -o $@
 
-.SUFFIXES: .o .c 
+.SUFFIXES: .o .c
 
 # ------------ Targets -------------------------------------------------
 
-all: $(LIB_TARGETS)$(CPPFLAGS) 
+all: $(LIB_TARGETS)$(CPPFLAGS)
 
 $(LIB_TARGETS): $(libSis_3300.OBJS)
 	$(AR) $(ARFLAGS) $@ $^

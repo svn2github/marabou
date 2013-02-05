@@ -2,10 +2,10 @@ CC = gcc
 
 PPCINC 		=	../../../include
 CESINC		=	/usr/include/ces
-RDOINC		=	../../../readout/inc
+UTIINC		=	../../../utils/inc
 MBSINC		=	$(MBSROOT)/inc
 
-CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I../inc -I$(RDOINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
+CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I../inc -I$(UTIINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
 
 BIN_DIR = ../../../bin/$(GSI_OS_VERSION)
 
