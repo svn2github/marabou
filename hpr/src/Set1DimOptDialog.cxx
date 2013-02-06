@@ -199,7 +199,8 @@ may be selected.\n\
 				errmode = erm;
 			}
 		}
-		if (erm.Length() == 0 && opt.Contains("E",TString::kIgnoreCase)) {
+		cout << "errmode:" << errmode << " " << errmode.Length() << endl;
+		if (errmode.Length() == 0 && opt.Contains("E",TString::kIgnoreCase)) {
 			errmode = "E";
 		}
 		fErrorMode[i] = errmode;
@@ -273,7 +274,7 @@ may be selected.\n\
 	
 	fRow_lab->Add(new TObjString("Float_Value_EndErrorSz "));
 	fValp[ind++] = &fEndErrorSize;
-	fRow_lab->Add(new TObjString("Float_Value+X ErrorSz  "));
+	fRow_lab->Add(new TObjString("Float_Value+X ErrorSz;0.0,0.5"));
 	fValp[ind++] = &fErrorX;
    fRow_lab->Add(new TObjString("CheckButton_     Log X"));
    fValp[ind++] = &fOneDimLogX;
@@ -545,7 +546,7 @@ void Set1DimOptDialog::SetDefaults()
    gStyle->SetHistLineStyle(env.GetValue("Set1DimOptDialog.fLineStyle", 1));
    gStyle->SetHistLineWidth(env.GetValue("Set1DimOptDialog.fLineWidth", 2));
    gStyle->SetEndErrorSize (env.GetValue("Set1DimOptDialog.fEndErrorSize",  1));
-   gStyle->SetErrorX       (env.GetValue("Set1DimOptDialog.fErrorX", 1));
+   gStyle->SetErrorX       (env.GetValue("Set1DimOptDialog.fErrorX", 0.5));
 	TString temp =  env.GetValue("Set1DimOptDialog.fErrorMode", "");
    if (  temp != "none" )
       gStyle->SetDrawOption(temp);
@@ -665,7 +666,7 @@ void Set1DimOptDialog::RestoreDefaults(Int_t resetall)
 // 	fShowMarkers     = env.GetValue("Set1DimOptDialog.fShowMarkers",    0);
 
  	fEndErrorSize   = env.GetValue("Set1DimOptDialog.fEndErrorSize" , 1);
- 	fErrorX         = env.GetValue("Set1DimOptDialog.fErrorX",        1);
+ 	fErrorX         = env.GetValue("Set1DimOptDialog.fErrorX",      0.5);
 	fLiveStat1Dim   = env.GetValue("Set1DimOptDialog.fLiveStat1Dim"  ,0);
 	fLiveGauss      = env.GetValue("Set1DimOptDialog.fLiveGauss"     ,0);
 	fLiveBG         = env.GetValue("Set1DimOptDialog.fLiveBG"        ,1);

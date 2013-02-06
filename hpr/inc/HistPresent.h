@@ -242,7 +242,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void SaveMap(const char*, const char* bp =0);
    void SaveFromSocket(const char*, const char* bp =0);
    TH1*  GetHist(const char*, const char*, const char*);
-   FitHist * ShowHist(TH1*, const char* origname=0);
+   FitHist * ShowHist(TH1*, const char* origname=NULL, TButton *b = NULL);
 //   TList* GetCanvasList(){return fCanvasList;};
    TList* GetHistList(){return fHistLists;};
    TList* GetSelectedHist(){return fSelectHist;};

@@ -13,6 +13,7 @@
 #include <TPaveText.h>
 #include "TGWindow.h"
 #include "TVirtualPad.h"
+#include "TButton.h"
 #include "TTimer.h"
 #include "HTCanvas.h"
 #include "TRootCanvas.h"
@@ -177,12 +178,15 @@ private:
    Size_t  fMarkerSize3Dim; 
 	Int_t   fApplyTranspCut;
 	Int_t   f3DimPolyMarker;
+	TButton * fCmdButton;
 	
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
            const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5,
            Int_t win_widx = 750, Int_t win_widy = 550);
    ~FitHist();
+	void SetCmdButton(TButton * b) {fCmdButton = b;};
+	TButton * GetCmdButton() { return fCmdButton; };
 	void DisconnectFromPadModified();
 	void SaveDefaults(Bool_t recalculate = kTRUE);
    void RestoreDefaultRanges();
@@ -192,6 +196,7 @@ public:
    void Draw2Dim();                      //
    void Draw3Dim();                      //
    void Draw3DimPolyMarker();
+	void Draw3DimView();
 	const Char_t * GetCanvasName(){return fCname.Data();};             //
    TRootCanvas* GetMyCanvas(){return mycanvas;};
    HTCanvas* GetCanvas(){return fCanvas;};

@@ -569,7 +569,7 @@ void Ascii2GraphDialog::RestoreDefaults()
    fGraphYdiv        = env.GetValue("Ascii2GraphDialog.GraphYdiv"  		, 1);
 	fDrawOpt          = env.GetValue("GraphAttDialog.fDrawOpt"           , "PA");
    fErrorMode        = env.GetValue("Ascii2GraphDialog.fErrorMode"		, " ");
-   fErrorX           = env.GetValue("Ascii2GraphDialog.fErrorX"			, 1);
+   fErrorX           = env.GetValue("Ascii2GraphDialog.fErrorX"			, 0.5);
    fEndErrorSize     = env.GetValue("Ascii2GraphDialog.fEndErrorSize"   , 1);
 	fGraphSmoothLine = 0;
 	fGraphSimpleLine = 0;

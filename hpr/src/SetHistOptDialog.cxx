@@ -248,52 +248,52 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
    fRow_lab->Add(new TObjString("CommentOnly+Sec"));
    fRow_lab->Add(new TObjString("CommentOnly+Tert"));
    fRow_lab->Add(new TObjString("CommentOnly+Optimize"));
-   fRow_lab->Add(new TObjString("CommentOnly+TickSide"));
+//   fRow_lab->Add(new TObjString("CommentOnly+TickSide"));
    fValp[ind++] = &fDummy;
    fValp[ind++] = &fDummy;
    fValp[ind++] = &fDummy;
    fValp[ind++] = &fDummy;
    fValp[ind++] = &fDummy;
-   fValp[ind++] = &fDummy;
+//   fValp[ind++] = &fDummy;
 
    fRow_lab->Add(new TObjString("CommentOnly_X"));
    fRow_lab->Add(new TObjString("PlainIntVal+"));
    fRow_lab->Add(new TObjString("PlainIntVal+"));
    fRow_lab->Add(new TObjString("PlainIntVal+"));
    fRow_lab->Add(new TObjString("CheckButton+"));
-   fRow_lab->Add(new TObjString("StringValue+"));
+//   fRow_lab->Add(new TObjString("StringValue+"));
    fValp[ind++] = &fDummy;
    fValp[ind++] = &fPdivX;
    fValp[ind++] = &fSdivX;
    fValp[ind++] = &fTdivX;
    fValp[ind++] = &fOptimizedivX;
-   fValp[ind++] = &fTickSideX;
+//   fValp[ind++] = &fTickSideX;
 
    fRow_lab->Add(new TObjString("CommentOnly_Y"));
    fRow_lab->Add(new TObjString("PlainIntVal+"));
    fRow_lab->Add(new TObjString("PlainIntVal+"));
    fRow_lab->Add(new TObjString("PlainIntVal+"));
    fRow_lab->Add(new TObjString("CheckButton+"));
-   fRow_lab->Add(new TObjString("StringValue+"));
+//   fRow_lab->Add(new TObjString("StringValue+"));
    fValp[ind++] = &fDummy;
    fValp[ind++] = &fPdivY;
    fValp[ind++] = &fSdivY;
    fValp[ind++] = &fTdivY;
    fValp[ind++] = &fOptimizedivY;
-   fValp[ind++] = &fTickSideY;
+//   fValp[ind++] = &fTickSideY;
    if (fHist->GetDimension() > 1) {
 		fRow_lab->Add(new TObjString("CommentOnly_Z"));
 		fRow_lab->Add(new TObjString("PlainIntVal+"));
 		fRow_lab->Add(new TObjString("PlainIntVal+"));
 		fRow_lab->Add(new TObjString("PlainIntVal+"));
 		fRow_lab->Add(new TObjString("CheckButton+"));
-		fRow_lab->Add(new TObjString("StringValue+"));
+//		fRow_lab->Add(new TObjString("StringValue+"));
 		fValp[ind++] = &fDummy;
 		fValp[ind++] = &fPdivZ;
 		fValp[ind++] = &fSdivZ;
 		fValp[ind++] = &fTdivZ;
 		fValp[ind++] = &fOptimizedivZ;
-      fValp[ind++] = &fTickSideZ;
+//      fValp[ind++] = &fTickSideZ;
    }
 
    fRow_lab->Add(new TObjString("ColorSelect_Axis Color"));
@@ -499,7 +499,7 @@ void SetHistOptDialog::SetHistAtt(Int_t bid)
 		fAxisX->SetLabelOffset(fLabelOffsetX);
 		fAxisX->SetLabelSize(  fLabelSize);
 		fAxisX->SetTickLength( fTickLength);
-		fAxisX->SetTicks(      fTickSideX);
+//		fAxisX->SetTicks(      fTickSideX);
 		fAxisX->SetTitleOffset(fTitleOffsetX);
 		fAxisX->SetTitleSize(  fTitleSize);
 		fAxisX->SetTitleColor( fTitleColorA);
@@ -516,7 +516,7 @@ void SetHistOptDialog::SetHistAtt(Int_t bid)
 		fAxisY->SetLabelOffset(fLabelOffsetY);
 		fAxisY->SetLabelSize(  fLabelSize);
 		fAxisY->SetTickLength( fTickLength);
-		fAxisY->SetTicks(      fTickSideY);
+//		fAxisY->SetTicks(      fTickSideY);
 		fAxisY->SetTitleOffset(fTitleOffsetY);
 		fAxisY->SetTitleSize  (fTitleSize);
 		fAxisY->SetTitleColor( fTitleColorA);
@@ -536,7 +536,7 @@ void SetHistOptDialog::SetHistAtt(Int_t bid)
 			fAxisZ->SetLabelOffset(fLabelOffsetZ);
 			fAxisZ->SetLabelSize(  fLabelSize);
 			fAxisZ->SetTickLength( fTickLength);
-			fAxisZ->SetTicks(      fTickSideZ);
+//			fAxisZ->SetTicks(      fTickSideZ);
 			fAxisZ->SetTitleOffset(fTitleOffsetZ);
 			fAxisZ->SetTitleSize(  fTitleSize);
 			fAxisZ->SetTitleColor( fTitleColorA);
@@ -822,10 +822,10 @@ void SetHistOptDialog::SetHistAttPerm(TStyle * style)
    sty->SetAxisColor    (fAxisColor   );
    sty->SetLabelColor   (fLabelColor  );
    sty->SetLabelFont    (fLabelFont   );
-   sty->SetLabelOffset  (fLabelOffsetX);
+   sty->SetLabelOffset  (fLabelOffsetX, "X");
    sty->SetLabelSize    (fLabelSize   );
    sty->SetTickLength   (fTickLength  );
-   sty->SetTitleOffset  (fTitleOffsetX);
+   sty->SetTitleOffset  (fTitleOffsetX, "X");
    sty->SetTitleSize    (fTitleSize   );
    sty->SetTitleColor   (fTitleColorA  );
    sty->SetTitleFont    (fTitleFont   );
@@ -874,18 +874,32 @@ void SetHistOptDialog::SaveDefaults()
    env.SetValue("SetHistOptDialog.fAxisColor",     fAxisColor);
    env.SetValue("SetHistOptDialog.fLabelColor",    fLabelColor);
    env.SetValue("SetHistOptDialog.fLabelFont",     fLabelFont);
-   env.SetValue("SetHistOptDialog.fLabelOffsetX",  fLabelOffsetX);
-   env.SetValue("SetHistOptDialog.fLabelOffsetY",  fLabelOffsetY);
-   env.SetValue("SetHistOptDialog.fLabelOffsetZ",  fLabelOffsetZ);
-   env.SetValue("SetHistOptDialog.fLabelSize",     fLabelSize);
+	if (fHist->GetDimension() == 3 ) {
+		env.SetValue("SetHistOptDialog.fLabelOffsetX3Dim",  fLabelOffsetX);
+		env.SetValue("SetHistOptDialog.fLabelOffsetY3Dim",  fLabelOffsetY);
+		env.SetValue("SetHistOptDialog.fLabelOffsetZ3Dim",  fLabelOffsetZ);
+		env.SetValue("SetHistOptDialog.fLabelSize3Dim",     fLabelSize);
+		env.SetValue("SetHistOptDialog.fTickLength3Dim",    fTickLength);
+		env.SetValue("SetHistOptDialog.fTickSideX3Dim",     fTickSideX);
+		env.SetValue("SetHistOptDialog.fTickSideY3Dim",     fTickSideY);
+		env.SetValue("SetHistOptDialog.fTickSideZ3Dim",     fTickSideZ);
+		env.SetValue("SetHistOptDialog.fTitleOffsetX3Dim",  fTitleOffsetX);
+		env.SetValue("SetHistOptDialog.fTitleOffsetY3Dim",  fTitleOffsetY);
+		env.SetValue("SetHistOptDialog.fTitleOffsetZ3Dim",  fTitleOffsetZ);
+	} else {
+		env.SetValue("SetHistOptDialog.fLabelOffsetX",  fLabelOffsetX);
+		env.SetValue("SetHistOptDialog.fLabelOffsetY",  fLabelOffsetY);
+		env.SetValue("SetHistOptDialog.fLabelOffsetZ",  fLabelOffsetZ);
+		env.SetValue("SetHistOptDialog.fLabelSize",     fLabelSize);
+		env.SetValue("SetHistOptDialog.fTickLength",    fTickLength);
+		env.SetValue("SetHistOptDialog.fTickSideX",     fTickSideX);
+		env.SetValue("SetHistOptDialog.fTickSideY",     fTickSideY);
+		env.SetValue("SetHistOptDialog.fTickSideZ",     fTickSideZ);
+		env.SetValue("SetHistOptDialog.fTitleOffsetX",  fTitleOffsetX);
+		env.SetValue("SetHistOptDialog.fTitleOffsetY",  fTitleOffsetY);
+		env.SetValue("SetHistOptDialog.fTitleOffsetZ",  fTitleOffsetZ);
+	}
    env.SetValue("SetHistOptDialog.fLabelMaxDigits",fLabelMaxDigits);
-   env.SetValue("SetHistOptDialog.fTickLength",    fTickLength);
-   env.SetValue("SetHistOptDialog.fTickSideX",      fTickSideX);
-   env.SetValue("SetHistOptDialog.fTickSideY",      fTickSideY);
-   env.SetValue("SetHistOptDialog.fTickSideZ",      fTickSideZ);
-   env.SetValue("SetHistOptDialog.fTitleOffsetX",   fTitleOffsetX);
-   env.SetValue("SetHistOptDialog.fTitleOffsetY",   fTitleOffsetY);
-   env.SetValue("SetHistOptDialog.fTitleOffsetZ",   fTitleOffsetZ);
    env.SetValue("SetHistOptDialog.fTitleSize",      fTitleSize);
    env.SetValue("SetHistOptDialog.fTitleColorA",    fTitleColorA);
    env.SetValue("SetHistOptDialog.fTitleFontA",     fTitleFontA);
@@ -897,7 +911,7 @@ void SetHistOptDialog::SaveDefaults()
 	env.SetValue("SetHistOptDialog.TitleTextColor",  fTitleTextColor );
    env.SetValue("SetHistOptDialog.TitleBorderSize", fTitleBorderSize);
    env.SetValue("SetHistOptDialog.TitleFont",       fTitleFont      );
-   env.SetValue("SetHistOptDialog.HistTitleSize",   fHistTitleSize  );
+   env.SetValue("SetHistOptDialog.fHistTitleSize",  fHistTitleSize  );
    env.SetValue("SetHistOptDialog.TitleStyle",      fTitleStyle     );
    env.SetValue("SetHistOptDialog.TitleX",          fTitleX         );
    env.SetValue("SetHistOptDialog.TitleY",          fTitleY         );
@@ -988,24 +1002,39 @@ void SetHistOptDialog::RestoreDefaults(Int_t resetall)
 		gSystem->TempFileName(envname);
 	}
    TEnv env(envname);
+	if (fHist->GetDimension() == 3 ) {
+		fLabelOffsetX = env.GetValue("SetHistOptDialog.fLabelOffsetX3Dim",  0.01);
+		fLabelOffsetY = env.GetValue("SetHistOptDialog.fLabelOffsetY3Dim",  0.01);
+		fLabelOffsetZ = env.GetValue("SetHistOptDialog.fLabelOffsetZ3Dim",  0.01);
+		fLabelSize    = env.GetValue("SetHistOptDialog.fLabelSize3Dim",     0.03);
+		fTickLength   = env.GetValue("SetHistOptDialog.fTickLength3Dim",    0.01);
+		fTickSideX    = env.GetValue("SetHistOptDialog.fTickSideX3Dim",      "-");
+		fTickSideY    = env.GetValue("SetHistOptDialog.fTickSideY3Dim",      "+");
+		fTickSideZ    = env.GetValue("SetHistOptDialog.fTickSideZ3Dim",      "+");
+		fTitleOffsetX = env.GetValue("SetHistOptDialog.fTitleOffsetX3Dim",    1.);
+		fTitleOffsetY = env.GetValue("SetHistOptDialog.fTitleOffsetY3Dim",    1.6);
+		fTitleOffsetZ = env.GetValue("SetHistOptDialog.fTitleOffsetZ3Dim",    1.4);
+	} else {
+		fLabelOffsetX = env.GetValue("SetHistOptDialog.fLabelOffsetX",       0.01);
+		fLabelOffsetY = env.GetValue("SetHistOptDialog.fLabelOffsetY",       0.01);
+		fLabelOffsetZ = env.GetValue("SetHistOptDialog.fLabelOffsetZ",       0.01);
+		fLabelSize    = env.GetValue("SetHistOptDialog.fLabelSize",          0.03);
+		fTickLength   = env.GetValue("SetHistOptDialog.fTickLength",         0.01);
+		fTickSideX    = env.GetValue("SetHistOptDialog.fTickSideX",           "+");
+		fTickSideY    = env.GetValue("SetHistOptDialog.fTickSideY",           "+");
+		fTickSideZ    = env.GetValue("SetHistOptDialog.fTickSideZ",           "+");
+		fTitleOffsetX = env.GetValue("SetHistOptDialog.fTitleOffsetX",         1.);
+		fTitleOffsetY = env.GetValue("SetHistOptDialog.fTitleOffsetY",         1.);
+		fTitleOffsetZ = env.GetValue("SetHistOptDialog.fTitleOffsetZ",         1.);
+	}
    fNdivisionsX   = env.GetValue("SetHistOptDialog.fNdivisionsX",   510);
    fNdivisionsY   = env.GetValue("SetHistOptDialog.fNdivisionsY",   510);
    fNdivisionsZ   = env.GetValue("SetHistOptDialog.fNdivisionsZ"  , 510);
    fAxisColor     = env.GetValue("SetHistOptDialog.fAxisColor",       1);
    fLabelColor    = env.GetValue("SetHistOptDialog.fLabelColor",      1);
    fLabelFont     = env.GetValue("SetHistOptDialog.fLabelFont",      62);
-   fLabelOffsetX  = env.GetValue("SetHistOptDialog.fLabelOffsetX", 0.01);
-   fLabelOffsetY  = env.GetValue("SetHistOptDialog.fLabelOffsetY", 0.01);
-   fLabelOffsetZ  = env.GetValue("SetHistOptDialog.fLabelOffsetZ", 0.01);
-   fLabelSize     = env.GetValue("SetHistOptDialog.fLabelSize",    0.03);
    fLabelMaxDigits= env.GetValue("SetHistOptDialog.fLabelMaxDigits",  4);
    fTickLength    = env.GetValue("SetHistOptDialog.fTickLength",   0.01);
-   fTickSideX     = env.GetValue("SetHistOptDialog.fTickSideX",     "+");
-   fTickSideY     = env.GetValue("SetHistOptDialog.fTickSideY",     "-");
-   fTickSideZ     = env.GetValue("SetHistOptDialog.fTickSideZ",     "+");
-   fTitleOffsetX  = env.GetValue("SetHistOptDialog.fTitleOffsetX",   1.);
-   fTitleOffsetY  = env.GetValue("SetHistOptDialog.fTitleOffsetY",   1.);
-   fTitleOffsetZ  = env.GetValue("SetHistOptDialog.fTitleOffsetZ",   1.);
    fTitleSize     = env.GetValue("SetHistOptDialog.fTitleSize",    0.03);
 	fHistTitleSize = env.GetValue("SetHistOptDialog.fHistTitleSize",0.03);
 	fTitleColorA   = env.GetValue("SetHistOptDialog.fTitleColorA",     1);
@@ -1072,9 +1101,9 @@ void SetHistOptDialog::GetValuesFromHist()
 
 	fNdivisionsY  = fAxisY->GetNdivisions ();
 	fLabelOffsetY = fAxisY->GetLabelOffset();
-	if ( !fAxisY->TestBit(TAxis::kTickPlus) &&
-		!fAxisY->TestBit(TAxis::kTickMinus) )
-		fAxisY->SetTicks("-");
+// 	if ( !fAxisY->TestBit(TAxis::kTickPlus) &&
+// 		!fAxisY->TestBit(TAxis::kTickMinus) )
+// 		fAxisY->SetTicks("-");
 	fTickSideY    = fAxisY->GetTicks      ();
 	fTitleOffsetY = fAxisY->GetTitleOffset();
 	fTitleCenterY = fAxisY->GetCenterTitle();
@@ -1133,53 +1162,72 @@ void SetHistOptDialog::GetValuesFromHist()
 }
 //______________________________________________________________________
 
-void SetHistOptDialog::SetDefaults()
+void SetHistOptDialog::SetDefaults(Int_t ndim)
 {
-//   cout << "SetHistOptDialog:: SetHistAttPerm" << endl;
+   cout << "SetHistOptDialog:: SetDefaults" << endl;
    TEnv env(".hprrc");
-	gStyle->SetNdivisions     (env.GetValue("SetHistOptDialog.fNdivisionsX",   510));
-	gStyle->SetAxisColor      (env.GetValue("SetHistOptDialog.fAxisColor",       1));
-	gStyle->SetLabelColor     (env.GetValue("SetHistOptDialog.fLabelColor",      1));
-	gStyle->SetLabelFont      (env.GetValue("SetHistOptDialog.fLabelFont",      62));
-	gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetX", 0.01));
-	gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",    0.03));
-	gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",   0.01));
-	gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetX",  1.1));
-	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleSize",    0.03));
-	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fHistTitleSize",0.03));
-	gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.fTitleColorA",     1));
-	gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.fTitleFontA",     62));
+	if ( ndim == 3 ) {
+		gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetX",  0.01), "X");
+		gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",     0.03), "X");
+		gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",    0.01), "X");
+		gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetX",   1.1), "X");
+		
+		gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetY",  0.01), "Y");
+		gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",     0.03), "Y");
+		gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",    0.01), "Y");
+		gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetY",   1.5), "Y");
+		
+		gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetZ",  0.01), "Z");
+		gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",     0.03), "Z");
+		gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",    0.01), "Z");
+		gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetZ",  0.01), "Z");
+	} else {
+		gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetX3Dim",  0.01), "X");
+		gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize3Dim",     0.03), "X");
+		gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength3Dim",    0.01), "X");
+		gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetX3Dim",   1.1), "X");
+		
+		gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetY3Dim",  0.01), "Y");
+		gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize3Dim",     0.03), "Y");
+		gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength3Dim",    0.01), "Y");
+		gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetY3Dim",   1.6), "Y");
+		
+		gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetZ3Dim",  0.01), "Z");
+		gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize3Dim",     0.03), "Z");
+		gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength3Dim",    0.01), "Z");
+		gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetZ3Dim",   1.4), "Z");
+	}
+	gStyle->SetNdivisions     (env.GetValue("SetHistOptDialog.fNdivisionsX",   510), "X");
+	gStyle->SetAxisColor      (env.GetValue("SetHistOptDialog.fAxisColor",       1), "X");
+	gStyle->SetLabelColor     (env.GetValue("SetHistOptDialog.fLabelColor",      1), "X");
+	gStyle->SetLabelFont      (env.GetValue("SetHistOptDialog.fLabelFont",      62), "X");
+	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleSize",    0.03), "X");
+	gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.fTitleColorA",     1), "X");
+	gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.fTitleFontA",     62), "X");
 	
-	gStyle->SetNdivisions     (env.GetValue("SetHistOptDialog.fNdivisionsY",    510), "Y");
-	gStyle->SetAxisColor      (env.GetValue("SetHistOptDialog.fAxisColor",        1), "Y");
-	gStyle->SetLabelColor     (env.GetValue("SetHistOptDialog.fLabelColor",       1), "Y");
-	gStyle->SetLabelFont      (env.GetValue("SetHistOptDialog.fLabelFont",       62), "Y");
-	gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetY",  0.01), "Y");
-	gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",     0.03), "Y");
-	gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",    0.01), "Y");
-	gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetY",   1.5), "Y");
-	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleSize",     0.03), "Y");
-	gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.fTitleColorA",      1), "Y");
-	gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.fTitleFontA",      62), "Y");
+	gStyle->SetNdivisions     (env.GetValue("SetHistOptDialog.fNdivisionsY",   510), "Y");
+	gStyle->SetAxisColor      (env.GetValue("SetHistOptDialog.fAxisColor",       1), "Y");
+	gStyle->SetLabelColor     (env.GetValue("SetHistOptDialog.fLabelColor",      1), "Y");
+	gStyle->SetLabelFont      (env.GetValue("SetHistOptDialog.fLabelFont",      62), "Y");
+	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleSize",    0.03), "Y");
+	gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.fTitleColorA",     1), "Y");
+	gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.fTitleFontA",     62), "Y");
 	
-	gStyle->SetNdivisions     (env.GetValue("SetHistOptDialog.fNdivisionsZ",    510), "Z");
-	gStyle->SetAxisColor      (env.GetValue("SetHistOptDialog.fAxisColor",        1), "Z");
-	gStyle->SetLabelColor     (env.GetValue("SetHistOptDialog.fLabelColor",       1), "Z");
-	gStyle->SetLabelFont      (env.GetValue("SetHistOptDialog.fLabelFont",       62), "Z");
-	gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetZ",  0.01), "Z");
-	gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",     0.03), "Z");
-	gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",    0.01), "Z");
-	gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetZ",  0.01), "Z");
-	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleSize",     0.03), "Z");
-	gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.fTitleColorA",      1), "Z");
-	gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.fTitleFontA",      62), "Z");
+	gStyle->SetNdivisions     (env.GetValue("SetHistOptDialog.fNdivisionsZ",   510), "Z");
+	gStyle->SetAxisColor      (env.GetValue("SetHistOptDialog.fAxisColor",       1), "Z");
+	gStyle->SetLabelColor     (env.GetValue("SetHistOptDialog.fLabelColor",      1), "Z");
+	gStyle->SetLabelFont      (env.GetValue("SetHistOptDialog.fLabelFont",      62), "Z");
+	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleSize",    0.03), "Z");
+	gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.fTitleColorA",     1), "Z");
+	gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.fTitleFontA",     62), "Z");
+	
 	TGaxis::SetMaxDigits      (env.GetValue("SetHistOptDialog.fLabelMaxDigits",  4));
 	
    gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.TitleColor",        0), "t");
    gStyle->SetTitleTextColor (env.GetValue("SetHistOptDialog.TitleTextColor",    1));
    gStyle->SetTitleBorderSize(env.GetValue("SetHistOptDialog.TitleBorderSize"   ,1));
    gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.TitleFont",        62), "t");
-   gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.HistTitleSize",  0.03),"h");
+   gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fHistTitleSize",  0.03),"h");
    gStyle->SetTitleStyle     (env.GetValue("SetHistOptDialog.TitleStyle",     1001));
    gStyle->SetTitleX         (env.GetValue("SetHistOptDialog.TitleX",          0.5));
    gStyle->SetTitleY         (env.GetValue("SetHistOptDialog.TitleY",         .995));

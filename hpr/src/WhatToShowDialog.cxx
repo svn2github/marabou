@@ -186,7 +186,7 @@ void WhatToShowDialog::SaveDefaults()
 		env.SetValue("WhatToShowDialog.fUseTimeOfDisplay1Dim", fUseTimeOfDisplay);
 		env.SetValue("WhatToShowDialog.fShowTitle1Dim",        fShowTitle);
 		env.SetValue("WhatToShowDialog.fShowFitBox1Dim",       fShowFitBox);
-   } else {
+   } else if ( fHist->GetDimension() == 2) {
 //		gStyle->SetOptStat(fOptStat2Dim);
 //		gStyle->SetOptFit(fShowFitBox2Dim);
 //		gStyle->SetOptTitle(fShowTitle2Dim);
@@ -196,6 +196,12 @@ void WhatToShowDialog::SaveDefaults()
 		env.SetValue("WhatToShowDialog.fUseTimeOfDisplay2Dim", fUseTimeOfDisplay);
 		env.SetValue("WhatToShowDialog.fShowTitle2Dim",        fShowTitle);
 		env.SetValue("WhatToShowDialog.fShowFitBox2Dim",       fShowFitBox);
+   } else {
+		env.SetValue("WhatToShowDialog.fOptStat3Dim",          fOptStat);
+		env.SetValue("WhatToShowDialog.fShowDateBox3Dim",      fShowDateBox);
+		env.SetValue("WhatToShowDialog.fShowStatBox3Dim",      fShowStatBox);
+		env.SetValue("WhatToShowDialog.fUseTimeOfDisplay3Dim", fUseTimeOfDisplay);
+		env.SetValue("WhatToShowDialog.fShowTitle3Dim",        fShowTitle);
    }
    env.SaveLevel(kEnvLocal);
 }
@@ -212,14 +218,20 @@ void WhatToShowDialog::RestoreDefaults()
 		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox1Dim", 1);
 		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox1Dim", 1);
 		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay1Dim", 1);
-   } else {
+   } else if (fHist->GetDimension() == 2) {
 		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat2Dim", 11111);
 		fShowFitBox       = env.GetValue("WhatToShowDialog.fShowFitBox2Dim", 1);
 		fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle2Dim", 1);
 		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox2Dim", 1);
 		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox2Dim", 1);
 		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay2Dim", 1);
-   }
+   } else {
+		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat3Dim", 11111);
+		fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle3Dim", 1);
+		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox3Dim", 0);
+		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox3Dim", 0);
+		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay2Dim", 1);
+	}
 //   gStyle->SetOptFit(fShowFitBox);
 }
 //______________________________________________________________________
@@ -233,7 +245,7 @@ void WhatToShowDialog::CloseDown(Int_t wid)
 }
 //______________________________________________________________________
 
-void WhatToShowDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+void WhatToShowDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
 //   cout << "CRButtonPressed(" << wid<< ", " <<bid;

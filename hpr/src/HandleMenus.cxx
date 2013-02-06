@@ -638,6 +638,16 @@ again:
                      fHCanvas->ToggleEventStatus();
 //                     fRootCanvas->ShowStatusBar(fHCanvas->GetShowEventStatus());
                      break;
+                  case kViewOpenGL:
+							{
+                     if ( gPad )
+								if ( gPad->GetView() == NULL ) {
+									cout << "Not applicable for this view" << endl;
+								} else {
+									gPad->GetViewer3D("ogl");
+								}
+							}
+                     break;
                   case kViewColors:
                      DrawColors();
                      break;
@@ -676,7 +686,10 @@ again:
                      break;
                   case kOption3Dim:
                      {
-                     new Set3DimOptDialog(fRootCanvas);
+							TButton *b = 0;
+							if ( fFitHist )
+								b=fFitHist->GetCmdButton();
+								new Set3DimOptDialog(fRootCanvas, b);
                      }
                      break;
                   case kOption2DimCol:
@@ -1450,9 +1463,9 @@ void HandleMenus::BuildMenus()
    }
    fViewMenu = new TGPopupMenu(fRootCanvas->GetParent());
 	if ( ! its_start_window ) {
-		fViewMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
-		fViewMenu->AddEntry("Event &Status", kViewEventStatus);
-		fViewMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
+		fViewMenu->AddEntry("Launch Graphics Editor",  kEditEditor);
+		fViewMenu->AddEntry("Event &Status",           kViewEventStatus);
+		fViewMenu->AddEntry("Draw selected Functions", kFHDrawFunctions);
 		fViewMenu->AddSeparator();
 	}
    fViewMenu->AddEntry("Show Colors",             kViewColors);
@@ -1460,6 +1473,8 @@ void HandleMenus::BuildMenus()
    fViewMenu->AddEntry("Show Markers",            kViewMarkers);
    fViewMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
    fViewMenu->AddEntry("Show Line Attr",          kViewLineStyles);
+	fViewMenu->AddSeparator();
+   fViewMenu->AddEntry("View with OpenGL",        kViewOpenGL);
 
    if ( graph1d ) {
    	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());

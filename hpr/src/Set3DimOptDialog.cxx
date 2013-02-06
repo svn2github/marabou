@@ -1,4 +1,5 @@
 #include "TROOT.h"
+#include "TButton.h"
 #include "TCanvas.h"
 #include "TFrame.h"
 #include "TRootCanvas.h"
@@ -11,9 +12,13 @@
 #include "TF1.h"
 #include "TH1.h"
 #include "TH3.h"
+#include "TView.h"
 #include "TStyle.h"
 #include "TSystem.h"
 #include "TPolyMarker3D.h"
+#include "TVirtualHistPainter.h"
+#include "TGLHistPainter.h"
+
 //#include "HistPresent.h"
 #include "Set3DimOptDialog.h"
 #include <iostream>
@@ -21,6 +26,7 @@
 Double_t gTranspThresh = 1;
 Double_t gTranspAbove = 0.4;
 Double_t gTranspBelow = 0.005;
+static const Int_t kNopt3 = 5;
 
 Double_t my_transfer_function(const Double_t *x, const Double_t * /*param*/)
 {
@@ -47,7 +53,7 @@ Set3DimOptDialog::Set3DimOptDialog(Int_t batch)
 }
 //_______________________________________________________________________
 
-Set3DimOptDialog::Set3DimOptDialog(TGWindow * win)
+Set3DimOptDialog::Set3DimOptDialog(TGWindow * win, TButton *b)
 {
 static const Char_t helptext[] =
 "Note: Changeing options only influence the current histogram\n\
@@ -75,20 +81,21 @@ according to their bin content. Typically the treshold is set to one\n\
 the transparency \"below\" to a small value (tranparent) and a \"above\"\n\
 to e.g. 0.5. In this way non filled bin are invisible.\n\
 \n\
-Caveat: When switching between GL and non GL the histogram must be\n\
+Caveat: When switching between display modes the histogram will be\n\
 redisplayed.\n\
 \n\
-For further details contact ROOTs documentation.\n\
+A first attempt to automatically rotate the picture is implemented\n\
+by simulating the movement of the pressed mouse\n\
 ";
-
-   const char *fDrawOpt3[4] =
-   {"SCAT", "BOX0", "GLCOL", "PolyM"};
-   const char *fDrawOpt3Title[4] =
-   {"Scatter", "BOX", "OpenCL", "3D PolyM"};
+   const char *fDrawOpt3[kNopt3] =
+   {"SCAT", "BOX0", "GLCOL", "PolyMHist","PolyMView"};
+   const char *fDrawOpt3Title[kNopt3] =
+   {"Scatter", "BOX", "OpenGL", "PolyM","View3D"};
 	
 //	gTranspThresh = 1;
 //	gTranspAbove = 0.4;
 //	gTranspBelow = 0.005;
+	fCmdButton = b;
 	fApplyTranspCut = 0;
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
@@ -111,10 +118,12 @@ For further details contact ROOTs documentation.\n\
 	   cout << "No Histogram in Canvas" << endl;
 	}
    RestoreDefaults();
+	fPhi3Dim = fCanvas->GetPhi();
+	fTheta3Dim = fCanvas->GetTheta();
 //   cout << "Set3DimOptDialog::ctor RestoreDefaults|"<<fDrawOpt3Dim<<"|" << endl;
 //	GetValuesFromHist();
    Int_t selected = -1;
-   for (Int_t i = 0; i < 4; i++) {
+   for (Int_t i = 0; i < kNopt3; i++) {
       fDrawOpt3DimArray[i] = fDrawOpt3[i];
 		TString temp(fDrawOpt3[i]);
 		temp = temp.Strip(TString::kBoth);
@@ -134,15 +143,21 @@ For further details contact ROOTs documentation.\n\
 
    Int_t ind = 0;
    Int_t indopt = 0;
-//    static Int_t dummy;
+	static Int_t dummy;
    static TString stycmd("SaveDefaults()");
    static TString sadcmd("SetAllToDefault()");
+   static TString rotcmd("Rotate()");
 
 	fBidSCAT = 0;
 	fBidBOX  = 1;
 	fBidGL   = 2;
-	fBidPolyM  = 3;
-   for (Int_t i = 0; i < 4; i++) {
+	fBidPolyM   = 3;
+	fBidView3D  = 4;
+	fRotDx = 1;
+	fRotDy = 0;
+	fRotSleep = 0;
+	fRotCycles = 10;
+   for (Int_t i = 0; i < kNopt3; i++) {
        TString text("RadioButton");
        if (i == 0)text += "_";
        else       text += "+";
@@ -151,6 +166,7 @@ For further details contact ROOTs documentation.\n\
        fValp[ind++] = &fOptRadio[indopt++];
    }
 //   cout << " indopt  " <<  indopt << endl;
+	fDrawOptPrev = fDrawOpt3Dim;
    fRow_lab->Add(new TObjString("ColorSelect_BgColor"));
    fValp[ind++] = &f3DimBackgroundColor;
    fRow_lab->Add(new TObjString("ColorSelect+FillC"));
@@ -162,12 +178,12 @@ For further details contact ROOTs documentation.\n\
    fBidMarkerColor = ind; fValp[ind++] = &fMarkerColor3Dim;
    fRow_lab->Add(new TObjString("Mark_Select+MStyle"));
    fBidMarkerStyle = ind; fValp[ind++] = &fMarkerStyle3Dim;
-   fRow_lab->Add(new TObjString("Float_Value+MSize"));
+   fRow_lab->Add(new TObjString("Float_Value+MSize;0.01,9.99"));
    fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize3Dim;
 	
-//	fRow_lab->Add(new TObjString("CheckButton_Use GL"));
-//	fValp[ind++] = &fUseGL;
-	fRow_lab->Add(new TObjString("CheckButton_Apply Transp"));
+	fRow_lab->Add(new TObjString("CommentOnly_Parameters for OpenGL"));
+	fValp[ind++] = &dummy;
+	fRow_lab->Add(new TObjString("CheckButton_Apply Transpareny Thr"));
 	fValp[ind++] = &fApplyTranspCut;
    fRow_lab->Add(new TObjString("DoubleValue+Threshold"));
    fValp[ind++] = &gTranspThresh;
@@ -176,7 +192,23 @@ For further details contact ROOTs documentation.\n\
    fRow_lab->Add(new TObjString("DoubleValue+Transp above"));
 	fBidTranspAbove = ind;
    fValp[ind++] = &gTranspAbove;
-
+   fRow_lab->Add(new TObjString("DoubleValue_View Phi"));
+	fBidPhi = ind;
+   fValp[ind++] = &fPhi3Dim;
+   fRow_lab->Add(new TObjString("DoubleValue+View Theta"));
+	fBidTheta = ind;
+   fValp[ind++] = &fTheta3Dim;
+	
+   fRow_lab->Add(new TObjString("PlainIntVal_Rot Dx"));
+   fValp[ind++] = &fRotDx;
+   fRow_lab->Add(new TObjString("PlainIntVal+Rot Dy"));
+   fValp[ind++] = &fRotDy;
+   fRow_lab->Add(new TObjString("PlainIntVal+Rot Cycles"));
+   fValp[ind++] = &fRotCycles;
+//   fRow_lab->Add(new TObjString("PlainIntVal+Rot Sleep"));
+//   fValp[ind++] = &fRotSleep;
+   fRow_lab->Add(new TObjString("CommandButt_Execute Rotate"));
+   fValp[ind++] = &rotcmd;
 
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
@@ -272,11 +304,12 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 				TIter next2(canvas->GetListOfPrimitives());
 				TObject *obj2;
 				while ( (obj2 = next2()) ) {
-					if (obj2->InheritsFrom("TPolyMarker3D"))
-					((TPolyMarker3D*)obj2)->SetMarkerSize (fMarkerSize3Dim); 
-            }
-         }
-
+					if (obj2->InheritsFrom("TPolyMarker3D")){
+						((TPolyMarker3D*)obj2)->SetMarkerSize (fMarkerSize3Dim); 
+						((TPolyMarker3D*)obj2)->SetMarkerStyle (fMarkerStyle3Dim); 
+					}
+				}
+			}
       } else if ((obj->InheritsFrom("TPad"))) {
          TPad *pad = (TPad*)obj;
          TIter next1(pad->GetListOfPrimitives());
@@ -306,6 +339,69 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 	canvas->Pop();
 	canvas->Modified();
 	canvas->Update();
+}
+
+//______________________________________________
+
+//void Set3DimOptDialog::Rotate(Int_t dx, Int_t dy, Int_t sleep, Int_t ncycles)
+void Set3DimOptDialog::Rotate()
+{
+// 0, 2 rotate about x axis
+// 2, 0        about y axis
+	Int_t cont_cycles = 1;
+	Int_t tot_cycles = fRotCycles;
+	TGLHistPainter *hp = NULL;
+	if ( fHist ) {
+	TVirtualHistPainter* vp  = fHist->GetPainter();
+		if (vp->InheritsFrom("TGLHistPainter") ) {
+	//   if ( vp->IsA() == TGLHistPainter::Class() ) {
+			hp = (TGLHistPainter *)fHist->GetPainter();
+	//		rotate();
+		}
+	}
+	TView *view = NULL;
+	if ( !hp) {
+		view=fCanvas->GetView();
+		tot_cycles = fRotCycles * 20;
+	} else {
+		// with OpenGL picture moves with mouse
+		// otherwise picture is updated with kButton1Up only
+		cont_cycles = 20;
+	}
+	if ( hp == NULL && view == NULL ) {
+		cout << "No usable view found" << endl;
+		return;
+	}
+	fCanvas->cd();
+	for (Int_t i = 0; i < fRotCycles; i++) {
+		// start in the middle of the plot
+		Int_t ix = fCanvas->GetWw() / 2;
+		Int_t iy = fCanvas->GetWh() / 2;
+		if ( hp )
+			hp->ExecuteEvent(kButton1Down, ix, iy);
+		else if (view)
+			view->ExecuteEvent(kButton1Down, ix, iy);
+		fCanvas->Modified();
+		fCanvas->Update();
+		for (Int_t k = 0; k < cont_cycles; k++) {
+			ix += fRotDx;
+			iy += fRotDy;
+			if ( hp )
+				hp->ExecuteEvent(kButton1Motion, ix, iy);
+			else if ( view ) {
+				view->ExecuteEvent(kButton1Motion, ix, iy);
+				fCanvas->Modified();
+				fCanvas->Update();
+			}
+//			gSystem->Sleep(fRotSleep);
+		}
+		if ( hp )
+			hp->ExecuteEvent(kButton1Up, ix, iy);
+		else if ( view )
+			view->ExecuteEvent(kButton1Up, ix, iy);
+		fCanvas->Modified();
+		fCanvas->Update();
+	}
 }
 //______________________________________________________________________
 /*
@@ -349,6 +445,8 @@ void Set3DimOptDialog::SaveDefaults()
 	env.SetValue("Set3DimOptDialog.fMarkerSize3Dim",   fMarkerSize3Dim   );
 //	env.SetValue("Set3DimOptDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set3DimOptDialog.fApplyTranspCut",   fApplyTranspCut   );
+	env.SetValue("Set3DimOptDialog.fPhi3Dim",          fPhi3Dim          );
+	env.SetValue("Set3DimOptDialog.fTheta3Dim",        fTheta3Dim        );
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -387,9 +485,9 @@ void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
 	fHistLineColor3Dim = env.GetValue("Set3DimOptDialog.fHistLineColor3Dim", 1);
 	fMarkerColor3Dim   = env.GetValue("Set3DimOptDialog.fMarkerColor3Dim",   1);
 	fMarkerStyle3Dim   = env.GetValue("Set3DimOptDialog.fMarkerStyle3Dim",   1);
-	fMarkerSize3Dim    = env.GetValue("Set3DimOptDialog.fMarkerSize3Dim",    1);
+	fMarkerSize3Dim    = env.GetValue("Set3DimOptDialog.fMarkerSize3Dim",    0.8);
 //	fUseGL             = env.GetValue("Set3DimOptDialog.fUseGL",             0);
-	fApplyTranspCut    = env.GetValue("Set3DimOptDialog.fApplyTranspCut",    0);
+	fApplyTranspCut    = env.GetValue("Set3DimOptDialog.fApplyTranspCut",    1);
 }
 //______________________________________________________________________
 
@@ -405,7 +503,7 @@ void Set3DimOptDialog::CloseDown(Int_t wid)
 void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
-   for (Int_t i = 0; i < 4; i++) {
+   for (Int_t i = 0; i < kNopt3; i++) {
       if (fOptRadio[i] == 1) {
 			fDrawOpt3Dim = fDrawOpt3DimArray[i];
 		}
@@ -417,10 +515,27 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 	}
 	if ( bid > fBidPolyM && bid <= fBidTranspAbove )
 		SetHistAttNow(canvas);
-	if (bid >= fBidSCAT && bid <= fBidPolyM ) {
+	// when changeing between GL and non GL option, the histogram
+	// must be redisplayed
+	if (bid == fBidPhi || bid == fBidTheta && ! fDrawOpt3Dim.Contains("OpenGL")) {
+		fCanvas->SetPhi(fPhi3Dim);
+		fCanvas->SetTheta(fTheta3Dim);
+		fCanvas->Modified();
+		fCanvas->Update();
+	}
+	
+	if (bid >= fBidSCAT && bid <= fBidView3D && fDrawOpt3Dim != fDrawOptPrev) {
+		fDrawOptPrev = fDrawOpt3Dim;
 		SaveDefaults();
-		delete fCanvas;
-//		gHpr->ShowHist(fHist);
+//		delete fCanvas;
+		gSystem->ProcessEvents();
+		if ( fCmdButton ) {
+//			cout << "CRButtonPressed exe: " << fCmdButton->GetMethod() << endl;
+			gROOT->ProcessLine(fCmdButton->GetMethod());
+			gSystem->ProcessEvents();
+		} 
+	} else {
+		fDrawOptPrev = fDrawOpt3Dim;
 	}
 }
 

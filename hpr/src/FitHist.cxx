@@ -28,6 +28,7 @@
 #include "TPaveStats.h"
 #include "TPolyLine.h"
 #include "TPolyMarker3D.h"
+#include "TPolyLine3D.h"
 #include "TPaveLabel.h"
 #include "TVirtualPad.h"
 #include "TApplication.h"
@@ -36,7 +37,6 @@
 #include "TDiamond.h"
 #include "HTCanvas.h"
 #include "TContextMenu.h"
-#include "TArray.h"
 #include "TString.h"
 #include "TRegexp.h"
 #include "TObjString.h"
@@ -50,7 +50,7 @@
 #include "TExec.h"
 #include "TLegendEntry.h"
 #include "THistPainter.h"
-
+#include "TView3D.h"
 #include "TGWidget.h"
 #include "HprGaxis.h"
 #include "FHCommands.h"
@@ -285,14 +285,20 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay1Dim", 1);
       fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle1Dim", 1);
       fShowFitBox       = env.GetValue("WhatToShowDialog.fShowFitBox1Dim",1);
-   } else {
+   } else if ( fSelHist->GetDimension() == 2 ){
 		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat2Dim", 1);
 		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox2Dim", 1);
 		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox2Dim", 1);
 		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay2Dim", 1);
       fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle2Dim", 1);
       fShowFitBox       = env.GetValue("WhatToShowDialog.fShowFitBox2Dim",1);
-   }
+   } else {
+		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat3Dim", 0);
+		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox3Dim", 0);
+		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox3Dim", 0);
+		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay3Dim", 0);
+      fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle3Dim", 1);
+	}
    fTitleCenterX  = env.GetValue("SetHistOptDialog.fTitleCenterX", 0);
    fTitleCenterY  = env.GetValue("SetHistOptDialog.fTitleCenterY", 0);
    fTitleCenterZ  = env.GetValue("SetHistOptDialog.fTitleCenterZ", 0);
@@ -308,9 +314,10 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fHistFillColor3Dim = env.GetValue("Set3DimOptDialog.fHistFillColor3Dim", 1);
 	fHistLineColor3Dim = env.GetValue("Set3DimOptDialog.fHistLineColor3Dim", 1);
 	fMarkerColor3Dim   = env.GetValue("Set3DimOptDialog.fMarkerColor3Dim",   1);
-	fMarkerStyle3Dim   = env.GetValue("Set3DimOptDialog.fMarkerStyle3Dim",   1);
+	fMarkerStyle3Dim   = env.GetValue("Set3DimOptDialog.fMarkerStyle3Dim",   7);
 	fMarkerSize3Dim    = env.GetValue("Set3DimOptDialog.fMarkerSize3Dim",    1);
 	f3DimPolyMarker    = env.GetValue("Set3DimOptDialog.f3DimPolyMarker",    0);
+
    fSerialPx = 0;
    fSerialPy = 0;
    fSerialPf = 0;
@@ -1196,7 +1203,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		}
 	}
 	if ( fSelHist->GetDimension() == 3 ) {
-		if (fDrawOpt3Dim.BeginsWith("GL")) {
+		if ( fDrawOpt3Dim.BeginsWith("GL") ) {
 			gStyle->SetCanvasPreferGL(kTRUE);
 		} else {
 			gStyle->SetCanvasPreferGL(kFALSE);
@@ -3046,100 +3053,6 @@ void FitHist::ExecDefMacro()
 
 //____________________________________________________________________________
 
-void FitHist::Draw3Dim()
-{
-//   TString drawopt("iso");	
-	cout << "fDrawOpt3Dim " << fDrawOpt3Dim << endl;
-	if ( fDrawOpt3Dim.Contains("PolyM") ) {
-		Draw3DimPolyMarker();
-		return;
-	}
-	
-	TList * lof = fSelHist->GetListOfFunctions();
-	TObject * trf= lof->FindObject("TransferFunction");
-	if ( fDrawOpt3Dim.Contains("GL") && fApplyTranspCut ) {
-		if ( !trf ) {
-			TF1 * tf = new TF1("TransferFunction", my_transfer_function);
-			lof->Add(tf);
-		}
-	} else {
-		if (trf) {
-			lof->Remove(trf);
-			delete trf;
-		}
-	}
-   fSelHist->SetDrawOption(fDrawOpt3Dim);
-   fSelHist->SetOption(fDrawOpt3Dim);
-   fSelHist->Draw(fDrawOpt3Dim);
-	fSelHist->SetFillColor(fHistFillColor3Dim);
-	fSelHist->SetLineColor(fHistLineColor3Dim);
-	fSelHist->SetLineStyle(1);
-	fSelHist->SetLineWidth(1);
-	fSelHist->SetMarkerColor(fMarkerColor3Dim);
-	fSelHist->SetMarkerStyle(fMarkerStyle3Dim);
-	fSelHist->SetMarkerSize (fMarkerSize3Dim);
-}
-//____________________________________________________________________________
-
-void FitHist::Draw3DimPolyMarker()
-{
-	TH3F * hempty = (TH3F*)fSelHist->Clone();
-	hempty->Reset();
-	fCanvas->SetRightMargin(0.16);
-	TGStatusBar *sb = ((TRootCanvas*)fCanvas->GetCanvasImp())->GetStatusBar();
-	if ( sb ) {
-		Int_t parts[4] = {20, 50, 10, 20};
-		sb->SetParts(parts, 4);
-	}
-	hempty->Draw("Z");
-	hempty->SetStats(0);
-	Float_t min = fSelHist->GetMinimum();
-	Float_t max = fSelHist->GetMaximum();
-//	gStyle->SetPalette(1);
-	TAxis * ax = fSelHist->GetXaxis();
-	TAxis * ay = fSelHist->GetYaxis();
-	TAxis * az = fSelHist->GetZaxis();
-	TPolyMarker3D * pm;
-	Double_t x, y, z;
-	
-	for (Int_t ix = 0; ix < ax->GetNbins(); ix++) {
-		for (Int_t iy = 0; iy < ay->GetNbins(); iy++) {
-			for (Int_t iz = 0; iz < az->GetNbins(); iz++) {
-				Float_t cont = fSelHist->GetBinContent(ix, iy, iz);
-				if (cont != 0) {
-					pm = new TPolyMarker3D(1);
-					x = ax->GetBinCenter(ix);
-					y = ay->GetBinCenter(iy);
-					z = az->GetBinCenter(iz);
-					pm->SetPoint(0,x, y, z);
-					Int_t col = (Int_t)((cont / (max-min) )* 50. + 50);
-//					cout << " max  cont Col "<< max << " "  << cont << " " << col << endl;
-					UInt_t icont = (UInt_t)cont;
-					pm->SetUniqueID(icont);
-					pm->SetName(Form(" X =  %6.4g Y =  %6.4g Z = %6.4g Content %6.4g",
-										  x, y, z, cont));
-					pm->SetMarkerColor(col);
-					pm->SetMarkerStyle(fMarkerStyle3Dim);
-					pm->SetMarkerSize(fMarkerSize3Dim);
-					pm->Draw();
-				}
-			}
-		}
-	}
-	TH2F* h3 = (TH2F*)gROOT->FindObject("DummyForTPaletteAxis");
-	if ( !h3)
-		h3 = new TH2F("DummyForTPaletteAxis","v",2,0,10, 2,0,10);
-	h3->SetMinimum(min);
-	h3->SetMaximum(max);
-	Double_t uc[20];
-	for (int i=0; i < 20; i++) uc[i] = min + i * (max - min) / 20.;
-	h3->SetContour(20,uc);
-	TPaletteAxis *pa = new TPaletteAxis(0.85, -0.9,0.9,0.9, h3);
-	pa->Draw();
-
-}
-//____________________________________________________________________________
-
 void FitHist::Draw1Dim()
 {
    TString drawopt;
@@ -3419,7 +3332,8 @@ void FitHist::Draw2Dim()
    } else {
       fCanvas->GetFrame()->SetFillStyle(1001);
       fCanvas->GetFrame()->SetFillColor(f2DimBackgroundColor);
-   }
+   }   
+   UpdateDrawOptions();
    DrawDate();
 	fCanvas->Modified();
    fCanvas->Update();
@@ -3432,6 +3346,236 @@ void FitHist::Draw2Dim()
 	if (!fCanvas->GetAutoExec())
 		fCanvas->ToggleAutoExec();
    fCanvas->Update();
+}
+//____________________________________________________________________________
+
+void FitHist::Draw3Dim()
+{
+//   TString drawopt("iso");
+	if ( gDebug > 0 )
+		cout << "fDrawOpt3Dim " << fDrawOpt3Dim << endl;
+	TEnv env(".hprrc");
+	fCanvas->SetPhi(env.GetValue("Set3DimOptDialog.fPhi3Dim",     30));
+	fCanvas->SetTheta(env.GetValue("Set3DimOptDialog.fTheta3Dim", 30));
+   if (fTitleCenterX) {
+      fSelHist->GetXaxis()->CenterTitle(kTRUE);
+//		cout << "fSelHist->GetXaxis()->CenterTitle(kTRUE); " << endl;
+	}
+   if (fTitleCenterY)
+      fSelHist->GetYaxis()->CenterTitle(kTRUE);
+   if (fTitleCenterZ) {
+		fSelHist->GetZaxis()->CenterTitle(kTRUE);
+//		cout << "fSelHist->GetZaxis()->CenterTitle(kTRUE); " << endl;
+	}
+//	fSelHist->GetXaxis()->SetTicks(env.GetValue("SetHistOptDialog.fTicksX3Dim","-"));
+	if ( gROOT->GetForceStyle() ) {
+		fCanvas->UseCurrentStyle();
+	}
+	fSelHist->GetYaxis()->SetTickLength(env.GetValue("SetHistOptDialog.fTickLengthX3Dim",0.01));
+	fSelHist->GetZaxis()->SetTitleOffset(env.GetValue("SetHistOptDialog.fTitleOffsetZ3Dim", 1.5));
+	if ( fDrawOpt3Dim.Contains("PolyMHist") ) {
+		Draw3DimPolyMarker();
+		return;
+	}
+	if ( fDrawOpt3Dim.Contains("PolyMView") ) {
+		Draw3DimView();
+		return;
+	}
+   if (fShowStatBox) {
+      gStyle->SetOptStat(fOptStat);
+      fSelHist->SetStats(1);
+		//      cout << "fSelHist->SetStats(1); " << fOptStat << endl;
+		gStyle->SetStatX(env.GetValue("SetHistOptDialog.StatX2D",0.9));
+		gStyle->SetStatY(env.GetValue("SetHistOptDialog.StatY2D",0.9));
+		gStyle->SetStatW(env.GetValue("SetHistOptDialog.StatW2D",0.2));
+		gStyle->SetStatH(env.GetValue("SetHistOptDialog.StatH2D",0.2));
+	} else {
+      fSelHist->SetStats(0);
+   } 
+	
+	TList * lof = fSelHist->GetListOfFunctions();
+	TObject * trf= lof->FindObject("TransferFunction");
+	if ( fDrawOpt3Dim.Contains("GL") && fApplyTranspCut ) {
+		if ( !trf ) {
+			TF1 * tf = new TF1("TransferFunction", my_transfer_function);
+			lof->Add(tf);
+		}
+	} else {
+		if (trf) {
+			lof->Remove(trf);
+			delete trf;
+		}
+	}
+   fSelHist->SetDrawOption(fDrawOpt3Dim);
+   fSelHist->SetOption(fDrawOpt3Dim);
+   fSelHist->Draw(fDrawOpt3Dim);
+	fSelHist->SetFillColor(fHistFillColor3Dim);
+	fSelHist->SetLineColor(fHistLineColor3Dim);
+	fSelHist->SetLineStyle(1);
+	fSelHist->SetLineWidth(1);
+	fSelHist->SetMarkerColor(fMarkerColor3Dim);
+	fSelHist->SetMarkerStyle(fMarkerStyle3Dim);
+	fSelHist->SetMarkerSize (fMarkerSize3Dim);
+	UpdateDrawOptions();
+   fCanvas->Update();
+}
+//____________________________________________________________________________
+
+void FitHist::Draw3DimPolyMarker()
+{
+	TH3F * hempty = (TH3F*)fSelHist->Clone();
+	hempty->Reset();
+	fCanvas->SetRightMargin(0.16);
+	TGStatusBar *sb = ((TRootCanvas*)fCanvas->GetCanvasImp())->GetStatusBar();
+	if ( sb ) {
+		Int_t parts[4] = {20, 50, 10, 20};
+		sb->SetParts(parts, 4);
+	}
+	hempty->Draw();
+	hempty->SetStats(0);
+	Float_t min = fSelHist->GetMinimum();
+	Float_t max = fSelHist->GetMaximum();
+//	gStyle->SetPalette(1);
+	TAxis * ax = fSelHist->GetXaxis();
+	TAxis * ay = fSelHist->GetYaxis();
+	TAxis * az = fSelHist->GetZaxis();
+	// this corrects a bug in root?
+	hempty->GetYaxis()->SetTickLength(hempty->GetXaxis()->GetTickLength());
+	TPolyMarker3D * pm;
+	Double_t x, y, z;
+	
+	for (Int_t ix = 0; ix < ax->GetNbins(); ix++) {
+		for (Int_t iy = 0; iy < ay->GetNbins(); iy++) {
+			for (Int_t iz = 0; iz < az->GetNbins(); iz++) {
+				Float_t cont = fSelHist->GetBinContent(ix, iy, iz);
+				if (cont != 0) {
+					pm = new TPolyMarker3D(1);
+					x = ax->GetBinCenter(ix);
+					y = ay->GetBinCenter(iy);
+					z = az->GetBinCenter(iz);
+					pm->SetPoint(0,x, y, z);
+					Int_t col = (Int_t)((cont / (max-min) )* 50. + 50);
+//					cout << " max  cont Col "<< max << " "  << cont << " " << col << endl;
+					UInt_t icont = (UInt_t)cont;
+					pm->SetUniqueID(icont);
+					pm->SetName(Form(" X =  %6.4g Y =  %6.4g Z = %6.4g Content %6.4g",
+										  x, y, z, cont));
+					pm->SetMarkerColor(col);
+					pm->SetMarkerStyle(fMarkerStyle3Dim);
+					pm->SetMarkerSize(fMarkerSize3Dim);
+					pm->Draw();
+				}
+			}
+		}
+	}
+	TH2F* h3 = (TH2F*)gROOT->FindObject("DummyForTPaletteAxis");
+	if ( !h3)
+		h3 = new TH2F("DummyForTPaletteAxis","v",2,0,10, 2,0,10);
+	h3->SetMinimum(min);
+	h3->SetMaximum(max);
+	Double_t uc[20];
+	for (int i=0; i < 20; i++) uc[i] = min + i * (max - min) / 20.;
+	h3->SetContour(20,uc);
+	TPaletteAxis *pa = new TPaletteAxis(0.85, -0.9,0.9,0.9, h3);
+	pa->Draw();
+
+}
+
+///____________________________________________________________________________
+
+void FitHist::Draw3DimView()
+{
+//	TH3F * hempty = (TH3F*)fSelHist->Clone();
+//	hempty->Reset();
+//	fCanvas->SetRightMargin(0.16);
+	TGStatusBar *sb = ((TRootCanvas*)fCanvas->GetCanvasImp())->GetStatusBar();
+	if ( sb ) {
+		Int_t parts[4] = {20, 50, 10, 20};
+		sb->SetParts(parts, 4);
+	}
+//   Double_t rx0 = 0, rx1 = 10, ry0 = 0, ry1 = 10, rz0 = 0, rz1 = 10;
+	TAxis * ax = fSelHist->GetXaxis();
+	TAxis * ay = fSelHist->GetYaxis();
+	TAxis * az = fSelHist->GetZaxis();
+   Double_t rmin[3], rmax[3];
+	Double_t x0, y0, z0, x1, y1, z1;
+   rmin[0] = x0 = ax->GetXmin();
+   rmin[1] = y0 = ay->GetXmin();
+   rmin[2] = z0 = az->GetXmin();
+   rmax[0] = x1 = ax->GetXmax();
+   rmax[1] = y1 = ay->GetXmax();
+   rmax[2] = z1 = az->GetXmax();
+	fCanvas->Range(rmin[0], rmin[1], rmax[0], rmax[1]);
+   TView3D *view = new TView3D(1, rmin, rmax);
+   view->ShowAxis();
+//	hempty->Draw();
+//	hempty->SetStats(0);
+	Float_t min = fSelHist->GetMinimum();
+	Float_t max = fSelHist->GetMaximum();
+//	gStyle->SetPalette(1);
+	TPolyMarker3D * pm;
+	Double_t x, y, z;
+	TPolyLine3D * pl3 = new TPolyLine3D(16);
+	pl3->SetPoint(0, x0, y0, z0);
+	pl3->SetPoint(1, x1, y0, z0);
+	pl3->SetPoint(2, x1, y0, z1);
+	pl3->SetPoint(3, x0, y0, z1);
+	pl3->SetPoint(4, x0, y0, z0);
+
+	pl3->SetPoint(5, x0, y1, z0);
+	pl3->SetPoint(6, x0, y1, z1);
+	pl3->SetPoint(7, x0, y0, z1);
+	pl3->SetPoint(8, x0, y1, z1);
+	
+	pl3->SetPoint(9, x1, y1, z1);
+	pl3->SetPoint(10, x1, y0, z1);
+	pl3->SetPoint(11, x1, y1, z1);
+	pl3->SetPoint(12, x1, y1, z0);
+	
+	pl3->SetPoint(13, x1, y0, z0);
+	pl3->SetPoint(14, x1, y1, z0);
+	pl3->SetPoint(15, x0, y1, z0);
+	
+	pl3->Draw();
+	
+	for (Int_t ix = 0; ix < ax->GetNbins(); ix++) {
+		for (Int_t iy = 0; iy < ay->GetNbins(); iy++) {
+			for (Int_t iz = 0; iz < az->GetNbins(); iz++) {
+				Float_t cont = fSelHist->GetBinContent(ix, iy, iz);
+				if (cont != 0) {
+					pm = new TPolyMarker3D(1);
+					x = ax->GetBinCenter(ix);
+					y = ay->GetBinCenter(iy);
+					z = az->GetBinCenter(iz);
+					pm->SetPoint(0,x, y, z);
+					Int_t col = (Int_t)((cont / (max-min) )* 50. + 50);
+//					cout << " max  cont Col "<< max << " "  << cont << " " << col << endl;
+					UInt_t icont = (UInt_t)cont;
+//					pm->SetUniqueID(icont);
+					pm->SetName(Form(" X =  %6.4g Y =  %6.4g Z = %6.4g Content %6.4g",
+										  x, y, z, cont));
+					pm->SetMarkerColor(col);
+					pm->SetMarkerStyle(fMarkerStyle3Dim);
+					pm->SetMarkerSize(fMarkerSize3Dim);
+					pm->Draw();
+				}
+			}
+		}
+	}
+	
+	TH2F* h3 = (TH2F*)gROOT->FindObject("DummyForTPaletteAxis");
+	if ( !h3)
+		h3 = new TH2F("DummyForTPaletteAxis","v",2,0,10, 2,0,10);
+	h3->SetMinimum(min);
+	h3->SetMaximum(max);
+	Double_t uc[20];
+	for (int i=0; i < 20; i++) uc[i] = min + i * (max - min) / 20.;
+	h3->SetContour(20,uc);
+	TPaletteAxis *pa = new TPaletteAxis(0.85, -0.9,0.9,0.9, h3);
+	pa->Draw();
+	fCanvas->cd();
+	fCanvas->Update();
+
 }
 
 //__________________________________________________________________________________
@@ -3481,9 +3625,9 @@ void FitHist::UpdateDrawOptions()
       fSelHist->SetOption(fDrawOpt2Dim);
       fSelHist->SetDrawOption(fDrawOpt2Dim);
    }
-   if (gROOT->GetForceStyle()) {
-      SetHistOptDialog::SetDefaults();
-   }
+//   if (gROOT->GetForceStyle()) {
+//      SetHistOptDialog::SetDefaults(fSelHist->GetDimension());
+//   }
 //   gPad->Modified();
 //   gPad->Update();
 }

@@ -3084,7 +3084,7 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 			hist->SetTitle(title);
 		}
 
-      ShowHist(hist, hname);
+      ShowHist(hist, hname, b);
    } else     WarnBox("Histogram not found");
 //   kSemaphore = 0;
     if (mother_canvas)
@@ -3092,7 +3092,7 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 }
 //_______________________________________________________________________
 
-FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
+FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 {
 //   RestoreOptions();
 
@@ -3186,6 +3186,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
    fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname.Data(),
           WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, wwidx, wwidy);
    fLastWindow = fh->GetMyCanvas();
+	fh->SetCmdButton(b);
    return fh;
 }
 //_______________________________________________________________________

@@ -64,7 +64,17 @@ private:
    Float_t      fTitleSize;
    Color_t      fTitleColorA;
    Style_t      fTitleFontA;
-
+   Float_t      fLabelOffsetX3Dim;
+   Float_t      fLabelOffsetY3Dim;
+   Float_t      fLabelOffsetZ3Dim;
+   Float_t      fLabelSize3Dim;
+   Float_t      fTickLength3Dim;
+   TString      fTickSideX3Dim;
+   TString      fTickSideY3Dim;
+   TString      fTickSideZ3Dim;
+   Float_t      fTitleOffsetX3Dim;
+   Float_t      fTitleOffsetY3Dim;
+   Float_t      fTitleOffsetZ3Dim;
    Color_t      fTitleLineColor;
 	Color_t      fTitleFillColor;
 	Color_t      fTitleTextColor;
@@ -127,7 +137,7 @@ public:
    void SetAllToDefault();
    void RestoreDefaults(Int_t resetall = 0);
 	void GetValuesFromHist();
-   static void SetDefaults();
+   static void SetDefaults(Int_t ndim =1);
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 

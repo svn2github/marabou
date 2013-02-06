@@ -6,6 +6,8 @@
 #include <iostream>
 //_____________________________________________________________________________________
 
+class TButton;
+
 class Set3DimOptDialog : public TObject {
 
 private:
@@ -14,7 +16,9 @@ private:
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
 	TH1          *fHist;
+	TButton      *fCmdButton;
    TString fDrawOpt;
+   TString fDrawOptPrev;
    Int_t fOptRadio[4];
    const char *fDrawOpt3DimArray[4];
    TString fDrawOpt3Dim;
@@ -28,6 +32,7 @@ private:
 	Int_t   fBidBOX;
 	Int_t   fBidGL;
 	Int_t   fBidPolyM;
+	Int_t   fBidView3D;
 	Int_t   fBidARR;
 	Int_t   fBidTEXT;
 	Int_t   fBidFillColor;
@@ -39,15 +44,25 @@ private:
 	Int_t   fBidTranspBelow;
 	Int_t   fBidTranspAbove;
 	Int_t   fApplyTranspCut;
+	Int_t   fRotDx;
+	Int_t   fRotDy;
+	Int_t   fRotSleep;
+	Int_t   fRotCycles;
+	Int_t    fBidPhi;
+   Double_t fPhi3Dim;
+	Int_t    fBidTheta;
+   Double_t fTheta3Dim;
+
 public:
 
-   Set3DimOptDialog(TGWindow * win = NULL);
+   Set3DimOptDialog(TGWindow * win = NULL, TButton *b = NULL);
 	Set3DimOptDialog(Int_t batch);
    ~Set3DimOptDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);
    void SetHistAtt(TCanvas *canvas);
+	void Rotate();
 //   void SetHistAttPermLocal();
 //   void SetHistAttPerm();
    void SaveDefaults();

@@ -11,8 +11,10 @@
 #include "TStyle.h"
 #include "TSystem.h"
 #include "GeneralAttDialog.h"
+#include "HistPresent.h"
 #include "SetColor.h"
 #include <iostream>
+
 
 namespace std {} using namespace std;
 
@@ -124,18 +126,22 @@ ____________________________________________________________\n\
 //   static Int_t dummy;
 	GetCustomStyles();
 	TObject *obj;
-   TString style_menu ("ComboSelect_         Set global style");
+   TString style_menu ("ComboSelect_         Set / Apply global style");
    TIter next(gROOT->GetListOfStyles());
 	while ( (obj = next()) ) {
 	   style_menu += ";";
 	   style_menu += ((TStyle*)obj)->GetName();
 	}
+	TString rescmd("RestoreSavedSettings()");
    RestoreDefaults();
    fRow_lab->Add(new TObjString("CheckButton_              Force current style"));
    fValp[ind++] = &fForceStyle;
    fRow_lab->Add(new TObjString(style_menu));
    fGlobalStyleButton = ind;
    fValp[ind++] = &fGlobalStyle;
+	fRow_lab->Add(new TObjString("CommandButt_Apply saved settings"));
+   fValp[ind++] = &rescmd;
+
    fRow_lab->Add(new TObjString("CheckButton_  Prepend filename to histo names"));
    fValp[ind++] = &fPrependFilenameToName;
    fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo titles"));
@@ -203,6 +209,21 @@ void GeneralAttDialog::GetCustomStyles()
 		}
 		cstyle->Close();
 	}
+}
+//_______________________________________________________________________
+
+void GeneralAttDialog::RestoreSavedSettings()
+{
+	fGlobalStyle = "Plain";
+	gROOT->SetStyle(fGlobalStyle);
+   TEnv env(".hprrc");
+   env.SetValue("GeneralAttDialog.fGlobalStyle",       fGlobalStyle);
+	env.SaveLevel(kEnvLocal);
+	fDialog->SetComboSelect(1,0);
+	gHpr->RestoreOptions();
+	cout << setmagenta << "Saved settings have been restored. "
+		<< "If you want to keep this mode for later sessions "
+		<< "change style to \"Plain\"" << setblack<< endl;
 }
 //_______________________________________________________________________
 
@@ -292,8 +313,13 @@ void GeneralAttDialog::RestoreDefaults()
 		<< "         dont use popup menu with right mouse in canvas"<< endl
 		<< "         to set log Y" << setblack << endl;
 	}
-	cout << "Set style to: " << fGlobalStyle << endl;
-	gROOT->SetStyle(fGlobalStyle);
+	// if it is user defined style apply it now
+	// it overwrites saved settings
+	if (fGlobalStyle != "Plain" && fGlobalStyle != "Default" ) {
+		cout << setmagenta << "Set style to: " << fGlobalStyle << endl;
+		cout << "Saved settings are overwritten" << setblack<< endl;
+		gROOT->SetStyle(fGlobalStyle);
+	}
 	gStyle->SetPalette(1,NULL);
 	// make sure text precission is 2 (not 3)
 	Int_t tp = gStyle->GetTextFont();
