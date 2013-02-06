@@ -157,9 +157,14 @@ void madc32_stopAcq(struct s_madc32 * s);
 
 void madc32_resetFifo(struct s_madc32 * s);
 
+void madc32_enableMCST(struct s_madc32 * s, uint16_t Address);
+void madc32_disableMCST(struct s_madc32 * s);
+
+void madc32_enableCBLT(struct s_madc32 * s, uint16_t Address, bool_t First, bool_t Last);
+void madc32_disableCBLT(struct s_madc32 * s);
+
 bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile);
 
-void madc32_resetEventBuffer(struct s_madc32 * s);
-uint32_t * madc32_pushEvent(struct s_madc32 * s, uint32_t * pointer);
+extern int vmtopm (int, struct dmachain *, char *, long);
 
 #endif

@@ -42,6 +42,10 @@
 #define MADC32_IRQ_THRESH				0x6018
 #define MADC32_MAX_XFER_DATA			0x601A
 
+#define MADC32_CBLT_MCST_CONTROL		0x6020
+#define MADC32_CBLT_ADDRESS				0x6022
+#define MADC32_MCST_ADDRESS				0x6024
+
 #define MADC32_BUFFER_DATA_LENGTH		0x6030
 #define MADC32_DATA_LENGTH_FORMAT		0x6032
 #define MADC32_READOUT_RESET			0x6034
@@ -232,9 +236,14 @@
 #define MADC32_M_EOB						0x80000000
 #define MADC32_M_WC							0x00000FFF
 
-#define MADC32_BLT_OFF						0
-#define MADC32_BLT_NORMAL					1
-#define MADC32_BLT_CHAINED					2
+#define MADC32_MCST_ENA						(0x1 << 7)
+#define MADC32_MCST_DIS						(0x1 << 6)
+#define MADC32_CBLT_FIRST_ENA				(0x1 << 5)
+#define MADC32_CBLT_FIRST_DIS				(0x1 << 4)
+#define MADC32_CBLT_LAST_ENA				(0x1 << 3)
+#define MADC32_CBLT_LAST_DIS				(0x1 << 2)
+#define MADC32_CBLT_ENA						(0x1 << 1)
+#define MADC32_CBLT_DIS						(0x1 << 0)
 
 
 /*____________________________________________________________________________
@@ -297,11 +306,16 @@ struct s_madc32 {
 	unsigned long bltAddr;
 	uio_mem_t bltBuffer;
 	uint32_t bltBufferSize;
-	int blockXfer;
+	bool_t blockXfer;
 
-	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
-	uint32_t *evtp;
-	bool_t skipData;
+	uint16_t mcstSignature;			/* MCST signature */
+	bool_t mcstEnabled;				/* TRUE if enabled */
+
+	uint16_t cbltSignature;			/* CBLT signature */
+	bool_t cbltEnabled;				/* TRUE if enabled */
+	bool_t cbltFirst;				/* TRUE if head of chain */
+	bool_t cbltLast;				/* TRUE if end of chain */
+
 };
 
 #endif

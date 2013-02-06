@@ -1,10 +1,10 @@
 CC 			=	gcc
 
-UTIINC		=	../inc
+RDOINC		=	../inc
 PPCINC		=	../../include
 CESINC		=	/usr/include/ces
 
-CFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(UTIINC) -I$(PPCINC) -I$(CESINC)
+CFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(RDOINC) -I$(PPCINC) -I$(CESINC)
 
 ObjSuf		=	o
 SrcSuf		=	c
@@ -13,12 +13,12 @@ RDOLIB		=	../../lib/$(GSI_OS_VERSION)/libRdo.$(LibSuf)
 
 BINDIR		=	../../bin/$(GSI_OS_VERSION)
 
-INCS		=	$(UTIINC)/gd_camio.h \
-				$(UTIINC)/gd_cnaf.h \
-				$(UTIINC)/gd_readout.h \
-				$(UTIINC)/gd_tstamp.h
+INCS		=	$(RDOINC)/gd_camio.h \
+				$(RDOINC)/gd_cnaf.h \
+				$(RDOINC)/gd_readout.h \
+				$(RDOINC)/gd_tstamp.h
 
-OBJS		=	$(UTILIB)(cc32_init.$(ObjSuf)) $(UTILIB)(dgf_download.$(ObjSuf))
+OBJS		=	$(RDOLIB)(cc32_init.$(ObjSuf)) $(RDOLIB)(dgf_download.$(ObjSuf))
 
 PROGS		=	caen \
 				cc32 \
@@ -35,7 +35,7 @@ all:			$(RDOLIB) $(PROGS)
 clean:
 			rm -f *.o $(RDOLIB)
 
-$(UTILIB):  	$(OBJS)
+$(RDOLIB):  	$(OBJS)
 
 caen:			caen.o $(RDOLIB)
 				$(CC) -o caen caen.o \

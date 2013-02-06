@@ -477,7 +477,7 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 	mnUC[0] = toupper(mnUC[0]);
 
 	sprintf(res, "MQDC32.%s.BlockXfer", mnUC);
-	s->blockXfer = root_env_getval_i(res, 0);
+	s->blockXfer = root_env_getval_b(res, FALSE);
 
 	sprintf(res, "MQDC32.%s.AccuChannel", mnUC);
 	s->accuChannel = root_env_getval_i(res, -1);
@@ -747,14 +747,14 @@ void mqdc32_enableBma(struct s_mqdc32 * s)
 	int bmaError;
 	int wordSize;
 
-	if (s->blockXfer == MQDC32_BLT_NORMAL) {
+	if (s->blockXfer) {
 		switch (s->dataWidth) {
 			case MQDC32_DATA_LENGTH_FORMAT_32: wordSize = BMA_M_WzD32; break;
 			case MQDC32_DATA_LENGTH_FORMAT_64: wordSize = BMA_M_WzD64; break;
 			default:
 				sprintf(msg, "[%senableBma] %s: Wrong data width - %d (should be 32 or 64), turning block xfer OFF", s->mpref, s->moduleName, s->dataWidth);
 				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-				s->blockXfer = MQDC32_BLT_OFF;
+				s->blockXfer = FALSE;
 				return;
 		}
 
@@ -764,7 +764,7 @@ void mqdc32_enableBma(struct s_mqdc32 * s)
 		if (bmaError != 0) {
 			sprintf(msg, "[%senableBma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			s->blockXfer = MQDC32_BLT_OFF;
+			s->blockXfer = FALSE;
 			bma_close();
 			return;
 		}
@@ -774,7 +774,7 @@ void mqdc32_enableBma(struct s_mqdc32 * s)
 		if (bmaError != 0) {
 			sprintf(msg, "[%senableBma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			s->blockXfer = MQDC32_BLT_OFF;
+			s->blockXfer = FALSE;
 			uio_cfree(&s->bltBuffer);
 			bma_close();
 			return;
@@ -804,12 +804,8 @@ void mqdc32_enableBma(struct s_mqdc32 * s)
 		sprintf(msg, "[%senableBma] %s: turning block xfer ON (mode=NORMAL, buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
-	} else if (s->blockXfer == MQDC32_BLT_CHAINED) {
-		sprintf(msg, "[%senableBma] %s: Chained BLT not yet implemented, turning block xfer OFF", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-		s->blockXfer = MQDC32_BLT_OFF;
 	} else {
-		s->blockXfer = MQDC32_BLT_OFF;
+		s->blockXfer = FALSE;
 		s->bltBufferSize = 0;
 		sprintf(msg, "[%senableBma] %s: Block xfer is OFF", s->mpref, s->moduleName);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -836,7 +832,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	numData = (int) mqdc32_getFifoLength(s);
 	if (numData == 0) return(0);
 
-	if (s->blockXfer == MQDC32_BLT_NORMAL) {
+	if (s->blockXfer) {
 #ifdef CPU_TYPE_RIO2
 		bmaError = bma_read(s->vmeAddr + MQDC32_DATA, s->bltBuffer.paddr | 0x80000000, numData, BMA_DEFAULT_MODE);
 		if (bmaError != 0) {
@@ -856,36 +852,8 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 		memcpy(pointer, s->bltBuffer.uaddr, sizeof(uint32_t) * numData);
 		pointer += numData;
 	} else {
-		s->blockXfer = MQDC32_BLT_OFF;
+		s->blockXfer = FALSE;
 		for (i = 0; i < numData; i++) *pointer++ = GET32(s->baseAddr, MQDC32_DATA);
-/*		for (i = 0; i < numData; i++) {
-			data = GET32(s->baseAddr, MQDC32_DATA);
-			if (data == 0) {
-				s->evtp++; *s->evtp = (MQDC32_M_TRAILER | 0x00525252);
-				pointer = mqdc32_pushEvent(s, pointer);
-				mqdc32_resetEventBuffer(s);
-				s->skipData = TRUE;
-				continue;
-			} else if ((data & MQDC32_M_SIGNATURE) == MQDC32_M_HEADER) {
-				s->skipData = FALSE;
-				if (s->evtp != s->evtBuf) {
-					s->evtp++; *s->evtp = (MQDC32_M_TRAILER | 0x00252525);
-					pointer = mqdc32_pushEvent(s, pointer);
-				}
-				mqdc32_resetEventBuffer(s);
-				*s->evtp = data;
-			} else if ((data & MQDC32_M_SIGNATURE) == MQDC32_M_TRAILER) {
-				if (s->skipData) continue;
-				s->evtp++; *s->evtp = data;
-				pointer = mqdc32_pushEvent(s, pointer);
-				mqdc32_resetEventBuffer(s);
-			} else if ((data & MQDC32_M_SIGNATURE) == MQDC32_M_EOB) {
-				break;
-			} else {
-				if (s->skipData) continue;
-				s->evtp++; *s->evtp = data;
-			}
-		} */
 	}
 
 	mqdc32_resetReadout(s);
@@ -907,14 +875,6 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	}
 
 	return (numData);
-}
-
-uint32_t * mqdc32_pushEvent(struct s_mqdc32 * s, uint32_t * pointer) {
-	int i;
-	int wc = s->evtp - s->evtBuf + 1;
-	uint32_t * p = s->evtBuf;
-	for (i = 0; i < wc; i++) *pointer++ = *p++;
-	return (pointer);
 }
 
 int mqdc32_readTimeB(struct s_mqdc32 * s, uint32_t * pointer)
@@ -957,7 +917,6 @@ void mqdc32_startAcq(struct s_mqdc32 * s)
 	SET16(s->baseAddr, MQDC32_START_ACQUISITION, 0x0);
 	mqdc32_resetFifo(s);
 	mqdc32_resetReadout(s);
-	mqdc32_resetEventBuffer(s);
 	memset(s->histo, 0, MQDC32_N_HISTOSIZE * sizeof(int));
 	if (s->accuChannel >= 0) {
 		sprintf(msg, "[%sstartAcq] %s: Accumulating data for channel %d)", s->mpref, s->moduleName, s->accuChannel);
@@ -976,7 +935,6 @@ void mqdc32_stopAcq(struct s_mqdc32 * s)
 	SET16(s->baseAddr, MQDC32_START_ACQUISITION, 0x0);
 	mqdc32_resetFifo(s);
 	mqdc32_resetReadout(s);
-	mqdc32_resetEventBuffer(s);
 	if (s->acqStarted && (s->accuChannel >= 0)) {
 		sprintf(histoFile, "histo_%s_%d.dat", s->moduleName, s->accuChannel);
 		f = fopen(histoFile, "w");
@@ -993,6 +951,41 @@ void mqdc32_resetFifo(struct s_mqdc32 * s)
 	SET16(s->baseAddr, MQDC32_FIFO_RESET, 0x1);
 }
 
+void mqdc32_enableMCST(struct s_mqdc32 * s, uint16_t Signature) {
+	s->mcstSignature = Signature;
+	SET16(s->baseAddr, MQDC32_MCST_ADDRESS, Signature);
+	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_MCST_ENA);
+	s->mcstEnabled = TRUE;
+}
+
+void mqdc32_disableMCST(struct s_mqdc32 * s) {
+	uint16_t ctrl;
+	s->mcstSignature = 0x0;
+	SET16(s->baseAddr, MQDC32_MCST_ADDRESS, 0x0);
+	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_MCST_DIS);
+	s->mcstEnabled = FALSE;
+}
+
+void mqdc32_enableCBLT(struct s_mqdc32 * s, uint16_t Signature, bool_t First, bool_t Last) {
+	s->cbltSignature = Signature;
+	SET16(s->baseAddr, MQDC32_CBLT_ADDRESS, Signature);
+	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_ENA);
+	if (First) SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_ENA); else SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_DIS);
+	if (Last) SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_ENA); else SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_DIS);
+	s->cbltEnabled = TRUE;
+}
+
+void mqdc32_disableCBLT(struct s_mqdc32 * s) {
+	s->cbltSignature = 0x0;
+	SET16(s->baseAddr, MQDC32_CBLT_ADDRESS, 0x0);
+	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_DIS);
+	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_DIS);
+	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_DIS);
+	s->cbltFirst = FALSE;
+	s->cbltLast = FALSE;
+	s->cbltEnabled = FALSE;
+}
+
 bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile)
 {
 	struct stat sbuf;
@@ -1004,12 +997,6 @@ bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile)
 		}
 	}
 	return FALSE;
-}
-
-void mqdc32_resetEventBuffer(struct s_mqdc32 * s) {
-	memset(s->evtBuf, 0, sizeof(s->evtBuf));
-	s->evtp = s->evtBuf;
-	s->skipData = FALSE;
 }
 
 void catchBerr() {}

@@ -42,6 +42,10 @@
 #define MQDC32_IRQ_THRESH				0x6018
 #define MQDC32_MAX_XFER_DATA			0x601A
 
+#define MQDC32_CBLT_MCST_CONTROL		0x6020
+#define MQDC32_CBLT_ADDRESS				0x6022
+#define MQDC32_MCST_ADDRESS				0x6024
+
 #define MQDC32_BUFFER_DATA_LENGTH		0x6030
 #define MQDC32_DATA_LENGTH_FORMAT		0x6032
 #define MQDC32_READOUT_RESET			0x6034
@@ -219,11 +223,22 @@
 #define MQDC32_M_EOB						0x80000000
 #define MQDC32_M_WC							0x00000FFF
 
-#define MQDC32_BLT_OFF						0
-#define MQDC32_BLT_NORMAL					1
-#define MQDC32_BLT_CHAINED					2
-
 #define MQDC32_N_HISTOSIZE					4096
+
+#define MQDC32_M_SIGNATURE					0xC0000000
+#define MQDC32_M_HEADER						0x40000000
+#define MQDC32_M_TRAILER					0xC0000000
+#define MQDC32_M_EOB						0x80000000
+#define MQDC32_M_WC							0x00000FFF
+
+#define MQDC32_MCST_ENA						(0x1 << 7)
+#define MQDC32_MCST_DIS						(0x1 << 6)
+#define MQDC32_CBLT_FIRST_ENA				(0x1 << 5)
+#define MQDC32_CBLT_FIRST_DIS				(0x1 << 4)
+#define MQDC32_CBLT_LAST_ENA				(0x1 << 3)
+#define MQDC32_CBLT_LAST_DIS				(0x1 << 2)
+#define MQDC32_CBLT_ENA						(0x1 << 1)
+#define MQDC32_CBLT_DIS						(0x1 << 0)
 
 /*____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////
@@ -283,15 +298,20 @@ struct s_mqdc32 {
 	unsigned long bltAddr;
 	uio_mem_t bltBuffer;
 	uint32_t bltBufferSize;
-	int blockXfer;
+	bool_t blockXfer;
 
 	int accuChannel;
 	int histo[MQDC32_N_HISTOSIZE];
 	bool_t acqStarted;
 
-	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
-	uint32_t *evtp;
-	bool_t skipData;
+	uint16_t mcstSignature;			/* MCST signature */
+	bool_t mcstEnabled;				/* TRUE if enabled */
+
+	uint16_t cbltSignature;			/* CBLT signature */
+	bool_t cbltEnabled;				/* TRUE if enabled */
+	bool_t cbltFirst;				/* TRUE if head of chain */
+	bool_t cbltLast;				/* TRUE if end of chain */
+
 };
 
 #endif

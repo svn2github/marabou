@@ -64,9 +64,7 @@ MADC32.$moduleName.XferData:			$xferData
 #                       0x3  -->  extended time stamp (+16bits)
 MADC32.$moduleName.MarkingType: 		$markingType
 
-# block transfer        0  --> off (default)
-#                       1  --> on (normal)
-#                       2  --> on (chained)
+# block transfer        enable/disable, TRUE/FALSE
 MADC32.$moduleName.BlockXfer:			$blockXfer
 %%End(FifoHandling)%%
 

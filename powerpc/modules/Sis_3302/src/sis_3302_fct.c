@@ -214,7 +214,7 @@ Bool_t sis3302_fillStruct(struct s_sis_3302 * Module, Char_t * SettingsFile) {
 	Module->updCountDown = 0;
 
 	sprintf(res, "SIS3302.%s.BlockXfer", mname);
-	Module->blockXfer = root_env_getval_i(res, SIS3302_BLT_OFF);
+	Module->blockXfer = root_env_getval_b(res, FALSE);
 
 	sprintf(res, "SIS3302.%s.ClockSource", mname);
 	Module->clockSource = root_env_getval_i(res, 7);
@@ -412,11 +412,7 @@ Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, Char_t * DumpFile)
 	sprintf(msg, "[dumpRegisters] [%s]: Dumping settings to file %s", Module->moduleName, DumpFile);
 	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 
-	switch (Module->blockXfer) {
-		case SIS3302_BLT_OFF:		blt = "off"; break;
-		case SIS3302_BLT_NORMAL:	blt = "normal"; break;
-		case SIS3302_BLT_CHAINED:	blt = "chained"; break;
-	}
+	blt = (Module->blockXfer) ? "on" : "off";
 	fprintf(dmp, "Block xfer                      : %s\n", blt);
 	fprintf(dmp, "Clock source                    : %d\n", sis3302_getClockSource(Module));
 	fprintf(dmp, "Lemo OUT mode                   : %d\n", sis3302_getLemoOutMode(Module));
@@ -827,12 +823,12 @@ void sis3302_enableBma(struct s_sis_3302 * Module)
 	Int_t chn;
 	Bool_t foundSome;
 
-	if (Module->blockXfer == SIS3302_BLT_NORMAL) {
+	if (Module->blockXfer) {
 		bmaError = bma_open();
 		if (bmaError != 0) {
 			sprintf(msg, "[enableBma] [%s]: %s, turning block xfer OFF - %s (%d)", Module->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			Module->blockXfer = SIS3302_BLT_OFF;
+			Module->blockXfer = FALSE;
 			bma_close();
 			return;
 		}
@@ -843,7 +839,7 @@ void sis3302_enableBma(struct s_sis_3302 * Module)
 		if (bmaError != 0) {
 			sprintf(msg, "[enableBma] [%s]: %s, turning block xfer OFF - %s (%d)", Module->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			Module->blockXfer = SIS3302_BLT_OFF;
+			Module->blockXfer = FALSE;
 			uio_cfree(&Module->bltBuffer);
 			bma_close();
 			return;
@@ -857,12 +853,8 @@ void sis3302_enableBma(struct s_sis_3302 * Module)
 /* configure AM code */
 		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_AmCode, BMA_M_AmA32U);
 
-	} else if (Module->blockXfer == SIS3302_BLT_CHAINED) {
-		sprintf(msg, "[enableBma] [%s]: Chained BLT not yet implemented, turning block xfer OFF", Module->moduleName);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-		Module->blockXfer = SIS3302_BLT_OFF;
 	} else {
-		Module->blockXfer = SIS3302_BLT_OFF;
+		Module->blockXfer = FALSE;
 		sprintf(msg, "[enableBma] [%s]: Block xfer is OFF", Module->moduleName);
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	}

@@ -68,7 +68,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	Int_t bmaError;
 
 	memset(nofEvents, 0, kSis3302NofChans * sizeof(Int_t));
-	
+
 	pointerBegin = Pointer;		/* save pointer to beginning */
 	pointer = Pointer;			/* where to start */
 	*pointer++ = 0;			/* lh: wc=0, rh=serial, will be updated later */
@@ -147,7 +147,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 		}
 	}
 
-	if (Module->blockXfer == SIS3302_BLT_OFF || dataTruncated) {
+	if (!Module->blockXfer || dataTruncated) {
 		channelPattern = Module->activeChannels;
 		for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
 			if (channelPattern & 1) {
@@ -170,7 +170,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 				}
 			}
 		}
-	} else if (Module->blockXfer == SIS3302_BLT_NORMAL) {
+	} else {
 		channelPattern = Module->activeChannels;
 		for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
 			if (channelPattern & 1) {

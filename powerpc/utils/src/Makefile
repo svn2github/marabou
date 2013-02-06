@@ -24,9 +24,6 @@ PROGS		=	envtst uxtst
 
 all:			$(UTILIB) $(PROGS)
 
-clean:
-			rm -f *.o $(UTILIB)
-
 $(UTILIB):  	$(OBJS)
 
 envtst:			envtst.o $(UTILIB)

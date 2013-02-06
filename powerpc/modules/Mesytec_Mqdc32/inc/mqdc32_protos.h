@@ -151,10 +151,13 @@ void mqdc32_stopAcq(struct s_mqdc32 * s);
 
 void mqdc32_resetFifo(struct s_mqdc32 * s);
 
-bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile);
+void mqdc32_enableMCST(struct s_mqdc32 * s, uint16_t Address);
+void mqdc32_disableMCST(struct s_mqdc32 * s);
 
-void mqdc32_resetEventBuffer(struct s_mqdc32 * s);
-uint32_t * mqdc32_pushEvent(struct s_mqdc32 * s, uint32_t * pointer);
+void mqdc32_enableCBLT(struct s_mqdc32 * s, uint16_t Address, bool_t First, bool_t Last);
+void mqdc32_disableCBLT(struct s_mqdc32 * s);
+
+bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile);
 
 extern int vmtopm (int, struct dmachain *, char *, long);
 

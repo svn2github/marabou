@@ -56,7 +56,7 @@ struct s_sis_3302 {
 	Bool_t verbose;
 	Bool_t dumpRegsOnInit;
 
-	Int_t blockXfer;					/* block xfer */
+	Bool_t blockXfer;					/* block xfer */
 #ifdef CPU_TYPE_RIO2
 	struct dmachain bltChain;
 #endif

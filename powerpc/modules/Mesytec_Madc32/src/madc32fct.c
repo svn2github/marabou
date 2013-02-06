@@ -58,6 +58,14 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 		s->verbose = FALSE;
 		s->dumpRegsOnInit = FALSE;
 
+		s->mcstEnabled = FALSE;
+		s->mcstSignature = 0x0;
+
+		s->cbltEnabled = FALSE;
+		s->cbltSignature = 0x0;
+		s->cbltFirst = FALSE;
+		s->cbltLast = FALSE;
+
 		firmware = GET16(s->baseAddr, MADC32_FIRMWARE_REV);
 		mainRev = (firmware >> 8) & 0xff;
 		s->memorySize = (mainRev >= 2) ? (8*1024 + 2) : (1024 + 2);
@@ -507,7 +515,7 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	mnUC[0] = toupper(mnUC[0]);
 
 	sprintf(res, "MADC32.%s.BlockXfer", mnUC);
-	s->blockXfer = root_env_getval_i(res, 0);
+	s->blockXfer = root_env_getval_b(res, FALSE);
 
 	for (i = 0; i < NOF_CHANNELS; i++) {
 		sprintf(res, "MADC32.%s.Thresh.%d", mnUC, i);
@@ -777,14 +785,14 @@ void madc32_enable_bma(struct s_madc32 * s)
 	int bmaError;
 	int wordSize;
 
-	if (s->blockXfer == MADC32_BLT_NORMAL) {
+	if (s->blockXfer) {
 		switch (s->dataWidth) {
 			case MADC32_DATA_LENGTH_FORMAT_32: wordSize = BMA_M_WzD32; break;
 			case MADC32_DATA_LENGTH_FORMAT_64: wordSize = BMA_M_WzD64; break;
 			default:
 				sprintf(msg, "[%senable_bma] %s: Wrong data width - %d (should be 32 or 64), turning block xfer OFF", s->mpref, s->moduleName, s->dataWidth);
 				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-				s->blockXfer = MADC32_BLT_OFF;
+				s->blockXfer = FALSE;
 				return;
 		}
 
@@ -794,7 +802,7 @@ void madc32_enable_bma(struct s_madc32 * s)
 		if (bmaError != 0) {
 			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			s->blockXfer = MADC32_BLT_OFF;
+			s->blockXfer = FALSE;
 			bma_close();
 			return;
 		}
@@ -804,7 +812,7 @@ void madc32_enable_bma(struct s_madc32 * s)
 		if (bmaError != 0) {
 			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			s->blockXfer = MADC32_BLT_OFF;
+			s->blockXfer = FALSE;
 			uio_cfree(&s->bltBuffer);
 			bma_close();
 			return;
@@ -834,12 +842,8 @@ void madc32_enable_bma(struct s_madc32 * s)
 		sprintf(msg, "[%senable_bma] %s: turning block xfer ON (mode=NORMAL, buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
-	} else if (s->blockXfer == MADC32_BLT_CHAINED) {
-		sprintf(msg, "[%senable_bma] %s: Chained BLT not yet implemented, turning block xfer OFF", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-		s->blockXfer = MADC32_BLT_OFF;
 	} else {
-		s->blockXfer = MADC32_BLT_OFF;
+		s->blockXfer = FALSE;
 		s->bltBufferSize = 0;
 		sprintf(msg, "[%senable_bma] %s: Block xfer is OFF", s->mpref, s->moduleName);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -859,18 +863,12 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	dataStart = pointer;
 
 /*	tryIt = 20;
-	while (tryIt-- && !madc32_dataReady(s)) { usleep(1000); }
-	if (tryIt <= 0) {
-		*pointer++ = 0xaffec0c0;
-		madc32_resetFifo(s);
-		madc32_startAcq(s);
-		return (pointer - dataStart);
-	} */
+	while (tryIt-- && !madc32_dataReady(s)) { usleep(1000); } */
 
 	numData = (int) madc32_getFifoLength(s);
 	if (numData == 0) return(0);
 
-	if (s->blockXfer == MADC32_BLT_NORMAL) {
+	if (s->blockXfer) {
 #ifdef CPU_TYPE_RIO2
 		bmaError = bma_read(s->vmeAddr + MADC32_DATA, s->bltBuffer.paddr | 0x80000000, numData, BMA_DEFAULT_MODE);
 		if (bmaError != 0) {
@@ -890,63 +888,13 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 		memcpy(pointer, s->bltBuffer.uaddr, sizeof(uint32_t) * numData);
 		pointer += numData;
 	} else {
-		s->blockXfer = MADC32_BLT_OFF;
-		evtWc = 0;
-		lastData = -1;
-		for (i = 0; i < numData; i++) {
-			rdoWc = i;
-			data = GET32(s->baseAddr, MADC32_DATA);
-			if (data == 0) {
-				s->evtp++; *s->evtp = (MADC32_M_TRAILER | 0x00525252);
-				pointer = madc32_pushEvent(s, pointer);
-				madc32_resetEventBuffer(s);
-				s->skipData = TRUE;
-/*				printf("DATA ZERO numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData); */
-				lastData = 0;
-				continue;
-			} else if ((data & MADC32_M_SIGNATURE) == MADC32_M_HEADER) {
-				s->skipData = FALSE;
-/*				printf("HEADER numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData); */
-				lastData = 1;
-				evtWc = data & MADC32_M_WC;
-				if (s->evtp != s->evtBuf) {
-					s->evtp++; *s->evtp = (MADC32_M_TRAILER | 0x00252525);
-					pointer = madc32_pushEvent(s, pointer);
-				}
-				madc32_resetEventBuffer(s);
-				*s->evtp = data;
-			} else if ((data & MADC32_M_SIGNATURE) == MADC32_M_TRAILER) {
-				if (s->skipData) continue;
-				evtWc--;
-/*				printf("TRAILER numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData); */
-				lastData = 2;
-				s->evtp++; *s->evtp = data;
-				pointer = madc32_pushEvent(s, pointer);
-				madc32_resetEventBuffer(s);
-			} else if ((data & MADC32_M_SIGNATURE) == MADC32_M_EOB) {
-/*				printf("EOB numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData); */
-				lastData = 3;
-				break;
-			} else {
-				if (s->skipData) continue;
-				evtWc--;
-				lastData = 4;
-				s->evtp++; *s->evtp = data;
-			}
-		}
+		s->blockXfer = FALSE;
+		for (i = 0; i < numData; i++) *pointer++ = GET32(s->baseAddr, MADC32_DATA);
 	}
 
 	madc32_resetReadout(s);
 
 	return (pointer - dataStart);
-}
-
-uint32_t * madc32_pushEvent(struct s_madc32 * s, uint32_t * pointer) {
-	int i;
-	int wc = s->evtp - s->evtBuf + 1;
-	uint32_t * p = s->evtBuf;
-	for (i = 0; i < wc; i++) *pointer++ = *p++;
-	return (pointer);
 }
 
 int madc32_readTimeB(struct s_madc32 * s, uint32_t * pointer)
@@ -989,7 +937,6 @@ void madc32_startAcq(struct s_madc32 * s)
 	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x0);
 	madc32_resetFifo(s);
 	madc32_resetReadout(s);
-	madc32_resetEventBuffer(s);
 	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x1);
 }
 
@@ -998,12 +945,46 @@ void madc32_stopAcq(struct s_madc32 * s)
 	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x0);
 	madc32_resetFifo(s);
 	madc32_resetReadout(s);
-	madc32_resetEventBuffer(s);
 }
 
 void madc32_resetFifo(struct s_madc32 * s)
 {
 	SET16(s->baseAddr, MADC32_FIFO_RESET, 0x1);
+}
+
+void madc32_enableMCST(struct s_madc32 * s, uint16_t Signature) {
+	s->mcstSignature = Signature;
+	SET16(s->baseAddr, MADC32_MCST_ADDRESS, Signature);
+	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_MCST_ENA);
+	s->mcstEnabled = TRUE;
+}
+
+void madc32_disableMCST(struct s_madc32 * s) {
+	uint16_t ctrl;
+	s->mcstSignature = 0x0;
+	SET16(s->baseAddr, MADC32_MCST_ADDRESS, 0x0);
+	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_MCST_DIS);
+	s->mcstEnabled = FALSE;
+}
+
+void madc32_enableCBLT(struct s_madc32 * s, uint16_t Signature, bool_t First, bool_t Last) {
+	s->cbltSignature = Signature;
+	SET16(s->baseAddr, MADC32_CBLT_ADDRESS, Signature);
+	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_ENA);
+	if (First) SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_ENA); else SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_DIS);
+	if (Last) SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_ENA); else SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_DIS);
+	s->cbltEnabled = TRUE;
+}
+
+void madc32_disableCBLT(struct s_madc32 * s) {
+	s->cbltSignature = 0x0;
+	SET16(s->baseAddr, MADC32_CBLT_ADDRESS, 0x0);
+	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_DIS);
+	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_DIS);
+	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_DIS);
+	s->cbltFirst = FALSE;
+	s->cbltLast = FALSE;
+	s->cbltEnabled = FALSE;
 }
 
 bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile)
@@ -1019,14 +1000,4 @@ bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile)
 	return FALSE;
 }
 
-void madc32_resetEventBuffer(struct s_madc32 * s) {
-	memset(s->evtBuf, 0, sizeof(s->evtBuf));
-	s->evtp = s->evtBuf;
-	s->skipData = FALSE;
-}
-
-void catchBerr() {
-	printf("BUS ERROR numData=%d rdo=%d wc=%d lastData=%d skip=%d\n", numData, rdoWc, evtWc, lastData, s_sav->skipData);
-	if (lastData != 5) getchar();
-	lastData = 5;
-}
+void catchBerr() {}

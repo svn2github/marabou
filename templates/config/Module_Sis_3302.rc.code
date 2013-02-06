@@ -17,6 +17,8 @@ SIS3302.Firmware: 							$moduleFirmware
 SIS3302.VerboseMode:						FALSE
 SIS3302.DumpRegisters:						FALSE
 
+SIS3302.UpdateSettings:						FALSE
+SIS3302.UpdateInterval:						0
 %%End(Preamble)%%
 
 %%Begin(AcquisitionControl)%%
@@ -37,6 +39,9 @@ SIS3302.$moduleName.ClockSource: 			$clockSource
 
 # mca mode (currently not implemented -> always FALSE)
 SIS3302.$moduleName.McaMode:		 		$mcaMode
+
+# block transfer        enable/disable, TRUE/FALSE
+SIS3302.$moduleName.BlockXfer:			$blockXfer
 
 # lemo out              0  -->  out 3 -> ADC sample logic armed
 # (MCA mode 0)                  out 2 -> ADCx event sampling busy
