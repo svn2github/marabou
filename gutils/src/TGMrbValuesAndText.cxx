@@ -2154,6 +2154,18 @@ void TGMrbValuesAndText::SetCheckButton(Int_t id, Int_t state)
 		}
 	}
 }
+//______________________________________________________________________________
+
+void TGMrbValuesAndText::SetComboSelect(Int_t id, Int_t sel)
+{
+	if (fEntries->At(id) ->InheritsFrom("TGComboBox")) {
+		TGComboBox *b = (TGComboBox *)fEntries->At(id);
+		if (b) {
+			if ( sel >= 0 && sel < b->GetNumberOfEntries() )
+				b->Select(sel, kFALSE);
+		}
+	}
+}
 
 Bool_t GetStringExt(const char *Prompt, TString  *text ,
                         Int_t win_width, TGWindow *Win,

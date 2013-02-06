@@ -141,6 +141,7 @@ public:
    void DisableCancelButton()   { fCancelButton->SetEnabled(kFALSE); };
 	void DoNeedRedraw()          { gClient->NeedRedraw(this); };
 	void SetCheckButton(Int_t id, Int_t state);
+	void SetComboSelect(Int_t id, Int_t sel);
 	
 ClassDef(TGMrbValuesAndText,0)		// [GraphUtils] A dialog box
 };
