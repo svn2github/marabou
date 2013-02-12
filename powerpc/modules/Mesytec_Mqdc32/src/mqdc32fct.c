@@ -787,11 +787,11 @@ void mqdc32_enableBma(struct s_mqdc32 * s)
 /* configure AM code */
 		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_AmCode, BMA_M_AmA32U);
 
-#ifdef CPU_TYPE_RIO3
 /* configure 'fifo' mode */
 		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_VMEAdrInc, BMA_M_VaiFifo);
 
-/* map XVME page for RIO3 */
+#ifndef CPU_TYPE_RIO2
+/* map XVME page for RIO3/RIO4 */
 		if ((s->bltAddr = xvme_map(s->vmeAddr, s->memorySize, BMA_M_AmA32U, wordSize)) == -1) {
 			sprintf(msg, "[%senableBma] %s: Can't map XVME page, turning block xfer OFF", s->mpref, s->moduleName);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -840,8 +840,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
-#endif
-#ifdef CPU_TYPE_RIO3
+#else
 		bmaCount = bma_read_count(s->bltAddr + MQDC32_DATA, bma_mem2loc(s->bltBuffer.paddr), numData, BMA_DEFAULT_MODE);
 		if (bmaCount == -1) {
 			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, sys_errlist[errno], errno, numData);

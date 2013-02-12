@@ -25,14 +25,17 @@
 //! $Date: $
 ////////////////////////////////////////////////////////////////////////////*/
 
-struct s_mapDb * mapVME(const Char_t * Name, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, Bool_t StaticFlag);
+struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, Bool_t StaticFlag);
 
-Bool_t mapBLT(struct s_mapDb * mapDb, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod);
+Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod);
 
-Bool_t remapVME(struct s_mapDb * mapDb, UInt_t Offset, Int_t Size);
+Bool_t remapVME(struct s_mapDescr * mapDescr, UInt_t Offset, Int_t Size);
 
-Bool_t unmapVME(struct s_mapDb * mapDb);
+Bool_t unmapVME(struct s_mapDescr * mapDescr);
 
 Bool_t unmapAll();
+
+struct s_mapDescr * _findMapDescr(const Char_t * DescrName);
+struct s_mapDescr * _createMapDescr(const Char_t * DescrName);
 
 #endif
