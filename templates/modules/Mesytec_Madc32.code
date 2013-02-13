@@ -16,7 +16,8 @@
 %%MODULE_DEFS%%
 
 %%BeginOfCode%%
-
+					madc32_use_mcst = FALSE;
+					madc32_firstModuleInChain = NULL;
 %%EndOfCode%%
 %%INIT_COMMON_CODE%%
 
@@ -27,9 +28,11 @@
 					s_$moduleNameLC = madc32_alloc($baseAddrL, $moduleNameLC, "$moduleNameLC", $moduleSerial); /* allocate data struct */
  					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
 					madc32_moduleInfo(s_$moduleNameLC);						/* read module info */
-					madc32_reset(s_$moduleNameLC);	 						/* reset module */
+					madc32_soft_reset(s_$moduleNameLC);	 						/* reset module */
 					madc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill database from environment data */
 					madc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
+					if (madc32_mcstEnabled(s_$moduleNameLC)) madc32_use_mcst = TRUE;	/* check if multicast */
+					if (madc32_firstInChain(s_$moduleNameLC)) madc32_firstModuleInChain = s_$moduleNameLC;	/* master of chain */
 					madc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
 					madc32_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
 					madc32_initialize(s_$moduleNameLC);		 					/* initialize module */
@@ -55,7 +58,7 @@
  							sprintf(msg, "Updating settings for module $moduleName after %d count(s)\n", s_$moduleName->updInterval);
  							f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
 							madc32_stopAcq(s_$moduleName);
-							madc32_reset(s_$moduleName);
+							madc32_soft_reset(s_$moduleName);
 							madc32_fillStruct(s_$moduleName, "$settingsFile");
 							madc32_loadFromDb(s_$moduleName, $chnPattern);
 							madc32_resetReadout(s_$moduleName);
@@ -102,9 +105,15 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-								madc32_stopAcq(s_$moduleName); 	/* start module $moduleName */
-								madc32_resetFifo(s_$moduleName);  	/* reset fifo */
-								madc32_startAcq(s_$moduleName); 	/* start module $moduleName */
+%M%								if (madc32_use_mcst) { 	/* start modules in multicast mode */
+%M%									madc32_stopAcq_mcst(madc32_firstModuleInChain);
+%M%									madc32_startAcq_mcst(madc32_firstModuleInChain);
+%M%									break;		/* all done! */
+%M%								}
+%M%								madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+%M%								madc32_startAcq(s_$moduleName);
+%N%								madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+%N%								madc32_startAcq(s_$moduleName);
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -114,8 +123,12 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-								madc32_stopAcq(s_$moduleName);  	/* stop module $moduleName */
-								madc32_resetFifo(s_$moduleName);  	/* reset fifo */
+%M%								if (madc32_use_mcst) { 	/* stop modules in multicast mode */
+%M%									madc32_stopAcq_mcst(madc32_firstModuleInChain);
+%M%									break;		/* all done! */
+%M%								}
+%M%								madc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
+%N%								madc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 
@@ -140,7 +153,8 @@ static struct s_madc32 * s_$moduleName;
 %%DEFINE_GLOBALS%%
 
 %%BeginOfCode%%
-
+static bool_t madc32_use_mcst;
+static struct s_madc32 * madc32_firstModuleInChain;
 %%EndOfCode%%
 %%DEFINE_GLOBALS_ONCE_ONLY%%
 

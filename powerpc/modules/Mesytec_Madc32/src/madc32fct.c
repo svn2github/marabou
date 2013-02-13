@@ -58,13 +58,13 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 		s->verbose = FALSE;
 		s->dumpRegsOnInit = FALSE;
 
-		s->mcstEnabled = FALSE;
+		s->mcstEnable = FALSE;
 		s->mcstSignature = 0x0;
 
-		s->cbltEnabled = FALSE;
+		s->cbltEnable = FALSE;
 		s->cbltSignature = 0x0;
-		s->cbltFirst = FALSE;
-		s->cbltLast = FALSE;
+		s->firstInChain = FALSE;
+		s->lastInChain = FALSE;
 
 		firmware = GET16(s->baseAddr, MADC32_FIRMWARE_REV);
 		mainRev = (firmware >> 8) & 0xff;
@@ -84,7 +84,7 @@ void madc32_initialize(struct s_madc32 * s)
 	madc32_resetReadout(s);
 }
 
-void madc32_reset(struct s_madc32 * s)
+void madc32_soft_reset(struct s_madc32 * s)
 {
   SET16(s->baseAddr, MADC32_SOFT_RESET, 0x1);
 }
@@ -122,6 +122,11 @@ uint16_t madc32_getAddrReg(struct s_madc32 * s)
 	uint16_t source = GET16(s->baseAddr, MADC32_ADDR_SOURCE);
 	if (source & MADC32_ADDR_SOURCE_REG) return GET16(s->baseAddr, MADC32_ADDR_REG);
 	else return 0;
+}
+
+void madc32_setMcstCblt_db(struct s_madc32 * s) {
+	if (s->mcstSignature != 0) madc32_enableMCST(s, s->mcstSignature, s->firstInChain, s->lastInChain); else madc32_disableMCST(s);
+	if (s->cbltSignature != 0) madc32_enableCBLT(s, s->cbltSignature, s->firstInChain, s->lastInChain); else madc32_disableCBLT(s);
 }
 
 void madc32_setModuleId_db(struct s_madc32 * s) { madc32_setModuleId(s, s->moduleId); }
@@ -534,6 +539,17 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 		}
 	}
 
+	sprintf(res, "MADC32.%s.MCSTSignature", mnUC);
+	s->mcstSignature = root_env_getval_x(res, 0x0);
+	if (s->mcstSignature != 0) s->mcstEnable = TRUE;
+	sprintf(res, "MADC32.%s.CBLTSignature", mnUC);
+	s->cbltSignature = root_env_getval_x(res, 0x0);
+	if (s->cbltSignature != 0) s->cbltEnable = TRUE;
+	sprintf(res, "MADC32.%s.FirstInChain", mnUC);
+	s->firstInChain = root_env_getval_b(res, FALSE);
+	sprintf(res, "MADC32.%s.LastInChain", mnUC);
+	s->lastInChain = root_env_getval_b(res, FALSE);
+
 	sprintf(res, "MADC32.%s.ModuleId", mnUC);
 	s->moduleId = root_env_getval_i(res, MADC32_MODULE_ID_DEFAULT);
 
@@ -631,6 +647,7 @@ void madc32_loadFromDb(struct s_madc32 * s, uint32_t chnPattern)
 	uint32_t bit;
 
 	madc32_setAddrReg_db(s);
+	madc32_setMcstCblt_db(s);
 	madc32_setModuleId_db(s);
 	madc32_setDataWidth_db(s);
 	madc32_setMultiEvent_db(s);
@@ -688,7 +705,10 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 	fprintf(f, "Thresholds:\n");
 	for (ch = 0; ch < NOF_CHANNELS; ch++) fprintf(f, "   %2d: %d\n", ch, madc32_getThreshold(s, ch));
 
-	fprintf(f, "Addr reg          : %#x\n", madc32_getAddrReg(s));
+	fprintf(f, "MCST signature    : %#x\n", s->mcstSignature);
+	fprintf(f, "CBLT signature    : %#x\n", s->cbltSignature);
+	if (s->firstInChain) fprintf(f, "CBLT chain        : first module in chain\n");
+	else if (s->lastInChain) fprintf(f, "CBLT chain        : last module in chain\n");
 	fprintf(f, "Module ID         : %d\n", madc32_getModuleId(s));
 	fprintf(f, "Data width        : %d\n", madc32_getDataWidth(s));
 	fprintf(f, "Multi event       : %d\n", madc32_getMultiEvent(s));
@@ -750,6 +770,10 @@ void madc32_printDb(struct s_madc32 * s)
 	for (ch = 0; ch < NOF_CHANNELS; ch++) printf("   %2d: %d\n", ch, s->threshold[ch]);
 
 	printf("Addr reg          : %#x\n", s->addrReg);
+	printf("MCST signature    : %#x\n", s->mcstSignature);
+	printf("CBLT signature    : %#x\n", s->cbltSignature);
+	if (s->firstInChain) printf("CBLT chain        : first module in chain\n");
+	else if (s->lastInChain) printf("CBLT chain        : last module in chain\n");
 	printf("Module ID         : %d\n", s->moduleId);
 	printf("Data width        : %d\n", s->dataWidth);
 	printf("Multi event       : %d\n", s->multiEvent);
@@ -915,6 +939,11 @@ void madc32_resetReadout(struct s_madc32 * s)
 	SET16(s->baseAddr, MADC32_READOUT_RESET, 0x1);
 }
 
+void madc32_resetTimestamp(struct s_madc32 * s)
+{
+	SET16(s->baseAddr,MADC32_CTRA_RESET_A_OR_B, 0x3);
+}
+
 bool_t madc32_testBusError(struct s_madc32 * s)
 {
 	return TSTB16(s->baseAddr, MADC32_MULTI_EVENT, MADC32_MULTI_EVENT_BERR) == 1 ? FALSE : TRUE;
@@ -935,6 +964,7 @@ void madc32_startAcq(struct s_madc32 * s)
 	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x0);
 	madc32_resetFifo(s);
 	madc32_resetReadout(s);
+	madc32_resetTimestamp(s);
 	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x1);
 }
 
@@ -943,6 +973,7 @@ void madc32_stopAcq(struct s_madc32 * s)
 	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x0);
 	madc32_resetFifo(s);
 	madc32_resetReadout(s);
+	madc32_resetTimestamp(s);
 }
 
 void madc32_resetFifo(struct s_madc32 * s)
@@ -950,11 +981,11 @@ void madc32_resetFifo(struct s_madc32 * s)
 	SET16(s->baseAddr, MADC32_FIFO_RESET, 0x1);
 }
 
-void madc32_enableMCST(struct s_madc32 * s, uint16_t Signature) {
+void madc32_enableMCST(struct s_madc32 * s, unsigned long Signature, bool_t First, bool_t Last) {
 	s->mcstSignature = Signature;
-	SET16(s->baseAddr, MADC32_MCST_ADDRESS, Signature);
+	SET16(s->baseAddr, MADC32_MCST_ADDRESS, (s->mcstSignature >> 24) & 0xFF);
 	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_MCST_ENA);
-	s->mcstEnabled = TRUE;
+	s->mcstEnable = TRUE;
 }
 
 void madc32_disableMCST(struct s_madc32 * s) {
@@ -962,16 +993,16 @@ void madc32_disableMCST(struct s_madc32 * s) {
 	s->mcstSignature = 0x0;
 	SET16(s->baseAddr, MADC32_MCST_ADDRESS, 0x0);
 	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_MCST_DIS);
-	s->mcstEnabled = FALSE;
+	s->mcstEnable = FALSE;
 }
 
-void madc32_enableCBLT(struct s_madc32 * s, uint16_t Signature, bool_t First, bool_t Last) {
+void madc32_enableCBLT(struct s_madc32 * s, unsigned long Signature, bool_t First, bool_t Last) {
 	s->cbltSignature = Signature;
-	SET16(s->baseAddr, MADC32_CBLT_ADDRESS, Signature);
+	SET16(s->baseAddr, MADC32_CBLT_ADDRESS, (s->cbltSignature >> 24) & 0xFF);
 	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_ENA);
 	if (First) SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_ENA); else SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_DIS);
 	if (Last) SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_ENA); else SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_DIS);
-	s->cbltEnabled = TRUE;
+	s->cbltEnable = TRUE;
 }
 
 void madc32_disableCBLT(struct s_madc32 * s) {
@@ -980,9 +1011,47 @@ void madc32_disableCBLT(struct s_madc32 * s) {
 	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_DIS);
 	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_DIS);
 	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_DIS);
-	s->cbltFirst = FALSE;
-	s->cbltLast = FALSE;
-	s->cbltEnabled = FALSE;
+	s->firstInChain = FALSE;
+	s->lastInChain = FALSE;
+	s->cbltEnable = FALSE;
+}
+
+bool_t madc32_mcstEnabled(struct s_madc32 * s) { return s->mcstEnable; };
+bool_t madc32_cbltEnabled(struct s_madc32 * s) { return s->cbltEnable; };
+bool_t madc32_firstInChain(struct s_madc32 * s) { return s->firstInChain; };
+bool_t madc32_lastInChain(struct s_madc32 * s) { return s->lastInChain; };
+bool_t madc32_middleOfChain(struct s_madc32 * s) { return (!s->firstInChain && !s->lastInChain); };
+
+void madc32_startAcq_mcst(struct s_madc32 * s)
+{
+	SET16(s->mcstSignature, MADC32_START_ACQUISITION, 0x0);
+	madc32_resetFifo_mcst(s);
+	madc32_resetReadout_mcst(s);
+	madc32_resetTimestamp_mcst(s);
+	SET16(s->mcstSignature, MADC32_START_ACQUISITION, 0x1);
+}
+
+void madc32_stopAcq_mcst(struct s_madc32 * s)
+{
+	SET16(s->mcstSignature, MADC32_START_ACQUISITION, 0x0);
+	madc32_resetFifo_mcst(s);
+	madc32_resetReadout_mcst(s);
+	madc32_resetTimestamp_mcst(s);
+}
+
+void madc32_resetFifo_mcst(struct s_madc32 * s)
+{
+	SET16(s->mcstSignature, MADC32_FIFO_RESET, 0x1);
+}
+
+void madc32_resetReadout_mcst(struct s_madc32 * s)
+{
+	SET16(s->mcstSignature, MADC32_READOUT_RESET, 0x1);
+}
+
+void madc32_resetTimestamp_mcst(struct s_madc32 * s)
+{
+	SET16(s->mcstSignature,MADC32_CTRA_RESET_A_OR_B, 0x3);
 }
 
 bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile)

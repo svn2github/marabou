@@ -63,7 +63,7 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 		fAddrModifier = AddrMod;
 		TString am;
 		if (fAddrModifier == 0) {
-			if (this->UseA32Addressing() || (BaseAddr & 0xFF000000)) {
+			if (BaseAddr & 0xFF000000) {
 				fAddrModifier = 0x09;
 				am = "A32";
 			} else {

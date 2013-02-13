@@ -163,9 +163,9 @@ const SMrbNamedXShort kMrbTsSource[] =
 
 TMrbMesytec_Mqdc32::TMrbMesytec_Mqdc32(const Char_t * ModuleName, UInt_t BaseAddr) :
 									TMrbVMEModule(ModuleName, "Mesytec_Mqdc32", BaseAddr,
-																0,
-																TMrbMesytec_Mqdc32::kSegSize,
-																1, 32, 1 << 13) {
+											this->UseA32Addressing() ? 0x09 : 0x39,
+											TMrbMesytec_Mqdc32::kSegSize,
+											1, 32, 1 << 13) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbMesytec_Mqdc32
@@ -531,6 +531,10 @@ TEnv * TMrbMesytec_Mqdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetBlockXfer(madcEnv->Get(moduleName.Data(), "BlockXfer", kFALSE));
 	this->SetAddressSource(madcEnv->Get(moduleName.Data(), "AddressSource", kAddressBoard));
 	this->SetAddressRegister(madcEnv->Get(moduleName.Data(), "AddressRegister", 0));
+	this->SetMcstSignature(madcEnv->Get(moduleName.Data(), "MCSTSignature", 0x0));
+	this->SetCbltSignature(madcEnv->Get(moduleName.Data(), "CBLTSignature", 0x0));
+	this->SetFirstInChain(madcEnv->Get(moduleName.Data(), "FirstInChain", kTRUE));
+	this->SetLastInChain(madcEnv->Get(moduleName.Data(), "LastInChain", kTRUE));
 	Int_t mid = madcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
 	if (mid == 0xFF) mid = this->GetSerial();
 	this->SetModuleId(mid);
@@ -566,6 +570,7 @@ TEnv * TMrbMesytec_Mqdc32::UseSettings(const Char_t * SettingsFile) {
 	fXmax = fRange;
 	fBinRange = fRange;
 
+	fSettings = madcEnv->Env();
 	return(madcEnv->Env());
 }
 
@@ -794,6 +799,7 @@ Bool_t TMrbMesytec_Mqdc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 		case TMrbConfig::kModuleStopAcquisitionGroup:
 		case TMrbConfig::kModuleUtilities:
 		case TMrbConfig::kModuleDefineGlobals:
+		case TMrbConfig::kModuleDefineGlobalsOnce:
 		case TMrbConfig::kModuleDefineLocalVarsInit:
 		case TMrbConfig::kModuleDefineLocalVarsReadout:
 		case TMrbConfig::kModuleDefinePrototypes:

@@ -272,8 +272,20 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 		inline Bool_t SetTsDivisor(Int_t Divisor) { return(this->Set(TMrbMesytec_Mqdc32::kRegTsDivisor, Divisor)); };
 		inline Int_t GetTsDivisor() { return(this->Get(TMrbMesytec_Mqdc32::kRegTsDivisor)); };
 
+		inline void EnableMCST(UInt_t Signature, Bool_t FirstInChain= kFALSE, Bool_t LastInChain = kFALSE) { fMCSTSignature = Signature; fFirstInChain = FirstInChain; fLastInChain = LastInChain; };
+		inline void EnableCBLT(UInt_t Signature, Bool_t FirstInChain= kFALSE, Bool_t LastInChain = kFALSE) { fCBLTSignature = Signature; fFirstInChain = FirstInChain; fLastInChain = LastInChain; };
+		inline void SetMcstSignature(UInt_t Signature) { fMCSTSignature = Signature; };
+		inline void SetCbltSignature(UInt_t Signature) { fCBLTSignature = Signature; };
+		inline void SetFirstInChain(Bool_t Flag) { fFirstInChain = Flag; };
+		inline void SetLastInChain(Bool_t Flag) { fLastInChain = Flag; };
+		inline Bool_t McstEnabled() { return (fMCSTSignature != 0); };
+		inline Bool_t CbltEnabled() { return (fCBLTSignature != 0); };
+		inline Bool_t IsFirstInChain() { return fFirstInChain; };
+		inline Bool_t IsLastInChain() { return fLastInChain; };
+
 		TEnv * UseSettings(const Char_t * SettingsFile = NULL);
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
+		inline TEnv * Settings() { return fSettings; };
 
 		inline void UpdateSettings(Bool_t Flag = kTRUE) { fUpdateSettings = Flag; };	// update settings
 		inline Bool_t SettingsToBeUpdated() { return(fUpdateSettings); };
@@ -301,6 +313,7 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 
 	protected:
 		TString fSettingsFile;
+		TEnv * fSettings;
 
 		Bool_t fUpdateSettings;
 		Int_t fUpdateInterval;
@@ -308,6 +321,11 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 		Bool_t fSlidingScaleOff;
 		Bool_t fSkipOutOfRange;
 		Bool_t fIgnoreThresh;
+
+		UInt_t fMCSTSignature;
+		UInt_t fCBLTSignature;
+		Bool_t fFirstInChain;
+		Bool_t fLastInChain;
 
 	ClassDef(TMrbMesytec_Mqdc32, 1)		// [Config] MQDC-32 charge integrating qdc
 };

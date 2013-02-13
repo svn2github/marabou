@@ -28,7 +28,7 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file);
 bool_t madc32_dumpRaw(struct s_madc32 * s, char * file);
 void madc32_printDb(struct s_madc32 * s);
 
-void madc32_reset(struct s_madc32 * s);
+void madc32_soft_reset(struct s_madc32 * s);
 
 void madc32_initDefaults(struct s_madc32 * s);
 
@@ -39,6 +39,8 @@ uint16_t madc32_getThreshold(struct s_madc32 * s, uint16_t channel);
 void madc32_setAddrReg(struct s_madc32 * s, uint16_t vmeAddr);
 void madc32_setAddrReg_db(struct s_madc32 * s);
 uint16_t madc32_getAddrReg(struct s_madc32 * s);
+
+void madc32_setMcstCblt_db(struct s_madc32 * s);
 
 void madc32_setModuleId(struct s_madc32 * s, uint16_t id);
 void madc32_setModuleId_db(struct s_madc32 * s);
@@ -156,14 +158,27 @@ void madc32_startAcq(struct s_madc32 * s);
 void madc32_stopAcq(struct s_madc32 * s);
 
 void madc32_resetFifo(struct s_madc32 * s);
+void madc32_resetTimestamp(struct s_madc32 * s);
 
-void madc32_enableMCST(struct s_madc32 * s, uint16_t Address);
+void madc32_enableMCST(struct s_madc32 * s, unsigned long Address, bool_t First, bool_t Last);
 void madc32_disableMCST(struct s_madc32 * s);
+bool_t madc32_mcstEnabled(struct s_madc32 * s);
 
-void madc32_enableCBLT(struct s_madc32 * s, uint16_t Address, bool_t First, bool_t Last);
+void madc32_enableCBLT(struct s_madc32 * s, unsigned long Address, bool_t First, bool_t Last);
 void madc32_disableCBLT(struct s_madc32 * s);
+bool_t madc32_cbltEnabled(struct s_madc32 * s);
+
+bool_t madc32_firstInChain(struct s_madc32 * s);
+bool_t madc32_lastInChain(struct s_madc32 * s);
+bool_t madc32_middleOfChain(struct s_madc32 * s);
 
 bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile);
+
+void madc32_startAcq_mcst(struct s_madc32 * s);
+void madc32_stopAcq_msct(struct s_madc32 * s);
+void madc32_resetFifo_mcst(struct s_madc32 * s);
+void madc32_resetTimestamp_mcst(struct s_madc32 * s);
+void madc_resetReadout_mcst(struct s_madc32 * s);
 
 extern int vmtopm (int, struct dmachain *, char *, long);
 

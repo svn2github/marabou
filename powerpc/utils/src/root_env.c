@@ -115,7 +115,7 @@ int root_env_getval_x(const char * ResourceName, int DefaultValue) {
 	sp = strchr(valstr, '(');
 	if (sp) *sp = '\0';
 	n = (strncmp(valstr, "0x", 2) == 0) ? 2 : 0;
-	sscanf(&valstr[n], "%x", &val);
+	sscanf(&valstr[n], "%lx", &val);
 	return(val);
 }
 

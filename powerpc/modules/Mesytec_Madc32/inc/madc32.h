@@ -308,13 +308,12 @@ struct s_madc32 {
 	uint32_t bltBufferSize;
 	bool_t blockXfer;
 
-	uint16_t mcstSignature;			/* MCST signature */
-	bool_t mcstEnabled;				/* TRUE if enabled */
-
-	uint16_t cbltSignature;			/* CBLT signature */
-	bool_t cbltEnabled;				/* TRUE if enabled */
-	bool_t cbltFirst;				/* TRUE if head of chain */
-	bool_t cbltLast;				/* TRUE if end of chain */
+	unsigned long mcstSignature;			/* MCST signature */
+	bool_t mcstEnable;			/* TRUE if enabled */
+	unsigned long cbltSignature;			/* CBLT signature */
+	bool_t cbltEnable;			/* TRUE if enabled */
+	bool_t firstInChain;			/* TRUE if head of chain */
+	bool_t lastInChain;			/* TRUE if end of chain */
 
 };
 

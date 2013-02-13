@@ -70,7 +70,7 @@ void mqdc32_initialize(struct s_mqdc32 * s)
 	mqdc32_resetReadout(s);
 }
 
-void mqdc32_reset(struct s_mqdc32 * s)
+void mqdc32_soft_reset(struct s_mqdc32 * s)
 {
 /*  SET16(s->baseAddr, MQDC32_SOFT_RESET, 0x1);	*/
 }
@@ -108,6 +108,11 @@ uint16_t mqdc32_getAddrReg(struct s_mqdc32 * s)
 	uint16_t source = GET16(s->baseAddr, MQDC32_ADDR_SOURCE);
 	if (source & MQDC32_ADDR_SOURCE_REG) return GET16(s->baseAddr, MQDC32_ADDR_REG);
 	else return 0;
+}
+
+void mqdc32_setMcstCblt_db(struct s_mqdc32 * s) {
+	if (s->mcstSignature != 0) mqdc32_enableMCST(s, s->mcstSignature, s->firstInChain, s->lastInChain); else mqdc32_disableMCST(s);
+	if (s->cbltSignature != 0) mqdc32_enableCBLT(s, s->cbltSignature, s->firstInChain, s->lastInChain); else mqdc32_disableCBLT(s);
 }
 
 void mqdc32_setModuleId_db(struct s_mqdc32 * s) { mqdc32_setModuleId(s, s->moduleId); }
@@ -499,6 +504,17 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 		}
 	}
 
+	sprintf(res, "MQDC32.%s.MCSTSignature", mnUC);
+	s->mcstSignature = root_env_getval_i(res, 0x0);
+	if (s->mcstSignature != 0) s->mcstEnable = TRUE;
+	sprintf(res, "MQDC32.%s.CBLTSignature", mnUC);
+	s->cbltSignature = root_env_getval_i(res, 0x0);
+	if (s->cbltSignature != 0) s->cbltEnable = TRUE;
+	sprintf(res, "MQDC32.%s.FirstInChain", mnUC);
+	s->firstInChain = root_env_getval_b(res, FALSE);
+	sprintf(res, "MQDC32.%s.LastInChain", mnUC);
+	s->lastInChain = root_env_getval_b(res, FALSE);
+
 	sprintf(res, "MQDC32.%s.ModuleId", mnUC);
 	s->moduleId = root_env_getval_i(res, MQDC32_MODULE_ID_DEFAULT);
 
@@ -592,6 +608,7 @@ void mqdc32_loadFromDb(struct s_mqdc32 * s, uint32_t chnPattern)
 	uint32_t bit;
 
 	mqdc32_setAddrReg_db(s);
+	mqdc32_setMcstCblt_db(s);
 	mqdc32_setModuleId_db(s);
 	mqdc32_setDataWidth_db(s);
 	mqdc32_setMultiEvent_db(s);
@@ -649,6 +666,10 @@ bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file)
 	for (ch = 0; ch < NOF_CHANNELS; ch++) fprintf(f, "   %2d: %d\n", ch, mqdc32_getThreshold(s, ch));
 
 	fprintf(f, "Addr reg          : %#x\n", mqdc32_getAddrReg(s));
+	fprintf(f, "MCST signature    : %#x\n", s->mcstSignature);
+	fprintf(f, "CBLT signature    : %#x\n", s->cbltSignature);
+	if (s->firstInChain) fprintf(f, "CBLT chain        : first module in chain\n");
+	else if (s->lastInChain) fprintf(f, "CBLT chain        : last module in chain\n");
 	fprintf(f, "Module ID         : %d\n", mqdc32_getModuleId(s));
 	fprintf(f, "Data width        : %d\n", mqdc32_getDataWidth(s));
 	fprintf(f, "Multi event       : %d\n", mqdc32_getMultiEvent(s));
@@ -711,6 +732,10 @@ void mqdc32_printDb(struct s_mqdc32 * s)
 	for (ch = 0; ch < NOF_CHANNELS; ch++) printf("   %2d: %d\n", ch, s->threshold[ch]);
 
 	printf("Addr reg          : %#x\n", s->addrReg);
+	printf("MCST signature    : %#x\n", s->mcstSignature);
+	printf("CBLT signature    : %#x\n", s->cbltSignature);
+	if (s->firstInChain) printf("CBLT chain        : first module in chain\n");
+	else if (s->lastInChain) printf("CBLT chain        : last module in chain\n");
 	printf("Module ID         : %d\n", s->moduleId);
 	printf("Data width        : %d\n", s->dataWidth);
 	printf("Multi event       : %d\n", s->multiEvent);
@@ -916,6 +941,7 @@ void mqdc32_startAcq(struct s_mqdc32 * s)
 	SET16(s->baseAddr, MQDC32_START_ACQUISITION, 0x0);
 	mqdc32_resetFifo(s);
 	mqdc32_resetReadout(s);
+	mqdc32_resetTimestamp(s);
 	memset(s->histo, 0, MQDC32_N_HISTOSIZE * sizeof(int));
 	if (s->accuChannel >= 0) {
 		sprintf(msg, "[%sstartAcq] %s: Accumulating data for channel %d)", s->mpref, s->moduleName, s->accuChannel);
@@ -934,6 +960,7 @@ void mqdc32_stopAcq(struct s_mqdc32 * s)
 	SET16(s->baseAddr, MQDC32_START_ACQUISITION, 0x0);
 	mqdc32_resetFifo(s);
 	mqdc32_resetReadout(s);
+	mqdc32_resetTimestamp(s);
 	if (s->acqStarted && (s->accuChannel >= 0)) {
 		sprintf(histoFile, "histo_%s_%d.dat", s->moduleName, s->accuChannel);
 		f = fopen(histoFile, "w");
@@ -950,11 +977,16 @@ void mqdc32_resetFifo(struct s_mqdc32 * s)
 	SET16(s->baseAddr, MQDC32_FIFO_RESET, 0x1);
 }
 
-void mqdc32_enableMCST(struct s_mqdc32 * s, uint16_t Signature) {
+void mqdc32_resetTimestamp(struct s_mqdc32 * s)
+{
+	SET16(s->baseAddr, MQDC32_CTRA_RESET_A_OR_B, 0x3);
+}
+
+void mqdc32_enableMCST(struct s_mqdc32 * s, unsigned long Signature, bool_t First, bool_t Last) {
 	s->mcstSignature = Signature;
 	SET16(s->baseAddr, MQDC32_MCST_ADDRESS, Signature);
 	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_MCST_ENA);
-	s->mcstEnabled = TRUE;
+	s->mcstEnable = TRUE;
 }
 
 void mqdc32_disableMCST(struct s_mqdc32 * s) {
@@ -962,16 +994,16 @@ void mqdc32_disableMCST(struct s_mqdc32 * s) {
 	s->mcstSignature = 0x0;
 	SET16(s->baseAddr, MQDC32_MCST_ADDRESS, 0x0);
 	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_MCST_DIS);
-	s->mcstEnabled = FALSE;
+	s->mcstEnable = FALSE;
 }
 
-void mqdc32_enableCBLT(struct s_mqdc32 * s, uint16_t Signature, bool_t First, bool_t Last) {
+void mqdc32_enableCBLT(struct s_mqdc32 * s, unsigned long Signature, bool_t First, bool_t Last) {
 	s->cbltSignature = Signature;
 	SET16(s->baseAddr, MQDC32_CBLT_ADDRESS, Signature);
 	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_ENA);
 	if (First) SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_ENA); else SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_DIS);
 	if (Last) SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_ENA); else SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_DIS);
-	s->cbltEnabled = TRUE;
+	s->cbltEnable = TRUE;
 }
 
 void mqdc32_disableCBLT(struct s_mqdc32 * s) {
@@ -980,9 +1012,47 @@ void mqdc32_disableCBLT(struct s_mqdc32 * s) {
 	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_DIS);
 	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_DIS);
 	SET16(s->baseAddr, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_DIS);
-	s->cbltFirst = FALSE;
-	s->cbltLast = FALSE;
-	s->cbltEnabled = FALSE;
+	s->firstInChain = FALSE;
+	s->lastInChain = FALSE;
+	s->cbltEnable = FALSE;
+}
+
+bool_t mqdc32_mcstEnabled(struct s_mqdc32 * s) { return s->mcstEnable; };
+bool_t mqdc32_cbltEnabled(struct s_mqdc32 * s) { return s->cbltEnable; };
+bool_t mqdc32_firstInChain(struct s_mqdc32 * s) { return s->firstInChain; };
+bool_t mqdc32_lastInChain(struct s_mqdc32 * s) { return s->lastInChain; };
+bool_t mqdc32_middleOfChain(struct s_mqdc32 * s) { return (!s->firstInChain && !s->lastInChain); };
+
+void mqdc32_startAcq_mcst(struct s_mqdc32 * s)
+{
+	SET16(s->mcstSignature, MQDC32_START_ACQUISITION, 0x0);
+	mqdc32_resetFifo_mcst(s);
+	mqdc32_resetReadout_mcst(s);
+	mqdc32_resetTimestamp_mcst(s);
+	SET16(s->mcstSignature, MQDC32_START_ACQUISITION, 0x1);
+}
+
+void mqdc32_stopAcq_mcst(struct s_mqdc32 * s)
+{
+	SET16(s->mcstSignature, MQDC32_START_ACQUISITION, 0x0);
+	mqdc32_resetFifo_mcst(s);
+	mqdc32_resetReadout_mcst(s);
+	mqdc32_resetTimestamp_mcst(s);
+}
+
+void mqdc32_resetFifo_mcst(struct s_mqdc32 * s)
+{
+	SET16(s->mcstSignature, MQDC32_FIFO_RESET, 0x1);
+}
+
+void mqdc32_resetReadout_mcst(struct s_mqdc32 * s)
+{
+	SET16(s->mcstSignature, MQDC32_READOUT_RESET, 0x1);
+}
+
+void mqdc32_resetTimestamp_mcst(struct s_mqdc32 * s)
+{
+	SET16(s->mcstSignature, MQDC32_CTRA_RESET_A_OR_B, 0x3);
 }
 
 bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile)

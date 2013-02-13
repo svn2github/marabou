@@ -36,6 +36,16 @@ MADC32.$moduleName.AddrReg: 			$addrReg
 
 # module id             default = 0xFF -> use high byte of board coder
 MADC32.$moduleName.ModuleId: 			$moduleId
+
+# mcst/cblt
+#          signature   0xNN000000, bits 31 ... 24
+#          first       TRUE if first module in chain
+#          last        TRUE if last module in chain
+MADC32.$moduleName.MCSTSignature:		$mcstSignature
+MADC32.$moduleName.CBLTSignature:		$cbltSignature
+MADC32.$moduleName.FirstInChain:		$firstInChain
+MADC32.$moduleName.LastInChain:			$lastInChain
+
 %%End(AddressRegisters)%%
 
 %%Begin(FifoHandling)%%

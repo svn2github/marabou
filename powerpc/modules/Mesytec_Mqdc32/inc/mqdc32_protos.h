@@ -4,8 +4,8 @@
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			mqdc32_protos.h
-//! \brief			Definitions for Mesytec Madc32 ADC
-//! \details		Prototypes for Mesytec Madc32
+//! \brief			Definitions for Mesytec mqdc32 ADC
+//! \details		Prototypes for Mesytec mqdc32
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
 //! $Revision: 1.14 $
@@ -28,7 +28,7 @@ bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file);
 bool_t mqdc32_dumpRaw(struct s_mqdc32 * s, char * file);
 void mqdc32_printDb(struct s_mqdc32 * s);
 
-void mqdc32_reset(struct s_mqdc32 * s);
+void mqdc32_soft_reset(struct s_mqdc32 * s);
 
 void mqdc32_initDefaults(struct s_mqdc32 * s);
 
@@ -41,6 +41,8 @@ uint16_t mqdc32_getThreshold(struct s_mqdc32 * s, uint16_t channel);
 void mqdc32_setAddrReg(struct s_mqdc32 * s, uint16_t vmeAddr);
 void mqdc32_setAddrReg_db(struct s_mqdc32 * s);
 uint16_t mqdc32_getAddrReg(struct s_mqdc32 * s);
+
+void mqdc32_setMcstCblt_db(struct s_mqdc32 * s);
 
 void mqdc32_setModuleId(struct s_mqdc32 * s, uint16_t id);
 void mqdc32_setModuleId_db(struct s_mqdc32 * s);
@@ -150,12 +152,26 @@ void mqdc32_startAcq(struct s_mqdc32 * s);
 void mqdc32_stopAcq(struct s_mqdc32 * s);
 
 void mqdc32_resetFifo(struct s_mqdc32 * s);
+void mqdc32_resetTimestamp(struct s_mqdc32 * s);
 
-void mqdc32_enableMCST(struct s_mqdc32 * s, uint16_t Address);
+void mqdc32_enableMCST(struct s_mqdc32 * s, unsigned long Address, bool_t First, bool_t Last);
 void mqdc32_disableMCST(struct s_mqdc32 * s);
+bool_t mqdc32_mcstEnabled(struct s_mqdc32 * s);
 
-void mqdc32_enableCBLT(struct s_mqdc32 * s, uint16_t Address, bool_t First, bool_t Last);
+void mqdc32_enableCBLT(struct s_mqdc32 * s, unsigned long Address, bool_t First, bool_t Last);
 void mqdc32_disableCBLT(struct s_mqdc32 * s);
+bool_t mqdc32_cbltEnabled(struct s_mqdc32 * s);
+
+bool_t mqdc32_firstInChain(struct s_mqdc32 * s);
+bool_t mqdc32_lastInChain(struct s_mqdc32 * s);
+bool_t mqdc32_middleOfChain(struct s_mqdc32 * s);
+
+
+void mqdc32_startAcq_mcst(struct s_mqdc32 * s);
+void mqdc32_stopAcq_msct(struct s_mqdc32 * s);
+void mqdc32_resetFifo_mcst(struct s_mqdc32 * s);
+void mqdc32_resetTimestamp_mcst(struct s_mqdc32 * s);
+void mqdc_resetReadout_mcst(struct s_mqdc32 * s);
 
 bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile);
 

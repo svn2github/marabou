@@ -27,7 +27,7 @@
 					s_$moduleNameLC = mqdc32_alloc($baseAddrL, $moduleNameLC, "$moduleNameLC", $moduleSerial); /* allocate data struct */
  					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
 					mqdc32_moduleInfo(s_$moduleNameLC);						/* read module info */
-					mqdc32_reset(s_$moduleNameLC);	 						/* reset module */
+					mqdc32_soft_reset(s_$moduleNameLC);	 						/* reset module */
 					mqdc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill database from environment data */
 					mqdc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
 					mqdc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
@@ -55,7 +55,7 @@
  							sprintf(msg, "Updating settings for module $moduleName after %d count(s)\n", s_$moduleName->updInterval);
  							f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
 							mqdc32_stopAcq(s_$moduleName);
-							mqdc32_reset(s_$moduleName);
+							mqdc32_soft_reset(s_$moduleName);
 							mqdc32_fillStruct(s_$moduleName, "$settingsFile");
 							mqdc32_loadFromDb(s_$moduleName, $chnPattern);
 							mqdc32_resetReadout(s_$moduleName);
