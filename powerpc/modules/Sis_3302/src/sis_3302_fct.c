@@ -26,6 +26,7 @@
 #include "sis_3302_database.h"
 
 #include "root_env.h"
+#include "mapping_database.h"
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
@@ -35,30 +36,20 @@ char msg[256];
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Allocate database
-//! \param[in]		VmeAddr			-- vme address (mapped)
-//! \param[in]		BaseAddr	 	-- base address (phys)
 //! \param[in]		Name			-- module name
+//! \param[in]		MD			-- mapping descriptor
 //! \param[in]		Serial			-- MARaBOU's serial number
 //! \return 		Module			-- Pointer to struct s_sis_3302
 ////////////////////////////////////////////////////////////////////////////*/
 
-struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * BaseAddr, char * Name, Int_t Serial)
+struct s_sis_3302 * sis3302_alloc(Char_t * Name, struct mapDescr * MD, Int_t Serial)
 {
 	struct s_sis_3302 * Module;
 	Module = (struct s_sis_3302 *) calloc(1, sizeof(struct s_sis_3302));
 	if (Module != NULL) {
-		Module->baseAddr = BaseAddr;
-		Module->vmeAddr = VmeAddr;
+		Module->md = MD;
 		strcpy(Module->moduleName, Name);
 		Module->serial = Serial;
-		Module->verbose = 0;
-		Module->segSize = 0;
-		Module->curSegSize = 0;
-		Module->lowerBound = 0;
-		Module->upperBound = 1;		/* to force re-mapping */
-		Module->mappedAddr = BaseAddr;
-		Module->addrMod = 0x9;
-
 		Module->verbose = kFALSE;
 		Module->dumpRegsOnInit = kFALSE;
 		Module->updSettings = kFALSE;
@@ -90,55 +81,12 @@ struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * Base
 ////////////////////////////////////////////////////////////////////////////*/
 
 volatile char * sis3302_mapAddress_sized(struct s_sis_3302 * Module, Int_t Offset, Int_t SegSize) {
+	return (volatile Char_t *) (Module->md->vmeBase + Offset);
+};
 
-	struct pdparam_master s_param;
-	UInt_t addr, low;
-	Bool_t mapIt;
-
-	s_param.iack = 1;
- 	s_param.rdpref = 0;
- 	s_param.wrpost = 0;
- 	s_param.swap = SINGLE_AUTO_SWAP;
- 	s_param.dum[0] = 0;
-
-	mapIt = kFALSE;
-	if (Module->upperBound == 0) {
-		mapIt = kTRUE;
-	} else if (Offset < Module->lowerBound || Offset > Module->upperBound) {
-		addr = return_controller(Module->mappedAddr, Module->curSegSize);
-		if (addr == 0xFFFFFFFF) {
-			sprintf(msg, "[mapAddress] Can't unmap log addr %#lx (seg size=%#lx, addr mod=%#x)", Module->mappedAddr, Module->curSegSize, Module->addrMod);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			return(NULL);
-		}
-		mapIt = kTRUE;
-		if (Module->verbose) {
-			sprintf(msg, "[mapAddress] Unmapping log addr %#lx (seg size=%#lx, addr mod=%#x)", Module->mappedAddr, Module->curSegSize, Module->addrMod);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-		}
-	}
-
-	if (mapIt) {
-		low = (Offset / SegSize) * SegSize;
-		addr = find_controller(Module->vmeAddr + low, SegSize, Module->addrMod, 0, 0, &s_param);
-		if (addr == 0xFFFFFFFF) {
-			sprintf(msg, "[mapAddress] Can't map phys addr %#lx (size=%#lx, addr mod=%#x)", (Module->baseAddr + Offset), SegSize, Module->addrMod);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			return(NULL);
-		}
-		Module->mappedAddr = addr;
-		Module->lowerBound = low;
-		Module->upperBound = low + SegSize - 1;
-		Module->curSegSize = SegSize;
-		if (Module->verbose) {
-			sprintf(msg, "[mapAddress] Mapping phys addr %#lx to log addr %#lx (size=%#lx, addr mod=%#x)", (Module->vmeAddr + low), addr, SegSize, Module->addrMod);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-		}
-	}
-	return((volatile Char_t *) (Module->mappedAddr + (Offset - Module->lowerBound)));
+volatile char * sis3302_mapAddress(struct s_sis_3302 * Module, Int_t Offset) {
+	return sis3302_mapAddress_sized(Module, Offset, Module->md->segSizeVME);
 }
-
-volatile char * sis3302_mapAddress(struct s_sis_3302 * Module, Int_t Offset) { return(sis3302_mapAddress_sized(Module, Offset, (Module->segSize == 0) ? 0x10000 : Module->segSize)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -167,7 +115,11 @@ void sis3302_moduleInfo(struct s_sis_3302 * Module) {
 	majorVersion = (ident >> 8) & 0xFF;
 	minorVersion = ident & 0xFF;
 	sprintf(msg, "[moduleInfo] [%s]: addr (phys) %#lx (log) %#lx mod %#x type %d version %x%02x",
-					Module->moduleName, Module->vmeAddr, Module->mappedAddr, Module->addrMod, boardId, majorVersion, minorVersion);
+					Module->moduleName,
+					Module->md->physAddrVME,
+					Module->md->vmeBase,
+					Module->md->addrModVME,
+					boardId, majorVersion, minorVersion);
 	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	return(kTRUE);
 }
@@ -810,55 +762,6 @@ Bool_t sis3302_armSampling(struct s_sis_3302 * Module, Int_t Sampling) { return(
 
 Bool_t sis3302_disarmSampling(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyDisarmSampling)); };
 
-/*________________________________________________________________[C FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-//! \details		Enables block mode transfer
-//! \param[in]		Module			-- module address
-////////////////////////////////////////////////////////////////////////////*/
-
-void sis3302_enableBma(struct s_sis_3302 * Module)
-{
-	Int_t bmaError;
-	Int_t startAddr;
-	Int_t chn;
-	Bool_t foundSome;
-
-	if (Module->blockXfer) {
-		bmaError = bma_open();
-		if (bmaError != 0) {
-			sprintf(msg, "[enableBma] [%s]: %s, turning block xfer OFF - %s (%d)", Module->moduleName,  sys_errlist[errno], errno);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			Module->blockXfer = FALSE;
-			bma_close();
-			return;
-		}
-
-#if 0
-/* allocate contiguous memory */
-		bmaError = uio_calloc(&Module->bltBuffer, Module->bufferSize * sizeof(uint32_t));
-		if (bmaError != 0) {
-			sprintf(msg, "[enableBma] [%s]: %s, turning block xfer OFF - %s (%d)", Module->moduleName,  sys_errlist[errno], errno);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			Module->blockXfer = FALSE;
-			uio_cfree(&Module->bltBuffer);
-			bma_close();
-			return;
-		}
-#endif
-
-/* configure VME block size */
-		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_VMESize, BMA_M_Vsz32);
-/* configure word size */
-		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_WordSize, BMA_M_WzD32);
-/* configure AM code */
-		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_AmCode, BMA_M_AmA32U);
-
-	} else {
-		Module->blockXfer = FALSE;
-		sprintf(msg, "[enableBma] [%s]: Block xfer is OFF", Module->moduleName);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-	}
-}
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -3663,11 +3566,9 @@ Bool_t sis3302_checkAddressSpace(struct s_sis_3302 * Module) {
 	if (reduced) {
 		sprintf(msg, "[%s] Using REDUCED address space (16MB)", Module->moduleName);
 		Module->reducedAddressSpace = kTRUE;
-		Module->segSize = kSis3302SegSizeReduced;
 	} else {
 		sprintf(msg, "[%s] Using FULL address space (128MB)", Module->moduleName);
 		Module->reducedAddressSpace = kFALSE;
-		Module->segSize = kSis3302SegSize;
 	}
 	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	return(kTRUE);

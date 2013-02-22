@@ -3,6 +3,7 @@
 
 #include "LwrTypes.h"
 #include "sis_3302_database.h"
+#include "mapping_database.h"
 
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@
 void sis_print(struct s_sis_3302 * Module, char * Message);
 
 /*! Alloc database for SIS3302 module */
-struct s_sis_3302 * sis3302_alloc(unsigned long VmeAddr, volatile unsigned char * BaseAddr, char * ModuleName, Int_t Serial);
+struct s_sis_3302 * sis3302_alloc(Char_t * ModuleName, struct mapDescr * MD, Int_t Serial);
 
 /*! Map VME address */
 volatile char * sis3302_mapAddress_sized(struct s_sis_3302 * Module, Int_t Offset, Int_t SegSize);
@@ -284,9 +285,6 @@ void sis3302_setStatus(struct s_sis_3302 * Module, UInt_t Bits);
 void sis3302_clearStatus(struct s_sis_3302 * Module, UInt_t Bits);
 UInt_t sis3302_getStatus(struct s_sis_3302 * Module);
 Bool_t sis3302_ssStatus(struct s_sis_3302 * Module, UInt_t Bits);
-
-/*! enable block mode xfer */
-void sis3302_enableBma(struct s_sis_3302 * s);
 
 /*! check if reduced address space */
 Bool_t sis3302_checkAddressSpace(struct s_sis_3302 * Module);

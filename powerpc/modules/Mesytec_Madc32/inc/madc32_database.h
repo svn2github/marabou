@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			madc32_database.h
 //! \brief			Database for Mesytec Madc32 ADC
-//! \details		
+//! \details		Structure describing Mesytec Madc32 ADCs
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
 //! $Revision: $

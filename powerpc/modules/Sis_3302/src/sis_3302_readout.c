@@ -25,6 +25,7 @@
 #include "sis_3302_layout.h"
 #include "sis_3302_database.h"
 
+#include "mapping_database.h"
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
@@ -53,6 +54,8 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	volatile Int_t * mappedAddr;
 	Int_t i;
 	UInt_t d;
+
+	uint32_t ptrloc;
 
 	Int_t bankFlag, bankShouldBe;
 	Int_t sampling;
@@ -181,25 +184,14 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 				startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
 
 				if ((((UInt_t) pointer) % 8) != 0) *pointer++ = 0x0d640d64;	/* align to 64 bit */
-#ifdef CPU_TYPE_RIO2
-            			if ((bmaError = vmtopm(getpid(), &Module->bltChain, (char*) pointer, nxs * sizeof(UInt_t))) == -1)
-					sprintf(msg, "[readout] [%s]: vmtopm call failed (chn=%d, wc=%d)", Module->moduleName, chn, nxs);
-					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-					continue;
-				}
-
-				bmaError = bma_read(Module->vmeAddr + startAddr, Module->bltChain.address | 0x0, nxs, BMA_DEFAULT_MODE);
+				ptrloc = getPhysAddr((char *) pointer, nxs * sizeof(uint32_t));
+				if (ptrloc == NULL) continue;
+				bmaError = bma_read(Module->md->bltBase + startAddr, ptrloc | 0x0, nxs, Module->md->bltModeId);
 				if (bmaError != 0) {
 					sprintf(msg, "[readout] [%s]: %s (%d) while reading event data (chn=%d, wc=%d)", Module->moduleName, sys_errlist[errno], errno, chn, nxs);
 					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 					continue;
 				}
-#endif
-
-#ifdef CPU_TYPE_RIO3
-				bmaError = bma_read(Module->vmeAddr + startAddr, (UInt_t) ((UInt_t) pointer & 0x0FFFFFFF) | 0x0, nxs , BMA_DEFAULT_MODE);
-
-#endif
 				pointer += nxs;
 			}
 		}

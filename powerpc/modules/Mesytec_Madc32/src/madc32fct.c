@@ -284,6 +284,7 @@ void madc32_setHoldDelay_db(struct s_madc32 * s, uint16_t gg) { madc32_setHoldDe
 void madc32_setHoldDelay(struct s_madc32 * s, uint16_t gg, uint16_t delay)
 {
 	int offs;
+	printf("@@@ delay %d %#x\n", gg, delay);
 	switch (gg) {
 		case 0: offs = MADC32_GG_HOLD_DELAY_0; break;
 		case 1: offs = MADC32_GG_HOLD_DELAY_1; break;
@@ -305,9 +306,10 @@ uint16_t madc32_getHoldDelay(struct s_madc32 * s, uint16_t gg)
 
 void madc32_setHoldWidth_db(struct s_madc32 * s, uint16_t gg) { madc32_setHoldWidth(s, gg, s->ggHoldWidth[gg]); }
 
-void madc32_setHoldWidth(struct s_madc32 * s, uint16_t width, uint16_t gg)
+void madc32_setHoldWidth(struct s_madc32 * s, uint16_t gg, uint16_t width)
 {
 	int offs;
+	printf("@@@ width %d %#x\n", gg, width);
 	switch (gg) {
 		case 0: offs = MADC32_GG_HOLD_WIDTH_0; break;
 		case 1: offs = MADC32_GG_HOLD_WIDTH_1; break;

@@ -20,12 +20,14 @@
 
 %%EndOfCode%%
 %%INIT_COMMON_CODE%%
+					sis3302_use_mcst = FALSE;
 
 %%BeginOfCode%%
 
 									/* init module $moduleName at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-					s_$moduleNameLC = sis3302_alloc($baseAddrL, $moduleNameLC, "$moduleNameLC", $moduleSerial); /* allocate data struct */
+
+					s_$moduleNameLC = sis3302_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
 					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
 					sis3302_moduleInfo(s_$moduleNameLC);				/* read module info */
 					sis3302_checkAddressSpace(s_$moduleNameLC);			/* check address space: full(128MB) or reduced(16MB) */
@@ -36,8 +38,8 @@
 					sis3302_setTracingMode(s_$moduleNameLC, $tracingMode);		/* turn tracing $onoff */
 					sis3302_resetSampling(s_$moduleNameLC);				/* reset sampling */
 					sis3302_clearTimestamp(s_$moduleNameLC);			/* reset time stamp */
-					sis3302_enable_bma(s_$moduleNameLC);				/* enable/disable bma */
-					sis3302_dumpRegisters(s_$moduleNameLC, "$dumpFile");		/* dump registers */
+					if (sis3302_blockXferIsOn(s_$moduleNameLC)) use_block_xfer = TRUE;	/* check if block xfer should be enabled */
+ 					sis3302_dumpRegisters(s_$moduleNameLC, "$dumpFile");		/* dump registers */
 
 %%EndOfCode%%
 %%INIT_MODULE%%
@@ -137,7 +139,7 @@ static struct s_sis_3302 * s_$moduleNameLC;
 %%DEFINE_GLOBALS%%
 
 %%BeginOfCode%%
-
+static bool_t sis3302_use_mcst;
 %%EndOfCode%%
 %%DEFINE_GLOBALS_ONCE_ONLY%%
 

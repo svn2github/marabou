@@ -16,7 +16,7 @@
 
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
-//! \file			Sis3302_Database.h
+//! \file			sis3302_Database.h
 //! \brief			Definitions for SIS3302 ADC
 //! \details		Structures describing a SIS3302 ADC
 //! $Author: Marabou $
@@ -34,15 +34,6 @@
 #define GROUP(adc)		(adc >> 1)
 
 struct s_sis_3302 {
-	ULong_t vmeAddr;						/* phys addr given by module switches */
-	volatile Char_t * baseAddr;					/* addr mapped via find_controller() */
-	Int_t segSize;
-	Int_t curSegSize;
-	UInt_t lowerBound;
-	UInt_t upperBound;
-	UInt_t mappedAddr;
-	UInt_t addrMod;
-
 	Char_t moduleName[STRLEN];
 	Char_t prefix[STRLEN];					/* "m_read_meb" (default) or any other */
 	Char_t mpref[10]; 					/* "sis3302: " or "" */
@@ -56,11 +47,9 @@ struct s_sis_3302 {
 	Bool_t verbose;
 	Bool_t dumpRegsOnInit;
 
-	Bool_t blockXfer;					/* block xfer */
-#ifdef CPU_TYPE_RIO2
-	struct dmachain bltChain;
-#endif
+	struct s_mapDescr * md;				/* mapping descriptor */
 
+	Bool_t blockXfer;					/* block xfer */
 	Int_t bufferSize;					/* max buffer size */
 
 	UInt_t status;
@@ -116,5 +105,7 @@ struct s_sis_3302 {
 	Int_t energySampleLength[NOF_GROUPS];
 	Int_t energySampleStart[3][NOF_GROUPS];
 	Int_t energyTauFactor[NOF_CHANNELS];
+
+	unsigned long mcstAddr;			/* MCST signature */
 };
 #endif
