@@ -150,6 +150,9 @@ const SMrbNamedXShort kMrbNimBusy[] =
 			{	TMrbMesytec_Madc32::kNimBusy,				"busy"			},
 			{	TMrbMesytec_Madc32::kNimG0Out,				"gate0"			},
 			{	TMrbMesytec_Madc32::kNimG1Out,				"gate1"			},
+			{	TMrbMesytec_Madc32::kNimCbusOut,			"cbusOut"		},
+			{	TMrbMesytec_Madc32::kNimBufferFull,			"bufferFull"		},
+			{	TMrbMesytec_Madc32::kNimOverThresh,			"overThresh"		},
 			{	0,			 								NULL,			}
 		};
 
@@ -473,7 +476,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegNimBusy, "NimBusy");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kNimBusy,
 													TMrbMesytec_Madc32::kNimBusy,
-													TMrbMesytec_Madc32::kNimCbusOut);
+													TMrbMesytec_Madc32::kNimOverThresh);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -597,6 +600,7 @@ TEnv * TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetNimG1OrOsc(madcEnv->Get(moduleName.Data(), "NimG1OrOsc", kNimG1));
 	this->SetNimFclOrRts(madcEnv->Get(moduleName.Data(), "NimFclOrRts", kNimFcl));
 	this->SetNimBusy(madcEnv->Get(moduleName.Data(), "NimBusy", kNimBusy));
+	this->SetBufferThresh(madcEnv->Get(moduleName.Data(), "BufferThresh", 0));
 	this->SetTestPulser(madcEnv->Get(moduleName.Data(), "TsSource", kTstampVME));
 	this->SetTsDivisor(madcEnv->Get(moduleName.Data(), "TsDivisor", 1));
 
@@ -700,6 +704,7 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$multiEvent", this->GetMultiEvent());
 						tmpl.Substitute("$markingType", this->GetMarkingType());
 						tmpl.Substitute("$blockXfer", this->BlockXferEnabled() ? "TRUE" : "FALSE");
+						tmpl.Substitute("$bufferThresh", this->GetBufferThresh());
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%OperationMode%");
@@ -836,6 +841,15 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 			fCodeTemplates.Substitute("$chnPattern", (Int_t) this->GetPatternOfChannelsUsed(), 16);
 			fCodeTemplates.Substitute("$serial", this->GetSerial());
 			fCodeTemplates.Substitute("$dumpFile", dump.Data());
+			fCodeTemplates.WriteCode(RdoStrm);
+			break;
+		case TMrbConfig::kModuleInitBLT:
+			fCodeTemplates.InitializeCode();
+			fCodeTemplates.Substitute("$moduleName", moduleNameLC);
+			fCodeTemplates.Substitute("$size", (Int_t) this->GetSegmentSize(), 16);
+			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
+			fCodeTemplates.Substitute("$addrMod", 0x0b, 16);
+			fCodeTemplates.Substitute("$fifoMode", "TRUE");
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleClearModule:
@@ -1013,6 +1027,7 @@ void TMrbMesytec_Madc32::PrintSettings(ostream & Out) {
 	Out << " ADC resolution      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAdcResolution) << endl;
 	Out << " Output format       : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegOutputFormat) << endl;
 	Out << " ADC override        : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAdcOverride) << endl;
+	Out << " Buffer threshold    : "	<< this->GetBufferThresh() << endl;
 	Out << " Sliding scale       : "	<< (this->SlidingScaleIsOff() ? "off" : "on") << endl;
 	Out << " Skip if out of range: "	<< (this->SkipOutOfRange() ? "yes" : "no") << endl;
 	Out << " Ignore thresholds   : "	<< (this->IgnoreThresholds() ? "yes" : "no") << endl;

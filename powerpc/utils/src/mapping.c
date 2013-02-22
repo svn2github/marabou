@@ -8,25 +8,47 @@
 // @(#)Date:       %G%
 // URL:            
 // Keywords:       
+//
+// Mapping                          RIO2          RIO3        RIO4/A32    RIO4/A24/A16
+//                 single cycle     static        static      direct      static
+//                 BLT              dynamic       static      dynamic     dynamic
+//                 MBLT             dynamic       static      dynamic     dynamic
+//
+//                 direct:  mapping thru 0xf0000000+physAddr
+//                 static:  mapping according to tables in mapping_database.h
+//                 dynamic: mapping via xvme()
 ////////////////////////////////////////////////////////////////////////////*/
 
-#include "mapping_database.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
 #include <errno.h>
+#include <stdint.h>
+#include <smem.h>
 
-/*________________________________________________________________[PROTOTYPES]
-////////////////////////////////////////////////////////////////////////////*/
-Char_t * strcmp(Char_t *, Char_t *);
-Char_t * calloc(Int_t, Int_t);
+#include <allParam.h>
+#include <ces/vmelib.h>
+#include <ces/bmalib.h>
+
+#include "root_env.h"
+#include "unix_string.h"
+#include "mapping_database.h"
+
+#include "err_mask_def.h"
+#include "errnum_def.h"
 
 /*___________________________________________________________________[GLOBALS]
 ////////////////////////////////////////////////////////////////////////////*/
-static struct s_mapDescr * firstDescr = NULL;
-static struct s_mapDescr * lastDescr = NULL;
+static struct pdparam_master s_param; 		/* vme segment params */
+
+static struct s_mapDescr * firstDescr = NULL;	/* first module in list */
+static struct s_mapDescr * lastDescr = NULL;	/* ... last module */
 
 Char_t msg[256];
 
 
-struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, Bool_t StaticFlag) {
+struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t Mapping) {
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mapVME
@@ -35,13 +57,15 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 //                 UInt_t PhysAddr          -- physical address
 //                 Int_t Size               -- segment size
 //                 UInt_t AddrMod           -- address modifier
-//                 Bool_t StaticFlag        -- TRUE if static mapping
+//                 UInt_t Mapping           -- available mapping modes
 // Results:        s_mapDescr * Descr       -- pointer to database
 // Description:    Performs VME mapping, either statically or dynamically
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
 	struct s_mapDescr * md;
+	UInt_t staticBase;
+	UInt_t dynamicAddr;
 	
 	if ((md = _createMapDescr(DescrName)) == NULL) {
 		sprintf(msg, "[mapVME] %s: mapping failed", DescrName);
@@ -49,8 +73,259 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 		return NULL;
 	}
 	
-	if (StaticFlag) {
+	md->mappingModes = Mapping;
+	md->mappingVME = kVMEMappingUndef;
+	md->mappingBLT = kVMEMappingUndef;
+
+#ifdef CPU_TYPE_RIO4
+	if (Mapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
+		md->vmeBase = PhysAddr | kAddr_A32Direct;
+		md->mappingVME = kVMEMappingDirect;
+	}
+#endif
+	if (md->mappingVME == kVMEMappingUndef) {
+		if (Mapping & kVMEMappingStatic) {
+			switch (AddrMod) {
+				case kAM_A32:
+					staticBase = kAddr_A32;
+					break;
+				case kAM_A24:
+					staticBase = kAddr_A24;
+				case kAM_A16:
+					staticBase = kAddr_A16;
+				default:
+					sprintf(msg, "[mapVME] %s: Illegal addr modifier - %#lx", DescrName, AddrMod);
+					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+					return NULL;
+			}
+
+			md->vmeBase = smem_create(DescrName, (Char_t *) (staticBase | PhysAddr), Size, SM_READ|SM_WRITE);
+			if (md->vmeBase == NULL) {
+				sprintf(msg, "[mapVME] %s: Creating shared segment failed - %s (%d)", DescrName, sys_errlist[errno], errno);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return NULL;
+			}
+			md->mappingVME = kVMEMappingStatic;
+		} else if (Mapping & kVMEMappingDynamic) {
+ 			s_param.iack = 1;
+ 			s_param.rdpref = 0;
+ 			s_param.wrpost = 0;
+ 			s_param.swap = SINGLE_AUTO_SWAP;
+ 			s_param.dum[0] = 0;
+ 			dynamicAddr = find_controller(PhysAddr, Size, AddrMod, 0, 0, &s_param);
+			if (dynamicAddr == 0xFFFFFFFF) {
+				sprintf(msg, "[mapVME] %s: Dynamic mapping failed - %s (%d)", DescrName, sys_errlist[errno], errno);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return NULL;
+			} else {
+				md->vmeBase = (volatile Char_t *) dynamicAddr;
+			}
+			md->mappingVME = kVMEMappingDynamic;
+		} else {
+			sprintf(msg, "[mapVME] %s: Illegal mapping mode - %#lx", DescrName, Mapping);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			return NULL;
+		}
+	}
+
+	strcpy(md->mdName, DescrName);
+	md->addrModVME = AddrMod;
+	md->physAddrVME = PhysAddr;
+	md->segSizeVME = Size;
+	return md;
+}
+
+Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mapBLT
+// Purpose:        Map BLT address
+// Arguments:      s_mapDescr * mapDescr    -- map descriptor
+//                 UInt_t PhysAddr          -- physical address
+//                 Int_t Size               -- segment size
+//                 UInt_t AddrMod           -- address modifier
+// Results:        TRUE/FALSE
+// Description:    Performs mapping to be used with block xfer
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	UInt_t staticBase;
+	UInt_t dynamicAddr;
+
+	char bltName[64];
+
+	if (_findMapDescr(mapDescr->mdName) == NULL) {
+		sprintf(msg, "[mapBLT] Mapping descriptor not found - %s", mapDescr->mdName);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		return FALSE;
+	}
+	
+	mapDescr->mappingBLT = kVMEMappingUndef;
+
+#ifdef CPU_TYPE_RIO3
+	if (mapDescr->mappingModes & kVMEMappingStatic) {
+		switch (AddrMod) {
+			case kAM_BLT:
+				staticBase = kAddr_BLT;
+				break;
+			case kAM_MBLT:
+				staticBase = kAddr_MBLT;
+			default:
+				sprintf(msg, "[mapVME] %s: Illegal addr modifier - %#lx", mapDescr->mdName, AddrMod);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return FALSE;
+		}
+
+		sprintf(bltName, "%s_blt", mapDescr->mdName);
+		mapDescr->bltBase = smem_create(bltName, (Char_t *) (staticBase | PhysAddr), Size, SM_READ);
+		if (mapDescr->bltBase == NULL) {
+			sprintf(msg, "[mapVME] %s: Creating shared segment for BLT failed - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			return FALSE;
+		}
+		mapDescr->mappingBLT = kVMEMappingStatic;
+	}
+#endif
+#ifdef CPU_TYPE_RIO2
+	if (mapDescr->mappingModes & kVMEMappingDynamic) {
+ 		s_param.iack = 1;
+ 		s_param.rdpref = 0;
+ 		s_param.wrpost = 0;
+ 		s_param.swap = SINGLE_AUTO_SWAP;
+ 		s_param.dum[0] = 0;
+ 		dynamicAddr = find_controller(PhysAddr, Size, AddrMod, 0, 0, &s_param);
+		if (dynamicAddr == 0xFFFFFFFF) {
+			sprintf(msg, "[mapVME] %s: Dynamic mapping failed - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			mapDescr->bltBase = NULL;
+		} else {
+			mapDescr->bltBase = (volatile Char_t *) dynamicAddr;
+			mapDescr->mappingBLT = kVMEMappingStatic;
+		}
+	}
+#else
+	if (mapDescr->mappingBLT == kVMEMappingUndef) {
+		if (mapDescr->mappingModes & kVMEMappingDynamic) {
+			dynamicAddr = xvme_map(PhysAddr, Size, AddrMod, 0);
+			if (dynamicAddr == -1) {
+				sprintf(msg, "[mapVME] %s: Can't map XVME page", mapDescr->mdName);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				mapDescr->bltBase = NULL;
+			} else {
+				mapDescr->bltBase = (volatile Char_t *) dynamicAddr;
+			}
+		}
+	}
+#endif
+
+	if (bma_create_mode(&mapDescr->bltModeId) != 0) {
+		sprintf(msg, "[mapVME] %s: Can't create BLT mode struct - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	}
+
+	mapDescr->addrModBLT = AddrMod;
+	mapDescr->physAddrBLT = PhysAddr;
+	mapDescr->segSizeBLT = Size;
+
+	if (mapDescr->bltBase == NULL) {
+		sprintf(msg, "[mapVME] %s: Can't map BLT addr - phys addr %#lx, addrMod=%#lx", mapDescr->mdName, PhysAddr, AddrMod);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		return FALSE;
 	} else {
+		sprintf(msg, "[mapVME] %s: phys addr %#lx, mapped to BLT addr %#lx, addrMod=%#lx", mapDescr->mdName, PhysAddr, mapDescr->bltBase, AddrMod);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		return TRUE;
+	}
+}
+
+Bool_t setBLTMode(struct s_mapDescr * mapDescr, UInt_t VmeSize, UInt_t WordSize, Bool_t FifoMode) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           setBLTMode
+// Purpose:        Set BLT mode
+// Arguments:      s_mapDescr * mapDescr    -- map descriptor
+//                 UInt_t VmeSize           -- VME size
+//                 UInt_t WordSize          -- word size
+//                 UInt_t AddrMod           -- address modifier
+//                 Bool_t FifoMode          -- TRUE if AutoIncr
+// Results:        ---
+// Description:    Fills BLT mode struct.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	Int_t sts;
+
+	if ((sts = bma_set_mode(mapDescr->bltModeId, BMA_M_VMESize, VmeSize)) != 0) {
+		sprintf(msg, "[setBLTMode] %s: Error while setting BLT mode (VMESize = %d) - error code %d", mapDescr->mdName, VmeSize, sts);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	}
+	if ((sts = bma_set_mode(mapDescr->bltModeId, BMA_M_WordSize, WordSize)) != 0) {
+		sprintf(msg, "[setBLTMode] %s: Error while setting BLT mode (WordSize = %d) - error code %d", mapDescr->mdName, WordSize, sts);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	}
+	if ((sts = bma_set_mode(mapDescr->bltModeId, BMA_M_AmCode, mapDescr->addrModBLT)) != 0) {
+		sprintf(msg, "[setBLTMode] %s: Error while setting BLT mode (AmCode = %#x) - error code %d", mapDescr->mdName, mapDescr->addrModBLT, sts);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	}
+	if ((sts = bma_set_mode(mapDescr->bltModeId, BMA_M_VMEAdrInc, FifoMode ? BMA_M_VaiFifo : BMA_M_VaiNormal)) != 0) {
+		sprintf(msg, "[setBLTMode] %s: Error while setting BLT mode (FifoMode = %d) - error code %d", mapDescr->mdName, FifoMode, sts);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	}
+	return TRUE;
+}
+
+bool_t initBLT() {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           initBLT
+// Purpose:        Initialize block xfer
+// Arguments:      ---
+// Results:        TRUE/FALSE
+// Description:    Calls bma_open() etc
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	Int_t bmaError;
+
+	bmaError = bma_open();
+	if (bmaError != 0) {
+		sprintf(msg, "[initBLT] Can't initialize BLT - %s (%d)", sys_errlist[errno], errno);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		bma_close();
+		return FALSE;
+	}
+	f_ut_send_msg("m_read_meb", "[initBLT] Block xfer enabled", ERR__MSG_INFO, MASK__PRTT);
+	return TRUE;
+}
+
+Bool_t unmapAll() {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           unmapAll
+// Purpose:        Unmap all shared segments
+// Arguments:      ---
+// Results:        TRUE/FALSE
+// Description:    Removes shared mem segments, frees memory.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	struct s_mapDescr * md;
+	char bltName[64];
+	
+	md = firstDescr;
+	if (md == NULL) return TRUE;
+	
+	while (md) {
+		if (md->mappingModes & kVMEMappingStatic) {
+			smem_create("", md->vmeBase, 0, SM_DETACH);
+			smem_remove(md->mdName);
+			smem_create("", md->bltBase, 0, SM_DETACH);
+			sprintf(bltName, "%s_blt", md->mdName);
+			smem_remove(bltName);
+		} else {
+			xvme_rel(md->bltBase, md->segSizeBLT);
+		}
+		md = md->nextDescr;
 	}
 }
 
@@ -71,7 +346,7 @@ struct s_mapDescr * _findMapDescr(const Char_t * DescrName) {
 	if (md == NULL) return NULL;
 	
 	while (md) {
-		if (strcmp(md->name, DescrName) == 0) return(md);
+		if (strcmp(md->mdName, DescrName) == 0) return(md);
 		md = md->nextDescr;
 	}
 	return NULL;
@@ -103,19 +378,48 @@ struct s_mapDescr * _createMapDescr(const Char_t * DescrName) {
 		return NULL;
 	}
 	
-	strcpy(md->name, DescrName);
+	strcpy(md->mdName, DescrName);
 	
 	if (firstDescr == NULL) {
 		md->prevDescr = NULL;
-		md->nextDescr = NULL;
 		firstDescr = md;
-		lastDescr = md;
-		return(md);
 	} else {
+		lastDescr->nextDescr = md;
 		md->prevDescr = lastDescr;
-		md->nextDescr = NULL;
-		lastDescr = md;
-		return md;
 	}
+	md->nextDescr = NULL;
+	lastDescr = md;
+	return md;
 }
+
+Char_t * getPhysAddr(Char_t * Addr, Int_t Size) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           getPhysAddr
+// Purpose:        Get pysical address from virtual one
+// Arguments:      UInt_t Addr              -- virtual address
+//                 Int_t Size               -- size in bytes
+// Results:        Int_t Offset             -- offset
+// Description:    Converts virtual to physical address.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	struct dmaChain {
+		ULong_t address;
+		Int_t count;
+	};
+
+	struct dmaChain chains[10];
+
+	static Int_t addrOffset = 0;
+	Int_t error;
+
+	if (vmtopm(getpid(), chains, Addr, Size) == -1) {
+		sprintf(msg, "[getPhysAddr] vmtopm call failed");
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		return NULL;
+	}
+	return (Char_t *) chains[0].address;
+}
+
 	

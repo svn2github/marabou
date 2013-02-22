@@ -35,6 +35,11 @@
 %%INIT_MODULE%%
 
 %%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
+
+%%BeginOfCode%%
 					$mnemoLC_set_dwin($moduleName, $lowerThresh, $upperThresh); 				/* set digital window limits */
 %%EndOfCode%%
 %%INIT_CHANNEL%%

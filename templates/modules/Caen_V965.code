@@ -160,6 +160,11 @@
 %%INIT_MODULE%%
 
 %%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
+
+%%BeginOfCode%%
 %U%					CAEN_V965_SET_THRESHOLD($moduleName, $m8, $chnNo, $lowerThreshL);	/* lower limit $chnName:$chnNo */
 %N%					CAEN_V965_SET_KILL_BIT($moduleName, $m8, $chnNo);					/* de-activate $chnName:$chnNo */
 %F% 				caen_v965_set_thresh($moduleName, "$threshFile");

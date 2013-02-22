@@ -29,6 +29,11 @@
 %%INIT_MODULE%%
 
 %%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
+
+%%BeginOfCode%%
 					$mnemoLC_init($moduleName, $extGate);	/* clear scaler $moduleName */
 %%EndOfCode%%
 %%CLEAR_MODULE%%

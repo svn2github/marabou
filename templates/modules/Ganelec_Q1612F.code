@@ -49,6 +49,11 @@
 %%INIT_MODULE%%
 
 %%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
+
+%%BeginOfCode%%
 					CIO_WRITE_R2B($moduleName, F(17), A($chnNo), $offsetL); 		/* offset $chnName:A($chnNo) */
 %%EndOfCode%%
 %%INIT_CHANNEL%%

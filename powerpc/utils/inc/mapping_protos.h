@@ -2,17 +2,7 @@
 #define __MAPPING_PROTOS_H__
 
 #include "LwrTypes.h"
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <errno.h>
-#include <stdint.h>
-
-#include <allParam.h>
-#include <ces/vmelib.h>
-#include <ces/bmalib.h>
+#include "mapping_database.h"
 
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
@@ -25,7 +15,7 @@
 //! $Date: $
 ////////////////////////////////////////////////////////////////////////////*/
 
-struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, Bool_t StaticFlag);
+struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t Mapping);
 
 Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod);
 
@@ -35,7 +25,17 @@ Bool_t unmapVME(struct s_mapDescr * mapDescr);
 
 Bool_t unmapAll();
 
+Bool_t initBLT();
+
+Bool_t setBLTMode(struct s_mapDescr * mapDescr, UInt_t VmeSize, UInt_t WordSize, Bool_t FifoMode);
+
+Char_t * getPhysAddr(Char_t * Addr, Int_t Size);
+
+void printMapping();
+
 struct s_mapDescr * _findMapDescr(const Char_t * DescrName);
 struct s_mapDescr * _createMapDescr(const Char_t * DescrName);
+
+extern int vmtopm (int, struct dmachain *, char *, long);
 
 #endif

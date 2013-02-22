@@ -185,6 +185,7 @@ const SMrbNamedXShort kMrbLofModuleTags[] =
 								{TMrbConfig::kModuleDefs,					"MODULE_DEFS"				},
 								{TMrbConfig::kModuleInitCommonCode, 		"INIT_COMMON_CODE"			},
 								{TMrbConfig::kModuleInitModule, 			"INIT_MODULE"				},
+								{TMrbConfig::kModuleInitBLT,	 			"INIT_BLOCK_XFER"				},
 								{TMrbConfig::kModuleInitChannel,			"INIT_CHANNEL"				},
 								{TMrbConfig::kModuleReadChannel,			"READ_CHANNEL"				},
 								{TMrbConfig::kModuleIncrementChannel,		"INCREMENT_CHANNEL" 		},
@@ -1946,10 +1947,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoInitPointers:
 						{
-							if ((vmeModule = (TMrbVMEModule *) this->FindModuleByType(TMrbConfig::kModuleVME)) != NULL) {
-								rdoTmpl.InitializeCode("%BV%");
-								rdoTmpl.WriteCode(rdoStrm);
-							}
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
 								if (module->GetMbsBranchNo() == pp->GetB()) module->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl, NULL);
@@ -2031,6 +2028,16 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag += "%";
 								rdoTmpl.InitializeCode(iniTag.Data());
 								rdoTmpl.Substitute("$crateNo", crate);
+								rdoTmpl.WriteCode(rdoStrm);
+							} else {
+								rdoTmpl.InitializeCode("%CEVME1%");
+								rdoTmpl.WriteCode(rdoStrm);
+								module = (TMrbModule *) this->FindModuleByCrate(crate);
+								while (module) {
+									if (module->GetMbsBranchNo() == pp->GetB()) module->MakeReadoutCode(rdoStrm, kModuleInitBLT);
+									module = (TMrbModule *) this->FindModuleByCrate(crate, module);
+								}
+								rdoTmpl.InitializeCode("%CEVME2%");
 								rdoTmpl.WriteCode(rdoStrm);
 							}
 							crate = this->FindCrate(crate);

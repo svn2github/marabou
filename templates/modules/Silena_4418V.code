@@ -40,6 +40,11 @@
 
 %%BeginOfCode%%
 
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
+
+%%BeginOfCode%%
+
 					CIO_WRITE_R2B($moduleName, F(17), A($chnNo + 8), $lowerThreshL);	/* lower limit $chnName:A($chnNo) */
 					CIO_WRITE_R2B($moduleName, F(17), A($chnNo), $upperThreshL);		/* upper limit */
 					CIO_WRITE_R2B($moduleName, F(20), A($chnNo), $offsetL); 		/* offset */

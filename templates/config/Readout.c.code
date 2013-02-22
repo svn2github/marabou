@@ -39,6 +39,11 @@
 
 #include "root_env.h"
 #include "unix_string.h"
+#include "mapping_database.h"
+#include "mapping_protos.h"
+
+#include "sbs_def.h"
+#include "f_user_trig_clear.h"
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Common indices used by readout as well as analysis
@@ -60,6 +65,8 @@ static struct pdparam_master s_param; 		/* vme segment params */
 static long total_event_count; 	/* events since last start */
 static long dt_event_count;		/* events since last dead-time stamp */
 static long dt_scaler_contents;	/* contents of dead-time scaler */
+
+static bool_t use_block_xfer;	/* TRUE if at least one module wants to use BLT */
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Global variables
@@ -98,8 +105,9 @@ static long dt_scaler_contents;	/* contents of dead-time scaler */
 %CC32%static volatile unsigned long * cam_sreg_C$crateNo; 	/* X/Q enable in crate C$crateNo */
 %CC32%static volatile unsigned long * cam_lam_C$crateNo;  	/* LAM pattern in crate C$crateNo */
 %V%static volatile char * $moduleName;	 				/* VME: $modulePosition: $moduleTitle */
-%VS%											/* VME: $modulePosition: $moduleTitle */
-%VS%static volatile char * $moduleNameBase;	 			/* --   base addr*/
+%V%static struct s_mapDescr * md_$moduleName;				/* VME: mapping descriptor for $moduleName */
+%VS%									/* VME: $modulePosition: $moduleTitle */
+%VS%static volatile char * $moduleNameBase;	 			/* --   base addr */
 %VS%static volatile char * $moduleName;	 				/* --   offset for subdevice $subdevice */
 
 %%EndOfCode%%
@@ -170,12 +178,6 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 / Initialize pointers to camac and/or vme modules
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 %%BeginOfCode%%
-%BV% 	s_param.iack = 1;						/* prepare vme segment */
-%BV% 	s_param.rdpref = 0;
-%BV% 	s_param.wrpost = 0;
-%BV% 	s_param.swap = SINGLE_AUTO_SWAP;
-%BV% 	s_param.dum[0] = 0; 					/* forces static mapping! */
-%BV%
 %C% 	$moduleNameLC = CIO_SET_BASE(B(0), C($crateNo), N($station)); 			/* $moduleNameLC: $moduleTitle */
 %C% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %CBV% 	cam_dwinh_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(30));	/* dataway inhibit in crate C$crateNo */
@@ -186,13 +188,14 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 %CC32% 	cam_rddw_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(27));	/* read double word in crate C$crateNo */
 %CC32% 	cam_bcast_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(25));	/* broadcast in crate C$crateNo */
 %CC32% 	cam_lam_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));		/* LAM pattern in crate C$crateNo */
-%V% 	$moduleNameLC = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* $moduleNameLC: $moduleTitle */
-%V%	if ((unsigned int) $moduleNameLC == 0xFFFFFFFF) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
+%V% 	md_$moduleNameLC = mapVME("$moduleNameLC", $baseAddrL, $segSizeL, $addrMod, $mapping);	/* $moduleNameLC: $moduleTitle */
+%V%	if (md_$moduleNameLC == NULL) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
+%V% 	else $moduleNameLC = md_$moduleNameLC->vmeBase;
 %V% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %VS%																		/* $moduleName: $moduleTitle */
-%VS% 	$moduleNameLCBase = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* -- base addr */
+%VS% 	md_$moduleNameLC = mapVME("$moduleNameLC", $baseAddrL, $segSizeL, $addrMod, $mapping);	/* $moduleNameLC: $moduleTitle */
 %VS%	if ((unsigned int) $moduleNameLC == 0xFFFFFFFF) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
-%VS% 	$moduleNameLC = $mnemoLC_get_subdevice($moduleNameLCBase, $subDevice);								/* -- subdevice $subDevice */
+%VS% 	$moduleNameLC = $mnemoLC_get_subdevice(md_$moduleNameLC->vmeBase, $subDevice);								/* -- subdevice $subDevice */
 %VS% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %%EndOfCode%%
 %%INIT_POINTERS%%
@@ -248,6 +251,9 @@ int f_user_init (unsigned char  bh_crate_nr,
 %CBCC32%			CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: dataway disable */
 %CBCC32%			CIO_WRITE_R2B(cam_lam_C$crateNo, F(16), A(0), 0L);		/* crate C$crateNo: clear lam ff */
 %CECC32%
+%CEVME1%					if (use_block_xfer) use_block_xfer = initBLT();		/* initialize block xfer if needed */
+%CEVME1%					if (use_block_xfer) {
+%CEVME2%					}
 %CE% 			break;
 %CE%
 %E%  		default:
@@ -255,6 +261,8 @@ int f_user_init (unsigned char  bh_crate_nr,
 %E% 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
 %E% 			break;
 %E% 	}
+%E%
+%E%
 %%EndOfCode%%
 %%INIT_MODULES%%
 
@@ -396,6 +404,7 @@ int f_user_readout (unsigned char  bh_trig_typ,
 
 %%BeginOfCode%%
 %B% 		case kMrbTrigger$trigName:		/* on trigger $trigName ($trigNo) */
+%B%/*			f_user_trig_clear(kMrbTriggerReadout); */
 %B%			switch (bh_crate_nr) {
 %CB%				case $crateNo:			/* include data from crate C$crateNo ($crateType) */
 %CD%		 			total_event_count++;		/* count this event (once per trigger!) */
@@ -457,6 +466,7 @@ int f_user_readout (unsigned char  bh_trig_typ,
 /* pass number of bytes to caller */
 
 	*l_se_read_len  = nofBytes;
+/*	*l_read_stat = TRIG__CLEARED;	*/
 
 	return(1);
 }	/* f_user_readout */

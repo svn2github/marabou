@@ -14,6 +14,8 @@ BIN_DIR = ../../../bin/$(GSI_OS_VERSION)
 AR = ar
 ARFLAG = -rv
 
+LIB		= $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
+
 # ------------ Library-Objects ----------------------------------------
 
 LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libMadc32.a
@@ -35,6 +37,7 @@ libMadc32.OBJS = madc32fct.o
 all: $(LIB_TARGETS) madc32
 
 $(LIB_TARGETS): $(libMadc32.OBJS)
+	cp ../inc/*.h ../../../../include
 	$(AR) $(ARFLAGS) $@ $^
 	ranlib $@
 
@@ -42,7 +45,9 @@ madc32:	madc32.o $(LIB_TARGETS)
 		$(CC) -o madc32 madc32.o \
 			-L ../../../lib/$(GSI_OS_VERSION) \
 			-L /lib/ces \
-			-lMadc32 -lUti -llynx -lvme -lbma -luio -lnetinet
+			-lMadc32 -lUti \
+			$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
+			-llynx -lvme -lbma -luio -lnetinet
 		mv madc32 $(BIN_DIR)
 
 clean:

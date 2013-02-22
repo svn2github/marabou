@@ -70,6 +70,9 @@ class TMrbVMEModule : public TMrbModule {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbSubevent * Subevent, Int_t Value = 0) { return(kFALSE); };
 
+		inline void UseVMEMapping(UInt_t Mapping) { fVMEMapping = Mapping; };
+		inline UInt_t GetVMEMapping() { return fVMEMapping; };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
@@ -78,8 +81,9 @@ class TMrbVMEModule : public TMrbModule {
 
 	protected:
 		UInt_t fBaseAddr;					// base address
-		UInt_t fAddrModifier;				// address modifier
-		Int_t fSegmentSize; 				// segment size
+		UInt_t fAddrModifier;					// address modifier
+		Int_t fSegmentSize; 					// segment size
+		UInt_t fVMEMapping;					// VME mapping
 
 	ClassDef(TMrbVMEModule, 1)		// [Config] Base class for VME modules
 };

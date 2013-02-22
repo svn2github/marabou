@@ -76,6 +76,9 @@ MADC32.$moduleName.MarkingType: 		$markingType
 
 # block transfer        enable/disable, TRUE/FALSE
 MADC32.$moduleName.BlockXfer:			$blockXfer
+
+# buffer threshold      0 ... 8120
+MADC32.$moduleName.BufferThresh:		$bufferThresh
 %%End(FifoHandling)%%
 
 %%Begin(OperationMode)%%

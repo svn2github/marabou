@@ -174,7 +174,4 @@ void mqdc32_resetTimestamp_mcst(struct s_mqdc32 * s);
 void mqdc_resetReadout_mcst(struct s_mqdc32 * s);
 
 bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile);
-
-extern int vmtopm (int, struct dmachain *, char *, long);
-
 #endif

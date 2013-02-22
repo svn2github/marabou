@@ -33,6 +33,11 @@
 
 %%BeginOfCode%%
 
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
+
+%%BeginOfCode%%
+
 					CIO_WRITE_R2B($moduleName, F(17), A($chnNo), $lowerThreshL);	/* lower limit $chnName:A($chnNo) */
 %%EndOfCode%%
 %%INIT_CHANNEL%%

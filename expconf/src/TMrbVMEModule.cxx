@@ -76,6 +76,8 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 			}
 		}
 		fSegmentSize = SegSize;
+		fVMEMapping = TMrbConfig::kVMEMappingDirect | TMrbConfig::kVMEMappingStatic | TMrbConfig::kVMEMappingDynamic;
+
 		fSubDevice = SubDevice;
 		fCrate = 0;
 		gMrbConfig->SetCrateType(0, TMrbConfig::kCrateVME); // mark vme crate active
@@ -176,6 +178,7 @@ Bool_t TMrbVMEModule::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadou
 		Template.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 		Template.Substitute("$addrMod", (Int_t) this->GetAddrModifier(), 16);
 		Template.Substitute("$segSize", this->GetSegmentSize(), 16);
+		Template.Substitute("$mapping", this->GetVMEMapping(), 16);
 		Template.WriteCode(RdoStrm);
 	}
 	return(kTRUE);

@@ -152,9 +152,11 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 										};
 
 		enum EMrbNimBusy		 		{	kNimBusy			=	0,
-											kNimG0Out,
-											kNimG1Out,
-											kNimCbusOut
+											kNimG0Out	=	1,
+											kNimG1Out	=	2,
+											kNimCbusOut	=	3,
+											kNimBufferFull	=	4,
+											kNimOverThresh 	=	8
 										};
 
 		enum EMrbTestPulser		 		{	kPulserOff			=	0,
@@ -276,6 +278,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline Bool_t SetNimBusy(Char_t * Busy) { return(this->Set(TMrbMesytec_Madc32::kRegNimBusy, Busy)); };
 		inline Int_t GetNimBusy() { return(this->Get(TMrbMesytec_Madc32::kRegNimBusy)); };
 
+		inline void SetBufferThresh(Int_t Thresh) { fBufferThresh = Thresh; };
+		inline Int_t GetBufferThresh() { return(fBufferThresh); };
+
 		inline Bool_t SetTestPulser(Int_t Mode) { return(this->Set(TMrbMesytec_Madc32::kRegPulserStatus, Mode)); };
 		inline Bool_t SetTestPulser(Char_t * Mode) { return(this->Set(TMrbMesytec_Madc32::kRegPulserStatus, Mode)); };
 		inline Int_t GetTestPulser() { return(this->Get(TMrbMesytec_Madc32::kRegPulserStatus)); };
@@ -337,6 +342,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		Bool_t fSkipOutOfRange;
 		Bool_t fIgnoreThresh;
 		Bool_t fAdcOverride;
+		Int_t fBufferThresh;
 
 		UInt_t fMCSTSignature;
 		UInt_t fCBLTSignature;

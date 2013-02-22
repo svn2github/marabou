@@ -16,7 +16,7 @@ BINDIR		=	../../bin/$(GSI_OS_VERSION)
 INCS		=	$(UTIINC)/root_env.h $(UTIINC)/unix_string.h $(UTIINC)/block.h
 
 
-OBJS		=	$(UTILIB)(root_env.$(ObjSuf)) $(UTILIB)(unix_string.$(ObjSuf)) $(UTILIB)(block.$(ObjSuf)) $(UTILIB)(xvmelib.$(ObjSuf))
+OBJS		=	$(UTILIB)(mapping.$(ObjSuf)) $(UTILIB)(root_env.$(ObjSuf)) $(UTILIB)(unix_string.$(ObjSuf)) $(UTILIB)(block.$(ObjSuf)) $(UTILIB)(xvmelib.$(ObjSuf))
 
 PROGS		=	envtst uxtst
 
@@ -25,6 +25,9 @@ PROGS		=	envtst uxtst
 all:			$(UTILIB) $(PROGS)
 
 $(UTILIB):  	$(OBJS)
+	cp ../inc/*.h ../../../include
+	$(AR) $(ARFLAGS) $@ $^
+	ranlib $@
 
 envtst:			envtst.o $(UTILIB)
 				$(CC) -o envtst envtst.o \

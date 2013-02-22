@@ -6,12 +6,20 @@
 ***************************************************************
 *                                                             
 *      Copyright 2002, CES Creative Electronic System SA      
-*        70, route du Pont-Butin, CH-1213 Petit-Lancy         
 *                   All Rights Reserved                       
 *                                                             
 ***************************************************************
 *
 * $Log: xvmelib.c,v $
+* Revision 1.3  2006/08/24 13:15:43  akos
+* RIO4 support
+*
+* Revision 1.2  2004/04/29 07:18:06  akos
+* Removed old CES address
+*
+* Revision 1.1.1.1  2003/04/14 13:40:50  akos
+* lynx4.0 project creation. Akos Csilling 14-Apr-2003
+*
 * Revision 1.2  2002/04/29 06:17:46  martin
 *  Chain support for RIO3 added.
 *
@@ -29,7 +37,9 @@
 * globals
 *--------------------------------------------------------
 */
+static int is_rio2 = -1;
 static int is_rio3 = -1;
+static int is_rio4 = -1;
 static struct pdparam_master param = {
 	1,	/* no vme iack 			*/
 	0,	/* No VME read prefetch 	*/
@@ -46,6 +56,17 @@ static struct pdparam_master param = {
 *--------------------------------------------------------
 */
 int
+xvme_is_rio2( void ) 
+{
+  int board_type;
+
+  if (is_rio2 == -1) {
+    board_type = uio_board_type();
+    is_rio2 = CESRIO2(board_type)?1:0;
+  }
+  return(is_rio2);
+}
+int
 xvme_is_rio3( void ) 
 {
   int board_type;
@@ -55,6 +76,17 @@ xvme_is_rio3( void )
     is_rio3 = CESRIO3(board_type)?1:0;
   }
   return(is_rio3);
+}
+int
+xvme_is_rio4( void ) 
+{
+  int board_type;
+
+  if (is_rio4 == -1) {
+    board_type = uio_board_type();
+    is_rio4 = CESRIO4(board_type)?1:0;
+  }
+  return(is_rio4);
 }
 /*
 *========================================================
@@ -66,7 +98,7 @@ xvme_map(u_int vaddr, int wsiz, int am, int adp)
 {
   u_int ad;
 
-  if (xvme_is_rio3() == 0) return(vaddr);
+  if (xvme_is_rio2()) return(vaddr);
   if (adp == -1) return(vaddr);
   if (adp == 1) {
     param.dum[1] = 0xa8;
@@ -83,6 +115,6 @@ xvme_map(u_int vaddr, int wsiz, int am, int adp)
 int
 xvme_rel(u_int laddr, int wsiz)
 {
-  if (xvme_is_rio3() == 0) return 0;
+  if (xvme_is_rio2()) return 0;
   return(vme_dma_unmap(laddr));
 }

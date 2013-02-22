@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <smem.h>
 #include <allParam.h>
 #include <ces/uiocmd.h>
 #include <ces/bmalib.h>
@@ -21,13 +22,15 @@
 #include "vmelib.h"
 
 #include "madc32.h"
+#include "madc32_database.h"
 #include "madc32_protos.h"
 
 #include "root_env.h"
+#include "mapping_database.h"
+#include "mapping_protos.h"
 
 #include "Version.h"
 
-static struct pdparam_master s_param; 		/* vme segment params */
 static struct s_madc32 * s_adc;
 
 void f_ut_send_msg(char * prefix, char * msg, int flag);
@@ -41,15 +44,20 @@ int main(int argc, char *argv[]) {
 	unsigned short srval;
 	unsigned long bcval;
 	volatile char * madc32;
+	bool_t staticFlag;
+
+	struct s_mapDescr * md;
 
 	char fct;
 	char file[256];
 	FILE * out;
 
-	if (argc <= 2) {
+	if (argc <= 4) {
 		fprintf(stderr, "madc32: Basic tests for Mesytec MADC32 modules\n\n");
-		fprintf(stderr, "Usage: madc32 <addr> [<fct> [<args>]]\n\n");
+		fprintf(stderr, "Usage: madc32 <addr> <addrMod> <sd> [<fct> [<args>]]\n\n");
 		fprintf(stderr, "       addr          VME addr, high order bits 17-31, A32 or A24\n");
+		fprintf(stderr, "       addrMod       addr modifier, 0x09 or 0x39\n");
+		fprintf(stderr, "       sd            mapping mode: s(tatic) or d(ynamic)\n");
 		fprintf(stderr, "       fct           function to be executed\n");
 		fprintf(stderr, "            v        read firmware version\n");
 		fprintf(stderr, "            r        reset module\n");
@@ -59,30 +67,26 @@ int main(int argc, char *argv[]) {
 	}
 
 	physAddr = (unsigned int) strtol(argv[1], NULL, 16);
-	if (physAddr & 0xFF00) addrMod = 0x9; else addrMod = 0x39;
 	physAddr <<= 16;
+	addrMod =  (unsigned int) strtol(argv[2], NULL, 16);
 
-	s_param.iack = 1;						/* prepare vme segment */
- 	s_param.rdpref = 0;
- 	s_param.wrpost = 0;
- 	s_param.swap = SINGLE_AUTO_SWAP;
- 	s_param.dum[0] = 0; 					/* forces static mapping! */
+	staticFlag = (*argv[3] == 's') ? TRUE : FALSE;
 
- 	madc32 = (volatile char *) find_controller(physAddr, 0x10000L, addrMod, 0, 0, &s_param);
-	if (madc32 == (volatile char *) -1) {
+	md = mapVME("madc32", physAddr, 0x10000L, addrMod, staticFlag);
+	if (md == NULL) {
 		fprintf(stderr, "madc32: Can't map addr %#lx (mod=%#lx)\n", physAddr, addrMod);
 		exit(1);
 	}
 
-	s_adc = madc32_alloc(physAddr, madc32, "madc32", 0xBB);	/* allocate data struct */
+	s_adc = madc32_alloc("madc32", md, 0x1);	/* allocate data struct */
 	if (s_adc == NULL) exit(1);
 
 	madc32_setPrefix(s_adc, "madc32");
 
-	fct = *argv[2];
+	fct = *argv[4];
 
 	file[0] = '\0';
-	if (argc >= 4) strcpy(file, argv[3]);
+	if (argc >= 6) strcpy(file, argv[5]);
 
 	switch (fct) {
 		case 'v':	madc32_moduleInfo(s_adc);				/* read module info */

@@ -23,9 +23,11 @@
 #include "gd_readout.h"
 
 #include "madc32.h"
+#include "madc32_database.h"
 #include "madc32_protos.h"
 
 #include "root_env.h"
+#include "mapping_database.h"
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
@@ -37,20 +39,16 @@ int rdoWc;
 int evtWc;
 int lastData;
 
-struct s_madc32 * s_sav;
-
 char msg[256];
 
-struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial)
+struct s_madc32 * madc32_alloc(char * moduleName, struct s_mapDescr * md, int serial)
 {
 	struct s_madc32 * s;
 	int firmware, mainRev;
 
 	s = (struct s_madc32 *) calloc(1, sizeof(struct s_madc32));
 	if (s != NULL) {
-		s_sav = s;
-		s->baseAddr = base;
-		s->vmeAddr = vmeAddr;
+		s->md = md;
 		strcpy(s->moduleName, moduleName);
 		strcpy(s->prefix, "m_read_meb");
 		strcpy(s->mpref, "madc32: ");
@@ -58,15 +56,12 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 		s->verbose = FALSE;
 		s->dumpRegsOnInit = FALSE;
 
-		s->mcstEnable = FALSE;
-		s->mcstSignature = 0x0;
-
-		s->cbltEnable = FALSE;
-		s->cbltSignature = 0x0;
+		s->mcstAddr = 0x0;
+		s->cbltAddr = 0x0;
 		s->firstInChain = FALSE;
 		s->lastInChain = FALSE;
 
-		firmware = GET16(s->baseAddr, MADC32_FIRMWARE_REV);
+		firmware = GET16(s->md->vmeBase, MADC32_FIRMWARE_REV);
 		mainRev = (firmware >> 8) & 0xff;
 		s->memorySize = (mainRev >= 2) ? (8*1024 + 2) : (1024 + 2);
 	} else {
@@ -80,19 +75,24 @@ void madc32_initialize(struct s_madc32 * s)
 {
 	signal(SIGBUS, catchBerr);
 	madc32_disableBusError(s);
-	madc32_enable_bma(s);
 	madc32_resetReadout(s);
+	sprintf(msg, "[%sinitialize] %s: Block xfer is %s", s->mpref, s->moduleName, s->blockXfer ? "ON" : "OFF");
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+}
+
+bool_t madc32_useBLT(struct s_madc32 * s) {
+	return s->blockXfer;
 }
 
 void madc32_soft_reset(struct s_madc32 * s)
 {
-  SET16(s->baseAddr, MADC32_SOFT_RESET, 0x1);
+  SET16(s->md->vmeBase, MADC32_SOFT_RESET, 0x1);
 }
 
 uint16_t madc32_getThreshold(struct s_madc32 * s, uint16_t channel)
 {
 	uint16_t thresh = 0;
-	if (channel < NOF_CHANNELS) thresh = GET16(s->baseAddr, MADC32_THRESHOLD + sizeof(uint16_t) * channel) & MADC32_THRESHOLD_MASK;
+	if (channel < NOF_CHANNELS) thresh = GET16(s->md->vmeBase, MADC32_THRESHOLD + sizeof(uint16_t) * channel) & MADC32_THRESHOLD_MASK;
 	return thresh;
 }
 
@@ -103,7 +103,7 @@ void madc32_setThreshold_db(struct s_madc32 * s, uint16_t channel)
 
 void madc32_setThreshold(struct s_madc32 * s, uint16_t channel, uint16_t thresh)
 {
-	if (channel < NOF_CHANNELS) SET16(s->baseAddr, MADC32_THRESHOLD + sizeof(uint16_t) * channel, thresh & MADC32_THRESHOLD_MASK);
+	if (channel < NOF_CHANNELS) SET16(s->md->vmeBase, MADC32_THRESHOLD + sizeof(uint16_t) * channel, thresh & MADC32_THRESHOLD_MASK);
 }
 
 void madc32_setAddrReg_db(struct s_madc32 * s) { madc32_setAddrReg(s, s->addrReg); }
@@ -111,135 +111,130 @@ void madc32_setAddrReg_db(struct s_madc32 * s) { madc32_setAddrReg(s, s->addrReg
 void madc32_setAddrReg(struct s_madc32 * s, uint16_t vmeAddr)
 {
 	if (vmeAddr) {
-		SET16(s->baseAddr, MADC32_ADDR_REG, vmeAddr);
-		SET16(s->baseAddr, MADC32_ADDR_SOURCE, MADC32_ADDR_SOURCE_REG);
-		s->baseAddr = vmeAddr;
+		SET16(s->md->vmeBase, MADC32_ADDR_REG, vmeAddr);
+		SET16(s->md->vmeBase, MADC32_ADDR_SOURCE, MADC32_ADDR_SOURCE_REG);
+		s->md->vmeBase = vmeAddr;
 	}
 }
 
 uint16_t madc32_getAddrReg(struct s_madc32 * s)
 {
-	uint16_t source = GET16(s->baseAddr, MADC32_ADDR_SOURCE);
-	if (source & MADC32_ADDR_SOURCE_REG) return GET16(s->baseAddr, MADC32_ADDR_REG);
+	uint16_t source = GET16(s->md->vmeBase, MADC32_ADDR_SOURCE);
+	if (source & MADC32_ADDR_SOURCE_REG) return GET16(s->md->vmeBase, MADC32_ADDR_REG);
 	else return 0;
-}
-
-void madc32_setMcstCblt_db(struct s_madc32 * s) {
-	if (s->mcstSignature != 0) madc32_enableMCST(s, s->mcstSignature, s->firstInChain, s->lastInChain); else madc32_disableMCST(s);
-	if (s->cbltSignature != 0) madc32_enableCBLT(s, s->cbltSignature, s->firstInChain, s->lastInChain); else madc32_disableCBLT(s);
 }
 
 void madc32_setModuleId_db(struct s_madc32 * s) { madc32_setModuleId(s, s->moduleId); }
 
 void madc32_setModuleId(struct s_madc32 * s, uint16_t id)
 {
-	SET16(s->baseAddr, MADC32_MODULE_ID, id & MADC32_MODULE_ID_MASK);
+	SET16(s->md->vmeBase, MADC32_MODULE_ID, id & MADC32_MODULE_ID_MASK);
 }
 
 uint16_t madc32_getModuleId(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_MODULE_ID) & MADC32_MODULE_ID_MASK;
+	return GET16(s->md->vmeBase, MADC32_MODULE_ID) & MADC32_MODULE_ID_MASK;
 }
 
 uint16_t madc32_getFifoLength(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_BUFFER_DATA_LENGTH) & MADC32_BUFFER_DATA_LENGTH_MASK;
+	return GET16(s->md->vmeBase, MADC32_BUFFER_DATA_LENGTH) & MADC32_BUFFER_DATA_LENGTH_MASK;
 }
 
 void madc32_setDataWidth_db(struct s_madc32 * s) { madc32_setDataWidth(s, s->dataWidth); }
 
 void madc32_setDataWidth(struct s_madc32 * s, uint16_t width)
 {
-	SET16(s->baseAddr, MADC32_DATA_LENGTH_FORMAT, width & MADC32_DATA_LENGTH_FORMAT_MASK);
+	SET16(s->md->vmeBase, MADC32_DATA_LENGTH_FORMAT, width & MADC32_DATA_LENGTH_FORMAT_MASK);
 }
 
 uint16_t madc32_getDataWidth(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_DATA_LENGTH_FORMAT) & MADC32_DATA_LENGTH_FORMAT_MASK;
+	return GET16(s->md->vmeBase, MADC32_DATA_LENGTH_FORMAT) & MADC32_DATA_LENGTH_FORMAT_MASK;
 }
 
 void madc32_setMultiEvent_db(struct s_madc32 * s) { madc32_setMultiEvent(s, s->multiEvent); }
 
 void madc32_setMultiEvent(struct s_madc32 * s, uint16_t mode)
 {
-	SET16(s->baseAddr, MADC32_MULTI_EVENT, mode & MADC32_MULTI_EVENT_MASK);
+	SET16(s->md->vmeBase, MADC32_MULTI_EVENT, mode & MADC32_MULTI_EVENT_MASK);
 }
 
 uint16_t madc32_getMultiEvent(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_MULTI_EVENT) & MADC32_MULTI_EVENT_MASK;
+	return GET16(s->md->vmeBase, MADC32_MULTI_EVENT) & MADC32_MULTI_EVENT_MASK;
 }
 
 void madc32_setXferData_db(struct s_madc32 * s) { madc32_setXferData(s, s->xferData); }
 
 void madc32_setXferData(struct s_madc32 * s, uint16_t wc)
 {
-	SET16(s->baseAddr, MADC32_MAX_XFER_DATA, wc & MADC32_MAX_XFER_DATA_MASK);
+	SET16(s->md->vmeBase, MADC32_MAX_XFER_DATA, wc & MADC32_MAX_XFER_DATA_MASK);
 }
 
 uint16_t madc32_getXferData(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_MAX_XFER_DATA) & MADC32_MAX_XFER_DATA_MASK;
+	return GET16(s->md->vmeBase, MADC32_MAX_XFER_DATA) & MADC32_MAX_XFER_DATA_MASK;
 }
 
 void madc32_setMarkingType_db(struct s_madc32 * s) { madc32_setMarkingType(s, s->markingType); }
 
 void madc32_setMarkingType(struct s_madc32 * s, uint16_t type)
 {
-	SET16(s->baseAddr, MADC32_MARKING_TYPE, type & MADC32_MARKING_TYPE_MASK);
+	SET16(s->md->vmeBase, MADC32_MARKING_TYPE, type & MADC32_MARKING_TYPE_MASK);
 }
 
 uint16_t madc32_getMarkingType(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_MARKING_TYPE) & MADC32_MARKING_TYPE_MASK;
+	return GET16(s->md->vmeBase, MADC32_MARKING_TYPE) & MADC32_MARKING_TYPE_MASK;
 }
 
 void madc32_setBankOperation_db(struct s_madc32 * s) { madc32_setBankOperation(s, s->bankOperation); }
 
 void madc32_setBankOperation(struct s_madc32 * s, uint16_t oper)
 {
-	SET16(s->baseAddr, MADC32_BANK_OPERATION, oper & MADC32_BANK_OPERATION_MASK);
+	SET16(s->md->vmeBase, MADC32_BANK_OPERATION, oper & MADC32_BANK_OPERATION_MASK);
 }
 
 uint16_t madc32_getBankOperation(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_BANK_OPERATION) & MADC32_BANK_OPERATION_MASK;
+	return GET16(s->md->vmeBase, MADC32_BANK_OPERATION) & MADC32_BANK_OPERATION_MASK;
 }
 
 void madc32_setAdcResolution_db(struct s_madc32 * s) { madc32_setAdcResolution(s, s->adcResolution); }
 
 void madc32_setAdcResolution(struct s_madc32 * s, uint16_t res)
 {
-	SET16(s->baseAddr, MADC32_ADC_RESOLUTION, res & MADC32_ADC_RESOLUTION_MASK);
+	SET16(s->md->vmeBase, MADC32_ADC_RESOLUTION, res & MADC32_ADC_RESOLUTION_MASK);
 }
 
 uint16_t madc32_getAdcResolution(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_ADC_RESOLUTION) & MADC32_ADC_RESOLUTION_MASK;
+	return GET16(s->md->vmeBase, MADC32_ADC_RESOLUTION) & MADC32_ADC_RESOLUTION_MASK;
 }
 
 void madc32_setOutputFormat_db(struct s_madc32 * s) { madc32_setOutputFormat(s, s->outputFormat); }
 
 void madc32_setOutputFormat(struct s_madc32 * s, uint16_t format)
 {
-	SET16(s->baseAddr, MADC32_OUTPUT_FORMAT, format & MADC32_OUTPUT_FORMAT_MASK);
+	SET16(s->md->vmeBase, MADC32_OUTPUT_FORMAT, format & MADC32_OUTPUT_FORMAT_MASK);
 }
 
 uint16_t madc32_getOutputFormat(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_OUTPUT_FORMAT) & MADC32_OUTPUT_FORMAT_MASK;
+	return GET16(s->md->vmeBase, MADC32_OUTPUT_FORMAT) & MADC32_OUTPUT_FORMAT_MASK;
 }
 
 void madc32_setAdcOverride_db(struct s_madc32 * s) { madc32_setAdcOverride(s, s->adcOverride); }
 
 void madc32_setAdcOverride(struct s_madc32 * s, uint16_t over)
 {
-	SET16(s->baseAddr, MADC32_ADC_OVERRIDE, over & MADC32_ADC_RESOLUTION_MASK);
+	SET16(s->md->vmeBase, MADC32_ADC_OVERRIDE, over & MADC32_ADC_RESOLUTION_MASK);
 }
 
 uint16_t madc32_getAdcOverride(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_ADC_OVERRIDE) & MADC32_ADC_RESOLUTION_MASK;
+	return GET16(s->md->vmeBase, MADC32_ADC_OVERRIDE) & MADC32_ADC_RESOLUTION_MASK;
 }
 
 void madc32_setSlidingScaleOff_db(struct s_madc32 * s) { madc32_setSlidingScaleOff(s, s->slidingScaleOff); }
@@ -247,12 +242,12 @@ void madc32_setSlidingScaleOff_db(struct s_madc32 * s) { madc32_setSlidingScaleO
 void madc32_setSlidingScaleOff(struct s_madc32 * s, bool_t flag)
 {
 	uint16_t f = flag ? 1 : 0;
-	SET16(s->baseAddr, MADC32_SLIDING_SCALE_OFF, f);
+	SET16(s->md->vmeBase, MADC32_SLIDING_SCALE_OFF, f);
 }
 
 bool_t madc32_getSlidingScaleOff(struct s_madc32 * s)
 {
-	uint16_t f = GET16(s->baseAddr, MADC32_SLIDING_SCALE_OFF) & MADC32_SLIDING_SCALE_OFF_MASK;
+	uint16_t f = GET16(s->md->vmeBase, MADC32_SLIDING_SCALE_OFF) & MADC32_SLIDING_SCALE_OFF_MASK;
 	return (f != 0) ? TRUE : FALSE;
 }
 
@@ -261,12 +256,12 @@ void madc32_setSkipOutOfRange_db(struct s_madc32 * s) { madc32_setSkipOutOfRange
 void madc32_setSkipOutOfRange(struct s_madc32 * s, bool_t flag)
 {
 	uint16_t f = flag ? 1 : 0;
-	SET16(s->baseAddr, MADC32_SKIP_OUT_OF_RANGE, f);
+	SET16(s->md->vmeBase, MADC32_SKIP_OUT_OF_RANGE, f);
 }
 
 bool_t madc32_getSkipOutOfRange(struct s_madc32 * s)
 {
-	uint16_t f = GET16(s->baseAddr, MADC32_SKIP_OUT_OF_RANGE) & MADC32_SKIP_OUT_OF_RANGE_MASK;
+	uint16_t f = GET16(s->md->vmeBase, MADC32_SKIP_OUT_OF_RANGE) & MADC32_SKIP_OUT_OF_RANGE_MASK;
 	return (f != 0) ? TRUE : FALSE;
 }
 
@@ -275,12 +270,12 @@ void madc32_setIgnoreThresholds_db(struct s_madc32 * s) { madc32_setIgnoreThresh
 void madc32_setIgnoreThresholds(struct s_madc32 * s, bool_t flag)
 {
 	uint16_t f = flag ? 1 : 0;
-	SET16(s->baseAddr, MADC32_IGNORE_THRESHOLDS, f);
+	SET16(s->md->vmeBase, MADC32_IGNORE_THRESHOLDS, f);
 }
 
 bool_t madc32_getIgnoreThresholds(struct s_madc32 * s)
 {
-	uint16_t f = GET16(s->baseAddr, MADC32_IGNORE_THRESHOLDS) & MADC32_IGNORE_THRESH_MASK;
+	uint16_t f = GET16(s->md->vmeBase, MADC32_IGNORE_THRESHOLDS) & MADC32_IGNORE_THRESH_MASK;
 	return (f != 0) ? TRUE : FALSE;
 }
 
@@ -294,7 +289,7 @@ void madc32_setHoldDelay(struct s_madc32 * s, uint16_t gg, uint16_t delay)
 		case 1: offs = MADC32_GG_HOLD_DELAY_1; break;
 		default: return;
 	}
-	SET16(s->baseAddr, offs, delay & MADC32_GG_HOLD_DELAY_MASK);
+	SET16(s->md->vmeBase, offs, delay & MADC32_GG_HOLD_DELAY_MASK);
 }
 
 uint16_t madc32_getHoldDelay(struct s_madc32 * s, uint16_t gg)
@@ -305,7 +300,7 @@ uint16_t madc32_getHoldDelay(struct s_madc32 * s, uint16_t gg)
 		case 1: offs = MADC32_GG_HOLD_DELAY_1; break;
 		default: return 0;
 	}
-	return GET16(s->baseAddr, offs) & MADC32_GG_HOLD_DELAY_MASK;
+	return GET16(s->md->vmeBase, offs) & MADC32_GG_HOLD_DELAY_MASK;
 }
 
 void madc32_setHoldWidth_db(struct s_madc32 * s, uint16_t gg) { madc32_setHoldWidth(s, gg, s->ggHoldWidth[gg]); }
@@ -318,7 +313,7 @@ void madc32_setHoldWidth(struct s_madc32 * s, uint16_t width, uint16_t gg)
 		case 1: offs = MADC32_GG_HOLD_WIDTH_1; break;
 		default: return;
 	}
-	SET16(s->baseAddr, offs, width & MADC32_GG_HOLD_WIDTH_MASK);
+	SET16(s->md->vmeBase, offs, width & MADC32_GG_HOLD_WIDTH_MASK);
 }
 
 uint16_t madc32_getHoldWidth(struct s_madc32 * s, uint16_t gg)
@@ -329,79 +324,79 @@ uint16_t madc32_getHoldWidth(struct s_madc32 * s, uint16_t gg)
 		case 1: offs = MADC32_GG_HOLD_WIDTH_1; break;
 		default: return 0;
 	}
-	return GET16(s->baseAddr, offs) & MADC32_GG_HOLD_WIDTH_MASK;
+	return GET16(s->md->vmeBase, offs) & MADC32_GG_HOLD_WIDTH_MASK;
 }
 
 void madc32_useGG_db(struct s_madc32 * s) { madc32_useGG(s, s->useGG); }
 
 void madc32_useGG(struct s_madc32 * s, uint16_t gg)
 {
-	SET16(s->baseAddr, MADC32_USE_GATE_GENERATOR, gg & MADC32_USE_GATE_GENERATOR_MASK);
+	SET16(s->md->vmeBase, MADC32_USE_GATE_GENERATOR, gg & MADC32_USE_GATE_GENERATOR_MASK);
 }
 
 uint16_t madc32_getGGUsed(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_USE_GATE_GENERATOR) & MADC32_USE_GATE_GENERATOR_MASK;
+	return GET16(s->md->vmeBase, MADC32_USE_GATE_GENERATOR) & MADC32_USE_GATE_GENERATOR_MASK;
 }
 
 void madc32_setInputRange_db(struct s_madc32 * s) { madc32_setInputRange(s, s->inputRange); }
 
 void madc32_setInputRange(struct s_madc32 * s, uint16_t range)
 {
-	SET16(s->baseAddr, MADC32_INPUT_RANGE, range & MADC32_INPUT_RANGE_MASK);
+	SET16(s->md->vmeBase, MADC32_INPUT_RANGE, range & MADC32_INPUT_RANGE_MASK);
 }
 
 uint16_t madc32_getInputRange(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_INPUT_RANGE) & MADC32_INPUT_RANGE_MASK;
+	return GET16(s->md->vmeBase, MADC32_INPUT_RANGE) & MADC32_INPUT_RANGE_MASK;
 }
 
 void madc32_setEclTerm_db(struct s_madc32 * s) { madc32_setEclTerm(s, s->eclTerm); }
 
 void madc32_setEclTerm(struct s_madc32 * s, uint16_t term)
 {
-	SET16(s->baseAddr, MADC32_ECL_TERMINATORS, term & MADC32_ECL_TERMINATORS_MASK);
+	SET16(s->md->vmeBase, MADC32_ECL_TERMINATORS, term & MADC32_ECL_TERMINATORS_MASK);
 }
 
 uint16_t madc32_getEclTerm(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_ECL_TERMINATORS) & MADC32_ECL_TERMINATORS_MASK;
+	return GET16(s->md->vmeBase, MADC32_ECL_TERMINATORS) & MADC32_ECL_TERMINATORS_MASK;
 }
 
 void madc32_setEclG1OrOsc_db(struct s_madc32 * s) { madc32_setEclG1OrOsc(s, s->eclG1OrOsc); }
 
 void madc32_setEclG1OrOsc(struct s_madc32 * s, uint16_t go)
 {
-	SET16(s->baseAddr, MADC32_ECL_G1_OR_OSC, go & MADC32_ECL_G1_OR_OSC_MASK);
+	SET16(s->md->vmeBase, MADC32_ECL_G1_OR_OSC, go & MADC32_ECL_G1_OR_OSC_MASK);
 }
 
 uint16_t madc32_getEclG1OrOsc(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_ECL_G1_OR_OSC) & MADC32_ECL_G1_OR_OSC_MASK;
+	return GET16(s->md->vmeBase, MADC32_ECL_G1_OR_OSC) & MADC32_ECL_G1_OR_OSC_MASK;
 }
 
 void madc32_setEclFclOrRts_db(struct s_madc32 * s) { madc32_setEclFclOrRts(s, s->eclFclOrRts); }
 
 void madc32_setEclFclOrRts(struct s_madc32 * s, uint16_t fr)
 {
-	SET16(s->baseAddr, MADC32_ECL_FCL_OR_RES_TS, fr & MADC32_ECL_FCL_OR_RES_TS_MASK);
+	SET16(s->md->vmeBase, MADC32_ECL_FCL_OR_RES_TS, fr & MADC32_ECL_FCL_OR_RES_TS_MASK);
 }
 
 uint16_t madc32_getEclFclOrRts(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_ECL_FCL_OR_RES_TS) & MADC32_ECL_FCL_OR_RES_TS_MASK;
+	return GET16(s->md->vmeBase, MADC32_ECL_FCL_OR_RES_TS) & MADC32_ECL_FCL_OR_RES_TS_MASK;
 }
 
 void madc32_setNimG1OrOsc_db(struct s_madc32 * s) { madc32_setNimG1OrOsc(s, s->nimG1OrOsc); }
 
 void madc32_setNimG1OrOsc(struct s_madc32 * s, uint16_t go)
 {
-	SET16(s->baseAddr, MADC32_NIM_G1_OR_OSC, go & MADC32_NIM_G1_OR_OSC_MASK);
+	SET16(s->md->vmeBase, MADC32_NIM_G1_OR_OSC, go & MADC32_NIM_G1_OR_OSC_MASK);
 }
 
 uint16_t madc32_getNimG1OrOsc(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_NIM_G1_OR_OSC) & MADC32_NIM_G1_OR_OSC_MASK;
+	return GET16(s->md->vmeBase, MADC32_NIM_G1_OR_OSC) & MADC32_NIM_G1_OR_OSC_MASK;
 }
 
 
@@ -409,73 +404,85 @@ void madc32_setNimFclOrRts_db(struct s_madc32 * s) { madc32_setNimFclOrRts(s, s-
 
 void madc32_setNimFclOrRts(struct s_madc32 * s, uint16_t fr)
 {
-	SET16(s->baseAddr, MADC32_NIM_FCL_OR_RES_TS, fr & MADC32_NIM_FCL_OR_RES_TS_MASK);
+	SET16(s->md->vmeBase, MADC32_NIM_FCL_OR_RES_TS, fr & MADC32_NIM_FCL_OR_RES_TS_MASK);
 }
 
 uint16_t madc32_getNimFclOrRts(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_NIM_FCL_OR_RES_TS) & MADC32_NIM_FCL_OR_RES_TS_MASK;
+	return GET16(s->md->vmeBase, MADC32_NIM_FCL_OR_RES_TS) & MADC32_NIM_FCL_OR_RES_TS_MASK;
 }
 
 void madc32_setNimBusy_db(struct s_madc32 * s) { madc32_setNimBusy(s, s->nimBusy); }
 
 void madc32_setNimBusy(struct s_madc32 * s, uint16_t busy)
 {
-	SET16(s->baseAddr, MADC32_NIM_BUSY, busy & MADC32_NIM_BUSY_MASK);
+	SET16(s->md->vmeBase, MADC32_NIM_BUSY, busy & MADC32_NIM_BUSY_MASK);
 }
 
 uint16_t madc32_getNimBusy(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_NIM_BUSY) & MADC32_NIM_BUSY_MASK;
+	return GET16(s->md->vmeBase, MADC32_NIM_BUSY) & MADC32_NIM_BUSY_MASK;
+}
+
+void madc32_setBufferThresh_db(struct s_madc32 * s) { madc32_setBufferThresh(s, s->bufferThresh); }
+
+void madc32_setBufferThresh(struct s_madc32 * s, uint16_t bufferThresh)
+{
+	SET16(s->md->vmeBase, MADC32_IRQ_THRESH, bufferThresh);
+}
+
+uint16_t madc32_getBufferThresh(struct s_madc32 * s)
+{
+	return GET16(s->md->vmeBase, MADC32_IRQ_THRESH);
 }
 
 void madc32_setTestPulser_db(struct s_madc32 * s) { madc32_setTestPulser(s, s->testPulserStatus); }
 
 void madc32_setTestPulser(struct s_madc32 * s, uint16_t mode)
 {
-	SET16(s->baseAddr, MADC32_TEST_PULSER_STATUS, mode & MADC32_TEST_PULSER_STATUS_MASK);
+	SET16(s->md->vmeBase, MADC32_TEST_PULSER_STATUS, mode & MADC32_TEST_PULSER_STATUS_MASK);
 }
 
 uint16_t madc32_getTestPulser(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_TEST_PULSER_STATUS) & MADC32_TEST_PULSER_STATUS_MASK;
+	return GET16(s->md->vmeBase, MADC32_TEST_PULSER_STATUS) & MADC32_TEST_PULSER_STATUS_MASK;
 }
 
 void madc32_setTsSource_db(struct s_madc32 * s) { madc32_setTsSource(s, s->ctraTsSource); }
 
 void madc32_setTsSource(struct s_madc32 * s, uint16_t source)
 {
-	SET16(s->baseAddr, MADC32_CTRA_TS_SOURCE, source & MADC32_CTRA_TS_SOURCE_MASK);
+	SET16(s->md->vmeBase, MADC32_CTRA_TS_SOURCE, source & MADC32_CTRA_TS_SOURCE_MASK);
 }
 
 uint16_t madc32_getTsSource(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_CTRA_TS_SOURCE) & MADC32_CTRA_TS_SOURCE_MASK;
+	return GET16(s->md->vmeBase, MADC32_CTRA_TS_SOURCE) & MADC32_CTRA_TS_SOURCE_MASK;
 }
 
 void madc32_setTsDivisor_db(struct s_madc32 * s) { madc32_setTsDivisor(s, s->ctraTsDivisor); }
 
 void madc32_setTsDivisor(struct s_madc32 * s, uint16_t div)
 {
-	SET16(s->baseAddr, MADC32_CTRA_TS_DIVISOR, div & MADC32_CTRA_TS_DIVISOR_MASK);
+	SET16(s->md->vmeBase, MADC32_CTRA_TS_DIVISOR, div & MADC32_CTRA_TS_DIVISOR_MASK);
 }
 
 uint16_t madc32_getTsDivisor(struct s_madc32 * s)
 {
-	return GET16(s->baseAddr, MADC32_CTRA_TS_DIVISOR) & MADC32_CTRA_TS_DIVISOR_MASK;
+	return GET16(s->md->vmeBase, MADC32_CTRA_TS_DIVISOR) & MADC32_CTRA_TS_DIVISOR_MASK;
 }
 
 void madc32_moduleInfo(struct s_madc32 * s)
 {
 	int firmware, mainRev, subRev;
-	firmware = GET16(s->baseAddr, MADC32_FIRMWARE_REV);
+	firmware = GET16(s->md->vmeBase, MADC32_FIRMWARE_REV);
 	mainRev = (firmware >> 8) & 0xff;
 	subRev = firmware & 0xff;
 	sprintf(msg, "[%smodule_info] %s: phys addr %#lx, mapped to %#lx, firmware %02x.%02x (%dk memory)",
 									s->mpref,
 									s->moduleName,
-									s->vmeAddr,
-									s->baseAddr,
+									s->md->physAddrVME,
+									s->md->vmeBase,
 									mainRev, subRev, (mainRev >= 2) ? 8 : 1);
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }
@@ -540,11 +547,9 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	}
 
 	sprintf(res, "MADC32.%s.MCSTSignature", mnUC);
-	s->mcstSignature = root_env_getval_x(res, 0x0);
-	if (s->mcstSignature != 0) s->mcstEnable = TRUE;
+	s->mcstAddr = root_env_getval_x(res, 0x0);
 	sprintf(res, "MADC32.%s.CBLTSignature", mnUC);
-	s->cbltSignature = root_env_getval_x(res, 0x0);
-	if (s->cbltSignature != 0) s->cbltEnable = TRUE;
+	s->cbltAddr = root_env_getval_x(res, 0x0);
 	sprintf(res, "MADC32.%s.FirstInChain", mnUC);
 	s->firstInChain = root_env_getval_b(res, FALSE);
 	sprintf(res, "MADC32.%s.LastInChain", mnUC);
@@ -689,6 +694,7 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 
 	int ch;
 	int gg;
+	bool_t mcstOrCblt, flag;;
 
 	if (!s->dumpRegsOnInit) return(TRUE);
 
@@ -702,39 +708,50 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 	sprintf(msg, "[%sdumpRegisters] %s: Dumping settings to file %s", s->mpref, s->moduleName, file);
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
-	fprintf(f, "Thresholds:\n");
+	fprintf(f, "Thresholds [0x4000]:\n");
 	for (ch = 0; ch < NOF_CHANNELS; ch++) fprintf(f, "   %2d: %d\n", ch, madc32_getThreshold(s, ch));
 
-	fprintf(f, "MCST signature    : %#x\n", s->mcstSignature);
-	fprintf(f, "CBLT signature    : %#x\n", s->cbltSignature);
-	if (s->firstInChain) fprintf(f, "CBLT chain        : first module in chain\n");
-	else if (s->lastInChain) fprintf(f, "CBLT chain        : last module in chain\n");
-	fprintf(f, "Module ID         : %d\n", madc32_getModuleId(s));
-	fprintf(f, "Data width        : %d\n", madc32_getDataWidth(s));
-	fprintf(f, "Multi event       : %d\n", madc32_getMultiEvent(s));
-	fprintf(f, "Max xfer data wc  : %d\n", madc32_getXferData(s));
-	fprintf(f, "Marking type      : %d\n", madc32_getMarkingType(s));
-	fprintf(f, "Bank operation    : %d\n", madc32_getBankOperation(s));
-	fprintf(f, "Adc resolution    : %d\n", madc32_getAdcResolution(s));
-	fprintf(f, "Output format     : %d\n", madc32_getOutputFormat(s));
-	fprintf(f, "Adc override      : %d\n", madc32_getAdcOverride(s));
-	fprintf(f, "Sliding scale off : %d\n", madc32_getSlidingScaleOff(s));
-	fprintf(f, "Skip out of range : %d\n", madc32_getSkipOutOfRange(s));
-	for (gg = 0; gg <= 1; gg++) {
-		fprintf(f, "Hold delay %d      : %d\n", gg, madc32_getHoldDelay(s, gg));
-		fprintf(f, "Hold width %d      : %d\n", gg, madc32_getHoldWidth(s, gg));
+	mcstOrCblt = FALSE;
+	if (flag = madc32_mcstIsEnabled(s))
+					fprintf(f, "MCST signature [0x6024]   : %#x\n", madc32_getMcstAddrReg(s));
+	else				fprintf(f, "MCST                      : disabled\n");
+	mcstOrCblt |= flag;
+	if (flag = madc32_cbltIsEnabled(s))
+					fprintf(f, "CBLT signature [0x6022]   : %#x\n", madc32_getMcstAddrReg(s));
+	else				fprintf(f, "CBLT                      : disabled\n");
+	mcstOrCblt |= flag;
+	if (mcstOrCblt) {
+		if (madc32_isFirstInChain(s)) fprintf(f, "MCST/CBLT chain           : first module in chain\n");
+		else if (madc32_isLastInChain(s)) fprintf(f, "MCST/CBLT chain           : last module in chain\n");
+		else fprintf(f, "MCST/CBLT chain   : module in the middle\n");
 	}
-	fprintf(f, "Use GG            : %d\n", madc32_getGGUsed(s));
-	fprintf(f, "Input range       : %d\n", madc32_getInputRange(s));
-	fprintf(f, "Ecl termination   : %#x\n", madc32_getEclTerm(s));
-	fprintf(f, "Ecl gate or osc   : %d\n", madc32_getEclG1OrOsc(s));
-	fprintf(f, "Ecl fcl or reset  : %d\n", madc32_getEclFclOrRts(s));
-	fprintf(f, "Nim gate or osc   : %d\n", madc32_getNimG1OrOsc(s));
-	fprintf(f, "Nim fcl or reset  : %d\n", madc32_getNimFclOrRts(s));
-	fprintf(f, "Nim busy          : %d\n", madc32_getNimBusy(s));
-	fprintf(f, "Pulser status     : %d\n", madc32_getTestPulser(s));
-	fprintf(f, "Timestamp source  : %#x\n", madc32_getTsSource(s));
-	fprintf(f, "Timestamp divisor : %d\n", madc32_getTsDivisor(s));
+	fprintf(f, "Module ID [0x6004]        : %d\n", madc32_getModuleId(s));
+	fprintf(f, "Data width [0x6032]       : %d\n", madc32_getDataWidth(s));
+	fprintf(f, "Multi event [0x6036]      : %d\n", madc32_getMultiEvent(s));
+	fprintf(f, "Buffer thresh [0x6018]    : %d\n", madc32_getBufferThresh(s));
+	fprintf(f, "Max xfer data wc [0x601A] : %d\n", madc32_getXferData(s));
+	fprintf(f, "Marking type [0x6038]     : %d\n", madc32_getMarkingType(s));
+	fprintf(f, "Bank operation [0x6040]   : %d\n", madc32_getBankOperation(s));
+	fprintf(f, "Adc resolution [0x6042]   : %d\n", madc32_getAdcResolution(s));
+	fprintf(f, "Output format [0x6044]    : %d\n", madc32_getOutputFormat(s));
+	fprintf(f, "Adc override [0x6046]     : %d\n", madc32_getAdcOverride(s));
+	fprintf(f, "Sliding scale off [0x6048]: %d\n", madc32_getSlidingScaleOff(s));
+	fprintf(f, "Skip out of range [0x604A]: %d\n", madc32_getSkipOutOfRange(s));
+	for (gg = 0; gg <= 1; gg++) {
+		fprintf(f, "Hold delay %d [0x605%d]     : %d\n", gg, gg*2, madc32_getHoldDelay(s, gg));
+		fprintf(f, "Hold width %d [0x605%d]     : %d\n", gg, gg*2 + 4, madc32_getHoldWidth(s, gg), gg*2 + 4);
+	}
+	fprintf(f, "Use GG [0x6058]           : %d\n", madc32_getGGUsed(s));
+	fprintf(f, "Input range [0x6060]      : %d\n", madc32_getInputRange(s));
+	fprintf(f, "Ecl termination [0x6062]  : %#x\n", madc32_getEclTerm(s));
+	fprintf(f, "Ecl gate or osc [0x6064]  : %d\n", madc32_getEclG1OrOsc(s));
+	fprintf(f, "Ecl fcl or reset [0x6066] : %d\n", madc32_getEclFclOrRts(s));
+	fprintf(f, "Nim gate or osc [0x606A]  : %d\n", madc32_getNimG1OrOsc(s));
+	fprintf(f, "Nim fcl or reset [0x606C] : %d\n", madc32_getNimFclOrRts(s));
+	fprintf(f, "Nim busy [0x606E]         : %d\n", madc32_getNimBusy(s));
+	fprintf(f, "Pulser status [0x6070]    : %d\n", madc32_getTestPulser(s));
+	fprintf(f, "Timestamp source [0x6096] : %#x\n", madc32_getTsSource(s));
+	fprintf(f, "Timestamp divisor [0x6098]: %d\n", madc32_getTsDivisor(s));
 	fclose(f);
 }
 
@@ -756,7 +773,7 @@ bool_t madc32_dumpRaw(struct s_madc32 * s, char * file)
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	for (i = 0x6000; i < 0x60B0; i += 2) {
-		fprintf(f, "%#lx %#x\n", i, GET16(s->baseAddr, i));
+		fprintf(f, "%#lx %#x\n", i, GET16(s->md->vmeBase, i));
 	}
 	fclose(f);
 }
@@ -770,13 +787,22 @@ void madc32_printDb(struct s_madc32 * s)
 	for (ch = 0; ch < NOF_CHANNELS; ch++) printf("   %2d: %d\n", ch, s->threshold[ch]);
 
 	printf("Addr reg          : %#x\n", s->addrReg);
-	printf("MCST signature    : %#x\n", s->mcstSignature);
-	printf("CBLT signature    : %#x\n", s->cbltSignature);
-	if (s->firstInChain) printf("CBLT chain        : first module in chain\n");
-	else if (s->lastInChain) printf("CBLT chain        : last module in chain\n");
+
+	if (s->mcstAddr != 0)
+					printf("MCST addr         : %#x\n", s->mcstAddr);
+	else				printf("MCST              : disabled\n");
+	if (s->cbltAddr != 0)
+					printf("CBLT addr         : %#x\n", s->cbltAddr);
+	else				printf("CBLT              : disabled\n");
+	if ((s->mcstAddr != 0) || (s->cbltAddr != 0)) {
+		if (s->firstInChain) printf("MCST/CBLT chain   : first module in chain\n");
+		else if (s->lastInChain) printf("MCST/CBLT chain   : last module in chain\n");
+		else printf("MCST/CBLT chain   : module in the middle\n");
+	}
 	printf("Module ID         : %d\n", s->moduleId);
 	printf("Data width        : %d\n", s->dataWidth);
 	printf("Multi event       : %d\n", s->multiEvent);
+	printf("Buffer thresh     : %d\n", s->bufferThresh);
 	printf("Max xfer data wc  : %d\n", s->xferData);
 	printf("Marking type      : %d\n", s->markingType);
 	printf("Bank operation    : %d\n", s->bankOperation);
@@ -802,79 +828,10 @@ void madc32_printDb(struct s_madc32 * s)
 	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
 }
 
-void madc32_enable_bma(struct s_madc32 * s)
-{
-/* use blocktransfer */
-
-	int bmaError;
-	int wordSize;
-
-	if (s->blockXfer) {
-		switch (s->dataWidth) {
-			case MADC32_DATA_LENGTH_FORMAT_32: wordSize = BMA_M_WzD32; break;
-			case MADC32_DATA_LENGTH_FORMAT_64: wordSize = BMA_M_WzD64; break;
-			default:
-				sprintf(msg, "[%senable_bma] %s: Wrong data width - %d (should be 32 or 64), turning block xfer OFF", s->mpref, s->moduleName, s->dataWidth);
-				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-				s->blockXfer = FALSE;
-				return;
-		}
-
-		s->bltBufferSize = s->memorySize;
-
-		bmaError = bma_open();
-		if (bmaError != 0) {
-			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			s->blockXfer = FALSE;
-			bma_close();
-			return;
-		}
-
-/* allocate contiguous memory */
-		bmaError = uio_calloc(&s->bltBuffer, s->memorySize * sizeof(uint32_t));
-		if (bmaError != 0) {
-			sprintf(msg, "[%senable_bma] %s: %s, turning block xfer OFF - %s (%d)", s->mpref, s->moduleName,  sys_errlist[errno], errno);
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			s->blockXfer = FALSE;
-			uio_cfree(&s->bltBuffer);
-			bma_close();
-			return;
-		}
-
-/* configure VME block size */
-		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_VMESize, BMA_M_Vsz32);
-/* configure word size */
-		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_WordSize, wordSize);
-/* configure AM code */
-		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_AmCode, BMA_M_AmA32U);
-/* configure 'fifo' mode */
-		bma_set_mode(BMA_DEFAULT_MODE, BMA_M_VMEAdrInc, BMA_M_VaiFifo);
-
-#ifndef CPU_TYPE_RIO2
-/* map XVME page for RIO3/RIO4 */
-		if ((s->bltAddr = xvme_map(s->vmeAddr, s->memorySize, BMA_M_AmA32U, wordSize)) == -1) {
-			sprintf(msg, "[%senable_bma] %s: Can't map XVME page, turning block xfer OFF", s->mpref, s->moduleName);
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			uio_cfree(&s->bltBuffer);
-			bma_close();
-			return;
-		}
-#endif
-
-		sprintf(msg, "[%senable_bma] %s: turning block xfer ON (mode=NORMAL, buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-
-	} else {
-		s->blockXfer = FALSE;
-		s->bltBufferSize = 0;
-		sprintf(msg, "[%senable_bma] %s: Block xfer is OFF", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	}
-}
-
 int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 {
+	static int addrOffset = 0;
+
 	uint32_t * dataStart;
 	uint32_t data;
 	unsigned int i;
@@ -882,6 +839,11 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	int bmaCount;
 	int tryIt;
 	int numData;
+
+	uint32_t ptrloc;
+
+	int mode;
+	int sts;
 
 	dataStart = pointer;
 
@@ -892,26 +854,17 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	if (numData == 0) return(0);
 
 	if (s->blockXfer) {
-#ifdef CPU_TYPE_RIO2
-		bmaError = bma_read(s->vmeAddr + MADC32_DATA, s->bltBuffer.paddr | 0x80000000, numData, BMA_DEFAULT_MODE);
+		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));
+		if (ptrloc == NULL) return(0);
+		bmaError = bma_read(s->md->bltBase + MADC32_DATA, ptrloc | 0x0, numData, s->md->bltModeId);
 		if (bmaError != 0) {
 			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, sys_errlist[errno], errno, numData);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
-#else
-		bmaCount = bma_read_count(s->bltAddr + MADC32_DATA, bma_mem2loc(s->bltBuffer.paddr), numData, BMA_DEFAULT_MODE);
-		if (bmaCount == -1) {
-			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, sys_errlist[errno], errno, numData);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-			return(0);
-		}
-#endif
-		memcpy(pointer, s->bltBuffer.uaddr, sizeof(uint32_t) * numData);
 		pointer += numData;
 	} else {
-		s->blockXfer = FALSE;
-		for (i = 0; i < numData; i++) *pointer++ = GET32(s->baseAddr, MADC32_DATA);
+		for (i = 0; i < numData; i++) *pointer++ = GET32(s->md->vmeBase, MADC32_DATA);
 	}
 
 	madc32_resetReadout(s);
@@ -923,54 +876,54 @@ int madc32_readTimeB(struct s_madc32 * s, uint32_t * pointer)
 {
 	uint16_t * p16 = pointer;
 	*p16++ = 0;
-	*p16++ = GET16(s->baseAddr, MADC32_CTRB_TIME_0);
-	*p16++ = GET16(s->baseAddr, MADC32_CTRB_TIME_1);
-	*p16++ = GET16(s->baseAddr, MADC32_CTRB_TIME_2);
+	*p16++ = GET16(s->md->vmeBase, MADC32_CTRB_TIME_0);
+	*p16++ = GET16(s->md->vmeBase, MADC32_CTRB_TIME_1);
+	*p16++ = GET16(s->md->vmeBase, MADC32_CTRB_TIME_2);
 	return 4 * sizeof(uint16_t) / sizeof(uint32_t);
 }
 
 bool_t madc32_dataReady(struct s_madc32 * s)
 {
-	return TSTB16(s->baseAddr, MADC32_DATA_READY, 0) ;
+	return TSTB16(s->md->vmeBase, MADC32_DATA_READY, 0) ;
 }
 
 void madc32_resetReadout(struct s_madc32 * s)
 {
-	SET16(s->baseAddr, MADC32_READOUT_RESET, 0x1);
+	SET16(s->md->vmeBase, MADC32_READOUT_RESET, 0x1);
 }
 
 void madc32_resetTimestamp(struct s_madc32 * s)
 {
-	SET16(s->baseAddr,MADC32_CTRA_RESET_A_OR_B, 0x3);
+	SET16(s->md->vmeBase, MADC32_CTRA_RESET_A_OR_B, 0x3);
 }
 
 bool_t madc32_testBusError(struct s_madc32 * s)
 {
-	return TSTB16(s->baseAddr, MADC32_MULTI_EVENT, MADC32_MULTI_EVENT_BERR) == 1 ? FALSE : TRUE;
+	return TSTB16(s->md->vmeBase, MADC32_MULTI_EVENT, MADC32_MULTI_EVENT_BERR) == 1 ? FALSE : TRUE;
 }
 
 void madc32_enableBusError(struct s_madc32 * s)
 {
-	CLRB16(s->baseAddr, MADC32_MULTI_EVENT, MADC32_MULTI_EVENT_BERR);
+	CLRB16(s->md->vmeBase, MADC32_MULTI_EVENT, MADC32_MULTI_EVENT_BERR);
 }
 
 void madc32_disableBusError(struct s_madc32 * s)
 {
-	SETB16(s->baseAddr, MADC32_MULTI_EVENT, MADC32_MULTI_EVENT_BERR);
+	SETB16(s->md->vmeBase, MADC32_MULTI_EVENT, MADC32_MULTI_EVENT_BERR);
 }
 
 void madc32_startAcq(struct s_madc32 * s)
 {
-	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x0);
+	SET16(s->md->vmeBase, MADC32_START_ACQUISITION, 0x0);
 	madc32_resetFifo(s);
 	madc32_resetReadout(s);
 	madc32_resetTimestamp(s);
-	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x1);
+ 	SET16(s->md->vmeBase, MADC32_START_ACQUISITION, 0x1);
 }
 
 void madc32_stopAcq(struct s_madc32 * s)
 {
-	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x0);
+	SET16(s->md->vmeBase, MADC32_START_ACQUISITION, 0x0);
 	madc32_resetFifo(s);
 	madc32_resetReadout(s);
 	madc32_resetTimestamp(s);
@@ -978,62 +931,113 @@ void madc32_stopAcq(struct s_madc32 * s)
 
 void madc32_resetFifo(struct s_madc32 * s)
 {
-	SET16(s->baseAddr, MADC32_FIFO_RESET, 0x1);
+	SET16(s->md->vmeBase, MADC32_FIFO_RESET, 0x1);
 }
 
-void madc32_enableMCST(struct s_madc32 * s, unsigned long Signature, bool_t First, bool_t Last) {
-	s->mcstSignature = Signature;
-	SET16(s->baseAddr, MADC32_MCST_ADDRESS, (s->mcstSignature >> 24) & 0xFF);
-	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_MCST_ENA);
-	s->mcstEnable = TRUE;
+void madc32_setMcstCblt_db(struct s_madc32 * s) {
+	madc32_setMcstAddr(s, s->mcstAddr);
+	madc32_setCbltAddr(s, s->cbltAddr);
+	if (s->firstInChain) madc32_setFirstInChain(s);
+	else if (s->lastInChain) madc32_setLastInChain(s);
+	else madc32_setMiddleOfChain(s);
 }
 
-void madc32_disableMCST(struct s_madc32 * s) {
+void madc32_setMcstAddr(struct s_madc32 * s, unsigned long Addr) {
+	SET16(s->md->vmeBase, MADC32_MCST_ADDRESS, (Addr >> 24) & 0xFF);
+	if (Addr) madc32_setMcstEnable(s);
+}
+
+uint16_t madc32_getMcstAddrReg(struct s_madc32 * s) {
+	uint16_t addr8;
+	addr8 = GET16(s->md->vmeBase, MADC32_MCST_ADDRESS);
+	return addr8;
+}
+
+void madc32_setMcstEnable(struct s_madc32 * s) {
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_MCST_ENA);
+}
+
+void madc32_setMcstDisable(struct s_madc32 * s) {
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_MCST_DIS);
+}
+
+bool_t madc32_mcstIsEnabled(struct s_madc32 * s) {
 	uint16_t ctrl;
-	s->mcstSignature = 0x0;
-	SET16(s->baseAddr, MADC32_MCST_ADDRESS, 0x0);
-	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_MCST_DIS);
-	s->mcstEnable = FALSE;
+	ctrl = GET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL);
+	return ((ctrl & MADC32_MCST_DIS) != 0);
 }
 
-void madc32_enableCBLT(struct s_madc32 * s, unsigned long Signature, bool_t First, bool_t Last) {
-	s->cbltSignature = Signature;
-	SET16(s->baseAddr, MADC32_CBLT_ADDRESS, (s->cbltSignature >> 24) & 0xFF);
-	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_ENA);
-	if (First) SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_ENA); else SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_DIS);
-	if (Last) SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_ENA); else SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_DIS);
-	s->cbltEnable = TRUE;
+void madc32_setCbltAddr(struct s_madc32 * s, unsigned long Addr) {
+	SET16(s->md->vmeBase, MADC32_CBLT_ADDRESS, (Addr >> 24) & 0xFF);
+	if (Addr) madc32_setCbltEnable(s);
 }
 
-void madc32_disableCBLT(struct s_madc32 * s) {
-	s->cbltSignature = 0x0;
-	SET16(s->baseAddr, MADC32_CBLT_ADDRESS, 0x0);
-	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_DIS);
-	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_DIS);
-	SET16(s->baseAddr, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_DIS);
-	s->firstInChain = FALSE;
-	s->lastInChain = FALSE;
-	s->cbltEnable = FALSE;
+uint16_t madc32_getCbltAddrReg(struct s_madc32 * s) {
+	uint16_t addr8;
+	addr8 = GET16(s->md->vmeBase, MADC32_CBLT_ADDRESS);
+	return addr8;
 }
 
-bool_t madc32_mcstEnabled(struct s_madc32 * s) { return s->mcstEnable; };
-bool_t madc32_cbltEnabled(struct s_madc32 * s) { return s->cbltEnable; };
-bool_t madc32_firstInChain(struct s_madc32 * s) { return s->firstInChain; };
-bool_t madc32_lastInChain(struct s_madc32 * s) { return s->lastInChain; };
-bool_t madc32_middleOfChain(struct s_madc32 * s) { return (!s->firstInChain && !s->lastInChain); };
+void madc32_setCbltEnable(struct s_madc32 * s) {
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_ENA);
+}
+
+void madc32_setCbltDisable(struct s_madc32 * s) {
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_DIS);
+}
+
+bool_t madc32_cbltIsEnabled(struct s_madc32 * s) {
+	uint16_t ctrl;
+	ctrl = GET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL);
+	return ((ctrl & MADC32_CBLT_DIS) != 0);
+}
+
+void madc32_setFirstInChain(struct s_madc32 * s) {
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_ENA);
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_DIS);
+}
+
+bool_t madc32_isFirstInChain(struct s_madc32 * s) {
+	uint16_t ctrl;
+	ctrl = GET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL);
+	return ((ctrl & MADC32_CBLT_FIRST_DIS) != 0);
+}
+
+void madc32_setLastInChain(struct s_madc32 * s) {
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_ENA);
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_DIS);
+}
+
+bool_t madc32_isLastInChain(struct s_madc32 * s) {
+	uint16_t ctrl;
+	ctrl = GET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL);
+	return ((ctrl & MADC32_CBLT_LAST_DIS) != 0);
+}
+
+void madc32_setMiddleOfChain(struct s_madc32 * s) {
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_FIRST_DIS);
+	SET16(s->md->vmeBase, MADC32_CBLT_MCST_CONTROL, MADC32_CBLT_LAST_DIS);
+}
+
+bool_t madc32_isMiddleOfChain(struct s_madc32 * s) {
+	bool_t first, last;
+	first = madc32_isFirstInChain(s);
+	last = madc32_isLastInChain(s);
+	return (!first && !last);
+}
 
 void madc32_startAcq_mcst(struct s_madc32 * s)
 {
-	SET16(s->mcstSignature, MADC32_START_ACQUISITION, 0x0);
+	SET16(s->mcstAddr, MADC32_START_ACQUISITION, 0x0);
 	madc32_resetFifo_mcst(s);
 	madc32_resetReadout_mcst(s);
 	madc32_resetTimestamp_mcst(s);
-	SET16(s->mcstSignature, MADC32_START_ACQUISITION, 0x1);
+	SET16(s->mcstAddr, MADC32_START_ACQUISITION, 0x1);
 }
 
 void madc32_stopAcq_mcst(struct s_madc32 * s)
 {
-	SET16(s->mcstSignature, MADC32_START_ACQUISITION, 0x0);
+	SET16(s->mcstAddr, MADC32_START_ACQUISITION, 0x0);
 	madc32_resetFifo_mcst(s);
 	madc32_resetReadout_mcst(s);
 	madc32_resetTimestamp_mcst(s);
@@ -1041,17 +1045,17 @@ void madc32_stopAcq_mcst(struct s_madc32 * s)
 
 void madc32_resetFifo_mcst(struct s_madc32 * s)
 {
-	SET16(s->mcstSignature, MADC32_FIFO_RESET, 0x1);
+	SET16(s->mcstAddr, MADC32_FIFO_RESET, 0x1);
 }
 
 void madc32_resetReadout_mcst(struct s_madc32 * s)
 {
-	SET16(s->mcstSignature, MADC32_READOUT_RESET, 0x1);
+	SET16(s->mcstAddr, MADC32_READOUT_RESET, 0x1);
 }
 
 void madc32_resetTimestamp_mcst(struct s_madc32 * s)
 {
-	SET16(s->mcstSignature,MADC32_CTRA_RESET_A_OR_B, 0x3);
+	SET16(s->mcstAddr, MADC32_CTRA_RESET_A_OR_B, 0x3);
 }
 
 bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile)

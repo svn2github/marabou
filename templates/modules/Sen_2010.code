@@ -30,6 +30,11 @@
 %%INIT_MODULE%%
 
 %%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
+
+%%BeginOfCode%%
 					CIO_CTRL_R2B($moduleName, F(9), A($chnNo));	/* clear channel */
 %%EndOfCode%%
 %%INIT_CHANNEL%%

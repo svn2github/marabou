@@ -25,20 +25,31 @@
 
 									/* init module $moduleNameLC at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-					s_$moduleNameLC = madc32_alloc($baseAddrL, $moduleNameLC, "$moduleNameLC", $moduleSerial); /* allocate data struct */
+					s_$moduleNameLC = madc32_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
  					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
 					madc32_moduleInfo(s_$moduleNameLC);						/* read module info */
 					madc32_soft_reset(s_$moduleNameLC);	 						/* reset module */
 					madc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill database from environment data */
 					madc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
-					if (madc32_mcstEnabled(s_$moduleNameLC)) madc32_use_mcst = TRUE;	/* check if multicast */
-					if (madc32_firstInChain(s_$moduleNameLC)) madc32_firstModuleInChain = s_$moduleNameLC;	/* master of chain */
+					if (madc32_mcstIsEnabled(s_$moduleNameLC)) {
+						madc32_use_mcst = TRUE;
+						if (madc32_isFirstInChain(s_$moduleNameLC)) madc32_firstModuleInChain = s_$moduleNameLC;
+					}
+					if (madc32_useBLT(s_$moduleNameLC)) use_block_xfer = TRUE;	/* check if block xfer should be enabled */
 					madc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
 					madc32_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
 					madc32_initialize(s_$moduleNameLC);		 					/* initialize module */
 
 %%EndOfCode%%
 %%INIT_MODULE%%
+
+%%BeginOfCode%%
+						if (madc32_useBLT(s_$moduleName)) {
+							mapBLT(md_$moduleName, $baseAddr, $size, $addrMod);
+							setBLTMode(md_$moduleName, BMA_M_Vsz32, BMA_M_WzD32, $fifoMode);
+						}
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
 
 %%BeginOfCode%%
 
@@ -105,7 +116,9 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-%M%								if (madc32_use_mcst) { 	/* start modules in multicast mode */
+%M%								if (madc32_use_mcst && madc32_firstModuleInChain) { 	/* start modules in multicast mode */
+%M%									sprintf(msg, "[Starting Mesytec modules via MCST - first module in chain is %s]\n", madc32_firstModuleInChain->moduleName);
+%M% 									f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
 %M%									madc32_stopAcq_mcst(madc32_firstModuleInChain);
 %M%									madc32_startAcq_mcst(madc32_firstModuleInChain);
 %M%									break;		/* all done! */

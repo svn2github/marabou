@@ -379,10 +379,10 @@ class TMrbConfig : public TNamed {
 		enum					{	kRdoOptSevtDefault	=	0	};										// default readout options
 		enum					{	kAnaOptSevtDefault	=	kAnaOptParamsByName | kAnaOptHistograms };	// default analyze options
 		enum					{	kCfgOptSevtDefault	=	0	};										// default config options
-
 		enum EMrbModuleTag	 	{	kModuleDefs			=	1,	// special readout tags
 									kModuleInitCommonCode,
 									kModuleInitModule,
+									kModuleInitBLT,
 									kModuleInitChannel,
 									kModuleReadChannel,
 									kModuleIncrementChannel,
@@ -438,6 +438,14 @@ class TMrbConfig : public TNamed {
 		enum EMrbControllerType {	kControllerUnused	=	0,			// controller types (camac)
 									kControllerCBV 		=	5,			// (see MBS manual!)
 									kControllerCC32		=	11
+								};
+
+		enum EMrbVMEMapping	 {	kVMEMappingUndef	=	0,			// vme mapping
+									kVMEMappingDirect	=	BIT(0),
+									kVMEMappingStatic	=	BIT(1),
+									kVMEMappingDynamic	=	BIT(2),
+									kVMEMappingHasBLT	=	BIT(10),
+									kVMEMappingHasMBLT	=	BIT(11)
 								};
 
 		enum EMrbHistoType  	{	kHistoTH1			=	BIT(10), 	// histogram types
@@ -1000,7 +1008,7 @@ class TMrbConfig : public TNamed {
 		TString fMbsVersion;				// MBS version, format N.M
 		TString fMbsVVersion;				// ... format vNN
 		TString fLynxVersion;				// lynxOs version, format N.M
-		TString fProcType;					// processor type: PPC, RIO2, or RIO3
+		TString fProcType;				// processor type: PPC, RIO2, RIO3 or RIO4
 
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
 };
