@@ -13,7 +13,7 @@
 #
 # LynxVersion:    2.5, 3.1, 4.0 ...
 # MbsVersion:     2.2, 4.2, 4.3, 4.5, 5.0 ...
-# Mode:           SP, MP, MB (single proc, multi proc, multi branch)
+# Mode:           SP, MB (single proc, multi branch)
 # CpuType:        RIO2, RIO3, RIO4
 # ContrType:      CBV, CC32 (camac)
 #                 CAMAC, VME (trigger module)
@@ -27,7 +27,7 @@
 *-*-*-RIO2-CC32.RemoteMemoryBase:		0xee550000
 *-*-*-RIO3-CC32.RemoteMemoryBase:		0x4f550000
 
-*-*-*-*-*.RemoteMemoryOffset:  			0x0
+*-*-*-*-*.RemoteMemoryOffset:  		0x0
 
 *-*-*-*-NoCamac.RemoteMemoryLength: 	0x0
 *-*-*-*-CBV.RemoteMemoryLength: 		0x00200000
@@ -40,8 +40,8 @@
 
 *-*-*-*-*.RemoteCamacOffset: 			0x0
 
-*-*-*-*-NoCamac.RemoteCamacLength: 		0x0
-*-*-*-*-CBV.RemoteCamacLength: 			0x00200000
+*-*-*-*-NoCamac.RemoteCamacLength: 	0x0
+*-*-*-*-CBV.RemoteCamacLength: 		0x00200000
 *-*-*-*-CC32.RemoteCamacLength: 		0x00008000
 
 *-*-*-*-*.LocalEsoneBase:	 			0x0
@@ -54,16 +54,17 @@
 
 *-*-*-*-*.LocalMemoryLength:			0x00001000
 
-*-*-SP-RIO4-*.LocalPipeBase:	 		0x08000000
-*-*-MP-*-*.LocalPipeBase:	 			0xe5000000
+*-*-SP-RIO4-*.LocalPipeBase:	 		0xe8000000
 *-*-SP-*-*.LocalPipeBase:	 			0x01e00000
 
 *-*-*-*-*.LocalPipeOffset:	 			0x0
 
-*-*-SP-RIO4-*.LocalPipeSegmentLength:	0x08000000
+*-*-SP-RIO4-*.LocalPipeSegmentLength:	0x0c000000
 *-*-SP-RIO3-*.LocalPipeSegmentLength:	0x02000000
 *-*-SP-*-*.LocalPipeSegmentLength:	 	0x00100000
-*-*-MP-*-*.LocalPipeSegmentLength:		0x00200000
+
+*-*-SP-RIO4-*.LocalPipeType:			1
+*-*-SP-*-*.LocalPipeType:				0
 
 *-*-*-*-*.LocalPipeLength:		 		10000
 
