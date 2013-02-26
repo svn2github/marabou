@@ -39,11 +39,14 @@ $(LIB_TARGETS): $(libMqdc32.OBJS)
 	ranlib $@
 
 mqdc32:	mqdc32.o $(LIB_TARGETS)
-		$(CC) -o mqdc32 mqdc32.o \
-			-L ../../../lib/$(GSI_OS_VERSION) \
-			-L /lib/ces \
-			-lMqdc32 -lUti -llynx -lvme -lbma -luio -lnetinet
-		mv mqdc32 $(BIN_DIR)
+	cp ../inc/*.h ../../../../include
+	$(CC) -o mqdc32 mqdc32.o \
+		-L ../../../lib/$(GSI_OS_VERSION) \
+		-L /lib/ces \
+		-lMqdc32 -lUti \
+		$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
+		-llynx -lvme -lbma -luio -lnetinet
+	mv mqdc32 $(BIN_DIR)
 
 clean:
 	rm -f *.o core core.* $(LIB_TARGETS)
