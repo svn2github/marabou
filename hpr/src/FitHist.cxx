@@ -79,6 +79,7 @@
 #include "WindowSizeDialog.h"
 #include "GeneralAttDialog.h"
 #include "HandleMenus.h"
+#include "TText3D.h"
 
 #include "hprbase.h"
 
@@ -3535,6 +3536,15 @@ void FitHist::Draw3DimView()
 	pl3->SetPoint(13, x1, y0, z0);
 	pl3->SetPoint(14, x1, y1, z0);
 	pl3->SetPoint(15, x0, y1, z0);
+	
+	TString tit = ax->GetTitle();
+	
+	if (tit.Length() > 0) {
+		TText3D * tt =new TText3D(x0, y0 - 0.08*(x1-x0), z0,
+										  (x1-x0), 0, 1, ax->GetTitle());
+		tt->SetTextSize(0.04);
+		tt->Draw();
+	}
 	
 	pl3->Draw();
 	

@@ -41,6 +41,9 @@ Int_t   SetColorModeDialog::fMtransHLS;
 Int_t   SetColorModeDialog::fMbw;
 Int_t   SetColorModeDialog::fMbwinv;
 Int_t   SetColorModeDialog::fMrbow;
+Int_t   SetColorModeDialog::fMDeepSea;
+Int_t   SetColorModeDialog::fMBlackBody;
+Int_t   SetColorModeDialog::fMTwoColHue;
 //__________________________________________________________________
 
 ClassImp(SetColorModeDialog)
@@ -63,7 +66,7 @@ or HLS (Hue/Lightness/Saturation) transitions\n\
    fRow_lab = new TList();
 
    Int_t ind = 0;
-//   static Int_t dummy;
+   static Int_t dummy;
    static TString stycmd("SetColorMode()");
    static TString hlscmd("SetHLS()");
    static TString rgbcmd("SetBrightness()");
@@ -73,10 +76,20 @@ or HLS (Hue/Lightness/Saturation) transitions\n\
    fValp[ind++] = &fMrbow;
    fRow_lab->Add(new TObjString("PlainIntVal+Nof Levels"));
    fValp[ind++] = &fNofTransLevels;
-   fRow_lab->Add(new TObjString("RadioButton_Grey lev, high=white"));
+   fRow_lab->Add(new TObjString("RadioButton_Grey level, high=white"));
    fValp[ind++] = &fMbw;
-   fRow_lab->Add(new TObjString("RadioButton+Grey lev, high=black)"));
+   fRow_lab->Add(new TObjString("RadioButton+Grey level, high=black"));
    fValp[ind++] = &fMbwinv;
+	
+   fRow_lab->Add(new TObjString("RadioButton_Deep Sea"));
+   fValp[ind++] = &fMDeepSea;
+   fRow_lab->Add(new TObjString("RadioButton+Black Body Rad"));
+   fValp[ind++] = &fMBlackBody;
+   fRow_lab->Add(new TObjString("RadioButton+Two Col Hue"));
+   fValp[ind++] = &fMTwoColHue;
+	
+   fRow_lab->Add(new TObjString("CommentOnly_User defined Palettes"));
+	fValp[ind++] = &dummy;
    fRow_lab->Add(new TObjString("RadioButton_Color transition HLS"));
    fValp[ind++] = &fMtransHLS;
    fRow_lab->Add(new TObjString("CommandButt+Set HLS"));
@@ -137,8 +150,14 @@ void SetColorModeDialog::SetColorMode()
 				<<  fPalette[1]  << " "   <<  fPalette[2];
 		cout   << endl;
 	}
-   if ( fMrbow ) {
+   if        ( fMrbow ) {
       gStyle->SetPalette(1, NULL);
+	} else if ( fMDeepSea ) {
+      gStyle->SetPalette(51);
+	} else if ( fMBlackBody ) {
+      gStyle->SetPalette(53);
+	} else if ( fMTwoColHue ) {
+      gStyle->SetPalette(54);
 	} else {
       gStyle->SetPalette(fNofColorLevels, fPalette);
 	}
@@ -191,8 +210,8 @@ void SetColorModeDialog::AdjustBrightness(Int_t row , Int_t val)
       default:
          return;
    }
-   cout << "AdjustBrightness: " <<SetColorModeDialog::fEnhenceRed
-        << " " << SetColorModeDialog::fEnhenceGreen << " " << SetColorModeDialog::fEnhenceBlue << endl;
+//   cout << "AdjustBrightness: " <<SetColorModeDialog::fEnhenceRed
+//        << " " << SetColorModeDialog::fEnhenceGreen << " " << SetColorModeDialog::fEnhenceBlue << endl;
    SetColorModeDialog::SetTransLevelsRGB();
 //   hp->SetColorPalette(mycanvas);
    UpdateCanvas();
@@ -425,6 +444,9 @@ void SetColorModeDialog::SaveDefaults()
    env.SetValue("SetColorModeDialog.fMbw", fMbw);
    env.SetValue("SetColorModeDialog.fMbwinv", fMbwinv);
    env.SetValue("SetColorModeDialog.fMrbow", fMrbow);
+   env.SetValue("SetColorModeDialog.fMbw", fMDeepSea);
+   env.SetValue("SetColorModeDialog.fMbwinv", fMBlackBody);
+   env.SetValue("SetColorModeDialog.fMrbow", fMTwoColHue);
    env.SetValue("SetColorModeDialog.NofTransLevels", fNofTransLevels);
    env.SetValue("SetColorModeDialog.StartColor", fStartColor);
    env.SetValue("SetColorModeDialog.EndColor", fEndColor);
@@ -471,11 +493,14 @@ void SetColorModeDialog::CloseDialog()
 void SetColorModeDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
-   fMtransRGB = env.GetValue("SetColorModeDialog.fMtransRGB", 0);
-   fMtransHLS = env.GetValue("SetColorModeDialog.fMtransHLS", 0);
-   fMbw = env.GetValue("SetColorModeDialog.fMbw", 0);
-   fMbwinv = env.GetValue("SetColorModeDialog.fMbwinv", 0);
-   fMrbow = env.GetValue("SetColorModeDialog.fMrbow", 1);
+   fMtransRGB  = env.GetValue("SetColorModeDialog.fMtransRGB", 0);
+   fMtransHLS  = env.GetValue("SetColorModeDialog.fMtransHLS", 0);
+   fMbw        = env.GetValue("SetColorModeDialog.fMbw", 0);
+   fMbwinv     = env.GetValue("SetColorModeDialog.fMbwinv", 0);
+   fMrbow      = env.GetValue("SetColorModeDialog.fMrbow", 1);
+   fMDeepSea   = env.GetValue("SetColorModeDialog.fMDeepSea", 0);
+   fMBlackBody = env.GetValue("SetColorModeDialog.fMBlackBody", 0);
+   fMTwoColHue = env.GetValue("SetColorModeDialog.fMTwoColHue", 0);
    fNofTransLevels   = env.GetValue("SetColorModeDialog.NofTransLevels", 20);
    fStartColor       = env.GetValue("SetColorModeDialog.StartColor", 2);
    fEndColor         = env.GetValue("SetColorModeDialog.EndColor", 3);

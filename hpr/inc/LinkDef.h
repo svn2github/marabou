@@ -33,6 +33,8 @@
 #pragma link C++ class HprStack;
 #pragma link C++ class HprGaxis;
 #pragma link C++ class HprLegend;
+#pragma link C++ class TText3D;
+#pragma link C++ class TPol3Dtext;
 #pragma link C++ global gHpr;
 #pragma link C++ global gHprWorkDir;
 #pragma link C++ global gHprLocalEnv;

@@ -50,6 +50,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/HprStack.h \
  					$(HPRDIRI)/HprGaxis.h \
  					$(HPRDIRI)/HprLegend.h \
+ 					$(HPRDIRI)/TText3D.h \
   					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
