@@ -163,7 +163,7 @@ const SMrbNamedXShort kMrbTsSource[] =
 
 TMrbMesytec_Mqdc32::TMrbMesytec_Mqdc32(const Char_t * ModuleName, UInt_t BaseAddr) :
 									TMrbVMEModule(ModuleName, "Mesytec_Mqdc32", BaseAddr,
-											this->UseA32Addressing() ? 0x09 : 0x39,
+											0x09,
 											TMrbMesytec_Mqdc32::kSegSize,
 											1, 32, 1 << 13) {
 //__________________________________________________________________[C++ CTOR]
@@ -559,6 +559,7 @@ TEnv * TMrbMesytec_Mqdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetNimG1OrOsc(madcEnv->Get(moduleName.Data(), "NimG1OrOsc", kNimG1));
 	this->SetNimFclOrRts(madcEnv->Get(moduleName.Data(), "NimFclOrRts", kNimFcl));
 	this->SetNimBusy(madcEnv->Get(moduleName.Data(), "NimBusy", kNimBusy));
+	this->SetBufferThresh(madcEnv->Get(moduleName.Data(), "BufferThresh", 0));
 	this->SetTestPulser(madcEnv->Get(moduleName.Data(), "TsSource", kTstampVME));
 	this->SetTsDivisor(madcEnv->Get(moduleName.Data(), "TsDivisor", 1));
 
@@ -655,6 +656,7 @@ Bool_t TMrbMesytec_Mqdc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$multiEvent", this->GetMultiEvent());
 						tmpl.Substitute("$markingType", this->GetMarkingType());
 						tmpl.Substitute("$blockXfer", this->BlockXferEnabled() ? "TRUE" : "FALSE");
+						tmpl.Substitute("$bufferThresh", this->GetBufferThresh());
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%OperationMode%");
@@ -791,12 +793,17 @@ Bool_t TMrbMesytec_Mqdc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 			fCodeTemplates.Substitute("$dumpFile", dump.Data());
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
+		case TMrbConfig::kModuleInitBLT:
+			fCodeTemplates.InitializeCode();
+			fCodeTemplates.Substitute("$moduleName", moduleNameLC);
+			fCodeTemplates.Substitute("$size", (Int_t) this->GetSegmentSize(), 16);
+			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
+			fCodeTemplates.Substitute("$addrMod", 0x0b, 16);
+			fCodeTemplates.Substitute("$fifoMode", "TRUE");
+			fCodeTemplates.WriteCode(RdoStrm);
+			break;
 		case TMrbConfig::kModuleClearModule:
 		case TMrbConfig::kModuleFinishReadout:
-		case TMrbConfig::kModuleStartAcquisition:
-		case TMrbConfig::kModuleStopAcquisition:
-		case TMrbConfig::kModuleStartAcquisitionGroup:
-		case TMrbConfig::kModuleStopAcquisitionGroup:
 		case TMrbConfig::kModuleUtilities:
 		case TMrbConfig::kModuleDefineGlobals:
 		case TMrbConfig::kModuleDefineGlobalsOnce:
@@ -810,6 +817,18 @@ Bool_t TMrbMesytec_Mqdc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
+		case TMrbConfig::kModuleStartAcquisition:
+		case TMrbConfig::kModuleStopAcquisition:
+		case TMrbConfig::kModuleStartAcquisitionGroup:
+		case TMrbConfig::kModuleStopAcquisitionGroup:
+			{
+				if (this->IsFirstInChain()) fCodeTemplates.InitializeCode("%M%"); else fCodeTemplates.InitializeCode("%N%");
+				fCodeTemplates.Substitute("$moduleName", this->GetName());
+				fCodeTemplates.Substitute("$nofParams", this->GetNofChannelsUsed());
+				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+				fCodeTemplates.WriteCode(RdoStrm);
+			}
 		case TMrbConfig::kModuleReadModule:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
@@ -955,6 +974,7 @@ void TMrbMesytec_Mqdc32::PrintSettings(ostream & Out) {
 	Out << " Block tansfer       : "	<< (this->BlockXferEnabled() ? "off" : "on") << endl;
 	Out << " Bank operation      : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegBankOperation) << endl;
 	Out << " ADC resolution      : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegAdcResolution) << endl;
+	Out << " Buffer threshold    : "	<< this->GetBufferThresh() << endl;
 	Out << " Sliding scale       : "	<< (this->SlidingScaleIsOff() ? "off" : "on") << endl;
 	Out << " Skip if out of range: "	<< (this->SkipOutOfRange() ? "yes" : "no") << endl;
 	Out << " Ignore thresholds   : "	<< (this->IgnoreThresholds() ? "yes" : "no") << endl;

@@ -13,7 +13,7 @@
 ////////////////////////////////////////////////////////////////////////////*/
 
 
-struct s_mqdc32 * mqdc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial);
+struct s_mqdc32 * mqdc32_alloc(char * moduleName, struct s_mapDescr * md, int serial);
 
 void mqdc32_moduleInfo(struct s_mqdc32 * s);
 void mqdc32_setPrefix(struct s_mqdc32 * s, char * prefix);
@@ -31,8 +31,6 @@ void mqdc32_printDb(struct s_mqdc32 * s);
 void mqdc32_soft_reset(struct s_mqdc32 * s);
 
 void mqdc32_initDefaults(struct s_mqdc32 * s);
-
-void mqdc32_enableBma(struct s_mqdc32 * s);
 
 void mqdc32_setThreshold(struct s_mqdc32 * s, uint16_t channel,  uint16_t thresh);
 void mqdc32_setThreshold_db(struct s_mqdc32 * s, uint16_t channel);
@@ -154,24 +152,35 @@ void mqdc32_stopAcq(struct s_mqdc32 * s);
 void mqdc32_resetFifo(struct s_mqdc32 * s);
 void mqdc32_resetTimestamp(struct s_mqdc32 * s);
 
-void mqdc32_enableMCST(struct s_mqdc32 * s, unsigned long Address, bool_t First, bool_t Last);
-void mqdc32_disableMCST(struct s_mqdc32 * s);
-bool_t mqdc32_mcstEnabled(struct s_mqdc32 * s);
+void mqdc32_setMcstSignature(struct s_mqdc32 * s, unsigned long Signature);
+uint16_t mqdc32_getMcstSignature(struct s_mqdc32 * s);
 
-void mqdc32_enableCBLT(struct s_mqdc32 * s, unsigned long Address, bool_t First, bool_t Last);
-void mqdc32_disableCBLT(struct s_mqdc32 * s);
-bool_t mqdc32_cbltEnabled(struct s_mqdc32 * s);
+void mqdc32_setCbltSignature(struct s_mqdc32 * s, unsigned long Signature);
+uint16_t mqdc32_getCbltSignature(struct s_mqdc32 * s);
 
-bool_t mqdc32_firstInChain(struct s_mqdc32 * s);
-bool_t mqdc32_lastInChain(struct s_mqdc32 * s);
-bool_t mqdc32_middleOfChain(struct s_mqdc32 * s);
+void mqdc32_setFirstInChain(struct s_mqdc32 * s);
+bool_t mqdc32_isFirstInChain(struct s_mqdc32 * s);
 
+void mqdc32_setLastInChain(struct s_mqdc32 * s);
+bool_t mqdc32_isLastInChain(struct s_mqdc32 * s);
+void mqdc32_setMiddleOfChain(struct s_mqdc32 * s);
+bool_t mqdc32_isMiddleOfChain(struct s_mqdc32 * s);
+
+void mqdc32_setMcstEnable(struct s_mqdc32 * s);
+void mqdc32_setMcstDisable(struct s_mqdc32 * s);
+bool_t mqdc32_mcstIsEnabled(struct s_mqdc32 * s);
+void mqdc32_setCbltEnable(struct s_mqdc32 * s);
+void mqdc32_setCbltDisable(struct s_mqdc32 * s);
+bool_t mqdc32_cbltIsEnabled(struct s_mqdc32 * s);
+
+void mqdc32_setMcstCblt_db(struct s_mqdc32 * s);
 
 void mqdc32_startAcq_mcst(struct s_mqdc32 * s);
 void mqdc32_stopAcq_msct(struct s_mqdc32 * s);
 void mqdc32_resetFifo_mcst(struct s_mqdc32 * s);
 void mqdc32_resetTimestamp_mcst(struct s_mqdc32 * s);
 void mqdc_resetReadout_mcst(struct s_mqdc32 * s);
+
 
 bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile);
 #endif

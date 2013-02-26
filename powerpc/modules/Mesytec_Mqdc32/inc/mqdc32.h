@@ -1,33 +1,15 @@
 #ifndef __MQDC32_H__
 #define __MQDC32_H__
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <errno.h>
-#include <stdint.h>
-
-#include <allParam.h>
-#include <ces/uiocmd.h>
-#include <ces/bmalib.h>
-
-#include "block.h"
-
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			mqdc32.h
-//! \brief			Definitions for Mesytec Madc32 ADC
-//! \details		Contains definitions to operate a Mesytec Madc32
+//! \brief			Definitions for Mesytec Mqdc32 QDC
+//! \details		Contains definitions to operate a Mesytec Mqdc32
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
 //! $Revision: 1.15 $
 //! $Date: 2011-04-29 07:19:03 $
-////////////////////////////////////////////////////////////////////////////*/
-
-/*____________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////
-//! \brief			address map
 ////////////////////////////////////////////////////////////////////////////*/
 
 #define MQDC32_DATA						0x0
@@ -240,78 +222,5 @@
 #define MQDC32_CBLT_ENA						(0x1 << 1)
 #define MQDC32_CBLT_DIS						(0x1 << 0)
 
-/*____________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////
-//! \brief			data structure for Madc32
-////////////////////////////////////////////////////////////////////////////*/
-
-
-#define NOF_CHANNELS	32
-
-struct s_mqdc32 {
-	unsigned long vmeAddr;					/* phys addr given by module switches */
-	volatile unsigned char * baseAddr;		/* addr mapped via find_controller() */
-
-	char moduleName[100];
-	char prefix[100];						/* "m_read_meb" (default) or any other */
-	char mpref[10]; 						/* "mqdc32: " or "" */
-
-	int serial; 							/* MARaBOU's serial number */
-
-	bool_t verbose;
-	bool_t dumpRegsOnInit;
-
-	bool_t updSettings;
-	int updInterval;
-	int updCountDown;
-
-	uint16_t threshold[NOF_CHANNELS];
-	uint16_t addrSource;
-	uint16_t addrReg;
-	uint16_t moduleId;
-	uint16_t fifoLength;
-	uint16_t dataWidth;
-	uint16_t xferData;
-	uint16_t multiEvent;
-	uint16_t markingType;
-	uint16_t bankOperation;
-	uint16_t adcResolution;
-	uint16_t bankOffset[2];
-	uint16_t gateLimit[2];
-	bool_t slidingScaleOff;
-	bool_t skipOutOfRange;
-	bool_t ignoreThresh;
-	uint16_t inputCoupling;
-	uint16_t eclTerm;
-	uint16_t eclG1OrOsc;
-	uint16_t eclFclOrRts;
-	uint16_t gateSelect;
-	uint16_t nimG1OrOsc;
-	uint16_t nimFclOrRts;
-	uint16_t nimBusy;
-	uint16_t testPulserStatus;
-	uint16_t ctraTsSource;
-	uint16_t ctraTsDivisor;
-
-	int memorySize;
-
-	unsigned long bltAddr;
-	uio_mem_t bltBuffer;
-	uint32_t bltBufferSize;
-	bool_t blockXfer;
-
-	int accuChannel;
-	int histo[MQDC32_N_HISTOSIZE];
-	bool_t acqStarted;
-
-	unsigned long mcstSignature;		/* MCST signature */
-	bool_t mcstEnable;			/* TRUE if enabled */
-
-	unsigned long cbltSignature;		/* CBLT signature */
-	bool_t cbltEnable;			/* TRUE if enabled */
-	bool_t firstInChain;			/* TRUE if head of chain */
-	bool_t lastInChain;			/* TRUE if end of chain */
-
-};
-
 #endif
+

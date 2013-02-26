@@ -261,6 +261,9 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 		inline Bool_t SetNimBusy(Char_t * Busy) { return(this->Set(TMrbMesytec_Mqdc32::kRegNimBusy, Busy)); };
 		inline Int_t GetNimBusy() { return(this->Get(TMrbMesytec_Mqdc32::kRegNimBusy)); };
 
+		inline void SetBufferThresh(Int_t Thresh) { fBufferThresh = Thresh; };
+		inline Int_t GetBufferThresh() { return(fBufferThresh); };
+
 		inline Bool_t SetTestPulser(Int_t Mode) { return(this->Set(TMrbMesytec_Mqdc32::kRegPulserStatus, Mode)); };
 		inline Bool_t SetTestPulser(Char_t * Mode) { return(this->Set(TMrbMesytec_Mqdc32::kRegPulserStatus, Mode)); };
 		inline Int_t GetTestPulser() { return(this->Get(TMrbMesytec_Mqdc32::kRegPulserStatus)); };
@@ -271,6 +274,8 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 
 		inline Bool_t SetTsDivisor(Int_t Divisor) { return(this->Set(TMrbMesytec_Mqdc32::kRegTsDivisor, Divisor)); };
 		inline Int_t GetTsDivisor() { return(this->Get(TMrbMesytec_Mqdc32::kRegTsDivisor)); };
+
+		inline TEnv * Settings() { return fSettings; };
 
 		inline void EnableMCST(UInt_t Signature, Bool_t FirstInChain= kFALSE, Bool_t LastInChain = kFALSE) { fMCSTSignature = Signature; fFirstInChain = FirstInChain; fLastInChain = LastInChain; };
 		inline void EnableCBLT(UInt_t Signature, Bool_t FirstInChain= kFALSE, Bool_t LastInChain = kFALSE) { fCBLTSignature = Signature; fFirstInChain = FirstInChain; fLastInChain = LastInChain; };
@@ -285,7 +290,6 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 
 		TEnv * UseSettings(const Char_t * SettingsFile = NULL);
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
-		inline TEnv * Settings() { return fSettings; };
 
 		inline void UpdateSettings(Bool_t Flag = kTRUE) { fUpdateSettings = Flag; };	// update settings
 		inline Bool_t SettingsToBeUpdated() { return(fUpdateSettings); };
@@ -321,7 +325,8 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 		Bool_t fSlidingScaleOff;
 		Bool_t fSkipOutOfRange;
 		Bool_t fIgnoreThresh;
-
+		Int_t fBufferThresh;
+		
 		UInt_t fMCSTSignature;
 		UInt_t fCBLTSignature;
 		Bool_t fFirstInChain;

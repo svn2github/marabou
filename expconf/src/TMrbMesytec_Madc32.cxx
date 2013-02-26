@@ -176,7 +176,7 @@ const SMrbNamedXShort kMrbTsSource[] =
 
 TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAddr) :
 									TMrbVMEModule(ModuleName, "Mesytec_Madc32", BaseAddr,
-										this->UseA32Addressing() ? 0x09 : 0x39,
+										0x09,
 										TMrbMesytec_Madc32::kSegSize,
 										1, 32, 1 << 13) {
 //__________________________________________________________________[C++ CTOR]
