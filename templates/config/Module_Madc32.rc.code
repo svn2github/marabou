@@ -38,7 +38,7 @@ MADC32.$moduleName.AddrReg: 			$addrReg
 MADC32.$moduleName.ModuleId: 			$moduleId
 
 # mcst/cblt
-#          signature   0xNN000000, bits 31 ... 24
+#          signature   0xNN, bits 31 ... 24
 #          first       TRUE if first module in chain
 #          last        TRUE if last module in chain
 MADC32.$moduleName.MCSTSignature:		$mcstSignature

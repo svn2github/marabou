@@ -73,6 +73,8 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 		return NULL;
 	}
 	
+	if (Size == 0) Size = 4096;
+
 	md->mappingModes = Mapping;
 	md->mappingVME = kVMEMappingUndef;
 	md->mappingBLT = kVMEMappingUndef;
@@ -91,8 +93,18 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 					break;
 				case kAM_A24:
 					staticBase = kAddr_A24;
+					if (PhysAddr > 0x00FFFFFF) {
+						sprintf(msg, "[mapVME] %s: Not a A24 addr - %#lx", DescrName, PhysAddr);
+						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						return NULL;
+					}
 				case kAM_A16:
 					staticBase = kAddr_A16;
+					if (PhysAddr > 0x0000FFFF) {
+						sprintf(msg, "[mapVME] %s: Not a A16 addr - %#lx", DescrName, PhysAddr);
+						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						return NULL;
+					}
 				default:
 					sprintf(msg, "[mapVME] %s: Illegal addr modifier - %#lx", DescrName, AddrMod);
 					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -132,7 +144,81 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 	md->addrModVME = AddrMod;
 	md->physAddrVME = PhysAddr;
 	md->segSizeVME = Size;
+	md->nofMappings++;
 	return md;
+}
+
+volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mapAdditionalVME
+// Purpose:        Add another VME page
+// Arguments:      s_mapDescr * mapDescr    -- map descriptor
+//                 UInt_t PhysAddr          -- physical address
+//                 Int_t Size               -- segment size
+// Results:        Char_t * MappedAddr      -- mapped address
+// Description:    Maps an additional address.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	volatile Char_t * mappedAddr;
+	UInt_t staticBase;
+	UInt_t dynamicAddr;
+
+	char segName[64];
+
+	if (Size == 0) Size = 4096;
+
+	switch (mapDescr->mappingVME) {
+		case kVMEMappingDirect:
+			mapDescr->nofMappings++;
+			return (volatile Char_t *) (PhysAddr | kAddr_A32Direct);
+
+		case kVMEMappingStatic:
+			switch (mapDescr->addrModVME) {
+				case kAM_A32:
+					staticBase = kAddr_A32;
+					break;
+				case kAM_A24:
+					staticBase = kAddr_A24;
+					if (PhysAddr > 0x00FFFFFF) {
+						sprintf(msg, "[mapAdditionalVME] %s: Not a A24 addr - %#lx", mapDescr->mdName, PhysAddr);
+						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						return NULL;
+					}
+				case kAM_A16:
+					staticBase = kAddr_A16;
+					if (PhysAddr > 0x0000FFFF) {
+						sprintf(msg, "[mapAdditionalVME] %s: Not a A16 addr - %#lx", mapDescr->mdName, PhysAddr);
+						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						return NULL;
+					}
+			}
+			sprintf(segName, "%s_%d", mapDescr->mdName, mapDescr->nofMappings + 1);
+			mappedAddr = smem_create(segName, (Char_t *) (staticBase | PhysAddr), Size, SM_READ|SM_WRITE);
+			if (mappedAddr == NULL) {
+				sprintf(msg, "[mapAdditionalVME] %s: Creating shared segment failed - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return NULL;
+			}
+			mapDescr->nofMappings++;
+			return mappedAddr;
+
+		case kVMEMappingDynamic:
+ 			s_param.iack = 1;
+ 			s_param.rdpref = 0;
+ 			s_param.wrpost = 0;
+ 			s_param.swap = SINGLE_AUTO_SWAP;
+ 			s_param.dum[0] = 0;
+ 			dynamicAddr = find_controller(PhysAddr, Size, mapDescr->addrModVME, 0, 0, &s_param);
+			if (dynamicAddr == 0xFFFFFFFF) {
+				sprintf(msg, "[mapAdditionalVME] %s: Dynamic mapping failed - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return NULL;
+			}
+			mapDescr->nofMappings++;
+			return (volatile Char_t *) dynamicAddr;
+	}
 }
 
 Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
@@ -171,7 +257,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 			case kAM_MBLT:
 				staticBase = kAddr_MBLT;
 			default:
-				sprintf(msg, "[mapVME] %s: Illegal addr modifier - %#lx", mapDescr->mdName, AddrMod);
+				sprintf(msg, "[mapBLT] %s: Illegal addr modifier - %#lx", mapDescr->mdName, AddrMod);
 				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 				return FALSE;
 		}
@@ -179,7 +265,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 		sprintf(bltName, "%s_blt", mapDescr->mdName);
 		mapDescr->bltBase = smem_create(bltName, (Char_t *) (staticBase | PhysAddr), Size, SM_READ);
 		if (mapDescr->bltBase == NULL) {
-			sprintf(msg, "[mapVME] %s: Creating shared segment for BLT failed - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
+			sprintf(msg, "[mapBLT] %s: Creating shared segment for BLT failed - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			return FALSE;
 		}
@@ -195,7 +281,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
  		s_param.dum[0] = 0;
  		dynamicAddr = find_controller(PhysAddr, Size, AddrMod, 0, 0, &s_param);
 		if (dynamicAddr == 0xFFFFFFFF) {
-			sprintf(msg, "[mapVME] %s: Dynamic mapping failed - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
+			sprintf(msg, "[mapBLT] %s: Dynamic mapping failed - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			mapDescr->bltBase = NULL;
 		} else {
@@ -208,7 +294,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 		if (mapDescr->mappingModes & kVMEMappingDynamic) {
 			dynamicAddr = xvme_map(PhysAddr, Size, AddrMod, 0);
 			if (dynamicAddr == -1) {
-				sprintf(msg, "[mapVME] %s: Can't map XVME page", mapDescr->mdName);
+				sprintf(msg, "[mapBLT] %s: Can't map XVME page", mapDescr->mdName);
 				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 				mapDescr->bltBase = NULL;
 			} else {
@@ -219,7 +305,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 #endif
 
 	if (bma_create_mode(&mapDescr->bltModeId) != 0) {
-		sprintf(msg, "[mapVME] %s: Can't create BLT mode struct - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
+		sprintf(msg, "[mapBLT] %s: Can't create BLT mode struct - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 
@@ -228,11 +314,11 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 	mapDescr->segSizeBLT = Size;
 
 	if (mapDescr->bltBase == NULL) {
-		sprintf(msg, "[mapVME] %s: Can't map BLT addr - phys addr %#lx, addrMod=%#lx", mapDescr->mdName, PhysAddr, AddrMod);
+		sprintf(msg, "[mapBLT] %s: Can't map BLT addr - phys addr %#lx, addrMod=%#lx", mapDescr->mdName, PhysAddr, AddrMod);
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	} else {
-		sprintf(msg, "[mapVME] %s: phys addr %#lx, mapped to BLT addr %#lx, addrMod=%#lx", mapDescr->mdName, PhysAddr, mapDescr->bltBase, AddrMod);
+		sprintf(msg, "[mapBLT] %s: phys addr %#lx, mapped to BLT addr %#lx, addrMod=%#lx", mapDescr->mdName, PhysAddr, mapDescr->bltBase, AddrMod);
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 		return TRUE;
 	}
@@ -378,6 +464,7 @@ struct s_mapDescr * _createMapDescr(const Char_t * DescrName) {
 		return NULL;
 	}
 	
+	memset(md, 0, sizeof(struct s_mapDescr));
 	strcpy(md->mdName, DescrName);
 	
 	if (firstDescr == NULL) {

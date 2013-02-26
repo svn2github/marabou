@@ -97,6 +97,8 @@ struct s_mapDescr {
 	Int_t segSizeBLT;				/* segment size */
 	Int_t bltModeId;				/* id from bma_create_mode() */
 
+	Int_t nofMappings;
+
 	void * prevDescr;				/* linked list */
 	void * nextDescr;
 

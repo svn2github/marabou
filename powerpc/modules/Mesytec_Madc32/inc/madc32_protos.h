@@ -167,11 +167,11 @@ void madc32_stopAcq(struct s_madc32 * s);
 void madc32_resetFifo(struct s_madc32 * s);
 void madc32_resetTimestamp(struct s_madc32 * s);
 
-void madc32_setMcstAddr(struct s_madc32 * s, unsigned long Address);
-uint16_t madc32_getMcstAddrReg(struct s_madc32 * s);
+void madc32_setMcstSignature(struct s_madc32 * s, unsigned long Signature);
+uint16_t madc32_getMcstSignature(struct s_madc32 * s);
 
-void madc32_setCbltAddr(struct s_madc32 * s, unsigned long Address);
-uint16_t madc32_getCbltAddrReg(struct s_madc32 * s);
+void madc32_setCbltSignature(struct s_madc32 * s, unsigned long Signature);
+uint16_t madc32_getCbltSignature(struct s_madc32 * s);
 
 void madc32_setFirstInChain(struct s_madc32 * s);
 bool_t madc32_isFirstInChain(struct s_madc32 * s);

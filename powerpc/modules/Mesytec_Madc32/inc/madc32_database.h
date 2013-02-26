@@ -80,8 +80,10 @@ struct s_madc32 {
 
 	bool_t blockXfer;			/* TRUE if block xfer enabled */
 
-	unsigned long mcstAddr;			/* MCST signature */
-	unsigned long cbltAddr;			/* CBLT signature */
+	unsigned long mcstSignature;		/* MCST signature */
+	volatile char * mcstAddr;		/* ... after mapping */
+	unsigned long cbltSignature;		/* CBLT signature */
+	volatile char * cbltAddr;		/* ... after mapping */
 	bool_t firstInChain;			/* TRUE if head of chain */
 	bool_t lastInChain;			/* TRUE if end of chain */
 

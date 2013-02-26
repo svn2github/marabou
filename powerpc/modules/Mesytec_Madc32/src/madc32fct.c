@@ -56,8 +56,8 @@ struct s_madc32 * madc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 		s->verbose = FALSE;
 		s->dumpRegsOnInit = FALSE;
 
-		s->mcstAddr = 0x0;
-		s->cbltAddr = 0x0;
+		s->mcstSignature = 0x0;
+		s->cbltSignature = 0x0;
 		s->firstInChain = FALSE;
 		s->lastInChain = FALSE;
 
@@ -284,7 +284,6 @@ void madc32_setHoldDelay_db(struct s_madc32 * s, uint16_t gg) { madc32_setHoldDe
 void madc32_setHoldDelay(struct s_madc32 * s, uint16_t gg, uint16_t delay)
 {
 	int offs;
-	printf("@@@ delay %d %#x\n", gg, delay);
 	switch (gg) {
 		case 0: offs = MADC32_GG_HOLD_DELAY_0; break;
 		case 1: offs = MADC32_GG_HOLD_DELAY_1; break;
@@ -309,7 +308,6 @@ void madc32_setHoldWidth_db(struct s_madc32 * s, uint16_t gg) { madc32_setHoldWi
 void madc32_setHoldWidth(struct s_madc32 * s, uint16_t gg, uint16_t width)
 {
 	int offs;
-	printf("@@@ width %d %#x\n", gg, width);
 	switch (gg) {
 		case 0: offs = MADC32_GG_HOLD_WIDTH_0; break;
 		case 1: offs = MADC32_GG_HOLD_WIDTH_1; break;
@@ -549,9 +547,9 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	}
 
 	sprintf(res, "MADC32.%s.MCSTSignature", mnUC);
-	s->mcstAddr = root_env_getval_x(res, 0x0);
+	s->mcstSignature = root_env_getval_x(res, 0x0);
 	sprintf(res, "MADC32.%s.CBLTSignature", mnUC);
-	s->cbltAddr = root_env_getval_x(res, 0x0);
+	s->cbltSignature = root_env_getval_x(res, 0x0);
 	sprintf(res, "MADC32.%s.FirstInChain", mnUC);
 	s->firstInChain = root_env_getval_b(res, FALSE);
 	sprintf(res, "MADC32.%s.LastInChain", mnUC);
@@ -715,11 +713,11 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 
 	mcstOrCblt = FALSE;
 	if (flag = madc32_mcstIsEnabled(s))
-					fprintf(f, "MCST signature [0x6024]   : %#x\n", madc32_getMcstAddrReg(s));
+					fprintf(f, "MCST signature [0x6024]   : %#x\n", madc32_getMcstSignature(s));
 	else				fprintf(f, "MCST                      : disabled\n");
 	mcstOrCblt |= flag;
 	if (flag = madc32_cbltIsEnabled(s))
-					fprintf(f, "CBLT signature [0x6022]   : %#x\n", madc32_getMcstAddrReg(s));
+					fprintf(f, "CBLT signature [0x6022]   : %#x\n", madc32_getCbltSignature(s));
 	else				fprintf(f, "CBLT                      : disabled\n");
 	mcstOrCblt |= flag;
 	if (mcstOrCblt) {
@@ -790,13 +788,13 @@ void madc32_printDb(struct s_madc32 * s)
 
 	printf("Addr reg          : %#x\n", s->addrReg);
 
-	if (s->mcstAddr != 0)
-					printf("MCST addr         : %#x\n", s->mcstAddr);
+	if (s->mcstSignature != 0)
+					printf("MCST signature    : %#x\n", s->mcstSignature);
 	else				printf("MCST              : disabled\n");
-	if (s->cbltAddr != 0)
-					printf("CBLT addr         : %#x\n", s->cbltAddr);
+	if (s->cbltSignature != 0)
+					printf("CBLT signature    : %#x\n", s->cbltSignature);
 	else				printf("CBLT              : disabled\n");
-	if ((s->mcstAddr != 0) || (s->cbltAddr != 0)) {
+	if ((s->mcstSignature != 0) || (s->cbltSignature != 0)) {
 		if (s->firstInChain) printf("MCST/CBLT chain   : first module in chain\n");
 		else if (s->lastInChain) printf("MCST/CBLT chain   : last module in chain\n");
 		else printf("MCST/CBLT chain   : module in the middle\n");
@@ -937,19 +935,24 @@ void madc32_resetFifo(struct s_madc32 * s)
 }
 
 void madc32_setMcstCblt_db(struct s_madc32 * s) {
-	madc32_setMcstAddr(s, s->mcstAddr);
-	madc32_setCbltAddr(s, s->cbltAddr);
+	madc32_setMcstAddr(s, s->mcstSignature);
+	madc32_setCbltAddr(s, s->cbltSignature);
 	if (s->firstInChain) madc32_setFirstInChain(s);
 	else if (s->lastInChain) madc32_setLastInChain(s);
 	else madc32_setMiddleOfChain(s);
 }
 
-void madc32_setMcstAddr(struct s_madc32 * s, unsigned long Addr) {
-	SET16(s->md->vmeBase, MADC32_MCST_ADDRESS, (Addr >> 24) & 0xFF);
-	if (Addr) madc32_setMcstEnable(s);
+void madc32_setMcstAddr(struct s_madc32 * s, unsigned long Signature) {
+	SET16(s->md->vmeBase, MADC32_MCST_ADDRESS, Signature);
+	if (Signature != 0) {
+		s->mcstAddr = mapAdditionalVME(s->md, (Signature & 0xFF) << 24, 0);
+		if (s->mcstAddr) madc32_setMcstEnable(s); else madc32_setMcstDisable(s);
+	} else {
+		madc32_setMcstDisable(s);
+	}
 }
 
-uint16_t madc32_getMcstAddrReg(struct s_madc32 * s) {
+uint16_t madc32_getMcstSignature(struct s_madc32 * s) {
 	uint16_t addr8;
 	addr8 = GET16(s->md->vmeBase, MADC32_MCST_ADDRESS);
 	return addr8;
@@ -969,12 +972,17 @@ bool_t madc32_mcstIsEnabled(struct s_madc32 * s) {
 	return ((ctrl & MADC32_MCST_DIS) != 0);
 }
 
-void madc32_setCbltAddr(struct s_madc32 * s, unsigned long Addr) {
-	SET16(s->md->vmeBase, MADC32_CBLT_ADDRESS, (Addr >> 24) & 0xFF);
-	if (Addr) madc32_setCbltEnable(s);
+void madc32_setCbltAddr(struct s_madc32 * s, unsigned long Signature) {
+	SET16(s->md->vmeBase, MADC32_CBLT_ADDRESS, Signature);
+	if (Signature != 0) {
+		s->cbltAddr = mapAdditionalVME(s->md, (Signature & 0xFF) << 24, 0);
+		if (s->cbltAddr) madc32_setCbltEnable(s); else madc32_setCbltDisable(s);
+	} else {
+		madc32_setCbltDisable(s);
+	}
 }
 
-uint16_t madc32_getCbltAddrReg(struct s_madc32 * s) {
+uint16_t madc32_getCbltSignature(struct s_madc32 * s) {
 	uint16_t addr8;
 	addr8 = GET16(s->md->vmeBase, MADC32_CBLT_ADDRESS);
 	return addr8;
