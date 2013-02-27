@@ -27,8 +27,8 @@ Bool_t unmapVME(struct s_mapDescr * mapDescr);
 
 Bool_t unmapAll();
 
-Bool_t setMappingForDest(UInt_t Mapping);
-UInt_t getMappingForDest();
+Bool_t setDestMapping(UInt_t Mapping);
+UInt_t getDestMapping();
 
 Bool_t initBLT();
 

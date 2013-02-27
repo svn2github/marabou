@@ -223,14 +223,14 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 	}
 }
 
-Bool_t setMappingForDest(UInt_t Mapping) {
+Bool_t setDestMapping(UInt_t Mapping) {
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           setMappingForDest
+// Name:           setDestMapping
 // Purpose:        Define mapping used for destination
 // Arguments:      UInt_t Mapping         -- mapping
 // Results:        TRUE/FALSE
-// Description:    Performs mapping to be used with block xfer
+// Description:    Defines destintation mapping, either static or direct
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
@@ -238,10 +238,10 @@ Bool_t setMappingForDest(UInt_t Mapping) {
 	return TRUE;
 }
 
-UInt_t getMappingForDest() {
+UInt_t getDestMapping() {
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           getMappingForDest
+// Name:           getDestMapping
 // Purpose:        Return mapping mode
 // Arguments:      ---
 // Results:        UInt_t Mapping         -- mapping
