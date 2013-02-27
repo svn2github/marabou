@@ -37,11 +37,11 @@ libMqdc32.OBJS = mqdc32fct.o
 all: $(LIB_TARGETS) mqdc32
 
 $(LIB_TARGETS): $(libMqdc32.OBJS)
+	cp ../inc/*.h ../../../include
 	$(AR) $(ARFLAGS) $@ $^
 	ranlib $@
 
 mqdc32:	mqdc32.o $(LIB_TARGETS)
-	cp ../inc/*.h ../../../../include
 	$(CC) -o mqdc32 mqdc32.o \
 		-L ../../../lib/$(GSI_OS_VERSION) \
 		-L /lib/ces \

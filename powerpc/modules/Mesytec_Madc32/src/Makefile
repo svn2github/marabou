@@ -37,7 +37,7 @@ libMadc32.OBJS = madc32fct.o
 all: $(LIB_TARGETS) madc32
 
 $(LIB_TARGETS): $(libMadc32.OBJS)
-	cp ../inc/*.h ../../../../include
+	cp ../inc/*.h ../../../include
 	$(AR) $(ARFLAGS) $@ $^
 	ranlib $@
 
