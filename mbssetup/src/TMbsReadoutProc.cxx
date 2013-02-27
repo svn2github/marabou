@@ -646,6 +646,23 @@ UInt_t TMbsReadoutProc::GetVSBAddr() const {
 	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "VSBAddr"), 0));
 }
 
+Bool_t TMbsReadoutProc::SetPipeType(Int_t Type) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMbsReadoutProc::SetPipeType
+// Purpose:        Define pipe type
+// Arguments:      Int_t Type    -- type
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets resource "TMbsSetup.ReadoutNNN.LocalPipeType".
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString r;
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "LocalPipeType"), Type, 16);
+	return(kTRUE);
+}
+
 Bool_t TMbsReadoutProc::SetPipeBase(UInt_t Addr) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -661,6 +678,22 @@ Bool_t TMbsReadoutProc::SetPipeBase(UInt_t Addr) {
 	TString r;
 	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "LocalPipeBase"), (Int_t) Addr, 16);
 	return(kTRUE);
+}
+
+Int_t TMbsReadoutProc::GetPipeType() const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMbsReadoutProc::GetPipeType
+// Purpose:        Return pipe type
+// Arguments:      --
+// Results:        Int_t Type  -- type
+// Exceptions:
+// Description:    Reads resource "TMbsSetup.ReadoutNNN.LocalPipeBase".
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString r;
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "LocalPipeType"), -1));
 }
 
 UInt_t TMbsReadoutProc::GetPipeBase() const {

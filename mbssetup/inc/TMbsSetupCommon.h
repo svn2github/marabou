@@ -80,6 +80,7 @@ enum EMbsSetupTags			{
 								kSetLocEsoneBase,
 								kSetLocMemoryBase,
 								kSetLocMemoryLength,
+								kSetLocPipeType,
 								kSetLocPipeBase,
 								kSetLocPipeLength,
 								kSetLocPipeOffset,

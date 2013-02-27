@@ -1507,7 +1507,26 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 					}
 					break;
 
-				case kSetLocPipeBase:
+				case kSetLocPipeType:
+					{
+						TArrayI arrayData(16);
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						Int_t pipeType = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeType"), -1);
+						if (pipeType == -1) {
+							UInt_t pty;
+							this->GetRcVal(pty, "LocalPipeType", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeType"), (Int_t) pty, 16);
+							pipeType = (Int_t) pty;
+						}
+						arrayData[0] = pipeType;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoLocPipeType", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+					case kSetLocPipeBase:
 					{
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;

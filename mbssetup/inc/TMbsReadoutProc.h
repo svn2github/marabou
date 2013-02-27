@@ -67,6 +67,8 @@ class TMbsReadoutProc : public TObject {
 		UInt_t GetVSBAddr() const;
 		Bool_t SetPipeBase(UInt_t Addr); 		// pipe base addr
 		UInt_t GetPipeBase() const;
+		Bool_t SetPipeType(Int_t Type); 		// pipe base type
+		Int_t GetPipeType() const;
 		Bool_t SetPipeSegLength(Int_t Length); 	// pipe seg length
 		Int_t GetPipeSegLength() const;
 		Bool_t SetPipeLength(Int_t NofSevts);	 	// pipe length (= max number of subevents in pipe)
