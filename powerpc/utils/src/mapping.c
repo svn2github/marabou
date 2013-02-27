@@ -78,6 +78,8 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 	md->mappingModes = Mapping;
 	md->mappingVME = kVMEMappingUndef;
 	md->mappingBLT = kVMEMappingUndef;
+	
+	md->mappingDest = kVMEMappingStatic;
 
 #ifdef CPU_TYPE_RIO4
 	if (Mapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
@@ -220,6 +222,36 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 			return (volatile Char_t *) dynamicAddr;
 	}
 }
+
+Bool_t setMappingForDest(UInt_t Mapping) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           setMappingForDest
+// Purpose:        Define mapping used for destination
+// Arguments:      UInt_t Mapping         -- mapping
+// Results:        TRUE/FALSE
+// Description:    Performs mapping to be used with block xfer
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	mappingDest = Mapping;
+	return TRUE;
+}
+
+UInt_t getMappingForDest() {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           getMappingForDest
+// Purpose:        Return mapping mode
+// Arguments:      ---
+// Results:        UInt_t Mapping         -- mapping
+// Description:    Returns mapping mode to be used for destination
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	return mappingDest;
+}
+
 
 Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
 /*________________________________________________________________[C FUNCTION]

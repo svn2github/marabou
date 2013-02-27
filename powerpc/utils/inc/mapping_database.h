@@ -78,6 +78,8 @@ enum	EMapSize	{	kSize_A32	=	0x06000000,
 #endif
 
 
+UInt_t mappingDest;					/* mapping for destination */
+
 struct s_mapDescr {
 	Char_t mdName[STRLEN];				/* name, to be used with smem_create() etc */
 
