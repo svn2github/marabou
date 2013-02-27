@@ -28,7 +28,6 @@
 #include <time.h>
 #include "s_evhe.h"
 #include "s_veshe.h"
-#include "s_setup.h"
 #include "gd_cnaf.h"
 #include "gd_camio.h"
 #include "gd_readout.h"
