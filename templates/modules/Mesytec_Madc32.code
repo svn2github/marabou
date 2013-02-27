@@ -116,17 +116,17 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-%M%								if (madc32_use_mcst && madc32_firstModuleInChain) { 	/* start modules in multicast mode */
-%M%									sprintf(msg, "[Starting Mesytec modules via MCST - first module in chain is %s]\n", madc32_firstModuleInChain->moduleName);
-%M% 									f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
-%M%									madc32_stopAcq_mcst(madc32_firstModuleInChain);
-%M%									madc32_startAcq_mcst(madc32_firstModuleInChain);
-%M%									break;		/* all done! */
-%M%								}
-%M%								madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
-%M%								madc32_startAcq(s_$moduleName);
-%N%								madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
-%N%								madc32_startAcq(s_$moduleName);
+%M%					if (madc32_use_mcst && madc32_firstModuleInChain) { 	/* start modules in multicast mode */
+%M%						sprintf(msg, "[Starting Mesytec modules via MCST - first module in chain is %s]\n", madc32_firstModuleInChain->moduleName);
+%M% 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+%M%						madc32_stopAcq_mcst(madc32_firstModuleInChain);
+%M%						madc32_startAcq_mcst(madc32_firstModuleInChain);
+%M%						break;		/* all done! */
+%M%					}
+%M%					madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+%M%					madc32_startAcq(s_$moduleName);
+%N%					madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+%N%					madc32_startAcq(s_$moduleName);
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -136,12 +136,12 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-%M%								if (madc32_use_mcst) { 	/* stop modules in multicast mode */
-%M%									madc32_stopAcq_mcst(madc32_firstModuleInChain);
-%M%									break;		/* all done! */
-%M%								}
-%M%								madc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
-%N%								madc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
+%M%					if (madc32_use_mcst) { 	/* stop modules in multicast mode */
+%M%						madc32_stopAcq_mcst(madc32_firstModuleInChain);
+%M%						break;		/* all done! */
+%M%					}
+%M%					madc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
+%N%					madc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 

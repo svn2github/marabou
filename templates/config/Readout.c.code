@@ -170,7 +170,6 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 // Keywords:
 ///////////////////////////////////////////////////////////////////////////*/
 
-	UInt_t destMapping;
 	static long ptrs_passed = 0L;	/* once only code */
 	
 	if ( ptrs_passed ) return(1);

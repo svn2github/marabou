@@ -75,6 +75,10 @@ void mqdc32_initialize(struct s_mqdc32 * s)
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }
 
+bool_t mqdc32_useBLT(struct s_mqdc32 * s) {
+	return s->blockXfer;
+}
+
 void mqdc32_soft_reset(struct s_mqdc32 * s)
 {
 /*  SET16(s->md->vmeBase, MQDC32_SOFT_RESET, 0x1);	*/

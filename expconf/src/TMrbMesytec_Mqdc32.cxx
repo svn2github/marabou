@@ -829,6 +829,7 @@ Bool_t TMrbMesytec_Mqdc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 				fCodeTemplates.WriteCode(RdoStrm);
 			}
+			break;
 		case TMrbConfig::kModuleReadModule:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
