@@ -59,8 +59,6 @@
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Static variables
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-static s_setup *ps_setup;		/* pointer to mbs setup (setup.usf) */
-
 static long clock_resolution;		/* clock resolution as given by clock_getres system call */
 static long trigger_count; 		/* count user triggers */
 static struct pdparam_master s_param; 		/* vme segment params */
@@ -178,14 +176,6 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 	
 	if ( ptrs_passed ) return(1);
 	ptrs_passed = 1L;
-
-	
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/ Get mapping mode for destination
-/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-	f_ut_get_setup_seg ((SM_READ | SM_WRITE), &ps_setup);
-    destMapping = (ps_setup->l_loc_pipe_type[0] == 0) ? kVMEMappingStatic : kVMEMappingDirect;
-	setDestMapping(destMapping);
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Initialize pointers to camac and/or vme modules
