@@ -1,6 +1,10 @@
 #ifndef __MQDC32_PROTOS_H__
 #define __MQDC32_PROTOS_H__
 
+#include "mapping_database.h"
+#include "mqdc32_database.h"
+#include "mqdc32.h"
+
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			mqdc32_protos.h
@@ -24,8 +28,8 @@ void mqdc32_loadFromDb(struct s_mqdc32 * s, uint32_t chnPattern);
 
 void mqdc32_initialize(struct s_mqdc32 * s);
 
-void madc32_enableBLT(struct s_madc32 * s);
-bool_t madc32_useBLT(struct s_madc32 * s);
+void mqdc32_enableBLT(struct s_mqdc32 * s);
+bool_t mqdc32_useBLT(struct s_mqdc32 * s);
 
 
 bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file);

@@ -2,6 +2,8 @@
 #define __MADC32_PROTOS_H__
 
 #include "mapping_database.h"
+#include "madc32_database.h"
+#include "madc32.h"
 
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
