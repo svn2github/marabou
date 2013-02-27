@@ -79,8 +79,6 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 	md->mappingVME = kVMEMappingUndef;
 	md->mappingBLT = kVMEMappingUndef;
 	
-	md->mappingDest = kVMEMappingStatic;
-
 #ifdef CPU_TYPE_RIO4
 	if (Mapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
 		md->vmeBase = PhysAddr | kAddr_A32Direct;
@@ -172,10 +170,11 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 	if (Size == 0) Size = 4096;
 
 	switch (mapDescr->mappingVME) {
+#ifdef CPU_TYPE_RIO4
 		case kVMEMappingDirect:
 			mapDescr->nofMappings++;
 			return (volatile Char_t *) (PhysAddr | kAddr_A32Direct);
-
+#endif
 		case kVMEMappingStatic:
 			switch (mapDescr->addrModVME) {
 				case kAM_A32:

@@ -66,6 +66,7 @@ xvme_is_rio2( void )
   }
   return(is_rio2);
 }
+#ifndef CPU_TYPE_RIO2
 int
 xvme_is_rio3( void ) 
 {
@@ -77,6 +78,7 @@ xvme_is_rio3( void )
   }
   return(is_rio3);
 }
+#ifdef CPU_TYPE_RIO4
 int
 xvme_is_rio4( void ) 
 {
@@ -88,6 +90,8 @@ xvme_is_rio4( void )
   }
   return(is_rio4);
 }
+#endif
+#endif
 /*
 *========================================================
 * map page
