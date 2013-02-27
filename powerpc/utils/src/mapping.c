@@ -166,8 +166,7 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 	UInt_t dynamicAddr;
 
 	char segName[64];
-
-	if (Size == 0) Size = 4096;
+	if (Size == 0) Size = mapDescr->segSizeVME;
 
 	switch (mapDescr->mappingVME) {
 #ifdef CPU_TYPE_RIO4

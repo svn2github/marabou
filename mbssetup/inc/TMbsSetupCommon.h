@@ -175,6 +175,7 @@ const SMrbNamedXShort kMbsSetupTags[] =			// list of setup tag words
 								{kSetLocEsoneBase,			"SET_LOC_ESONE_BASE"		},
 								{kSetLocMemoryBase,			"SET_LOC_MEMORY_BASE"		},
 								{kSetLocMemoryLength,		"SET_LOC_MEMORY_LENGTH"		},
+								{kSetLocPipeType,			"SET_LOC_PIPE_TYPE"			},
 								{kSetLocPipeBase,			"SET_LOC_PIPE_BASE"			},
 								{kSetLocPipeLength, 		"SET_LOC_PIPE_LENGTH"		},
 								{kSetLocPipeOffset, 		"SET_LOC_PIPE_OFFSET"		},

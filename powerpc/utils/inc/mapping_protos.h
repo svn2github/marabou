@@ -40,7 +40,4 @@ void printMapping();
 
 struct s_mapDescr * _findMapDescr(const Char_t * DescrName);
 struct s_mapDescr * _createMapDescr(const Char_t * DescrName);
-
-extern int vmtopm (int, struct dmachain *, char *, long);
-
 #endif
