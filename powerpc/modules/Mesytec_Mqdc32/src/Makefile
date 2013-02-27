@@ -14,6 +14,8 @@ BIN_DIR = ../../../bin/$(GSI_OS_VERSION)
 AR = ar
 ARFLAG = -rv
 
+LIB		= $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
+
 # ------------ Library-Objects ----------------------------------------
 
 LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libMqdc32.a

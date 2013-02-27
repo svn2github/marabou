@@ -22,9 +22,9 @@
 
 #include "gd_readout.h"
 
-#include "madc32.h"
-#include "madc32_database.h"
-#include "madc32_protos.h"
+#include "mqdc32.h"
+#include "mqdc32_database.h"
+#include "mqdc32_protos.h"
 
 #include "root_env.h"
 #include "mapping_database.h"
@@ -56,7 +56,7 @@ struct s_mqdc32 * mqdc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 		s->firstInChain = FALSE;
 		s->lastInChain = FALSE;
 
-		firmware = GET16(s->md->vmeBase, MADC32_FIRMWARE_REV);
+		firmware = GET16(s->md->vmeBase, MQDC32_FIRMWARE_REV);
 		mainRev = (firmware >> 8) & 0xff;
 		s->memorySize = (mainRev >= 2) ? (8*1024 + 2) : (1024 + 2);
 	} else {
@@ -70,8 +70,9 @@ void mqdc32_initialize(struct s_mqdc32 * s)
 {
 	signal(SIGBUS, catchBerr);
 /*	mqdc32_disableBusError(s);	*/
-	mqdc32_enableBma(s);
 	mqdc32_resetReadout(s);
+	sprintf(msg, "[%sinitialize] %s: Block xfer is %s", s->mpref, s->moduleName, s->blockXfer ? "ON" : "OFF");
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }
 
 void mqdc32_soft_reset(struct s_mqdc32 * s)
@@ -112,11 +113,6 @@ uint16_t mqdc32_getAddrReg(struct s_mqdc32 * s)
 	uint16_t source = GET16(s->md->vmeBase, MQDC32_ADDR_SOURCE);
 	if (source & MQDC32_ADDR_SOURCE_REG) return GET16(s->md->vmeBase, MQDC32_ADDR_REG);
 	else return 0;
-}
-
-void mqdc32_setMcstCblt_db(struct s_mqdc32 * s) {
-	if (s->mcstSignature != 0) mqdc32_enableMCST(s, s->mcstSignature, s->firstInChain, s->lastInChain); else mqdc32_disableMCST(s);
-	if (s->cbltSignature != 0) mqdc32_enableCBLT(s, s->cbltSignature, s->firstInChain, s->lastInChain); else mqdc32_disableCBLT(s);
 }
 
 void mqdc32_setModuleId_db(struct s_mqdc32 * s) { mqdc32_setModuleId(s, s->moduleId); }
@@ -440,7 +436,7 @@ void mqdc32_moduleInfo(struct s_mqdc32 * s)
 	sprintf(msg, "[%smodule_info] %s: phys addr %#lx, mapped to %#lx, firmware %02x.%02x (%dk memory)",
 									s->mpref,
 									s->moduleName,
-									s->vmeAddr,
+									s->md->physAddrVME,
 									s->md->vmeBase,
 									mainRev, subRev, (mainRev >= 2) ? 8 : 1);
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -487,9 +483,6 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 
 	sprintf(res, "MQDC32.%s.BlockXfer", mnUC);
 	s->blockXfer = root_env_getval_b(res, FALSE);
-
-	sprintf(res, "MQDC32.%s.AccuChannel", mnUC);
-	s->accuChannel = root_env_getval_i(res, -1);
 
 	for (i = 0; i < NOF_CHANNELS; i++) {
 		sprintf(res, "MQDC32.%s.Thresh.%d", mnUC, i);
@@ -652,6 +645,8 @@ bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file)
 	int ch;
 	int b;
 
+	bool_t mcstOrCblt, flag;;
+
 	if (!s->dumpRegsOnInit) return(TRUE);
 
 	f = fopen(file, "w");
@@ -784,7 +779,10 @@ void mqdc32_printDb(struct s_mqdc32 * s)
 	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
 }
 
+int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 {
+	static int addrOffset = 0;
+
 	uint32_t * dataStart;
 	uint32_t * dp;
 	uint32_t data;
@@ -811,7 +809,7 @@ void mqdc32_printDb(struct s_mqdc32 * s)
 	if (s->blockXfer) {
 		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));
 		if (ptrloc == NULL) return(0);
-		bmaError = bma_read(s->md->bltBase + MADC32_DATA, ptrloc | 0x0, numData, s->md->bltModeId);
+		bmaError = bma_read(s->md->bltBase + MQDC32_DATA, ptrloc | 0x0, numData, s->md->bltModeId);
 		if (bmaError != 0) {
 			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, sys_errlist[errno], errno, numData);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -819,7 +817,7 @@ void mqdc32_printDb(struct s_mqdc32 * s)
 		}
 		pointer += numData;
 	} else {
-		for (i = 0; i < numData; i++) *pointer++ = GET32(s->md->vmeBase, MADC32_DATA);
+		for (i = 0; i < numData; i++) *pointer++ = GET32(s->md->vmeBase, MQDC32_DATA);
 	}
 
 	mqdc32_resetReadout(s);
@@ -869,34 +867,15 @@ void mqdc32_startAcq(struct s_mqdc32 * s)
 	mqdc32_resetFifo(s);
 	mqdc32_resetReadout(s);
 	mqdc32_resetTimestamp(s);
-	memset(s->histo, 0, MQDC32_N_HISTOSIZE * sizeof(int));
-	if (s->accuChannel >= 0) {
-		sprintf(msg, "[%sstartAcq] %s: Accumulating data for channel %d)", s->mpref, s->moduleName, s->accuChannel);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	}
 	SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x1);
-	s->acqStarted = TRUE;
 }
 
 void mqdc32_stopAcq(struct s_mqdc32 * s)
 {
-	int i;
-	char histoFile[100];
-	FILE * f;
-
 	SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x0);
 	mqdc32_resetFifo(s);
 	mqdc32_resetReadout(s);
 	mqdc32_resetTimestamp(s);
-	if (s->acqStarted && (s->accuChannel >= 0)) {
-		sprintf(histoFile, "histo_%s_%d.dat", s->moduleName, s->accuChannel);
-		f = fopen(histoFile, "w");
-		for (i = 0; i < MQDC32_N_HISTOSIZE; i++) fprintf(f, "%5d %8d\n", i, s->histo[i]);
-		fclose(f);
-		sprintf(msg, "[%sstopAcq] %s: File %s written - %d channels)", s->mpref, s->moduleName, histoFile, MQDC32_N_HISTOSIZE);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	}
-	s->acqStarted = FALSE;
 }
 
 void mqdc32_resetFifo(struct s_mqdc32 * s)
@@ -907,28 +886,6 @@ void mqdc32_resetFifo(struct s_mqdc32 * s)
 void mqdc32_resetTimestamp(struct s_mqdc32 * s)
 {
 	SET16(s->md->vmeBase, MQDC32_CTRA_RESET_A_OR_B, 0x3);
-}
-
-void mqdc32_startAcq(struct s_mqdc32 * s)
-{
-	SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x0);
-	mqdc32_resetFifo(s);
-	mqdc32_resetReadout(s);
-	mqdc32_resetTimestamp(s);
- 	SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x1);
-}
-
-void mqdc32_stopAcq(struct s_mqdc32 * s)
-{
-	SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x0);
-	mqdc32_resetFifo(s);
-	mqdc32_resetReadout(s);
-	mqdc32_resetTimestamp(s);
-}
-
-void mqdc32_resetFifo(struct s_mqdc32 * s)
-{
-	SET16(s->md->vmeBase, MQDC32_FIFO_RESET, 0x1);
 }
 
 void mqdc32_setMcstCblt_db(struct s_mqdc32 * s) {
