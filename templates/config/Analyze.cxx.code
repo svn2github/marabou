@@ -621,3 +621,24 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %%EndOfCode%%
 %%INCLUDE_DUMMY_METHODS%%
 
+Bool_t UnpackInitialize(const Char_t * RootFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           UnpackInitialize
+// Purpose:        Initialize unpacker
+// Arguments:      Char_t * RootFile     -- name of root file containing tree
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Initialize unpacking and open root file
+//                 (to be used in offline analysis only)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbAnalyze == NULL) {
+		TMrbIOSpec * io = new TMrbIOSpec();
+		gMrbAnalyze = new TMrbAnalyze(io);			// init analysis specific for current setup
+	}
+	if (!gMrbAnalyze->OpenRootFile(RootFile)) return kFALSE;		// open root file, setup tree
+	return kTRUE;
+}
+

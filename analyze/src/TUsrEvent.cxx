@@ -237,7 +237,7 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t 
 //                 Int_t InitValue        -- init value to reset event vector
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:   Loops thru hitbuffers and fills subvent storage event by event.
+// Description:    Loops thru hitbuffers and fills subvent storage event by event.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -259,6 +259,41 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t 
 		}
 	}
 	return(foundHbx);
+}
+
+Int_t TUsrEvent::FillArrayFromHB(TUsrHBX * HBX, ULong64_t & TimeStamp, TArrayI & Data, Int_t Hidx, Int_t Didx, Int_t InitValue) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent::FillArrayFromHB
+// Purpose:        Fill array from hitbuffer
+// Arguments:      TUsrHBX * HBX          -- pointer to hit buffer
+//                 Int_t Hidx             -- current index in hit buffer
+//                 Int_t Didx             -- data index within hit
+//                 Int_t InitValue        -- init value for reset
+// Results:        ULong64_t & TimeStamp  -- time stamp
+//                 TArrayI & Data         -- data
+//                 Int_t NextIndex   -- index to be used in next call, -1 at end
+// Exceptions:
+// Description:    Get next event from hit buffer.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofHits = HBX->GetNofHits();				// number of hits in hitbuffer
+	if (nofHits > 0 && Hidx < nofHits) {
+		Data.Reset(InitValue);						// reset data vector
+		TUsrHit * hit = HBX->At(Hidx);				// inspect head of hitlist
+		Int_t evtNo = hit->GetEventNumber();		// extract event number
+		TimeStamp = hit->GetChannelTime();			// and timestamp
+		Bool_t foundHit = kFALSE;
+		for (Int_t hidx = Hidx; hidx < nofHits; hidx++) {		// loop over hits as long as event number doesn't change
+			hit = HBX->At(hidx);
+			if (hit->GetEventNumber() != evtNo) return(foundHit ? hidx : -1);		// return start indec of next event
+			Data[hit->GetChannel()] = hit->GetData(Didx);							// fill vector with data for given channel
+			foundHit = kTRUE;
+		}
+		return(foundHit ? nofHits : -1);			// end of hitbuffer
+	}
+	return(-1);		// no more data
 }
 
 void TUsrEvent::Print(const Char_t * Text, UInt_t TimeStamp) {

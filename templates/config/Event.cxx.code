@@ -567,3 +567,26 @@ void TUsrEvt%%EVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 %%EndOfCode%%
 %%EVT_RESET_DATA%%
 }
+
+Int_t TUsrEvt%%EVT_NAME_UC%%::UnpackNextEvent(Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%::UnpackNextEvent
+// Purpose:        Get next mbs event from tree
+// Arguments:      TTree * Tree       -- input tree
+//                 Int_t EntryNo      -- current entry in tree
+// Results:        Int_t EntryNo      -- next entry
+// Exceptions:
+// Description:    Reads next mbs event from tree
+//                 (to be used in offline analysis only)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (EntryNo < fTreeIn->GetEntriesFast()) {		// are there more events?
+		fTreeIn->GetEvent(EntryNo);
+		EntryNo++;
+		return EntryNo;
+	}
+	return -1;
+}
+

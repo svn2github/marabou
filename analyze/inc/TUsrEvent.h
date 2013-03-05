@@ -87,6 +87,9 @@ class TUsrEvent : public TObject {
 
 		Int_t FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto = kTRUE, Int_t Didx = TUsrHit::kHitEnergy);
 		Bool_t FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto = kTRUE, Int_t Didx = TUsrHit::kHitEnergy, Int_t InitValue = 0);
+		
+		Int_t FillArrayFromHB(TUsrHBX * HBX, ULong64_t & TimeStamp, TArrayI & Data, Int_t Hidx, Int_t Didx = TUsrHit::kHitEnergy, Int_t InitValue = 0);
+
 		virtual void Reset(Int_t InitValue = 0, Bool_t DataOnly = kFALSE) {};
 		
 		void Print(const Char_t * Text, UInt_t TimeStamp = 0);

@@ -40,6 +40,8 @@ class TUsrEvt%%EVT_NAME_UC%% :
 		Bool_t InitializeTree(TFile * RootFile); 				// init tree (replay mode only)
 		Bool_t ReplayTreeData(TMrbIOSpec * IOSpec);				// replay tree data
 		void Reset(Int_t InitValue = 0, Bool_t DataOnly = kFALSE);	// reset event data
+		
+		Int_t UnpackNextEvent(Int_t EntryNo);					// unpack next event
 
 		inline UInt_t GetSubeventPattern() const { return(fSubeventPattern); };
 		inline Bool_t ThereIsSubevent(UInt_t SubeventBit) const { return((fSubeventPattern & SubeventBit) != 0); };
