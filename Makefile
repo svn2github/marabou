@@ -294,25 +294,49 @@ changelog:
 	@$(MAKECHANGELOG)
 
 install:
-	@(if [ -d $(BINDIR) ]; then \
-	   inode1=`ls -id $(BINDIR) | awk '{ print $$1 }'`; \
-	fi; \
-	inode2=`ls -id $$PWD/bin | awk '{ print $$1 }'`; \
-	if [ -d $(BINDIR) ] && [ $$inode1 -eq $$inode2 ]; then \
-		echo "Everything already installed..."; \
-	else \
-		echo "Installing binaries in  $(BINDIR)"; \
-		$(INSTALLDIR) $(BINDIR); \
-		$(INSTALLFILES) $(ALLEXECS) $(BINDIR); \
-		echo "Installing libraries in $(LIBDIR)"; \
-		$(INSTALLDIR) $(LIBDIR); \
-		$(INSTALLFILES) $(ALLLIBS) $(LIBDIR); \
-		echo "Installing objs in      $(OBJDIR)"; \
-		$(INSTALLDIR) $(OBJDIR); \
-		$(INSTALL) $(ALLOBJS) $(OBJDIR); \
-		echo "Installing headers in   $(INCDIR)"; \
-		$(INSTALLDIR) $(INCDIR); \
-		$(INSTALLDATA) include/*.h $(INCDIR); \
+	@(if [ -z "$(MARABOU_INSTALL_PATH)" ]; then echo "MARABOU_INSTALL_PATH has to be set first!"; else \
+		if [ -d $(BINDIR) ]; then \
+			inode1=`ls -id $(BINDIR) | awk '{ print $$1 }'`; \
+		fi; \
+		inode2=`ls -id $$PWD/bin | awk '{ print $$1 }'`; \
+		if [ -d $(BINDIR) ] && [ $$inode1 -eq $$inode2 ]; then \
+			echo "Everything already installed..."; \
+		else \
+			echo "Installing binaries in  $(BINDIR)"; \
+			$(INSTALLDIR) $(BINDIR); \
+			$(INSTALLFILES) $(ALLEXECS) $(BINDIR); \
+			echo "Installing libraries in $(LIBDIR)"; \
+			$(INSTALLDIR) $(LIBDIR); \
+			$(INSTALLFILES) $(ALLLIBS) $(LIBDIR); \
+			echo "Installing objs in      $(OBJDIR)"; \
+			$(INSTALLDIR) $(OBJDIR); \
+			$(INSTALL) $(ALLOBJS) $(OBJDIR); \
+			echo "Installing headers in   $(INCDIR)"; \
+			$(INSTALLDIR) $(INCDIR); \
+			$(INSTALLDATA) include/*.h $(INCDIR); \
+			echo "Installing templates in   $(TEMPLDIR)"; \
+			$(INSTALLDIR) $(TEMPLDIR); \
+			$(INSTALLDATA) templates/* $(TEMPLDIR); \
+			echo "Installing data in   $(DATADIR)"; \
+			$(INSTALLDIR) $(DATADIR); \
+			$(INSTALLDATA) data/* $(DATADIR); \
+			echo "Installing macros in   $(MACRODIR)"; \
+			$(INSTALLDIR) $(MACRODIR); \
+			$(INSTALLDATA) macros/* $(MACRODIR); \
+			echo "Installing icons in   $(ICONPATH)"; \
+			$(INSTALLDIR) $(ICONPATH); \
+			$(INSTALLDATA) icons/* $(ICONPATH); \
+			echo "Installing sounds in   $(SOUNDPATH)"; \
+			$(INSTALLDIR) $(SOUNDPATH); \
+			$(INSTALLDATA) sounds/* $(SOUNDPATH); \
+			echo "Installing HistPresents doc in  $(DOCHPRDIR)"; \
+			$(INSTALLDIR) $(DOCHPRDIR); \
+			$(INSTALLDATA) doc/hpr/* $(DOCHPRDIR); \
+		fi \
+	fi)
+
+install-others:
+	@(if [ -z "$(MARABOU_INSTALL_PATH)" ]; then echo "MARABOU_INSTALL_PATH has to be set first!"; else \
 		echo "Installing templates in   $(TEMPLDIR)"; \
 		$(INSTALLDIR) $(TEMPLDIR); \
 		$(INSTALLDATA) templates/* $(TEMPLDIR); \
@@ -333,28 +357,9 @@ install:
 		$(INSTALLDATA) doc/hpr/* $(DOCHPRDIR); \
 	fi)
 
-install-others:
-		@echo "Installing templates in   $(TEMPLDIR)"; \
-		$(INSTALLDIR) $(TEMPLDIR); \
-		$(INSTALLDATA) templates/* $(TEMPLDIR); \
-		echo "Installing data in   $(DATADIR)"; \
-		$(INSTALLDIR) $(DATADIR); \
-		$(INSTALLDATA) data/* $(DATADIR); \
-		echo "Installing macros in   $(MACRODIR)"; \
-		$(INSTALLDIR) $(MACRODIR); \
-		$(INSTALLDATA) macros/* $(MACRODIR); \
-		echo "Installing icons in   $(ICONPATH)"; \
-		$(INSTALLDIR) $(ICONPATH); \
-		$(INSTALLDATA) icons/* $(ICONPATH); \
-		echo "Installing sounds in   $(SOUNDPATH)"; \
-		$(INSTALLDIR) $(SOUNDPATH); \
-		$(INSTALLDATA) sounds/* $(SOUNDPATH); \
-		echo "Installing HistPresents doc in  $(DOCHPRDIR)"; \
-		$(INSTALLDIR) $(DOCHPRDIR); \
-		$(INSTALLDATA) doc/hpr/* $(DOCHPRDIR); \
-
 install-html:
-		@echo "Installing html files in $(HTMLURL)"; \
+	@(if [ -z "$(MARABOU_ADMIN)" ]; then echo "MARABOU_ADMIN has to be set first!"; else \
+		echo "Installing html files in $(HTMLURL)"; \
 		$(INSTALLDIR)	htmldoc \
 				htmldoc/marabou \
 				htmldoc/gutils \
@@ -370,20 +375,20 @@ install-html:
 		$(INSTALLDATA) c_analyze/doc/*.gif htmldoc/c_analyze; \
 		$(INSTALLDATA) snake/doc/*.gif htmldoc/snake; \
 		$(INSTALLDATA) dgfcontrol/doc/*.gif htmldoc/dgfcontrol; \
-		$(INSTALLDATA) html/marabou/MARaBOU.html htmldoc; \
-
-		if [ -z "$(MARABOU_ADMIN)" ]; then echo "MARABOU_ADMIN has to be set first!"; else \
 		echo "[Enter password for $(MARABOU_ADMIN)]"; \
 		$(UPLOADHTML); \
-		fi
+	fi)
 
 install-dist:
-		@echo "Installing distribution files in $(DISTURL)"; \
-		echo "[Enter (normal) root password]"; \
-		$(UPLOADDIST) marabou
+	@(if [ -z "$(MARABOU_ADMIN)" ]; then echo "MARABOU_ADMIN has to be set first!"; else \
+		echo "Installing distribution files in $(DISTURL)"; \
+		echo "[Enter password for $(MARABOU_ADMIN)]"; \
+		$(UPLOADDIST) marabou; \
+	fi)
 
 install-snake:
-		@echo "Installing SNAKE binaries in  $(BINDIR)"; \
+	@(if [ -z "$(MARABOU_INSTALL_PATH)" ]; then echo "MARABOU_INSTALL_PATH has to be set first!"; else \
+		echo "Installing SNAKE binaries in  $(BINDIR)"; \
 		$(INSTALLDIR) $(BINDIR); \
 		$(INSTALL) bin/DDAControl bin/DDAExec $(BINDIR); \
 		echo "Installing SNAKE libraries in $(LIBDIR)"; \
@@ -391,38 +396,15 @@ install-snake:
 		$(INSTALL) lib/libTSnkDDA0816.so $(LIBDIR); \
 		echo "Installing SNAKE headers in   $(INCDIR)"; \
 		$(INSTALLDIR) $(INCDIR); \
-		$(INSTALLDATA) include/TSnk*.h include/DDA*.h $(INCDIR)
+		$(INSTALLDATA) include/TSnk*.h include/DDA*.h $(INCDIR); \
+	fi)
 
 install-expconf:
+	@(if [ -z "$(MARABOU_INSTALL_PATH)" ]; then echo "MARABOU_INSTALL_PATH has to be set first!"; else \
 		echo "Installing CONFIG libraries in $(LIBDIR)"; \
 		$(INSTALLDIR) $(LIBDIR); \
-		$(INSTALL) lib/libTMrbConfig.so $(LIBDIR)
-
-install-ppc:
-		@echo "Installing ppc headers in $(PPCDIR)/include"; \
-		$(INSTALLDIR) $(PPCDIR)/include; \
-		$(INSTALLDATA) powerpc/include/* $(PPCDIR)/include; \
-		$(INSTALLDATA) powerpc/*/inc/* $(PPCDIR)/include; \
-		echo "Installing ppc libraries in $(PPCDIR)/lib/*"; \
-		$(INSTALLDATA) powerpc/lib/2.5 $(PPCDIR)/lib; \
-		$(INSTALLDATA) powerpc/lib/2.5/* $(PPCDIR)/lib/2.5; \
-		$(INSTALLDATA) powerpc/lib/3.1 $(PPCDIR)/lib; \
-		$(INSTALLDATA) powerpc/lib/3.1/* $(PPCDIR)/lib/3.1; \
-		echo "Installing ppc binaries in $(PPCDIR)/bin/*"; \
-		$(INSTALLDATA) powerpc/bin/2.5 $(PPCDIR)/bin; \
-		$(INSTALLDATA) powerpc/bin/2.5/* $(PPCDIR)/bin/2.5; \
-		$(INSTALLDATA) powerpc/bin/3.1 $(PPCDIR)/bin; \
-		$(INSTALLDATA) powerpc/bin/3.1/* $(PPCDIR)/bin/3.1; \
-		echo "Installing ppc module headers in $(PPCDIR)/include"; \
-		$(INSTALLDATA) powerpc/modules/*/inc/* $(PPCDIR)/include; \
-		echo "Installing ppc module libraries in $(PPCDIR)/lib/*"; \
-		for FLIST in powerpc/modules/lib/*/*; do \
-			DIR=`dirname $$FLIST`; \
-			SUBDIR=`basename $$DIR`; \
-			if [ -d $$DIR ]; then \
-				$(INSTALLDATA) powerpc/modules/lib/$$SUBDIR/* $(PPCDIR)/lib/$$SUBDIR; \
-			fi; \
-		done; \
+		$(INSTALL) lib/libTMrbConfig.so $(LIBDIR); \
+	fi)
 
 showbuild:
 	@echo "MODULES            = $(MODULES)"

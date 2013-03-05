@@ -13,7 +13,10 @@ EXCLUDEO=`for i in */src/*.o ; do echo --exclude $i; done `
 EXCLUDED=`for i in */src/*.d ; do echo --exclude $i; done `
 EXCLUDECVS=`for i in *; do find $i -name CVS -exec echo --exclude {} --exclude {}/* \;; done`
 
-echo "[Making MARaBOU distribution (version $CERN_LEVEL): $TARFILE]"
+TARFILE=`root-config --version`
+TARFILE=marabou-`dirname $TARFILE`.`basename $TARFILE`.tgz
+
+echo "[Making MARaBOU distribution: $TARFILE]"
 
 rm -f $TARFILE
 
@@ -26,15 +29,12 @@ tar --exclude *.so  \
 
 TF=`root-config --version`
 TF=marabou-`dirname $TF`.`basename $TF`.tgz
-echo "[Linking $TARFILE to $TF]"
-ln -s $TARFILE $TF
 
-TARFILE=marabou_html_$CERN_LEVEL.tgz
+TARFILE=`root-config --version`
+TARFILE=marabou-html-`dirname $TARFILE`.`basename $TARFILE`.tgz
 
-echo "[Making MARaBOU HTML docu (version $CERN_LEVEL): $TARFILE]"
+echo "[Making MARaBOU HTML docu: $TARFILE]"
 
-rm -f $TARFILE
-
-tar -czf $TARFILE html
+tar -czf $TARFILE htmldoc
 
 exit 0
