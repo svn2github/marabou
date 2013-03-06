@@ -6,16 +6,22 @@
 	setup = new TMbsSetup(".mbssetup");
 	TString evtBuilder = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "");
 	if (evtBuilder.IsNull()) {
-		cerr << setred << "mbssetup.C: Name of eventBuilder missing: Please define \"TMbsSetup.EventBuilder.Name\" in .rootrc" << setblack << endl;
-		gSystem->Exit(0);
+		evtBuilder = gEnv->GetValue("TMbsSetup.DefaultHost", "");
+		if (evtBuilder.IsNull()) {
+			cerr << setred << "mbssetup.C: Name of eventBuilder missing: Please define \"TMbsSetup.EventBuilder.Name\" in .rootrc" << setblack << endl;
+			gSystem->Exit(1);
+		}
 	}
 	setup->EvtBuilder()->SetProcName(evtBuilder.Data());
 	TString remoteHome = setup->RemoteHomeDir();
 	setup->SetNofReadouts(1);
 	TString ppcPath = gEnv->GetValue("TMbsSetup.WorkingDir", "");
 	if (ppcPath.IsNull()) {
-		cerr << setred << "mbssetup.C: Working directory missing: Please define \"TMbsSetup.WorkingDir\" in .rootrc (\"ppc\" recommended)" << setblack << endl;
-		gSystem->Exit(0);
+		ppcPath = gEnv->GetValue("TMbsSetup.DefaultHomeDir", "");		
+		if (ppcPath.IsNull()) {
+			cerr << setred << "mbssetup.C: Working directory missing: Please define \"TMbsSetup.WorkingDir\" in .rootrc (\"ppc\" recommended)" << setblack << endl;
+			gSystem->Exit(1);
+		}
 	}
 	setup->SetPath(ppcPath.Data());
 	TString rdoProc = gEnv->GetValue("TMbsSetup.Readout0.Name", "");
