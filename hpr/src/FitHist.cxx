@@ -3444,6 +3444,7 @@ void FitHist::Draw3DimPolyMarker()
 	hempty->GetYaxis()->SetTickLength(hempty->GetXaxis()->GetTickLength());
 	TPolyMarker3D * pm;
 	Double_t x, y, z;
+	Int_t ncolors = gStyle->GetNumberOfColors();
 	
 	for (Int_t ix = 0; ix < ax->GetNbins(); ix++) {
 		for (Int_t iy = 0; iy < ay->GetNbins(); iy++) {
@@ -3455,13 +3456,15 @@ void FitHist::Draw3DimPolyMarker()
 					y = ay->GetBinCenter(iy);
 					z = az->GetBinCenter(iz);
 					pm->SetPoint(0,x, y, z);
-					Int_t col = (Int_t)((cont / (max-min) )* 50. + 50);
+					Int_t col = (Int_t)((cont / (max-min) )* ncolors);
+					Int_t theColor = Int_t((col+0.99)*Float_t(ncolors)/Float_t(ncolors));
+					if (theColor > ncolors-1) theColor = ncolors-1;
 //					cout << " max  cont Col "<< max << " "  << cont << " " << col << endl;
 					UInt_t icont = (UInt_t)cont;
 					pm->SetUniqueID(icont);
 					pm->SetName(Form(" X =  %6.4g Y =  %6.4g Z = %6.4g Content %6.4g",
 										  x, y, z, cont));
-					pm->SetMarkerColor(col);
+					pm->SetMarkerColor(gStyle->GetColorPalette(theColor));
 					pm->SetMarkerStyle(fMarkerStyle3Dim);
 					pm->SetMarkerSize(fMarkerSize3Dim);
 					pm->Draw();
@@ -3547,7 +3550,7 @@ void FitHist::Draw3DimView()
 	}
 	
 	pl3->Draw();
-	
+	Int_t ncolors = gStyle->GetNumberOfColors();
 	for (Int_t ix = 0; ix < ax->GetNbins(); ix++) {
 		for (Int_t iy = 0; iy < ay->GetNbins(); iy++) {
 			for (Int_t iz = 0; iz < az->GetNbins(); iz++) {
@@ -3558,13 +3561,16 @@ void FitHist::Draw3DimView()
 					y = ay->GetBinCenter(iy);
 					z = az->GetBinCenter(iz);
 					pm->SetPoint(0,x, y, z);
-					Int_t col = (Int_t)((cont / (max-min) )* 50. + 50);
+					Int_t col = (Int_t)((cont / (max-min) )* ncolors);
+					Int_t theColor = Int_t((col+0.99)*Float_t(ncolors)/Float_t(ncolors));
+					if (theColor > ncolors-1) theColor = ncolors-1;
+//					Int_t col = (Int_t)((cont / (max-min) )* 50. + 50);
 //					cout << " max  cont Col "<< max << " "  << cont << " " << col << endl;
 					UInt_t icont = (UInt_t)cont;
 //					pm->SetUniqueID(icont);
 					pm->SetName(Form(" X =  %6.4g Y =  %6.4g Z = %6.4g Content %6.4g",
 										  x, y, z, cont));
-					pm->SetMarkerColor(col);
+					pm->SetMarkerColor(gStyle->GetColorPalette(theColor));
 					pm->SetMarkerStyle(fMarkerStyle3Dim);
 					pm->SetMarkerSize(fMarkerSize3Dim);
 					pm->Draw();
