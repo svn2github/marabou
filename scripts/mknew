@@ -1,0 +1,90 @@
+if [ $# -ne 2 ]
+then
+  echo
+  echo "mknew: create a new miniball directory"
+  echo
+  echo "       Usage: mknew <old_dir_name> <new_dir_name>"
+  echo
+  echo "              <old_dir_name>    existing miniball dir"
+  echo "              <new_dir_name>    new miniball dir to be created"
+  echo
+  echo "       creates a new dir <new_dir_name> and copies all relevant files from <old_dir_name>"
+  echo
+  exit 0
+fi
+ 
+echo "mknew: creating directory $2"
+mkdir $2
+echo "mknew: copying root files: *.C"
+cp -p $1/*.C $2
+echo "mknew: copying calibration files: *.cal"
+cp -p $1/*.cal $2
+echo "mknew: copying config definition files: *.def"
+cp -p $1/*.def $2
+echo "mknew: copying root environment: .rootrc"
+cp -p $1/.rootrc $2
+echo "mknew: copying root environment: .hprrc"
+cp -p $1/.hprrc $2
+echo "mknew: creating subdirectory ./ppc"
+cp -p -r $1/ppc $2
+echo "mknew: creating subdirectory ./udef"
+cp -p -r $1/udef $2
+if [ -f $1/iniMrbPath ]
+then
+  echo "mknew: copying ROOTSYS/MARABOU setup: ./iniMrbPath"
+  cp -p $1/iniMrbPath $2
+fi
+if [ -f $1/adc1Settings.rc ]
+then
+  echo "mknew: copying adc/qdc settings: ./*Settings.rc"
+  cp -p $1/adc?Settings.rc $2
+fi
+if [ -f $1/.mbssetup-localdefs ]
+then
+  echo "mknew: copying local mbssetup defs: ./.mbssetup-localdefs"
+  cp -p $1/.mbssetup-localdefs $2
+fi
+echo "mknew: copying histogram lists"
+cp -p $1/*.histlist $2
+cd $2
+echo "Fix up paths in C_analyze.def"
+grep -v DIR: C_analyze.def > C_analyze.def~
+echo "DIR: `pwd`/ppc" >> C_analyze.def~
+mv C_analyze.def~ C_analyze.def
+echo "Fix up paths in .rootrc"
+grep -v TMbsSetup.DefaultHomeDir: .rootrc | grep -v TMbsSetup.WorkingDir: > .rootrc~
+echo "TMbsSetup.DefaultHomeDir: `pwd`" >> .rootrc~
+echo "TMbsSetup.WorkingDir: `pwd`/ppc" >> .rootrc~
+mv .rootrc~ .rootrc
+rm .mbssetup
+echo
+echo "mknew: performing config step"
+root -b Config.C
+root -b Config.C
+echo
+echo "mknew: performing mbssetup"
+root -b mbssetup.C
+MBSSETUP_DONE=$?
+echo
+echo "mknew: compiling analysis code (Linux/ROOT)"
+make -f *Analyze.mk clean all
+echo
+echo "mknew: compiling readout code (Lynx/MBS)"
+root -b mkReadout.C
+READOUT_DONE=$?
+echo
+echo
+echo "================================================================================="
+echo "mknew: directory $2 ready to be used"
+if [ $MBSSETUP_DONE -ne 0 ]
+then
+	echo "mbssetup.C failed - please correct entries in .rootrc and call \"Setup MBS\" in C_analyze!"
+fi
+if [ $READOUT_DONE -ne 0 ]
+then
+	echo "mkReadout.C failed - please compile readout code manually (via C_analyze)!"
+fi
+echo "================================================================================="
+echo
+echo
+
