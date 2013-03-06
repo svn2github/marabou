@@ -5,10 +5,11 @@ then
   echo
   echo "       Usage: mknew <old_dir_name> <new_dir_name>"
   echo
-  echo "              <old_dir_name>    existing miniball dir"
-  echo "              <new_dir_name>    new miniball dir to be created"
+  echo "              <old_dir_name>    existing marabou dir"
+  echo "              <new_dir_name>    new marabou dir to be created"
   echo
   echo "       creates a new dir <new_dir_name> and copies all relevant files from <old_dir_name>"
+  echo "       calls Config.C, performs MBS setup, and compiles ROOT and MBS code, resp.
   echo
   exit 0
 fi
