@@ -1,6 +1,6 @@
 {
-	static const char setred[]      =   "\033[31m";
-	static const char setblack[]    =   "\033[39m";
+	const char setred[]      =   "\033[31m";
+	const char setblack[]    =   "\033[39m";
 	gROOT->Macro("LoadUtilityLibs.C");
 	gROOT->Macro("LoadConfigLibs.C");
 	setup = new TMbsSetup(".mbssetup");
