@@ -16,6 +16,7 @@
 #include "TObject.h"
 #include "TObjArray.h"
 #include "TIterator.h"
+#include "TEnv.h"
 
 #include "TUsrHit.h"
 #include "TUsrHBX.h"
@@ -37,9 +38,10 @@ class TUsrEventBuilder : public TObject {
 
 	public:
 		TUsrEventBuilder() {};
-		TUsrEventBuilder(TUsrEvent * Event, Int_t NofHbx, Int_t FirstHbx, Int_t MaxTimeDiff, Int_t ResetValue = 0, Int_t DataIndex = TUsrHit::kHitEnergy) {
+		TUsrEventBuilder(TUsrEvent * Event, Int_t NofHbx, Int_t FirstHbx, Int_t MaxTimeDiff = 0, Int_t ResetValue = 0, Int_t DataIndex = TUsrHit::kHitEnergy) {
 			this->SetEvent(Event);
 			this->SetNofHbx(NofHbx, FirstHbx);
+			if (MaxTimeDiff == 0) MaxTimeDiff = gEnv->GetValue("TMrbAnalyze.MaxTimeDiff", 10);
 			this->SetMaxTimeDiff(MaxTimeDiff);
 			this->SetResetValue(ResetValue);
 			this->SetDataIndex(DataIndex);
