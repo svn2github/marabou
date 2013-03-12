@@ -6,6 +6,7 @@
 #pragma link C++ class TMrbIOSpec+;
 #pragma link C++ class TMrbAnalyze+;
 #pragma link C++ class TUsrEvent+;
+#pragma link C++ class TUsrEventBuilder+;
 #pragma link C++ class TUsrEvtStart+;
 #pragma link C++ class TUsrEvtStop+;
 #pragma link C++ class TUsrDeadTime+;

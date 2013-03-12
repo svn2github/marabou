@@ -24,9 +24,9 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=
-MARABOU=
-MARABOU_INSTALL_PATH=
+ROOTSYS=/usr/local/opt/root/root5.30-00_gcc-412_qt_ia64
+MARABOU=`pwd`
+MARABOU_INSTALL_PATH=nothing_to_install
 
 #____________________________[end editable section]___________________________
 
@@ -198,11 +198,6 @@ if [ $SYSMODE = "y" ]
 then
 	echo "iniMrbPath: You are currently using ROOT `$ROOTSYS/bin/root-config --version` ($ROOTSYS)"
 	echo "iniMrbPath: MARaBOU distribution at $MARABOU is ready to be built"
-	if [ -z "$MARABOU_INSTALL_PATH" ]
-	then
-		echo -e -n $RED >&2
-		echo "iniMrbPath: WARNING! MARABOU_INSTALL_PATH not set - installation not possible" >&2
-	fi
 else
 	echo "iniMrbPath: MARaBOU installation at $MARABOU is ready to be used"
 fi
