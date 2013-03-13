@@ -46,6 +46,8 @@ class TUsrEventBuilder : public TObject {
 			this->SetResetValue(ResetValue);
 			this->SetDataIndex(DataIndex);
 			fEventHeads.Clear();
+			fTimeStampLow = 0;
+			fTimeStampHigh = 0;
 		}
 		~TUsrEventBuilder() {};
 
@@ -55,6 +57,9 @@ class TUsrEventBuilder : public TObject {
 		inline void SetMaxTimeDiff(Int_t MaxTimeDiff) { fMaxTimeDiff = MaxTimeDiff; };
 		inline void SetResetValue(Int_t ResetValue) { fResetValue = ResetValue; };
 		inline void SetDataIndex(Int_t DataIndex) { fDataIndex = DataIndex; };
+		
+		inline ULong64_t GetTimeStampLow() { return fTimeStampLow; };
+		inline ULong64_t GetTimeStampHigh() { return fTimeStampHigh; };
 
 		Bool_t NextEvent();
 
@@ -68,6 +73,9 @@ class TUsrEventBuilder : public TObject {
 		Int_t fMaxTimeDiff;	// max time diff within a physical event
 		Int_t fResetValue;	// reset value
 		Int_t fDataIndex;	// hit data index
+		
+		ULong64_t fTimeStampLow;	// time stamp, low value
+		ULong64_t fTimeStampHigh;	// ... high value
 
 		TList fEventHeads;	// list of hits at beginning of adc events
 		TIterator * fEventIter;	// iterator to step thru list of event heads

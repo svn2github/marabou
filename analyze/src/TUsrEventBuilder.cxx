@@ -71,8 +71,15 @@ Bool_t TUsrEventBuilder::NextEvent() {
 	fEvent->Reset(fResetValue, kTRUE);
 	TUsrHit * hit;
 	while ((hit = (TUsrHit *) fEventIter->Next())) {			// loop thru list of event heads
-		if (tstamp == 0) tstamp = hit->GetChannelTime();	// time stamp marks beginning of event
-		Int_t tdiff = (Int_t) (hit->GetChannelTime() - tstamp);	// calc time diff
+		ULong64_t ts = hit->GetChannelTime();
+		if (tstamp == 0) {
+			tstamp = ts;				// time stamp marks beginning of event
+			fTimeStampLow = ts;
+			fTimeStampHigh = ts;
+		}
+		if (ts > fTimeStampHigh) fTimeStampHigh = ts;
+		
+		Int_t tdiff = (Int_t) (ts - tstamp);	// calc time diff
 		if ((abs(tdiff) < fMaxTimeDiff)) {
 			this->FillVector(hit);				// hit belongs to this event: fill channel data into subevent vector
 		} else {
