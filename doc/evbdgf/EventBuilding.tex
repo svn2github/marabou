@@ -1,0 +1,325 @@
+\documentclass[10pt]{article}
+
+\usepackage{hyperref} 
+\usepackage{graphicx} 
+\usepackage{fancybox} 
+\usepackage{rotating} 
+\usepackage{color} 
+%%\usepackage{DIN_A4} 
+%%\usepackage{here}
+
+\ifx\MARaBOU\undefined
+\def\MARaBOU{MAR\lower.5ex\hbox{a}BO\kern-.5em\lower.5ex\hbox{O}\kern-.1em U}%
+\fi
+
+\newcommand{\samefootnote}{$^\alph{footnote}$}
+\newcommand{\samempfootnote}{$^\alph{mpfootnote}$}
+
+\definecolor{lightblue}{rgb}{.68,.88,.90}
+
+\newcommand{\blue}[1]{\colorbox{lightblue}{\texttt{#1}}}
+\newcommand{\yellow}[1]{\colorbox{yellow}{\texttt{#1}}}
+\newcommand{\redt}[1]{\textcolor{red}{\texttt{#1}}}
+\newcommand{\greent}[1]{\textcolor{green}{\texttt{#1}}}
+\newcommand{\bluet}[1]{\textcolor{blue}{\texttt{#1}}}
+
+\newenvironment{boxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\fbox{\TheSbox}}
+	
+\newenvironment{yellowboxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\colorbox{yellow}{\TheSbox}}
+	
+\newenvironment{blueboxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\colorbox{lightblue}{\TheSbox}}
+	
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\begin{titlepage}
+\title{How to perform event building in a MINIBALL experiment}
+\author{R. Lutter}
+\maketitle
+\vfill
+\begin{abstract}
+\setlength{\parindent}{0pt}
+\begin{center}
+This document describes how to perform event building and to generate \texttt{ROOT} trees from med data in a \mbox{Miniball} experiment.
+\end{center}
+\end{abstract}
+\vfill
+\end{titlepage}
+\newpage
+\tableofcontents
+\newpage
+\section{Online data acquisition}\label{OnlineDataAcquisition}
+Any data in a MINIBALL experiment will be produced by connecting to the \texttt{MBS} subsystem and reading raw data from the harware modules
+in \texttt{VME} and \texttt{CAMAC} crates \cite{DaqInstructions}.
+Online data are then written to disk using the \texttt{MED} format (\texttt{MBS} event data) \cite{MedStructure}.\\
+Fig. \ref{DataAcquisition} shows data flow as well as software components used to acquire experimental data.\\
+
+Following files are needed for this step:
+\begin{center}
+\begin{itemize}
+\setlength{\rightmargin}{1em}%
+\setlength{\leftmargin}{2em}%
+\setlength{\itemsep}{0pt}%
+\setlength{\parskip}{1mm}%
+\setlength{\partopsep}{0pt}%
+\setlength{\parsep}{0pt}%
+\setlength{\topsep}{0pt}%
+\item	\yellow{DgfReadout.c}\\
+	user's readout function given by hardware definitions in \yellow{Config.C},\\
+	auto-generated during config step
+\item	\yellow{DgfAnalyze.cxx}\\
+	methods and functions to setup the \texttt{ROOT} system and to decode raw data from \texttt{MBS},\\
+	auto-generated during the config step
+\item	\yellow{udef/ProcessEvent.cxx}\\
+	consistency checks and accumulation of diagnostic histograms,\\
+	has to be provided by user
+\end{itemize}
+\end{center}
+\begin{figure}[H]
+\centerline{\includegraphics[width=.75\linewidth]{DataAcquisition}}
+\caption{Online data acquisition}
+\label{DataAcquisition}
+\end{figure}
+\newpage
+\section{Filling hitBuffers from raw data}\label{FillingHB}
+\subsection{Extracting hits from DGF-4C data}\label{ExtractDgfHits}
+\subsection{Extracting hits from CAEN ADC/TDC data}\label{ExtractCaenHits}
+\newpage
+\section{Event building}\label{EventBuilding}
+In a second step one may create meaningful events from raw data read from \texttt{MED} files.
+These events may then be written to \texttt{ROOT} trees and used in replay sessions afterwards.
+Fig. \ref{EventBuilder} shows how to do the event building.
+
+\begin{figure}[H]
+\centerline{\includegraphics[width=.75\linewidth]{EventBuilder}}
+\caption{Event building}
+\label{EventBuilder}
+\end{figure}
+Steps to be performed for the event building process:
+\begin{center}
+\begin{itemize}
+\setlength{\rightmargin}{1em}%
+\setlength{\leftmargin}{2em}%
+\setlength{\itemsep}{0pt}%
+\setlength{\parskip}{1mm}%
+\setlength{\partopsep}{0pt}%
+\setlength{\parsep}{0pt}%
+\setlength{\topsep}{0pt}%
+\item	in \yellow{SetCppIfdefs.C}: activate event building\\
+	\hspace*{.2\linewidth}\yellow{dgf->MakeDefined("\_\_EVENT\_BUILDING\_ON\_\_", kTRUE, "Start event building");}
+\item	in \yellow{Config.C}: define an event class to be used for event building\\
+	\hspace*{.2\linewidth}\yellow{dgf->IncludeUserClass("udef", "MbEvent.cxx", kTRUE);}\\
+	when doing the config step for the first time this will generate a template class \texttt{MbEvent};\\
+	you then have to modify this class according to your needs
+\item	provide an event building algorithm: \texttt{TUsrEvtReadout::BuildEvent()} in \yellow{udef/BuildEvent.cxx}
+(table \ref{TabEvbAlgorithm}, fig. \ref{FigEvbAlgorithm})
+\item	in \yellow{.rootrc} file: add an entry \blue{TMrbAnalyze.CoincWindow: N}
+\item	perform config, compile and link the whole stuff, run \texttt{C\_analyze}
+\end{itemize}
+\end{center}
+\newpage
+\subsection{Inserting time stamps in ADC/TDC data}\label{InsertingTimeStamps}
+\begin{center}
+\begin{table}[H]
+{\scriptsize
+\begin{yellowboxed}{\linewidth}
+\verb+  Bool_t TUsrEvtReadout::InsertTimeStamp(Int_t TsIdx, Int_t TsChannel, Int_t StartIdx, Int_t NofHbx) {+\\
+\verb-  //________________________________________________________________[C++ METHOD]-\\
+\verb+  //////////////////////////////////////////////////////////////////////////////+\\
+\verb+  // Name:         TUsrEvtReadout::InsertTimeStamp+\\
+\verb+  // Purpose:      Insert time stamps into adc data+\\
+\verb+  // Arguments:    Int_t TsIdx       -- index of timestamping buffer+\\
+\verb+  //               Int_t TsChannel   -- number of timestamping channel+\\
+\verb+  //               Int_t StartIdx    -- index of adc buffer to start with+\\
+\verb+  //               Int_t NofHbx      -- number of buffers to process+\\
+\verb+  // Results:      kTRUE/kFALSE+\\
+\verb+  // Description:  Inserts time stamps from timestamping dgf into adc buffers.+\\
+\verb+  //               Time stamps in dgf buffer are sorted by time,+\\
+\verb+  //               adc/tdc buffers contain single channel data grouped by event number.+\\
+\verb+  //               This algorithm inserts time stamps one by one in adc channel data;+\\
+\verb+  //               channels belonging to one event (i.e. having the same event number)+\\
+\verb+  //               will be marked with same time stamp.+\\
+\verb+  // Keywords:     +\\
+\verb+  //////////////////////////////////////////////////////////////////////////////+\\
+\verb+  +\\
+\verb+    TUsrHBX *tsHbx = this->GetHBX(TsIdx);                   // connect to hitbuffer of time stamping dgf+\\
+\verb+  +\\
+\verb-    for (Int_t i = StartIdx; i < StartIdx + NofHbx; i++) {  // loop over adcs/tdcs-\\
+\verb+      tsHbx->ResetIndex();                                  // reset to first item in ts-dgf buffer+\\
+\verb+      TUsrHit * tsHit = tsHbx->FindHit(TsChannel);          // fetch first item (= time stamp)+\\
+\verb+      if(!tsHit) break;                                     // no time stamps in this buffer (should never be)+\\
+\verb+      TUsrHBX * cHbx = this->GetHBX(i);                     // connect to current adc/tdc buffer+\\
+\verb+      cHbx->ResetIndex();                                   // reset to first item in buffer+\\
+\verb+      TUsrHit * cHit = cHbx->NextHit();                     // fetch first adc/tdc hit (= channel data)+\\
+\verb+      while(tsHit && cHit) {                                // step thru buffers+\\
+\verb+        Int_t evtNo = cHit->GetEventNumber();               // save current event number from adc/tdc hit+\\
+\verb+        while(cHit->GetEventNumber() == evtNo) {            // as long as event number doesn't change:+\\
+\verb+          cHit->SetChannelTime(tsHit);                      //    insert current time stamp in adc hit+\\
+\verb+          cHit = cHbx->NextHit();+\\
+\verb+          if (!cHit) break;                                 // end of adc/tdc buffer reached+\\
+\verb+        }+\\
+\verb+        tsHit = tsHbx->FindHit(TsChannel);                  // event number in adc/tdc buffer has changed:+\\
+\verb+      }                                                     //    get next time stamp from ts-dgf buffer+\\
+\verb+    }+\\
+\verb+    return(kTRUE);+\\
+\verb+  }+
+\end{yellowboxed}}
+\caption{Algorithm used for time stamp insertion}
+\label{TabTsiAlgorithm}
+\end{table}
+\end{center}
+\subsection{Event building algorithm}\label{EventBuildingAlgorithm}
+\begin{center}
+\begin{table}[H]
+{\scriptsize
+\begin{yellowboxed}{\linewidth}
+\verb+  Bool_t TUsrEvtReadout::BuildEvent() {+\\
+\verb-  //________________________________________________________________[C++ METHOD]-\\
+\verb+  //////////////////////////////////////////////////////////////////////////////+\\
+\verb+  // Name:        TUsrEvtReadout::BuildEvent+\\
+\verb+  // Purpose:     Event building+\\
+\verb+  // Arguments:   --+\\
+\verb+  // Results:     kTRUE/kFALSE+\\
+\verb+  // Exceptions:  +\\
+\verb+  // Description: Loops over all hit buffers,+\\
+\verb+  //              collects hits within window 'coincWindow'+\\
+\verb+  //              stores hits in events of type MbEvent+\\
+\verb+  //              then calls method MbEvent::WriteToTree() for each event+\\
+\verb+  //              Strategy:+\\
+\verb+  //                a binary tree TBtree is used to compare events+\\
+\verb+  //                method TBtree::FindObject() calls MbEvent::Compare()+\\
+\verb+  //                MbEvent::IsEqual() then tests if time stamps are 'equal' within 'coincWindow'+\\
+\verb+  //                hits belonging to an event are stored in a hit buffer of type TClonesArray,+\\
+\verb+  //                to get the benefits of TClonesArray these hit buffers have to be static+\\
+\verb+  //                they will be allocated only once and reused afterwards. +\\
+\verb+  // Keywords:     +\\
+\verb+  //////////////////////////////////////////////////////////////////////////////+\\
+\verb+  +\\
+\verb+    TBtree evtsS;+\\
+\verb+    TBtree * evts = &evtsS;+\\
+\verb+  +\\
+\verb+  // reset hit buffers+\\
+\verb+    TObjArrayIter epI(&poolOfMbEvents);+\\
+\verb+    while(MbEvent * evt = (MbEvent *) epI.Next()) evt->Reset();+\\
+\verb+  +\\
+\verb+  // fill binary tree, create events if necessary+\\
+\verb+    Int_t evtCount = 0;+\\
+\verb-    for (Int_t i = kIdxCluster1; i < kIdxCluster1 + kNofSevts; i++) {    // loop over all hit buffers-\\
+\verb+      if (i == kIdxTSCluster) continue;           // discard time stamper+\\
+\verb+      TUsrHBX *hbx = this->GetHBX(i);             // pointer to current hit buffer+\\
+\verb+      if (hbx) {+\\
+\verb+        Int_t hitNo = 0;+\\
+\verb+        hbx->ResetIndex();                        // reset buffer index to first hit+\\
+\verb+        while (TUsrHit *hit = hbx->NextHit()) {   // loop over hits of this buffer+\\
+\verb+          if (hit->GetChannelTime() == 0) continue;              // time stamp = 0 -> junk data+\\
+\verb+          tmpEvent.SetEventTime(hit->GetChannelTime());          // insert time stamp into temp event+\\
+\verb+          MbEvent * evt = (MbEvent *) evts->FindObject(&tmpEvent);   // compare it with events already there+\\
+\verb+          if (evt == NULL) {                                     // no match+\\
+\verb+            if (evtCount < poolOfMbEvents.GetEntriesFast()) {    // try to get a event from pool+\\
+\verb+              evt = (MbEvent *) poolOfMbEvents[evtCount];+\\
+\verb+            } else {+\\
+\verb+              evt = new MbEvent();                // create a new one+\\
+\verb+              poolOfMbEvents.Add(evt);            // add it to pool+\\
+\verb+            }+\\
+\verb+            evt->Reset();                         // reset event time, hit buffer etc+\\
+\verb+            evt->SetEventTime(hit->GetChannelTime());  // insert time stamp+\\
+\verb+            evt->SetCoincWindow(coincWdw);        // should know about time window+\\
+\verb+            evts->Add(evt);                       // add new event to binary tree+\\
+\verb-            evtCount++;-\\
+\verb+          }+\\
+\verb+          evt->AddHit(hit);                       // append current hit to event+\\
+\verb-          hitNo++;-\\
+\verb+        }+\\
+\verb+      }+\\
+\verb+    }+\\
+\verb+  +\\
+\verb+  // call method MbEvent::WriteToTree() for all events+\\
+\verb+	  TBtreeIter evI(evts);+\\
+\verb+	  while(MbEvent * evt = (MbEvent *) evI.Next()) evt->WriteToTree();  // write event data to tree+\\
+\verb+	  evtsS.Clear();                                // clear entries in binary tree+\\
+\verb+	  return(kTRUE);+\\
+\verb+  }+
+\end{yellowboxed}}
+\caption{Algorithm used for the event building process}
+\label{TabEvbAlgorithm}
+\end{table}
+\end{center}
+\newpage
+\begin{figure}[H]
+\centerline{\includegraphics[width=\linewidth]{EvbAlgorithm}}
+\caption{Event builder: schematic diagram}
+\label{FigEvbAlgorithm}
+\end{figure}
+\newpage
+\section{Replay session}\label{ReplaySession}
+Once events have been built and tree data have been written to \texttt{ROOT} file one may start a replay session
+by reading these pre-sorted data. Fig. \ref{ReplayTreeData} shows the data flow for such a replay session.
+The gain in speed is about a factor of 10 as compared to replaying raw data from \texttt{MED} files.
+
+\begin{figure}[H]
+\centerline{\includegraphics[width=.75\linewidth]{ReplaySession}}
+\caption{Offline replay session}
+\label{ReplayTreeData}
+\end{figure}
+
+User has to provide a method \yellow{MbEvent::Analyze()} containing his analysis. A wrapper class \yellow{MbExp} may be used
+to establish pointer arrays pointing to different event components such as cores, segments, channels, etc (table \ref{MbExp}).
+
+\begin{center}
+\begin{table}[H]
+{\scriptsize
+\begin{yellowboxed}{\linewidth}
+\verb-  //______________________________________________________[C++ CLASS DEFINITION]-\\
+\verb+  //////////////////////////////////////////////////////////////////////////////+\\
+\verb+  // Name:           MbExp+\\
+\verb+  // Purpose:        Wrapper class to access MbEvent data+\\
+\verb+  // Description:    Organizes MbEvent data in a more "experiment-oriented" way.+\\
+\verb+  //                 Data may be accessed via cluster, core, and segment numbers (dgf),+\\
+\verb+  //                 via adc and channel numbers, resp.+\\
+\verb+  //                 Performs boundary check if requested.+\\
+\verb+  //                 Indices start with 0.+\\
+\verb+  // Keywords:+\\
+\verb+  //////////////////////////////////////////////////////////////////////////////+\\
+\verb+  +\\
+\verb+  class MbExp {+\\
+\verb+    +\\
+\verb+    public:+\\
+\verb+      MbExp(MbEvent * Event = NULL) { Init(Event); };    // default ctor+\\
+\verb+      virtual ~MbExp() {};                // default dtor+\\
+\verb+  +\\
+\verb+      TUsrHit * Core(Int_t Cluster, Int_t Core, Bool_t BoundaryCheck = kFALSE);+\\
+\verb+      TUsrHit * Segment(Int_t Cluster, Int_t Core, Int_t Seg, Bool_t BoundaryCheck = kFALSE);+\\
+\verb+      TUsrHit * Particle(Int_t Dgf, Int_t Channel, Bool_t BoundaryCheck = kFALSE);+\\
+\verb+      TUsrHit * Time(Int_t Tdc, Int_t Channel, Bool_t BoundaryCheck = kFALSE);+\\
+\verb+  +\\
+\verb+      void Init(MbEvent * Event = NULL); // initialize ptr arrays with data from MbEvent+\\
+\verb+  +\\
+\verb+    protected:+\\
+\verb+      TUsrHit * fCores[kNofDgfClusters][kNofDgfCoresPerCluster];+\\
+\verb+      TUsrHit * fSegs[kNofDgfClusters][kNofDgfCoresPerCluster][kNofDgfSegsPerCore];+\\
+\verb+      TUsrHit * fPart[kNofAdcs][kNofChannelsPerAdc];+\\
+\verb+      TUsrHit * fTime[kNofTdcs][kNofChannelsPerTdc];+\\
+\verb+  +\\
+\verb+    protected:+\\
+\verb+      TUsrHit fEmptyHit;+\\
+\verb+  };+\\
+\end{yellowboxed}}
+\caption{Wrapper class to access event components}
+\label{MbExp}
+\end{table}
+\end{center}
+\newpage
+\begin{thebibliography}{9}
+\bibitem{DaqInstructions} See also: "Instructions how to use the DAQ in a MINIBALL experiment",\\
+\verb+http://www.bl.physik.uni-muenchen.de/marabou/html/doc/DaqInstructions.pdf+
+\bibitem{MedStructure} For details see: "MED Data Structure",\\
+\verb+http://www.bl.physik.uni-muenchen.de/marabou/html/doc/MedStructure.pdf+
+\end{thebibliography}
+\end{document}
