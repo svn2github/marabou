@@ -60,6 +60,8 @@ class TUsrEventBuilder : public TObject {
 		
 		inline ULong64_t GetTimeStampLow() { return fTimeStampLow; };
 		inline ULong64_t GetTimeStampHigh() { return fTimeStampHigh; };
+		
+		inline TObjArray * GetHitList() { return &fHitList; };
 
 		Bool_t NextEvent();
 
@@ -77,8 +79,10 @@ class TUsrEventBuilder : public TObject {
 		ULong64_t fTimeStampLow;	// time stamp, low value
 		ULong64_t fTimeStampHigh;	// ... high value
 
-		TList fEventHeads;	// list of hits at beginning of adc events
-		TIterator * fEventIter;	// iterator to step thru list of event heads
+		TObjArray fEventHeads;		// list of hits at beginning of adc events
+		TIterator * fEventIter;		// iterator to step thru list of event heads
+		
+		TObjArray fHitList;			// list of hits belonging to one physical event
 
 	ClassDef(TUsrEventBuilder, 1)	// [Analyze] A user-specific event builder
 };

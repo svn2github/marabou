@@ -107,12 +107,14 @@ void TUsrEventBuilder::FillVector(TUsrHit * Head) {
 	Int_t nofHits = hbx->GetNofHits();			// and number of hits
 	Int_t evtNo = Head->GetEventNumber();			// and event number
 	Int_t hIdx = Head->GetData(kHitIndexWithinBuffer);	// and position of hit within adc event
+	fHitList.Clear();
 	while (hIdx < nofHits) {
 		TUsrHit * h = hbx->At(hIdx);			// get next hit as long as event number is same
 		if (h->GetEventNumber() > evtNo) return;	// end of adc event, start over with next one
 		Int_t * p = (Int_t *) gMrbAnalyze->GetParamAddr(h->GetModuleNumber(), h->GetChannel());	// pointer to subevent data
-		*p = h->GetData(fDataIndex);
-		hIdx++;
+		*p = h->GetData(fDataIndex);			// store (energy) value
+		fHitList.Add(h);						// add hit to list
+		hIdx++;									// continue with next hit in buffer
 	}
 	return;		// all done
 }
