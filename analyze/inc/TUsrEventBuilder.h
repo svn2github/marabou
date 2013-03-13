@@ -23,8 +23,8 @@
 #include "TUsrEvent.h"
 
 enum EMrbSpecialHitIndices	{	kHitHbxIndex		=	2,
-					kHitIndexWithinBuffer	=	3
-				};
+								kHitIndexWithinBuffer	=	3
+							};
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -48,6 +48,8 @@ class TUsrEventBuilder : public TObject {
 			fEventHeads.Clear();
 			fTimeStampLow = 0;
 			fTimeStampHigh = 0;
+			fDataArray = NULL;
+			fNofChannels = 32;
 		}
 		~TUsrEventBuilder() {};
 
@@ -60,6 +62,8 @@ class TUsrEventBuilder : public TObject {
 		
 		inline ULong64_t GetTimeStampLow() { return fTimeStampLow; };
 		inline ULong64_t GetTimeStampHigh() { return fTimeStampHigh; };
+		
+		inline void UseArray(TArrayI * DataArray, Int_t NofChannels = 32) { fDataArray = DataArray; fNofChannels = NofChannels; };
 		
 		inline TObjArray * GetHitList() { return &fHitList; };
 
@@ -83,6 +87,9 @@ class TUsrEventBuilder : public TObject {
 		TIterator * fEventIter;		// iterator to step thru list of event heads
 		
 		TObjArray fHitList;			// list of hits belonging to one physical event
+		
+		TArrayI * fDataArray;		// array to store hit data, use subevent storage if = NULL
+		Int_t fNofChannels;			// number of channels per adc
 
 	ClassDef(TUsrEventBuilder, 1)	// [Analyze] A user-specific event builder
 };

@@ -68,7 +68,7 @@ Bool_t TUsrEventBuilder::NextEvent() {
 //////////////////////////////////////////////////////////////////////////////
 
 	ULong64_t tstamp = 0;
-	fEvent->Reset(fResetValue, kTRUE);
+	if (fDataArray) fDataArray->Reset(fResetValue); else fEvent->Reset(fResetValue, kTRUE);
 	TUsrHit * hit;
 	while ((hit = (TUsrHit *) fEventIter->Next())) {			// loop thru list of event heads
 		ULong64_t ts = hit->GetChannelTime();
@@ -111,8 +111,12 @@ void TUsrEventBuilder::FillVector(TUsrHit * Head) {
 	while (hIdx < nofHits) {
 		TUsrHit * h = hbx->At(hIdx);			// get next hit as long as event number is same
 		if (h->GetEventNumber() > evtNo) return;	// end of adc event, start over with next one
-		Int_t * p = (Int_t *) gMrbAnalyze->GetParamAddr(h->GetModuleNumber(), h->GetChannel());	// pointer to subevent data
-		*p = h->GetData(fDataIndex);			// store (energy) value
+		if (fDataArray) {
+			fDataArray->SetAt((Double_t) h->GetData(fDataIndex), (h->GetModuleNumber() - 1) * fNofChannels + h->GetChannel());
+		} else {
+			Int_t * p = (Int_t *) gMrbAnalyze->GetParamAddr(h->GetModuleNumber(), h->GetChannel());	// pointer to subevent data
+			*p = h->GetData(fDataIndex);			// store (energy) value
+		}
 		fHitList.Add(h);						// add hit to list
 		hIdx++;									// continue with next hit in buffer
 	}
