@@ -68,6 +68,7 @@ Bool_t TUsrEventBuilder::NextEvent() {
 //////////////////////////////////////////////////////////////////////////////
 
 	ULong64_t tstamp = 0;
+	fHitList.Clear();
 	if (fDataArray) fDataArray->Reset(fResetValue); else fEvent->Reset(fResetValue, kTRUE);
 	TUsrHit * hit;
 	while ((hit = (TUsrHit *) fEventIter->Next())) {			// loop thru list of event heads
@@ -107,7 +108,6 @@ void TUsrEventBuilder::FillVector(TUsrHit * Head) {
 	Int_t nofHits = hbx->GetNofHits();			// and number of hits
 	Int_t evtNo = Head->GetEventNumber();			// and event number
 	Int_t hIdx = Head->GetData(kHitIndexWithinBuffer);	// and position of hit within adc event
-	fHitList.Clear();
 	while (hIdx < nofHits) {
 		TUsrHit * h = hbx->At(hIdx);			// get next hit as long as event number is same
 		if (h->GetEventNumber() > evtNo) return;	// end of adc event, start over with next one
