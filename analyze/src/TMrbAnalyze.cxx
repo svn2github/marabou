@@ -3391,6 +3391,27 @@ Bool_t TMrbAnalyze::SetTimeOffset(Int_t ModuleIndex, Int_t Offset) {
 	return(kTRUE);
 }
 
+Bool_t TMrbAnalyze::SetTimeOffset() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::SetTimeOffset
+// Purpose:        Insert time offset in table
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Takes time offsets from .rootrc
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+    Bool_t sts = kTRUE;
+	Int_t ts0 = gEnv->GetValue("TMrbAnalyze.TSOffset", 0); 	// common value for all modules
+    for (Int_t m = 1; m <= fModuleList.GetLast(); m++) {
+        Int_t tsOff = gEnv->GetValue(Form("TMrbAnalyze.TSOffset%d", m), ts0);
+        if (!this->SetTimeOffset(m, tsOff)) sts = kFALSE;
+    }
+    return sts;
+}
+
 Int_t TMrbAnalyze::GetTimeOffset(Int_t ModuleIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

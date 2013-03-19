@@ -71,7 +71,7 @@ Bool_t TUsrEventBuilder::NextEvent() {
 	if (fDataArray) fDataArray->Reset(fResetValue); else fEvent->Reset(fResetValue, kTRUE);
 	TUsrHit * hit;
 	while ((hit = (TUsrHit *) fEventIter->Next())) {			// loop thru list of event heads
-		ULong64_t ts = hit->GetChannelTime();
+		ULong64_t ts = hit->GetChannelTime() - gMrbAnalyze->GetTimeOffset(hit->GetModuleNumber());
 		if (tstamp == 0) {
 			tstamp = ts;				// time stamp marks beginning of event
 			fTimeStampLow = ts;

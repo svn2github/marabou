@@ -231,7 +231,8 @@ class TMrbAnalyze : public TObject {
 		inline Int_t GetNofHistos() const { return(fHistoList.GetEntriesFast()); };		// number of histos
 		inline TMrbLofNamedX * GetLofHistos() { return(&fHistoList); };		// list of histos
 
-		Bool_t SetTimeOffset(Int_t ModuleNumber, Int_t Offset); 	// set time offset
+		Bool_t SetTimeOffset(); 									// set time offset
+		Bool_t SetTimeOffset(Int_t ModuleNumber, Int_t Offset);
 		Int_t GetTimeOffset(Int_t ModuleNumber) const;					// get time offset
 
 		inline void SetDumpCount(Int_t Count) { fDumpCount = Count; };
