@@ -383,10 +383,12 @@ Bool_t setBLTMode(struct s_mapDescr * mapDescr, UInt_t VmeSize, UInt_t WordSize,
 		sprintf(msg, "[setBLTMode] %s: Error while setting BLT mode (AmCode = %#x) - error code %d", mapDescr->mdName, mapDescr->addrModBLT, sts);
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	}
+#ifndef CPU_TYPE_RIO2
 	if ((sts = bma_set_mode(mapDescr->bltModeId, BMA_M_VMEAdrInc, FifoMode ? BMA_M_VaiFifo : BMA_M_VaiNormal)) != 0) {
 		sprintf(msg, "[setBLTMode] %s: Error while setting BLT mode (FifoMode = %d) - error code %d", mapDescr->mdName, FifoMode, sts);
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	}
+#endif
 	return TRUE;
 }
 
@@ -438,8 +440,10 @@ Bool_t unmapAll() {
 			smem_create("", md->bltBase, 0, SM_DETACH);
 			sprintf(bltName, "%s_blt", md->mdName);
 			smem_remove(bltName);
+#ifndef CPU_TYPE_RIO2
 		} else {
 			xvme_rel(md->bltBase, md->segSizeBLT);
+#endif
 		}
 		md = md->nextDescr;
 	}

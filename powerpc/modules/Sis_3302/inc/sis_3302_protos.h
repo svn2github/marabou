@@ -16,10 +16,8 @@
 //! $Date: 2011-12-08 10:04:49 $
 ////////////////////////////////////////////////////////////////////////////*/
 
-void sis_print(struct s_sis_3302 * Module, char * Message);
-
 /*! Alloc database for SIS3302 module */
-struct s_sis_3302 * sis3302_alloc(Char_t * ModuleName, struct mapDescr * MD, Int_t Serial);
+struct s_sis_3302 * sis3302_alloc(Char_t * ModuleName, struct s_mapDescr * MD, Int_t Serial);
 
 /*! Map VME address */
 volatile char * sis3302_mapAddress_sized(struct s_sis_3302 * Module, Int_t Offset, Int_t SegSize);
@@ -292,5 +290,7 @@ ULong_t ca(struct s_sis_3302 * Module, ULong_t Address);
 
 /*! check if block xfer mode */
 Bool_t sis3302_blockXferIsOn(struct s_sis_3302 * Module);
+
+void sis_print(struct s_sis_3302 * Module, char * Message);
 
 #endif

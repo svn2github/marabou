@@ -21,12 +21,12 @@
 #include "LwrTypes.h"
 #include "M2L_CommonDefs.h"
 
+#include "mapping_database.h"
 #include "sis_3302_protos.h"
 #include "sis_3302_layout.h"
 #include "sis_3302_database.h"
 
 #include "root_env.h"
-#include "mapping_database.h"
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
@@ -42,7 +42,7 @@ char msg[256];
 //! \return 		Module			-- Pointer to struct s_sis_3302
 ////////////////////////////////////////////////////////////////////////////*/
 
-struct s_sis_3302 * sis3302_alloc(Char_t * Name, struct mapDescr * MD, Int_t Serial)
+struct s_sis_3302 * sis3302_alloc(Char_t * Name, struct s_mapDescr * MD, Int_t Serial)
 {
 	struct s_sis_3302 * Module;
 	Module = (struct s_sis_3302 *) calloc(1, sizeof(struct s_sis_3302));
