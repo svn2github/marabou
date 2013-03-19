@@ -60,7 +60,6 @@
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 static long clock_resolution;		/* clock resolution as given by clock_getres system call */
 static long trigger_count; 		/* count user triggers */
-static struct pdparam_master s_param; 		/* vme segment params */
 
 static long total_event_count; 	/* events since last start */
 static long dt_event_count;		/* events since last dead-time stamp */

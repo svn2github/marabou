@@ -44,7 +44,7 @@ class TUsrHit : public TObject {
 		enum	{	kHitWaveForm	=	kHitLast + 1	};
 		enum	{	kMaxHitData 	=	kHitLast + 1	};
 
-// alternate layout used by martin lauer's PSA code
+// alternative layout used by martin lauer's PSA code
 		enum	{	kHitPSA1		=	2	};
 		enum	{	kHitPSA_T0		=	kHitPSA1	};
 		enum	{	kHitPSA2		=	3	};
@@ -58,20 +58,20 @@ class TUsrHit : public TObject {
 		enum	{	kHitPSA6		=	7	};
 		enum	{	kHitPSA_T90		=	kHitPSA6	};
 
-// alternate layout used for 32 bit energy data
+// alternative layout used for 32 bit energy data
 
 		enum	{	kHitEnergyLong	=	2	};
 
-// alternate layout used by c_ptm module
+// alternative layout used by c_ptm module
 		enum	{	kHitPattern 	=	2	};	// 32 bit hit pattern
 		enum	{	kHitCounterT1	=	4	};	// 32 bit counter T1
 		enum	{	kHitCounterT2	=	6	};	// 32 bit counter T2
 
-// alternate layout used by mux module
+// alternative layout used by mux module
 		enum	{	kHitMuxModNo	=	2	};	// module number for multiplexer
 		enum	{	kHitMuxChannel	=	3	};	// channel number for multiplexer
 
-// alternate layout used by madc32
+// alternative layout used by madc32
 		enum	{	kHitMadc32Res	=	2	};	// adc resolution
 
 	public:
@@ -96,8 +96,9 @@ class TUsrHit : public TObject {
 		inline Int_t GetModuleNumber() const { return(fModuleNumber); };
 		inline Int_t GetChannel() const { return(fChannel); };
 
-		inline Long64_t GetChannelTime() const { return(fChannelTime); };		// get event time
+		inline Long64_t GetChannelTime() const { return(fChannelTime); };		// get time stamp
 		const Char_t * ChannelTime2Ascii(TString & TimeString) const;
+		Long64_t GetChannelTimeCorr();		// get time stamp corrected by applying module offset
 
 		inline UShort_t * GetDataAddr() { return(fData); };
 		inline UShort_t GetData(Int_t Index = TUsrHit::kHitEnergy) const { return(fData[Index]); };

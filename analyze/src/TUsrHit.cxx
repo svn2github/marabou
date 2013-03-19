@@ -281,3 +281,19 @@ const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) const {
 	return(TimeString.Data());
 }
 
+Long64_t TUsrHit::GetChannelTimeCorr() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHit::GetChannelTimeCorr
+// Purpose:        Get time stamp
+// Arguments:      --
+// Results:        Long64_t TimeStamp   -- 48bit time stamp
+// Exceptions:
+// Description:    Returns time stamp corrected by module offset
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Long64_t ts = this->GetChannelTime() - gMrbAnalyze->GetTimeOffset(this->GetModuleNumber());
+	return ts;
+}
+
