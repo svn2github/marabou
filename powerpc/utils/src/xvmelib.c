@@ -57,6 +57,17 @@ static struct pdparam_master param = {
 */
 #ifndef CPU_TYPE_RIO2
 int
+xvme_is_rio2( void ) 
+{
+  int board_type;
+
+  if (is_rio2 == -1) {
+    board_type = uio_board_type();
+    is_rio2 = CESRIO2(board_type)?1:0;
+  }
+  return(is_rio3);
+}
+int
 xvme_is_rio3( void ) 
 {
   int board_type;
