@@ -98,6 +98,7 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 						return NULL;
 					}
+					break;
 				case kAM_A16:
 					staticBase = kAddr_A16;
 					if (PhysAddr > 0x0000FFFF) {
@@ -105,6 +106,7 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 						return NULL;
 					}
+					break;
 				default:
 					sprintf(msg, "[mapVME] %s: Illegal addr modifier - %#lx", DescrName, AddrMod);
 					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -186,6 +188,7 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 						return NULL;
 					}
+					break;
 				case kAM_A16:
 					staticBase = kAddr_A16;
 					if (PhysAddr > 0x0000FFFF) {
@@ -193,6 +196,7 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 						return NULL;
 					}
+					break;
 			}
 			sprintf(segName, "%s_%d", mapDescr->mdName, mapDescr->nofMappings + 1);
 			mappedAddr = smem_create(segName, (Char_t *) (staticBase | PhysAddr), Size, SM_READ|SM_WRITE);
