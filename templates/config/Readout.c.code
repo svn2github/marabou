@@ -105,7 +105,8 @@ static bool_t use_block_xfer;	/* TRUE if at least one module wants to use BLT */
 %CC32%static volatile unsigned long * cam_lam_C$crateNo;  	/* LAM pattern in crate C$crateNo */
 %V%static volatile char * $moduleName;	 				/* VME: $modulePosition: $moduleTitle */
 %V%static struct s_mapDescr * md_$moduleName;				/* VME: mapping descriptor for $moduleName */
-%VS%									/* VME: $modulePosition: $moduleTitle */
+%VS%														/* VME: $modulePosition: $moduleTitle */
+%VS%static struct s_mapDescr * md_$moduleName;				/* --	mapping descriptor */
 %VS%static volatile char * $moduleNameBase;	 			/* --   base addr */
 %VS%static volatile char * $moduleName;	 				/* --   offset for subdevice $subdevice */
 
