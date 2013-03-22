@@ -195,7 +195,7 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 %V% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %VS%																		/* $moduleName: $moduleTitle */
 %VS% 	md_$moduleNameLC = mapVME("$moduleNameLC", $baseAddrL, $segSizeL, $addrMod, $mapping);	/* $moduleNameLC: $moduleTitle */
-%VS%	if ((unsigned int) $moduleNameLC == 0xFFFFFFFF) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
+%VS%	if (md_$moduleNameLC == NULL) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
 %VS% 	$moduleNameLC = $mnemoLC_get_subdevice(md_$moduleNameLC->vmeBase, $subDevice);								/* -- subdevice $subDevice */
 %VS% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %%EndOfCode%%
