@@ -76,8 +76,14 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 			}
 		}
 		fSegmentSize = SegSize;
-		fVMEMapping = TMrbConfig::kVMEMappingDirect | TMrbConfig::kVMEMappingStatic | TMrbConfig::kVMEMappingDynamic;
 
+		fVMEMapping = TMrbConfig::kVMEMappingDirect | TMrbConfig::kVMEMappingStatic | TMrbConfig::kVMEMappingDynamic;
+		fVMEMapping = gEnv->GetValue("TMrbConfig.VMEMapping",  (Int_t) fVMEMapping);
+		TString moduleNameUC = ModuleName;
+		moduleNameUC(0,1).ToUpper();
+		fVMEMapping = gEnv->GetValue(Form("TMrbConfig.%s.VMEMapping", moduleNameUC.Data()), (Int_t) fVMEMapping);
+		
+		
 		fSubDevice = SubDevice;
 		fCrate = 0;
 		gMrbConfig->SetCrateType(0, TMrbConfig::kCrateVME); // mark vme crate active
