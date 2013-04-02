@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <stdint.h>
 #include "s_evhe.h"
 #include "s_veshe.h"
 #include "gd_cnaf.h"
