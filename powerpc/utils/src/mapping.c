@@ -66,6 +66,7 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 	struct s_mapDescr * md;
 	UInt_t staticBase;
 	UInt_t dynamicAddr;
+	UInt_t cpuBaseAddr;
 	
 	if ((md = _createMapDescr(DescrName)) == NULL) {
 		sprintf(msg, "[mapVME] %s: mapping failed", DescrName);
@@ -83,7 +84,7 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 	if (Mapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
 		md->vmeBase = PhysAddr | kAddr_A32Direct;
 		md->mappingVME = kVMEMappingDirect;
-		sprintf(msg, "[mapVME] %s: Direct mapping %#lx -> %#lx, addrMod=%#x", DescrName, PhysAddr, md->vmeBase, AddrMode);
+		sprintf(msg, "[mapVME] %s: Direct mapping %#lx -> %#lx, addrMod=%#x", DescrName, PhysAddr, md->vmeBase, AddrMod);
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 #endif
@@ -125,12 +126,17 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			md->mappingVME = kVMEMappingStatic;
 		} else if (Mapping & kVMEMappingDynamic) {
+#ifdef CPU_TYPE_RIO4
+			md->busId = bus_open("xvme_mas");
+			dynamicAddr = bus_map(md->busId, PhysAddr, 0, Size, 0xa0, 0);
+#else
  			s_param.iack = 1;
  			s_param.rdpref = 0;
  			s_param.wrpost = 0;
  			s_param.swap = SINGLE_AUTO_SWAP;
  			s_param.dum[0] = 0;
  			dynamicAddr = find_controller(PhysAddr, Size, AddrMod, 0, 0, &s_param);
+#endif
 			if (dynamicAddr == 0xFFFFFFFF) {
 				sprintf(msg, "[mapVME] %s: Dynamic mapping failed - %s (%d)", DescrName, sys_errlist[errno], errno);
 				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -172,8 +178,10 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 	volatile Char_t * mappedAddr;
 	UInt_t staticBase;
 	UInt_t dynamicAddr;
+	UInt_t cpuBaseAddr;
 
-	char segName[64];
+	Char_t segName[64];
+
 	if (Size == 0) Size = mapDescr->segSizeVME;
 
 	switch (mapDescr->mappingVME) {
@@ -215,12 +223,16 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 			return mappedAddr;
 
 		case kVMEMappingDynamic:
+#ifdef CPU_TYPE_RIO4
+			dynamicAddr = bus_map(mapDescr->busId, PhysAddr, 0, Size, 0xa0, 0);
+#else
  			s_param.iack = 1;
  			s_param.rdpref = 0;
  			s_param.wrpost = 0;
  			s_param.swap = SINGLE_AUTO_SWAP;
  			s_param.dum[0] = 0;
  			dynamicAddr = find_controller(PhysAddr, Size, mapDescr->addrModVME, 0, 0, &s_param);
+#endif
 			if (dynamicAddr == 0xFFFFFFFF) {
 				sprintf(msg, "[mapAdditionalVME] %s: Dynamic mapping failed - %s (%d)", mapDescr->mdName, sys_errlist[errno], errno);
 				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -230,36 +242,6 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 			return (volatile Char_t *) dynamicAddr;
 	}
 }
-
-Bool_t setDestMapping(UInt_t Mapping) {
-/*________________________________________________________________[C FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           setDestMapping
-// Purpose:        Define mapping used for destination
-// Arguments:      UInt_t Mapping         -- mapping
-// Results:        TRUE/FALSE
-// Description:    Defines destintation mapping, either static or direct
-// Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
-
-	mappingDest = Mapping;
-	return TRUE;
-}
-
-UInt_t getDestMapping() {
-/*________________________________________________________________[C FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           getDestMapping
-// Purpose:        Return mapping mode
-// Arguments:      ---
-// Results:        UInt_t Mapping         -- mapping
-// Description:    Returns mapping mode to be used for destination
-// Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
-
-	return mappingDest;
-}
-
 
 Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
 /*________________________________________________________________[C FUNCTION]
@@ -278,7 +260,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 	UInt_t staticBase;
 	UInt_t dynamicAddr;
 
-	char bltName[64];
+	Char_t bltName[64];
 
 	if (_findMapDescr(mapDescr->mdName) == NULL) {
 		sprintf(msg, "[mapBLT] Mapping descriptor not found - %s", mapDescr->mdName);
@@ -432,11 +414,74 @@ bool_t initBLT() {
 	return TRUE;
 }
 
+Bool_t unmapVME(struct s_mapDescr * mapDescr) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           unmapVME
+// Purpose:        Unmap a mapped segment
+// Arguments:      s_mapDescr * mapDescr    -- map descriptor
+// Results:        TRUE/FALSE
+// Description:    Removes a mapped segment, frees memory.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	UInt_t addr;
+
+	if (mapDescr->mappingModes & kVMEMappingStatic) {
+		smem_create("", mapDescr->vmeBase, 0, SM_DETACH);
+		smem_remove(mapDescr->mdName);
+		return TRUE;
+	} else if (mapDescr->mappingModes & kVMEMappingDynamic) {
+#ifdef CPU_TYPE_RIO2
+		addr = return_controller(mapDescr->vmeBase, mapDescr->segSizeVME);
+		return (addr != 0xFFFFFFFF);
+#elif CPU_TYPE_RIO3
+		addr = return_controller(mapDescr->vmeBase, mapDescr->segSizeVME);
+		return (addr != 0xFFFFFFFF);
+#elif CPU_TYPE_RIO4
+		bus_unmap(mapDescr->busId, mapDescr->vmeBase);
+#endif
+	}
+}
+
+Bool_t unmapBLT(struct s_mapDescr * mapDescr) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           unmapBLT
+// Purpose:        Unmap a BLT segment
+// Arguments:      s_mapDescr * mapDescr    -- map descriptor
+// Results:        TRUE/FALSE
+// Description:    Removes a BMT segment, frees memory.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	Char_t bltName[64];
+	Bool_t sts;
+	UInt_t addr;
+
+	if (mapDescr->bltBase == NULL) return kTRUE;
+
+	if (mapDescr->mappingModes & kVMEMappingStatic) {
+		smem_create("", mapDescr->bltBase, 0, SM_DETACH);
+		sprintf(bltName, "%s_blt", mapDescr->mdName);
+		smem_remove(bltName);
+		return kTRUE;
+	} else if (mapDescr->mappingModes & kVMEMappingDynamic) {
+#ifdef CPU_TYPE_RIO2
+		addr = return_controller(mapDescr->bltBase, mapDescr->segSizeBLT);
+		return (addr != 0xFFFFFFFF);
+#elif CPU_TYPE_RIO3
+		addr = xvme_rel(mapDescr->bltBase, mapDescr->segSizeBLT);
+		return (addr != 0xFFFFFFFF);
+#endif
+	}
+}
+
 Bool_t unmapAll() {
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           unmapAll
-// Purpose:        Unmap all shared segments
+// Purpose:        Unmap all mappings
 // Arguments:      ---
 // Results:        TRUE/FALSE
 // Description:    Removes shared mem segments, frees memory.
@@ -450,19 +495,11 @@ Bool_t unmapAll() {
 	if (md == NULL) return TRUE;
 	
 	while (md) {
-		if (md->mappingModes & kVMEMappingStatic) {
-			smem_create("", md->vmeBase, 0, SM_DETACH);
-			smem_remove(md->mdName);
-			smem_create("", md->bltBase, 0, SM_DETACH);
-			sprintf(bltName, "%s_blt", md->mdName);
-			smem_remove(bltName);
-#ifndef CPU_TYPE_RIO2
-		} else {
-			xvme_rel(md->bltBase, md->segSizeBLT);
-#endif
-		}
+		unmapVME(md);
+		unmapBLT(md);
 		md = md->nextDescr;
 	}
+	return TRUE;
 }
 
 struct s_mapDescr * _findMapDescr(const Char_t * DescrName) {

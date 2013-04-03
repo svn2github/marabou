@@ -57,7 +57,7 @@ ifeq ($(GSI_OS_VERSION),4.0)
 POSIX   =  -mthreads
 CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-          $(LIB)/libedit.a -llynx -lposix-pre1c
+          $(LIB)/libedit.a -lbus -llynx -lposix-pre1c
 SMILIBS = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(LIB)/lib_smi.a \
           $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
 endif

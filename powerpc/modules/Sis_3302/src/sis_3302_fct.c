@@ -63,6 +63,7 @@ struct s_sis_3302 * sis3302_alloc(Char_t * Name, struct s_mapDescr * MD, Int_t S
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			Module = NULL;
 		}
+		sis3302_checkAddressSpace(Module);
 	} else {
 		sprintf(msg, "[alloc] Can't allocate sis_3302 struct");
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -3565,12 +3566,21 @@ Bool_t sis3302_checkAddressSpace(struct s_sis_3302 * Module) {
 	}
 	if (reduced) {
 		sprintf(msg, "[%s] Using REDUCED address space (16MB)", Module->moduleName);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 		Module->reducedAddressSpace = kTRUE;
+		if (Module->md->segSizeVME > SIS3302_ADDR_SPACE_REDUCED) {
+			sprintf(msg, "[%s]: Allocated VME segment greater than 16MB - %#lx", Module->moduleName, Module->md->segSizeVME);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		}
 	} else {
 		sprintf(msg, "[%s] Using FULL address space (128MB)", Module->moduleName);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 		Module->reducedAddressSpace = kFALSE;
+		if (Module->md->segSizeVME < SIS3302_ADDR_SPACE_NORMAL) {
+			sprintf(msg, "[%s]: Allocated VME segment smaller than 128MB - %#lx", Module->moduleName, Module->md->segSizeVME);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		}
 	}
-	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	return(kTRUE);
 }
 

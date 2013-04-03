@@ -28,14 +28,14 @@
 
 #define NOF_CHANNELS	8
 #define NOF_GROUPS		4
-#define STRLEN			100
+#define SIS3302_STRLEN			100
 
 
 #define GROUP(adc)		(adc >> 1)
 
 struct s_sis_3302 {
-	Char_t moduleName[STRLEN];
-	Char_t prefix[STRLEN];					/* "m_read_meb" (default) or any other */
+	Char_t moduleName[SIS3302_STRLEN];
+	Char_t prefix[SIS3302_STRLEN];				/* "m_read_meb" (default) or any other */
 	Char_t mpref[10]; 					/* "sis3302: " or "" */
 
 	Int_t boardId;						/* module info */

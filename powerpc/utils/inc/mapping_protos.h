@@ -24,11 +24,9 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 Bool_t remapVME(struct s_mapDescr * mapDescr, UInt_t Offset, Int_t Size);
 
 Bool_t unmapVME(struct s_mapDescr * mapDescr);
+Bool_t unmapBLT(struct s_mapDescr * mapDescr);
 
 Bool_t unmapAll();
-
-Bool_t setDestMapping(UInt_t Mapping);
-UInt_t getDestMapping();
 
 Bool_t initBLT();
 

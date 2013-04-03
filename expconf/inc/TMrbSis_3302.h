@@ -37,9 +37,8 @@ namespace std {} using namespace std;
 class TMrbSis_3302 : public TMrbVMEModule {
 
 	public:
-		enum				{	kSegSizeStart		=	0x0010000L	};
-		enum				{	kSegSize2		=	0x4000000L	};
-		enum				{	kSegSize3		=	0x8000000L	};
+		enum				{	kSegSizeReduced		=	0x1000000L	};
+		enum				{	kSegSizeNormal		=	0x8000000L	};
 		enum				{	kAddrMod		=	0x09	};
 
 		enum				{	kNofGroups		=	4	};
@@ -48,7 +47,7 @@ class TMrbSis_3302 : public TMrbVMEModule {
 	public:
 
 		TMrbSis_3302() {};  												// default ctor
-		TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr); 			// define a new module
+		TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr, Bool_t ReducedAddrSpace = kFALSE); 			// define a new module
 		~TMrbSis_3302() {};													// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code

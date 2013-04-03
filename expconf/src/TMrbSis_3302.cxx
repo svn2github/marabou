@@ -35,7 +35,7 @@ extern TMrbLogger * gMrbLog;
 ClassImp(TMrbSis_3302)
 
 
-TMrbSis_3302::TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr) :
+TMrbSis_3302::TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr, Bool_t ReducedAddrSpace) :
 									TMrbVMEModule(ModuleName, "Sis_3302", BaseAddr,
 																TMrbSis_3302::kAddrMod,
 																0,
@@ -68,8 +68,12 @@ TMrbSis_3302::TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr) :
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		} else {
-			TString ppc = gEnv->GetValue("TMbsSetup.ProcType", "RIO2");
-			this->SetSegmentSize(kSegSizeStart);
+			TString ppc = gEnv->GetValue("TMbsSetup.ProcType", "RIO3");
+			if (ppc.CompareTo("RIO3") != 0 && ppc.CompareTo("RIO4") != 0) {
+				gMrbLog->Err() << "Wrong CPU type - " << ppc << " (should be RIO3 or RIO4)" << endl;
+				gMrbLog->Flush(this->ClassName());
+			}
+			this->SetSegmentSize(ReducedAddrSpace ? kSegSizeReduced : kSegSizeNormal);
 			SetTitle("SIS 3302 digitizing adc 8 chn 16 bit 100 MHz"); 	// store module type
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";

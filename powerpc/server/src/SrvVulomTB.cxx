@@ -217,8 +217,8 @@ Bool_t SrvVulomTB::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 	MinorVersion = 0;
 	if (PrintFlag) {
 		gMrbLog->Out()	<< setbase(16)
-						<< "TrigBox info: addr (phys) 0x" << Module->GetBaseAddr()
-						<< " (log) 0x" << Module->GetMappedAddr()
+						<< "TrigBox info: addr (phys) 0x" << Module->GetPhysAddr()
+						<< " (log) 0x" << Module->GetBaseAddr()
 						<< " mod 0x" << Module->GetAddrModifier()
 						<< " type VULOM \"t5\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetModuleInfo");

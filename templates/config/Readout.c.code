@@ -34,6 +34,7 @@
 #include "gd_readout.h"
 #include "gd_tstamp.h"
 #include "ces/vmelib.h"
+#include "ces/bmalib.h"
 
 #include "err_mask_def.h"
 #include "errnum_def.h"

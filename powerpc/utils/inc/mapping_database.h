@@ -3,7 +3,7 @@
 
 #include "LwrTypes.h"
 
-#define STRLEN	64
+#define MAP_STRLEN	64
 
 #ifdef CPU_TYPE_RIO2
 static Char_t * rioType = "RIO2";
@@ -78,10 +78,8 @@ enum	EMapSize	{	kSize_A32	=	0x06000000,
 #endif
 
 
-UInt_t mappingDest;					/* mapping for destination */
-
 struct s_mapDescr {
-	Char_t mdName[STRLEN];				/* name, to be used with smem_create() etc */
+	Char_t mdName[MAP_STRLEN];			/* name, to be used with smem_create() etc */
 
 	UInt_t mappingModes;				/* possible VME mapping modes */
 
@@ -90,6 +88,7 @@ struct s_mapDescr {
 	UInt_t physAddrVME;				/* phys addr given by module switches */
 	volatile Char_t * vmeBase;			/* mapped address, static or dynamic mapping */
 	Int_t segSizeVME;				/* segment size */
+	Int_t busId;					/* identifier from bus_open() */
 
 	Bool_t bltEnabled;				/* TRUE if BLT is enabled */
 	UInt_t mappingBLT;				/* used BLT mapping */

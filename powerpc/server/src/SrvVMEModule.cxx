@@ -21,11 +21,27 @@
 typedef int intptr_t;
 
 #include "signal.h"
-#include "vmelib.h"
+#include <stdint.h>
+#include <unistd.h>
+#include <smem.h>
+#include <mem.h>
+
+#include <ces/vmelib.h>
+extern "C" {
+#include <ces/bmalib.h>
+#include <ces/buslib.h>
+#include <ces/uiolib.h>
+}
+
+#include <ces/xvme.h>
 
 #include "vmecontrol.h"
 
 #define PRINT_MAPPING	1
+
+extern "C" u_int xvme_map(u_int vaddr, int wsiz, int am, int adp);
+
+Bool_t bltInit = kFALSE;
 
 TMrbLofNamedX * gLofVMEProtos;		// list of prototypes
 TMrbLofNamedX * gLofVMEModules;		// list of actual modules
@@ -56,15 +72,10 @@ SrvVMEModule::SrvVMEModule(const Char_t * ModuleType,	const Char_t * ModuleDescr
 		this->MakeZombie();
 	} else {
 		fProto = NULL;
-		fAddrMod = AddrMod;
-		fSegSize = SegSize;
-		fCurSegSize = 0;
+		fAddrModVME = AddrMod;
+		fSegSizeVME = SegSize;
 		fNofChannels = NofChannels;
 		fRange = Range;
-		fBaseAddr = 0;
-		fAddrLow = 0;
-		fAddrHigh = 0;
-		fMappedAddr = 0;
 		gLofVMEProtos->AddNamedX(new TMrbNamedX(gLofVMEProtos->GetEntries(), ModuleType, ModuleDescr, this));
 	}
 }
@@ -104,17 +115,13 @@ SrvVMEModule::SrvVMEModule(const Char_t * ModuleName, const Char_t * ModuleType,
 				gMrbLog->Flush(this->ClassName());
 				this->MakeZombie();
 			} else {
+				fSegSizeVME = fProto->GetSegmentSize();
+				fAddrModVME = fProto->GetAddrModifier();
+				fMappingModes = kVMEMappingDirect | kVMEMappingStatic | kVMEMappingDynamic;
+				this->MapVME(BaseAddr, fSegSizeVME, fAddrModVME, fMappingModes);
 				fID = fProto->GetID();
-				fAddrMod = fProto->GetAddrModifier();
-				fSegSize = fProto->GetSegmentSize();
 				fNofChannels = nofChannels;
 				fNofChannelsUsed = NofChannels;
-				fBaseAddr = BaseAddr;
-				fAddrLow = 0;
-				fAddrHigh = 0;
-				fMappedAddr = 0;
-
-				if (this->MapAddress(0, 0x10000) == NULL) this->MakeZombie();		// transform phys addr to vme addr
 			}
 		}
 	}
@@ -146,69 +153,7 @@ void SrvVMEModule::Append() {
 
 volatile Char_t * SrvVMEModule::MapAddress(UInt_t Offset, Int_t SegSize) {
 
-	struct pdparam_master s_param; 			// vme segment params
-
-	s_param.iack = 1;
- 	s_param.rdpref = 0;
- 	s_param.wrpost = 0;
- 	s_param.swap = SINGLE_AUTO_SWAP;
- 	s_param.dum[0] = 0; 				// forces static mapping!
-
-	if (SegSize == 0) SegSize = fSegSize;		// actual segment size: if not explicitly given take default
-	
-	if (this->IsPrototype()) {
-		gMrbLog->Err()	<< "[" << this->GetName() << "]: Can't map a PROTOTYPE module - ignored"<< endl;
-		gMrbLog->Flush(this->ClassName(), "MapAddress");
-		return(NULL);
-	}
-
-	Bool_t mapIt = kFALSE;
-	if (fAddrHigh == 0 && Offset != 0xFFFFFFFF) {
-		mapIt = kTRUE;						// never done
-	} else if (Offset == 0xFFFFFFFF || Offset < fAddrLow || Offset > fAddrHigh) {
-#if (PRINT_MAPPING != 0)
-		gMrbLog->Out()	<< "[Unmapping log addr=0x" << setbase(16) << fMappedAddr << ", size=0x" << fCurSegSize << "]" << setbase(10) << endl;
-		gMrbLog->Flush(this->ClassName(), "MapAddress");
-#endif
-		UInt_t addr = return_controller(fMappedAddr, fCurSegSize);
-		if (addr == 0xFFFFFFFF) {
-			gMrbLog->Err()	<< "[" << this->GetName() << "]: Can't unmap log addr 0x"
-					<< setbase(16) << fMappedAddr << " (seg size=0x" << fCurSegSize << ", addr mod=0x" << fAddrMod << ")" << endl;
-			gMrbLog->Flush(this->ClassName(), "MapAddress");
-			return(NULL);
-		}
-		if (Offset != 0xFFFFFFFF) mapIt = kTRUE;
-	}
-
-	if (mapIt) {
-		UInt_t low = (Offset / SegSize) * SegSize;
-		UInt_t addr = find_controller(fBaseAddr + low, SegSize, fAddrMod, 0, 0, &s_param);
-		if (addr == 0xFFFFFFFF) {
-#if (PRINT_MAPPING != 0)
-			gMrbLog->Err()	<< "[Mapping offset=0x" << setbase(16) << Offset
-							<< " (phys addr=" << (fBaseAddr + Offset) << ") low=0x" << low
-							<< " high=0x" << (low + SegSize - 1) << " to log addr=???" << "]"
-							<< setbase(10) << endl;
-			gMrbLog->Flush(this->ClassName(), "MapAddress");
-#endif
-			gMrbLog->Err()	<< "[" << this->GetName() << "]: Can't map phys addr 0x"
-							<< setbase(16) << (fBaseAddr + Offset) << " (size=0x" << SegSize << ", addr mod=0x" << fAddrMod << ")" << endl;
-			gMrbLog->Flush(this->ClassName(), "MapAddress");
-			return(NULL);
-		}
-		fMappedAddr = addr;
-		fAddrLow = low;
-		fAddrHigh = low + SegSize - 1;
-		fCurSegSize = SegSize;
-#if (PRINT_MAPPING != 0)
-		gMrbLog->Out()	<< "[Mapping offset=0x" << setbase(16) << Offset
-						<< " (phys addr=" << (fBaseAddr + Offset) << ") low=0x" << fAddrLow
-						<< " high=0x" << fAddrHigh << " to log addr=0x" << addr << "]"
-						<< setbase(10) << endl;
-		gMrbLog->Flush(this->ClassName(), "MapAddress");
-#endif
-	}
-	return((volatile Char_t *) (fMappedAddr + (Offset - fAddrLow)));
+	return((volatile Char_t *) (fVmeBase + Offset));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -226,10 +171,10 @@ Bool_t SrvVMEModule::CheckBusTrap(SrvVMEModule * Module, UInt_t Offset, const Ch
 
 	gMrbLog->Err()	<< "[" << Module->GetName() << "]: Bus trap at phys addr 0x"
 					<< setbase(16)
-					<< Module->GetBaseAddr();
+					<< fPhysAddrVME;
 	if (Offset != 0) gMrbLog->Err() 	<< " + 0x" << Offset;
-	gMrbLog->Err()	<< ", log addr 0x" << fMappedAddr;
-	if (Offset != 0) gMrbLog->Err() 	<< " + 0x" << (Offset - fAddrLow);
+	gMrbLog->Err()	<< ", log addr 0x" << (UInt_t) fVmeBase;
+	if (Offset != 0) gMrbLog->Err() 	<< " + 0x" << Offset;
 	if (Method != NULL) gMrbLog->Err()	<< " (called by method \"" << Method << "()\")" << endl;
 	gMrbLog->Flush(this->ClassName(), "CheckBusTrap");
 	return(kTRUE);
@@ -259,3 +204,435 @@ void SrvVMEModule::Print() {
 	gMrbLog->Flush(this->ClassName(), "Print");
 }
 
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mapVME
+// Purpose:        Map VME address
+// Arguments:      UInt_t PhysAddr          -- physical address
+//                 Int_t Size               -- segment size
+//                 UInt_t AddrMod           -- address modifier
+//                 UInt_t Mapping           -- available mapping modes
+// Results:        s_mapDescr * Descr       -- pointer to database
+// Description:    Performs VME mapping, either statically or dynamically
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////'/
+
+Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t Mapping) {
+
+	UInt_t staticBase;
+	UInt_t dynamicAddr;
+	
+	if (Size == 0) Size = 4096;
+
+	fMappingModes = Mapping;
+	fMappingVME = kVMEMappingUndef;
+	fMappingBLT = kVMEMappingUndef;
+	
+#ifdef CPU_TYPE_RIO4
+	if (Mapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
+		fVmeBase = (volatile Char_t *) (PhysAddr | kAddr_A32Direct);
+		fMappingVME = kVMEMappingDirect;
+	}
+#endif
+	if (fMappingVME == kVMEMappingUndef) {
+		if (Mapping & kVMEMappingStatic) {
+			switch (AddrMod) {
+				case kAM_A32:
+					staticBase = kAddr_A32;
+					break;
+				case kAM_A24:
+					staticBase = kAddr_A24;
+					if (PhysAddr > 0x00FFFFFF) {
+						gMrbLog->Err() << "[" << this->GetName() << "] Not a A24 addr - " << setbase(16) << PhysAddr << endl;
+						gMrbLog->Flush(this->ClassName());
+						return kFALSE;
+					}
+				case kAM_A16:
+					staticBase = kAddr_A16;
+					if (PhysAddr > 0x0000FFFF) {
+						gMrbLog->Err() << "[" << this->GetName() << "] Not a A16 addr - " << setbase(16) << PhysAddr << endl;
+						gMrbLog->Flush(this->ClassName());
+						return kFALSE;
+					}
+				default:
+					gMrbLog->Err() << "[" << this->GetName() << "] Illegal addr modifier - " << setbase(16) << AddrMod << endl;
+					gMrbLog->Flush(this->ClassName());
+					return kFALSE;
+			}
+
+			fVmeBase = smem_create((Char_t *) this->GetName(), (Char_t *) (staticBase | PhysAddr), Size, SM_READ|SM_WRITE);
+			if (fVmeBase == NULL) {
+				gMrbLog->Err() << "[" << this->GetName() << "] Creating shared segment failed" << endl;
+				gMrbLog->Flush(this->ClassName());
+				return kFALSE;
+			}
+			fMappingVME = kVMEMappingStatic;
+		} else if (Mapping & kVMEMappingDynamic) {
+#ifdef CPU_TYPE_RIO4
+			fBusId = bus_open("xvme_mas");
+			dynamicAddr = bus_map(fBusId, PhysAddr, 0, Size, 0xa0, 0);
+#else
+ 			s_param.iack = 1;
+ 			s_param.rdpref = 0;
+ 			s_param.wrpost = 0;
+ 			s_param.swap = SINGLE_AUTO_SWAP;
+ 			s_param.dum[0] = 0;
+ 			dynamicAddr = find_controller(PhysAddr, Size, AddrMod, 0, 0, &s_param);
+#endif
+			if (dynamicAddr == 0xFFFFFFFF) {
+				gMrbLog->Err() << "[" << this->GetName() << "] Dynamic mapping failed" << endl;
+				gMrbLog->Flush(this->ClassName());
+				return kFALSE;
+			} else {
+				fVmeBase = (volatile Char_t *) dynamicAddr;
+			}
+			fMappingVME = kVMEMappingDynamic;
+		} else {
+			gMrbLog->Err() << "[" << this->GetName() << "] Illegal mapping mode - " << setbase(16) << Mapping << endl;
+			gMrbLog->Flush(this->ClassName());
+			return kFALSE;
+		}
+	}
+
+	fAddrModVME = AddrMod;
+	fPhysAddrVME = PhysAddr;
+	fSegSizeVME = Size;
+	fNofMappings++;
+	return kTRUE;
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mapAdditionalVME
+// Purpose:        Add another VME page
+// Arguments:      UInt_t PhysAddr          -- physical address
+//                 Int_t Size               -- segment size
+// Results:        Char_t * MappedAddr      -- mapped address
+// Description:    Maps an additional address.
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////////
+
+volatile Char_t * SrvVMEModule::MapAdditionalVME(UInt_t PhysAddr, Int_t Size) {
+
+	volatile Char_t * mappedAddr;
+	UInt_t staticBase;
+	UInt_t dynamicAddr;
+	UInt_t cpuBaseAddr;
+
+	TString segName;
+
+	if (Size == 0) Size = fSegSizeVME;
+
+	switch (fMappingVME) {
+#ifdef CPU_TYPE_RIO4
+		case kVMEMappingDirect:
+			fNofMappings++;
+			return (volatile Char_t *) (PhysAddr | kAddr_A32Direct);
+#endif
+		case kVMEMappingStatic:
+			switch (fAddrModVME) {
+				case kAM_A32:
+					staticBase = kAddr_A32;
+					break;
+				case kAM_A24:
+					staticBase = kAddr_A24;
+					if (PhysAddr > 0x00FFFFFF) {
+						gMrbLog->Err() << "[" << this->GetName() << "] Not a A24 addr - " << setbase(16) << PhysAddr << endl;
+						gMrbLog->Flush(this->ClassName());
+						return NULL;
+					}
+				case kAM_A16:
+					staticBase = kAddr_A16;
+					if (PhysAddr > 0x0000FFFF) {
+						gMrbLog->Err() << "[" << this->GetName() << "] Not a A16 addr - " << setbase(16) << PhysAddr << endl;
+						gMrbLog->Flush(this->ClassName());
+						return NULL;
+					}
+			}
+			segName = Form("%s_%d", this->GetName(), fNofMappings + 1);
+			mappedAddr = smem_create((Char_t *) segName.Data(), (Char_t *) (staticBase | PhysAddr), Size, SM_READ|SM_WRITE);
+			if (mappedAddr == NULL) {
+				gMrbLog->Err() << "[" << this->GetName() << "] Creating shared segment " << segName.Data() << " failed" << endl;
+				gMrbLog->Flush(this->ClassName());
+				return NULL;
+			}
+			fNofMappings++;
+			return mappedAddr;
+
+		case kVMEMappingDynamic:
+#ifdef CPU_TYPE_RIO4
+			dynamicAddr = bus_map(fBusId, PhysAddr, 0, Size, 0xa0, 0);
+#else
+ 			s_param.iack = 1;
+ 			s_param.rdpref = 0;
+ 			s_param.wrpost = 0;
+ 			s_param.swap = SINGLE_AUTO_SWAP;
+ 			s_param.dum[0] = 0;
+ 			dynamicAddr = find_controller(PhysAddr, Size, fAddrModVME, 0, 0, &s_param);
+#endif
+			if (dynamicAddr == 0xFFFFFFFF) {
+				gMrbLog->Err() << "[" << this->GetName() << "] Dynamic mapping failed" << endl;
+				gMrbLog->Flush(this->ClassName());
+				return NULL;
+			}
+			fNofMappings++;
+			return (volatile Char_t *) dynamicAddr;
+	}
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mapBLT
+// Purpose:        Map BLT address
+// Arguments:      UInt_t PhysAddr          -- physical address
+//                 Int_t Size               -- segment size
+//                 UInt_t AddrMod           -- address modifier
+// Results:        TRUE/FALSE
+// Description:    Performs mapping to be used with block xfer
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvVMEModule::MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
+
+	UInt_t staticBase;
+	UInt_t dynamicAddr;
+
+	TString bltName;
+
+	fMappingBLT = kVMEMappingUndef;
+
+#ifdef CPU_TYPE_RIO3
+	if (fMappingModes & kVMEMappingStatic) {
+		switch (AddrMod) {
+			case kAM_BLT:
+				staticBase = kAddr_BLT;
+				break;
+			case kAM_MBLT:
+				staticBase = kAddr_MBLT;
+			default:
+				gMrbLog->Err() << "[" << this->GetName() << "] Illegal addr modifier - " << setbase(16) << AddrMod << endl;
+				gMrbLog->Flush(this->ClassName());
+				return kFALSE;
+		}
+
+		bltName = Form("%s_blt", this->GetName());
+		fBltBase = smem_437(bltName, (Char_t *) (staticBase | PhysAddr), Size, SM_READ);
+		if (fBltBase == NULL) {
+			gMrbLog->Err() << "[" << this->GetName() << "] Creating shared segment " << bltName.Data() << " failed" << endl;
+			gMrbLog->Flush(this->ClassName());
+			return kFALSE;
+		}
+		fMappingBLT = kVMEMappingStatic;
+	}
+#endif
+#ifdef CPU_TYPE_RIO2
+	if (fMappingModes & kVMEMappingDynamic) {
+ 		s_param.iack = 1;
+ 		s_param.rdpref = 0;
+ 		s_param.wrpost = 0;
+ 		s_param.swap = SINGLE_AUTO_SWAP;
+ 		s_param.dum[0] = 0;
+ 		dynamicAddr = find_controller(PhysAddr, Size, AddrMod, 0, 0, &s_param);
+		if (dynamicAddr == 0xFFFFFFFF) {
+			gMrbLog->Err() << "[" << this->GetName() << "] Dynamic mapping failed" << endl;
+			gMrbLog->Flush(this->ClassName());
+			fBltBase = NULL;
+		} else {
+			fBltBase = (volatile Char_t *) dynamicAddr;
+			fMappingBLT = kVMEMappingStatic;
+		}
+	}
+#else
+	if (fMappingBLT == kVMEMappingUndef) {
+		if (fMappingModes & kVMEMappingDynamic) {
+			dynamicAddr = xvme_map(PhysAddr, Size, AddrMod, 0);
+			if (dynamicAddr == -1) {
+				gMrbLog->Err() << "[" << this->GetName() << "] Can't map XVME page" << endl;
+				gMrbLog->Flush(this->ClassName());
+				fBltBase = NULL;
+			} else {
+				fBltBase = (volatile Char_t *) dynamicAddr;
+			}
+		}
+	}
+#endif
+
+	if (bma_create_mode(&fBltModeId) != 0) {
+		gMrbLog->Err() << "[" << this->GetName() << "] Can't create BLT mode struct" << endl;
+		gMrbLog->Flush(this->ClassName());
+	}
+
+	fAddrModBLT = AddrMod;
+	fPhysAddrBLT = PhysAddr;
+	fSegSizeBLT = Size;
+
+	if (fBltBase == NULL) {
+		gMrbLog->Err() << "[" << this->GetName() << "] Can't map BLT addr - phys addr " << setbase(16) << PhysAddr << ", addrMod=" << setbase(16) << AddrMod << endl;
+		gMrbLog->Flush(this->ClassName());
+		return kFALSE;
+	} else {
+		gMrbLog->Out() << "[" << this->GetName() << "] phys addr " << setbase(16) << PhysAddr << ", mapped to BLT addr " << setbase(16) << fBltBase << ", addrMod=" << setbase(16) << AddrMod << endl;
+		gMrbLog->Flush(this->ClassName());
+		return kTRUE;
+	}
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           setBLTMode
+// Purpose:        Set BLT mode
+// Arguments:      s_mapDescr * mapDescr    -- map descriptor
+//                 UInt_t VmeSize           -- VME size
+//                 UInt_t WordSize          -- word size
+//                 UInt_t AddrMod           -- address modifier
+//                 Bool_t FifoMode          -- TRUE if AutoIncr
+// Results:        ---
+// Description:    Fills BLT mode struct.
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvVMEModule::SetBLTMode(UInt_t VmeSize, UInt_t WordSize, Bool_t FifoMode) {
+
+	Int_t sts;
+
+	if ((sts = bma_set_mode(fBltModeId, BMA_M_VMESize, VmeSize)) != 0) {
+		gMrbLog->Err() << "[" << this->GetName() << "] Error while setting BLT mode (VMESize = " << VmeSize << ") - error code " << sts << endl;
+		gMrbLog->Flush(this->ClassName());
+	}
+	if ((sts = bma_set_mode(fBltModeId, BMA_M_WordSize, WordSize)) != 0) {
+		gMrbLog->Err() << "[" << this->GetName() << "] Error while setting BLT mode (WordSize = " << WordSize << ") - error code " << sts << endl;
+		gMrbLog->Flush(this->ClassName());
+	}
+	if ((sts = bma_set_mode(fBltModeId, BMA_M_AmCode, fAddrModBLT)) != 0) {
+		gMrbLog->Err() << "[" << this->GetName() << "] Error while setting BLT mode (AmCode = " << setbase(16) << fAddrModBLT << ") - error code " << sts << endl;
+		gMrbLog->Flush(this->ClassName());
+	}
+#ifndef CPU_TYPE_RIO2
+	if ((sts = bma_set_mode(fBltModeId, BMA_M_VMEAdrInc, FifoMode ? BMA_M_VaiFifo : BMA_M_VaiNormal)) != 0) {
+		gMrbLog->Err() << "[" << this->GetName() << "] Error while setting BLT mode (FifoMode = " << FifoMode << ") - error code " << sts << endl;
+		gMrbLog->Flush(this->ClassName());
+	}
+#endif
+	return kTRUE;
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           initBLT
+// Purpose:        Initialize block xfer
+// Arguments:      ---
+// Results:        TRUE/FALSE
+// Description:    Calls bma_open() etc
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////////
+
+bool_t SrvVMEModule::InitBLT() {
+
+	Int_t bmaError;
+
+	if (bltInit) return kTRUE;
+
+	bmaError = bma_open();
+	if (bmaError != 0) {
+		gMrbLog->Err() << "[" << this->GetName() << "] Can't initialize BLT - bma_open() failed" << endl;
+		gMrbLog->Flush(this->ClassName());
+		bma_close();
+		return kFALSE;
+	}
+	gMrbLog->Out() << "[" << this->GetName() << "] Block xfer enabled" << endl;
+	gMrbLog->Flush(this->ClassName());
+	return kTRUE;
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           unmapVME
+// Purpose:        Unmap a mapped segment
+// Arguments:      ---
+// Results:        TRUE/FALSE
+// Description:    Removes a mapped segment, frees memory.
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvVMEModule::UnmapVME() {
+
+	UInt_t addr;
+
+	if (fMappingModes & kVMEMappingStatic) {
+		smem_create((Char_t *) "", (Char_t *) fVmeBase, 0, SM_DETACH);
+		smem_remove((Char_t *) this->GetName());
+		return kTRUE;
+	} else if (fMappingModes & kVMEMappingDynamic) {
+#ifdef CPU_TYPE_RIO2
+		addr = return_controller(fVmeBase, fSegSizeVME);
+		return (addr != 0xFFFFFFFF);
+#elif CPU_TYPE_RIO3
+		addr = return_controller(fVmeBase, fSegSizeVME);
+		return (addr != 0xFFFFFFFF);
+#elif CPU_TYPE_RIO4
+		bus_unmap(fBusId, (UInt_t) fVmeBase);
+#endif
+	}
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           unmapBLT
+// Purpose:        Unmap a BLT segment
+// Arguments:      ---
+// Results:        TRUE/FALSE
+// Description:    Removes a BMT segment, frees memory.
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvVMEModule::UnmapBLT() {
+
+	TString bltName;
+	Bool_t sts;
+	UInt_t addr;
+
+	if (fBltBase == NULL) return kTRUE;
+
+	if (fMappingModes & kVMEMappingStatic) {
+		smem_create((Char_t *) "", (Char_t *) fBltBase, 0, SM_DETACH);
+		bltName = Form("%s_blt", this->GetName());
+		smem_remove((Char_t *) bltName.Data());
+		return kTRUE;
+	} else if (fMappingModes & kVMEMappingDynamic) {
+#ifdef CPU_TYPE_RIO2
+		addr = return_controller(fBltBase, fSegSizeBLT);
+		return (addr != 0xFFFFFFFF);
+#elif CPU_TYPE_RIO3
+		addr = xvme_rel(fBltBase, fSegSizeBLT);
+		return (addr != 0xFFFFFFFF);
+#endif
+	}
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           getPhysAddr
+// Purpose:        Get pysical address from virtual one
+// Arguments:      UInt_t Addr              -- virtual address
+//                 Int_t Size               -- size in bytes
+// Results:        Int_t Offset             -- offset
+// Description:    Converts virtual to physical address.
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////////
+
+Char_t * SrvVMEModule::GetPhysAddr(Char_t * Addr, Int_t Size) {
+
+	struct dmachain chains[10];
+
+	static Int_t addrOffset = 0;
+	Int_t error;
+
+	if (vmtopm(getpid(), chains, Addr, Size) == -1) {
+		gMrbLog->Err() << "[" << this->GetName() << "] vmtopm call failed" << endl;
+		gMrbLog->Flush(this->ClassName());
+		return NULL;
+	}
+	return (Char_t *) chains[0].address;
+}
+
+	

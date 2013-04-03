@@ -317,5 +317,9 @@
 /* max number of samples */
 #define SIS3302_MAX_NUMBER_SAMPLES					0x3ffffc
 
+/* address space */
+#define SIS3302_ADDR_SPACE_NORMAL			0x8000000	/* 128MB */
+#define SIS3302_ADDR_SPACE_REDUCED			0x1000000	/* 16MB */
+
 
 #endif

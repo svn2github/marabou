@@ -18,6 +18,8 @@
 #include "LwrNamedX.h"
 #include "LwrLofNamedX.h"
 
+#include "mapping_database.h"
+
 class SrvVMEModule : public TNamed {
 
 	public:
@@ -33,6 +35,55 @@ class SrvVMEModule : public TNamed {
 									kModuleVulomTB  		=	kManufactGsi + 0x3
 								};
 
+		enum ESrvMapping	 	{	kVMEMappingUndef	=	0,			/* vme mapping */
+									kVMEMappingDirect	=	BIT(0),
+									kVMEMappingStatic	=	BIT(1),
+									kVMEMappingDynamic	=	BIT(2),
+									kVMEMappingHasBLT	=	BIT(10),
+									kVMEMappingHasMBLT	=	BIT(11)
+						};
+
+		enum ESrvAddrMod		{	kAM_A32		=	0x09,
+									kAM_A24		=	0x39,
+									kAM_A16		=	0x29,
+									kAM_BLT		=	0x0b,
+									kAM_MBLT	=	0x08
+						};
+
+#ifdef CPU_TYPE_RIO2
+		enum	ESrvMapAddr		{	kAddr_A32	=	0xE0000000,
+									kAddr_A24	=	0xEE000000,
+									kAddr_A16	=	0xEFFE0000
+						};
+		enum	ESrvMapSize		{	kSize_A32	=	0x0E000000,
+									kSize_A24	=	0x01000000,
+									kSize_A16	=	0x00010000
+						};
+#elif CPU_TYPE_RIO3
+		enum	ESrvMapAddr		{	kAddr_A32	=	0x50000000,
+									kAddr_A24	=	0x4F000000,
+									kAddr_A16	=	0x4E000000,
+									kAddr_BLT	=	0x50000000,
+									kAddr_MBLT	=	0x60000000
+						};
+		enum	ESrvMapSize		{	kSize_A32	=	0x10000000,
+									kSize_A24	=	0x01000000,
+									kSize_A16	=	0x00010000,
+									kSize_BLT	=	0x10000000,
+									kSize_MBLT	=	0x10000000
+						};
+#else
+		enum	ESrvMapAddr		{	kAddr_A32	=	0x50000000,
+									kAddr_A24	=	0x4F000000,
+									kAddr_A16	=	0x4E000000,
+									kAddr_A32Direct	=	0xF0000000
+						};
+		enum	ESrvMapSize		{	kSize_A32	=	0x06000000,
+									kSize_A24	=	0x01000000,
+									kSize_A16	=	0x00010000
+						};
+#endif
+
 	public:
 
 		//! Constructor: define a module prototype
@@ -42,20 +93,14 @@ class SrvVMEModule : public TNamed {
 		//! \param[in]			SegSize 	-- segment size in bytes
 		//! \param[in]			NofChannels	-- number of channels
 		//! \param[in]			Range		-- range in bits / resolution
-		SrvVMEModule(const Char_t * ModuleType,	const Char_t * ModuleDescr,
-												UInt_t AddrMod,
-												Int_t SegSize,
-												Int_t NofChannels,
-												Int_t Range);
+		SrvVMEModule(const Char_t * ModuleType,	const Char_t * ModuleDescr, UInt_t AddrMod, Int_t SegSize, Int_t NofChannels, Int_t Range);
 
 		//! Constructor: define a real module
 		//! \param[in]			ModuleName	-- module name
 		//! \param[in]			ModuleType	-- prototypee (i.e. "Sis3302")
-		//! \param[in]			BaseAddr 	-- base (=physical) adress
+		//! \param[in]			PhysAddr 	-- physical adress
 		//! \param[in]			NofChannels	-- number of channels used
-		SrvVMEModule(const Char_t * ModuleName,	const Char_t * ModuleType,
-												UInt_t BaseAddr,
-												Int_t NofChannels = 0);
+		SrvVMEModule(const Char_t * ModuleName,	const Char_t * ModuleType, UInt_t PhysAddr, Int_t NofChannels = 0);
 
 		//! Destructor
 		~SrvVMEModule() {};
@@ -64,31 +109,23 @@ class SrvVMEModule : public TNamed {
 		void Print();
 
 		//! Get module's base (=physical) address
-		//! \retval 	BaseAddr	-- base (=physical) address
-		inline UInt_t GetBaseAddr() const { return(fBaseAddr); };
+		//! \retval 	PhysAddr	-- base (=physical) address
+		inline UInt_t GetPhysAddr() const { return(fPhysAddrVME); };
 
 		//! Get	module's mapped (=vme) address
-		//! \retval 	MappedAddr	-- mapped (=vme) address
-		inline UInt_t GetMappedAddr() const { return(fMappedAddr); };
-
-		//! Get lowest address mapped so far
-		//! \retval 	AddrLow 	-- lower bound of mapping segment
-		inline UInt_t GetAddrLow() const { return(fAddrLow); };
-
-		//! Get highest address mapped so far
-		//! \retval 	AddrHigh 	-- upper bound of mapping segment
-		inline UInt_t GetAddrHigh() const { return(fAddrHigh); };
+		//! \retval 	BaseAddr	-- mapped (=vme) address
+		inline UInt_t GetBaseAddr() const { return((UInt_t) fVmeBase); };
 
 		//! Set segment size in bytes
-		inline void SetSegmentSize(Int_t SegSize) { fSegSize = SegSize; };
+		inline void SetSegmentSize(Int_t SegSize) { fSegSizeVME = SegSize; };
 
 		//! Get segment size in bytes
 		//! \retval 	SegSize 	-- segment size in bytes
-		inline Int_t GetSegmentSize() const { return(fSegSize); };
+		inline Int_t GetSegmentSize() const { return(fSegSizeVME); };
 
 		//! Get vme addr modifier
 		//! \retval 	AddrMod 		-- vme address modifier
-		inline Int_t GetAddrModifier() const { return(fAddrMod); };
+		inline Int_t GetAddrModifier() const { return(fAddrModVME); };
 
 		//! Get number of channels housed in this module
 		//! \retval 	NofChannels 	-- number of channels
@@ -126,6 +163,39 @@ class SrvVMEModule : public TNamed {
 
 		inline const Char_t * ClassName() const { return "SrvVMEModule"; };
 
+		//! Map modules addr space
+		//! \param[in]			PhysAddr	-- phys addr
+		//! \param[in]			Size		-- segment size
+		//! \param[in]			AddrMod		-- addr modifier
+		//! \param[in]			Mapping		-- mapping modes
+		//! \return 	TRUE or FALSE
+		Bool_t MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t Mapping);
+		volatile Char_t * MapAdditionalVME(UInt_t PhysAddr, Int_t Size);
+
+		//! Map modules BLT space
+		//! \return 	TRUE or FALSE
+		//! \param[in]			PhysAddr	-- phys addr
+		//! \param[in]			Size		-- segment size
+		//! \param[in]			AddrMod		-- addr modifier
+		Bool_t MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod);
+
+		//! Unmap VME and BLT segments
+		//! \return 	TRUE or FALSE
+		Bool_t UnmapVME();
+		Bool_t UnmapBLT();
+
+		//! Initialize BLT
+		//! \return 	TRUE or FALSE
+		Bool_t InitBLT();
+
+		//! Define BLT attributes
+		//! \return 	TRUE or FALSE
+		Bool_t SetBLTMode(UInt_t VmeSize, UInt_t WordSize, Bool_t FifoMode);
+
+		//! Calc phys addr from logical one
+		//! \return 	PhysAddr
+		Char_t * GetPhysAddr(Char_t * Addr, Int_t Size);
+
 	protected:
 
 		//! Check if bustrap occurred during vme access
@@ -137,18 +207,30 @@ class SrvVMEModule : public TNamed {
 	protected:
 
 		SrvVMEModule * fProto;	 			//!< link to prototype module
-		Int_t fID;							//!< module (=prototype) id
-		UInt_t fBaseAddr;					//!< base address
-		UInt_t fAddrLow; 					//!< current low limit
-		UInt_t fAddrHigh; 					//!< current high limit
-		UInt_t fMappedAddr; 				//!< mapped vme address
-		UInt_t fAddrMod;					//!< address modifier
-		Int_t fSegSize; 	 				//!< segment size
-		Int_t fCurSegSize; 	 				//!< current segment size (may differ from fSegSize)
+		Int_t fID;					//!< module (=prototype) id
 		Int_t fNofChannels; 				//!< number of channels
 		Int_t fNofChannelsUsed; 			//!< number of channels used
-		Int_t fRange;		 				//!< resolution
-		TMrbLofNamedX * fLofFunctions;		//!< functions
+		Int_t fRange;		 			//!< resolution
+		TMrbLofNamedX * fLofFunctions;			//!< functions
+
+		UInt_t fMappingModes;				//!< mapping modes available
+		UInt_t fMappingVME;				//!< used VME mapping
+		UInt_t fAddrModVME;				//!< address modifier
+		UInt_t fPhysAddrVME;				//!< phys addr given by module switches
+		volatile Char_t * fVmeBase;			//!< mapped address, static or dynamic mapping
+		Int_t fSegSizeVME;				//!< segment size
+		Int_t fBusId;					//!< identifier from bus_open() call
+
+		Bool_t fBltEnabled;				//!< TRUE if BLT is enabled
+		UInt_t fMappingBLT;				//!< used BLT mapping
+		UInt_t fAddrModBLT;				//!< address modifier
+		UInt_t fPhysAddrBLT;				//!< phys addr given by module switches
+		volatile Char_t * fBltBase;			//!< mapped address
+		Int_t fSegSizeBLT;				//!< segment size
+		Int_t fBltModeId;				//!< id from bma_create_mode()
+
+		Int_t fNofMappings;				//!< number of mappings for this device
+
 };	
 
 #endif

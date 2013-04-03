@@ -128,7 +128,7 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			{
 				if (!this->CheckAddressSpace(Module, kFALSE)) return(kFALSE);
 				M2L_VME_Return_Module_Addr * m = (M2L_VME_Return_Module_Addr *) allocMessage(sizeof(M2L_VME_Return_Module_Addr), 1, kM2L_MESS_VME_EXEC_FUNCTION);
-				m->fAddress = swapIt(Module->GetBaseAddr());
+				m->fAddress = swapIt(Module->GetPhysAddr());
 				m->fAddrSpace = swapIt(this->IsReduced() ? 16 : 128);
 				return((M2L_MsgHdr *) m);
 			}
@@ -743,8 +743,8 @@ Bool_t SrvSis3302::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 	MinorVersion = ident & 0xFF;
 	if (PrintFlag) {
 		gMrbLog->Out()	<< setbase(16)
-						<< "SIS module info: addr (phys) 0x" << Module->GetBaseAddr()
-						<< " (log) 0x" << Module->GetMappedAddr()
+						<< "SIS module info: addr (phys) 0x" << Module->GetPhysAddr()
+						<< " (log) 0x" << Module->GetBaseAddr()
 						<< " mod 0x" << Module->GetAddrModifier()
 						<< setbase(10)
 						<< " type " << BoardId

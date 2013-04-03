@@ -34,11 +34,11 @@ libSis_3302.OBJS = sis_3302_fct.o sis_3302_readout.o
 all: $(LIB_TARGETS)$(CPPFLAGS)
 
 $(LIB_TARGETS): $(libSis_3302.OBJS)
+	cp ../inc/*.h ../../../include
 	$(AR) $(ARFLAGS) $@ $^
 	ranlib $@
 
 lib: $(LIB_TARGETS)
-
 
 clean:
 	rm -f *.o core core.* $(LIB_TARGETS)

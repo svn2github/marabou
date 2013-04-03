@@ -167,7 +167,7 @@ Bool_t TMrbVMEModule::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadou
 	moduleName = this->GetName();
 	moduleName(0,1).ToUpper();
 
-	if (TagIndex == TMrbConfig::kRdoInitPointers) {
+	if (TagIndex == TMrbConfig::kRdoLowInitPointers) {
 		if (this->GetNofSubDevices() <= 1) {
 			Template.InitializeCode("%V%");
 		} else {

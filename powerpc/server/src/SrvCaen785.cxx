@@ -129,8 +129,8 @@ Bool_t SrvCaen785::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 	Serial = (Int_t) (serialMSB << 8) + (Int_t) serialLSB;
 	if (PrintFlag) {
 		gMrbLog->Out()	<< setbase(16)
-						<< "CAEN module info: addr (phys) " << Module->GetBaseAddr()
-						<< " addr (log) " << Module->GetMappedAddr()
+						<< "CAEN module info: addr (phys) " << Module->GetPhysAddr()
+						<< " addr (log) " << Module->GetBaseAddr()
 						<< " mod " << Module->GetAddrModifier()
 						<< setbase(10)
 						<< " type " << BoardId

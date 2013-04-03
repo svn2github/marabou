@@ -14,6 +14,7 @@ SrcSuf		=	cxx
 LibSuf		=	a
 
 LWRLIB		=	../../lib/$(GSI_OS_VERSION)/libLwr.$(LibSuf)
+UTILIB		=	../../lib/$(GSI_OS_VERSION)/libUti.$(LibSuf)
 SRVLIB		=	../../lib/$(GSI_OS_VERSION)/libSrv.$(LibSuf)
 
 INCS		=	$(SRVINC)/SrvUtils.$(IclSuf) \
@@ -39,11 +40,11 @@ all:			$(SRVLIB) $(SRVPRG)
 clean:
 				rm -f *.o $(SRVLIB)
 
-$(SRVPRG):		mrbLynxOsSrv.o $(SRVLIB) $(LWRLIB)
+$(SRVPRG):		mrbLynxOsSrv.o $(SRVLIB) $(LWRLIB) $(UTILIB)
 				$(CXX) -o mrbLynxOsSrv mrbLynxOsSrv.o \
 				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
-				-lSrv -lLwr -lvme -llynx -lnetinet
+				-lSrv -lLwr -lUti -lvme -lbma -lbus -luio $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)/lib_mbs.a -llynx -lnetinet
 				mv mrbLynxOsSrv ../../bin/$(GSI_OS_VERSION)
 
 
