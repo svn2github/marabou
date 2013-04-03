@@ -83,6 +83,8 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 	if (Mapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
 		md->vmeBase = PhysAddr | kAddr_A32Direct;
 		md->mappingVME = kVMEMappingDirect;
+		sprintf(msg, "[mapVME] %s: Direct mapping %#lx -> %#lx, addrMod=%#x", DescrName, PhysAddr, md->vmeBase, AddrMode);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 #endif
 	if (md->mappingVME == kVMEMappingUndef) {
@@ -119,6 +121,8 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 				return NULL;
 			}
+			sprintf(msg, "[mapVME] %s: Static mapping %#lx -> %#lx, addrMod=%#x", DescrName, PhysAddr, md->vmeBase, AddrMod);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			md->mappingVME = kVMEMappingStatic;
 		} else if (Mapping & kVMEMappingDynamic) {
  			s_param.iack = 1;
@@ -134,6 +138,8 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 			} else {
 				md->vmeBase = (volatile Char_t *) dynamicAddr;
 			}
+			sprintf(msg, "[mapVME] %s: Dynamic mapping %#lx -> %#lx, addrMod=%#x", DescrName, PhysAddr, md->vmeBase, AddrMod);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			md->mappingVME = kVMEMappingDynamic;
 		} else {
 			sprintf(msg, "[mapVME] %s: Illegal mapping mode - %#lx", DescrName, Mapping);
@@ -303,6 +309,8 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			return FALSE;
 		}
+		sprintf(msg, "[mapBLT] %s: Static mapping %#lx -> %#lx, addrMod=%#x", mapDescr->mdName, PhysAddr, mapDescr->bltBase, AddrMod);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 		mapDescr->mappingBLT = kVMEMappingStatic;
 	}
 #endif
@@ -321,6 +329,8 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 		} else {
 			mapDescr->bltBase = (volatile Char_t *) dynamicAddr;
 			mapDescr->mappingBLT = kVMEMappingStatic;
+			sprintf(msg, "[mapBLT] %s: Dynamic mapping %#lx -> %#lx, addrMod=%#x", mapDescr->mdName, PhysAddr, md->bltBase, AddrMode);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 	}
 #else
@@ -333,6 +343,8 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 				mapDescr->bltBase = NULL;
 			} else {
 				mapDescr->bltBase = (volatile Char_t *) dynamicAddr;
+				sprintf(msg, "[mapBLT] %s: Dynamic mapping %#lx -> %#lx, addrMod=%#x", mapDescr->mdName, PhysAddr, mapDescr->bltBase, AddrMod);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			}
 		}
 	}

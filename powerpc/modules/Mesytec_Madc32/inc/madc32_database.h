@@ -86,7 +86,6 @@ struct s_madc32 {
 	volatile char * cbltAddr;		/* ... after mapping */
 	bool_t firstInChain;			/* TRUE if head of chain */
 	bool_t lastInChain;			/* TRUE if end of chain */
-
 };
 
 #endif
