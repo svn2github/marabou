@@ -118,7 +118,7 @@ SrvVMEModule::SrvVMEModule(const Char_t * ModuleName, const Char_t * ModuleType,
 				fSegSizeVME = fProto->GetSegmentSize();
 				fAddrModVME = fProto->GetAddrModifier();
 				fMappingModes = kVMEMappingDirect | kVMEMappingStatic | kVMEMappingDynamic;
-				this->MapVME(BaseAddr, fSegSizeVME, fAddrModVME, fMappingModes);
+				this->MapVME(BaseAddr, fSegSizeVME, fAddrModVME, 0x7);
 				fID = fProto->GetID();
 				fNofChannels = nofChannels;
 				fNofChannelsUsed = NofChannels;
@@ -171,9 +171,9 @@ Bool_t SrvVMEModule::CheckBusTrap(SrvVMEModule * Module, UInt_t Offset, const Ch
 
 	gMrbLog->Err()	<< "[" << Module->GetName() << "]: Bus trap at phys addr 0x"
 					<< setbase(16)
-					<< fPhysAddrVME;
+					<< Module->GetPhysAddr();
 	if (Offset != 0) gMrbLog->Err() 	<< " + 0x" << Offset;
-	gMrbLog->Err()	<< ", log addr 0x" << (UInt_t) fVmeBase;
+	gMrbLog->Err()	<< ", log addr 0x" << (UInt_t) Module->GetBaseAddr();
 	if (Offset != 0) gMrbLog->Err() 	<< " + 0x" << Offset;
 	if (Method != NULL) gMrbLog->Err()	<< " (called by method \"" << Method << "()\")" << endl;
 	gMrbLog->Flush(this->ClassName(), "CheckBusTrap");
@@ -219,6 +219,7 @@ void SrvVMEModule::Print() {
 
 Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t Mapping) {
 
+	struct pdparam_master s_param; 		/* vme segment params */
 	UInt_t staticBase;
 	UInt_t dynamicAddr;
 	
@@ -230,12 +231,24 @@ Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t 
 	
 #ifdef CPU_TYPE_RIO4
 	if (Mapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
+		if (PhysAddr > 0x0FFFFFFF) {
+			gMrbLog->Err() << "[" << this->GetName() << "] Direct mapping not possible - " << setbase(16) << PhysAddr << endl;
+			gMrbLog->Flush(this->ClassName(), "MapVME");
+			return kFALSE;
+		}
 		fVmeBase = (volatile Char_t *) (PhysAddr | kAddr_A32Direct);
 		fMappingVME = kVMEMappingDirect;
+		gMrbLog->Out() << "[" << this->GetName() << "] Direct mapping of phys addr 0x" << setbase(16) << PhysAddr << " to log addr 0x" << (UInt_t) fVmeBase << endl;
+		gMrbLog->Flush(this->ClassName(), "MapVME");
 	}
 #endif
 	if (fMappingVME == kVMEMappingUndef) {
 		if (Mapping & kVMEMappingStatic) {
+			if (PhysAddr > 0x0FFFFFFF) {
+				gMrbLog->Err() << "[" << this->GetName() << "] Static mapping not possible - " << setbase(16) << PhysAddr << endl;
+				gMrbLog->Flush(this->ClassName(), "MapVME");
+				return kFALSE;
+			}
 			switch (AddrMod) {
 				case kAM_A32:
 					staticBase = kAddr_A32;
@@ -244,29 +257,31 @@ Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t 
 					staticBase = kAddr_A24;
 					if (PhysAddr > 0x00FFFFFF) {
 						gMrbLog->Err() << "[" << this->GetName() << "] Not a A24 addr - " << setbase(16) << PhysAddr << endl;
-						gMrbLog->Flush(this->ClassName());
+						gMrbLog->Flush(this->ClassName(), "MapVME");
 						return kFALSE;
 					}
 				case kAM_A16:
 					staticBase = kAddr_A16;
 					if (PhysAddr > 0x0000FFFF) {
 						gMrbLog->Err() << "[" << this->GetName() << "] Not a A16 addr - " << setbase(16) << PhysAddr << endl;
-						gMrbLog->Flush(this->ClassName());
+						gMrbLog->Flush(this->ClassName(), "MapVME");
 						return kFALSE;
 					}
 				default:
 					gMrbLog->Err() << "[" << this->GetName() << "] Illegal addr modifier - " << setbase(16) << AddrMod << endl;
-					gMrbLog->Flush(this->ClassName());
+					gMrbLog->Flush(this->ClassName(), "MapVME");
 					return kFALSE;
 			}
 
 			fVmeBase = smem_create((Char_t *) this->GetName(), (Char_t *) (staticBase | PhysAddr), Size, SM_READ|SM_WRITE);
 			if (fVmeBase == NULL) {
 				gMrbLog->Err() << "[" << this->GetName() << "] Creating shared segment failed" << endl;
-				gMrbLog->Flush(this->ClassName());
+				gMrbLog->Flush(this->ClassName(), "MapVME");
 				return kFALSE;
 			}
 			fMappingVME = kVMEMappingStatic;
+			gMrbLog->Out() << "[" << this->GetName() << "] Static mapping of phys addr 0x" << setbase(16) << PhysAddr << " to log addr 0x" << (UInt_t) fVmeBase << endl;
+			gMrbLog->Flush(this->ClassName(), "MapVME");
 		} else if (Mapping & kVMEMappingDynamic) {
 #ifdef CPU_TYPE_RIO4
 			fBusId = bus_open("xvme_mas");
@@ -287,9 +302,11 @@ Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t 
 				fVmeBase = (volatile Char_t *) dynamicAddr;
 			}
 			fMappingVME = kVMEMappingDynamic;
+			gMrbLog->Out() << "[" << this->GetName() << "] Dynamic mapping of phys addr 0x" << setbase(16) << PhysAddr << " to log addr 0x" << (UInt_t) fVmeBase << endl;
+			gMrbLog->Flush(this->ClassName(), "MapVME");
 		} else {
 			gMrbLog->Err() << "[" << this->GetName() << "] Illegal mapping mode - " << setbase(16) << Mapping << endl;
-			gMrbLog->Flush(this->ClassName());
+			gMrbLog->Flush(this->ClassName(), "MapVME");
 			return kFALSE;
 		}
 	}
@@ -314,6 +331,7 @@ Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t 
 
 volatile Char_t * SrvVMEModule::MapAdditionalVME(UInt_t PhysAddr, Int_t Size) {
 
+	struct pdparam_master s_param; 		/* vme segment params */
 	volatile Char_t * mappedAddr;
 	UInt_t staticBase;
 	UInt_t dynamicAddr;
@@ -326,10 +344,22 @@ volatile Char_t * SrvVMEModule::MapAdditionalVME(UInt_t PhysAddr, Int_t Size) {
 	switch (fMappingVME) {
 #ifdef CPU_TYPE_RIO4
 		case kVMEMappingDirect:
+			if (PhysAddr > 0x0FFFFFFF) {
+				gMrbLog->Err() << "[" << this->GetName() << "] Direct mapping not possible - " << setbase(16) << PhysAddr << endl;
+				gMrbLog->Flush(this->ClassName(), "MapAdditionalVME");
+				return kFALSE;
+			}
 			fNofMappings++;
+			gMrbLog->Out() << "[" << this->GetName() << "] Direct mapping of phys addr 0x" << setbase(16) << PhysAddr << " to log addr 0x" << (PhysAddr | kAddr_A32Direct) << endl;
+			gMrbLog->Flush(this->ClassName(), "MapAdditionalVME");
 			return (volatile Char_t *) (PhysAddr | kAddr_A32Direct);
 #endif
 		case kVMEMappingStatic:
+			if (PhysAddr > 0x0FFFFFFF) {
+				gMrbLog->Err() << "[" << this->GetName() << "] Static mapping not possible - " << setbase(16) << PhysAddr << endl;
+				gMrbLog->Flush(this->ClassName(), "MapAdditionalVME");
+				return kFALSE;
+			}
 			switch (fAddrModVME) {
 				case kAM_A32:
 					staticBase = kAddr_A32;
@@ -338,14 +368,14 @@ volatile Char_t * SrvVMEModule::MapAdditionalVME(UInt_t PhysAddr, Int_t Size) {
 					staticBase = kAddr_A24;
 					if (PhysAddr > 0x00FFFFFF) {
 						gMrbLog->Err() << "[" << this->GetName() << "] Not a A24 addr - " << setbase(16) << PhysAddr << endl;
-						gMrbLog->Flush(this->ClassName());
+						gMrbLog->Flush(this->ClassName(), "MapAdditionalVME");
 						return NULL;
 					}
 				case kAM_A16:
 					staticBase = kAddr_A16;
 					if (PhysAddr > 0x0000FFFF) {
 						gMrbLog->Err() << "[" << this->GetName() << "] Not a A16 addr - " << setbase(16) << PhysAddr << endl;
-						gMrbLog->Flush(this->ClassName());
+						gMrbLog->Flush(this->ClassName(), "MapAdditionalVME");
 						return NULL;
 					}
 			}
@@ -353,10 +383,12 @@ volatile Char_t * SrvVMEModule::MapAdditionalVME(UInt_t PhysAddr, Int_t Size) {
 			mappedAddr = smem_create((Char_t *) segName.Data(), (Char_t *) (staticBase | PhysAddr), Size, SM_READ|SM_WRITE);
 			if (mappedAddr == NULL) {
 				gMrbLog->Err() << "[" << this->GetName() << "] Creating shared segment " << segName.Data() << " failed" << endl;
-				gMrbLog->Flush(this->ClassName());
+				gMrbLog->Flush(this->ClassName(), "MapAdditionalVME");
 				return NULL;
 			}
 			fNofMappings++;
+			gMrbLog->Out() << "[" << this->GetName() << "] Static mapping of phys addr 0x" << setbase(16) << PhysAddr << " to log addr 0x" << (UInt_t) mappedAddr << endl;
+			gMrbLog->Flush(this->ClassName(), "MapAdditionalVME");
 			return mappedAddr;
 
 		case kVMEMappingDynamic:
@@ -372,10 +404,12 @@ volatile Char_t * SrvVMEModule::MapAdditionalVME(UInt_t PhysAddr, Int_t Size) {
 #endif
 			if (dynamicAddr == 0xFFFFFFFF) {
 				gMrbLog->Err() << "[" << this->GetName() << "] Dynamic mapping failed" << endl;
-				gMrbLog->Flush(this->ClassName());
+				gMrbLog->Flush(this->ClassName(), "MapAdditionalVME");
 				return NULL;
 			}
 			fNofMappings++;
+			gMrbLog->Out() << "[" << this->GetName() << "] Dynamic mapping of phys addr 0x" << setbase(16) << PhysAddr << " to log addr 0x" << dynamicAddr << endl;
+			gMrbLog->Flush(this->ClassName(), "MapAdditionalVME");
 			return (volatile Char_t *) dynamicAddr;
 	}
 }
@@ -411,7 +445,7 @@ Bool_t SrvVMEModule::MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
 				staticBase = kAddr_MBLT;
 			default:
 				gMrbLog->Err() << "[" << this->GetName() << "] Illegal addr modifier - " << setbase(16) << AddrMod << endl;
-				gMrbLog->Flush(this->ClassName());
+				gMrbLog->Flush(this->ClassName(), "MapBLT");
 				return kFALSE;
 		}
 
@@ -419,9 +453,11 @@ Bool_t SrvVMEModule::MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
 		fBltBase = smem_437(bltName, (Char_t *) (staticBase | PhysAddr), Size, SM_READ);
 		if (fBltBase == NULL) {
 			gMrbLog->Err() << "[" << this->GetName() << "] Creating shared segment " << bltName.Data() << " failed" << endl;
-			gMrbLog->Flush(this->ClassName());
+			gMrbLog->Flush(this->ClassName(), "MapBLT");
 			return kFALSE;
 		}
+		gMrbLog->Out() << "[" << this->GetName() << "] Static BLT mapping of phys addr 0x" << setbase(16) << PhysAddr << " to log addr 0x" << (UInt_t) fBltBase << endl;
+		gMrbLog->Flush(this->ClassName(), "MapBLT");
 		fMappingBLT = kVMEMappingStatic;
 	}
 #endif
@@ -435,11 +471,13 @@ Bool_t SrvVMEModule::MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
  		dynamicAddr = find_controller(PhysAddr, Size, AddrMod, 0, 0, &s_param);
 		if (dynamicAddr == 0xFFFFFFFF) {
 			gMrbLog->Err() << "[" << this->GetName() << "] Dynamic mapping failed" << endl;
-			gMrbLog->Flush(this->ClassName());
+			gMrbLog->Flush(this->ClassName(), "MapBLT");
 			fBltBase = NULL;
 		} else {
 			fBltBase = (volatile Char_t *) dynamicAddr;
 			fMappingBLT = kVMEMappingStatic;
+			gMrbLog->Out() << "[" << this->GetName() << "] Dynamic BLT mapping of phys addr 0x" << setbase(16) << PhysAddr << " to log addr 0x" << (UInt_t) fBltBase << endl;
+			gMrbLog->Flush(this->ClassName(), "MapBLT");
 		}
 	}
 #else
@@ -448,10 +486,12 @@ Bool_t SrvVMEModule::MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
 			dynamicAddr = xvme_map(PhysAddr, Size, AddrMod, 0);
 			if (dynamicAddr == -1) {
 				gMrbLog->Err() << "[" << this->GetName() << "] Can't map XVME page" << endl;
-				gMrbLog->Flush(this->ClassName());
+				gMrbLog->Flush(this->ClassName(), "MapBLT");
 				fBltBase = NULL;
 			} else {
 				fBltBase = (volatile Char_t *) dynamicAddr;
+				gMrbLog->Out() << "[" << this->GetName() << "] Dynamic BLT mapping of phys addr 0x" << setbase(16) << PhysAddr << " to log addr 0x" << (UInt_t) fBltBase << endl;
+				gMrbLog->Flush(this->ClassName(), "MapBLT");
 			}
 		}
 	}
@@ -459,7 +499,7 @@ Bool_t SrvVMEModule::MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
 
 	if (bma_create_mode(&fBltModeId) != 0) {
 		gMrbLog->Err() << "[" << this->GetName() << "] Can't create BLT mode struct" << endl;
-		gMrbLog->Flush(this->ClassName());
+		gMrbLog->Flush(this->ClassName(), "MapBLT");
 	}
 
 	fAddrModBLT = AddrMod;
@@ -468,13 +508,10 @@ Bool_t SrvVMEModule::MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
 
 	if (fBltBase == NULL) {
 		gMrbLog->Err() << "[" << this->GetName() << "] Can't map BLT addr - phys addr " << setbase(16) << PhysAddr << ", addrMod=" << setbase(16) << AddrMod << endl;
-		gMrbLog->Flush(this->ClassName());
+		gMrbLog->Flush(this->ClassName(), "MapBLT");
 		return kFALSE;
-	} else {
-		gMrbLog->Out() << "[" << this->GetName() << "] phys addr " << setbase(16) << PhysAddr << ", mapped to BLT addr " << setbase(16) << fBltBase << ", addrMod=" << setbase(16) << AddrMod << endl;
-		gMrbLog->Flush(this->ClassName());
-		return kTRUE;
 	}
+	return kTRUE;
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -497,20 +534,20 @@ Bool_t SrvVMEModule::SetBLTMode(UInt_t VmeSize, UInt_t WordSize, Bool_t FifoMode
 
 	if ((sts = bma_set_mode(fBltModeId, BMA_M_VMESize, VmeSize)) != 0) {
 		gMrbLog->Err() << "[" << this->GetName() << "] Error while setting BLT mode (VMESize = " << VmeSize << ") - error code " << sts << endl;
-		gMrbLog->Flush(this->ClassName());
+		gMrbLog->Flush(this->ClassName(), "SetBLTMode");
 	}
 	if ((sts = bma_set_mode(fBltModeId, BMA_M_WordSize, WordSize)) != 0) {
 		gMrbLog->Err() << "[" << this->GetName() << "] Error while setting BLT mode (WordSize = " << WordSize << ") - error code " << sts << endl;
-		gMrbLog->Flush(this->ClassName());
+		gMrbLog->Flush(this->ClassName(), "SetBLTMode");
 	}
 	if ((sts = bma_set_mode(fBltModeId, BMA_M_AmCode, fAddrModBLT)) != 0) {
 		gMrbLog->Err() << "[" << this->GetName() << "] Error while setting BLT mode (AmCode = " << setbase(16) << fAddrModBLT << ") - error code " << sts << endl;
-		gMrbLog->Flush(this->ClassName());
+		gMrbLog->Flush(this->ClassName(), "SetBLTMode");
 	}
 #ifndef CPU_TYPE_RIO2
 	if ((sts = bma_set_mode(fBltModeId, BMA_M_VMEAdrInc, FifoMode ? BMA_M_VaiFifo : BMA_M_VaiNormal)) != 0) {
 		gMrbLog->Err() << "[" << this->GetName() << "] Error while setting BLT mode (FifoMode = " << FifoMode << ") - error code " << sts << endl;
-		gMrbLog->Flush(this->ClassName());
+		gMrbLog->Flush(this->ClassName(), "SetBLTMode");
 	}
 #endif
 	return kTRUE;
@@ -535,12 +572,12 @@ bool_t SrvVMEModule::InitBLT() {
 	bmaError = bma_open();
 	if (bmaError != 0) {
 		gMrbLog->Err() << "[" << this->GetName() << "] Can't initialize BLT - bma_open() failed" << endl;
-		gMrbLog->Flush(this->ClassName());
+		gMrbLog->Flush(this->ClassName(), "InitBLT");
 		bma_close();
 		return kFALSE;
 	}
 	gMrbLog->Out() << "[" << this->GetName() << "] Block xfer enabled" << endl;
-	gMrbLog->Flush(this->ClassName());
+	gMrbLog->Flush(this->ClassName(), "InitBLT");
 	return kTRUE;
 }
 
@@ -629,7 +666,7 @@ Char_t * SrvVMEModule::GetPhysAddr(Char_t * Addr, Int_t Size) {
 
 	if (vmtopm(getpid(), chains, Addr, Size) == -1) {
 		gMrbLog->Err() << "[" << this->GetName() << "] vmtopm call failed" << endl;
-		gMrbLog->Flush(this->ClassName());
+		gMrbLog->Flush(this->ClassName(), "GetPhysAddr");
 		return NULL;
 	}
 	return (Char_t *) chains[0].address;

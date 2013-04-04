@@ -38,7 +38,7 @@ ofstream dump;
 SrvSis3302::SrvSis3302() : SrvVMEModule(	"Sis3302",							//!< type
 											"Digitizing chan, 8ch 13(16)bit", 	//!< description
 											0x09,								//!< address modifier: A32
-											kSis3302SegSize,  					//!< segment size
+											kSis3302SegSizeReduced,  					//!< segment size
 											kSis3302NofChans,					//!< 8 channels/chans
 											  1 << 13) {						//!< range
 //__________________________________________________________________[C++ CTOR]
@@ -276,7 +276,6 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 		case kM2L_FCT_SIS_3302_WRITE_END_ADDR_THRESH:
 			{
 				d = data[0];
-				cout << "@@@ extern: end=" << d << endl;
 				if (!this->WriteEndAddrThresh(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
@@ -3948,7 +3947,6 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 	}
 
 	Int_t maxThresh = maxWords * 2;		// thresh has to be 16bit
-	cout << "@@@ start trace: end=" << maxThresh << endl;
 	this->WriteEndAddrThresh(Module, maxThresh);
 	Int_t sl = 400;
 	this->WriteRawDataSampleLength(Module, sl, kSis3302AllChans);

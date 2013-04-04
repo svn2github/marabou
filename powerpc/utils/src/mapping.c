@@ -82,6 +82,11 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 	
 #ifdef CPU_TYPE_RIO4
 	if (Mapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
+		if (PhysAddr > 0x0FFFFFFF) {
+			sprintf(msg, "[mapVME] %s: Direct mapping not possible - %#lx (max 0x0FFFFFFF)", DescrName, PhysAddr);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			return NULL;
+		}
 		md->vmeBase = PhysAddr | kAddr_A32Direct;
 		md->mappingVME = kVMEMappingDirect;
 		sprintf(msg, "[mapVME] %s: Direct mapping %#lx -> %#lx, addrMod=%#x", DescrName, PhysAddr, md->vmeBase, AddrMod);
@@ -90,6 +95,11 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 #endif
 	if (md->mappingVME == kVMEMappingUndef) {
 		if (Mapping & kVMEMappingStatic) {
+			if (PhysAddr > 0x0FFFFFFF) {
+				sprintf(msg, "[mapVME] %s: Static mapping not possible - %#lx (max 0x0FFFFFFF)", DescrName, PhysAddr);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return NULL;
+			}
 			switch (AddrMod) {
 				case kAM_A32:
 					staticBase = kAddr_A32;
@@ -187,10 +197,20 @@ volatile Char_t * mapAdditionalVME(struct s_mapDescr * mapDescr, UInt_t PhysAddr
 	switch (mapDescr->mappingVME) {
 #ifdef CPU_TYPE_RIO4
 		case kVMEMappingDirect:
+			if (PhysAddr > 0x0FFFFFFF) {
+				sprintf(msg, "[mapAdditionalVME] %s: Direct mapping not possible - %#lx (max 0x0FFFFFFF)", mapDescr->mdName, PhysAddr);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return NULL;
+			}
 			mapDescr->nofMappings++;
 			return (volatile Char_t *) (PhysAddr | kAddr_A32Direct);
 #endif
 		case kVMEMappingStatic:
+			if (PhysAddr > 0x0FFFFFFF) {
+				sprintf(msg, "[mapAdditionalVME] %s: Static mapping not possible - %#lx (max 0x0FFFFFFF)", mapDescr->mdName, PhysAddr);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return NULL;
+			}
 			switch (mapDescr->addrModVME) {
 				case kAM_A32:
 					staticBase = kAddr_A32;
