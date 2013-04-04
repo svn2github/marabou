@@ -79,6 +79,8 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
+	fTraceCollection = kFALSE;
+
 // geometry
 	Int_t frameWidth = this->GetWidth();
 	Int_t frameHeight = this->GetHeight();
@@ -541,6 +543,7 @@ Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, TMrbNamedX * HistoD
 	}
 
 	fEmax = 0;
+
 	Int_t k = kSis3302EventPreHeader;
 	Int_t offset = kSis3302EventHeader + rdl + edl;
 	for (Int_t i = 0; i < nofEvents; i++) {

@@ -354,7 +354,7 @@ void VMEMainFrame::TabChanged(Int_t Selection) {
 		case VMEControlData::kVMETabCaen785:
 			if (fCaen785Panel == NULL) {
 				fCaen785Panel = new VMECaen785Panel(fCaen785Tab);
-				gVMEControlData->AddToLofPanels(fSis3302Panel, VMEControlData::kVMETabSis3302);
+				gVMEControlData->AddToLofPanels(fCaen785Panel, VMEControlData::kVMETabCaen785);
 			}
 			break;
 

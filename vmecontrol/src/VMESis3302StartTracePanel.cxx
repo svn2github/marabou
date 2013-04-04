@@ -80,6 +80,8 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
+	fTraceCollection = kFALSE;
+
 // geometry
 	Int_t frameWidth = this->GetWidth();
 	Int_t frameHeight = this->GetHeight();
