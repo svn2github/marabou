@@ -80,8 +80,8 @@ SrvVMEModule::SrvVMEModule(const Char_t * ModuleType,	const Char_t * ModuleDescr
 	}
 }
 
-SrvVMEModule::SrvVMEModule(const Char_t * ModuleName, const Char_t * ModuleType, UInt_t BaseAddr, Int_t NofChannels) :
-																		TNamed(ModuleName, ModuleType) {
+SrvVMEModule::SrvVMEModule(const Char_t * ModuleName, const Char_t * ModuleType,
+		UInt_t BaseAddr, Int_t SegSize, Int_t NofChannels, UInt_t Mapping) : TNamed(ModuleName, ModuleType) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 //! \class			SrvVMEModule	SrvVMEModule.h
@@ -115,10 +115,10 @@ SrvVMEModule::SrvVMEModule(const Char_t * ModuleName, const Char_t * ModuleType,
 				gMrbLog->Flush(this->ClassName());
 				this->MakeZombie();
 			} else {
-				fSegSizeVME = fProto->GetSegmentSize();
+				fSegSizeVME = SegSize;
 				fAddrModVME = fProto->GetAddrModifier();
-				fMappingModes = kVMEMappingDirect | kVMEMappingStatic | kVMEMappingDynamic;
-				this->MapVME(BaseAddr, fSegSizeVME, fAddrModVME, 0x7);
+				fMappingModes = Mapping;
+				this->MapVME(BaseAddr, fSegSizeVME, fAddrModVME, fMappingModes);
 				fID = fProto->GetID();
 				fNofChannels = nofChannels;
 				fNofChannelsUsed = NofChannels;

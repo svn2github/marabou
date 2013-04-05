@@ -35,7 +35,7 @@ class TC2LVMEModule : public TMrbNamedX {
 		TC2LVMEModule() {};								// default ctor		
 
 		TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleType,
-								UInt_t Address = 0, Int_t NofChannels = 0, Bool_t Offline = kFALSE);
+				UInt_t Address = 0, Int_t SegSize = 0, Int_t NofChannels = 0, UInt_t Mapping = 0, Bool_t Offline = kFALSE);
 
 		~TC2LVMEModule() {};							// default dtor
 
@@ -43,9 +43,11 @@ class TC2LVMEModule : public TMrbNamedX {
 		inline const Char_t * GetType() { return(this->GetTitle()); };
 
 		inline UInt_t GetAddress() { return(fBaseAddress); };
+		inline Int_t GetSegSize() { return(fSegSize); };
+		inline Int_t GetMapping() { return(fMapping); };
 		inline Int_t GetNofChannels() { return(fNofChannels); };
 
-		Bool_t Connect(UInt_t Address, Int_t NofChannels);
+		Bool_t Connect(UInt_t Address, Int_t SegSize, Int_t NofChannels, UInt_t Mapping);
 		Bool_t GetModuleInfo();
 
 		inline TMrbNamedX * FindFunction(Int_t Fcode) { return(fLofFunctionTypes.FindByIndex(Fcode)); };
@@ -59,6 +61,8 @@ class TC2LVMEModule : public TMrbNamedX {
 
 	protected:
 		inline void SetAddress(UInt_t Address) { fBaseAddress = Address; };
+		inline void SetSegSize(Int_t SegSize) { fSegSize = SegSize; };
+		inline void SetMapping(UInt_t Mapping) { fMapping = Mapping; };
 		inline void SetNofChannels(Int_t NofChannels) { fNofChannels = NofChannels; };
 		inline void SetHandle(UInt_t Handle) { this->SetIndex((Int_t) Handle); };
 
@@ -66,6 +70,8 @@ class TC2LVMEModule : public TMrbNamedX {
 		Bool_t fVerbose;			// verbose mode
 		Bool_t fOffline;			// kTRUE if offline
 		UInt_t fBaseAddress; 		// module address
+		Int_t fSegSize; 		// segment size
+		UInt_t fMapping; 		// VME mapping modes
 		Int_t fNofChannels; 		// number of channels used
 		TString fSettingsFile;		// where to store settings
 

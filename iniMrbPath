@@ -18,14 +18,14 @@
 # Set SYSMODE=y only if you want to build MARaBOU from sources
 # To use MARaBOU after successful installation set SYSMODE=n
 
-SYSMODE=n
+SYSMODE=y
 
 # Set environment vars needed by MARaBOU:
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=
-MARABOU=
+ROOTSYS=/usr/local/opt/root/root5.30-00_gcc-412_qt_ia64
+MARABOU=`pwd`
 MARABOU_INSTALL_PATH=/cant_be_installed
 
 #____________________________[end editable section]___________________________

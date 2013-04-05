@@ -100,9 +100,11 @@ void SrvSocket::Listen() {
 				errCnt = 0;
 				M2L_VME_Connect * connect = (M2L_VME_Connect *) buffer;
 				swapData((Int_t *) &connect->fBaseAddr);
+				swapData(&connect->fSegSize);
 				swapData(&connect->fNofChannels);
-				SrvVMEModule * vmeModule = new SrvVMEModule(	connect->fModuleName, connect->fModuleType,
-																connect->fBaseAddr, connect->fNofChannels);
+				swapData((Int_t *) &connect->fMapping);
+				SrvVMEModule * vmeModule = new SrvVMEModule(connect->fModuleName, connect->fModuleType,
+						connect->fBaseAddr, connect->fSegSize, connect->fNofChannels, connect->fMapping);
 				if (vmeModule->IsZombie()) {
 					this->Error(sock, gMrbLog);
 				} else {

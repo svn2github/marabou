@@ -35,8 +35,9 @@ class TC2LVulomTB : public TC2LVMEModule {
 
 		TC2LVulomTB() {};		// default ctor
 
-		TC2LVulomTB(const Char_t * ModuleName, UInt_t Address = 0, Int_t NofChannels = 0, Bool_t Offline = kFALSE)
-								: TC2LVMEModule(ModuleName, "VulomTB", Address, NofChannels, Offline) {};
+		TC2LVulomTB(const Char_t * ModuleName,
+				UInt_t Address = 0, Int_t SegSize = 0, Int_t NofChannels = 0, UInt_t Mapping = 0, Bool_t Offline = kFALSE)
+					: TC2LVMEModule(ModuleName, "VulomTB", Address, SegSize, NofChannels, Mapping, Offline) {};
 
 		~TC2LVulomTB() {};							// default dtor
 

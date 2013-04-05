@@ -100,7 +100,7 @@ class SrvVMEModule : public TNamed {
 		//! \param[in]			ModuleType	-- prototypee (i.e. "Sis3302")
 		//! \param[in]			PhysAddr 	-- physical adress
 		//! \param[in]			NofChannels	-- number of channels used
-		SrvVMEModule(const Char_t * ModuleName,	const Char_t * ModuleType, UInt_t PhysAddr, Int_t NofChannels = 0);
+		SrvVMEModule(const Char_t * ModuleName,	const Char_t * ModuleType, UInt_t PhysAddr, Int_t SegSize, Int_t NofChannels = 0, UInt_t Mapping = 0x7);
 
 		//! Destructor
 		~SrvVMEModule() {};

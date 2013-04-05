@@ -4780,6 +4780,7 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 										rcTmpl.Substitute("$moduleAddr", ((TMrbVMEModule *) module)->GetPosition());
 										rcTmpl.Substitute("$moduleHexAddr", ((TMrbVMEModule *) module)->GetBaseAddr(), 16);
 										rcTmpl.Substitute("$moduleSegSize", ((TMrbVMEModule *) module)->GetSegmentSize(), 16);
+										rcTmpl.Substitute("$moduleVMEMapping", ((TMrbVMEModule *) module)->GetVMEMapping(), 16);
 										rcTmpl.Substitute("$moduleCrate", ((TMrbCamacModule *) module)->GetCrate());
 										rcTmpl.Substitute("$moduleStation", 0);
 								}

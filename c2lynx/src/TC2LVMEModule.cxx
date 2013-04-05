@@ -34,8 +34,8 @@ extern TMrbC2Lynx * gMrbC2Lynx;
 ClassImp(TC2LVMEModule)
 
 TC2LVMEModule::TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleType,
-								UInt_t Address, Int_t NofChannels, Bool_t Offline)
-																: TMrbNamedX(0, ModuleName, ModuleType) {
+								UInt_t Address, Int_t SegSize, Int_t NofChannels, UInt_t Mapping, Bool_t Offline)
+												: TMrbNamedX(0, ModuleName, ModuleType) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TC2LVMEModule
@@ -56,20 +56,22 @@ TC2LVMEModule::TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleTyp
 	
 	fLofFunctionTypes.AddNamedX(kMrbLofFunctionTypes);
 
-	if (this->Connect(Address, NofChannels)) {
+	if (this->Connect(Address, SegSize, NofChannels, Mapping)) {
 		gROOT->Append(this);
 	} else {
 		this->MakeZombie();
 	}
 }
 
-Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t NofChannels) {
+Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t SegSize, Int_t NofChannels, UInt_t Mapping) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TC2LVMEModule::Connect
 // Purpose:        Connect to module via tcp socket
 // Arguments:      UInt_t Address         -- VME address
+//                 Int_t SegSize          -- segment size
 //                 Int_t NofChannels      -- number of channels used
+//                 UInt_t Mapping         -- VME mapping modes
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Asks LynxOs server to connect to given module
@@ -96,7 +98,9 @@ Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t NofChannels) {
 		strcpy(c.fModuleName, this->GetName());
 		strcpy(c.fModuleType, this->GetType());
 		c.fBaseAddr = Address;
+		c.fSegSize = SegSize;
 		c.fNofChannels = NofChannels;
+		c.fMapping = Mapping;
 		if (gMrbC2Lynx->Send((M2L_MsgHdr *) &c)) {
 			M2L_VME_Return_Handle h;
 			gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &h, sizeof(M2L_VME_Return_Handle), kM2L_MESS_VME_CONNECT);
@@ -113,6 +117,8 @@ Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t NofChannels) {
 		return(kFALSE);
 	}
 	this->SetAddress(Address);
+	this->SetSegSize(SegSize);
+	this->SetMapping(Mapping);
 	this->SetNofChannels(NofChannels);
 	return(kTRUE);
 }

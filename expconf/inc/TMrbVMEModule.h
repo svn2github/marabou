@@ -57,6 +57,9 @@ class TMrbVMEModule : public TMrbModule {
 		inline void SetSegmentSize(Int_t SegSize) { fSegmentSize = SegSize; };		// segment size
 		inline Int_t GetSegmentSize() const { return(fSegmentSize); };
 
+		inline void SetVMEMapping(UInt_t Mapping) { fVMEMapping = Mapping; };		// VME mapping
+		inline UInt_t GetVMEMapping() const { return(fVMEMapping); };
+
 		inline void SetAddrModifier(Int_t AddrMod) { fAddrModifier = AddrMod; };	// addr modifier
 		inline Int_t GetAddrModifier() const { return(fAddrModifier); };
 

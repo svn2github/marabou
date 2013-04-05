@@ -210,6 +210,20 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 				errCnt++;
 				continue;
 			}
+			Int_t segSize = fVctrlrc->Get(".Module", mnuc.Data(), "SegSize", 0);
+			if (segSize == 0) {
+				gMrbLog->Err()	<< "[" << moduleName << "] Segment size missing" << endl;
+				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+				errCnt++;
+				continue;
+			}
+			UInt_t vmeMapping = fVctrlrc->Get(".Module", mnuc.Data(), "Mapping", 0);
+			if (vmeMapping == 0) {
+				gMrbLog->Err()	<< "[" << moduleName << "] VME mapping mode missing" << endl;
+				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+				errCnt++;
+				continue;
+			}
 			Int_t nofChannels = fVctrlrc->Get(".Module", mnuc.Data(), "NofChannelsUsed", 0);
 			if (nofChannels == 0) {
 				gMrbLog->Wrn()	<< "[" << moduleName << "] No channels assigned" << endl;
@@ -228,7 +242,7 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 						}
 					}
 					if (module == NULL) {
-						module = new TC2LSis3302(moduleName.Data(), vmeAddr, nofChannels, this->IsOffline());
+						module = new TC2LSis3302(moduleName.Data(), vmeAddr, segSize, nofChannels, vmeMapping, this->IsOffline());
 					}
 					if (module->IsZombie()) {
 						errCnt++;
@@ -250,7 +264,7 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 						}
 					}
 					if (module == NULL) {
-						module = new TC2LVulomTB(moduleName.Data(), vmeAddr, nofChannels, this->IsOffline());
+						module = new TC2LVulomTB(moduleName.Data(), vmeAddr, segSize, nofChannels, vmeMapping, this->IsOffline());
 					}
 					if (module->IsZombie()) {
 						errCnt++;

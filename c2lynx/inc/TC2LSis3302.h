@@ -35,8 +35,9 @@ class TC2LSis3302 : public TC2LVMEModule {
 
 		TC2LSis3302() {};		// default ctor
 
-		TC2LSis3302(const Char_t * ModuleName, UInt_t Address = 0, Int_t NofChans = 0, Bool_t Offline = kFALSE)
-								: TC2LVMEModule(ModuleName, "Sis3302", Address, NofChans, Offline) {};
+		TC2LSis3302(const Char_t * ModuleName,
+			UInt_t Address = 0, Int_t SegSize = 0, Int_t NofChans = 0, UInt_t Mapping = 0, Bool_t Offline = kFALSE)
+					: TC2LVMEModule(ModuleName, "Sis3302", Address, SegSize, NofChans, Mapping, Offline) {};
 
 		~TC2LSis3302() {};							// default dtor
 

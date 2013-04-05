@@ -30,8 +30,9 @@ class TC2LCaen785 : public TC2LVMEModule {
 
 		TC2LCaen785() {};								// default ctor		
 
-		TC2LCaen785(const Char_t * ModuleName, UInt_t Address = 0, Int_t NofChannels = 0)
-								: TC2LVMEModule(ModuleName, "Caen785", Address, NofChannels) {};
+		TC2LCaen785(const Char_t * ModuleName,
+			UInt_t Address = 0, Int_t SegSize = 0, Int_t NofChannels = 0, UInt_t Mapping = 0, Bool_t Offline = kFALSE)
+						: TC2LVMEModule(ModuleName, "Caen785", Address, SegSize, NofChannels, Mapping, Offline) {};
 
 		~TC2LCaen785() {};							// default dtor
 

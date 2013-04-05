@@ -68,7 +68,9 @@ typedef struct {
 //                 Char_t fModuleName[] -- module name
 //                 Char_t fModuleType[] -- module type
 //                 UInt_t fBaseAddr     -- phys address
+//                 Int_t fSegSize       -- segment size
 //                 Int_t fNofChannels   -- number of channels to be used
+//                 UInt_t fMapping      -- possible mapping modes
 // Used by:        Client
 //////////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +79,9 @@ typedef struct {
 	Char_t fModuleName[kM2L_L_NAME];
 	Char_t fModuleType[kM2L_L_TYPE];
 	UInt_t fBaseAddr;
+	Int_t fSegSize;
 	Int_t fNofChannels;
+	UInt_t fMapping;
 } M2L_VME_Connect;
 
 //___________________________________________________[C/C++ STRUCT DEFINITION]
