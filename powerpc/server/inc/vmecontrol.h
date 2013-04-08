@@ -7,6 +7,13 @@
 #define XC
 #endif
 
+#ifndef CPU_TYPE_RIO4
+struct dmachain {
+        void *address;
+        int count;
+};
+#endif
+
 //______________________________________________________________[C prototypes]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           vmecontrol.h
@@ -20,5 +27,7 @@
 
 XC	unsigned long return_controller(unsigned long physaddr, unsigned long len);
 XC	unsigned long find_controller(unsigned long vmeaddr, unsigned long len, unsigned long am, unsigned long offset, unsigned long size, struct pdparam_master * param);
+XC	int vmtopm(int, struct dmachain *, char *, long);
+
 
 #endif

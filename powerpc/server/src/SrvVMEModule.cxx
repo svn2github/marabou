@@ -24,7 +24,9 @@ typedef int intptr_t;
 #include <stdint.h>
 #include <unistd.h>
 #include <smem.h>
+#ifdef CPU_TYPE_RIO4
 #include <mem.h>
+#endif
 
 #include <ces/vmelib.h>
 extern "C" {
@@ -450,7 +452,7 @@ Bool_t SrvVMEModule::MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
 		}
 
 		bltName = Form("%s_blt", this->GetName());
-		fBltBase = smem_437(bltName, (Char_t *) (staticBase | PhysAddr), Size, SM_READ);
+		fBltBase = smem_create(bltName, (Char_t *) (staticBase | PhysAddr), Size, SM_READ);
 		if (fBltBase == NULL) {
 			gMrbLog->Err() << "[" << this->GetName() << "] Creating shared segment " << bltName.Data() << " failed" << endl;
 			gMrbLog->Flush(this->ClassName(), "MapBLT");

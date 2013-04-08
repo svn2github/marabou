@@ -18,8 +18,6 @@
 #include "LwrNamedX.h"
 #include "LwrLofNamedX.h"
 
-#include "mapping_database.h"
-
 class SrvVMEModule : public TNamed {
 
 	public:
