@@ -1294,7 +1294,6 @@ void VMESis3302Panel::TrigPolarChanged(Int_t FrameId, Int_t Selection) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t invTrig = kFALSE;
-	cout << "@@@ " << Selection << endl;
 	switch (Selection) {
 		case kVMETrigPolPos:	invTrig = kFALSE; break;
 		case kVMETrigPolNeg:	invTrig = kTRUE; break;
