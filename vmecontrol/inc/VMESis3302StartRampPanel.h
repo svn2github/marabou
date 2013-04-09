@@ -96,6 +96,8 @@ class VMESis3302StartRampPanel : public TGMainFrame {
 		TGMrbLabelCombo * fSelectModule;  			//		module
 		TGMrbCheckButtonList * fSelectChanPatt;  		//		channel
 
+		TGTextButton * fCloseButton;				// close window
+
 		TGGroupFrame * fHistoFrame; 				// show histos
 		TRootEmbeddedCanvas * fHistoCanvas;			//		canvas
 

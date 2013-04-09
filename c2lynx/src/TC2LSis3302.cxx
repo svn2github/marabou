@@ -716,7 +716,7 @@ Bool_t TC2LSis3302::StopTraceCollection() {
 Bool_t TC2LSis3302::GetTraceLength(TArrayI & Data, Int_t ChanNo) {
 	TArrayI dataSend(1);
 	Data.Set(kSis3302EventPreHeader);
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_LENGTH, dataSend, Data, ChanNo));
+	return this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_LENGTH, dataSend, Data, ChanNo);
 }
 
 Bool_t TC2LSis3302::GetTraceData(TArrayI & Data, Int_t & EventNo, Int_t ChanNo) {

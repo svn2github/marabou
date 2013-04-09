@@ -45,7 +45,7 @@ TROOT root("GUI", "VMEControl GUI", initfuncs);
 
 int main(Int_t argc, Char_t **argv)
 {
-	TRint theApp("VMEControl", &argc, argv);
+	TApplication theApp("VMEControl", &argc, argv);
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("vmeControl.log");
 
@@ -61,6 +61,6 @@ int main(Int_t argc, Char_t **argv)
 
 	new TGMrbGeometry(mainWindow);
 
-	theApp.SetPrompt("VMEControl [%d] ");
+//	theApp.SetPrompt("VMEControl [%d] ");
 	theApp.Run();
 }

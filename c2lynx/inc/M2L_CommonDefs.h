@@ -115,7 +115,7 @@
 #endif
 
 	enum			{	kSis3302StatusCollectingTraces	=	0x1 };
-	enum			{	kSis3302MaxBufSize		=	0x20000	};
+	enum			{	kSis3302MaxBufSize		=	0x10000	};
 
 	enum EVulomTB	{	kVulomTBNofScalers			= 3,
 						kVulomTBNofChannels 		= 16,

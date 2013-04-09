@@ -541,7 +541,9 @@ Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, TMrbNamedX * HistoD
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
 		return(-1);
 	}
-
+	for (Int_t j = 0; j < 10; j++) {
+		for (Int_t i = 0; i < 10; i++) cout << EvtData[i] << " "; cout << endl;
+	}
 	fEmax = 0;
 
 	Int_t k = kSis3302EventPreHeader;
@@ -742,6 +744,10 @@ void VMESis3302StartHistoPanel::KeyPressed(Int_t FrameId, Int_t Key) {
 			gApplication->Terminate(0);
 			break;
 		case TGMrbLofKeyBindings::kGMrbKeyActionClose:
+			if (fTraceCollection) {
+				gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop accumulation of histos first");
+				return;
+			}
 			this->CloseWindow();
 			break;
 	}

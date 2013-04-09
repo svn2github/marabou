@@ -449,6 +449,7 @@ void VMESis3302StartTracePanel::StartTrace() {
 		TArrayI traceData(kSis3302NofChans * kSis3302EventPreHeader);
 		traceNo++;
 		traceData.Reset(0);
+		
 		if (!curModule->GetTraceLength(traceData, chnPatt)) {
 			gVMEControlData->MsgBox(this, "StartTrace", "Error", "Couldn't get trace data");
 			return;

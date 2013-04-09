@@ -149,6 +149,11 @@ VMESis3302StartRampPanel::VMESis3302StartRampPanel(const TGWindow * Window, TMrb
 	fSelectChanPatt->ChangeBackground(gVMEControlData->fColorGold);
 	fSelectChanPatt->SetState(0x1);
 
+	fCloseButton = new TGTextButton(fSelectFrame, "Close", kVMESis3302Close);
+	HEAP(fCloseButton);
+	fSelectFrame->AddFrame(fCloseButton, groupGC->LH());
+	fCloseButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302Close));
+
 // canvas
 	fHistoFrame = new TGGroupFrame(this, "Histograms", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fHistoFrame);
@@ -265,7 +270,7 @@ void VMESis3302StartRampPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			this->DeleteClones();
 			break;
 		case VMESis3302StartRampPanel::kVMESis3302Close:
-			this->KeyPressed(0, TGMrbLofKeyBindings::kGMrbKeyActionExit);
+			this->KeyPressed(0, TGMrbLofKeyBindings::kGMrbKeyActionClose);
 			break;
 	}
 }
