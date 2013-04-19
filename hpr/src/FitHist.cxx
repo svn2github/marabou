@@ -316,7 +316,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fHistLineColor3Dim = env.GetValue("Set3DimOptDialog.fHistLineColor3Dim", 1);
 	fMarkerColor3Dim   = env.GetValue("Set3DimOptDialog.fMarkerColor3Dim",   1);
 	fMarkerStyle3Dim   = env.GetValue("Set3DimOptDialog.fMarkerStyle3Dim",   7);
-	fMarkerSize3Dim    = env.GetValue("Set3DimOptDialog.fMarkerSize3Dim",    1);
+	fMarkerSize3Dim    = env.GetValue("Set3DimOptDialog.fMarkerSize3Dim",    1.);
 	f3DimPolyMarker    = env.GetValue("Set3DimOptDialog.f3DimPolyMarker",    0);
 
    fSerialPx = 0;
@@ -384,7 +384,7 @@ FitHist::~FitHist()
 	}
 //   cout<< "enter FitHist  dtor "<< GetName()<<endl;
    if (!fExpHist && gHpr && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
-   gDirectory->GetList()->Remove(this);
+   gROOT->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
    if ( fFit1DimD ) fFit1DimD->CloseDialog();
    if ( fFit2DimD ) fFit2DimD->CloseDialog();
@@ -394,7 +394,7 @@ FitHist::~FitHist()
 //      cout << "fExpHist " << fExpHist->GetName() << endl;
 //      dont delete possible windows
       fExpHist->GetListOfFunctions()->Clear("nodelete");
-      gDirectory->GetList()->Remove(fExpHist);
+      gROOT->GetList()->Remove(fExpHist);
       delete fExpHist;
       fExpHist = 0;
    }
@@ -1219,10 +1219,13 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    hist->SetDirectory(gROOT);
 //   if ( (is2dim(hist) && fLiveStat2Dim) || (!is2dim(hist) && fLiveStat1Dim) ){
 	if (gStyle->GetCanvasPreferGL() == kFALSE) {
-		TString cmd("((FitHist*)gROOT->FindObject(\"");
-      cmd += GetName();
-      cmd += "\"))->handle_mouse()";
-//      cout << "FitHist::DisplayHist cmd: " << cmd << endl;
+// 		TString cmd("((FitHist*)gROOT->FindObject(\"");
+//       cmd += GetName();
+//       cmd += "\"))->handle_mouse()";
+		TString cmd("((FitHist*)");
+		cmd += Form("0x%x", this);
+      cmd += ")->handle_mouse()";
+//     cout << "FitHist::DisplayHist cmd: " << cmd << endl;
       fCanvas->AddExec("handle_mouse", cmd.Data());
 		fCanvas->GetFrame()->SetBit(TBox::kCannotMove);
 	}
@@ -1990,7 +1993,23 @@ void FitHist::KolmogorovTest()
 
 void FitHist::Superimpose(Int_t mode)
 {
-	Hpr::SuperImpose(fCanvas, fSelHist, mode);
+	Int_t nhs = Hpr::SuperImpose(fCanvas, fSelHist, mode);
+	if ( nhs > 0) {
+		TString origname(this->GetName());
+		if ( !origname.EndsWith("_superimp") ) {
+			gROOT->GetList()->Remove(this);
+			origname += "_superimp";
+			this->SetName(origname);
+			gROOT->GetList()->Add(this);
+			cout << "Rename FitHist to: " << origname << endl;
+		}
+		origname = fCanvas->GetName();
+		if ( !origname.EndsWith("_superimp") ) {
+			origname += "_superimp";
+			fCanvas->SetName(origname);
+			cout << "Rename canvas to: " << origname << endl;
+		}
+	}
 }
 //____________________________________________________________________________________
 //  find limits
@@ -3501,45 +3520,63 @@ void FitHist::Draw3DimView()
 	TAxis * ax = fSelHist->GetXaxis();
 	TAxis * ay = fSelHist->GetYaxis();
 	TAxis * az = fSelHist->GetZaxis();
-   Double_t rmin[3], rmax[3];
 	Double_t x0, y0, z0, x1, y1, z1;
-   rmin[0] = x0 = ax->GetXmin();
-   rmin[1] = y0 = ay->GetXmin();
-   rmin[2] = z0 = az->GetXmin();
-   rmax[0] = x1 = ax->GetXmax();
-   rmax[1] = y1 = ay->GetXmax();
-   rmax[2] = z1 = az->GetXmax();
+   x0 = ax->GetXmin();
+   y0 = ay->GetXmin();
+   z0 = az->GetXmin();
+   x1 = ax->GetXmax();
+   y1 = ay->GetXmax();
+   z1 = az->GetXmax();
+	TString cname = fCanvas->GetName();
+	cout << "Canvas name: " << cname << endl;
+	if ( !cname.BeginsWith("C_F") ) {
+		cout << "Illegal canvas name " << endl;
+	} else {
+		cname = cname(3,cname.Length()-3);
+		TEnv * env = GetDefaults(cname);
+		if (env) {
+			x0 = env->GetValue("fRangeX0",x0);
+			y0 = env->GetValue("fRangeY0",y0);
+			z0 = env->GetValue("fRangeZ0",z0);
+			x1 = env->GetValue("fRangeX1",x1);
+			y1 = env->GetValue("fRangeY1",y1);
+			z1 = env->GetValue("fRangeZ1",z1);
+			ax->SetRangeUser(x0, x1);
+			ay->SetRangeUser(y0, y1);
+			az->SetRangeUser(z0, z1);
+		}
+	}
+   Double_t rmin[3], rmax[3];
+	Int_t binlx = ax->GetFirst();
+	Int_t binly = ay->GetFirst();
+	Int_t binlz = az->GetFirst();
+	Int_t binux = ax->GetLast();
+	Int_t binuy = ay->GetLast();
+	Int_t binuz = az->GetLast();
+	
+   rmin[0] = x0 = ax->GetBinLowEdge(binlx);
+   rmin[1] = y0 = ay->GetBinLowEdge(binly);
+   rmin[2] = z0 = az->GetBinLowEdge(binlz);
+   rmax[0] = x1 = ax->GetBinLowEdge(binux)+ ax->GetBinWidth(binux);
+   rmax[1] = y1 = ay->GetBinLowEdge(binuy)+ ay->GetBinWidth(binuy);
+   rmax[2] = z1 = az->GetBinLowEdge(binuz)+ az->GetBinWidth(binuz);
 	fCanvas->Range(rmin[0], rmin[1], rmax[0], rmax[1]);
    TView3D *view = new TView3D(1, rmin, rmax);
    view->ShowAxis();
-//	hempty->Draw();
+	TEnv env1(".hprrc");
+	Double_t vphi    = env1.GetValue("Set3DimOptDialog.fPhi3Dim", 135.);
+   Double_t vtheta  = env1.GetValue("Set3DimOptDialog.fTheta3Dim", 30.);
+	fCanvas->SetPhi(vphi);
+	fCanvas->SetTheta(vtheta);
+
 //	hempty->SetStats(0);
 	Float_t min = fSelHist->GetMinimum();
 	Float_t max = fSelHist->GetMaximum();
 //	gStyle->SetPalette(1);
 	TPolyMarker3D * pm;
 	Double_t x, y, z;
-	TPolyLine3D * pl3 = new TPolyLine3D(16);
-	pl3->SetPoint(0, x0, y0, z0);
-	pl3->SetPoint(1, x1, y0, z0);
-	pl3->SetPoint(2, x1, y0, z1);
-	pl3->SetPoint(3, x0, y0, z1);
-	pl3->SetPoint(4, x0, y0, z0);
-
-	pl3->SetPoint(5, x0, y1, z0);
-	pl3->SetPoint(6, x0, y1, z1);
-	pl3->SetPoint(7, x0, y0, z1);
-	pl3->SetPoint(8, x0, y1, z1);
-	
-	pl3->SetPoint(9, x1, y1, z1);
-	pl3->SetPoint(10, x1, y0, z1);
-	pl3->SetPoint(11, x1, y1, z1);
-	pl3->SetPoint(12, x1, y1, z0);
-	
-	pl3->SetPoint(13, x1, y0, z0);
-	pl3->SetPoint(14, x1, y1, z0);
-	pl3->SetPoint(15, x0, y1, z0);
-	
+	Hpr::BoundingB3D(NULL, x0, y0, z0, x1, y1, z1);
+/*	
 	TString tit = ax->GetTitle();
 	
 	if (tit.Length() > 0) {
@@ -3547,13 +3584,12 @@ void FitHist::Draw3DimView()
 										  (x1-x0), 0, 1, ax->GetTitle());
 		tt->SetTextSize(0.04);
 		tt->Draw();
-	}
+	}*/
 	
-	pl3->Draw();
 	Int_t ncolors = gStyle->GetNumberOfColors();
-	for (Int_t ix = 0; ix < ax->GetNbins(); ix++) {
-		for (Int_t iy = 0; iy < ay->GetNbins(); iy++) {
-			for (Int_t iz = 0; iz < az->GetNbins(); iz++) {
+	for (Int_t ix = binlx; ix <= binux ; ix++) {
+		for (Int_t iy = binly; iy <= binuy; iy++) {
+			for (Int_t iz = binlz; iz < binuz; iz++) {
 				Float_t cont = fSelHist->GetBinContent(ix, iy, iz);
 				if (cont != 0) {
 					pm = new TPolyMarker3D(1);

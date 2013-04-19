@@ -197,7 +197,7 @@ public:
    void Draw3Dim();                      //
    void Draw3DimPolyMarker();
 	void Draw3DimView();
-	const Char_t * GetCanvasName(){return fCname.Data();};             //
+	const Char_t * GetCanvasName(){return fCanvas->GetName();};             //
    TRootCanvas* GetMyCanvas(){return mycanvas;};
    HTCanvas* GetCanvas(){return fCanvas;};
    void  SetMyCanvas(TRootCanvas *myc){mycanvas = myc;};

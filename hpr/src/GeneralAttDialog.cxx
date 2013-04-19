@@ -20,6 +20,7 @@ namespace std {} using namespace std;
 
 Int_t GeneralAttDialog::fPrependFilenameToName = 1;
 Int_t GeneralAttDialog::fPrependFilenameToTitle = 0;
+Int_t GeneralAttDialog::fAppendTimestampToHistname = 0;
 Int_t GeneralAttDialog::fForceStyle = 1;
 Int_t GeneralAttDialog::fShowPSFile = 0;
 Int_t GeneralAttDialog::fSuppressWarnings = 1;
@@ -47,6 +48,10 @@ GeneralAttDialog::GeneralAttDialog(TGWindow * win)
 static const char helptext[] =
 "\n\
 ___________________________________________________________\n\
+Append Timestamp to histo names\n\
+-------------------------------\n\
+With this option histograms get unique names when displayed\n\
+In this way one may display the same histograms serveral times\n\
 Prepend filename to histo titles\n\
 --------------------------------\n\
 This is useful when superimposing, stacking or showing histograms\n\
@@ -142,6 +147,8 @@ ____________________________________________________________\n\
 	fRow_lab->Add(new TObjString("CommandButt_Apply saved settings"));
    fValp[ind++] = &rescmd;
 
+   fRow_lab->Add(new TObjString("CheckButton_  Append Timestamp to histo names"));
+   fValp[ind++] = &fAppendTimestampToHistname;
    fRow_lab->Add(new TObjString("CheckButton_  Prepend filename to histo names"));
    fValp[ind++] = &fPrependFilenameToName;
    fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo titles"));
@@ -271,6 +278,7 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fStackedPads"   ,    fStackedPads   );
 	env.SetValue("GeneralAttDialog.fPrependFilenameToTitle", fPrependFilenameToTitle);
 	env.SetValue("GeneralAttDialog.fPrependFilenameToName",  fPrependFilenameToName);
+	env.SetValue("GeneralAttDialog.fAppendTimestampToHistname", fAppendTimestampToHistname );
 	env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
@@ -305,6 +313,7 @@ void GeneralAttDialog::RestoreDefaults()
    fStackedPads     = env.GetValue("GeneralAttDialog.fStackedPads"   , 0);
 	fPrependFilenameToTitle = env.GetValue("GeneralAttDialog.fPrependFilenameToTitle"   , 0);
 	fPrependFilenameToName = env.GetValue("GeneralAttDialog.fPrependFilenameToName", 1);
+	fAppendTimestampToHistname = env.GetValue("GeneralAttDialog.fAppendTimestampToHistname", 0);
 	
 	if (fAdjustMinY == 0 ) {
 		cout << setred

@@ -3083,7 +3083,13 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 			title.Prepend(fn);
 			hist->SetTitle(title);
 		}
-
+		if ( GeneralAttDialog::fAppendTimestampToHistname != 0 ) {
+			TString name = hist->GetName();
+			TDatime dt;
+			name += "_";
+			name += dt.GetTime();
+			hist->SetName(name);
+		}
       ShowHist(hist, hname, b);
    } else     WarnBox("Histogram not found");
 //   kSemaphore = 0;
@@ -3144,8 +3150,8 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
             const char * cn=fhist->GetCanvasName();
             if (cn) {
                if (!(gROOT->GetListOfCanvases()->FindObject(cn))) {
-                  cout << "Deleting unused: " << fhist << " " << fhist->GetName() << endl;
-                  fhist->Delete();
+                  cout << "Not Deleting unused: " << fhist << " " << fhist->GetName() << endl;
+//                  fhist->Delete();
                }
             }
          }
@@ -3155,14 +3161,14 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 //   gROOT->Reset();
    nHists++;
 //	cout << "ShowHist: fNwindows, FHname, save " << WindowSizeDialog::fNwindows<< " " << FHname << " " <<FHnameSave << endl;
-   if (FHnameSave != FHname) {
+//   if (FHnameSave != FHname) {
       if (WindowSizeDialog::fNwindows > 0) {       // not the 1. time
          WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
          WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
       }
       WindowSizeDialog::fNwindows++;
       FHnameSave = FHname;
-   }
+//   }
 //   cout << " fNwindows " << WindowSizeDialog::fNwindows << " " <<WindowSizeDialog::fWinshiftx<< endl;
    if (WindowSizeDialog::fNwindows > 10) {
       if (QuestionBox("More than 10 hists on screen!! Remove them?", fLastWindow))

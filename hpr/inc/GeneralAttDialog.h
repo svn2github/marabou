@@ -18,6 +18,7 @@ private:
 public:
 	static Int_t fPrependFilenameToName;
 	static Int_t fPrependFilenameToTitle;
+	static Int_t fAppendTimestampToHistname;
    static Int_t fForceStyle;
    static Int_t fShowPSFile;
    static Int_t fSuppressWarnings;

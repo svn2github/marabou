@@ -9,6 +9,7 @@
 #include "TPaveStats.h"
 #include "HprGaxis.h"
 #include "HprLegend.h"
+class TPolyLine3D;
 
 namespace Hpr
 {
@@ -22,9 +23,11 @@ namespace Hpr
 	Bool_t HistLimitsMatch(TH1* h1, TH1* h2);
 	HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where, 
 		Double_t ledge, Double_t uedge, Double_t axis_offset=0, Color_t col=0);
-	void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode);
+	Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode);
 	TH1 * GetOneHist(TH1 * selhist);
 	void ResizeStatBox(TPaveStats * st, Int_t ndim); 
 	Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp);
+	void BoundingB3D(TPolyLine3D * pl,  Double_t x0, Double_t y0, Double_t z0, 
+						  Double_t x1, Double_t y1, Double_t z1);
 }
 #endif

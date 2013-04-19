@@ -5,8 +5,10 @@
 #include "TGMrbValuesAndText.h"
 #include <iostream>
 //_____________________________________________________________________________________
+static const Int_t kNopt3 = 5;
 
 class TButton;
+class TView3D;
 
 class Set3DimOptDialog : public TObject {
 
@@ -16,11 +18,12 @@ private:
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
 	TH1          *fHist;
+	TView3D      *fView3D;
 	TButton      *fCmdButton;
    TString fDrawOpt;
    TString fDrawOptPrev;
-   Int_t fOptRadio[4];
-   const char *fDrawOpt3DimArray[4];
+   Int_t fOptRadio[kNopt3];
+   const char *fDrawOpt3DimArray[kNopt3];
    TString fDrawOpt3Dim;
    Color_t fHistFillColor3Dim;
    Color_t fHistLineColor3Dim;
@@ -52,6 +55,15 @@ private:
    Double_t fPhi3Dim;
 	Int_t    fBidTheta;
    Double_t fTheta3Dim;
+	Double_t fRangeX0;
+	Double_t fRangeX1;
+	Double_t fRangeY0;
+	Double_t fRangeY1;
+	Double_t fRangeZ0;
+	Double_t fRangeZ1;
+	Int_t   fBidRangeX0;
+	Int_t   fBidRangeZ1;
+	Bool_t  fRangeChanged;
 
 public:
 
@@ -64,7 +76,7 @@ public:
    void SetHistAtt(TCanvas *canvas);
 	void Rotate();
 //   void SetHistAttPermLocal();
-//   void SetHistAttPerm();
+   void SetRanges();
    void SaveDefaults();
    void SetAllToDefault();
    void RestoreDefaults(Int_t resetall = 0);

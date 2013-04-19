@@ -13,20 +13,21 @@
 #include "TH1.h"
 #include "TH3.h"
 #include "TView.h"
+#include "TView3D.h"
 #include "TStyle.h"
 #include "TSystem.h"
 #include "TPolyMarker3D.h"
 #include "TVirtualHistPainter.h"
 #include "TGLHistPainter.h"
 
-//#include "HistPresent.h"
+#include "hprbase.h"
+#include "support.h"
 #include "Set3DimOptDialog.h"
 #include <iostream>
 
 Double_t gTranspThresh = 1;
 Double_t gTranspAbove = 0.4;
 Double_t gTranspBelow = 0.005;
-static const Int_t kNopt3 = 5;
 
 Double_t my_transfer_function(const Double_t *x, const Double_t * /*param*/)
 {
@@ -100,6 +101,9 @@ by simulating the movement of the pressed mouse\n\
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
    fHist = NULL;
+	fView3D = NULL;
+	fRangeChanged = kFALSE;
+
    Int_t nh1 = 0, nh2 = 0;
    TIter next(fCanvas->GetListOfPrimitives());
 	TObject *obj;
@@ -112,10 +116,34 @@ by simulating the movement of the pressed mouse\n\
 		   }
          if (fHist->GetDimension() == 1) nh1++;
          if (fHist->GetDimension() > 1)  nh2++;
-      }
+		}
    }
 	if ( fHist == NULL ) {
-	   cout << "No Histogram in Canvas" << endl;
+		fView3D = (TView3D*)fCanvas->GetView();
+
+		if ( fView3D ) {
+			Double_t *rmin = fView3D->GetRmin();
+			Double_t *rmax = fView3D->GetRmax();
+			fRangeX0 = rmin[0];
+			fRangeX1 = rmax[0];
+			fRangeY0 = rmin[1];
+			fRangeY1 = rmax[1]; 
+			fRangeZ0 = rmin[2];
+			fRangeZ1 = rmax[2];
+		} else {
+	     cout << "No Hist nore TView3D in Canvas" << endl;
+		  return;
+		}
+	} else {
+		TAxis * xa = fHist->GetXaxis();
+		TAxis * ya = fHist->GetYaxis();
+		TAxis * za = fHist->GetZaxis();
+		fRangeX0 = xa->GetBinLowEdge(xa->GetFirst());
+		fRangeX1 = xa->GetBinLowEdge(xa->GetLast())+ xa->GetBinWidth(xa->GetLast());
+		fRangeY0 = ya->GetBinLowEdge(ya->GetFirst());
+		fRangeY1 = ya->GetBinLowEdge(ya->GetLast())+ ya->GetBinWidth(ya->GetLast());
+		fRangeZ0 = za->GetBinLowEdge(za->GetFirst());
+		fRangeZ1 = za->GetBinLowEdge(za->GetLast())+ za->GetBinWidth(za->GetLast());
 	}
    RestoreDefaults();
 	fPhi3Dim = fCanvas->GetPhi();
@@ -147,6 +175,7 @@ by simulating the movement of the pressed mouse\n\
    static TString stycmd("SaveDefaults()");
    static TString sadcmd("SetAllToDefault()");
    static TString rotcmd("Rotate()");
+   static TString srgcmd("SetRanges()");
 
 	fBidSCAT = 0;
 	fBidBOX  = 1;
@@ -180,6 +209,25 @@ by simulating the movement of the pressed mouse\n\
    fBidMarkerStyle = ind; fValp[ind++] = &fMarkerStyle3Dim;
    fRow_lab->Add(new TObjString("Float_Value+MSize;0.01,9.99"));
    fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize3Dim;
+	
+	fRow_lab->Add(new TObjString("CommentOnly_Display ranges"));
+	fValp[ind++] = &dummy;
+   fRow_lab->Add(new TObjString("CommandButt-Set ranges"));
+   fValp[ind++] = &srgcmd;
+   fRow_lab->Add(new TObjString("DoubleValue_X1"));
+	fBidRangeX0 = ind;
+   fValp[ind++] = &fRangeX0;
+   fRow_lab->Add(new TObjString("DoubleValue+Y1"));
+   fValp[ind++] = &fRangeY0;
+   fRow_lab->Add(new TObjString("DoubleValue+Z1"));
+   fValp[ind++] = &fRangeZ0;
+   fRow_lab->Add(new TObjString("DoubleValue_X2"));
+   fValp[ind++] = &fRangeX1;
+   fRow_lab->Add(new TObjString("DoubleValue+Y2"));
+   fValp[ind++] = &fRangeY1;
+   fRow_lab->Add(new TObjString("DoubleValue+Z2"));
+	fBidRangeZ1 = ind;
+   fValp[ind++] = &fRangeZ1;
 	
 	fRow_lab->Add(new TObjString("CommentOnly_Parameters for OpenGL"));
 	fValp[ind++] = &dummy;
@@ -243,6 +291,50 @@ void Set3DimOptDialog::CloseDialog()
 }
 //_______________________________________________________________________
 
+void Set3DimOptDialog::SetRanges()
+{
+	if (fRangeX0 >= fRangeX1 || fRangeY0 >= fRangeY1 
+		|| fRangeZ0 >= fRangeZ1) {
+		cout << "Illegal range:" << endl;
+		cout << fRangeX0<< " " <<fRangeY0<< " " <<fRangeZ0
+		<< " " <<fRangeX1<< " " <<fRangeY1<< " " <<fRangeZ1 << endl;
+		return;
+	}
+	TString cname = fCanvas->GetName();
+	cout << "Canvas name: " << cname << endl;
+	if ( !cname.BeginsWith("C_F") ) {
+		cout << "Illegal canvas name " << endl;
+	} else {
+		cname = cname(3,cname.Length()-3);
+		TEnv * env = GetDefaults(cname, kFALSE);
+		if (env) {
+			env->SetValue("fRangeX0", fRangeX0);
+			env->SetValue("fRangeX1", fRangeX1);
+			env->SetValue("fRangeY0", fRangeY0);
+			env->SetValue("fRangeY1", fRangeY1);
+			env->SetValue("fRangeZ0", fRangeZ0);
+			env->SetValue("fRangeZ1", fRangeZ1);
+			env->SaveLevel(kEnvLocal);
+		}
+	}
+	Double_t *rmin;
+	Double_t *rmax;
+	if ( fView3D ) {
+		rmin = fView3D->GetRmin();
+		rmax = fView3D->GetRmax();
+		if (fRangeX0 >= rmin[0] && fRangeX1 <= rmax[0] &&
+			fRangeY0 >= rmin[1] && fRangeY1 <= rmax[1] &&
+			fRangeZ0 >= rmin[2] && fRangeZ1 <= rmax[2]) {
+		} else {
+			cout << "New ranges exceed current, must redisplay view" << endl;
+			return;
+		}
+	}
+	fRangeChanged = kTRUE;
+	SetHistAtt(fCanvas);
+}
+//_______________________________________________________________________
+
 void Set3DimOptDialog::SetHistAttNow(TCanvas *canvas)
 {
 	if (gDebug > 0) 
@@ -262,7 +354,8 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 {
    if (!canvas) return;
 	canvas->cd();
-	TIter next(canvas->GetListOfPrimitives());
+	TList *lop = canvas->GetListOfPrimitives();
+	TIter next(lop);
    TObject *obj;
    fDrawOpt = fDrawOpt3Dim;
 // 	if (fUseGL && ( fDrawOpt.Contains("BOX") ||fDrawOpt.Contains("ISO"))) {
@@ -290,6 +383,11 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 					delete trf;
 				}
 			}
+			if ( fHist ) {
+				((TH3*)obj)->GetXaxis()->SetRangeUser(fRangeX0, fRangeX1);
+				((TH3*)obj)->GetYaxis()->SetRangeUser(fRangeY0, fRangeY1);
+				((TH3*)obj)->GetZaxis()->SetRangeUser(fRangeZ0, fRangeZ1);
+			}
          ((TH3*)obj)->SetDrawOption(fDrawOpt);
          ((TH3*)obj)->SetOption(fDrawOpt);
 			((TH3*)obj)->SetFillColor(fHistFillColor3Dim);
@@ -300,16 +398,20 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 			((TH3*)obj)->SetMarkerColor(fMarkerColor3Dim);  
 			((TH3*)obj)->SetMarkerStyle(fMarkerStyle3Dim);  
 			((TH3*)obj)->SetMarkerSize (fMarkerSize3Dim); 
-			if (fDrawOpt.Contains("PolyM")){
-				TIter next2(canvas->GetListOfPrimitives());
-				TObject *obj2;
-				while ( (obj2 = next2()) ) {
-					if (obj2->InheritsFrom("TPolyMarker3D")){
-						((TPolyMarker3D*)obj2)->SetMarkerSize (fMarkerSize3Dim); 
-						((TPolyMarker3D*)obj2)->SetMarkerStyle (fMarkerStyle3Dim); 
-					}
-				}
-			}
+// 			if (fDrawOpt.Contains("PolyM") || fDrawOpt.Contains("View")){
+// 				TIter next2(canvas->GetListOfPrimitives());
+// 				TObject *obj2;
+// 				while ( (obj2 = next2()) ) {
+// 					if (obj2->InheritsFrom("TPolyMarker3D")){
+// 						((TPolyMarker3D*)obj2)->SetMarkerSize (fMarkerSize3Dim); 
+// 						((TPolyMarker3D*)obj2)->SetMarkerStyle (fMarkerStyle3Dim); 
+// 					}
+// 				}
+// 			}
+		} else if (obj->InheritsFrom("TPolyMarker3D")){
+			((TPolyMarker3D*)obj)->SetMarkerSize (fMarkerSize3Dim); 
+			((TPolyMarker3D*)obj)->SetMarkerStyle (fMarkerStyle3Dim); 
+
       } else if ((obj->InheritsFrom("TPad"))) {
          TPad *pad = (TPad*)obj;
          TIter next1(pad->GetListOfPrimitives());
@@ -325,6 +427,43 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 	      pad->Update();
       }
    }
+	if ( fView3D && fRangeChanged ) {
+		TPolyLine3D * pl3d = NULL;
+		fView3D->SetRange(fRangeX0, fRangeY0, fRangeZ0, fRangeX1, fRangeY1, fRangeZ1);
+		TIter next1(canvas->GetListOfPrimitives());
+		TList tempdel;
+		TPolyMarker3D *pm;
+		Double_t pmx=0, pmy=0, pmz=0;
+		while ( (obj = next1()) ) {
+			if (obj->InheritsFrom("TPolyMarker3D")) {
+				pm = (TPolyMarker3D*)obj;
+				if ( pm->GetN() == 1 ) {
+					pm->GetPoint(0,pmx, pmy, pmz);
+					if (  pmx < fRangeX0 || pmx > fRangeX1 
+						|| pmy < fRangeY0 || pmy > fRangeX1
+						|| pmz < fRangeZ0 || pmz > fRangeZ1) {
+						tempdel.Add(pm);
+					}
+				}
+			}
+			if (obj->InheritsFrom("TPolyLine3D")) {
+				pl3d = (TPolyLine3D*)obj;
+			}
+		}
+		if (tempdel.GetSize() > 0) {
+			TIter next2(&tempdel);
+			while ( (obj = next2()) ) {
+				lop->Remove(obj);
+				delete obj;
+			}
+		}
+		if ( pl3d ) {
+			fCanvas->cd();
+			Hpr::BoundingB3D(pl3d, fRangeX0, fRangeY0, fRangeZ0, 
+								  fRangeX1, fRangeY1, fRangeZ1);
+		}
+		
+	}
    if (f3DimBackgroundColor == 0) {
       if (gStyle->GetCanvasColor() == 0) {
          canvas->GetFrame()->SetFillStyle(0);
@@ -336,6 +475,7 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
       canvas->GetFrame()->SetFillStyle(1001);
       canvas->GetFrame()->SetFillColor(f3DimBackgroundColor);
    }
+   fRangeChanged = kFALSE;
 	canvas->Pop();
 	canvas->Modified();
 	canvas->Update();
@@ -447,6 +587,12 @@ void Set3DimOptDialog::SaveDefaults()
 	env.SetValue("Set3DimOptDialog.fApplyTranspCut",   fApplyTranspCut   );
 	env.SetValue("Set3DimOptDialog.fPhi3Dim",          fPhi3Dim          );
 	env.SetValue("Set3DimOptDialog.fTheta3Dim",        fTheta3Dim        );
+// 	env.SetValue("Set3DimOptDialog.fRangeX0",          fRangeX0);
+// 	env.SetValue("Set3DimOptDialog.fRangeX1",          fRangeX1);	
+// 	env.SetValue("Set3DimOptDialog.fRangeY0",          fRangeY0);
+// 	env.SetValue("Set3DimOptDialog.fRangeY1",          fRangeY1);
+// 	env.SetValue("Set3DimOptDialog.fRangeZ0",          fRangeZ0);
+// 	env.SetValue("Set3DimOptDialog.fRangeZ1",          fRangeZ1);
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -488,6 +634,14 @@ void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
 	fMarkerSize3Dim    = env.GetValue("Set3DimOptDialog.fMarkerSize3Dim",    0.8);
 //	fUseGL             = env.GetValue("Set3DimOptDialog.fUseGL",             0);
 	fApplyTranspCut    = env.GetValue("Set3DimOptDialog.fApplyTranspCut",    1);
+	fPhi3Dim           = env.GetValue("Set3DimOptDialog.fPhi3Dim", 135.);
+	fTheta3Dim         = env.GetValue("Set3DimOptDialog.fTheta3Dim", 30);
+// 	fRangeX0           = env.GetValue("Set3DimOptDialog.fRangeX0", fRangeX0);
+// 	fRangeX1           = env.GetValue("Set3DimOptDialog.fRangeX1", fRangeX1);
+// 	fRangeY0           = env.GetValue("Set3DimOptDialog.fRangeY0", fRangeY0);
+// 	fRangeY1           = env.GetValue("Set3DimOptDialog.fRangeY1", fRangeY1);
+// 	fRangeZ0           = env.GetValue("Set3DimOptDialog.fRangeZ0", fRangeZ0);
+// 	fRangeZ1           = env.GetValue("Set3DimOptDialog.fRangeZ1", fRangeZ1);
 }
 //______________________________________________________________________
 
@@ -513,6 +667,9 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 		if (obj) cout  << ", " << canvas->GetName() << ")";
 		cout << endl;
 	}
+	if ( bid >= fBidRangeX0 && bid <= fBidRangeZ1 )
+		return;
+	
 	if ( bid > fBidPolyM && bid <= fBidTranspAbove )
 		SetHistAttNow(canvas);
 	// when changeing between GL and non GL option, the histogram

@@ -12,6 +12,7 @@
 #include "TGMsgBox.h"
 #include "TRootCanvas.h"
 #include "TRegexp.h"
+#include "TPolyLine3D.h"
 #include "TGMrbValuesAndText.h"
 #include "TGMrbTableFrame.h"
 #include <iostream>
@@ -467,7 +468,7 @@ HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where,
 };
 //____________________________________________________________________________________
 
-void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
+Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 {
 	static const char helptext[] =
 	"\n\
@@ -494,13 +495,14 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 //	HprLegend * fLegend = (HprLegend*)canvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
 	HprLegend * fLegend = (HprLegend*)FindLegendInPad(canvas);
 	TH1 *hist;
+	Int_t nhs = 0;
 	//   TPaveLabel *tname;
 	//  choose from histo list
 	//   Int_t nh = gHpr->GetSelectedHist()->GetSize();
 	if (gHpr->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
 		if (gHpr->GetSelectedHist()->GetSize() > 1) {
 			Hpr::WarnBox("More than 1 selection,\n please choose only one");
-			return;
+			return nhs;
 		}
 		hist = gHpr->GetSelHistAt(0);
 	} else {
@@ -509,7 +511,7 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	if ( !hist ) {
 //		Hpr::WarnBox("No hist selected");
 		cout << setred << "No histogram selected" << setblack << endl;
-		return;
+		return nhs;
 	}
 	hist->SetMinimum(-1111);
 	hist->SetMaximum(-1111);
@@ -524,7 +526,7 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	
 	if (hist->GetDimension() != selhist->GetDimension()) {
 		Hpr::WarnBox("Dimensions of histograms differ");
-		return;
+		return nhs;
 	}
 	//	Double_t rightmax = 1.1*ymax;
 	//	canvas->cd();
@@ -548,7 +550,7 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 			//			}
 			if ( lWarnDiffBin && !Hpr::HistLimitsMatch(horig, hist) ) {
 				if ( !QuestionBox("Hist limits or bins differ, really superimpose?",win) ) {
-					return;
+					return nhs;
 				} else {
 					hist->GetXaxis()->Set(horig->GetXaxis()->GetNbins(),
 												 horig->GetXaxis()->GetXmin(), horig->GetXaxis()->GetXmax());
@@ -686,13 +688,19 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 								NULL, NULL, row_lab, valp,
 								NULL, NULL, helptext);
 								if (!ok )
-									return;
+									return nhs;
 	}
 	if ( do_scale != 0 && auto_scale != 0 ) {
 		//		new_scale = hymax / rightmax;
 		cout << "Scale will be auto adjusted " << endl;
 	}
-	
+	// change name of original histogram to protect against autodelete
+	TString origname(horig->GetName());
+	if ( !origname.EndsWith("_superimp") ) {
+		origname += "_superimp";
+		horig->SetName(origname);
+		cout << "Rename histogram to: " << origname << endl;
+	}
 	//	TGaxis *naxis = 0;
 	TH1 *hdisp = (TH1 *) hist->Clone();
 	if (do_scale && selhist->GetDimension() != 2)  {
@@ -721,7 +729,7 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 			}
 			if ( maxy == 0 ) {
 				cout << "Max = 0 " << endl;
-				return;
+				return nhs;
 			}
 			new_scale = selhist->GetMaximum() / maxy;
 		} else {
@@ -776,6 +784,7 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	if (gDebug > 0) 
 		cout << "DrawCopy(drawopt) " << drawopt << endl;
 	TH1 * hdrawn = hdisp->DrawCopy(drawopt.Data());
+	nhs++;
 	TPaveStats *sb = (TPaveStats*)hdrawn->GetListOfFunctions()->FindObject("stats");
 	if ( sb ) {
 		cout << "SetStatBox: "  
@@ -899,6 +908,7 @@ void SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	env.SetValue("SuperImposeHist.SkipDialog", lSkipDialog);
 	env.SetValue("SuperImposeHist.WarnDiffBin", lWarnDiffBin);
 	env.SaveLevel(kEnvLocal);
+	return nhs;
 }
 //____________________________________________________________________________________
 
@@ -1046,6 +1056,38 @@ Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp)
 		}
 	}
 	return kTRUE;
+}
+	
+void BoundingB3D(TPolyLine3D * pl,  Double_t x0, Double_t y0, Double_t z0, 
+						  Double_t x1, Double_t y1, Double_t z1) 
+{
+	cout << "TPolyLine3D: " << x0 << " " << y0 << " " << z0 
+	     << " " << x1 << " " << y1 << " "  << z1 << endl;
+	TPolyLine3D * pl3;	  
+	if ( pl )
+		pl3 = pl;
+	else	
+		pl3 = new TPolyLine3D(16);
+	pl3->SetPoint(0, x0, y0, z0);
+	pl3->SetPoint(1, x1, y0, z0);
+	pl3->SetPoint(2, x1, y0, z1);
+	pl3->SetPoint(3, x0, y0, z1);
+	pl3->SetPoint(4, x0, y0, z0);
+
+	pl3->SetPoint(5, x0, y1, z0);
+	pl3->SetPoint(6, x0, y1, z1);
+	pl3->SetPoint(7, x0, y0, z1);
+	pl3->SetPoint(8, x0, y1, z1);
+	
+	pl3->SetPoint(9, x1, y1, z1);
+	pl3->SetPoint(10, x1, y0, z1);
+	pl3->SetPoint(11, x1, y1, z1);
+	pl3->SetPoint(12, x1, y1, z0);
+	
+	pl3->SetPoint(13, x1, y0, z0);
+	pl3->SetPoint(14, x1, y1, z0);
+	pl3->SetPoint(15, x0, y1, z0);
+	pl3->Draw();
 }
 
 }   // end namespace Hpr

@@ -31,6 +31,9 @@ HprGaxis::HprGaxis(TCanvas * canvas, Double_t xmin, Double_t ymin, Double_t xmax
 	fTimer = new TTimer();
 	fTimer->Connect("Timeout()", "HprGaxis", this, "ReDoAxis()");
 	fSkipNextNotify = 0;
+	if ( gDebug > 0 ) {
+		cout << "HprGaxis::ctor this, fCanvas: "<< this << " " << fCanvas << endl;
+	}
 };
 //__________________________________________________________________
 
@@ -39,7 +42,7 @@ void HprGaxis::ReDoAxis()
 //	TIter next(canvas->GetListOfPrimitives());
 //	TObject *obj;
 	if ( gDebug > 0 ) {
-		cout << "HprGaxis::ReDoAxis()"<< endl;
+		cout << "HprGaxis::ReDoAxis() fCanvas: "<< fCanvas << endl;
 	}
 	// anything changed??
 	if ( (fFrameX1 == fCanvas->GetFrame()->GetX1() && fFrameX2 == fCanvas->GetFrame()->GetX2()

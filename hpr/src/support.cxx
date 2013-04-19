@@ -976,7 +976,7 @@ TEnv *GetDefaults(const char * hname, Bool_t mustexist, Bool_t renew)
 			gSystem->Exec(cmd.Data());
 //			cout << "Removing: " << cmd.Data() << endl;
 		}
-//      cout << "Looked for : " << defname.Data() << endl;
+//      cout << "GetDefaults: Looked for : " << defname.Data() << endl;
       lastset = new TEnv(defname.Data());
    }
    return lastset;
