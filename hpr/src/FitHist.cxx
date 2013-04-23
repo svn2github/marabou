@@ -3528,7 +3528,7 @@ void FitHist::Draw3DimView()
    y1 = ay->GetXmax();
    z1 = az->GetXmax();
 	TString cname = fCanvas->GetName();
-	cout << "Canvas name: " << cname << endl;
+//	cout << "Canvas name: " << cname << endl;
 	if ( !cname.BeginsWith("C_F") ) {
 		cout << "Illegal canvas name " << endl;
 	} else {

@@ -1061,8 +1061,8 @@ Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp)
 void BoundingB3D(TPolyLine3D * pl,  Double_t x0, Double_t y0, Double_t z0, 
 						  Double_t x1, Double_t y1, Double_t z1) 
 {
-	cout << "TPolyLine3D: " << x0 << " " << y0 << " " << z0 
-	     << " " << x1 << " " << y1 << " "  << z1 << endl;
+//	cout << "TPolyLine3D: " << x0 << " " << y0 << " " << z0 
+//	     << " " << x1 << " " << y1 << " "  << z1 << endl;
 	TPolyLine3D * pl3;	  
 	if ( pl )
 		pl3 = pl;
