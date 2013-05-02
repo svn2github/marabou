@@ -452,9 +452,13 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
       fFlagFrame2->Resize((Int_t)0.5 * itemwidth,fFlagFrame2->GetDefaultHeight());
       fTableRowFrame->AddFrame(fFlagFrame2,lo2);
    }
+   if ( *fRet == 2 )
+		this->AddFrame(fActionFrame,lo1);                // frame into main frame
    this->AddFrame(fColFrame,lo1);                // frame into main frame
    this->AddFrame(fTableRowFrame,lo1);                // frame into main frame
-   this->AddFrame(fActionFrame,lo1);                // frame into main frame
+   if ( *fRet != 2 )
+		this->AddFrame(fActionFrame,lo1);                // frame into main frame
+	
    if (Title) this->SetWindowName(Title);
    this->MapSubwindows();
 
