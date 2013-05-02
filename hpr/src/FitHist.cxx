@@ -1312,7 +1312,8 @@ void FitHist::Entire()
 //   fOrigHist->GetListOfFunctions()->Print();
 
    if (fExpHist) {
-      cout << " Entire() fExpHist->Delete()" <<endl;
+		if (gDebug > 0)
+			cout << " Entire() fExpHist->Delete()" <<endl;
       fExpHist->GetListOfFunctions()->Clear("nodelete");
       TF1 *ff= (TF1*)gROOT->GetListOfFunctions()->FindObject("backf");
       if (ff) delete ff;
@@ -1353,8 +1354,8 @@ void FitHist::Entire()
          }
       }
    }
-   fCanvas->Modified(kTRUE);
-   fCanvas->Update();
+//   fCanvas->Modified(kTRUE);
+//   fCanvas->Update();
    fCanvas->GetFrame()->SetBit(TBox::kCannotMove);
 };
 //_______________________________________________________________________________________
@@ -2001,13 +2002,13 @@ void FitHist::Superimpose(Int_t mode)
 			origname += "_superimp";
 			this->SetName(origname);
 			gROOT->GetList()->Add(this);
-			cout << "Rename FitHist to: " << origname << endl;
+//			cout << "Rename FitHist to: " << origname << endl;
 		}
 		origname = fCanvas->GetName();
 		if ( !origname.EndsWith("_superimp") ) {
 			origname += "_superimp";
 			fCanvas->SetName(origname);
-			cout << "Rename canvas to: " << origname << endl;
+//			cout << "Rename canvas to: " << origname << endl;
 		}
 	}
 }
@@ -3077,16 +3078,25 @@ void FitHist::Draw1Dim()
 {
    TString drawopt;
 	fCanvas->cd();
+	TPaveStats * st1 = (TPaveStats *)fSelHist->GetListOfFunctions()->FindObject("stats");
+	if ( st1 )
+		fSelHist->GetListOfFunctions()->Remove(st1);
+	if ( fCanvas->GetListOfPrimitives()->FindObject(fSelHist) )
+		fCanvas->GetListOfPrimitives()->Remove(fSelHist);
+	
 	if (fShowStatBox) {
-		gStyle->SetOptStat(fOptStat);
-		fSelHist->SetStats(1);
 		TEnv env(".hprrc");
 		gStyle->SetStatX(env.GetValue("SetHistOptDialog.StatX",0.9));
 		gStyle->SetStatY(env.GetValue("SetHistOptDialog.StatY",0.9));
-		if ( gDebug > 0 )
-			cout << "Draw1Dim StatY " << gStyle->GetStatY() << endl;
 		gStyle->SetStatW(env.GetValue("SetHistOptDialog.StatW",0.2));
 		gStyle->SetStatH(env.GetValue("SetHistOptDialog.StatH",0.16));
+		gStyle->SetOptStat(fOptStat);
+		fSelHist->SetStats(1);
+		if ( gDebug > 0 ) {
+			cout << "Draw1Dim fOptStat " << fOptStat << " " << endl;
+			cout << "Draw1Dim StatX, Y " << gStyle->GetStatX() << " " << gStyle->GetStatY() << endl;
+			cout << "Draw1Dim StatW, H " << gStyle->GetStatW() << " " << gStyle->GetStatH() << endl;
+		}
 	} else {
 		fSelHist->SetStats(0);
 		//			 cout << "fSelHist->SetStats(0); " << endl;
@@ -3263,6 +3273,11 @@ void FitHist::DrawDate()
 void FitHist::Draw2Dim()
 {
    fCanvas->cd();
+	TPaveStats * st1 = (TPaveStats *)fSelHist->GetListOfFunctions()->FindObject("stats");
+	if ( st1 )
+		fSelHist->GetListOfFunctions()->Remove(st1);
+	if ( fCanvas->GetListOfPrimitives()->FindObject(fSelHist) )
+		fCanvas->GetListOfPrimitives()->Remove(fSelHist);
 	if (gDebug > 0)
 		cout << "Draw2Dim:" << " GetLogy " << fCanvas->GetLogy() << endl;
 	if ( gDebug > 0 ) {
@@ -3272,14 +3287,14 @@ void FitHist::Draw2Dim()
 		<< " fHistFillStyle2Dim :" <<fHistFillStyle2Dim<< endl;
 	}
    if (fShowStatBox) {
-      gStyle->SetOptStat(fOptStat);
-      fSelHist->SetStats(1);
 		TEnv env(".hprrc");
 		//      cout << "fSelHist->SetStats(1); " << fOptStat << endl;
 		gStyle->SetStatX(env.GetValue("SetHistOptDialog.StatX2D",0.9));
 		gStyle->SetStatY(env.GetValue("SetHistOptDialog.StatY2D",0.9));
 		gStyle->SetStatW(env.GetValue("SetHistOptDialog.StatW2D",0.2));
 		gStyle->SetStatH(env.GetValue("SetHistOptDialog.StatH2D",0.2));
+      gStyle->SetOptStat(fOptStat);
+      fSelHist->SetStats(1);
 	} else {
       fSelHist->SetStats(0);
    } 

@@ -506,11 +506,15 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		}
 		hist = gHpr->GetSelHistAt(0);
 	} else {
-		hist = Hpr::GetOneHist(selhist);      // look in memory
+		hist = Hpr::GetOneHist(selhist, canvas);      // look in memory
 	}
 	if ( !hist ) {
 //		Hpr::WarnBox("No hist selected");
 		cout << setred << "No histogram selected" << setblack << endl;
+		return nhs;
+	}
+	if (hist->GetDimension() != selhist->GetDimension()) {
+		Hpr::WarnBox("Dimensions of histograms differ");
 		return nhs;
 	}
 	hist->SetMinimum(-1111);
@@ -522,14 +526,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	static Int_t   lIncrColors  = env.GetValue("SuperImposeHist.AutoIncrColors", 0);
 	static Int_t   lSkipDialog  = env.GetValue("SuperImposeHist.SkipDialog", 0);
 	static Int_t   lWarnDiffBin = env.GetValue("SuperImposeHist.WarnDiffBin", 1);
-	//	static Int_t   lNoStatBox   = env.GetValue("SuperImposeHist.NoStatBox", 1);
 	
-	if (hist->GetDimension() != selhist->GetDimension()) {
-		Hpr::WarnBox("Dimensions of histograms differ");
-		return nhs;
-	}
-	//	Double_t rightmax = 1.1*ymax;
-	//	canvas->cd();
 	TRootCanvas * win = (TRootCanvas*)canvas->GetCanvasImp();
 	TIter next(canvas->GetListOfPrimitives());
 	Int_t nhists = 0 ;
@@ -696,13 +693,16 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	}
 	// change name of original histogram to protect against autodelete
 	TString origname(horig->GetName());
-	if ( !origname.EndsWith("_superimp") ) {
-		origname += "_superimp";
+	if ( !origname.EndsWith("_has_supimp") ) {
+		origname += "_has_supimp";
 		horig->SetName(origname);
-		cout << "Rename histogram to: " << origname << endl;
+//		cout << "Rename histogram to: " << origname << endl;
 	}
 	//	TGaxis *naxis = 0;
 	TH1 *hdisp = (TH1 *) hist->Clone();
+	TString name = hdisp->GetName();
+	name += "_is_supimp";
+	hdisp->SetName(name.Data());
 	if (do_scale && selhist->GetDimension() != 2)  {
 		//		cout << "!!!!!!!!!!!!!!!!" << endl;
 		if ( auto_scale ) {
@@ -735,16 +735,13 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		} else {
 			//			new_scale = 1;
 		}
-		TString name = hdisp->GetName();
-		name += "_scaled";
-		hdisp->SetName(name.Data());
 		cout << "Scale " << hdisp->GetName() << " by " << new_scale << endl;
 		hdisp->Scale(new_scale);
 		for (Int_t i = 1; i <= hist->GetNbinsX(); i++) {
 			hdisp->SetBinError(i, new_scale * hist->GetBinError(i));
 		}
 		cout << "Superimpose: Scale errors linearly" << endl;
-	}
+	} 
 	canvas->cd();
 	hdisp->SetLineColor(lLColor);
 	hdisp->SetLineStyle(lLStyle);
@@ -912,18 +909,25 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 }
 //____________________________________________________________________________________
 
-TH1 * GetOneHist(TH1 * selhist)
+TH1 * GetOneHist(TH1 * selhist, TCanvas * canvas)
 {
 	Int_t nhists = 0;
-	TOrdCollection *entries = new TOrdCollection();
+//	TOrdCollection *entries = new TOrdCollection();
+	TOrdCollection entries;
 	TH1 * hist = NULL;
+	TString hlist;
+	TString hselect;
 	TList *tl = gDirectory->GetList();
 	TIter next(tl);
 	while (TObject * obj = next()) {
 		if (obj->InheritsFrom("TH1")) {
 			hist = (TH1 *) obj;
-			if (hist != selhist) {
-				entries->Add(new TObjString(hist->GetName()));
+			TString hn(hist->GetName());
+			if ( hist != selhist && !hn.EndsWith("is_supimp") 
+				&& hist->GetDimension() == selhist->GetDimension() ) {
+				entries.AddFirst(new TObjString(hist->GetName()));
+				hlist.Prepend(hist->GetName());
+				hlist.Prepend(";");
 				nhists++;
 			}
 		}
@@ -932,29 +936,49 @@ TH1 * GetOneHist(TH1 * selhist)
 		Hpr::WarnBox("No Histogram found");
 		return 0;
 	}
-	
-	TArrayI flags(nhists);
-	flags.Reset();
-	Int_t retval = 0;
-	
-	Int_t itemwidth = 240;
-	new TGMrbTableFrame(NULL, &retval, "Select a histogram", itemwidth, 1, nhists,
-		entries, 0, 0, &flags, nhists);
-	if (retval < 0){
-		  return NULL;
+	TRootCanvas * win = NULL;
+	if ( canvas )
+		win = (TRootCanvas*)canvas->GetCanvasImp();
+	Int_t retval=0;
+	Int_t itemwidth = 300;
+	if ( nhists > 10 ) {
+		void *lValp[2];
+		TList lRow_lab;
+		hlist.Prepend("ComboSelect_SelHist");
+		
+		lRow_lab.Add( new TObjString(hlist) );
+		lValp[0] = &hselect;
+		new TGMrbValuesAndText("Select a histogram", NULL, &retval,itemwidth, win,
+								NULL, NULL, &lRow_lab, lValp,
+								NULL, NULL);
+		if ( retval < 0 )
+			return NULL;
+		
+		hist = (TH1 *) gROOT->FindObject(hselect);
+	} else {
+		TArrayI flags(nhists);
+		flags.Reset();
+		retval = 2;
+		
+		itemwidth = 240;
+		new TGMrbTableFrame(win, &retval, "Select a histogram", itemwidth, 1, nhists,
+			&entries, 0, 0, &flags, nhists);
+		if (retval < 0){
+			return NULL;
+		}
+		TObjString * objs;
+		TString s;
+		for (Int_t i = 0; i < nhists; i++) {
+			//      Char_t sel = selected[i];
+			if (flags[i] == 1) {
+				objs = (TObjString *) entries.At(i);
+				s = objs->String();
+				hist = (TH1 *) gROOT->FindObject((const char *) s);
+				break;
+			}
+		}
 	}
-	TObjString * objs;
-	TString s;
-	for (Int_t i = 0; i < nhists; i++) {
-		  //      Char_t sel = selected[i];
-		  if (flags[i] == 1) {
-			  objs = (TObjString *) entries->At(i);
-			  s = objs->String();
-			  hist = (TH1 *) gROOT->FindObject((const char *) s);
-			  break;
-		  }
-	}
-	delete entries;
+	
 	if (!hist) {
 		  Hpr::WarnBox("No Histogram found");
 	}
@@ -962,6 +986,7 @@ TH1 * GetOneHist(TH1 * selhist)
 		  Hpr::WarnBox("Cant use same histogram");
 		  hist = NULL;
 	}
+//	hist->Print();
 	return hist;
 }
 //__________________________________________________________________

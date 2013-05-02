@@ -1124,14 +1124,14 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
 			if ( ok ) {
 				slen = fn.Length();
 				name = name(slen+1, name.Length());
-//				cout << "DeleteOnFile fn: " << fn << endl;
+				cout << "DeleteOnFile fn: " << fn << endl;
 			} else {
 				cout << "Cant get file name from: " << name << endl;
 				return -1;
 			}
 			pos = 0;
 			if ( name.Tokenize(entry,pos, del) ) {
-//				cout << "DeleteOnFile entry: " << entry << endl;
+				cout << "DeleteOnFile entry: " << entry << endl;
 			} else {
 				cout << "Cant get entry from: " << fn << endl;
 				return -1;
@@ -1147,21 +1147,30 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
       	question += " from ";
       	question += fn;
       	if (QuestionBox(question.Data(), win) == kMBYes) {
-         	TFile * f = new TFile(fname, "update");
-         	if (f->Get(entry.Data())) {
-               list->Remove(sel);
-//               Int_t cycle = f->GetKey(name.Data())->GetCycle();
-//               if (cycle > 0) {
-//                  name += ";";
-//                  name += cycle;
-//               }
-               cout << "Deleting: " << name.Data() << endl;
-            	f->Delete(entry.Data());
-            	ndeleted++;
-         	} else {
-            	cout << entry.Data() << " not found on " << fname << endl;
-         	}
+				if ( !strncmp(fname, "Memory", 7) ) {
+					TObject * obj = gROOT->FindObject(entry.Data());
+					if ( obj ) {
+						list->Remove(sel);
+						delete obj;
+						ndeleted++;
+					}
+				} else {
+					TFile * f = new TFile(fname, "update");
+					if (f->Get(entry.Data())) {
+						list->Remove(sel);
+	//               Int_t cycle = f->GetKey(name.Data())->GetCycle();
+	//               if (cycle > 0) {
+	//                  name += ";";
+	//                  name += cycle;
+	//               }
+						cout << "Deleting: " << name.Data() << endl;
+						f->Delete(entry.Data());
+						ndeleted++;
+					} else {
+						cout << entry.Data() << " not found on " << fname << endl;
+					}
          	f->Close();
+				}
       	}
    	}
    }

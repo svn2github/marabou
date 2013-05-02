@@ -24,7 +24,7 @@ namespace Hpr
 	HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where, 
 		Double_t ledge, Double_t uedge, Double_t axis_offset=0, Color_t col=0);
 	Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode);
-	TH1 * GetOneHist(TH1 * selhist);
+	TH1 * GetOneHist(TH1 * selhist, TCanvas * canvas = NULL);
 	void ResizeStatBox(TPaveStats * st, Int_t ndim); 
 	Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp);
 	void BoundingB3D(TPolyLine3D * pl,  Double_t x0, Double_t y0, Double_t z0, 

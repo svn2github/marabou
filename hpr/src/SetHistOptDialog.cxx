@@ -91,13 +91,16 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
 	\n\
 	Double_t  statw  = gStyle->GetStatW();\n\
 	if (fit) statw   = 1.8*gStyle->GetStatW();\n\
-		\\nlines number of entries like cont, mean, sigma, etc\n\
-		\\nlinesf for fitting parameters\n\
+		nlines: number of entries like cont, mean, sigma, etc\n\
+		nlinesf: for fitting parameters\n\
 		Double_t  stath  = (nlines+nlinesf)*gStyle->GetStatFontSize();\n\
 		if (stath <= 0 || 3 == (gStyle->GetStatFont()%10)) {\n\
 			stath = 0.25*(nlines+nlinesf)*gStyle->GetStatH();\n\
 		}\n\
 	\n\
+	The textsize of the StatBox should normally be 0, then it is\n\
+	adjusted automatically to the size of the box, if you want \n\
+	do it by yourself it might be tricky.\n\
 	Note: Changeing options only influences the current histogram\n\
 	To make them active for subsequently displayed histograms\n\
 	press: \"Set as global def\"\n\

@@ -905,6 +905,12 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
           cout << " Skip getstat(fComSocket)" << endl;
       }
    } else if (strstr(fname,"Memory")) {
+		TSeqCollection *loc = gROOT->GetListOfCanvases();
+		TCanvas *cm;
+		if ( cm = (TCanvas*)loc->FindObject("ContentList")) {
+			if ( !strncmp(cm->GetTitle(),"Memory",7) )
+				delete cm;
+		}
       st=new TMrbStatistics();
       nstat = st->Fill();
    } else if (strstr(fname,".map")) {
@@ -2209,8 +2215,13 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
    gDirectory=gROOT;
 //  gROOT->ls();
    TString newname(hname.Data());
-   newname += "_",
-   newname += pos;
+	pp = newname.Index(";");
+	if (pp >0)
+		newname.Resize(pp);
+	if (pos > 0) {
+		newname += "_",
+		newname += pos;
+	}
 	if ( GeneralAttDialog::fPrependFilenameToTitle != 0 ) {
 		TString title = hist->GetTitle();
 		fname = gSystem->BaseName(fname);
@@ -3066,6 +3077,13 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 //   kSemaphore = 1;
    TH1* hist = GetHist(fname, dir, hname);
    if ( hist ) {
+		if ( !hist->TestBit(kNotDeleted) ) {
+			cout << "Histogram is deleted: " << hname << endl;
+			if (mother_canvas)
+				mother_canvas->SetEnableButtons(kTRUE);
+			return;
+		}
+
       if ( b ) {
 			b->SetBit(kSelected);
 			b->SetFillColor(3);
@@ -3138,7 +3156,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 			gROOT->GetListOfCanvases()->Remove(fhist->GetCanvas());
 			TH1 *oldhist=fhist->GetSelHist();
          delete fhist->GetCanvas();
-			if (oldhist)
+			if (oldhist != hist)
 				delete oldhist;
 //			gSystem->Sleep(100);
       }
