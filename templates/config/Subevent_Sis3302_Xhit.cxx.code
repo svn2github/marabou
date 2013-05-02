@@ -17,11 +17,17 @@ Bool_t  TMrbSubevent_Sis3302_Xhit::FillSubevent(const UShort_t * SevtData, Int_t
 //                 |=================|===================|
 //                 |    word count   |   module serial   | header word
 //                 |=====================================|
-//                 |   tstamp high   |   channel number  |
+//                 | raw data lngth  | energy data lngth | group 1 / chn 1+2
+//                 |-------------------------------------|
+//                 |       ...       |        ...        | group 2 / chn 3+4
+//                 |-------------------------------------|
+//                 |       ...       |        ...        | group 3 / chn 5+6
+//                 |-------------------------------------|
+//                 |       ...       |        ...        | group 4 / chn 7+8
+//                 |=====================================|
+//                 |   tstamp high   |   channel number  | 1st channel
 //                 |-------------------------------------|
 //                 |          time stamp low             |
-//                 |-------------------------------------|
-//                 | raw data lngth  | energy data lngth | [0,0] normally
 //                 |-------------------------------------|
 //                 |     raw data    |  (traces, 16bit)  |
 //                 |        ...      |        ...        |
@@ -37,7 +43,7 @@ Bool_t  TMrbSubevent_Sis3302_Xhit::FillSubevent(const UShort_t * SevtData, Int_t
 //                 |-------------------------------------|
 //                 |       trailer (0xdeadbeef)          |
 //                 |=====================================|
-//                 |   tstamp high   |   channel number  |
+//                 |   tstamp high   |   channel number  | next channel
 //                 |-------------------------------------|
 //                 |          time stamp low             |
 //                 |-------------------------------------|
@@ -84,6 +90,14 @@ Bool_t  TMrbSubevent_Sis3302_Xhit::FillSubevent(const UShort_t * SevtData, Int_t
 			return(kTRUE);
 		}
 
+		UShort_t rawLength[4];					// extract raw data and energy trace length, resp.
+		UShort_t energyLength[4];
+		for (Int_t grp = 0; grp < 4; grp++, wc--) {
+			UInt_t d = *dataPtr++;
+			rawLength[grp] = (d >> 16) & 0xFFFF;
+			energyLength[grp] = d & 0xFFFF;
+		}
+
 		while (wc > 0) {
 			UInt_t tsHigh = *dataPtr++;			// time stamp high, channel
 			UInt_t tsLow = *dataPtr++;			// time stamp low
@@ -91,11 +105,11 @@ Bool_t  TMrbSubevent_Sis3302_Xhit::FillSubevent(const UShort_t * SevtData, Int_t
 			tsArr[0] = (tsHigh >> 16) & 0xFFFF;
 			tsArr[1] = (tsLow >> 16) & 0xFFFF;
 			tsArr[2] = tsLow & 0xFFFF;
-			UInt_t * rdPtr = dataPtr;
-			Int_t edl = *dataPtr++;
-			Int_t rdl = (edl >> 16) & 0xFFFF;
-			edl &= 0xFFFF;
-			Int_t rdledl = rdl + edl;
+
+			UShort_t * rdPtr = (UShort_t *) dataPtr;	// beginning of raw data
+
+			Int_t chn = (Int_t) (tsHigh & 0xF);		// channel number
+			Int_t rdledl = rawLength[chn] + energyLength[chn];
 			if (rdledl > 0) {
 				if (rdledl > $xHitDataLength) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Too many trace data", SevtData, origSevtWC);
@@ -121,8 +135,6 @@ Bool_t  TMrbSubevent_Sis3302_Xhit::FillSubevent(const UShort_t * SevtData, Int_t
 				return(kTRUE);
 			}
 
-			Int_t chn = (Int_t) (tsHigh & 0xF);		// channel number
-
 			mle->IncrChannelHits(chn);			// count this channel
 
 			$xHitName * hit = this->GetHitBuffer()->AddXhit(
@@ -130,7 +142,7 @@ Bool_t  TMrbSubevent_Sis3302_Xhit::FillSubevent(const UShort_t * SevtData, Int_t
 							moduleNumber,
 							chn,
 							tsArr,
-							NULL, 0, (UShort_t *) rdPtr, rdledl * 2);
+							NULL, 0, rdPtr, rdledl * 2);
 			if (hit == NULL) {
 				cerr	<< setred
 					<< this->ClassName() << "::FillSubevent() [sevtWC="
@@ -139,7 +151,7 @@ Bool_t  TMrbSubevent_Sis3302_Xhit::FillSubevent(const UShort_t * SevtData, Int_t
 				return(kTRUE);
 			}
 			hit->SetDataLong(maxEnergy);	// insert energy value
-			wc -= (7 + rdledl);
+			wc -= (6 + rdledl);
 		}
 		SevtWC -= wcs * sizeof(Int_t) / sizeof(Short_t);	// count for wc 32 bit words
 	}
