@@ -39,6 +39,7 @@ Int_t GeneralAttDialog::fStackedReally = 1;
 Int_t GeneralAttDialog::fScaleStack = 1;
 Int_t GeneralAttDialog::fStackedNostack = 0;
 Int_t GeneralAttDialog::fStackedPads = 0;
+Int_t GeneralAttDialog::fLegoSuppressZero = 1;
 TString GeneralAttDialog::fGlobalStyle = "Plain";
 
 //_______________________________________________________________________
@@ -180,6 +181,8 @@ ____________________________________________________________\n\
 	fValp[ind++] = &fContentLowLimit;
 	fRow_lab->Add(new TObjString("PlainIntVal_    Fit2Dim Vertical Adjust Limit"));
 	fValp[ind++] = &fVertAdjustLimit;
+	fRow_lab->Add(new TObjString("CheckButton_Dont draw cells with 0 cont(LEGO)"));
+	fValp[ind++] = &fLegoSuppressZero;
 
    fRow_lab->Add(new TObjString("CommentOnly_Option for stacked hists"));
    fValp[ind++] = &fScaleStack;

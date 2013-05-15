@@ -3298,6 +3298,9 @@ void FitHist::Draw2Dim()
 	} else {
       fSelHist->SetStats(0);
    } 
+   if ( fDrawOpt2Dim.Contains("LEGO") && GeneralAttDialog::fLegoSuppressZero == 1 )
+		fDrawOpt2Dim.Prepend("0");
+
    fSelHist->Draw(fDrawOpt2Dim);
 	if (gDebug > 0)
 		cout << "Draw2Dim:" << " GetLogy " << fCanvas->GetLogy() << endl;
@@ -3617,7 +3620,7 @@ void FitHist::Draw3DimView()
 					if (theColor > ncolors-1) theColor = ncolors-1;
 //					Int_t col = (Int_t)((cont / (max-min) )* 50. + 50);
 //					cout << " max  cont Col "<< max << " "  << cont << " " << col << endl;
-					UInt_t icont = (UInt_t)cont;
+//					UInt_t icont = (UInt_t)cont;
 //					pm->SetUniqueID(icont);
 					pm->SetName(Form(" X =  %6.4g Y =  %6.4g Z = %6.4g Content %6.4g",
 										  x, y, z, cont));

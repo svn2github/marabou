@@ -37,6 +37,7 @@ public:
    static Int_t fStackedReally;
    static Int_t fStackedNostack;
    static Int_t fStackedPads;
+	static Int_t fLegoSuppressZero;
 	static TString fGlobalStyle;
 
    GeneralAttDialog(TGWindow * win = NULL);

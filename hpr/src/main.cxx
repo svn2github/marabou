@@ -3,6 +3,7 @@
 #include "TEnv.h"
 #include <iostream>
 #include "HistPresent.h"
+#include "SetColor.h"
 
 int main(int argc, char **argv)
 {

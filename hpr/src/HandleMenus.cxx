@@ -323,8 +323,12 @@ HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph *
               : TGFrame(gClient->GetRoot(), 10 ,10),
                 fHCanvas(c),fHistPresent(hpr), fFitHist(fh), fGraph(graph)
 {
+	if ( fHCanvas->IsBatch() ) {
+		cout << setred << "Cannot open canvas, did you forget option -X with ssh "
+		<< endl << "HistPresent exits now" << setblack << endl;
+		exit(-1);
+	}
    fRootCanvas = (TRootCanvas*)fHCanvas->GetCanvasImp();
-
    fRootsMenuBar = fRootCanvas->GetMenuBar();
    fMenuBarItemLayout = fRootCanvas->GetMenuBarItemLayout();
    fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
@@ -347,41 +351,7 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
    if(fHistPresent){
       hbrowser=fHistPresent->GetHelpBrowser();
    }
-/*   Bool_t changed = kFALSE;
-	if ( fFitHist ) { 
-		if (is2dim(fFitHist->GetSelHist())) {
-			if (fHCanvas->GetLogz()) {
-				if ( !fDisplayMenu->IsEntryChecked(kFHLogY) ) {
-					fDisplayMenu->CheckEntry(kFHLogY);
-					changed = kTRUE;
-				}
-			} else {
-				if ( fDisplayMenu->IsEntryChecked(kFHLogY) ) {
-					fDisplayMenu->UnCheckEntry(kFHLogY);
-					changed = kTRUE;
-				}
-			}
-		} else {
-			if (fHCanvas->GetLogy()) {
-				if ( !fDisplayMenu->IsEntryChecked(kFHLogY) ) {
-					fDisplayMenu->CheckEntry(kFHLogY);
-					changed = kTRUE;
-				}
-			} else {
-				if ( fDisplayMenu->IsEntryChecked(kFHLogY) ) {
-					fDisplayMenu->UnCheckEntry(kFHLogY);
-					changed = kTRUE;
-				}
-			}
-		}
-		
-		if ( changed ) {
-			fRootCanvas->ForceUpdate();
-	//		cout << " log state changed" << endl<< flush;
-			gSystem->ProcessEvents();
-		}
-	}*/
-   switch (GET_MSG(msg)) {
+mulma   switch (GET_MSG(msg)) {
 
       case kC_COMMAND:
 

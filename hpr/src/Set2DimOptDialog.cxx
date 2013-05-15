@@ -13,6 +13,7 @@
 #include "TStyle.h"
 #include "TSystem.h"
 #include "Set2DimOptDialog.h"
+#include "GeneralAttDialog.h"
 #include <iostream>
 
 namespace std {} using namespace std;
@@ -463,6 +464,8 @@ void Set2DimOptDialog::SetHistAtt(TPad *pad, TH2 * hist)
 	} else {
 		gStyle->SetCanvasPreferGL(kFALSE);
 	}
+	if ( fDrawOpt.Contains("LEGO") && GeneralAttDialog::fLegoSuppressZero == 1 )
+		fDrawOpt.Prepend("0");
 	if ( !fDrawOpt.Contains("SAME") )
 		fDrawOpt += fSameOpt;
 	if ( gDebug > 0 ) 
