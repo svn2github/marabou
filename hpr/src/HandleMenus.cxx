@@ -351,7 +351,7 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
    if(fHistPresent){
       hbrowser=fHistPresent->GetHelpBrowser();
    }
-mulma   switch (GET_MSG(msg)) {
+   switch (GET_MSG(msg)) {
 
       case kC_COMMAND:
 
