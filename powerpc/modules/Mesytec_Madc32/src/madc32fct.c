@@ -856,10 +856,10 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 
 	if (s->blockXfer) {
 		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));
-		if (ptrloc == NULL) return(0); 
-		bmaCount = bma_read_count(s->md->bltBase + MADC32_DATA, ptrloc | 0x0, numData, s->md->bltModeId);
-		if (bmaCount < 0) {
-			sprintf(msg, "[%sreadout] %s: Error while reading event data (numData=%d)", s->mpref, s->moduleName, numData);
+		if (ptrloc == NULL) return(0);
+		bmaError = bma_read(s->md->bltBase + MADC32_DATA, ptrloc | 0x0, numData, s->md->bltModeId);
+		if (bmaError != 0) {
+			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, sys_errlist[errno], errno, numData);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
