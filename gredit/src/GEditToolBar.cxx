@@ -100,7 +100,7 @@ void GEdit::ShowToolBar(Bool_t show)
 	fRootCanvas->ForceUpdate();
 	gSystem->ProcessEvents();
 	TString icons_dir =   gEnv->GetValue("Gui.IconPath","");
-	if ( !icons_dir.Contains("MARABOU") ) {
+	if ( !icons_dir.Contains("MARABOU",TString::kIgnoreCase) ) {
 	   cout << setred << "Your ICONPATH does not contain $MARABOU/icons" << endl;
 		cout << "Please add: \"Gui.IconPath: $MARABOU/icons:$ROOTSYS/icons\" to your $HOME/.rootrc" << endl << "and restart HistPresent"
 		     << setblack << endl;
