@@ -66,6 +66,9 @@ class TMrbSis_3820 : public TMrbVMEScaler {
 		inline void SetNonClearingMode(Bool_t Flag = kTRUE) { fNonClearingMode = Flag; };
 		inline Bool_t NonClearingMode() { return(fNonClearingMode); };
 
+		inline void ClearAfterRead(Bool_t Flag = kTRUE) { fClearAfterRead = Flag; };
+		inline Bool_t ToBeClearedAfterRead() { return(fClearAfterRead); };
+
 		inline void SetDataFormat24(Bool_t Flag = kTRUE) { fDataFormat24 = Flag; };
 		inline Bool_t DataFormat24() { return(fDataFormat24); };
 
@@ -90,6 +93,7 @@ class TMrbSis_3820 : public TMrbVMEScaler {
 		Int_t fFifoDepth;			// fifo depth per channel
 		Int_t fLNEChannel;			// channel to act as LNE source
 		Bool_t fNonClearingMode;	// kTRUE if non-clearing mode
+		Bool_t fClearAfterRead;		// kTRUE if to be cleared even if non-clearing mode
 		Bool_t fDataFormat24;		// kTRUE data format 24 bit + channel + user
 		Bool_t fEnableRefPulser;	// kTRUE if reference pulser is to be used in ch0
 		Bool_t fExtension48;		// kTRUE if chn0 & chn16 extended to 48 bits (data will be stored in chn#31)

@@ -342,6 +342,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 				fCodeTemplates.WriteCode(RdoStrm);
+				if (this->ToBeClearedAfterRead()) {
+					fCodeTemplates.InitializeCode("%CAR%");
+					fCodeTemplates.Substitute("$moduleName", this->GetName());
+					fCodeTemplates.WriteCode(RdoStrm);
+				}
 			}
 			break;
 	}

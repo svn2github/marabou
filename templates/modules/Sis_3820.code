@@ -220,6 +220,7 @@
 %MHS%						memset(evt.out32, 0, $mnemoLC_hit * sizeof(unsigned long));
 %MHS%						evt.out32 += $mnemoLC_hit;
 %MHS%					}
+%CAR%					SIS_3820_COUNTER_CLEAR($moduleName);
 %%EndOfCode%%
 %%READ_MODULE%%
 
