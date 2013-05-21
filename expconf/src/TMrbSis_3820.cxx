@@ -306,6 +306,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 					gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 					fExtension48 = kFALSE;
 				}
+				if (this->Get("LNESource") == 0) {
+					fCodeTemplates.InitializeCode("%FSR%");
+					fCodeTemplates.Substitute("$moduleName", this->GetName());
+					fCodeTemplates.WriteCode(RdoStrm);
+				}
 				if (nofChannels < 32) {
 					if (!this->CheckIfPatternIsContiguous()) {
 						gMrbLog->Err()	<< "Pattern of channels used is not contiguous - 0x"

@@ -175,6 +175,7 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
+%FSR%						SIS_3820_KEY_VME_LNE($moduleName);				/* force readout of scaler $moduleName */
 %SH%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
 %SH%						RDO_BLTI_32(32);
 %SHOVF%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
