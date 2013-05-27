@@ -43,6 +43,7 @@
 #include "HprTh3Dialog.h"
 #include "Rebin2DimDialog.h"
 #include "hprbase.h"
+#include "ShiftScale.h"
 
 void EditFitMacroG(TGWindow * win);
 void ExecFitMacroG(TGraph * graph, TGWindow * win);
@@ -228,6 +229,7 @@ enum ERootCanvasCommands {
    kFHFitPolyMarks,
    kFHFindPeaks,
    kFHCalibrate,
+	kFHShiftScale,
    kFHCalDialog,
    kFHCalibrateNew,
    kFHDeleteCal,
@@ -333,6 +335,7 @@ HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph *
    fMenuBarItemLayout = fRootCanvas->GetMenuBarItemLayout();
    fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
    fEditor = NULL;
+	fHistInPad = NULL;
 	//   MapWindow();
 //   UnMapWindow();
 };
@@ -1130,7 +1133,12 @@ again:
                   case kFH_CASCADE2_U:
                      fFitHist->FitPolyMarks(-1);
                      break;
-
+						case kFHShiftScale:
+						{
+							if ( fFitHist && fFitHist->GetSelHist())
+								new ShiftScale(fFitHist->GetSelHist(), (HTCanvas*)fHCanvas);
+							break;
+						}
                   case kFHCalibrate:
                      fFitHist->Calibrate();
                      break;
@@ -1625,6 +1633,7 @@ void HandleMenus::BuildMenus()
 			fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
 			fFitMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
 			fFitMenu->AddSeparator();
+			fFitMenu->AddEntry("Shift / Scale histogram",     kFHShiftScale);
 			if( nDim == 1 ){
 				fFitMenu->AddEntry("Calibration Dialog",            kFHCalibrate);
 				fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
