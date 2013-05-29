@@ -22,7 +22,7 @@ LIB = $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
 RDO_INCL	= %%READOUT_INCLUDE%%
 RDO_LIBS	= %%READOUT_LIBS%%
 
-CES_LIBS	= -L/lib/ces -lvme -lbma -luio
+CES_LIBS	= -L/lib/ces -lvme -lbma -lbus -luio
 
 C_CTRL	= %%CAMAC_CONTROLLER%%
 
