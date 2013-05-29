@@ -47,7 +47,7 @@ madc32:	madc32.o $(LIB_TARGETS)
 			-L /lib/ces \
 			-lMadc32 -lUti \
 			$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
-			-llynx -lvme -lbma -luio -lnetinet
+			-llynx -lvme -lbma -lbus -luio -lnetinet
 		mv madc32 $(BIN_DIR)
 
 clean:
