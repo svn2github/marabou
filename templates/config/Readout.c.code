@@ -67,7 +67,7 @@ static long total_event_count; 	/* events since last start */
 static long dt_event_count;		/* events since last dead-time stamp */
 static long dt_scaler_contents;	/* contents of dead-time scaler */
 
-static bool_t use_block_xfer;	/* TRUE if at least one module wants to use BLT */
+static bool_t use_block_xfer = FALSE;	/* TRUE if at least one module wants to use BLT */
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Global variables

@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-    <META NAME="Generator" CONTENT="Cosmo Create 1.0.3">
     <TITLE>%%ANALYZE_FILE%% </TITLE>
 </HEAD>
 <BODY>
@@ -31,7 +30,7 @@
 %SEVT%  	  <UL>
 %SEVTE%       </UL>
 %MOD%			 <LI>
-%MOD%			 <A HREF="http://www.bl.physik.uni-muenchen.de/marabou/html/$moduleClassName.html">$moduleClassName</A> $moduleDots $moduleName: $moduleTitle in $modulePosition
+%MOD%			 <A HREF="http://www.bl.physik.uni-muenchen.de/marabou/htmldoc/$moduleClassName.html">$moduleClassName</A> $moduleDots $moduleName: $moduleTitle in $modulePosition
 %%EndOfCode%%
 %%HTML_MAKE_SETUP%%
 </UL>
@@ -41,9 +40,9 @@
 <FONT SIZE="5">Links:</FONT></P>
 <UL>
     <LI>
-    <A HREF="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU_Index.html">MARaBOU class index</A>
+    <A HREF="http://www.bl.physik.uni-muenchen.de/marabou/htmldoc/MARaBOU_Index.html">MARaBOU class index</A>
     <LI>
-    <A HREF="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">MARaBOU home page</A>
+    <A HREF="http://www.bl.physik.uni-muenchen.de/marabou/htmldoc/MARaBOU.html">MARaBOU home page</A>
     <LI>
 	<A HREF="http://root.cern.ch">ROOT home page</A>
 </UL>
