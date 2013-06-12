@@ -13,10 +13,12 @@ class TPolyLine3D;
 
 namespace Hpr
 {
-   void WriteHistasASCII(TH1 *hist, TGWindow *window = NULL, Int_t a_g = 0);
-   void WarnBox(const char *, TGWindow *window = NULL);
-   Bool_t QuestionBox(const char *message, TGWindow *window);
-   TH1 * FindHistOfTF1(TVirtualPad * ca, const char * fname, Int_t pop_push);
+	void WriteGraphasASCII(TGraph * g, TRootCanvas * mycanvas = 0);
+	void WriteOutGraph(TGraph * g, TRootCanvas * mycanvas = 0);
+	void WriteHistasASCII(TH1 *hist, TGWindow *window = NULL, Int_t a_g = 0);
+	void WarnBox(const char *, TGWindow *window = NULL);
+	Bool_t QuestionBox(const char *message, TGWindow *window);
+	TH1 * FindHistOfTF1(TVirtualPad * ca, const char * fname, Int_t pop_push);
 	TH1 * FindHistInPad(TVirtualPad * ca, Int_t lfgraph = 0, Int_t lfstack = 0, TObject ** parent=0);
 	TGraph * FindGraphInPad(TVirtualPad * ca);
 	TLegend * FindLegendInPad(TVirtualPad * ca);

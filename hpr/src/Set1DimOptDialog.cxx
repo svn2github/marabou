@@ -199,7 +199,7 @@ may be selected.\n\
 				errmode = erm;
 			}
 		}
-		cout << "errmode:" << errmode << " " << errmode.Length() << endl;
+//		cout << "errmode:" << errmode << " " << errmode.Length() << endl;
 		if (errmode.Length() == 0 && opt.Contains("E",TString::kIgnoreCase)) {
 			errmode = "E";
 		}
@@ -530,7 +530,7 @@ void Set1DimOptDialog::SetAtt(TH1* /*hist*/)
 
 void Set1DimOptDialog::SetHistAttPermLocal()
 {
-   cout << "Set1DimOptDialog:: SetHistAttPerm()" << endl;
+//   cout << "Set1DimOptDialog:: SetHistAttPerm()" << endl;
    SaveDefaults();
    SetHistAttPerm();
 }
@@ -555,13 +555,6 @@ void Set1DimOptDialog::SetDefaults()
    gStyle->SetMarkerColor     (env.GetValue("Set1DimOptDialog.MarkerColor",       1));
    gStyle->SetMarkerStyle     (env.GetValue("Set1DimOptDialog.MarkerStyle",       7));
    gStyle->SetMarkerSize      (env.GetValue("Set1DimOptDialog.MarkerSize",      1.));
-//	if (fShowMarkers |= 0) {
-//		temp = gStyle->GetDrawOption();
-//		temp+= "P";
-//		gStyle->SetDrawOption(temp);
-//	}
-//	gStyle->SetOptLogx         (env.GetValue("Set1DimOptDialog.fOneDimLogX",     0));
-//	gStyle->SetOptLogy         (env.GetValue("Set1DimOptDialog.fOneDimLogY",     0));
 }
 //______________________________________________________________________
 
@@ -595,7 +588,7 @@ void Set1DimOptDialog::SetHistAttPerm()
 
 void Set1DimOptDialog::SaveDefaults()
 {
-	cout << "Set1DimOptDialog::SaveDefaults() fShowMarkers[0] " << fShowMarkers[0]<< endl;
+//	cout << "Set1DimOptDialog::SaveDefaults() fShowMarkers[0] " << fShowMarkers[0]<< endl;
    TEnv env(".hprrc");
 	env.SetValue("Set1DimOptDialog.fFill1Dim",      fFill[0]      );
 	env.SetValue("Set1DimOptDialog.fFillColor",     fFillColor[0] );

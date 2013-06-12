@@ -88,7 +88,7 @@ _________________________________________________________________________\n\
 		}
 		fTitle[i] = gr->GetTitle();
 		fDrawOpt[i]   = gr->GetDrawOption();
-		cout << "GetDrawOption() " << i << ": " << fDrawOpt[i] << endl;
+//		cout << "GetDrawOption() " << i << ": " << fDrawOpt[i] << endl;
 		fFillColor[i] = gr->GetFillColor(); 
 		fFillStyle[i] = gr->GetFillStyle(); 
 		fLineColor[i] = gr->GetLineColor(); 

@@ -895,7 +895,7 @@ again:
 //                      fFitHist->WriteOutHist();
                      break;
                   case kFHGraphToFile:
-                     WriteOutGraph(fGraph, fRootCanvas);
+                     Hpr::WriteOutGraph(fGraph, fRootCanvas);
                      break;
                   case kFHSelAnyDir:
 							{
@@ -908,7 +908,7 @@ again:
 							fHistPresent->SelectdCache();
 							break;
 						case kFHGraphToASCII:
-                     WriteGraphasASCII(fGraph, fRootCanvas);
+                     Hpr::WriteGraphasASCII(fGraph, fRootCanvas);
                      break;
                   case kFHCanvasToFile:
 //                      fFitHist->WriteOutCanvas();

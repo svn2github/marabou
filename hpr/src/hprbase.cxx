@@ -2,6 +2,7 @@
 #include "TEnv.h"
 #include "TFile.h"
 #include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
 #include "TFrame.h"
 #include "THStack.h"
 #include "TString.h"
@@ -15,6 +16,7 @@
 #include "TPolyLine3D.h"
 #include "TGMrbValuesAndText.h"
 #include "TGMrbTableFrame.h"
+#include "TGMrbInputDialog.h"
 #include <iostream>
 #include <fstream>
 #include "hprbase.h"
@@ -27,6 +29,111 @@ using std::endl;
 
 namespace Hpr 
 {
+//______________________________________________________________________________________
+
+void WriteGraphasASCII(TGraph * g,  TRootCanvas * mycanvas)
+{
+static const Char_t helpText[] = 
+"Write graph as ASCII";
+	TString fname = g->GetName();
+	fname += ".ascii";
+	void *Valp[10];
+	Int_t ind = 0;
+	TList Row_lab;
+	
+	TString formX("%10.10g");
+	TString formY("%10.10g");
+	Int_t print_errorX = 0;
+	Int_t print_errorY = 1;
+	Row_lab.Add(new TObjString("StringValue_File name"));
+	Valp[ind++] = &fname;
+	Row_lab.Add(new TObjString("StringValue_Format X values"));
+	Valp[ind++] = &formX;
+	Row_lab.Add(new TObjString("StringValue+Format Y, errors"));
+	Valp[ind++] = &formY;
+	Row_lab.Add(new TObjString("CheckButton_Output ErrorX"));
+	Valp[ind++] = &print_errorX;
+	Row_lab.Add(new TObjString("CheckButton+Output ErrorY"));
+	Valp[ind++] = &print_errorY;
+	
+	Int_t itemwidth = 400;
+	Int_t ok = -2;
+	
+	new TGMrbValuesAndText("Write Graph as ASCII", NULL, &ok,itemwidth, mycanvas,
+							 NULL, NULL, &Row_lab, Valp,
+							 NULL, NULL, helpText);
+
+	if (!gSystem->AccessPathName((const char *) fname, kFileExists)) {
+//      cout << fname << " exists" << endl;
+		int buttons = kMBOk | kMBDismiss, retval = 0;
+		EMsgBoxIcon icontype = kMBIconQuestion;
+		new TGMsgBox(gClient->GetRoot(), mycanvas,
+						 "Question", "File exists, overwrite?",
+						 icontype, buttons, &retval);
+		if (retval == kMBDismiss)
+			return;
+	}
+	ofstream outfile;
+	outfile.open((const char *) fname);
+	Double_t * x = 0;
+	Double_t * y = 0;
+	Double_t * ex = 0;
+	Double_t * ey = 0;
+	Double_t * exl = 0;
+	Double_t * exh = 0;
+	Double_t * eyl = 0;
+	Double_t * eyh = 0;
+	Double_t Sum = 0.;
+	if (outfile) {
+		x = g->GetX();
+		y = g->GetY();
+		if (g->IsA() == TGraphErrors::Class()) {
+			ex = ((TGraphErrors *)g)->GetEX();
+			ey = ((TGraphErrors *)g)->GetEY();
+		}
+		if (g->IsA() == TGraphAsymmErrors::Class()) {
+			exl = ((TGraphAsymmErrors *)g)->GetEXlow();
+			exh = ((TGraphAsymmErrors *)g)->GetEXhigh();
+			eyl = ((TGraphAsymmErrors *)g)->GetEYlow();
+			eyh = ((TGraphAsymmErrors *)g)->GetEYhigh();
+		}
+		for (Int_t i = 0; i < g->GetN(); i++) {
+			outfile << Form(formX.Data(), x[i]) << " " << Form(formY.Data(),y[i]);
+			Sum += y[i];
+			if (ex && print_errorX)  outfile << " " << Form(formY.Data(), ex[i]);
+			if (ey && print_errorY)  outfile << " " << Form(formY.Data(), ey[i]);
+			if (exl && print_errorX && print_errorY)
+			outfile << " " << Form(formY.Data(), exl[i]) << " " << Form(formY.Data(), exh[i])
+					  << " " << Form(formY.Data(), eyl[i]) << " " << Form(formY.Data(),  eyh[i]);
+			outfile << endl;
+		}
+		outfile.close();
+		cout << g->GetN() << " Lines written to: "
+			 << (const char *) fname << endl 
+			 << " Sum: " << Sum <<  endl;
+	} else {
+		cout << " Cannot open: " << fname << endl;
+	}
+}
+//______________________________________________________________________________________
+
+void WriteOutGraph(TGraph * g, TRootCanvas * mycanvas)
+{
+	if (g) {
+		TString name = g->GetName();
+		Bool_t ok;
+		name =
+			 GetString("Save hist with name", name.Data(), &ok, mycanvas);
+		if (!ok)
+			return;
+		g->SetName(name.Data());
+		new Save2FileDialog(g);
+//     if (OpenWorkFile(mycanvas)) {
+//         g->Write();
+//        CloseWorkFile();
+//     }
+	}
+}
 
 void WriteHistasASCII(TH1 *hist, TGWindow *window, Int_t ascii_graph)
 {
@@ -43,32 +150,34 @@ and write the Graph to a ROOT file\n\
 If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 // *INDENT-ON*
 	
-   if ( hist->GetDimension() == 3 ) {
-      WarnBox(" WriteHistasASCII: 3-dim not yet supported ", window);
-      return;
-   }
-   if ( hist->GetDimension() != 1 && ascii_graph == 1) {
-      WarnBox(" WriteHistasGraph: only 1-dim supported", window);
-      return;
-   }
-   static Int_t channels   = 0;
-   static Int_t bincenters = 1;
-   static Int_t binw2      = 0;
-   static Int_t errors     = 1;
-   static Int_t first_binX  = 0;
-   static Int_t last_binX   = 0;
-   static Int_t first_binY  = 0;
-   static Int_t last_binY   = 0;
+	if ( hist->GetDimension() == 3 ) {
+		WarnBox(" WriteHistasASCII: 3-dim not yet supported ", window);
+		return;
+	}
+	if ( hist->GetDimension() != 1 && ascii_graph == 1) {
+		WarnBox(" WriteHistasGraph: only 1-dim supported", window);
+		return;
+	}
+	static Int_t channels   = 0;
+	static Int_t bincenters = 1;
+	static Int_t binw2      = 0;
+	static Int_t errors     = 1;
+	static Int_t first_binX  = 0;
+	static Int_t last_binX   = 0;
+	static Int_t first_binY  = 0;
+	static Int_t last_binY   = 0;
 	Int_t transX             = 0;
 	Double_t offsetX = 0;
 	Double_t slope = 1;
-//	Int_t dummy;
-   static Int_t suppress_zeros = 0;
+	Int_t dummy;
+	static Int_t suppress_zeros = 0;
+	TString formX("%10.10g");
+	TString formY("%10.10g");
 	TFile *rfile = NULL;
 	TGraphErrors *graph = NULL;
-   TString fname;
-   TString gname;
-   TString gtitle;
+	TString fname;
+	TString gname;
+	TString gtitle;
 	const char *helpText = NULL;
 	if ( ascii_graph == 0 ) {
 		fname = hist->GetName();
@@ -81,10 +190,10 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 		helpText =  &helpTextGraph[0];
 	}
 
-   TList *row_lab = new TList();
-   static void *valp[50];
-   Int_t ind = 0;
-   Bool_t ok = kTRUE;
+	TList *row_lab = new TList();
+	static void *valp[50];
+	Int_t ind = 0;
+	Bool_t ok = kTRUE;
 
 	if ( ascii_graph == 0 ) {
 		row_lab->Add(new TObjString("StringValue_File name"));
@@ -97,58 +206,65 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 		row_lab->Add(new TObjString("StringValue_ Graph tit"));
 		valp[ind++] = &gtitle;
 	}
-   if (hist->GetDimension() == 1) {
+	if (hist->GetDimension() == 1) {
 		if (  ascii_graph == 0 ) {
 			row_lab->Add(new TObjString("CheckButton_ChannelNumbs"));
 			valp[ind++] = &channels;
 			row_lab->Add(new TObjString("CheckButton+   Bin Centers"));
 			valp[ind++] = &bincenters;
 		}
-   }
+	}
 	row_lab->Add(new TObjString("CheckButton_    Errors X"));
 	valp[ind++] = &binw2;
-   row_lab->Add(new TObjString("CheckButton+Errors Cont(Y)"));
-   valp[ind++] = &errors;
-   row_lab->Add(new TObjString("PlainIntVal_First_binX"));
-   valp[ind++] = &first_binX;
-   row_lab->Add(new TObjString("PlainIntVal+Last_binX"));
-   valp[ind++] = &last_binX;
-   if (hist->GetDimension() == 2 && ascii_graph == 0) {
-      row_lab->Add(new TObjString("PlainIntVal_First_binY"));
-      valp[ind++] = &first_binY;
-      row_lab->Add(new TObjString("PlainIntVal_Last_binY"));
-      valp[ind++] = &last_binY;
-   }
-   row_lab->Add(new TObjString("CheckButton_     Suppress empty channels"));
-   valp[ind++] = &suppress_zeros;
+	row_lab->Add(new TObjString("CheckButton+Errors Cont(Y)"));
+	valp[ind++] = &errors;
+	row_lab->Add(new TObjString("PlainIntVal_First_binX"));
+	valp[ind++] = &first_binX;
+	row_lab->Add(new TObjString("PlainIntVal+Last_binX"));
+	valp[ind++] = &last_binX;
+	if (hist->GetDimension() == 2 && ascii_graph == 0) {
+		row_lab->Add(new TObjString("PlainIntVal_First_binY"));
+		valp[ind++] = &first_binY;
+		row_lab->Add(new TObjString("PlainIntVal_Last_binY"));
+		valp[ind++] = &last_binY;
+	}
+	row_lab->Add(new TObjString("CheckButton_Suppress empty channels"));
+	valp[ind++] = &suppress_zeros;
+	row_lab->Add(new TObjString("CommentOnly+ "));
+	valp[ind++] = &dummy;
+	row_lab->Add(new TObjString("StringValue_Form BinCenter"));
+	valp[ind++] = &formX;
+	row_lab->Add(new TObjString("StringValue+Form Cont, Err"));
+	valp[ind++] = &formY;
+
 	row_lab->Add(new TObjString("CheckButton_Apply linear trans to Xscale"));
 	valp[ind++] = &transX;
-   row_lab->Add(new TObjString("DoubleValue_OffsetX"));
-   valp[ind++] = &offsetX;
-   row_lab->Add(new TObjString("DoubleValue+Slope"));
-   valp[ind++] = &slope;
+	row_lab->Add(new TObjString("DoubleValue_OffsetX"));
+	valp[ind++] = &offsetX;
+	row_lab->Add(new TObjString("DoubleValue+Slope"));
+	valp[ind++] = &slope;
 
-   Int_t itemwidth=280;
+	Int_t itemwidth=400;
 	TString tit;
 	if (  ascii_graph == 0 ) {
 		tit = "Hist to ASCII-file";
 	} else {
 		tit = "Hist to Graph";
 	}
-   ok = GetStringExt(tit, NULL, itemwidth, window,
-                   NULL, NULL, row_lab, valp, NULL, NULL, helpText);
-   if (!ok) {
-      return;
-   }
-   Int_t nl = 0;
-   Int_t nbx1 = 1;
-   Int_t nbx2 = hist->GetNbinsX();
-   if (first_binX > 0) nbx1 = first_binX;
-   if (last_binX > 0)  nbx2 = last_binX;
+	ok = GetStringExt(tit, NULL, itemwidth, window,
+						 NULL, NULL, row_lab, valp, NULL, NULL, helpText);
+	if (!ok) {
+		return;
+	}
+	Int_t nl = 0;
+	Int_t nbx1 = 1;
+	Int_t nbx2 = hist->GetNbinsX();
+	if (first_binX > 0) nbx1 = first_binX;
+	if (last_binX > 0)  nbx2 = last_binX;
 	Int_t ntot = 0;
-   if ( hist->GetDimension() == 1 ) {
-      for (Int_t i = nbx1; i <= nbx2; i++) {
-         if ( hist->GetBinContent(i) == 0 && suppress_zeros )
+	if ( hist->GetDimension() == 1 ) {
+		for (Int_t i = nbx1; i <= nbx2; i++) {
+			if ( hist->GetBinContent(i) == 0 && suppress_zeros )
 				continue;
 			ntot++;
 		}
@@ -171,57 +287,57 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 		graph->SetName(gname);
 		graph->SetTitle(gtitle);
 	}
-   if ( hist->GetDimension() == 1 ) {
-      for (Int_t i = nbx1; i <= nbx2; i++) {
+	if ( hist->GetDimension() == 1 ) {
+		for (Int_t i = nbx1; i <= nbx2; i++) {
 			Double_t xerr = hist->GetBinWidth(i) / TMath::Sqrt(12);
 			Double_t x = hist->GetBinCenter(i);
 			if ( transX )
 				x = offsetX + slope * x;
 			if ( ascii_graph == 0 && binw2 == 0) 
 				xerr = 0;
-         if (bincenters && suppress_zeros &&
-             hist->GetBinContent(i)  == 0) continue;
+			if (bincenters && suppress_zeros &&
+				 hist->GetBinContent(i)  == 0) continue;
 			if ( ascii_graph == 0 ) {
 				if (channels)
-					*outfile << i << "\t";
+					*outfile << i << " ";
 				if (bincenters)
-					*outfile << x << "\t";
+					*outfile << Form(formX.Data(), x) << " ";
 				*outfile << hist->GetBinContent(i);
 				if (binw2)
-					*outfile << "\t" <<  xerr;
+					*outfile << " " <<  Form(formY.Data(), xerr);
 				if (errors)
-					*outfile << "\t" << hist->GetBinError(i);
+					*outfile << " " << Form(formY.Data(), hist->GetBinError(i));
 				*outfile << std::endl;
 			} else {
 				graph->SetPoint(nl, x, hist->GetBinContent(i)); 
 				if (errors)
 					graph->SetPointError(nl,xerr,hist->GetBinError(i)); 
 			}
-         nl++;
-      }
+			nl++;
+		}
 
-   } else {
-      Int_t nby1 = 1;
-      Int_t nby2 = hist->GetNbinsY();
-      if (first_binY > 0) nby1 = first_binY;
-      if (last_binY > 0)  nby2 = last_binY;
-      TAxis * xa = hist->GetXaxis();
-      TAxis * ya = hist->GetYaxis();
-      for (Int_t i = nbx1; i <= nbx2; i++) {
-         for (Int_t k = nby1; k <= nby2; k++) {
-            if (suppress_zeros && hist->GetCellContent(i, k)  == 0) continue;
-            *outfile << xa->GetBinCenter(i) << "\t";
-            *outfile << ya->GetBinCenter(k) << "\t";
+	} else {
+		Int_t nby1 = 1;
+		Int_t nby2 = hist->GetNbinsY();
+		if (first_binY > 0) nby1 = first_binY;
+		if (last_binY > 0)  nby2 = last_binY;
+		TAxis * xa = hist->GetXaxis();
+		TAxis * ya = hist->GetYaxis();
+		for (Int_t i = nbx1; i <= nbx2; i++) {
+			for (Int_t k = nby1; k <= nby2; k++) {
+				if (suppress_zeros && hist->GetCellContent(i, k)  == 0) continue;
+				*outfile << Form(formX.Data(), xa->GetBinCenter(i)) << " ";
+				*outfile << Form(formY.Data(), ya->GetBinCenter(k)) << " ";
 
-            *outfile << hist->GetCellContent(i,k);
-            if (errors)
-            *outfile << "\t" << hist->GetCellError(i,k);
-            *outfile << std::endl;
-            nl++;
-         }
-      }
-   }
-   if ( ascii_graph == 0 ) {
+				*outfile << Form(formY.Data(), hist->GetCellContent(i,k));
+				if (errors)
+				*outfile << " " << Form(formY.Data(), hist->GetCellError(i,k));
+				*outfile << std::endl;
+				nl++;
+			}
+		}
+	}
+	if ( ascii_graph == 0 ) {
 		cout << nl << " lines written to: " << (const char *) fname << endl;
 		outfile->close();
 	} else {
@@ -234,44 +350,44 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 
 void WarnBox(const char *message, TGWindow *window)
 {
-   Int_t retval = 0;
-   new TGMsgBox(gClient->GetRoot(), window,
-                "Warning", message, kMBIconExclamation, kMBDismiss,
-                &retval);
+	Int_t retval = 0;
+	new TGMsgBox(gClient->GetRoot(), window,
+					 "Warning", message, kMBIconExclamation, kMBDismiss,
+					 &retval);
 }
 //___________________________________________________________________________
 
 Bool_t QuestionBox(const char *message, TGWindow *window)
 {
-      int buttons = kMBOk | kMBDismiss, retval = 0;
-      new TGMsgBox(gClient->GetRoot(), window, "Question", message,
-                   kMBIconQuestion, buttons, &retval);
-       return ( retval != kMBDismiss );
+		int buttons = kMBOk | kMBDismiss, retval = 0;
+		new TGMsgBox(gClient->GetRoot(), window, "Question", message,
+						 kMBIconQuestion, buttons, &retval);
+		 return ( retval != kMBDismiss );
 }
 
 //_______________________________________________________________________________________
 
 TH1 * FindHistOfTF1(TVirtualPad * ca, const char * fname, Int_t push_pop)
 {
-   if (!ca) return NULL;
-   TIter next(ca->GetListOfPrimitives());
-   while (TObject * obj = next()) {
-      if (obj->InheritsFrom("TH1")) {
-         TList *lof = ((TH1*)obj)->GetListOfFunctions();
-         TObject *o = lof->FindObject(fname);
-         if (o) {
-            if (push_pop != 0) {
-               lof->Remove(o);
-               if (push_pop > 0) 
-                  lof->AddFirst(o);
-               else
-                  lof->Add(0);
-            }
-            return (TH1*)o;
-         }
-      }
-   }
-   return NULL;
+	if (!ca) return NULL;
+	TIter next(ca->GetListOfPrimitives());
+	while (TObject * obj = next()) {
+		if (obj->InheritsFrom("TH1")) {
+			TList *lof = ((TH1*)obj)->GetListOfFunctions();
+			TObject *o = lof->FindObject(fname);
+			if (o) {
+				if (push_pop != 0) {
+					lof->Remove(o);
+					if (push_pop > 0) 
+						lof->AddFirst(o);
+					else
+						lof->Add(0);
+				}
+				return (TH1*)o;
+			}
+		}
+	}
+	return NULL;
 };
 //_______________________________________________________________________________________
 
