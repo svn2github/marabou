@@ -274,6 +274,11 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 //                 UInt_t AddrMod           -- address modifier
 // Results:        TRUE/FALSE
 // Description:    Performs mapping to be used with block xfer
+//                 depending on cpu type:
+//                         RIO2: dynamic mapping via find_controller()
+//                         RIO3: static mapping via smem_create()
+//                               dynamic mapping via xvme_map()
+//                         RIO4: dynamic mapping via xvme_map()
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
@@ -291,6 +296,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 	mapDescr->mappingBLT = kVMEMappingUndef;
 
 #ifdef CPU_TYPE_RIO3
+/* RIO3: BLT static mapping via smem_create() */
 	if (mapDescr->mappingModes & kVMEMappingStatic) {
 		switch (AddrMod) {
 			case kAM_BLT:
@@ -316,7 +322,9 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 		mapDescr->mappingBLT = kVMEMappingStatic;
 	}
 #endif
+
 #ifdef CPU_TYPE_RIO2
+/* RIO2: BLT dynamic mapping via find_controller() */
 	if (mapDescr->mappingModes & kVMEMappingDynamic) {
  		s_param.iack = 1;
  		s_param.rdpref = 0;
@@ -336,15 +344,17 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 		}
 	}
 #else
+/* RIO3/RIO4: BLT dynamic mapping via xvme_map() */
 	if (mapDescr->mappingBLT == kVMEMappingUndef) {
 		if (mapDescr->mappingModes & kVMEMappingDynamic) {
-			dynamicAddr = xvme_map(PhysAddr, Size, AddrMod, 0);
+ 			dynamicAddr = xvme_map(PhysAddr, Size, AddrMod, 0);
 			if (dynamicAddr == -1) {
 				sprintf(msg, "[mapBLT] %s: Can't map XVME page", mapDescr->mdName);
 				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 				mapDescr->bltBase = NULL;
 			} else {
 				mapDescr->bltBase = (volatile Char_t *) dynamicAddr;
+				mapDescr->mappingBLT = kVMEMappingStatic;
 				sprintf(msg, "[mapBLT] %s: Dynamic mapping %#lx -> %#lx, addrMod=%#x", mapDescr->mdName, PhysAddr, mapDescr->bltBase, AddrMod);
 				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			}

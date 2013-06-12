@@ -69,6 +69,8 @@ enum	EMapSize	{	kSize_A32	=	0x10000000,
 enum	EMapAddr	{	kAddr_A32	=	0x50000000,
 				kAddr_A24	=	0x4F000000,
 				kAddr_A16	=	0x4E000000,
+				kAddr_BLT	=	0x50000000,
+				kAddr_MBLT	=	0x60000000,
 				kAddr_A32Direct	=	0xF0000000
 			};
 enum	EMapSize	{	kSize_A32	=	0x06000000,
