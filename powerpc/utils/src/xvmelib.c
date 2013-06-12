@@ -55,7 +55,6 @@ static struct pdparam_master param = {
 * check board_type();
 *--------------------------------------------------------
 */
-#ifndef CPU_TYPE_RIO2
 int
 xvme_is_rio2( void ) 
 {
@@ -65,8 +64,9 @@ xvme_is_rio2( void )
     board_type = uio_board_type();
     is_rio2 = CESRIO2(board_type)?1:0;
   }
-  return(is_rio3);
+  return(is_rio2);
 }
+#ifndef CPU_TYPE_RIO2
 int
 xvme_is_rio3( void ) 
 {
@@ -91,7 +91,7 @@ xvme_is_rio4( void )
   return(is_rio4);
 }
 #endif
-
+#endif
 /*
 *========================================================
 * map page
@@ -122,4 +122,3 @@ xvme_rel(u_int laddr, int wsiz)
   if (xvme_is_rio2()) return 0;
   return(vme_dma_unmap(laddr));
 }
-#endif
