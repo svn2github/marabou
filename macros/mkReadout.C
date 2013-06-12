@@ -8,6 +8,7 @@
 	of << "source .login" << endl;
 	TString cwd = gSystem->WorkingDirectory();
 	of << "cd " << cwd << "/ppc" << endl;
+	of << "cp ../*Readout.mk ." << endl;
 	of << "make -f *Readout.mk clean all" << endl;
 	of.close();
 	gSystem->Exec("chmod +x ppc.mk");
