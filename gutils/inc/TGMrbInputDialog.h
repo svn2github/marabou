@@ -7,18 +7,18 @@
 #include <TGListBox.h>
 //_________________________________________________________________________________________
 
-extern const char *GetString(const char *prompt, const char *defval, 
+const char *GetString(const char *prompt, const char *defval, 
                              Bool_t * Ok=0, TGWindow *win=0, 
                              const char *ynprompt=0,Bool_t * yn=0,
                              const char *helptext=0,
                              const char *ynprompt1=0,Bool_t * yn1=0,
                              const char * FileName=0, TList * complist=0);
-extern Int_t GetInteger(const char *prompt, Int_t defval, 
+Int_t GetInteger(const char *prompt, Int_t defval, 
                         Bool_t * Ok=0, TGWindow *win=0, 
                         const char *ynprompt=0, Bool_t * yn=0,
                         const char *helptext=0,
                         const char *ynprompt1=0,Bool_t * yn1=0);
-extern Float_t GetFloat(const char *prompt, Float_t defval, 
+Float_t GetFloat(const char *prompt, Float_t defval, 
                         Bool_t * Ok=0, TGWindow *win=0, 
                         const char *ynprompt=0, Bool_t * yn=0,
                         const char *helptext=0,

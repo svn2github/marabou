@@ -741,6 +741,11 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 							    TGTransientFrame(gClient->GetRoot(), Win, 10, 10)
 {
    // Create  input dialog.
+   if ( gDebug > 0 && Win) {
+		cout << "ctor TGMrbValuesAndText: Id, fId(Main) " << this->GetId() 
+		<< " " << Win->GetId() << endl
+		<< "TGTransientFrame * trf=(TGTransientFrame*)"<< this << endl;
+	}
    SetCleanup(kDeepCleanup);
 
    Pixel_t red, blue, lblue, brown, grey, lgrey, wheat;
