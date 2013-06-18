@@ -28,6 +28,7 @@
 
 #include "root_env.h"
 #include "mapping_database.h"
+#include "bmaErrlist.h"
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
@@ -815,7 +816,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 		if (ptrloc == NULL) return(0);
 		bmaError = bma_read(s->md->bltBase + MQDC32_DATA, ptrloc | 0x0, numData, s->md->bltModeId);
 		if (bmaError != 0) {
-			sprintf(msg, "[%sreadout] %s: %s (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, sys_errlist[errno], errno, numData);
+			sprintf(msg, "[%sreadout] %s: Error \"%s\" (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, bmaErrlist[bmaError], bmaError, numData);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
