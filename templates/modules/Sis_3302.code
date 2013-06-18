@@ -45,8 +45,8 @@
 %%INIT_MODULE%%
 
 %%BeginOfCode%%
-					mapBLT(md_$moduleName, $baseAddr, $size, $addrMod);
-					setBLTMode(md_$moduleName, BMA_M_Vsz32, BMA_M_WzD32, $fifoMode);
+						mapBLT(md_$moduleName, $baseAddr, $size, $addrMod);
+						setBLTMode(md_$moduleName, BMA_M_Vsz32, BMA_M_WzD32, $fifoMode);
 %%EndOfCode%%
 %%INIT_BLOCK_XFER%%
 
