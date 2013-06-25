@@ -284,6 +284,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 
 	UInt_t staticBase;
 	UInt_t dynamicAddr;
+	UInt_t mappingModesBLT;
 
 	Char_t bltName[64];
 
@@ -293,11 +294,14 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 		return FALSE;
 	}
 	
+	mappingModesBLT = (mapDescr->mappingModes >> 4) & 0x7;					/* BLT mapping may be different */
+	if (mappingModesBLT == 0) mappingModesBLT = mapDescr->mappingModes;		/* from VME mapping */
+	
 	mapDescr->mappingBLT = kVMEMappingUndef;
 
 #ifdef CPU_TYPE_RIO3
 /* RIO3: BLT static mapping via smem_create() */
-	if (mapDescr->mappingModes & kVMEMappingStatic) {
+	if (mappingModesBLT & kVMEMappingStatic) {
 		switch (AddrMod) {
 			case kAM_BLT:
 				staticBase = kAddr_BLT;
@@ -325,7 +329,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 
 #ifdef CPU_TYPE_RIO2
 /* RIO2: BLT dynamic mapping via find_controller() */
-	if (mapDescr->mappingModes & kVMEMappingDynamic) {
+	if (mappingModesBLT & kVMEMappingDynamic) {
  		s_param.iack = 1;
  		s_param.rdpref = 0;
  		s_param.wrpost = 0;
@@ -346,7 +350,7 @@ Bool_t mapBLT(struct s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size, UInt_t 
 #else
 /* RIO3/RIO4: BLT dynamic mapping via xvme_map() */
 	if (mapDescr->mappingBLT == kVMEMappingUndef) {
-		if (mapDescr->mappingModes & kVMEMappingDynamic) {
+		if (mappingModesBLT & kVMEMappingDynamic) {
  			dynamicAddr = xvme_map(PhysAddr, Size, AddrMod, 0);
 			if (dynamicAddr == -1) {
 				sprintf(msg, "[mapBLT] %s: Can't map XVME page", mapDescr->mdName);
