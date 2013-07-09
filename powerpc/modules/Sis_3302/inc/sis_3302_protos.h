@@ -293,4 +293,7 @@ Bool_t sis3302_blockXferIsOn(struct s_sis_3302 * Module);
 
 void sis_print(struct s_sis_3302 * Module, char * Message);
 
+Bool_t sis3302_checkBusTrap(struct s_sis_3302 * Module, ULong_t Address, Char_t * Method);
+void sis3302_catchBusTrap();
+
 #endif

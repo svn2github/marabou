@@ -30,6 +30,8 @@
 #include "err_mask_def.h"
 #include "errnum_def.h"
 
+#include "sis_3302_bus_trap.h"
+
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Read data
@@ -162,6 +164,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 				mappedAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, startAddr));
 				if (mappedAddr == NULL) continue;
 				evtNo = nofEvents[chn];
+				CLEAR_BUS_TRAP_FLAG;
 				for (i = 0; i < nxs; i++) {
 					d = *mappedAddr++;
 					if (i == 0) d = (d & 0xFFFF0000) | chn;
@@ -171,6 +174,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 						if (evtNo == 0) break;
 					}
 				}
+				CHECK_BUS_TRAP(Module, ca(Module, startAddr), "readout");
 			}
 		}
 	} else {
@@ -186,12 +190,14 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 				if ((((UInt_t) pointer) % 8) != 0) *pointer++ = 0x0d640d64;	/* align to 64 bit */
 				ptrloc = getPhysAddr((char *) pointer, nxs * sizeof(uint32_t));
 				if (ptrloc == NULL) continue;
+				CLEAR_BUS_TRAP_FLAG;
 				bmaError = bma_read(Module->md->bltBase + startAddr, ptrloc | 0x0, nxs, Module->md->bltModeId);
 				if (bmaError != 0) {
 					sprintf(msg, "[readout] [%s]: %s (%d) while reading event data (chn=%d, wc=%d)", Module->moduleName, sys_errlist[errno], errno, chn, nxs);
 					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 					continue;
 				}
+				CHECK_BUS_TRAP(Module, Module->md->bltBase + startAddr, "readout");
 				pointer += nxs;
 			}
 		}

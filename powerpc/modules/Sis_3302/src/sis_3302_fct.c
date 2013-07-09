@@ -1,12 +1,14 @@
 /*__________________________________________________________[C IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-//! \file			Sis3302_Functions.c
+//! \file			sis_3302_fct.c
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
 //! $Revision: 1.15 $
 //! $Date: 2011-12-08 10:04:50 $
 ////////////////////////////////////////////////////////////////////////////*/
+
+#define BUS_TRAP_CHECK_ON
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,6 +18,7 @@
 #include <allParam.h>
 #include <ces/vmelib.h>
 #include <errno.h>
+#include <signal.h>
 
 
 #include "LwrTypes.h"
@@ -31,6 +34,10 @@
 #include "err_mask_def.h"
 #include "errnum_def.h"
 
+#include "sis_3302_bus_trap.h"
+
+BUS_TRAP_FLAG;
+
 char msg[256];
 
 /*________________________________________________________________[C FUNCTION]
@@ -45,6 +52,9 @@ char msg[256];
 struct s_sis_3302 * sis3302_alloc(Char_t * Name, struct s_mapDescr * MD, Int_t Serial)
 {
 	struct s_sis_3302 * Module;
+	
+	INIT_BUS_TRAP;
+	
 	Module = (struct s_sis_3302 *) calloc(1, sizeof(struct s_sis_3302));
 	if (Module != NULL) {
 		Module->md = MD;
@@ -109,7 +119,9 @@ void sis3302_moduleInfo(struct s_sis_3302 * Module) {
 	firmWare = (volatile ULong_t *) sis3302_mapAddress(Module, ca(Module, SIS3302_MODID));
 	if (firmWare == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	ident = *firmWare;
+	CHECK_BUS_TRAP(Module, ca(Module, SIS3302_MODID), "moduleInfo");
 
 	b = (ident >> 16) & 0xFFFF;
 	boardId = (b &0xF) + 10 * ((b >> 4) & 0xF) + 100 * ((b >> 8) & 0xF) + 1000 * ((b >> 12) & 0xF);
@@ -628,6 +640,7 @@ Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Chan
 
 	maxTimeout = 5000;
 	idx = 0;
+	CLEAR_BUS_TRAP_FLAG;
 	for (chn = firstChan; chn <= lastChan; chn++, idx++) {
 		*dacStatus = kSis3302DacCmdLoadShiftReg + (chn << 4);
 		timeout = 0 ;
@@ -639,6 +652,7 @@ Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Chan
 
 		DacValues[idx] = (*dacData >> 16) & 0xFFFF;
 	}
+	CHECK_BUS_TRAP(Module, ca(Module, SIS3302_DAC_CONTROL_STATUS), "readDac");
 	return(kTRUE);
 }
 
@@ -682,6 +696,7 @@ Bool_t sis3302_writeDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Cha
 
 	maxTimeout = 5000;
 	idx = 0;
+	CLEAR_BUS_TRAP_FLAG;
 	for (chn = firstChan; chn <= lastChan; chn++, idx++) {
 		*dacData = DacValues[idx];
 		*dacStatus = kSis3302DacCmdLoadShiftReg + (chn << 4);
@@ -700,6 +715,7 @@ Bool_t sis3302_writeDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Cha
 		} while (((data & kSis3302DacBusy) == kSis3302DacBusy) && (timeout <  maxTimeout));
 		if (timeout >=  maxTimeout) return(kFALSE);
 	}
+	CHECK_BUS_TRAP(Module, ca(Module, SIS3302_DAC_DATA), "writeDac");
 	return(kTRUE);
 }
 
@@ -745,7 +761,9 @@ Bool_t sis3302_keyAddr(struct s_sis_3302 * Module, Int_t Key) {
 	keyAddr = (Int_t *) sis3302_mapAddress(Module, offset);
 	if (keyAddr == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*keyAddr = 0;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "sis3302_keyAddr");
 	if (Key == kSis3302KeyReset || Key == kSis3302KeyResetSampling) sleep(1);
 	return (kTRUE);
 }
@@ -774,6 +792,8 @@ Bool_t sis3302_disarmSampling(struct s_sis_3302 * Module) { return(sis3302_keyAd
 UInt_t sis3302_readControlStatus(struct s_sis_3302 * Module) {
 
 	Int_t offset;
+	UInt_t cstat;
+	
 	volatile UInt_t * ctrlStat;
 
 	offset = SIS3302_CONTROL_STATUS;
@@ -781,7 +801,10 @@ UInt_t sis3302_readControlStatus(struct s_sis_3302 * Module) {
 	ctrlStat = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (ctrlStat == NULL) return(0);
 
-	return (*ctrlStat);
+	CLEAR_BUS_TRAP_FLAG;
+	cstat = *ctrlStat;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readControlStatus");
+	return cstat;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -802,7 +825,9 @@ Bool_t sis3302_writeControlStatus(struct s_sis_3302 * Module, UInt_t Bits) {
 	ctrlStat = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (ctrlStat == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*ctrlStat = Bits;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeControlStatus");
 	return(kTRUE);
 }
 
@@ -819,6 +844,7 @@ Bool_t sis3302_writeControlStatus_db(struct s_sis_3302 * Module) { return(sis330
 UInt_t sis3302_readEventConfig(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	volatile UInt_t * evtConf;
+	UInt_t econf;
 	Int_t offset;
 
 	if (!sis3302_checkChannelNo(Module, "readEventConfig", ChanNo)) return (0xaffec0c0);
@@ -837,7 +863,10 @@ UInt_t sis3302_readEventConfig(struct s_sis_3302 * Module, Int_t ChanNo) {
 	evtConf = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (evtConf == NULL) return(0xaffec0c0);
 
-	return (*evtConf);
+	CLEAR_BUS_TRAP_FLAG;
+	econf = *evtConf;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readEventConfig");
+	return econf;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -871,7 +900,9 @@ Bool_t sis3302_writeEventConfig(struct s_sis_3302 * Module, UInt_t Bits, Int_t C
 
 	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (evtConf == NULL) return(kFALSE);
+	CLEAR_BUS_TRAP_FLAG;
 	*evtConf = Bits;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeEventConfig");
 	return(kTRUE);
 }
 
@@ -887,6 +918,7 @@ UInt_t sis3302_readEventExtendedConfig(struct s_sis_3302 * Module, Int_t ChanNo)
 
 	Int_t offset;
 	volatile Int_t * evtConf;
+	UInt_t econf;
 
 	if (!sis3302_checkChannelNo(Module, "readEventExtendedConfig", ChanNo)) return (0xaffec0c0);
 
@@ -904,7 +936,10 @@ UInt_t sis3302_readEventExtendedConfig(struct s_sis_3302 * Module, Int_t ChanNo)
 	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (evtConf == NULL) return(0xaffec0c0);
 
-	return (*evtConf);
+	CLEAR_BUS_TRAP_FLAG;
+	econf = *evtConf;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readEventExtendedConfig");
+	return econf;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -939,8 +974,10 @@ Bool_t sis3302_writeEventExtendedConfig(struct s_sis_3302 * Module, UInt_t Bits,
 	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (evtConf == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*evtConf = Bits;
-	return(kTRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeEventExtendedConfig");
+	return kTRUE;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1355,6 +1392,7 @@ Int_t sis3302_readEndAddrThresh(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile Int_t * endAddr;
+	Int_t ea;
 
 	if (!sis3302_checkChannelNo(Module, "readEndAddrThresh", ChanNo)) return (kFALSE);
 
@@ -1372,7 +1410,10 @@ Int_t sis3302_readEndAddrThresh(struct s_sis_3302 * Module, Int_t ChanNo) {
 	endAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (endAddr == NULL) return(kFALSE);
 
-	return (*endAddr);
+	CLEAR_BUS_TRAP_FLAG;
+	ea = *endAddr;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readEndAddrThresh");
+	return ea;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1412,8 +1453,10 @@ Bool_t sis3302_writeEndAddrThresh(struct s_sis_3302 * Module, Int_t Thresh, Int_
 	endAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (endAddr == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*endAddr = Thresh;
-	return(kTRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readEndAddrThresh");
+	return kTRUE;
 }
 
 Bool_t sis3302_writeEndAddrThresh_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEndAddrThresh(Module, Module->endAddrThresh[ChanNo/2], ChanNo)); }
@@ -1430,6 +1473,7 @@ UInt_t sis3302_readPreTrigDelayAndGateLength(struct s_sis_3302 * Module, Int_t C
 
 	Int_t offset;
 	volatile UInt_t * trigReg;
+	UInt_t tdgl;
 
 	if (!sis3302_checkChannelNo(Module, "readPreTrigDelayAndGateLength", ChanNo)) return (0xaffec0c0);
 
@@ -1447,7 +1491,10 @@ UInt_t sis3302_readPreTrigDelayAndGateLength(struct s_sis_3302 * Module, Int_t C
 	trigReg = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigReg == NULL) return(0xaffec0c0);
 
-	return (*trigReg);
+	CLEAR_BUS_TRAP_FLAG;
+	tdgl = *trigReg;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readPreTrigDelayAndGateLength");
+	return tdgl;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1481,8 +1528,10 @@ Bool_t sis3302_writePreTrigDelayAndGateLength(struct s_sis_3302 * Module, UInt_t
 	trigReg = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigReg == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*trigReg = Bits;
-	return(TRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writePreTrigDelayAndGateLength");
+	return kTRUE;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1604,8 +1653,9 @@ UInt_t sis3302_readRawDataBufConfig(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile UInt_t * rawData;
+	UInt_t raw;
 
-	if (!sis3302_checkChannelNo(Module, "sis3302_readRawDataBufConfig", ChanNo)) return (kFALSE);
+	if (!sis3302_checkChannelNo(Module, "readRawDataBufConfig", ChanNo)) return (kFALSE);
 
 	switch (ChanNo) {
 		case 0:
@@ -1621,7 +1671,10 @@ UInt_t sis3302_readRawDataBufConfig(struct s_sis_3302 * Module, Int_t ChanNo) {
 	rawData = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (rawData == NULL) return(0xaffec0c0);
 
-	return (*rawData);
+	CLEAR_BUS_TRAP_FLAG;
+	raw = *rawData;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readRawDataBufConfig");
+	return raw;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1638,7 +1691,7 @@ Bool_t sis3302_writeRawDataBufConfig(struct s_sis_3302 * Module, UInt_t Bits, In
 	Int_t offset;
 	volatile UInt_t * rawData;
 
-	if (!sis3302_checkChannelNo(Module, "writeRawDataSampleLength", ChanNo)) return (kFALSE);
+	if (!sis3302_checkChannelNo(Module, "writeRawDataBufConfig", ChanNo)) return (kFALSE);
 
 	switch (ChanNo) {
 		case kSis3302AllChans:	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ALL_ADC; break;
@@ -1655,8 +1708,10 @@ Bool_t sis3302_writeRawDataBufConfig(struct s_sis_3302 * Module, UInt_t Bits, In
 	rawData = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (rawData == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*rawData = Bits;
-	return(kTRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeRawDataBufConfig");
+	return kTRUE;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1795,6 +1850,7 @@ Int_t sis3302_readNextSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile Int_t * samplAddr;
+	Int_t sa;
 
 	if (!sis3302_checkChannelNo(Module, "readNextSampleAddr", ChanNo)) return (0xaffec0c0);
 
@@ -1811,7 +1867,11 @@ Int_t sis3302_readNextSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	samplAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (samplAddr == NULL) return(0xaffec0c0);
-	return (*samplAddr);
+	
+	CLEAR_BUS_TRAP_FLAG;
+	sa = *samplAddr;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readNextSampleAddr");
+	return sa;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1826,6 +1886,7 @@ Int_t sis3302_readPrevBankSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile Int_t * samplAddr;
+	Int_t sa;
 
 	if (!sis3302_checkChannelNo(Module, "readPrevBankSampleAddr", ChanNo)) return (0xaffec0c0);
 
@@ -1842,7 +1903,11 @@ Int_t sis3302_readPrevBankSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	samplAddr = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (samplAddr == NULL) return(0xaffec0c0);
-	return (*samplAddr);
+	
+	CLEAR_BUS_TRAP_FLAG;
+	sa = *samplAddr;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readNextSampleAddr");
+	return sa;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1875,9 +1940,11 @@ UInt_t sis3302_readActualSample(struct s_sis_3302 * Module, Int_t ChanNo) {
 	actSample = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (actSample == NULL) return(0xaffec0c0);
 
+	CLEAR_BUS_TRAP_FLAG;
 	data = *actSample;
 	if ((ChanNo & 1) == 0) data >>= 16;
-	return (data);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readActualSample");
+	return data;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1892,6 +1959,7 @@ UInt_t sis3302_readTriggerSetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile UInt_t * trigSetup;
+	UInt_t ts;
 
 	if (!sis3302_checkChannelNo(Module, "readTriggerSetup", ChanNo)) return (0xaffec0c0);
 
@@ -1909,7 +1977,10 @@ UInt_t sis3302_readTriggerSetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigSetup == NULL) return(0xaffec0c0);
 
-	return (*trigSetup);
+	CLEAR_BUS_TRAP_FLAG;
+	ts = *trigSetup;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readTriggerSetup");
+	return ts;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1950,8 +2021,10 @@ Bool_t sis3302_writeTriggerSetup(struct s_sis_3302 * Module, UInt_t Data, Int_t 
 	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigSetup == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*trigSetup = Data;
-	return(kTRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeTriggerSetup");
+	return kTRUE;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1966,6 +2039,7 @@ UInt_t sis3302_readTriggerExtendedSetup(struct s_sis_3302 * Module, Int_t ChanNo
 
 	Int_t offset;
 	volatile UInt_t * trigSetup;
+	UInt_t ts;
 
 	if (!sis3302_checkChannelNo(Module, "writeTriggerExtendedSetup", ChanNo)) return (0xaffec0c0);
 
@@ -1983,7 +2057,10 @@ UInt_t sis3302_readTriggerExtendedSetup(struct s_sis_3302 * Module, Int_t ChanNo
 	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigSetup == NULL) return(kFALSE);
 
-	return (*trigSetup);
+	CLEAR_BUS_TRAP_FLAG;
+	ts = *trigSetup;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readTriggerExtendedSetup");
+	return ts;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -2001,7 +2078,7 @@ Bool_t sis3302_writeTriggerExtendedSetup(struct s_sis_3302 * Module, UInt_t Data
 	volatile UInt_t * trigSetup;
 	Int_t chn;
 
-	if (!sis3302_checkChannelNo(Module, "writeTriggerSetup", ChanNo)) return (kFALSE);
+	if (!sis3302_checkChannelNo(Module, "writeTriggerExtendedSetup", ChanNo)) return (kFALSE);
 
 	if (ChanNo == kSis3302AllChans) {
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
@@ -2024,8 +2101,10 @@ Bool_t sis3302_writeTriggerExtendedSetup(struct s_sis_3302 * Module, UInt_t Data
 	trigSetup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigSetup == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*trigSetup = Data;
-	return(kTRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeTriggerExtendedSetup");
+	return kTRUE;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -2329,6 +2408,7 @@ UInt_t sis3302_readTriggerThreshReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile UInt_t * trigThresh;
+	UInt_t tth;
 
 	if (!sis3302_checkChannelNo(Module, "readTriggerThreshReg", ChanNo)) return (0xaffec0c0);
 
@@ -2345,7 +2425,11 @@ UInt_t sis3302_readTriggerThreshReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	trigThresh = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigThresh == NULL) return(0xaffec0c0);
-	return (*trigThresh);
+
+	CLEAR_BUS_TRAP_FLAG;
+	tth = *trigThresh;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readTriggerThreshReg");
+	return tth;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -2387,8 +2471,10 @@ Bool_t sis3302_writeTriggerThreshReg(struct s_sis_3302 * Module, UInt_t Data, In
 	trigThresh = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (trigThresh == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*trigThresh = Data;
-	return(kTRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readTriggerThreshReg");
+	return kTRUE;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -2550,6 +2636,7 @@ UInt_t sis3302_readEnergySetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile UInt_t * setup;
+	UInt_t es;
 
 	if (!sis3302_checkChannelNo(Module, "readEnergySetup", ChanNo)) return (0xaffec0c0);
 
@@ -2567,7 +2654,10 @@ UInt_t sis3302_readEnergySetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 	setup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (setup == NULL) return(0xaffec0c0);
 
-	return (*setup);
+	CLEAR_BUS_TRAP_FLAG;
+	es = *setup;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readEnergySetup");
+	return es;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -2602,7 +2692,9 @@ Bool_t sis3302_writeEnergySetup(struct s_sis_3302 * Module, UInt_t Data, Int_t C
 	setup = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (setup == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*setup = Data;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeEnergySetup");
 	return(kTRUE);
 }
 
@@ -2742,6 +2834,7 @@ UInt_t sis3302_readEnergyGateReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile UInt_t * gateReg;
+	UInt_t gr;
 
 	if (!sis3302_checkChannelNo(Module, "readEnergySetup", ChanNo)) return (0xaffec0c0);
 
@@ -2758,7 +2851,11 @@ UInt_t sis3302_readEnergyGateReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	gateReg = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (gateReg == NULL) return(0xaffec0c0);
-	return (*gateReg);
+
+	CLEAR_BUS_TRAP_FLAG;
+	gr = *gateReg;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readEnergyGateReg");
+	return gr;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -2775,7 +2872,7 @@ Bool_t sis3302_writeEnergyGateReg(struct s_sis_3302 * Module, UInt_t Data, Int_t
 	Int_t offset;
 	volatile UInt_t * gateReg;
 
-	if (!sis3302_checkChannelNo(Module, "readEnergySetup", ChanNo)) return (kFALSE);
+	if (!sis3302_checkChannelNo(Module, "writeEnergyGateReg", ChanNo)) return (kFALSE);
 
 	switch (ChanNo) {
 		case kSis3302AllChans:
@@ -2793,8 +2890,10 @@ Bool_t sis3302_writeEnergyGateReg(struct s_sis_3302 * Module, UInt_t Data, Int_t
 	gateReg = (volatile UInt_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (gateReg == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*gateReg = Data;
-	return(kTRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeEnergyGateReg");
+	return kTRUE;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -2917,6 +3016,7 @@ Int_t sis3302_readEnergySampleLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile Int_t * sample;
+	Int_t smpl;
 
 	if (!sis3302_checkChannelNo(Module, "readEnergySampleLength", ChanNo)) return (0xaffec0c0);
 
@@ -2934,7 +3034,10 @@ Int_t sis3302_readEnergySampleLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 	sample = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (sample == NULL) return(0xaffec0c0);
 
-	return(*sample);
+	CLEAR_BUS_TRAP_FLAG;
+	smpl = *sample;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readEnergySampleLength");
+	return smpl;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -2968,8 +3071,10 @@ Bool_t sis3302_writeEnergySampleLength(struct s_sis_3302 * Module, Int_t SampleL
 	sample = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (sample == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*sample = SampleLength;
-	return(kTRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeEnergySampleLength");
+	return kTRUE;
 }
 
 Bool_t sis3302_writeEnergySampleLength_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEnergySampleLength(Module, Module->energySampleLength[ChanNo/2], ChanNo)); }
@@ -2986,6 +3091,7 @@ Int_t sis3302_readTauFactor(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile Int_t * tauFactor;
+	Int_t tau;
 
 	if (!sis3302_checkChannelNo(Module, "readTauFactor", ChanNo)) return (0xaffec0c0);
 
@@ -3003,7 +3109,10 @@ Int_t sis3302_readTauFactor(struct s_sis_3302 * Module, Int_t ChanNo) {
 	tauFactor = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (tauFactor == NULL) return(0xaffec0c0);
 
-	return (*tauFactor);
+	CLEAR_BUS_TRAP_FLAG;
+	tau = *tauFactor;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readTauFactor");
+	return tau;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -3050,7 +3159,9 @@ Bool_t sis3302_writeTauFactor(struct s_sis_3302 * Module, Int_t Tau, Int_t ChanN
 	tauFactor = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (tauFactor == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*tauFactor = Tau;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeTauFactor");
 	return(kTRUE);
 }
 
@@ -3069,6 +3180,7 @@ Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t Chan
 
 	Int_t offset;
 	volatile Int_t * sampleIndex;
+	Int_t sx;
 
 	if (!sis3302_checkChannelNo(Module, "readStartIndex", ChanNo)) return (0xaffec0c0);
 
@@ -3126,7 +3238,10 @@ Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t Chan
 	sampleIndex = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (sampleIndex == NULL) return(0xaffec0c0);
 
-	return(*sampleIndex);
+	CLEAR_BUS_TRAP_FLAG;
+	sx = *sampleIndex;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readStartIndex");
+	return sx;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -3220,7 +3335,9 @@ Bool_t sis3302_writeStartIndex(struct s_sis_3302 * Module, Int_t IdxVal, Int_t I
 
 	sampleIndex = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (sampleIndex == NULL) return(kFALSE);
+	CLEAR_BUS_TRAP_FLAG;
 	*sampleIndex = IdxVal;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeStartIndex");
 	return(kTRUE);
 }
 
@@ -3237,12 +3354,16 @@ UInt_t sis3302_readAcquisitionControl(struct s_sis_3302 * Module) {
 
 	Int_t offset;
 	volatile Int_t * ctrl;
+	UInt_t ctr;
 
 	offset = SIS3302_ACQUISITION_CONTROL;
 	ctrl = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (ctrl == NULL) return(0xaffec0c0);
 
-	return (*ctrl);
+	CLEAR_BUS_TRAP_FLAG;
+	ctr = *ctrl;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "readAcquisitionControl");
+	return ctr;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -3262,8 +3383,10 @@ Bool_t sis3302_writeAcquisitionControl(struct s_sis_3302 * Module, UInt_t Data) 
 	ctrl = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (ctrl == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*ctrl = Data;
-	return (kTRUE);
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "writeAcquisitionControl");
+	return kTRUE;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -3471,7 +3594,9 @@ Bool_t sis3302_setPageReg(struct s_sis_3302 * Module, Int_t PageNumber) {
 	pageReg = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (pageReg == NULL) return(kFALSE);
 
+	CLEAR_BUS_TRAP_FLAG;
 	*pageReg = PageNumber;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "setPageReg");
 	return (kTRUE);
 }
 
@@ -3482,16 +3607,19 @@ Bool_t sis3302_setPageReg(struct s_sis_3302 * Module, Int_t PageNumber) {
 //! \return 		PageNumber	-- current page number
 ////////////////////////////////////////////////////////////////////////////*/
 
-Int_t sis3302_getPageRegister(struct s_sis_3302 * Module) {
+Int_t sis3302_getPageReg(struct s_sis_3302 * Module) {
 
 	Int_t offset;
 	volatile Int_t * pageReg;
+	Int_t pr;
 
 	offset = SIS3302_ADC_MEMORY_PAGE_REGISTER;
 	pageReg = (volatile Int_t *) sis3302_mapAddress(Module, ca(Module, offset));
 	if (pageReg == NULL) return(0xaffec0c0);
 
-	return (*pageReg);
+	CLEAR_BUS_TRAP_FLAG;
+	pr = *pageReg;
+	CHECK_BUS_TRAP(Module, ca(Module, offset), "getPageReg");	return pr;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -3611,3 +3739,26 @@ Bool_t sis3302_isStatus(struct s_sis_3302 * Module, UInt_t Bits) { return ((Modu
 
 Bool_t sis3302_blockXferIsOn(struct s_sis_3302 * Module) { return(Module->blockXfer != 0); };
 
+/*________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Check if SIGBUS occurred
+//! \param[in]		Module			-- module address
+//! \param[in]		Offset			-- address offset
+//! \param[in]		Method			-- calling method
+//! \return 		TRUE or FALSE
+////////////////////////////////////////////////////////////////////////////*/
+
+#ifdef BUS_TRAP_CHECK_ON
+
+Bool_t sis3302_checkBusTrap(struct s_sis_3302 * Module, ULong_t Offset, Char_t * Method) {
+
+	if (!bus_trap_flag) return FALSE;
+
+	sprintf(msg, "[%s]: Bus trap at phys addr %#lx+%lx, log addr %#lx+%lx, called by %s", Module->moduleName, Module->md->physAddrVME, Offset, Module->md->physAddrVME, Offset, Method);
+	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	return TRUE;
+}
+
+void sis3302_catchBusTrap() { bus_trap_flag = TRUE; };
+
+#endif
