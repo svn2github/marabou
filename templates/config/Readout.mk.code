@@ -22,9 +22,7 @@ LIB = $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
 RDO_INCL	= %%READOUT_INCLUDE%%
 RDO_LIBS	= %%READOUT_LIBS%%
 
-CES_LIBS	= -L/lib/ces -lvme -lbma -lbus -luio
-
-C_CTRL	= %%CAMAC_CONTROLLER%%
+C_CTRL		= %%CAMAC_CONTROLLER%%
 
 CC	= gcc
 
@@ -33,33 +31,29 @@ SMILIBS      = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(LIB)/lib_s
 SHMQ    = -DLYNX__SMEM
 
 ifeq ($(GSI_OS_VERSION),2.5)
-POSIX   = -mposix4d9 -mthreads
-CFLAGS  = $(POSIX) -DLynx -DGSI_MBS -D$(C_CTRL) -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
-LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-          $(LIB)/libedit.a -llynx -lnetinet
-endif
-
-ifeq ($(GSI_OS_VERSION),3.0)
-POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
-LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-          $(LIB)/libedit.a -llynx  -lnetinet
+POSIX   	= -mposix4d9 -mthreads
+CFLAGS  	= $(POSIX) -DLynx -DGSI_MBS -D$(C_CTRL) -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+LIBS    	= $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
+			  $(LIB)/libedit.a -llynx -lnetinet
+CES_LIBS	= -L/lib/ces -lvme -lbma -luio
 endif
 
 ifeq ($(GSI_OS_VERSION),3.1)
-POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
-LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-          $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
+POSIX   	=  -mthreads
+CFLAGS  	= $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+LIBS    	= $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
+			  $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
+CES_LIBS	= -L/lib/ces -lvme -lbma -lbus -luio
 endif
 
 ifeq ($(GSI_OS_VERSION),4.0)
-POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
-LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-          $(LIB)/libedit.a -lbus -llynx -lposix-pre1c
-SMILIBS = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(LIB)/lib_smi.a \
-          $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
+POSIX   	=  -mthreads
+CFLAGS  	= $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+LIBS    	= $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
+			  $(LIB)/libedit.a -lbus -llynx -lposix-pre1c
+SMILIBS		= $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(LIB)/lib_smi.a \
+			  $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
+CES_LIBS	= -L/lib/ces -lvme -lbma -lbus -luio
 endif
 
 CFLAGS	+= -I$(RPATH) -I$(INC) $(RDO_INCL)
