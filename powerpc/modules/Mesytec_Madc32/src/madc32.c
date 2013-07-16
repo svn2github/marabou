@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 	unsigned short srval;
 	unsigned long bcval;
 	volatile char * madc32;
-	bool_t staticFlag;
+	unsigned int mappingMod;
 
 	struct s_mapDescr * md;
 
@@ -54,10 +54,10 @@ int main(int argc, char *argv[]) {
 
 	if (argc <= 4) {
 		fprintf(stderr, "madc32: Basic tests for Mesytec MADC32 modules\n\n");
-		fprintf(stderr, "Usage: madc32 <addr> <addrMod> <sd> [<fct> [<args>]]\n\n");
+		fprintf(stderr, "Usage: madc32 <addr> <addrMod> <mapMod> [<fct> [<args>]]\n\n");
 		fprintf(stderr, "       addr          VME addr, high order bits 17-31\n");
 		fprintf(stderr, "       addrMod       addr modifier, 0x09 (A32) or 0x39 (A24)\n");
-		fprintf(stderr, "       sd            mapping mode: (bit pattern) 1 (direct, RIO4 only), 2 (static), 4 (dynamic)\n");
+		fprintf(stderr, "       mapMod        mapping mode: (bit pattern) 1 (direct, RIO4 only), 2 (static), 4 (dynamic)\n");
 		fprintf(stderr, "       fct           function to be executed\n");
 		fprintf(stderr, "            v        read firmware version\n");
 		fprintf(stderr, "            r        reset module\n");
@@ -70,9 +70,9 @@ int main(int argc, char *argv[]) {
 	physAddr <<= 16;
 	addrMod =  (unsigned int) strtol(argv[2], NULL, 16);
 
-	staticFlag = (unsigned int) strtol(argv[3], NULL, 16);
+	mappingMod = (unsigned int) strtol(argv[3], NULL, 16);
 
-	md = mapVME("madc32", physAddr, 0x10000L, addrMod, staticFlag);
+	md = mapVME("madc32", physAddr, 0x10000L, addrMod, mappingMod);
 	if (md == NULL) {
 		fprintf(stderr, "madc32: Can't map addr %#lx (mod=%#lx)\n", physAddr, addrMod);
 		exit(1);
