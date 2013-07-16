@@ -1060,13 +1060,17 @@ const Char_t * TMrbConfig::GetLynxVersion(Bool_t Verbose)  {
 		}
 
 		TObjArray * v = lynxVersion.Tokenize(".");
-		if (v->GetEntries() != 2) {
-			if (Verbose) {
-				gMrbLog->Err() << "Wrong format of LynxOs version - " << lynxVersion << endl;
-				gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
-			}
-			delete v;
-			return("");
+		Int_t nv = v->GetEntries();
+		switch (nv) {
+			case 2:
+			case 3: break;
+			default:
+				if (Verbose) {
+					gMrbLog->Err() << "Wrong format of LynxOs version - " << lynxVersion << endl;
+					gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
+				}
+				delete v;
+				return("");
 		}
 		TString major = ((TObjString *) v->At(0))->String();
 		if (!major.IsDigit()) {
@@ -8337,6 +8341,8 @@ Bool_t TMrbConfig::CheckConfig() {
 	} else if (fMbsVersion.CompareTo("4.5") == 0) {
 		lv = "3.1";
 	} else if (fMbsVersion.CompareTo("5.0") == 0) {
+		lv = "4.0";
+	} else if (fMbsVersion.CompareTo("6.2") == 0) {
 		lv = "4.0";
 	} else {
 		gMrbLog->Err() << "Wrong MBS version - " << fMbsVersion << "; set TMbsSetup.MbsVersion in .rootrc properly" << endl;
