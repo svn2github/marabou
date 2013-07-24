@@ -20,6 +20,8 @@
 #include "LwrLogger.h"
 #include "SetColor.h"
 
+enum	{ kMaxTry = 100 };
+
 extern TMrbLofNamedX * gLofVMEProtos;		//!< list of prototypes
 extern TMrbLofNamedX * gLofVMEModules;		//!< list of actual modules
 
@@ -4046,9 +4048,9 @@ Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t C
 					traceDataOk = kTRUE;
 					break;
 				}
-			} while (++tryIt < 20);
+			} while (++tryIt < kMaxTry);
 			if (!bankOk) {
-				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Bank switching failed for chn" << chan << " - bank bit is " << bankFlag << " but should be " << bankShouldBe << endl;
+				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Bank switching failed for chn" << chan << " - bank bit is 0x" << setbase(16) << bankFlag << " but should be 0x" << bankShouldBe << endl;
 				gMrbLog->Flush(this->ClassName(), "GetTraceLength");
 				n = 0;
 			}

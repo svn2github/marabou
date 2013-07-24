@@ -18,6 +18,10 @@
 #include <allParam.h>
 #include <ces/vmelib.h>
 #include <errno.h>
+
+
+typedef int intptr_t;
+
 #include <signal.h>
 
 

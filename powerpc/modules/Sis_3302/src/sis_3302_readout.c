@@ -26,11 +26,14 @@
 #include "sis_3302_database.h"
 
 #include "mapping_database.h"
+#include "bmaErrlist.h"
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
 
 #include "sis_3302_bus_trap.h"
+
+enum	{ kMaxTry = 100 };
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -54,7 +57,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	Int_t evtNo;
 	Int_t startAddr;
 	volatile Int_t * mappedAddr;
-	Int_t i;
+	Int_t i, ilast;
 	UInt_t d;
 
 	uint32_t ptrloc;
@@ -93,32 +96,34 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 			tryIt = 0;
 			bankOk = kFALSE;
 			do {
-				nxs = sis3302_readPrevBankSampleAddr(Module, chn);
+				nxs = sis3302_readPrevBankSampleAddr(Module, chn);	/* get last sampling address (16-bit words) */
 				if (nxs == 0xaffec0c0) break;
-				bankFlag = nxs & 0x01000000;	/* check bit 24 */
+				bankFlag = nxs & 0x01000000;				/* check bit 24: bank flag */
 				bankShouldBe = (sampling == kSis3302KeyArmBank1Sampling) ? 0x01000000 : 0;
 				bankOk = (bankFlag == bankShouldBe);
 				if (bankOk) {
-					nxs &= 0x3FFFFC;
+					nxs &= Module->reducedAddressSpace ? 0x3FFFC : 0x3FFFFC;	/* mask out relevant address bits */
 					if (nxs == 0) break;
-					nxs >>= 1;
+					nxs >>= 1;					/* now 32-bit words */
 					grp = chn / 2;
 					rdl = Module->rawDataSampleLength[grp];
 					edl = Module->energySampleLength[grp];
-					wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl/2;
-					nofEvents[chn] = nxs / wc;
-					totalSize += nofEvents[chn] * (wc + 1) * sizeof(Int_t);
+					wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl/2;	/* wc (32-bit words) */
+					nofEvents[chn] = nxs / wc;			/* calc number of events */
+					totalSize += nofEvents[chn] * (wc + 1) * sizeof(Int_t);	/* total size (bytes) */
 					break;
 				}
-			} while (++tryIt < 20);
+				usleep(1);
+			} while (++tryIt < kMaxTry);
 			if (!bankOk) {
-				sprintf(msg, "[readout] [%s]: Bank switching failed for chn %d - bank bit is %d but should be %d", Module->moduleName, chn, bankFlag, bankShouldBe);
+				sprintf(msg, "[readout] [%s]: Bank switching failed for chn %d - bank bit is %#lx but should be %#lx", Module->moduleName, chn, bankFlag, bankShouldBe);
 				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 			}
 		}
 	}
 
 	dataTruncated = (totalSize > Module->bufferSize);
+
 	if (dataTruncated) {	/* if data exceed buffer space in the ppc */
 		Float_t x = ((Float_t) Module->bufferSize) / totalSize;
 		if (Module->verbose) {
@@ -157,7 +162,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 		for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
 			if (channelPattern & 1) {
 				nxs = sis3302_readPrevBankSampleAddr(Module, chn);
-				nxs &= 0x3FFFFC;
+				nxs &= Module->reducedAddressSpace ? 0x3FFFC : 0x3FFFFC;
 				if (nxs == 0) continue;
 				nxs >>= 1;
 				startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
@@ -165,11 +170,13 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 				if (mappedAddr == NULL) continue;
 				evtNo = nofEvents[chn];
 				CLEAR_BUS_TRAP_FLAG;
+				ilast = 0;
 				for (i = 0; i < nxs; i++) {
 					d = *mappedAddr++;
 					if (i == 0) d = (d & 0xFFFF0000) | chn;
 					*pointer++ = d;
 					if (d == 0xdeadbeef) {
+						ilast = i;
 						evtNo--;
 						if (evtNo == 0) break;
 					}
@@ -182,7 +189,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 		for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
 			if (channelPattern & 1) {
 				nxs = sis3302_readPrevBankSampleAddr(Module, chn);
-				nxs &= 0x3FFFFC;
+				nxs &= Module->reducedAddressSpace ? 0x3FFFC : 0x3FFFFC;
 				if (nxs == 0) continue;
 				nxs >>= 1;
 				startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
@@ -193,7 +200,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 				CLEAR_BUS_TRAP_FLAG;
 				bmaError = bma_read(Module->md->bltBase + startAddr, ptrloc | 0x0, nxs, Module->md->bltModeId);
 				if (bmaError != 0) {
-					sprintf(msg, "[readout] [%s]: %s (%d) while reading event data (chn=%d, wc=%d)", Module->moduleName, sys_errlist[errno], errno, chn, nxs);
+					sprintf(msg, "[readout] [%s]: %s (%d) while reading event data (chn=%d, wc=%d)", Module->moduleName, bmaErrlist[bmaError], bmaError, chn, nxs);
 					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 					continue;
 				}
