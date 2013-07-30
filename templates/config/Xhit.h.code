@@ -18,7 +18,7 @@
 #include "TUsrHitBuffer.h"
 
 enum	{ k%%EXTENDED_HIT_NAME_UC%%DataLength =
-								%%EXTENDED_HIT_DATA_LENGTH%% };
+								%%EXTENDED_HIT_DATA_LENGTH%% };		// data length (32bit words)
 
 class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 
@@ -81,7 +81,7 @@ class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 
 	protected:		
 		Int_t fXdataLength; 							// actual length of extended data
-		UShort_t fXdata[k%%EXTENDED_HIT_NAME_UC%%DataLength]; 	// data
+		UShort_t fXdata[k%%EXTENDED_HIT_NAME_UC%%DataLength * 2]; 		// data (16bit words)
 		
 	ClassDef(%%EXTENDED_HIT_NAME_UC%%, 1)				// [Analyze] An extension to TUsrHit object
 };
