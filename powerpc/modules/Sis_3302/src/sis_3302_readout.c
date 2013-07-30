@@ -1,3 +1,4 @@
+
 /*____________________________________________________________________[C CODE]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           sis_3302_readout.c
@@ -34,6 +35,9 @@
 #include "sis_3302_bus_trap.h"
 
 enum	{ kMaxTry = 100 };
+
+static FILE * dump = NULL;
+static dcnt = 0;
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -81,11 +85,25 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	pointer = Pointer;			/* where to start */
 	*pointer++ = 0;			/* lh: wc=0, rh=serial, will be updated later */
 
+#ifdef DUMP_IT
+	if (dump == NULL) {
+		dcnt++;
+		sprintf(msg, "xxx-%d.dat", dcnt);
+		dump = fopen(msg, "w");
+	}
+	fprintf(dump, "-----------------------------------------------------------\n");
+#endif
 	for (grp = 0; grp < kSis3302NofGroups; grp++) {
 		rdl = Module->tracingMode ? Module->rawDataSampleLength[grp] / 2 : 0;
 		edl = Module->tracingMode ? Module->energySampleLength[grp] : 0;
 		*pointer++ = (rdl << 16) | edl;
+#ifdef DUMP_IT
+		fprintf(dump, "grp=%d rdl=%#lx edl=%#lx\n", grp, rdl, edl);
+#endif
 	}
+#ifdef DUMP_IT
+	fprintf(dump, "-----------------------------------------------------------\n");
+#endif
 
 	totalSize = 0;
 	channelPattern = Module->activeChannels;
@@ -175,6 +193,9 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 					d = *mappedAddr++;
 					if (i == 0) d = (d & 0xFFFF0000) | chn;
 					*pointer++ = d;
+#ifdef DUMP_IT
+					fprintf(dump, "%d %#lx\n", i, d);
+#endif
 					if (d == 0xdeadbeef) {
 						ilast = i;
 						evtNo--;
@@ -211,7 +232,13 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	}
 
 	wc = (Int_t) (pointer - pointerBegin);
-	*pointerBegin = (wc << 16) | Module->serial;		/* update 1st word: lh: wc=0, rh=serial */
+	*pointerBegin = (wc << 8) | Module->serial;		/* update 1st word: wc[31:8], serial[7:0] */
+#ifdef DUMP_IT
+	fprintf(dump, "wc=%d serial=%#lx\n", wc, (wc << 16) | Module->serial);
+	fclose(dump);
+	dump = NULL;
+	printf("@@@ %d\n", dcnt);
+#endif
 	return (wc);
 }
 
