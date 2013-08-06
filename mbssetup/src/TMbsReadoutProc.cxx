@@ -1053,6 +1053,7 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 
 	TString compileIt = codeName + ".sh";
 	path = srcPath + compileIt;
+	gSystem->Unlink(path.Data());
 
 	ofstream sh(path.Data(), ios::out);
 	if (!sh.good()) {
@@ -1065,7 +1066,7 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 	sh << "#" << compileIt << ": shell script to compile readout source " << codeName << ".c" << endl;
 	sh << endl;
 	sh << "cd " << srcPath << endl;
-	sh << "source /sys/hosttype" << endl;
+	sh << "source /sys/gsi_lynx_env" << endl;
 	sh << "set path = ( /bin /bin/ces /usr/bin /usr/local/bin /etc /usr/etc . ~/tools)" << endl;
 	sh << "source /mbs/login " << Version << endl;
 	sh << "make -f " << mkFile << " clean all" << endl;
@@ -1095,7 +1096,9 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 		for (;;) {
 			diagLine.ReadLine(diag, kFALSE);
 			diagLine = diagLine.Strip(TString::kBoth);
-			if (diag.eof()) break;
+			if (diag.eof()) {
+				break;
+			}
 			if (diagLine.Index("warning:", 0) != -1) {
 				nofWarnings++;
 				cerr	<< setred
