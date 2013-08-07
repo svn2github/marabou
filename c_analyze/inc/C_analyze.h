@@ -75,13 +75,14 @@ private:
 			*fInputSource,
 			*fRunNr, *fOldRunNr,
 			*fComment, *fPar,
-			*fMbsVersion, *fDir,
+			*fMbsVersion, *fProcType, *fDir,
 			*fConnect, *fCodeName,
 			*fFromTime, *fToTime,
 			*fResetList, *fOurPidFile, *fHelpFile,
 			*fSoundFile, *fSoundPlayer;
 
    TString *fSaveMap;
+   Bool_t  fUseSSH;
    Bool_t  fWriteOutput, fAutoSave, fSelectTime, fSelectNumber, fAutoSetup,
            fShowRate, fAttach, fMbsDebug, fForcedStop;
    Int_t   fM_OldStatus;

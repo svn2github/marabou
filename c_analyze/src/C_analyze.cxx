@@ -2,7 +2,6 @@
 #include <sys/socket.h>
 #include "TString.h"
 //#include "TRint.h"
-
 #include <TROOT.h>
 #include <TApplication.h>
 #include <TVirtualX.h>
@@ -1340,6 +1339,8 @@ last event < first event", this);
 //_____________________________________________________________________________________
 Bool_t FhMainFrame::MbsStatus(){
    if(!fMbsControl) fMbsControl = new TMbsControl(((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString(),
+												  fProcType->Data(),
+												  fUseSSH,
                                                   fMbsVersion->Data(),
                                                   fTbDir->GetString());
    cout << sepline << endl;
@@ -1409,6 +1410,8 @@ Bool_t FhMainFrame::Configure()
       }
 
       if(!fMbsControl) fMbsControl = new TMbsControl(mproc.Data(),
+													 fProcType->Data(),
+													 fUseSSH,
                                                      fMbsVersion->Data(),
                                                      fTbDir->GetString());
       cout << setblue<< "c_ana: Configure, check for running Mbs processes on Lynx"<< setblack << endl;
@@ -1621,7 +1624,7 @@ Bool_t FhMainFrame::ClearMbs()
    }
    if(!CheckHostsUp())return kFALSE;
    if(!fMbsControl) fMbsControl = new TMbsControl( ((TObjString *) ppcArray->At(fCbConnect->GetSelected()-1))->GetString(),
-                                                 fMbsVersion->Data(),
+                                                 fProcType->Data(), fUseSSH, fMbsVersion->Data(),
                                                   fTbDir->GetString());
    fM_Status = M_ABSENT;
    if (fMessageServer) {
@@ -2805,7 +2808,13 @@ Bool_t FhMainFrame::GetDefaults(){
      cerr	<< setred << "C_analyze: MBS version not defined" << setblack << endl;
      ok = kFALSE;
    }
-
+	fProcType = new TString(gEnv->GetValue("TMbsSetup.ProcType", ""));
+	if (fProcType->IsNull()) {
+     cerr	<< setred << "C_analyze: PPC proc type not defined" << setblack << endl;
+     ok = kFALSE;
+   }
+   fUseSSH = gEnv->GetValue("TMbsSetup.UseSSH", kFALSE);
+	
    fDir          = new TString("ppc");
    fCodeName        = new TString("");
    fFromTime        = new TString(":000");

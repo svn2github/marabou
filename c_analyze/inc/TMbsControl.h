@@ -26,7 +26,6 @@ const Char_t kReadoutVSBAddress[] = "0xf0000000";
 const Char_t kEvbVSBAddress[] =     "0xf5000000";
 
 enum eMbsStates {absent, dirty, loaded, configured, running, paused, moving};
-enum eProcType {unknown, ppc, cvc};
 
 class TMbsNode : public TNamed {
 
@@ -45,17 +44,14 @@ protected:
    Int_t fProcType;
 
 public:
-enum eProcType {unknown, ppc, cvc};
    TMbsNode(){};
    TMbsNode(const Char_t * node);
    ~TMbsNode(){};
 
    Int_t  GetStatus();
-   Int_t  GetProcType(){return fProcType;};
    void   PrintHeader();
    Int_t  PrintProcesses();
    Int_t  GetNbytesRead(){ return fNbytesRead;};
-//   void   Swap(Int_t * data, Int_t ndata, Int_t ie);
 
    Char_t fUser[kTextLength];   
    Char_t fDaqDate[kTextLength];
@@ -150,16 +146,19 @@ protected:
    TString fCurNode;
    TString fCurDomain;
    TString fMBSVersion;
+   TString fProcType;
    TString fFullDir;
    TString fDir;
    TString fUserName;
    TString fGuiNode;
    TString fDisplay;
+   Bool_t fUseSSH;
+   TString fRshSshCmd;
    TSocket * fPrompterSocket;
 
 public:
    TMbsControl(){};
-   TMbsControl(const Char_t * node,const Char_t * version, const Char_t * dir);
+   TMbsControl(const Char_t * node, const Char_t * procType, Bool_t UseSSH, const Char_t * version, const Char_t * dir);
    ~TMbsControl(){};
    TMbsNode * PrompterNode(){return fPrompterNode;};
    TMbsNode * TriggerNode() {return fTriggerNode;};

@@ -31,7 +31,7 @@ ClassImp(TMbsNode)
 ClassImp(TMbsControl)
 ClassImp(MessageServer)
 
-TMbsControl::TMbsControl (const Char_t * node,const Char_t * version,
+TMbsControl::TMbsControl (const Char_t * node, const Char_t * procType, Bool_t UseSSH, const Char_t * version,
                           const Char_t * dir){
    fCurNode = node;
 
@@ -40,6 +40,10 @@ TMbsControl::TMbsControl (const Char_t * node,const Char_t * version,
       fCurDomain.Remove(0,fCurNode.Index("."));
    }
    fMBSVersion = version;
+   
+   fProcType = procType;
+   fUseSSH = UseSSH;
+   fRshSshCmd = fUseSSH ? "ssh " : "rsh ";
    fDir = dir;
    fUserName = gSystem->Getenv("USER");
    fGuiNode  = gSystem->HostName();
@@ -66,6 +70,7 @@ TMbsControl::TMbsControl (const Char_t * node,const Char_t * version,
    cout << "MbsMaster  " << fCurNode << endl;
    cout << "UserName   " << fUserName << endl;
    cout << "MBSVersion " << fMBSVersion << endl;
+   cout << "ProcType   " << fProcType << endl;
    cout << "Directory  " << fDir << endl;
    cout << "GuiNode    " << fGuiNode << endl;
    cout << "Display    " << fDisplay << setblack<< endl;
@@ -84,7 +89,7 @@ Int_t TMbsControl::GetNofMbsProcs(){
    Int_t nprocs = 0;
    TIter next(fNodeNames);
    while((obj = (TObjString *)next())){
-      TString cmd = "/usr/bin/rsh ";
+      TString cmd = fRshSshCmd;
       cmd += obj->GetString();
       cmd += fCurDomain;
       cout << "c_mbs: on node: " <<  obj->GetString().Data()
@@ -112,7 +117,7 @@ Int_t TMbsControl::GetNodeNames(){
    FILE *fp;
    char line[60];
    if (!fDir.BeginsWith("/")) {
-      cmd = "/usr/bin/rsh "; cmd += fCurNode; cmd += " pwd";
+      cmd = fRshSshCmd; cmd += fCurNode; cmd += " pwd";
       cout << cmd << endl;
       fp = gSystem->OpenPipe(cmd.Data(), "r");
       fgets(line,60,fp);
@@ -126,7 +131,7 @@ Int_t TMbsControl::GetNodeNames(){
    }
    cout << setblue<< "c_mbs:  Get Node names from " << fDir << "/node_list.txt"<< setblack << endl;
 
-   cmd = "/usr/bin/rsh "; cmd += fCurNode;  cmd += " cat ";
+   cmd = fRshSshCmd; cmd += fCurNode;  cmd += " cat ";
    cmd += dir; cmd += "/node_list.txt";
    fp = gSystem->OpenPipe(cmd.Data(), "r");
    while (fgets(line,60,fp) != 0) {
@@ -245,13 +250,13 @@ Bool_t  TMbsControl::StartMbs(Int_t Interrupt){
 		cout << "Later: Got " << fNodeNames->GetSize() << " node"<< endl;
 
 		if (gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
-			rshCmd = "/usr/bin/rsh ";
+			rshCmd = fRshSshCmd;
 			rshCmd = rshCmd  + trnode.Data() + " -l " + fUserName.Data() +
               " /bin/ces/vsbini "+ kReadoutVSBAddress;
       		cout << setmagenta<< rshCmd << setblack<< endl;
      	 	gSystem->Exec(rshCmd.Data());
       		if(fNodeNames->GetSize() > 1){
-				rshCmd = "/usr/bin/rsh ";
+				rshCmd = fRshSshCmd;
 				rshCmd = rshCmd  + prnode.Data() + " -l " + fUserName.Data() +
                  " /bin/ces/vsbini "+ kEvbVSBAddress;
 				cout << setmagenta<< rshCmd << setblack<< endl;
@@ -259,7 +264,7 @@ Bool_t  TMbsControl::StartMbs(Int_t Interrupt){
      		}
 		}
 		if(fNodeNames->GetSize() == 1){
-			rshCmd = "/usr/bin/rsh ";
+			rshCmd = fRshSshCmd;
 			rshCmd = rshCmd  + trnode.Data() + " -l " + fUserName.Data() +
                 " /bin/ces/vmeconfig -a /mbs/driv/trig-vme_2.5_RIO2/vmetab";
 			if (Interrupt != 0) rshCmd += "-c";
@@ -268,7 +273,7 @@ Bool_t  TMbsControl::StartMbs(Int_t Interrupt){
 		}
 	}
 
-   rshCmd = "/usr/bin/rsh ";
+   rshCmd = fRshSshCmd;
    rshCmd = rshCmd  + fCurNode.Data() + " -l " + fUserName.Data() +
             " /mbs/" + fMBSVersion.Data() + "/script/mbsstartup.sc " +
             fMBSVersion.Data()+" "+ fDir.Data() +" "+ fGuiNode.Data();
@@ -297,7 +302,7 @@ Bool_t  TMbsControl::StopMbs(){
       ok = SendToPrompter("$exit");
       ok = DisConnectPrompter();
    }
-   rshCmd = "/usr/bin/rsh ";
+   rshCmd = fRshSshCmd;
    rshCmd = rshCmd  + fCurNode.Data() + " -l " + fUserName.Data() +
             " /mbs/" + fMBSVersion.Data() + "/script/mbsshutall.sc " +
             fMBSVersion.Data()+" "+ fDir.Data();
@@ -481,9 +486,6 @@ TMbsNode::TMbsNode (const Char_t * node) : TNamed(node, "MbsNode") {
    for(Int_t i=0; i < kTypesLength; i++)       fTypes[i] = 0;
    for(Int_t i=0; i < kMapLength; i++)         fMap[i] = 0;
    for(Int_t i=0; i < kActiveLength; i++)      fActive[i] = 0;
-   if      (!strncmp(node,"cvc",3))fProcType = TMbsNode::cvc;
-   else if (!strncmp(node,"ppc",3))fProcType = TMbsNode::ppc;
-   else                            fProcType = TMbsNode::unknown;
    fProcessNames = new TOrdCollection();
 //   cout << "ctor TMbsNode " << node << endl;
 }
