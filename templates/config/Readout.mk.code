@@ -50,7 +50,7 @@ SHMQ    = -DLYNX__SMEM
 
 ifeq ($(GSI_OS_VERSION),2.5)
 POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+CFLAGS  = $(POSIX) -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 CES_LIBS = -L/lib/ces -lvme -lbma -luio 
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(DIMLIB) \
           $(LIB)/libedit.a -llynx -lnetinet
@@ -58,7 +58,7 @@ endif
 
 ifeq ($(GSI_OS_VERSION),3.1)
 POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM) 
+CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM) 
 CES_LIBS = -L/lib/ces -lvme -lbma -lbus -luio 
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(DIMLIB) \
           $(LIB)/libedit.a  -lposix-pre1c -lnetinet
@@ -66,7 +66,7 @@ endif
 
 ifeq ($(GSI_OS_VERSION),4.0)
 POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 CES_LIBS = -L/lib/ces -lvme -lbma -lbus -luio 
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(DIMLIB) \
           $(LIB)/libedit.a -lposix-pre1c

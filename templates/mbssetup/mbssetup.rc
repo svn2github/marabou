@@ -76,5 +76,5 @@
 *-*-*-RIO3-*.SubeventLength:			8096
 *-*-*-RIO4-*.SubeventLength:			10144
 
-*-*-*-*-EVB.VSBAddr:					0xf5000000
-*-*-*-*-RDO.VSBAddr:					0xf0000000
+*-*-*-*-EVB.VSBAddr:						0xf5000000
+*-*-*-*-RDO.VSBAddr:						0xf0000000
