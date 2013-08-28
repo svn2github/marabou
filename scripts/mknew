@@ -9,11 +9,31 @@ then
   echo "              <new_dir_name>    new marabou dir to be created"
   echo
   echo "       creates a new dir <new_dir_name> and copies all relevant files from <old_dir_name>"
-  echo "       calls Config.C, performs MBS setup, and compiles ROOT and MBS code, resp.
+  echo "       calls Config.C, performs MBS setup, and compiles ROOT and MBS code, resp."
   echo
   exit 0
 fi
  
+if [ ! -d $1 ]
+then
+  echo "mknew: $1 is not a directory"
+  exit 1
+fi
+if [ -f $2 -o -d $2 ]
+then
+  echo "mknew: $2 already present"
+  exit 1
+fi
+if [ -z "$MARABOU" ]
+then
+  echo "mknew: \$MARABOU isn't defined"
+  exit 1
+fi
+if [ -z "$ROOTSYS" ]
+then
+  echo "mknew: \$ROOTSYS isn't defined"
+  exit 1
+fi
 echo "mknew: creating directory $2"
 mkdir $2
 echo "mknew: copying root files: *.C"
@@ -67,10 +87,10 @@ echo "mknew: performing mbssetup"
 root -b mbssetup.C
 MBSSETUP_DONE=$?
 echo
-echo "mknew: compiling analysis code (Linux/ROOT)"
+echo "mknew: compiling analysis code \(Linux/ROOT\)"
 make -f *Analyze.mk clean all
 echo
-echo "mknew: compiling readout code (Lynx/MBS)"
+echo "mknew: compiling readout code \(Lynx/MBS\)"
 root -b mkReadout.C
 READOUT_DONE=$?
 echo
@@ -88,4 +108,3 @@ fi
 echo "================================================================================="
 echo
 echo
-
