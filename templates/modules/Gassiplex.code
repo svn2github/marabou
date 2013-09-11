@@ -1,0 +1,149 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           Gassiplex.code
+// Purpose:        Code for Gassiplex modules
+// Description:    Contains template code to operate a Gassiplex module
+// Author:         R. Lutter
+// Revision:
+// Date:
+// Keywords:
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+#include "gassiplex_database.h"
+#include "gassiplex_protos.h"
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleNameLC at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					s_$moduleNameLC = md_$moduleNameLC->handle;
+ 					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
+					gassiplex_initialize(s_$moduleNameLC);		 					/* initialize module */
+
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					evt.out32 += gassiplex_readout(s_$moduleNameLC, (uint32_t *) evt.out32);	/* read data */
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+%N%					gassiplex_stopAcq(s_$moduleNameLC);	/* start module $moduleName */
+%N%					gassiplex_startAcq(s_$moduleNameLC);
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+%N%					gassiplex_stopAcq(s_$moduleNameLC);	/* stop module $moduleName */
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+static struct s_gassiplex * s_$moduleNameLC;
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+	-I@{.PPCIncludePath:/nfs/marabou/include}
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+	-L@{.PPCLibraryPath:/nfs/marabou/lib}  -lGassiplex -lLvme
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+
