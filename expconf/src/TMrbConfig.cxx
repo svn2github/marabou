@@ -185,7 +185,7 @@ const SMrbNamedXShort kMrbLofModuleTags[] =
 								{TMrbConfig::kModuleDefs,					"MODULE_DEFS"				},
 								{TMrbConfig::kModuleInitCommonCode, 		"INIT_COMMON_CODE"			},
 								{TMrbConfig::kModuleInitModule, 			"INIT_MODULE"				},
-								{TMrbConfig::kModuleInitBLT,	 			"INIT_BLOCK_XFER"				},
+								{TMrbConfig::kModuleInitBLT,	 			"INIT_BLOCK_XFER"			},
 								{TMrbConfig::kModuleInitChannel,			"INIT_CHANNEL"				},
 								{TMrbConfig::kModuleReadChannel,			"READ_CHANNEL"				},
 								{TMrbConfig::kModuleIncrementChannel,		"INCREMENT_CHANNEL" 		},
@@ -478,6 +478,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleMesytecMqdc32,			"Mesytec_Mqdc32" 				},
 								{TMrbConfig::kModuleCaenV1X90,				"Caen_V1X90"	 				},
 								{TMrbConfig::kModuleVulomTB,				"VulomTB"		 				},
+								{TMrbConfig::kModuleGassiplex,				"Gassiplex"		 				},
 								{TMrbConfig::kModuleSoftModule, 	 		"@SoftMod@" 					},
 								{0, 										NULL							}
 							};
@@ -1861,7 +1862,10 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (module->IsVME()) {
 									TMrbVMEModule * vmodule = (TMrbVMEModule *) module;
-									if (vmodule->GetNofSubDevices() <= 1) {
+									if (vmodule->HasOwnMapping()) {
+										rdoTmpl.InitializeCode("%OM%");
+										rdoTmpl.Substitute("$mnemoLC", module->GetMnemonic());
+									} else if (vmodule->GetNofSubDevices() <= 1) {
 										rdoTmpl.InitializeCode("%V%");
 										rdoTmpl.Substitute("$mnemoLC", module->GetMnemonic());
 									} else {
@@ -1903,7 +1907,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								rdoTmpl.InitializeCode("%MT%");
 								rdoTmpl.Substitute("$moduleNameLC", module->GetName());
 								moduleName = module->GetName();
-								moduleName(0,1).ToUpper();
 								rdoTmpl.Substitute("$moduleNameUC", moduleName.Data());
 								Int_t lam = (module->IsCamac()) ?
 											(Int_t) (0x1 << (((TMrbCamacModule *) module)->GetStation() - 1)) : 0;

@@ -70,10 +70,14 @@ TMrbSis_3302::TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr, Bool_t Re
 		} else {
 			TString ppc = gEnv->GetValue("TMbsSetup.ProcType", "RIO3");
 			if (ppc.CompareTo("RIO3") != 0 && ppc.CompareTo("RIO4") != 0) {
-				gMrbLog->Err() << "Wrong CPU type - " << ppc << " (should be RIO3 or RIO4)" << endl;
+				gMrbLog->Err() << ModuleName << ": Wrong CPU type - " << ppc << " (should be RIO3 or RIO4)" << endl;
 				gMrbLog->Flush(this->ClassName());
+				this->MakeZombie();
 			}
-			this->SetSegmentSize(ReducedAddrSpace ? kSegSizeReduced : kSegSizeNormal);
+		}
+		
+		if (!this->IsZombie()) {
+			this->SetSegmentSize(ReducedAddrSpace ? (Int_t) kSegSizeReduced : (Int_t) kSegSizeNormal);
 			SetTitle("SIS 3302 digitizing adc 8 chn 16 bit 100 MHz"); 	// store module type
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
@@ -262,7 +266,7 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
+				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "3.1"));
 				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
 				gSystem->ExpandPathName(codeString);
@@ -274,7 +278,7 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
+				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "3.1"));
 				fCodeTemplates.ExpandPathName();
 				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);

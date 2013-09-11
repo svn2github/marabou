@@ -162,13 +162,15 @@ Bool_t TMrbVMEModule::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadou
 
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;
-	mnemoUC.ToUpper();
+	mnemoUC(0,1).ToUpper();
 
 	moduleName = this->GetName();
 	moduleName(0,1).ToUpper();
 
 	if (TagIndex == TMrbConfig::kRdoInitPointers) {
-		if (this->GetNofSubDevices() <= 1) {
+		if (this->HasOwnMapping()) {
+			Template.InitializeCode("%OM%");
+		} else if (this->GetNofSubDevices() <= 1) {
 			Template.InitializeCode("%V%");
 		} else {
 			Template.InitializeCode("%VS%");

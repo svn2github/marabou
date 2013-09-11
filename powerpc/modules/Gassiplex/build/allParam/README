@@ -1,0 +1,319 @@
+Author:  Benjamin Sailer
+         TUM/E12
+         Benjamin.Sailer@ph.tum.de
+Version: 0.2
+Date:    2001-03-31
+
+allParam libraries
+==================
+
+Content
+-------
+
+1. The scope of the README files
+2. How to install the allParam libraries
+3. How to use the allParam libraries
+4. Known bugs and further developement perspectives
+
+1. The scope of the README files
+--------------------------------
+
+  Each subdirecory has it's own README file, containing the prerequesites of
+the special param library build there. The test directory contains a litte test
+suite to check if the explicit defined behaviour of the libraries is fulfilled
+within the concrete enviroment. Unfortunately this testing suite cannot check
+if the parameter sources needed for a correct work are available. In case of
+files this is not that big problem because if you unset the enviroment
+variables DAQSLOW_PARAM_FILE and SETUP, it should work out fine. If the
+parameter source is a database, of course the situation is bad because you need
+connection to the explicit database containing exactly the data tested within
+the test suite (for liboraParam.a you even need connection to the database at
+compiletime). With libcaParam.a only a complete setup of a EPICS parameter
+server, which is contained in the HADES DAQ runctrl package, together with the
+param library can be tested.
+
+2. How to make and install the allParam libraries
+-------------------------------------------------
+
+  Retrieve the libraries via ftp from
+ftp://ftp.e12.physik.tu-muenchen.de/pub/hadsoft/allParam-0.2.tar.Z
+and extract them to a directory of your own choice (which is only needed for
+building and testing the libraries). Although the sources are also available
+via CVS, it is recommended to use only the tar archives, while CVS is reserved
+for the developers of the libraries (as the checkouts are logged by CVS).
+  Go into the extracted directory allParam and type
+$ make <lib>
+(where <lib> is one of 'ca', 'file', 'ora', 'psql' or 'tcl') to make a single
+library. As making all of them is not very likely, (you will use only some of
+them at all), this possibility is skipped in this version.
+$ make <lib>_test compiles the sources for the test an performs one. The
+results ca be seen in the files test/*_protocol.txt.
+$ make <lib>_install
+copies the libraries to $(LIBDIR) specified in the Makefile (usually
+$HOME/lib/$SYSTYPE or /usr/local/lib) an the headerfile allParam.h to $(INCDIR)
+($HOME/include or /usr/local/include).
+$ make <lib>_all
+does the same as
+$ make <lib> && make <lib>_test && make <lib>_install
+. Note that
+$ make <lib>_test
+and
+$ make <lib>_install
+depend on
+$ make
+so the libraries will be made automatically before testing or installing.
+  The usage of the enviroment variable $SYSTYPE applies to the fact that your
+home directory may be available from different os' with different binary file
+formats, which you should be able to use simultaneously. If you don't have this
+envviroment variable available, you can correct this placing the lines
+SYSTYPE=$(echo "$(uname -m)_$(uname -s)_$(uname -r)" |
+    tr -d [:cntrl:] |
+    tr [:lower:] [:upper:] |
+    tr -c [:alnum:] _)
+export SYSTYPE
+into your ~/.profile.
+
+3. How to use the allParam libraries
+------------------------------------
+
+  The param libraries provide four functions to access parmeters from different
+sources:
+
+- Param_getStringArray() retrieves an array of strings,
+- Param_getFilename() is more specialized on strings representing files,
+- Param_getIntArray() makes a conversion to unsigned long integers (if all
+  elements of the retrieved array can be converted properly; to decide this,
+  the C-function strtoul(3) is used)
+- Param_getString(),
+- Param_getFilename() and
+- Param_getInt() are aliases that retrieve only a scalar value (the first
+  element of an array),
+- Param_getBlob() allows to receive an open file stream to read data from.
+
+  Additionally, there are two functions that allow to store scalar values of
+unsigned integers respectively strings to the parameter source. These functions
+are called
+
+- Param_storeString() and
+- Param_storeInt().
+
+All functions have a return value that indicates the success (0) or failure
+of the action, all functions need to get a pointer to user-supplied space
+for the result and all funtions put the number of elements returned into a
+user-supplied integer field. Additionally all functions need a pointer to an
+invoked Param structure and name and idx to identify the Parameter that should
+be returned.
+  In case of a failure, one can also retrieve the last error message from the
+parameter source when looking into Param_getErrStr().
+  At first you have to invoke a new Param structure and call the constructor
+of it via
+#include <allParam.h>
+...
+{
+	Param *param;
+	param = malloc(sizeof(Param));
+	if(param != 0) {
+		if(conParam(param) != 0) {
+			sprintf(stderr, "conParam() for param failed.\n"); 
+			exit(-1);
+		}
+	} else {
+		sprintf(stderr, "malloc() for param failed.\n"); 
+		exit(-1);
+	}
+}
+... respectively ...
+{
+	Param *param;
+	const char *setup = "setup";
+	param = malloc(sizeof(Param));
+	if(param != 0) {
+		if(conSetupParam(param, setup) != 0) {
+			sprintf(stderr, "conSetupParam() for param failed.\n"); 
+			exit(-1);
+		}
+	} else {
+		sprintf(stderr, "malloc() for param failed.\n"); 
+		exit(-1);
+	}
+}
+...
+{
+	desParam(param);
+	free param;
+}
+Here you also can see the deletion of the Param structure.
+After calling one of the two constructors, you can immediately start retieving
+values. Note, that a not found parameter does not result in an -1 return value
+but only in the number 0 of returned rows. So check the returned rows all the
+time before you use the result. The content of the reserved space is not
+defined beyond the retrieved values. Note that returned strings may have a
+length of PARAM_MAX_VALUE_LEN and prepare enought space for them. Here some
+examples (one for each function):
+
+/* Param_getString */
+	const char *name = "tname";
+	const char *idx1 = "tstring";
+	char values[PARAM_MAX_VALUE_LEN];
+	int row;
+	if(Param_getString(param, name, idx1, &row, values) != 0) {
+		sprintf(stderr, "%s : Param_getString() failed: %s",
+			argv[0], Param_getErrStr(param));
+		exit (-1);
+	} else if(row == 0) {
+		sprintf(stderr, "%s(%s) not found.\n", name, idx1);
+	} else {
+		printf("%s(%s): %s\n", name, idx1, values);
+	}
+
+/* Param_getInt */
+	const char *idx2 = "tint";
+	unsigned long int valuei;
+	if(Param_getInt(param, name, idx2, &row, &valuei) != 0) {
+		sprintf(stderr, "%s : Param_getInt() failed: %s",
+			argv[0], Param_getErrStr(param));
+		exit (-1);
+	} else if(row == 0) {
+		sprintf(stderr, "%s(%s) not found.\n", name, idx2);
+		exit (-1);
+	} else {
+		printf("%s(%s) : %s\n", name, idx2, valuei);
+	}
+
+/* Param_getFilename */
+	const char *name = "tname";
+	const char *idx3 = "tfile";
+	char valuef[PARAM_MAX_VALUE_LEN];
+	int row;
+	if(Param_getFilename(param, name, idx3, &row, valuef) != 0) {
+		sprintf(stderr, "%s : Param_getFilename() failed: %s",
+			argv[0], Param_getErrStr(param));
+		exit (-1);
+	} else if(row == 0) {
+		sprintf(stderr, "%s(%s) not found.\n", name, idx3);
+	} else {
+		printf("%s(%s): %s\n", name, idx3, valuef);
+	}
+
+/* Param_getStringArray */
+	const char *idx4 = "tstringa";
+	char *valuesa[LEN];
+	int maxrows = LEN;
+	int rows;
+	int i;
+	for (i = 0 ; i < maxrows ; i++) {
+		valuesa[i] = malloc(PARAM_MAX_VALUE_LEN * sizeof(char));
+		if(valuesa[i] == 0) {
+			sprintf(stderr, "malloc() for value failed.\n"); 
+			exit(-1);
+		}
+	}
+	if(Param_getStringArray(param, name, idx4, maxrows, &rows, valuesa) != 0) {
+		sprintf(stderr, "%s : Param_getStringArray() failed: %s",
+			argv[0], Param_getErrStr(param));
+		exit (-1);
+	} else if(row == 0) {
+		sprintf(stderr, "%s(%s) not found.\n", name, idx4);
+		exit (-1);
+	} else {
+		for (i = 0 ; i < maxrows ; i++) {
+			printf("%s(%s %d) : %s\n", name, idx4, i, valuesa[i]);
+			free(valuesa[i]);
+		}
+	}
+
+/* Param_getIntArray */
+	const char *idx5 = "tinta";
+	unsigned long int valueia[LEN];
+	if(Param_getIntArray(param, name, idx5, maxrows, &rows, valueia) != 0) {
+		sprintf(stderr, "%s : Param_getIntArray() failed: %s",
+			argv[0], Param_getErrStr(param));
+		exit (-1);
+	} else if(rows == 0) {
+		sprintf(stderr, "%s(%s) not found.\n", name, idx5);
+		exit (-1);
+	} else {
+		for (i = 0 ; i < maxrows ; i++) {
+			printf("%s(%s %d) : %d\n", name, idx5, i, valueia[i]);
+		}
+	}
+
+/* Param_getFilenameArray */
+	const char *idx6 = "tfilea";
+	char *valuefa[LEN];
+	int maxrows = LEN;
+	int rows;
+	int i;
+	for (i = 0 ; i < maxrows ; i++) {
+		valuesa[i] = malloc(PARAM_MAX_VALUE_LEN * sizeof(char));
+		if(valuefa[i] == 0) {
+			sprintf(stderr, "malloc() for value failed.\n"); 
+			exit(-1);
+		}
+	}
+	if(Param_getFilenameArray(param, name, idx6, maxrows, &rows, valuefa) != 0) {
+		sprintf(stderr, "%s : Param_getFilenameArray() failed: %s",
+			argv[0], Param_getErrStr(param));
+		exit (-1);
+	} else if(row == 0) {
+		sprintf(stderr, "%s(%s) not found.\n", name, idx6);
+		exit (-1);
+	} else {
+		for (i = 0 ; i < maxrows ; i++) {
+			printf("%s(%s %d) : %s\n", name, idx6, i, valuefa[i]);
+			free(valuefa[i]);
+		}
+	}
+
+  Note that the returned number of elements is the minimum of 'maxrows'
+specified and the number of elements found in the parameter source. If those
+two differ, you have do decide what to do, no error return value is set and
+no error message supplied. This is due to the fact that you often don't know
+the exact number of result elements but only a upper limit for that. On the
+other hand if you want to retrieve an integer array and only one of the
+values seems to be no integer (according to strtoul(3)), the return value is
+-1 and the content of the supplied array (valueia in our example) is undefined.
+  Be aware of the fact that there is a magic border for the number of array
+elements that can be transferred at once. This is PARAM_MAX_ARRAY_LEN and
+currently set to 128.
+  Take also care of what kind of pointer type you have to supply in the
+different value fields:
+- Param_getString() needs a char *,
+- Param_getInt() needs a unsigned long int *,
+- Param_getFilename() needs a char *,
+- Param_getStringArray() needs a char** (which is not returned by
+  char valuesa[PARAM_MAX_VALUE_LEN][LEN] !),
+- Param_getIntArray() needs a unsigned long int *, too (but of course with
+  LEN * sizeof(unsigned long int) allocated memory behind), 
+- Param_getFilenameArray() needs a char** (like Param_getStringArray() does) and
+- Param_getBlob() needs a FILE **
+
+4. Known bugs and further developement perspectives
+---------------------------------------------------
+
+- The treatment of values out of bounds (e.g. strings longer than the foreseen
+  PARAM_MAX_NAME_LEN and PARAM_MAX_VALUE_LEN) is not checked in the testsuite
+  yet.
+- EPICS has a much more strict limitation on the length of PV names (28
+  including the prefix 'HAD:Px:<setup>:'). So the full length of 127 + 127
+  characters for name + idx cannot be used when including a libcaParam.a in the
+  data path. Although the test suite shows, that channel access may also work
+  with longer PV name lengths, the next version should take advantage of the
+  EPICS Release 3.14 which promises to skip this limitation officially.
+- Limitations on the size of blobs when they are transported via channel access
+  should no longer be valid in the next version.
+- Up to now no concept is found to easily use the correct set of libraries
+  depending on the host architecture and operating system. However, this should
+  be a general rule to be available for all the hades libraries.
+- The psql-library did not follow the developments of the version 0.2 at all.
+  It is likely that this tree will be canceled completely in the next version.
+- In excange, ideas have come up to replace the EPICS-based parameter
+  transport via channel access by some smal-shaped self programmed one based
+  of RPCs and meeting the requirements of the param libraries much better at
+  all. If there is time enough a new tree rpc will be introduced in the next
+  version.
+
+Please send further bug reports to
+
+Benjamin.Sailer@ph.tum.de
+

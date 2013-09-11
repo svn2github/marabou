@@ -1,0 +1,44 @@
+tclParam.o : \
+ ./tcl/tclParam.c config.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/unistd.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/ansidecl_lynx.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/sys/types.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/ctype.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/errno.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/stdio.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/ipc.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/tslsynch.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/sem.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/sys/stat.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/name.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/time.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/signal.p4.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/param.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/conf.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/stdlib.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/string.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/sys/utsname.h \
+ /usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/tcl.h \
+ tcl/../include/allParam.h
+./tcl/tclParam.c :
+config.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/unistd.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/ansidecl_lynx.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/sys/types.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/ctype.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/errno.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/stdio.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/ipc.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/tslsynch.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/sem.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/sys/stat.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/name.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/time.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/signal.p4.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/param.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/conf.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/stdlib.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/string.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/sys/utsname.h :
+/usr/lib/gcc-lib/ppc-xcoff-lynxos/2.9-gnupro-98r2/../../../../include/tcl.h :
+tcl/../include/allParam.h :

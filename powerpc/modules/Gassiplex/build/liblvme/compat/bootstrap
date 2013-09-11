@@ -1,0 +1,4 @@
+rm -f configure config/*
+aclocal -I config &&
+automake --foreign --add-missing --copy &&
+autoconf

@@ -1,0 +1,16 @@
+/cleanup.sql/1.1/Thu May 31 12:52:28 2001//
+/echoobjs.sh/1.2/Tue Mar 27 14:07:20 2001//
+/main.sh/1.5/Wed Apr  4 14:40:39 2001//
+/make_links.sh/1.6/Mon Apr  2 17:48:12 2001//
+/post_ca_test.sh/1.1/Mon Mar 26 15:35:14 2001//
+/post_file_test.sh/1.1/Mon Mar 26 15:35:14 2001//
+/post_ora_test.sh/1.2/Thu May 31 12:52:28 2001//
+/post_psql_test.sh/1.1/Mon Mar 26 15:35:14 2001//
+/post_tcl_test.sh/1.1/Mon Mar 26 15:35:14 2001//
+/pre_ca_test.sh/1.3/Mon Apr  2 11:43:42 2001//
+/pre_file_test.sh/1.2/Mon Apr  2 11:43:42 2001//
+/pre_ora_test.sh/1.2/Mon Apr  2 11:43:42 2001//
+/pre_psql_test.sh/1.2/Mon Apr  2 11:43:42 2001//
+/pre_tcl_test.sh/1.2/Mon Apr  2 11:43:42 2001//
+/remove_links.sh/1.2/Mon Apr  2 17:35:26 2001//
+D

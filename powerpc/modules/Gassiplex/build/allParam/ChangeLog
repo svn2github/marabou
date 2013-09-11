@@ -1,0 +1,15 @@
+2003-01-31	Benjamin Sailer	<Benjamin.Sailer@ph.tum.de>
+
+	* added configure-support to 'examples'.  Changed C-sources
+	  on an easy level.
+
+	* Header file install now working.
+ 
+2003-01-24	Benjamin Sailer	<Benjamin.Sailer@ph.tum.de>
+
+	* introduced autoconf / automake formalism for configuring allParam.
+	  directories 'test' and 'examples' not yet included.
+	  C-sources not yet changed according to configure macros.
+
+	* removed psql subtree.
+

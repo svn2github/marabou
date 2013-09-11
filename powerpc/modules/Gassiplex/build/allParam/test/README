@@ -1,0 +1,67 @@
+Author:  Benjamin Sailer
+         TUM/E12
+         Benjamin.Sailer@ph.tum.de
+Version: 0.2
+Date:    2001-03-28
+
+test suite
+==========
+
+Content
+-------
+
+1. testing requirements
+2. testing results
+
+1. testing requirements
+-----------------------
+
+  For the tests there are of course needed all the libraries against which the
+user aplications have to be linked, too. This can easily be extracted out of
+the Makefile.
+
+2. testing results
+------------------
+
+  The testing results are written down to files called <lib>_test_protocol.txt
+in the test directory. There is also included a timing information, which
+unfortunately is (depending on the shell you are using) not always written to
+the file but sometimes only to stderr. Note that channel access is not
+deterministic as timeouts can occur on a heavily used network, which can be
+tuned changing the TIMEOUT definition in ca/caParam.c. Of course the enviroment
+needed at runtime is also needed when testing (i.e. network connection to the
+database hosts are needed for ora_test_suite and psql_test_suite). As the
+parameter server is now part of this library package, the test of caParam also
+uses the server compiled here. The scripts in ./bin do the startup and kill of
+the server automatically when make <lib>_test is used.
+
+  To increase the verbosity of the tests, you can add a -DVERBOSE to the
+CFLAGS in the Makefile.
+
+  If a test_suite fails with a segmentation violation and the output in the
+test protocol therefore is no help, you can run the test manually (by typing
+
+$ ./<lib>_test_suite
+
+) to find out which test fails. By renaming the corresponding sources (i.e.
+
+$ cd int
+$ mv i_lowercase.c i_lowercase.c-
+$ mv i_lowercase.h i_lowercase.h-
+$ cd -
+$ make clean
+$ make <lib>_test
+
+), you can skip a single test.
+
+  There is also a huge field of errors not tested yet (containing all overflows
+of name lengths, index lengths, param file lengths, array lengths and so on -
+including restrictions that occur not due to param library limitations but also
+limitations in database access or channel access. Anyhow the stucture of the
+tests is very easy so you can enhance the suite with little efford or propose
+additional tests as of course you can also:
+
+Send bug reports to
+
+Benjamin.Sailer@ph.tum.de
+

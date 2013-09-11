@@ -1,0 +1,1 @@
+set tname(tstring)	"tnewvalue"

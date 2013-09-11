@@ -1,0 +1,84 @@
+Author:  Benjamin Sailer <Benjamin.Sailer@ph.tum.de>
+Version: 0.2
+Date:    2001-03-31
+
+allParam library Release Notes for Version 0.2
+==============================================
+
+Enhancements:
+-------------
+
+1. Common header file
+
+All libraries now use a common header file allParam.h, to be placed in
+$HOME/include or the system wide includepath (/usr/local/include). This
+requires a little change in the makefiles of programs using the libraries but
+at last ensures that only the linking has to be done when changing the
+parameter source (which was not the case in Version 0.1).
+
+2. Multiple setup support
+
+The support of multiple setups is introduced in Version 0.2 of the libraries.
+This is due to the fact, that different programs may need different setup
+parameters at a time, that all come from a single parameter server. The main
+change for the user results in a second constructor for the Param structure,
+handing over an additional setup string to distinguish the parameters.
+This constructor,
+> conSetupParam(Param *, const char *)
+is an alternative to the for compatibility reasons co-existing
+> conParam(Param *),
+that will be changed to the final
+> conParam(Param *, const char *)
+in one of the next releases.
+For libfileParam.a and libtclParam.a, the setup is translated to file names.
+See the READMEs of those particular libraries for details.
+
+3. Storage of parameters
+
+In the new allParam library Version a writeback of parameters (scalar integers
+and scalar strings) is introduced. They either fill files in tcl-syntax (for
+libfileParam.a and libtclParam.a) or fill a table in the database (in the
+case of liboraParam.a and libpsqlParam.a). Those stored parameters are
+available for Param_get-calls immediately afterwards. It is possible to write
+down the same parameters more than once which changes the value to the most
+recent one (or at least sould do that). Like parameters to read, parameters to
+write are identified by "setup", "name" and "idx".
+
+4. daq_*_param_cas
+
+From this version on, the package does not only contain the libraries for the
+channel access parameter source, but also the sources to build the server. This
+seems to be more consistent and allows testing for this special source without
+the requirement of a extern parameter server.
+
+5. Param_getFilename() and Param_getFilenameArray()
+
+Two new functions have been introduced that can be handled like the string-
+functions but give the user the possibility to change the prefix for all of
+them by editing just one line in the tcl-file. This is especially useful for
+moving files pointed to to another sub tree of the directory structure but
+not to be dependend on relative paths to these files.
+
+6. Param_getBlob()
+
+The possibility to transport binary data as a unit has been introduced. Up to
+now, this is realized as a file-stream and thus has no limitations for most
+of the parameter sources while caParam just allows sizes up to 16368 bytes
+(as a limitation of channel access). This limitation may be skipped in the
+next version.
+
+7. Test extension
+
+The test suite has been extended to proof the new features. Subdirectories,
+scripts before and after test execution allow more sophisticated tests, while
+the structure provides the flexibility to skip single tests without any changes
+in the sources (exept renaming the sources of the specified test).
+
+Bugfixes:
+---------
+
+libFileParam.a does not rely on strings without whitespaces anymore. The large
+fix amount of allocated memory at libfileParam.a has been changed to a
+dynamically allocated and relocated memory to reduce the consumption to the
+needed space and extinguish the magic number of maximal 1024 parameter entries.
+

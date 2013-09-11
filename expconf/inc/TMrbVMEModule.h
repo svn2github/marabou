@@ -67,11 +67,13 @@ class TMrbVMEModule : public TMrbModule {
 
 		virtual inline Bool_t HasBlockXfer() const { return(kFALSE); };				// module is capable of using BLT
 		virtual inline Bool_t UseA32Addressing() const { return(kFALSE); };			// use a32 addressing anyway
-
+		
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate readout code
 												TMrbTemplate & Template, const Char_t * Prefix = NULL);
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbSubevent * Subevent, Int_t Value = 0) { return(kFALSE); };
+
+		virtual inline Bool_t HasOwnMapping() const { return(kFALSE); };				// module has its own vme mapping
 
 		inline void UseVMEMapping(UInt_t Mapping) { fVMEMapping = Mapping; };
 		inline UInt_t GetVMEMapping() { return fVMEMapping; };

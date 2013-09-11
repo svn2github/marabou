@@ -1,0 +1,4 @@
+rm -rf aclocal.m4 configure config/[a-z]* Makefile.in autom4te-2.53.cache
+aclocal -I config &&
+automake --add-missing --copy &&
+autoconf

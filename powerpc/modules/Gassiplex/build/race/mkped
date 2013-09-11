@@ -1,0 +1,13 @@
+#!/bin/sh
+
+for j in 0 1
+do
+	test $j -eq 0 && rc=00
+	test $j -eq 1 && rc=10
+	for i in 0 1 2 3 4 5 6 7
+	do
+		awk '$1 == '$j' && $2 == '$i' {
+			print $4, int($5 + 1 * $6)
+		}' <pedestal_0.dat >rc${rc}p${i}.dat
+	done
+done

@@ -31,7 +31,8 @@ enum EMrbVMEMapping	 {	kVMEMappingUndef	=	0,			/* vme mapping */
 				kVMEMappingStatic	=	BIT(1),
 				kVMEMappingDynamic	=	BIT(2),
 				kVMEMappingHasBLT	=	BIT(10),
-				kVMEMappingHasMBLT	=	BIT(11)
+				kVMEMappingHasMBLT	=	BIT(11),
+				kVMEMappingPrivate	=	BIT(12)
 			};
 
 /* address modifiers */
@@ -81,14 +82,14 @@ enum	EMapSize	{	kSize_A32	=	0x06000000,
 
 
 struct s_mapDescr {
-	Char_t mdName[MAP_STRLEN];			/* name, to be used with smem_create() etc */
+	Char_t mdName[MAP_STRLEN];		/* name, to be used with smem_create() etc */
 
-	UInt_t mappingModes;				/* possible VME mapping modes */
+	UInt_t mappingModes;			/* possible VME mapping modes */
 
 	UInt_t mappingVME;				/* used VME mapping */
 	UInt_t addrModVME;				/* address modifier */
 	UInt_t physAddrVME;				/* phys addr given by module switches */
-	volatile Char_t * vmeBase;			/* mapped address, static or dynamic mapping */
+	volatile Char_t * vmeBase;		/* mapped address, static or dynamic mapping */
 	Int_t segSizeVME;				/* segment size */
 	Int_t busId;					/* identifier from bus_open() */
 
@@ -101,6 +102,8 @@ struct s_mapDescr {
 	Int_t bltModeId;				/* id from bma_create_mode() */
 
 	Int_t nofMappings;
+	
+	void * handle;					/* pointer to device specific data */
 
 	void * prevDescr;				/* linked list */
 	void * nextDescr;

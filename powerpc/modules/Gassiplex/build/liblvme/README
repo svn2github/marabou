@@ -1,0 +1,45 @@
+lvme -- library for VME access
+
+This is version 1.3 of lvme, the library that allows
+unified code for vme access throughout the HADES collaboration.
+
+This release has been implemented and tested on the following platforms:
+CES RIO-PPC-LYNX-2.5.1, CES RIO-PPC-LYNX-2.4, CES FIC-68K-LYNX2.2,
+ELTEC E128-PENTIUM-LINUX, ELTEC E7-68K-LYNX-2.5
+It was not tested on ELETC E7-68K-OSK but since the last test on that
+system no changes in the OSK part were made, so it is supposed to work.
+
+Address modifiers are still not completely handled, especially under
+Lynx on E7, A24 is not tested yet.
+
+The Makefile works on Linux and Lynx w PPC and 68K.
+For OSK special commands must be used to produce lvme.r.
+
+Two example programs exist (in subdirectory "examples"):
+  testlvme makes word (16bit) accesses to the specified addresses / bits
+  bar checks special functions on several modules of giessenTronic and
+  GSITronic
+
+Caveats:
+  not all address modifiers are honored.
+  alignement to page boundaries is not checked on all platforms
+  
+Changes from version 1.2:
+- A function LVme_cleanup() has been implemented that monitors all VME memory
+  mappings and therefore destroys them all when called. This can be used in
+  signal handlers to leave even the realtime systems based on LynxOS in a
+  defined state when the program is killed or dies due to a failure.
+
+Changes between version 1.1 and version 1.2:
+- Block Move Access for CES-Lynx
+
+Changes to be expected:
+- change of simple functions to macros (the PPC compiler seems
+  to do no inlining :-(), be careful when using arguments with side
+  effects
+- proper handling of address modifiers as far as hardware-possible
+- more than one simltaneous vme mapping for linux
+
+Future directions (open for discussion):
+- debug version to check for out of bound access, unaligned access etc.
+- block transfer

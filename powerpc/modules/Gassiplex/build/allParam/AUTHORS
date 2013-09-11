@@ -1,0 +1,8 @@
+Authors of allParam libraries.
+
+Mathias Muench.  First idea about different sources for configuration files.
+Implementation of 'tcl' and 'file'.
+
+Benjamin Sailer.  Changes of 'tcl' and 'file'.  Implementation of other
+sources 'ora' and 'ca'.
+

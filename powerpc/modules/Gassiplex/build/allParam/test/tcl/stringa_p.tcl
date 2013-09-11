@@ -1,0 +1,9 @@
+set tname(tstringa0) test1
+set tname(tstringa1) test0
+set tname(tstringa2) test3
+set tname(tstringa3) test2
+set tname(tstringa4) test5
+set tname(tstringa5) test4
+set tname(tstringa6) test7
+set tname(tstringa7) test6
+set tname(tstringa9) test10

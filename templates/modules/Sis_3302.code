@@ -17,10 +17,9 @@
 %%MODULE_DEFS%%
 
 %%BeginOfCode%%
-
+					sis3302_use_mcst = FALSE;
 %%EndOfCode%%
 %%INIT_COMMON_CODE%%
-					sis3302_use_mcst = FALSE;
 
 %%BeginOfCode%%
 

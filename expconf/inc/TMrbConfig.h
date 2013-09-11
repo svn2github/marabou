@@ -546,6 +546,7 @@ class TMrbConfig : public TNamed {
 									kModuleCaenV1X90	    =   kManufactCaen + 0x25,
 									kModuleVulomTB		    =   kManufactGSI + 0x26,
 									kModuleMesytecMqdc32	=	kManufactMesytec + 0x27,
+									kModuleGassiplex		=	kManufactTUM + 0x28,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};

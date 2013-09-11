@@ -39,7 +39,7 @@ class TMrbSis_3302 : public TMrbVMEModule {
 	public:
 		enum				{	kSegSizeReduced		=	0x1000000L	};
 		enum				{	kSegSizeNormal		=	0x8000000L	};
-		enum				{	kAddrMod		=	0x09	};
+		enum				{	kAddrMod			=	0x09	};
 
 		enum				{	kNofGroups		=	4	};
 		enum				{	kNofChannels	=	8	};

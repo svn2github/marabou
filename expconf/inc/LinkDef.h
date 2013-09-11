@@ -55,6 +55,9 @@
 #pragma link C++ class TMrbSubevent_Madc_1;
 #pragma link C++ class TMrbSubevent_Madc_2;
 #pragma link C++ class TMrbSubevent_Madc_3;
+#pragma link C++ class TMrbSubevent_Gassiplex_1;
+#pragma link C++ class TMrbSubevent_Gassiplex_2;
+#pragma link C++ class TMrbSubevent_Gassiplex_3;
 #pragma link C++ class TMrbSubeventRaw;
 #pragma link C++ class TMrbSubevent_Data_S;
 #pragma link C++ class TMrbSubevent_Data_I;
@@ -97,6 +100,7 @@
 #pragma link C++ class TMrbMesytec_Mux16;
 #pragma link C++ class TMrbMesytec_Madc32;
 #pragma link C++ class TMrbMesytec_Mqdc32;
+#pragma link C++ class TMrbGassiplex;
 #pragma link C++ class TMrbVulomTB;
 #pragma link C++ class TMrbModuleRaw;
 #endif

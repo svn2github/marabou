@@ -1,0 +1,72 @@
+Author:  Benjamin Sailer
+         TUM/E12
+         Benjamin.Sailer@ph.tum.de
+Version: 0.2
+Date:    2001-05-31
+
+liboraParam.a
+=============
+
+Content
+-------
+
+1. Compiletime requirements
+2. Linktime requirments
+3. Runtime requirments
+4. Known bugs and further developement perspectives
+
+1. Compiletime requirements
+---------------------------
+
+  At compiletime liboraParam.a needs the enviroment variable ORACLE_HOME
+pointing to the root of the oracle development tree (containing the precompiler
+proc, the include files oraca.h and sqlca.h). Additionally, you must have a
+network connection to the hades oracle database on the GSI linux cluster. User
+and password for a reading access are hardwired in the code (which is not very
+elegant but an intrinsic feature of proc).
+
+2. Linktime requirments
+-----------------------
+
+  The above mentioned ORACLE_HOME must also exist at linktime, in this case to
+provide the oracle sql libraries which are listed in the test directory
+Makefile.
+
+3. Runtime requirments
+----------------------
+
+  At runtime you also use hard wired access information and have to have a the
+connection to the database, to. Therein the retrived parameters are all stored
+in two tables (views, to be more precise) called daq.param_int and
+daq.param_string while the parameters stored are given to procedures
+daq.store_param.store_param_int and daq.store_param.store_param_string that
+try to match the insertions to special shapes for special insertion treatment,
+and, if the matching fails, put them into the generic tables daq.store_int
+respectively daq.store_string. Of course, former views contain a lookup in
+various tables that hold only specific data sets and to supply these is a vast
+field not yet made applicable for normal users.
+
+4. Known bugs and further developement perspectives
+---------------------------------------------------
+
+  As the default requirement that inserted parameters can be retrieved as they
+are from the parameter source could not be matched in the database up to now
+(which is a principle problem of the requirement, I guess), tests that rely
+on this feature (e.g. s_store_existing, i_store_existing) may fail. Anyhow, the
+most urgent thing to improve is the shape of the database itself as well as
+filling the tables with proper values for testing with 'real' data and
+requirements. The least developped feature connected to this library at all
+are proper insert forms to fill the database with the correct information
+without the knowledge of the exact structure of the database at all. Up to now,
+Param_getBlob() just opens a file stream in the directory structure of the
+calling program, of which the name is retrieved with a Param_getFilename()
+call. This should change into the extraction of blobs directly out of the
+database in coming versions (if discovered to be practical at all).
+Param_getFilename() calls are not disguised from Param_getString() calls
+except the adding of the prefix path glob(basedir). No special tables
+containing Filename-type entries are forseen up to now.
+
+Please send further bug reports to
+
+Benjamin.Sailer@ph.tum.de
+

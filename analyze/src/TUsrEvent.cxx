@@ -287,7 +287,7 @@ Int_t TUsrEvent::FillArrayFromHB(TUsrHBX * HBX, ULong64_t & TimeStamp, TArrayI &
 		Bool_t foundHit = kFALSE;
 		for (Int_t hidx = Hidx; hidx < nofHits; hidx++) {		// loop over hits as long as event number doesn't change
 			hit = HBX->At(hidx);
-			if (hit->GetEventNumber() != evtNo) return(foundHit ? hidx : -1);		// return start indec of next event
+			if (hit->GetEventNumber() != evtNo) return(foundHit ? hidx : -1);		// return start index of next event
 			Data[hit->GetChannel()] = hit->GetData(Didx);							// fill vector with data for given channel
 			foundHit = kTRUE;
 		}

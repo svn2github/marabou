@@ -100,6 +100,8 @@ class TMrbTemplate : public TObject {
 		inline Bool_t IsOk() const { return((fTagStatus & (kNoTag | kTagOK)) != 0); };
 
 		inline Bool_t HasOtherTags() const { return(fHasOtherTags); };
+		
+		inline TMrbLofNamedX * GetTagWords() { return fLofTagWords; };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
