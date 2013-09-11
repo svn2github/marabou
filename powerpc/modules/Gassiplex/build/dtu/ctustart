@@ -1,6 +1,0 @@
-#!/bin/bash
-
-export DAQSLOW_PARAM_FILE=$HOME/bin/param.tcl
-
-dtuctrl start ctu
-

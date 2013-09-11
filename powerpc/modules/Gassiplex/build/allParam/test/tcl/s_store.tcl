@@ -1,1 +1,0 @@
-set tname(tnewstr)	"tnewvalue"
