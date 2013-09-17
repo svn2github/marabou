@@ -1907,6 +1907,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								rdoTmpl.InitializeCode("%MT%");
 								rdoTmpl.Substitute("$moduleNameLC", module->GetName());
 								moduleName = module->GetName();
+								moduleName(0,1).ToUpper();
 								rdoTmpl.Substitute("$moduleNameUC", moduleName.Data());
 								Int_t lam = (module->IsCamac()) ?
 											(Int_t) (0x1 << (((TMrbCamacModule *) module)->GetStation() - 1)) : 0;
