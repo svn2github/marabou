@@ -58,6 +58,7 @@ TMrbSubevent_Gassiplex_3::TMrbSubevent_Gassiplex_3(const Char_t * SevtName, cons
 		fSevtSubtype = 103;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
+		this->AllocateHistograms(kFALSE);
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Gassiplex");	// we need this base class
 		gDirectory->Append(this);
 	}

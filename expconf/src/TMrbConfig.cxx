@@ -103,18 +103,19 @@ const SMrbNamedXShort kMrbLofModuleTypes[] =
 
 const SMrbNamedX kMrbLofHistoTypes[] =
 							{
-								{TMrbConfig::kHistoTH1C,		"TH1C", "1-dim histogram with one byte per channel"		},
-								{TMrbConfig::kHistoTH1D,		"TH1D", "1-dim histogram with one double per channel"	},
-								{TMrbConfig::kHistoTH1F,		"TH1F", "1-dim histogram with one float per channel"	},
-								{TMrbConfig::kHistoTH1S,		"TH1S", "1-dim histogram with one short per channel"	},
-								{TMrbConfig::kHistoTH2C,		"TH2C", "2-dim histogram with one byte per channel"		},
-								{TMrbConfig::kHistoTH2D,		"TH2D", "2-dim histogram with one double per channel"	},
-								{TMrbConfig::kHistoTH2F,		"TH2F", "2-dim histogram with one float per channel"	},
-								{TMrbConfig::kHistoTH2S,		"TH2S", "2-dim histogram with one short per channel"	},
-								{TMrbConfig::kHistoTH3C,		"TH3C", "3-dim histogram with one byte per channel"		},
-								{TMrbConfig::kHistoTH3D,		"TH3D", "3-dim histogram with one double per channel"	},
-								{TMrbConfig::kHistoTH3F,		"TH3F", "3-dim histogram with one float per channel"	},
-								{TMrbConfig::kHistoTH3S,		"TH3S", "3-dim histogram with one short per channel"	},
+								{TMrbConfig::kHistoTH1C,		"TH1C", "1-dim histogram, one byte per channel"		},
+								{TMrbConfig::kHistoTH1D,		"TH1D", "1-dim histogram, one double per channel"	},
+								{TMrbConfig::kHistoTH1F,		"TH1F", "1-dim histogram, one float per channel"	},
+								{TMrbConfig::kHistoTH1S,		"TH1S", "1-dim histogram, one short per channel"	},
+								{TMrbConfig::kHistoTH2C,		"TH2C", "2-dim histogram, one byte per channel"		},
+								{TMrbConfig::kHistoTH2I,		"TH2I", "2-dim histogram, one integer per channel"	},
+								{TMrbConfig::kHistoTH2D,		"TH2D", "2-dim histogram, one double per channel"	},
+								{TMrbConfig::kHistoTH2F,		"TH2F", "2-dim histogram, one float per channel"	},
+								{TMrbConfig::kHistoTH2S,		"TH2S", "2-dim histogram, one short per channel"	},
+								{TMrbConfig::kHistoTH3C,		"TH3C", "3-dim histogram, one byte per channel"		},
+								{TMrbConfig::kHistoTH3D,		"TH3D", "3-dim histogram, one double per channel"	},
+								{TMrbConfig::kHistoTH3F,		"TH3F", "3-dim histogram, one float per channel"	},
+								{TMrbConfig::kHistoTH3S,		"TH3S", "3-dim histogram, one short per channel"	},
 								{TMrbConfig::kHistoRate,		"Rate", "rate histogram"								},
 								{0, 							NULL			}
 							};

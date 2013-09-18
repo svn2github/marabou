@@ -244,6 +244,7 @@ Bool_t TMrbGassiplex::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleNameLC", moduleNameLC);
 			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC);
+			fCodeTemplates.Substitute("$moduleSerial", this->GetSerial());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.WriteCode(RdoStrm);

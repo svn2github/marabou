@@ -47,6 +47,7 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
+					*evt.out32++ = $moduleSerial;	/* insert serial number */
 					evt.out32 += gassiplex_readout(s_$moduleNameLC, (uint32_t *) evt.out32);	/* read data */
 %%EndOfCode%%
 %%READ_MODULE%%

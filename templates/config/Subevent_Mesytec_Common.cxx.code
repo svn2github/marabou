@@ -28,6 +28,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 	while (SevtWC > 0) {									// subevent may contain several madc modules
 		Int_t header = (*dataPtr++ << 16);
 		header |= *dataPtr++;
+		wordsProcessed += 2;
 		if (header == 0xaffec0c0) {
 			cerr	<< setred
 					<< this->ClassName() << "::FillSubevent(): Data not ready (affec0c0) - restart"
@@ -89,12 +90,12 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 			highTimeStamp |= *xtsPtr++;
 		}
 
-		if (!trailerFound) highTimeStamp = 0;			// doesn't make sense if trailer (and therefore lower time stamp) is missing
+		if (!trailerFound) highTimeStamp = 0;		// doesn't make sense if trailer (and therefore lower time stamp) is missing
 
 		ULong64_t ts64 = 0;
 		if ((highTimeStamp & MADC_M_XTS) == MADC_D_XTS) {
 			ts64 = ((Long64_t) (highTimeStamp & MADC_M_TSHIGH)) << 30;
-			wc--;							// - extended ts
+			wc--;					// - extended ts
 		}
 		ts64 |= lowTimeStamp;
 		UShort_t tsArr[3];
@@ -119,13 +120,14 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 		for (; wc; wc--) {
 			Int_t data = (*dataPtr++ << 16);
 			data |= *dataPtr++;
+			wordsProcessed += 2;
 			if ((data & MADC_M_ID) != MADC_D_DATA) {
 				if ((data & MADC_M_XTS) == MADC_D_XTS) continue;
 				if ((data & MADC_M_ID) == MADC_D_EOE) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOE", SevtData, origSevtWC);
 					cerr	<< setred
 							<< this->ClassName() << "::FillSubevent(): [Module "
-							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC=" << wordsProcessed
+							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC=" << (wordsProcessed - 2)
 							<< "] Unexpected EOB - remaining wc=" << wc << " ignored. Continuing with next event."
 							<< setblack << endl;
 					dataPtr -= 2;
@@ -136,7 +138,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 					cerr	<< setred
 							<< this->ClassName() << "::FillSubevent(): [Module "
 							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
-							<< wordsProcessed << "] Wrong data - 0x" << setbase(16) << data << setbase(10)
+							<< (wordsProcessed - 2) << "] Wrong data - 0x" << setbase(16) << data << setbase(10)
 							<< setblack << endl;
 					return(kTRUE);
 				}
@@ -160,10 +162,9 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 		}
 
 		dataPtr = nextEvent;
-		if (!trailerFound) dataPtr -= 2;	// trailer was missing
+		if (!trailerFound) dataPtr -= 2;			// trailer was missing
 
 		SevtWC -= wcs;						// remaining subevent data
-		wordsProcessed += wcs;
 		eventsProcessed++;
 	}
 	return(kTRUE);
