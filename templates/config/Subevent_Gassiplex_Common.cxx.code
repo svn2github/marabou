@@ -74,8 +74,8 @@ Bool_t TMrbSubevent_Gassiplex::FillSubevent(const UShort_t * SevtData, Int_t Sev
 			}
 		}
 
-		SevtWC -= wcs;						// remaining subevent data
-		wordsProcessed += wcs;
+		SevtWC -= wcs + 2;						// remaining subevent data
+		wordsProcessed += wcs + 2;
 		eventsProcessed++;
 	}
 	return(kTRUE);
