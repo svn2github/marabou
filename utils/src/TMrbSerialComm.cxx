@@ -4,11 +4,11 @@
 // Purpose:        MARaBOU utilities: serial line I/O
 // Description:    Implements methods to control a serial port
 //                 (inspired by class c_SerialComm written by Mario Schubert)
-// Keywords:
-// Author:         R. Lutter
-// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSerialComm.cxx,v 1.7 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
-// Date:           
+//                 O.S. 17.09.2013 Add control of DTR, RTS etc, add raw r/w
+// Author:         R. Lutter, O.Schaile
+// Revision:       $Id: TMrbSerialComm.h 17.09.2013$       
+// Mailto:         <a href=mailto:rudolf.lutter@physik.uni-muenchen.de>R. Lutter</a>
+// Date:           17.09.2013
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -22,6 +22,8 @@ namespace std {} using namespace std;
 #include <fcntl.h>
 #include <errno.h>
 #include <ctype.h>
+#include <sys/ioctl.h>
+#include "termios.h"
 #include <termios.h>
 
 #include "TROOT.h"
@@ -216,7 +218,7 @@ Bool_t TMrbSerialComm::Open() {
 }
 
 Bool_t TMrbSerialComm::Close() {
-//__________________________________________________________________[C++ CTOR]
+//__________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSerialComm::Close()
 // Purpose:        Close connection
@@ -535,3 +537,453 @@ const Char_t * TMrbSerialComm::MakePrintable(TString & PrintString, const Char_t
 	}
 	return(PrintString.Data());
 }
+//________________________________________________________________
+
+Int_t TMrbSerialComm::ReadDataRaw(UChar_t * Data, Int_t nbytes)
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::ReadDataRaw
+// Purpose:        Read data from serial device, raw bytes, no processing
+// Arguments:      UChar_t * Data         -- where to store data
+//                 Int_t nbytes           -- number of bytes to read
+// Results:        Int_t nread            -- number of bytes read
+// Exceptions:
+// Description:    Inputs data from serial port.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t nread;
+	
+	if (!this->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadData");
+		return(-1);
+	}
+	nread = read(fFd, Data, nbytes);
+	if (nread == -1) {
+		if (gSystem->GetErrno() == EAGAIN) {
+			return(0);
+		} else {
+			gMrbLog->Err() << gSystem->GetError() << " (" << gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+			gMrbLog->Flush(this->ClassName(), "ReadData");
+			return(nbytes);
+		}
+	}
+	fBytesReceived += nread;
+	return nread;
+};
+//________________________________________________________________
+
+Int_t TMrbSerialComm::WriteDataRaw(const UChar_t * Data, Int_t nbytes)
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::WriteDataRaw
+// Purpose:        Write data to serial device, raw bytes, no processing
+// Arguments:      UChar_t * Data         -- pointer to  data
+//                 Int_t nbytes           -- number of bytes to write
+// Results:        Int_t nwritten         -- number of bytes written
+// Exceptions:
+// Description:    Write data to serial port.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t nwritten;
+	if (!this->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteData");
+		return(-1);
+	}
+	nwritten = write(fFd, Data, nbytes);
+	if (nbytes != nwritten) {
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteData");
+		return(-1);
+	}
+	fBytesTransmitted += nwritten;
+	return(nwritten);
+};
+//________________________________________________________________
+
+Bool_t TMrbSerialComm::GetDtr()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::GetDtr
+// Purpose:        Query state of DTR line
+// Arguments:      
+// Results:        TRUE if set
+// Exceptions:
+// Description:    Query state of DTR line
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1) {
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "DTR get");
+		return kFALSE;
+	}
+	
+	if(stat & TIOCM_DTR)
+	    return kTRUE;
+	else
+	    return kFALSE;
+
+};
+//________________________________________________________________
+
+Bool_t TMrbSerialComm::GetCts()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::GetCts
+// Purpose:        Query state of CTS line
+// Arguments:      
+// Results:        TRUE if set
+// Exceptions:
+// Description:    Query state of CTS line
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1) {
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "CTS get");
+		return kFALSE;
+	}
+	
+	if(stat & TIOCM_CTS)
+	    return kTRUE;
+	else
+	    return kFALSE;
+
+};
+//________________________________________________________________
+
+Bool_t TMrbSerialComm::GetDsr()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::GetDsr
+// Purpose:        Query state of DSR line
+// Arguments:      
+// Results:        TRUE if set
+// Exceptions:
+// Description:    Query state of DSR line
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1) {
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "DSR get");
+		return kFALSE;
+	}
+	
+	if(stat & TIOCM_DSR)
+	    return kTRUE;
+	else
+	    return kFALSE;
+
+};
+//________________________________________________________________
+
+void TMrbSerialComm::SetDtr()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::SetDtr
+// Purpose:        Set state of DTR line high
+// Arguments:      
+// Results:        
+// Exceptions:
+// Description:    Set state of DTR line high
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1){
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "DTR set");
+		return;
+	}
+	
+	if( !(stat & TIOCM_DTR) ) {
+		stat |= TIOCM_DTR;
+		if(ioctl(fFd, TIOCMSET, &stat) == -1) {
+			gMrbLog->Err() << gSystem->GetError() << " (" 
+			<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+			gMrbLog->Flush(this->ClassName(), "DTR set");
+			return;
+		}
+	}
+};
+//________________________________________________________________
+
+void TMrbSerialComm::ResetDtr()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::ResetDtr
+// Purpose:        Set state of DTR line low
+// Arguments:      
+// Results:        
+// Exceptions:
+// Description:   Set state of DTR line low 
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1){
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "DTR reset");
+		return;
+	}
+	
+	if( (stat & TIOCM_DTR) ) {
+		stat &= ~TIOCM_DTR;
+		if(ioctl(fFd, TIOCMSET, &stat) == -1) {
+			gMrbLog->Err() << gSystem->GetError() << " (" 
+			<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+			gMrbLog->Flush(this->ClassName(), "DTR reset");
+			return;
+		}
+		tcflush(fFd, TCIFLUSH);		// clean the modem line and activate the settings for the port
+	}
+};
+//________________________________________________________________
+
+Bool_t TMrbSerialComm::GetRts()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::GetRts
+// Purpose:        Query state of RTS line
+// Arguments:      
+// Results:        TRUE if set
+// Exceptions:
+// Description:    Query state of RTS line
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1){
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "RTS get");
+		return kFALSE;
+	}
+	
+	if(stat & TIOCM_RTS)
+	    return kTRUE;
+	else
+	    return kFALSE;
+};
+//________________________________________________________________
+
+void TMrbSerialComm::SetRts()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::SetRts
+// Purpose:        Set state of RTS line high
+// Arguments:      
+// Results:        
+// Exceptions:
+// Description:    Set state of RTS line high
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1){
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "RTS set");
+		return;
+	}
+	tcflush(fFd, TCIFLUSH);		// clean the modem line and activate the settings for the port
+	
+	if( !(stat & TIOCM_RTS)) {
+	    stat |= TIOCM_RTS;
+		if(ioctl(fFd, TIOCMSET, &stat) == -1) {
+			gMrbLog->Err() << gSystem->GetError() << " (" 
+			<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+			gMrbLog->Flush(this->ClassName(), "RTS set");
+			return;
+		}
+	}
+};
+//________________________________________________________________
+
+void TMrbSerialComm::SetRtsAndDtr()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::SetRtsAndDtr
+// Purpose:        Simultaneously set state of RTS and DTR line high
+// Arguments:      
+// Results:        
+// Exceptions:
+// Description:    Set state of RTS and DTR line high
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1){
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "RTS set");
+		return;
+	}
+	
+	tcflush(fFd, TCIFLUSH);		// clean the modem line and activate the settings for the port
+	stat |= TIOCM_DTR;
+	stat |= TIOCM_RTS;
+	if(ioctl(fFd, TIOCMSET, &stat) == -1) {
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "RTS set");
+		return;
+	}
+};
+//________________________________________________________________
+
+void TMrbSerialComm::ResetRts()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::ResetRts
+// Purpose:        Set state of RTS line low
+// Arguments:      
+// Results:        
+// Exceptions:
+// Description:    Set state of RTS line low
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1){
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "RTS reset");
+		return;
+	}
+	
+	if(stat & TIOCM_RTS) {
+		stat &= ~TIOCM_RTS;
+		tcflush(fFd, TCIFLUSH);		// clean the modem line and activate the settings for the port
+
+		if(ioctl(fFd, TIOCMSET, &stat) == -1) {
+			gMrbLog->Err() << gSystem->GetError() << " (" 
+			<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+			gMrbLog->Flush(this->ClassName(), "RTS reset");
+			return;
+		}
+	}
+};
+//________________________________________________________________
+
+void TMrbSerialComm::ToggleDtr()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::ToggleDtr
+// Purpose:        Change state of DTR line
+// Arguments:      
+// Results:        
+// Exceptions:
+// Description:    Change state of DTR line
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	Int_t stat;
+	if(ioctl(fFd, TIOCMGET, &stat) == -1){
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "DTR write");
+		return;
+	}
+	
+	if(stat & TIOCM_DTR)
+	    stat &= ~TIOCM_DTR;
+	else
+	    stat |= TIOCM_DTR;
+	if(ioctl(fFd, TIOCMSET, &stat) == -1) {
+		gMrbLog->Err() << gSystem->GetError() << " (" 
+		<< gSystem->GetErrno() << ")" << " - " << this->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "DTR write");
+		return;
+	}
+};
+//________________________________________________________________
+
+Bool_t TMrbSerialComm::SetModemBaudRate(Int_t speed)
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::SetModemBaudRate
+// Purpose:        Set baudrate
+// Arguments:      Int_t speed      - requested baudrate
+// Results:        TRUE if succesful (valid bauddrate)
+//                 FALSE otherwise
+// Exceptions:
+// Description:    Set state of RTS line low
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	termios tios;
+	tcgetattr(fFd, &tios);				// save current serial port settings
+	if (speed > 0)
+		fBaudRate = speed;
+	if (cfsetspeed(&tios, fBaudRate) == -1) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "]: Unsupported baud rate - " << fBaudRate
+						<< ", using default = 19200" << endl;
+		gMrbLog->Flush(this->ClassName(), "Open");
+		return kFALSE;
+	}
+	tcflush(fFd, TCIFLUSH);				// clean the modem line and activate the settings for the port
+	tcsetattr(fFd, TCSANOW, &tios);
+	return kTRUE;
+}
+//________________________________________________________________
+
+Bool_t TMrbSerialComm::SetRaw()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::SetRaw
+// Purpose:        Prepare modem for raw transfer of bytes (not characters)
+// Arguments:     
+// Results:        TRUE
+// Exceptions:
+// Description:    Prepare modem for raw transfer of bytes (not characters)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	termios options;
+	tcgetattr(fFd, &options);
+	options.c_cflag |= (CLOCAL | CREAD);
+	options.c_lflag &= ~(ICANON | ECHO | ISIG);
+	tcflush(fFd, TCIFLUSH);				// clean the modem line and activate the settings for the port
+	tcsetattr(fFd, TCSANOW, &options);
+	return kTRUE;
+}
+//________________________________________________________________
+
+Bool_t TMrbSerialComm::SetSpaceParity()
+{
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSerialComm::SetSpaceParity
+// Purpose:        Set modem to SpaceParity (parity bit always 0)
+// Arguments:     
+// Results:        TRUE
+// Exceptions:
+// Description:    Set modem to SpaceParity
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	termios options;
+	tcgetattr(fFd, &options);
+	options.c_cflag &= ~PARENB;
+	options.c_cflag &= ~CSTOPB;
+	options.c_cflag &= ~CSIZE;
+	options.c_cflag |= CS8;
+	tcflush(fFd, TCIFLUSH);				// clean the modem line and activate the settings for the port
+	tcsetattr(fFd, TCSANOW, &options);
+	return kTRUE;
+}
+;

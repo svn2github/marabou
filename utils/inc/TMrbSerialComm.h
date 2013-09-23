@@ -7,8 +7,9 @@
 // Purpose:        Class defs to control a serial I/O line
 // Description:    Class definitions to control I/O from/to a serial port.
 //                 Inspired by a class c_SerialComm written by Mario Schubert
-// Author:         R. Lutter
-// Revision:       $Id: TMrbSerialComm.h,v 1.7 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
+//                 O.S. 17.09.2013 Add control of DTR, RTS etc, add raw r/w
+// Author:         R. Lutter, O.Schaile
+// Revision:       $Id: TMrbSerialComm.h 17.09.2013$       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -73,6 +74,22 @@ class TMrbSerialComm : public TNamed {
 		virtual void Print() const;			// print settings
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
+		
+		Int_t ReadDataRaw(UChar_t * Data, Int_t nbytes);
+		Int_t WriteDataRaw(const UChar_t * Data, Int_t nbytes);
+		Bool_t GetDsr();
+		Bool_t GetDtr();
+		void SetDtr();
+		void ResetDtr();
+		Bool_t GetCts();
+		Bool_t GetRts();
+		void SetRts();
+		void ResetRts();
+		void SetRtsAndDtr();
+		void ToggleDtr();
+		Bool_t SetModemBaudRate(Int_t baudrate = 0);
+		Bool_t SetRaw();
+		Bool_t SetSpaceParity();
 
 	protected:
 		const Char_t * MakePrintable(TString & PrintString, const Char_t * String) const;
