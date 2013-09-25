@@ -54,8 +54,9 @@
 
 *-*-*-*-*.LocalMemoryLength:			0x00001000
 
-*-*-SP-RIO4-*.LocalPipeBase:	 		0xe8000000
-*-*-SP-*-*.LocalPipeBase:	 			0x01e00000
+*-*-SP-RIO3-*.LocalPipeBase:	 		0x04000000
+*-*-SP-RIO4-*.LocalPipeBase:	 		0x08000000
+*-*-SP-*-*.LocalPipeBase:	 		0x02000000
 
 *-*-*-*-*.LocalPipeOffset:	 			0x0
 
@@ -66,7 +67,7 @@
 *-*-SP-RIO4-*.LocalPipeType:			1
 *-*-SP-*-*.LocalPipeType:				0
 
-*-*-*-*-*.LocalPipeLength:		 		10000
+*-*-SP-*-*.LocalPipeLength:		 	100
 
 *-*-*-RIO2-VME.TriggerModuleBase:		0xe2000000
 *-*-*-RIO3-VME.TriggerModuleBase:		0x42000000

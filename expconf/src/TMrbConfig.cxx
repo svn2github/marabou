@@ -7702,6 +7702,7 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 								<< " (0x" << psl << setbase(10) << " is recommended for a " << procType << " cpu)" << endl;
 				gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
 			}
+#if 0
 			Int_t pipeLength = (fPipeSegLength - 2 * fSevtSize) / 20 - 1;
 			if (pipeLength > kMbsPipeLengthMax)  pipeLength = kMbsPipeLengthMax;
 			if (pipeLength < kMbsPipeLengthMin) {
@@ -7711,8 +7712,9 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 				gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
 				pipeLength = kMbsPipeLengthMin;
 			}
-			mbsSetup->ReadoutProc(0)->SetPipeSegLength(fPipeSegLength);
 			mbsSetup->ReadoutProc(0)->SetPipeLength(pipeLength);
+#endif
+			mbsSetup->ReadoutProc(0)->SetPipeSegLength(fPipeSegLength);
 		}
 		TMrbEvent * evt;
 		TIterator * evtIter = fLofEvents.MakeIterator();
