@@ -233,6 +233,15 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			fCodeTemplates.Substitute("$dumpFile", dump.Data());
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
+		case TMrbConfig::kModuleInitBLT:
+			fCodeTemplates.InitializeCode();
+			fCodeTemplates.Substitute("$moduleName", moduleNameLC);
+			fCodeTemplates.Substitute("$size", (Int_t) this->GetSegmentSize(), 16);
+			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
+			fCodeTemplates.Substitute("$addrMod", 0x0b, 16);
+			fCodeTemplates.Substitute("$fifoMode", "FALSE");
+			fCodeTemplates.WriteCode(RdoStrm);
+			break;
 		case TMrbConfig::kModuleClearModule:
 		case TMrbConfig::kModuleFinishReadout:
 		case TMrbConfig::kModuleStartAcquisition:
@@ -241,6 +250,7 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 		case TMrbConfig::kModuleStopAcquisitionGroup:
 		case TMrbConfig::kModuleUtilities:
 		case TMrbConfig::kModuleDefineGlobals:
+		case TMrbConfig::kModuleDefineGlobalsOnce:
 		case TMrbConfig::kModuleDefineLocalVarsInit:
 		case TMrbConfig::kModuleDefineLocalVarsReadout:
 		case TMrbConfig::kModuleDefinePrototypes:
