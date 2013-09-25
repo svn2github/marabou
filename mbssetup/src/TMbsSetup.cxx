@@ -1526,13 +1526,14 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 					}
 					break;
 
-					case kSetLocPipeBase:
+				case kSetLocPipeBase:
 					{
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t pipeBase = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), 0);
 						if (pipeBase == 0) {
+							cout << cType->GetName() << " " << pType->GetName() << " " << sMode << " " << mbsVersion << " " << lynxVersion << endl;
 							this->GetRcVal(pipeBase, "LocalPipeBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
 							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), (Int_t) pipeBase, 16);
 						}
@@ -1618,7 +1619,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 							if (found) {
 								stpTmpl.InitializeCode();
 								stpTmpl.Substitute("$trigNo", (Int_t) i);
-								stpTmpl.Substitute("$sevtBufArr", this->EncodeArray(arrayData, kNofCrates));
+								stpTmpl.Substitute("$sevtBufArr", this->EncodeArray(arrayData, kNofCrates, 16));
 								stpTmpl.WriteCode(stp);
 							}
 						}
