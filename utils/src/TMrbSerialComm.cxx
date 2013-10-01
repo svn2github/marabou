@@ -532,7 +532,7 @@ const Char_t * TMrbSerialComm::MakePrintable(TString & PrintString, const Char_t
 				||	(isspace(str(i)) != 0)) {
 			PrintString += str(i);
 		} else {
-			PrintString += Form("\\03o", str(i));
+			PrintString += Form("\\%03o", str(i));
 		}
 	}
 	return(PrintString.Data());
@@ -958,6 +958,7 @@ Bool_t TMrbSerialComm::SetRaw()
 	tcgetattr(fFd, &options);
 	options.c_cflag |= (CLOCAL | CREAD);
 	options.c_lflag &= ~(ICANON | ECHO | ISIG);
+	options.c_iflag &= ~(ICRNL | IGNCR);
 	tcflush(fFd, TCIFLUSH);				// clean the modem line and activate the settings for the port
 	tcsetattr(fFd, TCSANOW, &options);
 	return kTRUE;
