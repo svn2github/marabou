@@ -26,12 +26,12 @@
 ////////////////////////////////////////////////////////////////////////////*/
 
 
-#define NOF_CHANNELS	8
-#define NOF_GROUPS		4
+#define SIS_NOF_CHANNELS	8
+#define SIS_NOF_GROUPS		4
 #define SIS3302_STRLEN			100
 
 
-#define GROUP(adc)		(adc >> 1)
+#define SIS_GROUP(adc)		(adc >> 1)
 
 struct s_sis_3302 {
 	Char_t moduleName[SIS3302_STRLEN];
@@ -66,33 +66,33 @@ struct s_sis_3302 {
 								/* OFF: save length values, set to zero, restore on stop */
 	UInt_t activeChannels;					/* pattern of active channels */
 
-	Int_t dacValues[NOF_CHANNELS];
+	Int_t dacValues[SIS_NOF_CHANNELS];
 
 	UInt_t controlStatus;
-	UInt_t headerBits[NOF_GROUPS];
-	UInt_t triggerMode[NOF_CHANNELS];
-	UInt_t gateMode[NOF_CHANNELS];
-	UInt_t nextNeighborTrigger[NOF_CHANNELS];
-	UInt_t nextNeighborGate[NOF_CHANNELS];
-	Bool_t invertSignal[NOF_CHANNELS];
-	Int_t endAddrThresh[NOF_GROUPS];
-	Int_t pretrigDelay[NOF_GROUPS];
-	Int_t trigGateLength[NOF_GROUPS];
-	Int_t rawDataSampleLength[NOF_GROUPS];
-	Int_t rawDataSampleStart[NOF_GROUPS];
-	Int_t trigPeakTime[NOF_CHANNELS];
-	Int_t trigGapTime[NOF_CHANNELS];
-	Int_t trigPulseLength[NOF_CHANNELS];
-	Int_t trigInternalGate[NOF_CHANNELS];
-	Int_t trigInternalDelay[NOF_CHANNELS];
-	Int_t trigDecimation[NOF_CHANNELS];
-	Int_t trigThresh[NOF_CHANNELS];
-	Int_t trigGT[NOF_CHANNELS];
-	Int_t trigOut[NOF_CHANNELS];
-	Int_t energyPeakTime[NOF_GROUPS];
-	Int_t energyGapTime[NOF_GROUPS];
-	Int_t energyDecimation[NOF_GROUPS];
-	Int_t energyGateLength[NOF_GROUPS];
+	UInt_t headerBits[SIS_NOF_GROUPS];
+	UInt_t triggerMode[SIS_NOF_CHANNELS];
+	UInt_t gateMode[SIS_NOF_CHANNELS];
+	UInt_t nextNeighborTrigger[SIS_NOF_CHANNELS];
+	UInt_t nextNeighborGate[SIS_NOF_CHANNELS];
+	Bool_t invertSignal[SIS_NOF_CHANNELS];
+	Int_t endAddrThresh[SIS_NOF_GROUPS];
+	Int_t pretrigDelay[SIS_NOF_GROUPS];
+	Int_t trigGateLength[SIS_NOF_GROUPS];
+	Int_t rawDataSampleLength[SIS_NOF_GROUPS];
+	Int_t rawDataSampleStart[SIS_NOF_GROUPS];
+	Int_t trigPeakTime[SIS_NOF_CHANNELS];
+	Int_t trigGapTime[SIS_NOF_CHANNELS];
+	Int_t trigPulseLength[SIS_NOF_CHANNELS];
+	Int_t trigInternalGate[SIS_NOF_CHANNELS];
+	Int_t trigInternalDelay[SIS_NOF_CHANNELS];
+	Int_t trigDecimation[SIS_NOF_CHANNELS];
+	Int_t trigThresh[SIS_NOF_CHANNELS];
+	Int_t trigGT[SIS_NOF_CHANNELS];
+	Int_t trigOut[SIS_NOF_CHANNELS];
+	Int_t energyPeakTime[SIS_NOF_GROUPS];
+	Int_t energyGapTime[SIS_NOF_GROUPS];
+	Int_t energyDecimation[SIS_NOF_GROUPS];
+	Int_t energyGateLength[SIS_NOF_GROUPS];
 
 	Int_t clockSource;
 	Bool_t mcaMode;
@@ -101,10 +101,10 @@ struct s_sis_3302 {
 	Int_t lemoInEnableMask;
 	Bool_t triggerFeedback;
 
-	Int_t energyTestBits[NOF_GROUPS];
-	Int_t energySampleLength[NOF_GROUPS];
-	Int_t energySampleStart[3][NOF_GROUPS];
-	Int_t energyTauFactor[NOF_CHANNELS];
+	Int_t energyTestBits[SIS_NOF_GROUPS];
+	Int_t energySampleLength[SIS_NOF_GROUPS];
+	Int_t energySampleStart[3][SIS_NOF_GROUPS];
+	Int_t energyTauFactor[SIS_NOF_CHANNELS];
 
 	unsigned long mcstAddr;			/* MCST signature */
 };

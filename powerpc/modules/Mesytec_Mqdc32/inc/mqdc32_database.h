@@ -26,7 +26,7 @@
 //! $Date: $
 ////////////////////////////////////////////////////////////////////////////*/
 
-#define NOF_CHANNELS	32
+#define MQDC_NOF_CHANNELS	32
 
 struct s_mqdc32 {
 	char moduleName[100];
@@ -44,7 +44,7 @@ struct s_mqdc32 {
 	int updInterval;
 	int updCountDown;
 
-	uint16_t threshold[NOF_CHANNELS];
+	uint16_t threshold[MQDC_NOF_CHANNELS];
 	uint16_t addrSource;
 	uint16_t addrReg;
 	uint16_t moduleId;

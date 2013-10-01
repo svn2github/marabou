@@ -1,18 +1,6 @@
 #ifndef __MADC32_H__
 #define __MADC32_H__
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <errno.h>
-#include <stdint.h>
-
-#include <allParam.h>
-#include <ces/bmalib.h>
-
-#include "block.h"
-
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			madc32.h
@@ -22,11 +10,6 @@
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
 //! $Revision: 1.15 $
 //! $Date: 2011-04-29 07:19:03 $
-////////////////////////////////////////////////////////////////////////////*/
-
-/*____________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////
-//! \brief			address map
 ////////////////////////////////////////////////////////////////////////////*/
 
 #define MADC32_DATA						0x0
@@ -40,6 +23,10 @@
 
 #define MADC32_IRQ_THRESH				0x6018
 #define MADC32_MAX_XFER_DATA			0x601A
+
+#define MADC32_CBLT_MCST_CONTROL		0x6020
+#define MADC32_CBLT_ADDRESS				0x6022
+#define MADC32_MCST_ADDRESS				0x6024
 
 #define MADC32_BUFFER_DATA_LENGTH		0x6030
 #define MADC32_DATA_LENGTH_FORMAT		0x6032
@@ -204,7 +191,7 @@
 #define MADC32_NIM_BUSY_BUFFER_FULL			4
 #define MADC32_NIM_BUSY_ABOVE_THRESH		8
 #define MADC32_NIM_BUSY_DEFAULT				MADC32_NIM_BUSY_BUSY
-#define MADC32_NIM_BUSY_MASK				MADC32_NIM_BUSY_CBUS
+#define MADC32_NIM_BUSY_MASK				0xF
 
 #define MADC32_TEST_PULSER_OFF				0
 #define MADC32_TEST_PULSER_A0				4
@@ -231,83 +218,14 @@
 #define MADC32_M_EOB						0x80000000
 #define MADC32_M_WC							0x00000FFF
 
-#define MADC32_BLT_OFF						0
-#define MADC32_BLT_NORMAL					1
-#define MADC32_BLT_CHAINED					2
+#define MADC32_MCST_ENA						(0x1 << 7)
+#define MADC32_MCST_DIS						(0x1 << 6)
+#define MADC32_CBLT_FIRST_ENA				(0x1 << 5)
+#define MADC32_CBLT_FIRST_DIS				(0x1 << 4)
+#define MADC32_CBLT_LAST_ENA				(0x1 << 3)
+#define MADC32_CBLT_LAST_DIS				(0x1 << 2)
+#define MADC32_CBLT_ENA						(0x1 << 1)
+#define MADC32_CBLT_DIS						(0x1 << 0)
 
-
-/*____________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////
-//! \brief			data structure for Madc32
-////////////////////////////////////////////////////////////////////////////*/
-
-
-#define NOF_CHANNELS	32
-
-struct dmachain {
-        void *address;
-        int count;
-};
-
-struct s_madc32 {
-	unsigned long vmeAddr;					/* phys addr given by module switches */
-	volatile unsigned char * baseAddr;		/* addr mapped via find_controller() */
-
-	char moduleName[100];
-	char prefix[100];						/* "m_read_meb" (default) or any other */
-	char mpref[10]; 						/* "madc32: " or "" */
-
-	int serial; 							/* MARaBOU's serial number */
-
-	bool_t verbose;
-	bool_t dumpRegsOnInit;
-
-	bool_t updSettings;
-	int updInterval;
-	int updCountDown;
-
-	uint16_t threshold[NOF_CHANNELS];
-	uint16_t addrSource;
-	uint16_t addrReg;
-	uint16_t moduleId;
-	uint16_t fifoLength;
-	uint16_t dataWidth;
-	uint16_t xferData;
-	uint16_t multiEvent;
-	uint16_t markingType;
-	uint16_t bankOperation;
-	uint16_t adcResolution;
-	uint16_t outputFormat;
-	uint16_t adcOverride;
-	bool_t slidingScaleOff;
-	bool_t skipOutOfRange;
-	bool_t ignoreThresh;
-	uint16_t ggHoldDelay[2];
-	uint16_t ggHoldWidth[2];
-	uint16_t useGG;
-	uint16_t inputRange;
-	uint16_t eclTerm;
-	uint16_t eclG1OrOsc;
-	uint16_t eclFclOrRts;
-	uint16_t nimG1OrOsc;
-	uint16_t nimFclOrRts;
-	uint16_t nimBusy;
-	uint16_t testPulserStatus;
-	uint16_t ctraTsSource;
-	uint16_t ctraTsDivisor;
-
-	int memorySize;
-
-	struct s_bma * bma; 					/* block mode access */
-	uint32_t bltBufferSize;
-	uint32_t bltBlockSize;
-	uint8_t * bltBuffer;
-	uint32_t bltDestination;
-	int blockXfer;
-
-	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
-	uint32_t *evtp;
-	bool_t skipData;
-};
 
 #endif

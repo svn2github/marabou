@@ -27,6 +27,7 @@
 #include "sis_3302_database.h"
 
 #include "mapping_database.h"
+
 #include "bmaErrlist.h"
 
 #include "err_mask_def.h"
@@ -217,6 +218,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 
 				if ((((UInt_t) pointer) % 8) != 0) *pointer++ = 0x0d640d64;	/* align to 64 bit */
 				ptrloc = getPhysAddr((char *) pointer, nxs * sizeof(uint32_t));
+				printf("@@@ base=%#lx addrMod=%#lx start=%#lx pnt=%#lx (%#lx) nxs=%d (%#lx)\n", Module->md->bltBase, Module->md->bltModeId, startAddr, pointer, ptrloc, nxs, nxs); getchar();
 				if (ptrloc == NULL) continue;
 				CLEAR_BUS_TRAP_FLAG;
 				bmaError = bma_read(Module->md->bltBase + startAddr, ptrloc | 0x0, nxs, Module->md->bltModeId);

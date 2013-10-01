@@ -64,7 +64,6 @@
 *-*-SP-RIO3-*.LocalPipeSegmentLength:	0x02000000
 *-*-SP-*-*.LocalPipeSegmentLength:	 	0x00100000
 
-*-*-SP-RIO4-*.LocalPipeType:			1
 *-*-SP-*-*.LocalPipeType:				0
 
 *-*-SP-*-*.LocalPipeLength:		 	100

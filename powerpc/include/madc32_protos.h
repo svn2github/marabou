@@ -1,6 +1,10 @@
 #ifndef __MADC32_PROTOS_H__
 #define __MADC32_PROTOS_H__
 
+#include "mapping_database.h"
+#include "madc32_database.h"
+#include "madc32.h"
+
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			madc32_protos.h
@@ -13,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////*/
 
 
-struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial);
+struct s_madc32 * madc32_alloc(char * moduleName, struct s_mapDescr * md, int serial);
 
 void madc32_moduleInfo(struct s_madc32 * s);
 void madc32_setPrefix(struct s_madc32 * s, char * prefix);
@@ -24,13 +28,15 @@ void madc32_loadFromDb(struct s_madc32 * s, uint32_t chnPattern);
 
 void madc32_initialize(struct s_madc32 * s);
 
+void madc32_enableBLT(struct s_madc32 * s);
+bool_t madc32_useBLT(struct s_madc32 * s);
+
 bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file);
 bool_t madc32_dumpRaw(struct s_madc32 * s, char * file);
 void madc32_printDb(struct s_madc32 * s);
 
-void madc32_reset(struct s_madc32 * s);
+void madc32_soft_reset(struct s_madc32 * s);
 
-void  madc32_setBltBlockSize(struct s_madc32 * s, uint32_t size);
 void madc32_initDefaults(struct s_madc32 * s);
 
 void madc32_setThreshold(struct s_madc32 * s, uint16_t channel,  uint16_t thresh);
@@ -131,6 +137,10 @@ void madc32_setNimBusy(struct s_madc32 * s, uint16_t busy);
 void madc32_setNimBusy_db(struct s_madc32 * s);
 uint16_t madc32_getNimBusy(struct s_madc32 * s);
 
+void madc32_setBufferThresh_db(struct s_madc32 * s);
+void madc32_setBufferThresh(struct s_madc32 * s, uint16_t thresh);
+uint16_t madc32_getBufferThresh(struct s_madc32 * s);
+
 void madc32_setTestPulser(struct s_madc32 * s, uint16_t mode);
 void madc32_setTestPulser_db(struct s_madc32 * s);
 uint16_t madc32_getTestPulser(struct s_madc32 * s);
@@ -157,12 +167,36 @@ void madc32_startAcq(struct s_madc32 * s);
 void madc32_stopAcq(struct s_madc32 * s);
 
 void madc32_resetFifo(struct s_madc32 * s);
+void madc32_resetTimestamp(struct s_madc32 * s);
+
+void madc32_setMcstSignature(struct s_madc32 * s, unsigned long Signature);
+uint16_t madc32_getMcstSignature(struct s_madc32 * s);
+
+void madc32_setCbltSignature(struct s_madc32 * s, unsigned long Signature);
+uint16_t madc32_getCbltSignature(struct s_madc32 * s);
+
+void madc32_setFirstInChain(struct s_madc32 * s);
+bool_t madc32_isFirstInChain(struct s_madc32 * s);
+
+void madc32_setLastInChain(struct s_madc32 * s);
+bool_t madc32_isLastInChain(struct s_madc32 * s);
+void madc32_setMiddleOfChain(struct s_madc32 * s);
+bool_t madc32_isMiddleOfChain(struct s_madc32 * s);
+
+void madc32_setMcstEnable(struct s_madc32 * s);
+void madc32_setMcstDisable(struct s_madc32 * s);
+bool_t madc32_mcstIsEnabled(struct s_madc32 * s);
+void madc32_setCbltEnable(struct s_madc32 * s);
+void madc32_setCbltDisable(struct s_madc32 * s);
+bool_t madc32_cbltIsEnabled(struct s_madc32 * s);
+
+void madc32_setMcstCblt_db(struct s_madc32 * s);
+
+void madc32_startAcq_mcst(struct s_madc32 * s);
+void madc32_stopAcq_msct(struct s_madc32 * s);
+void madc32_resetFifo_mcst(struct s_madc32 * s);
+void madc32_resetTimestamp_mcst(struct s_madc32 * s);
+void madc_resetReadout_mcst(struct s_madc32 * s);
 
 bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile);
-
-void madc32_resetEventBuffer(struct s_madc32 * s);
-uint32_t * madc32_pushEvent(struct s_madc32 * s, uint32_t * pointer);
-
-extern int vmtopm (int, struct dmachain *, char *, long);
-
 #endif

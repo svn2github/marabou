@@ -1,32 +1,15 @@
 #ifndef __MQDC32_H__
 #define __MQDC32_H__
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <errno.h>
-#include <stdint.h>
-
-#include <allParam.h>
-#include <ces/bmalib.h>
-
-#include "block.h"
-
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			mqdc32.h
-//! \brief			Definitions for Mesytec Madc32 ADC
-//! \details		Contains definitions to operate a Mesytec Madc32
+//! \brief			Definitions for Mesytec Mqdc32 QDC
+//! \details		Contains definitions to operate a Mesytec Mqdc32
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
 //! $Revision: 1.15 $
 //! $Date: 2011-04-29 07:19:03 $
-////////////////////////////////////////////////////////////////////////////*/
-
-/*____________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////
-//! \brief			address map
 ////////////////////////////////////////////////////////////////////////////*/
 
 #define MQDC32_DATA						0x0
@@ -40,6 +23,10 @@
 
 #define MQDC32_IRQ_THRESH				0x6018
 #define MQDC32_MAX_XFER_DATA			0x601A
+
+#define MQDC32_CBLT_MCST_CONTROL		0x6020
+#define MQDC32_CBLT_ADDRESS				0x6022
+#define MQDC32_MCST_ADDRESS				0x6024
 
 #define MQDC32_BUFFER_DATA_LENGTH		0x6030
 #define MQDC32_DATA_LENGTH_FORMAT		0x6032
@@ -213,85 +200,27 @@
 
 #define MQDC32_M_SIGNATURE					0xC0000000
 #define MQDC32_M_HEADER						0x40000000
+#define MQDC32_M_DATA						0x00000000
 #define MQDC32_M_TRAILER					0xC0000000
 #define MQDC32_M_EOB						0x80000000
 #define MQDC32_M_WC							0x00000FFF
 
-#define MQDC32_BLT_OFF						0
-#define MQDC32_BLT_NORMAL					1
-#define MQDC32_BLT_CHAINED					2
+#define MQDC32_N_HISTOSIZE					4096
 
+#define MQDC32_M_SIGNATURE					0xC0000000
+#define MQDC32_M_HEADER						0x40000000
+#define MQDC32_M_TRAILER					0xC0000000
+#define MQDC32_M_EOB						0x80000000
+#define MQDC32_M_WC							0x00000FFF
 
-/*____________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////
-//! \brief			data structure for Madc32
-////////////////////////////////////////////////////////////////////////////*/
-
-
-#define NOF_CHANNELS	32
-
-struct dmachain {
-        void *address;
-        int count;
-};
-
-struct s_mqdc32 {
-	unsigned long vmeAddr;					/* phys addr given by module switches */
-	volatile unsigned char * baseAddr;		/* addr mapped via find_controller() */
-
-	char moduleName[100];
-	char prefix[100];						/* "m_read_meb" (default) or any other */
-	char mpref[10]; 						/* "mqdc32: " or "" */
-
-	int serial; 							/* MARaBOU's serial number */
-
-	bool_t verbose;
-	bool_t dumpRegsOnInit;
-
-	bool_t updSettings;
-	int updInterval;
-	int updCountDown;
-
-	uint16_t threshold[NOF_CHANNELS];
-	uint16_t addrSource;
-	uint16_t addrReg;
-	uint16_t moduleId;
-	uint16_t fifoLength;
-	uint16_t dataWidth;
-	uint16_t xferData;
-	uint16_t multiEvent;
-	uint16_t markingType;
-	uint16_t bankOperation;
-	uint16_t adcResolution;
-	uint16_t bankOffset[2];
-	uint16_t gateLimit[2];
-	bool_t slidingScaleOff;
-	bool_t skipOutOfRange;
-	bool_t ignoreThresh;
-	uint16_t inputCoupling;
-	uint16_t eclTerm;
-	uint16_t eclG1OrOsc;
-	uint16_t eclFclOrRts;
-	uint16_t gateSelect;
-	uint16_t nimG1OrOsc;
-	uint16_t nimFclOrRts;
-	uint16_t nimBusy;
-	uint16_t testPulserStatus;
-	uint16_t ctraTsSource;
-	uint16_t ctraTsDivisor;
-
-	int memorySize;
-
-	struct s_bma * bma; 					/* block mode access */
-	uint32_t bltBufferSize;
-	uint32_t bltBlockSize;
-	uint8_t * bltBuffer;
-	uint32_t bltDestination;
-	int blockXfer;
-
-	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
-	uint32_t *evtp;
-	bool_t skipData;
-};
+#define MQDC32_MCST_ENA						(0x1 << 7)
+#define MQDC32_MCST_DIS						(0x1 << 6)
+#define MQDC32_CBLT_FIRST_ENA				(0x1 << 5)
+#define MQDC32_CBLT_FIRST_DIS				(0x1 << 4)
+#define MQDC32_CBLT_LAST_ENA				(0x1 << 3)
+#define MQDC32_CBLT_LAST_DIS				(0x1 << 2)
+#define MQDC32_CBLT_ENA						(0x1 << 1)
+#define MQDC32_CBLT_DIS						(0x1 << 0)
 
 #endif
+

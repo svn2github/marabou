@@ -1,7 +1,7 @@
 #ifndef __BMA_ERRORS__
 #define __BMA_ERRORS__
 
-char * bmaErrlist[] = {
+static char * bmaErrlist[] = {
         "[BMA_OK] success",
         "[BMA_E_Error] unspecific err",
         "[BMA_E_NotImp] not (yet) implemented",

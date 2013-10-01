@@ -27,7 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////*/
 
 
-#define NOF_CHANNELS	32
+#define MADC_NOF_CHANNELS	32
 
 struct s_madc32 {
 	char moduleName[100];
@@ -45,7 +45,7 @@ struct s_madc32 {
 	int updInterval;
 	int updCountDown;
 
-	uint16_t threshold[NOF_CHANNELS];
+	uint16_t threshold[MADC_NOF_CHANNELS];
 	uint16_t addrSource;
 	uint16_t addrReg;
 	uint16_t moduleId;

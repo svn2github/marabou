@@ -88,18 +88,18 @@ void mqdc32_soft_reset(struct s_mqdc32 * s)
 uint16_t mqdc32_getThreshold(struct s_mqdc32 * s, uint16_t channel)
 {
 	uint16_t thresh = 0;
-	if (channel < NOF_CHANNELS) thresh = GET16(s->md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel) & MQDC32_THRESHOLD_MASK;
+	if (channel < MQDC_NOF_CHANNELS) thresh = GET16(s->md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel) & MQDC32_THRESHOLD_MASK;
 	return thresh;
 }
 
 void mqdc32_setThreshold_db(struct s_mqdc32 * s, uint16_t channel)
 {
-	if (channel < NOF_CHANNELS) mqdc32_setThreshold(s, channel, s->threshold[channel]);
+	if (channel < MQDC_NOF_CHANNELS) mqdc32_setThreshold(s, channel, s->threshold[channel]);
 }
 
 void mqdc32_setThreshold(struct s_mqdc32 * s, uint16_t channel, uint16_t thresh)
 {
-	if (channel < NOF_CHANNELS) SET16(s->md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel, thresh & MQDC32_THRESHOLD_MASK);
+	if (channel < MQDC_NOF_CHANNELS) SET16(s->md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel, thresh & MQDC32_THRESHOLD_MASK);
 }
 
 void mqdc32_setAddrReg_db(struct s_mqdc32 * s) { mqdc32_setAddrReg(s, s->addrReg); }
@@ -489,7 +489,7 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 	sprintf(res, "MQDC32.%s.BlockXfer", mnUC);
 	s->blockXfer = root_env_getval_b(res, FALSE);
 
-	for (i = 0; i < NOF_CHANNELS; i++) {
+	for (i = 0; i < MQDC_NOF_CHANNELS; i++) {
 		sprintf(res, "MQDC32.%s.Thresh.%d", mnUC, i);
 		s->threshold[i] = root_env_getval_i(res, MQDC32_THRESHOLD_DEFAULT);
 	}
@@ -636,7 +636,7 @@ void mqdc32_loadFromDb(struct s_mqdc32 * s, uint32_t chnPattern)
 	mqdc32_setTsDivisor_db(s);
 
 	bit = 1;
-	for (ch = 0; ch < NOF_CHANNELS; ch++) {
+	for (ch = 0; ch < MQDC_NOF_CHANNELS; ch++) {
 		if (chnPattern & bit) mqdc32_setThreshold_db(s, ch); else mqdc32_setThreshold(s, ch, MQDC32_D_CHAN_INACTIVE);
 		bit <<= 1;
 	}
@@ -665,7 +665,7 @@ bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file)
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	fprintf(f, "Thresholds:\n");
-	for (ch = 0; ch < NOF_CHANNELS; ch++) fprintf(f, "   %2d: %d\n", ch, mqdc32_getThreshold(s, ch));
+	for (ch = 0; ch < MQDC_NOF_CHANNELS; ch++) fprintf(f, "   %2d: %d\n", ch, mqdc32_getThreshold(s, ch));
 
 	fprintf(f, "Addr reg          : %#x\n", mqdc32_getAddrReg(s));
 	mcstOrCblt = FALSE;
@@ -741,7 +741,7 @@ void mqdc32_printDb(struct s_mqdc32 * s)
 	int b;
 
 	printf("Thresholds:\n");
-	for (ch = 0; ch < NOF_CHANNELS; ch++) printf("   %2d: %d\n", ch, s->threshold[ch]);
+	for (ch = 0; ch < MQDC_NOF_CHANNELS; ch++) printf("   %2d: %d\n", ch, s->threshold[ch]);
 
 	printf("Addr reg          : %#x\n", s->addrReg);
 	if (s->mcstSignature != 0)

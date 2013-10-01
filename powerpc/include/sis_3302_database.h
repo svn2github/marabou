@@ -3,9 +3,20 @@
 
 #include "LwrTypes.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include <errno.h>
+#include <stdint.h>
+
+#include <allParam.h>
+#include <ces/vmelib.h>
+#include <ces/bmalib.h>
+
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
-//! \file			Sis3302_Database.h
+//! \file			sis3302_Database.h
 //! \brief			Definitions for SIS3302 ADC
 //! \details		Structures describing a SIS3302 ADC
 //! $Author: Marabou $
@@ -15,39 +26,31 @@
 ////////////////////////////////////////////////////////////////////////////*/
 
 
-#define NOF_CHANNELS	8
-#define NOF_GROUPS		4
-#define STRLEN			100
+#define SIS_NOF_CHANNELS	8
+#define SIS_NOF_GROUPS		4
+#define SIS3302_STRLEN			100
 
 
-#define GROUP(adc)		(adc >> 1)
+#define SIS_GROUP(adc)		(adc >> 1)
 
 struct s_sis_3302 {
-	ULong_t vmeAddr;						/* phys addr given by module switches */
-	volatile Char_t * baseAddr;					/* addr mapped via find_controller() */
-	Int_t segSize;
-	Int_t curSegSize;
-	UInt_t lowerBound;
-	UInt_t upperBound;
-	UInt_t mappedAddr;
-	UInt_t addrMod;
+	Char_t moduleName[SIS3302_STRLEN];
+	Char_t prefix[SIS3302_STRLEN];				/* "m_read_meb" (default) or any other */
+	Char_t mpref[10]; 					/* "sis3302: " or "" */
 
-	Char_t moduleName[STRLEN];
-	Char_t prefix[STRLEN];					/* "m_read_meb" (default) or any other */
-	Char_t mpref[10]; 						/* "madc32: " or "" */
-
-	Int_t boardId;							/* module info */
+	Int_t boardId;						/* module info */
 	Int_t majorVersion;
 	Int_t minorVersion;
 
-	Int_t serial; 							/* MARaBOU's serial number */
+	Int_t serial; 						/* MARaBOU's serial number */
 
 	Bool_t verbose;
 	Bool_t dumpRegsOnInit;
 
-	struct s_bma * bma; 					/* block mode access */
-	Char_t * bltBuffer;
-	Bool_t blockTransOn;
+	struct s_mapDescr * md;				/* mapping descriptor */
+
+	Bool_t blockXfer;					/* block xfer */
+	Int_t bufferSize;					/* max buffer size */
 
 	UInt_t status;
 
@@ -59,39 +62,37 @@ struct s_sis_3302 {
 
 	Int_t currentSampling;					/* sampling: bank 1 or 2 */
 
-	Bool_t tracingMode;						/* ON:  keep raw and energy tracing length values */
-											/* OFF: save length values, set to zero, restore on stop */
+	Bool_t tracingMode;					/* ON:  keep raw and energy tracing length values */
+								/* OFF: save length values, set to zero, restore on stop */
 	UInt_t activeChannels;					/* pattern of active channels */
 
-	Int_t bufferSize;					/* max buffer size */
-
-	Int_t dacValues[NOF_CHANNELS];
+	Int_t dacValues[SIS_NOF_CHANNELS];
 
 	UInt_t controlStatus;
-	UInt_t headerBits[NOF_GROUPS];
-	UInt_t triggerMode[NOF_CHANNELS];
-	UInt_t gateMode[NOF_CHANNELS];
-	UInt_t nextNeighborTrigger[NOF_CHANNELS];
-	UInt_t nextNeighborGate[NOF_CHANNELS];
-	Bool_t invertSignal[NOF_CHANNELS];
-	Int_t endAddrThresh[NOF_GROUPS];
-	Int_t pretrigDelay[NOF_GROUPS];
-	Int_t trigGateLength[NOF_GROUPS];
-	Int_t rawDataSampleLength[NOF_GROUPS];
-	Int_t rawDataSampleStart[NOF_GROUPS];
-	Int_t trigPeakTime[NOF_CHANNELS];
-	Int_t trigGapTime[NOF_CHANNELS];
-	Int_t trigPulseLength[NOF_CHANNELS];
-	Int_t trigInternalGate[NOF_CHANNELS];
-	Int_t trigInternalDelay[NOF_CHANNELS];
-	Int_t trigDecimation[NOF_CHANNELS];
-	Int_t trigThresh[NOF_CHANNELS];
-	Int_t trigGT[NOF_CHANNELS];
-	Int_t trigOut[NOF_CHANNELS];
-	Int_t energyPeakTime[NOF_GROUPS];
-	Int_t energyGapTime[NOF_GROUPS];
-	Int_t energyDecimation[NOF_GROUPS];
-	Int_t energyGateLength[NOF_GROUPS];
+	UInt_t headerBits[SIS_NOF_GROUPS];
+	UInt_t triggerMode[SIS_NOF_CHANNELS];
+	UInt_t gateMode[SIS_NOF_CHANNELS];
+	UInt_t nextNeighborTrigger[SIS_NOF_CHANNELS];
+	UInt_t nextNeighborGate[SIS_NOF_CHANNELS];
+	Bool_t invertSignal[SIS_NOF_CHANNELS];
+	Int_t endAddrThresh[SIS_NOF_GROUPS];
+	Int_t pretrigDelay[SIS_NOF_GROUPS];
+	Int_t trigGateLength[SIS_NOF_GROUPS];
+	Int_t rawDataSampleLength[SIS_NOF_GROUPS];
+	Int_t rawDataSampleStart[SIS_NOF_GROUPS];
+	Int_t trigPeakTime[SIS_NOF_CHANNELS];
+	Int_t trigGapTime[SIS_NOF_CHANNELS];
+	Int_t trigPulseLength[SIS_NOF_CHANNELS];
+	Int_t trigInternalGate[SIS_NOF_CHANNELS];
+	Int_t trigInternalDelay[SIS_NOF_CHANNELS];
+	Int_t trigDecimation[SIS_NOF_CHANNELS];
+	Int_t trigThresh[SIS_NOF_CHANNELS];
+	Int_t trigGT[SIS_NOF_CHANNELS];
+	Int_t trigOut[SIS_NOF_CHANNELS];
+	Int_t energyPeakTime[SIS_NOF_GROUPS];
+	Int_t energyGapTime[SIS_NOF_GROUPS];
+	Int_t energyDecimation[SIS_NOF_GROUPS];
+	Int_t energyGateLength[SIS_NOF_GROUPS];
 
 	Int_t clockSource;
 	Bool_t mcaMode;
@@ -100,9 +101,11 @@ struct s_sis_3302 {
 	Int_t lemoInEnableMask;
 	Bool_t triggerFeedback;
 
-	Int_t energyTestBits[NOF_GROUPS];
-	Int_t energySampleLength[NOF_GROUPS];
-	Int_t energySampleStart[3][NOF_GROUPS];
-	Int_t energyTauFactor[NOF_CHANNELS];
+	Int_t energyTestBits[SIS_NOF_GROUPS];
+	Int_t energySampleLength[SIS_NOF_GROUPS];
+	Int_t energySampleStart[3][SIS_NOF_GROUPS];
+	Int_t energyTauFactor[SIS_NOF_CHANNELS];
+
+	unsigned long mcstAddr;			/* MCST signature */
 };
 #endif
