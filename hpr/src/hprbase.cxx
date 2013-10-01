@@ -810,9 +810,10 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	// change name of original histogram to protect against autodelete
 	TString origname(horig->GetName());
 	if ( !origname.EndsWith("_has_supimp") ) {
+		horig->Clone();
 		origname += "_has_supimp";
 		horig->SetName(origname);
-//		cout << "Rename histogram to: " << origname << endl;
+		cout << "Make a clone and rename histogram to: " << origname << endl;
 	}
 	//	TGaxis *naxis = 0;
 	TH1 *hdisp = (TH1 *) hist->Clone();
@@ -999,6 +1000,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		fLegend->AddEntry(hdrawn, "", opt);
 	}
 	canvas->Update();
+	gHpr->ClearSelect();
 	if ( hdrawn ) {
 		TRegexp sa("SAME");
 		TString dro(hdrawn->GetDrawOption());
