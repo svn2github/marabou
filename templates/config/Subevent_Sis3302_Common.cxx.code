@@ -62,7 +62,7 @@ Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 	UInt_t * sevtStart = dataPtr;				// save ptr to begin of subevent 
 	while (SevtWC > 0) {					// subevent may contain several SIS modules
 		UInt_t header = *dataPtr++;			// header word
-		Int_t wc = (Int_t) ((header >> 16) & 0xFFFF);
+		Int_t wc = (Int_t) ((header >> 8) & 0xFFFF);
 		Int_t wcs = wc;
 		wc--;
 
