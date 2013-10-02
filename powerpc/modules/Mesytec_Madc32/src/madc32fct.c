@@ -859,39 +859,16 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));
 		if (ptrloc == NULL) return(0);
 		
-/*		p = pointer;
-		for (i = 0; i < 10; i++) {
-			for (j = 0; j < 10; j++) *p++ = 0xaffec0c0;
-		}
-
- 		p = pointer;
-		printf("@@@ before:\n");
-		printf("@@@ %#lx %#lx\n", pointer, ptrloc);
-		for (i = 0; i < 10; i++) {
-			printf("%#0lx: ", p);
-			for (j = 0; j < 10; j++) printf("%#0lx ", *p++);
-			printf("\n");
-		}
-		printf("@@@ base = %#lx, offset = %#lx\n", s->md->bltBase, MADC32_DATA);
-		getchar(); */
-
 		bmaError = bma_read(s->md->bltBase + MADC32_DATA, ptrloc, numData, s->md->bltModeId);
 		if (bmaError != 0) {
-			sprintf(msg, "[%sreadout] %s: Error \"%s\" (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, bmaErrlist[bmaError], bmaError, numData);
+			if (bmaError < 0) {
+				sprintf(msg, "[%sreadout] %s: Error %d while reading event data (numData=%d)", s->mpref, s->moduleName, bmaError, numData);
+			} else {
+				sprintf(msg, "[%sreadout] %s: Error \"%s\" (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, bmaErrlist[bmaError], bmaError, numData);
+			}
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
-
-/* 		printf("@@@ after:\n");
-		printf("@@@ %#lx %#lx\n", pointer, ptrloc);
-		p = pointer;
-		for (i = 0; i < 10; i++) {
-			printf("%#0lx: ", p);
-			for (j = 0; j < 10; j++) printf("%#0lx ", *p++);
-			printf("\n");
-		}
-		getchar(); */
-
 			
 		pointer += numData;
 	} else {
