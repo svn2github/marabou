@@ -869,8 +869,10 @@ Int_t MCA8000::FillHistogram()
 	if ( !fData ) {
 		fData = new UInt_t[fNofBins];
 	}
-	gBenchmark->Reset();
-	gBenchmark->Start("fill_hist");
+	if (fVerbose > 0) {
+		gBenchmark->Reset();
+		gBenchmark->Start("fill_hist");
+	}
 	Int_t retry = 5;
 	Int_t sum = -1;
 	while ( retry-- ) {
@@ -888,7 +890,9 @@ Int_t MCA8000::FillHistogram()
 			}
 			printf("Fill hist, Name: %s Sum of cont: %d Max count: %d\n", 
 			fHist->GetName(), sum, max_count);
-			gBenchmark->Show("fill_hist");
+			if (fVerbose > 0) {
+				gBenchmark->Show("fill_hist");
+			}
 			break;
 		}
 	}
