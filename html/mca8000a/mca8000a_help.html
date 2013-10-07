@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>How to convert pictures</TITLE>
+<link type="text/css" rel="stylesheet" href="style.css">
+</HEAD>
+<BODY bgcolor=#FFffcc>
+<h2>Amptek MCA8000a </h2>
+This programs implements control and readout of an
+Amptek MCA8000a device.
+<p></p>
+The MCA8000a accepts input signals of 0 - +5V or
+0 - +10 selectable by a hardware switch on the device.
+The resolution of the spectrum can be selected by 
+software between 256 and 16384 channels.
+The upper 1/32 channels are used for sliding scale
+linearisation hence of e.g. 1024 channels only 992 contain
+useful data. If not more than 65536 counts in any channel
+(of interest) are expected readout time may be halved by
+reading only the lower 16 bits of the spectrum.
+Input signals require no gate, the threshold is set by
+software.
+<p></p>
+
+The preset acquisition time is selectable,0 indicates no preset
+The time can be real (wall clock) of ADC live time
+Data acquisition may be stopped and restarted at any time.
+If preset time or spectra should be cleared on restart can
+be selected.
+<!--
+For more information on the device
+<a href = "http://www.bl.physik.uni-muenchen.de/marabou/htmldoc/mca8000a.html"></a>
+please consult</a>
+-->
+<p></p>
+Data are stored in a histogram. Number of channels and axis ranges
+are determined by the selected resolution of the MCA.
+E.g. resolution 1024 gives  Nbins: 992, low edge: 0, upper 992.
+The name of the hist is the date/time stamp of the booking time
+e.g. <code>mca_20130919_090332</code>, the title is also automatic
+but may be changed by the user.
+<p></p>
+To help watching the history of the spectrum during running
+<code>Book Histogram</code> may be issued at any time,  <code>Fill Histogram</code>
+uses the last booked histogram, if none exists yet it is booked
+automatically.
+<p></p>
+To display the histograms use <code>List Objects in Memory</code> from
+HistPresents main menu, use <code>Hist_to_ROOT-File</code> from the 
+<code>File</code> popup menu in the canvas to save the histogram to a file
+<p></p>
+<code>Caveat:</code> 
+<p></p>
+The serial connection with the MCA8000a seems not very stable. 
+Therefore sometimes several retries are needed to get status 
+and data (programmed are max 5 retries). In some cases the command 
+must be repeated.
+<p></p>
+Make sure that the MCA8000a is properly connected at startup since 
+the baudrate of the device and of the serial port must be adjusted
+in fixed order. In doubt stop the program, switch off and on the 
+MCA8000a and restart.
+</BODY>
+</HTML>

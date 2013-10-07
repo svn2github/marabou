@@ -1,0 +1,49 @@
+<style type="text/css">
+  h1, h2 { font-family: "Times New Roman", serif; }
+
+  h1 { margin-left: -10%;}
+  h2,h3,h4,h5,h6 { margin-left: 0%; }
+  table {
+	 margin-left: -4%
+	 font-family: sans-serif;
+	 background: white;
+	 border-width: 2;
+	 border-color: white;
+  }
+  code {
+     color: black; font-weight: bold; font-size:1.2em;
+     white-space: pre; font-family: "Courier New", monospace;
+  }
+  pre {
+     color: green; font-weight: bold;
+     white-space: pre; font-family: "Courier New", monospace;
+  }
+  tt { color: green }
+  em { font-style: italic; font-weight: bold }
+  strong { text-transform: uppercase; font-weight: bold }
+  .navbar {text-align: center }
+  .example {
+    color: rgb(153,0,51);
+    border: none;
+    padding: 0.5em;
+    width: 100%;
+    background-color: rgb(255,255,153)
+  }
+  pre.example {
+    font-family: "Lucida Console", "Courier New", monospace;
+    white-space: pre;
+  }
+  url {
+     color: blue; font-weight: bold;
+     white-space: pre; font-family: "Courier New", monospace;
+  }
+  th { font-family: sans-serif; background: rgb(204, 204, 153) }
+  td { font-family: sans-serif; background: rgb(255, 255, 153) }
+  body { 
+    margin-left: 10%; 
+    margin-right: 10%; 
+    font-family: sans-serif
+	 background-color:  rgb(153, 255, 255);
+  }
+
+</style>
