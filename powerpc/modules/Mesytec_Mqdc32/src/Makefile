@@ -16,44 +16,49 @@ ARFLAG = -rv
 
 LIB		= $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
 
+ifeq ($(GSI_CPU_PLATFORM),RIO2)
+MBSLIBS	= -llynx -lvme -lbma -luio -lnetinet
+else
+MBSLIBS	= -llynx -lvme -lbma -lbus -luio -lnetinet
+endif
+
 # ------------ Library-Objects ----------------------------------------
 
-LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libMqdc32.a
+ObjSuf		=	o
+SrcSuf		=	c
+LibSuf		=	a
 
-libMqdc32.OBJS = mqdc32fct.o
+LIBMQDC32		=	../../../lib/$(GSI_OS_VERSION)/libMqdc32.$(LibSuf)
 
-# ------------ Suffix Rules -------------------------------------------
+OBJS		=	$(LIBMQDC32)(mqdc32fct.$(ObjSuf))
 
-.SUFFIXES:
+PROGS		=	mqdc32
 
-# ----- C Code ---------
-%.o: %.c
-	$(CC) $< -c $(CFLAGS) -o $@
+.SUFFIXES: .$(SrcSuf)
 
-.SUFFIXES: .o .c
+all:			$(LIBMQDC32) $(PROGS)
 
-# ------------ Targets -------------------------------------------------
-
-all: $(LIB_TARGETS) mqdc32
-
-$(LIB_TARGETS): $(libMqdc32.OBJS)
-	cp ../inc/*.h ../../../include
-	$(AR) $(ARFLAGS) $@ $^
+$(LIBMQDC32):  	$(OBJS)
 	ranlib $@
+	cp ../inc/*.h ../../../include
 
-mqdc32:	mqdc32.o $(LIB_TARGETS)
+mqdc32:	mqdc32.o $(LIBMQDC32)
 	$(CC) -o mqdc32 mqdc32.o \
 		-L ../../../lib/$(GSI_OS_VERSION) \
 		-L /lib/ces \
 		-lMqdc32 -lUti \
 		$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
-		-llynx -lvme -lbma -lbus -luio -lnetinet
+		$(MBSLIBS)
 	mv mqdc32 $(BIN_DIR)
+	
+.$(SrcSuf).$(ObjSuf):
+			$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f *.o core core.* $(LIB_TARGETS)
+	rm -f *.o core core.* $(LIBMQDC32)
 
 depend:
 	gcc -MM $(CFLAGS) $(CPPFLAGS) *.c
 
 # ------------ Dependencies --------------------------------------------
+

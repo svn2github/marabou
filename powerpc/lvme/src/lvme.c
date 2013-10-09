@@ -17,7 +17,9 @@
 #include <sys/types.h>
 #include <ces/uiolib.h>
 #include <ces/absolute.h>
+#ifndef CPU_TYPE_RIO2
 #include <ces/buslib.h>
+#endif
 
 #include "xvmelib.h"
 #include "lvme.h"
@@ -257,6 +259,7 @@ LBma* newLBma(size_t size, uint32_t vmeAddr,
   /*
    * configure 'fifo' mode
    */
+#ifndef CPU_TYPE_RIO2
   if ((status = bma_set_mode(BMA_DEFAULT_MODE,
                              BMA_M_VMEAdrInc,
                              (fifoMode == 1 ? BMA_M_VaiFifo : BMA_M_VaiNormal)
@@ -265,6 +268,7 @@ LBma* newLBma(size_t size, uint32_t vmeAddr,
     delLBma(my);
     return NULL;
   }
+#endif
   
   /*
    * map XVME page for RIO3

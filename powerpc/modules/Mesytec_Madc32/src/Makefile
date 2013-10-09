@@ -16,44 +16,49 @@ ARFLAG = -rv
 
 LIB		= $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
 
+ifeq ($(GSI_CPU_PLATFORM),RIO2)
+MBSLIBS	= -llynx -lvme -lbma -luio -lnetinet
+else
+MBSLIBS	= -llynx -lvme -lbma -lbus -luio -lnetinet
+endif
+
 # ------------ Library-Objects ----------------------------------------
 
-LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libMadc32.a
+ObjSuf		=	o
+SrcSuf		=	c
+LibSuf		=	a
 
-libMadc32.OBJS = madc32fct.o
+LIBMADC32		=	../../../lib/$(GSI_OS_VERSION)/libMadc32.$(LibSuf)
 
-# ------------ Suffix Rules -------------------------------------------
+OBJS		=	$(LIBMADC32)(madc32fct.$(ObjSuf))
 
-.SUFFIXES:
+PROGS		=	madc32
 
-# ----- C Code ---------
-%.o: %.c
-	$(CC) $< -c $(CFLAGS) -o $@
+.SUFFIXES: .$(SrcSuf)
 
-.SUFFIXES: .o .c
+all:			$(LIBMADC32) $(PROGS)
 
-# ------------ Targets -------------------------------------------------
-
-all: $(LIB_TARGETS) madc32
-
-$(LIB_TARGETS): $(libMadc32.OBJS)
-	cp ../inc/*.h ../../../include
-	$(AR) $(ARFLAGS) $@ $^
+$(LIBMADC32):  	$(OBJS)
 	ranlib $@
+	cp ../inc/*.h ../../../include
 
-madc32:	madc32.o $(LIB_TARGETS)
-		$(CC) -o madc32 madc32.o \
-			-L ../../../lib/$(GSI_OS_VERSION) \
-			-L /lib/ces \
-			-lMadc32 -lUti \
-			$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
-			-llynx -lvme -lbma -lbus -luio -lnetinet
-		mv madc32 $(BIN_DIR)
+madc32:	madc32.o $(LIBMADC32)
+	$(CC) -o madc32 madc32.o \
+		-L ../../../lib/$(GSI_OS_VERSION) \
+		-L /lib/ces \
+		-lMadc32 -lUti \
+		$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
+		$(MBSLIBS)
+	mv madc32 $(BIN_DIR)
+	
+.$(SrcSuf).$(ObjSuf):
+			$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f *.o core core.* $(LIB_TARGETS)
+	rm -f *.o core core.* $(LIBMADC32)
 
 depend:
 	gcc -MM $(CFLAGS) $(CPPFLAGS) *.c
 
 # ------------ Dependencies --------------------------------------------
+

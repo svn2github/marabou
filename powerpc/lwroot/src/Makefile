@@ -73,6 +73,7 @@ clean:
 
 $(LWRLIB):  $(OBJS)
 				ranlib $@
+				cp ../inc/*.h ../../include
 
 .$(SrcSuf).$(ObjSuf):
 			$(CXX) $(CXXFLAGS) -c $<

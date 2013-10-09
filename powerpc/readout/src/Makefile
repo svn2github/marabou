@@ -36,9 +36,8 @@ clean:
 			rm -f *.o $(RDOLIB)
 
 $(RDOLIB):  	$(OBJS)
-	cp ../inc/*.h ../../include
-	$(AR) $(ARFLAGS) $@ $^
 	ranlib $@
+	cp ../inc/*.h ../../include
 
 caen:			caen.o $(RDOLIB)
 				$(CC) -o caen caen.o \

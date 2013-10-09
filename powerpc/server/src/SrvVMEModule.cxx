@@ -1,7 +1,7 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			SrvVMEModule.cxx
-//! \brief			MARaBOU to Lynx: VME module
+//! \brief			MARaBOU to Lynx: VME modules_param
 //! \details		Implements class methods to handle VME modules
 //!
 //! $Author: Marabou $
@@ -31,11 +31,15 @@ typedef int intptr_t;
 #include <ces/vmelib.h>
 extern "C" {
 #include <ces/bmalib.h>
+#ifndef CPU_TYPE_RIO2
 #include <ces/buslib.h>
+#endif
 #include <ces/uiolib.h>
 }
 
+#ifndef CPU_TYPE_RIO2
 #include <ces/xvme.h>
+#endif
 
 #include "vmecontrol.h"
 
@@ -430,6 +434,7 @@ volatile Char_t * SrvVMEModule::MapAdditionalVME(UInt_t PhysAddr, Int_t Size) {
 
 Bool_t SrvVMEModule::MapBLT(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod) {
 
+	struct pdparam_master s_param; 		/* vme segment params */
 	UInt_t staticBase;
 	UInt_t dynamicAddr;
 

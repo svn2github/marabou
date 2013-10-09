@@ -15,37 +15,29 @@ ARFLAG = -rv
 
 # ------------ Library-Objects ----------------------------------------
 
-LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libSis_3302.a
+ObjSuf		=	o
+SrcSuf		=	c
+LibSuf		=	a
 
-libSis_3302.OBJS = sis_3302_fct.o sis_3302_readout.o
+LIBSIS3302		=	../../../lib/$(GSI_OS_VERSION)/libSis_3302.$(LibSuf)
 
-# ------------ Suffix Rules -------------------------------------------
+OBJS		=	$(LIBSIS3302)(sis_3302_fct.$(ObjSuf)) $(LIBSIS3302)(sis_3302_readout.$(ObjSuf))
 
-.SUFFIXES:
+.SUFFIXES: .$(SrcSuf)
 
-# ----- C Code ---------
-%.o: %.c
-	$(CC) $< -c $(CFLAGS) -o $@
+all:			$(LIBSIS3302)
 
-.SUFFIXES: .o .c
-
-# ------------ Targets -------------------------------------------------
-
-all: $(LIB_TARGETS)$(CPPFLAGS)
-
-$(LIB_TARGETS): $(libSis_3302.OBJS)
-	cp ../inc/*.h ../../../include
-	$(AR) $(ARFLAGS) $@ $^
+$(LIBSIS3302):  	$(OBJS)
 	ranlib $@
+	cp ../inc/*.h ../../../include
 
-lib: $(LIB_TARGETS)
+.$(SrcSuf).$(ObjSuf):
+			$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f *.o core core.* $(LIB_TARGETS)
+	rm -f *.o core core.* $(LIBSIS3302)
 
 depend:
 	gcc -MM $(CFLAGS) $(CPPFLAGS) *.c
 
 # ------------ Dependencies --------------------------------------------
-
-sis_3302_fct.o: sis_3302_fct.c ../inc/sis_3302_database.h ../inc/sis_3302_protos.h  ../inc/sis_3302_layout.h

@@ -17,6 +17,12 @@ LWRLIB		=	../../lib/$(GSI_OS_VERSION)/libLwr.$(LibSuf)
 UTILIB		=	../../lib/$(GSI_OS_VERSION)/libUti.$(LibSuf)
 SRVLIB		=	../../lib/$(GSI_OS_VERSION)/libSrv.$(LibSuf)
 
+ifeq ($(GSI_CPU_PLATFORM),RIO2)
+MBSLIBS		= -lUti -lvme -lbma -luio -llynx -lnetinet
+else
+MBSLIBS		= -lUti -lvme -lbma -lbus -luio -llynx -lnetinet
+endif
+
 INCS		=	$(SRVINC)/SrvUtils.$(IclSuf) \
 				$(SRVINC)/SrvSocket.$(IclSuf) \
 				$(SRVINC)/SrvVMEModule.$(IclSuf) \
@@ -44,12 +50,12 @@ $(SRVPRG):		mrbLynxOsSrv.o $(SRVLIB) $(LWRLIB) $(UTILIB)
 				$(CXX) -o mrbLynxOsSrv mrbLynxOsSrv.o \
 				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
-				-lSrv -lLwr -lUti -lvme -lbma -lbus -luio $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)/lib_mbs.a -llynx -lnetinet
+				-lSrv -lLwr $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)/lib_mbs.a $(MBSLIBS)
 				mv mrbLynxOsSrv ../../bin/$(GSI_OS_VERSION)
-
 
 $(SRVLIB):   $(INCS) $(OBJS)
 				ranlib $@
+				cp ../inc/*.h ../../include
 
 .$(SrcSuf).$(ObjSuf):
 			$(CXX) $(CXXFLAGS) -c $<

@@ -25,9 +25,8 @@ PROGS		=	envtst uxtst
 all:			$(UTILIB) $(PROGS)
 
 $(UTILIB):  	$(OBJS)
-	cp ../inc/*.h ../../include
-	$(AR) $(ARFLAGS) $@ $^
 	ranlib $@
+	cp ../inc/*.h ../../include
 
 envtst:			envtst.o $(UTILIB)
 				$(CC) -o envtst envtst.o \

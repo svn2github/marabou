@@ -1,50 +1,29 @@
-CC = gcc
+CC 			=	gcc
 
-PPCINC 		=	../../include
+RDOINC		=	../inc
+PPCINC		=	../../include
 CESINC		=	/usr/include/ces
-UTIINC		=	../../utils/inc
-MBSINC		=	$(MBSROOT)/inc
 
-CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I../inc -I$(UTIINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
+CFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(RDOINC) -I$(PPCINC) -I$(CESINC)
 
-BIN_DIR = ../../bin/$(GSI_OS_VERSION)
+ObjSuf		=	o
+SrcSuf		=	c
+LibSuf		=	a
 
-# ------------ Libaries ------------------------------------------------
+LVMELIB		=	../../lib/$(GSI_OS_VERSION)/libLvme.$(LibSuf)
 
-AR = ar
-ARFLAG = -rv
+OBJS		=	$(LVMELIB)(lvme.$(ObjSuf)) $(LVMELIB)(xvmelib.$(ObjSuf))
 
-LIB		= $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
+.SUFFIXES: .$(SrcSuf)
 
-# ------------ Library-Objects ----------------------------------------
-
-LIB_TARGETS = ../../lib/$(GSI_OS_VERSION)/libLvme.a
-
-libMadc32.OBJS = lvme.o xvmelib.o
-
-# ------------ Suffix Rules -------------------------------------------
-
-.SUFFIXES:
-
-# ----- C Code ---------
-%.o: %.c
-	$(CC) $< -c $(CFLAGS) -o $@
-
-.SUFFIXES: .o .c
-
-# ------------ Targets -------------------------------------------------
-
-all: $(LIB_TARGETS)
-
-$(LIB_TARGETS): $(libMadc32.OBJS)
-	cp ../inc/*.h ../../include
-	$(AR) $(ARFLAGS) $@ $^
-	ranlib $@
+all:			$(LVMELIB)
 
 clean:
-	rm -f *.o core core.* $(LIB_TARGETS)
+			rm -f *.o $(LVMELIB)
 
-depend:
-	gcc -MM $(CFLAGS) $(CPPFLAGS) *.c
+$(LVMELIB):  	$(OBJS)
+	ranlib $@
+	cp ../inc/*.h ../../include
 
-# ------------ Dependencies --------------------------------------------
+.$(SrcSuf).$(ObjSuf):
+			$(CC) $(CFLAGS) -c $<
