@@ -508,7 +508,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 				if (this->WriteRootTree(ioSpec)) {
 					this->ReplayEvents(ioSpec);
 					this->CloseRootTree(ioSpec);
-					this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
+					this->FinishRun(ioSpec, kTRUE);			// finish run (BEFORE saving histos, user may overwrite this method)
 					this->SaveHistograms("*", ioSpec);
 					this->ClearHistograms("*", ioSpec);
 					nofEntries++;
@@ -537,7 +537,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
 						else									gMrbTransport->CloseLMDFile();
 						this->CloseRootTree(ioSpec);
-						this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
+						this->FinishRun(ioSpec, kTRUE);		// finish run (BEFORE saving histos, user may overwrite this method)
 						this->SaveHistograms("*", ioSpec);
 						this->ClearHistograms("*", ioSpec);
 					}
@@ -550,6 +550,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 			}
 		}
 	}
+	this->FinishRun(NULL, kFALSE);		// finish run AFTER ALL
 
    cout << " PutPid(TMrbAnalyze::M_STOPPING)" << endl;
    PutPid(TMrbAnalyze::M_STOPPING);
