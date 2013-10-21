@@ -1,3 +1,6 @@
+// Author: Otto Schaile <http://www.physik.uni-muenchen.de/~Otto.Schaile>
+// * Copyright OS
+
 #include "Rtypes.h"
 #include "TSystem.h"
 
@@ -5,30 +8,35 @@ class TMrbSerialComm;
 class TH1I;
 class TGMrbValuesAndText;
 class TStopwatch;
-
+//______________________________________
+//
+// MCA8000, 
+// This programs implements control and readout of a                    //
+// Amptek MCA8000a device.                                              //
+//
 class MCA8000 : public TObject {
 private:
 	TMrbSerialComm * fSerComm;   // pointer to class serving the device
-	TString fSerDev;         // serial dev: /dev/ttyS0
-	TStopwatch * fStopwatch; //
+	TString fSerDev;         // serial dev name: /dev/ttyS0
 	Int_t fStatusOk;         // flag for successful initialisation
 	Int_t fNofBinsCode;      // flag bits 0:2 code 
 	Int_t fNofBins;          // number of bins in spectrum
 	Int_t fBufLength;        // length of buffer 2 * fNofBins + 20
-	TString fNofBinsString;  // needed for combo box
+	TString fNofBinsString;  // needed for combo box 
 	Int_t fThreshold;        // input signal threshold
 	Int_t fTimerFlag;        // flag bit 3, 0: set RealTime 1: livetime
 	Int_t fBaudRateDivisor;  // = 1 for 115200; 24 for 4800
 	Int_t fSleepTime;        // times needed for 1 byte
 	Int_t fAcqTime;          // preset acquistion time
 	Int_t fShortRead;        // read only lower 16 bit of spectrum data
-	TH1I * fHist;
+	TH1I * fHist;            // pointer to latest booked histogram
 	UInt_t * fData;          // to keep 32 bit bin values on readout
-	UChar_t * fBuf0;         // byte buffer for readout
-	UChar_t * fBuf1;
-	TString fHistTitleMenu;
-	TString fHistTitle;
-	Int_t fUserTitle;
+	UChar_t * fBuf0;         // byte buffer for readout lower 16 bits
+	UChar_t * fBuf1;         // byte buffer for readout upper 16 bits
+	TString fHistTitle;      // histogram title
+	TString fHistTitleMenu;  // histogram title, variable used in menu
+	Int_t fUserTitle;        // > 0 indicates if user changed title
+	TStopwatch * fStopwatch; //
 	TGMrbValuesAndText * fDialogCmd;
 	TList * fRowLab;
 	void * fValp[100];
@@ -67,7 +75,6 @@ public:
 	Int_t SetGroup(Int_t group = 0); 
 	Int_t DeleteTime(); 
 	Int_t DeleteData();
-	void ClearMCA();
 	Int_t StartAcq(Int_t acqtime = 0, Int_t threshold = 0); 
 	Int_t StopAcq(); 
 	Int_t PrintStatusRaw(UChar_t * stat = NULL);

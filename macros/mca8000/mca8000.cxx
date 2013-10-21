@@ -1,3 +1,7 @@
+// @(#)root/html:$Id$
+// Author: OttoSchaile <mailto:OttoSchaile@lmu.de>
+// * Copyright Marabou
+#include "TROOT.h"
 #include "TSystem.h"
 #include "TMath.h"
 #include "TDatime.h"
@@ -25,10 +29,9 @@
 #define TOTAL_MEMORY_SIZE (32 * 1024)
 
 ClassImp(MCA8000)
-//_____________________________________________________________________
 
 MCA8000::MCA8000(TString device)
-//////////////////////////////////////////////////////////////////////////
+//_____________________________________________________________________
 //                                                                      //
 // This programs implements control and readout of a                    //
 // Amptek MCA8000a device.                                              //
@@ -76,15 +79,15 @@ MCA8000::MCA8000(TString device)
 	fSerComm = NULL;
 	fStatusOk = 0;
 	fSerDev = device;
-	fNofBinsCode = 3;       // flag bits 0:2
-	fNofBins = 2048; 
+	fNofBinsCode = 2;       // flag bits 0:2
+	fNofBins = 4096; 
 	fNofBinsString = "";
 	fNofBinsString += fNofBins;   
-	fThreshold = 30;
+	fThreshold = 300;
 	fTimerFlag = 0;         // flag bit 3, RealTime
 	fBaudRateDivisor = 24;  // 4800 Baud
 	fSleepTime = 4000;
-	fAcqTime = 60;          // 60 sec
+	fAcqTime = 0;          // 0 sec = inf
 	fHist = NULL;
 	fData = NULL;
 	fBuf0 = NULL;
@@ -156,13 +159,13 @@ Int_t MCA8000::OpenDevice()
 //____________________________________________________________________
 
 void MCA8000::PowerOn()
-{
 
 ////////////////////////////////////////////////////////////////////////
 //
 //  Turn power on  
 //
 ////////////////////////////////////////////////////////////////////////
+{
 	fSerComm->SetRts();
 	for (Int_t i=0; i <200; i++) {
 		fSerComm->ToggleDtr();
@@ -174,13 +177,13 @@ void MCA8000::PowerOn()
 //____________________________________________________________________
 
 void MCA8000::SetBaudRate(Int_t baudRateDivisor)
-{
 
 ////////////////////////////////////////////////////////////////////////
 //
 //  Set baudrate of MCA8000a 
 //
 ////////////////////////////////////////////////////////////////////////
+{
 	Int_t written = 0;
 	UChar_t cmd[5] = {0, 0, 0, baudRateDivisor, 0};
 	UChar_t csum =0;
@@ -208,13 +211,13 @@ void MCA8000::SetBaudRate(Int_t baudRateDivisor)
 //____________________________________________________________________
 
 Int_t MCA8000::SendCommand(UChar_t * cmd)
-{
 
 ////////////////////////////////////////////////////////////////////////
 //
 //  Send a 5 bytes command
 //
 ////////////////////////////////////////////////////////////////////////
+{
 	Int_t written = 0;
 	usleep(100000);	
 	fSerComm->ResetDtr();
@@ -234,7 +237,8 @@ Int_t MCA8000::SendCommand(UChar_t * cmd)
 	}
 	if ( fVerbose > 0 )
 		printf("\n");
-	usleep(10000);	
+	// sleeptime depends on number of bins (resolution)
+	usleep(40 * fNofBins);	
 //	UChar_t buf[2];
 //	fSerComm->ReadDataRaw(buf,2);
 	fSerComm->ResetRts();
@@ -244,13 +248,13 @@ Int_t MCA8000::SendCommand(UChar_t * cmd)
 //____________________________________________________________________
 
 Int_t MCA8000::SendControl(UChar_t * data)
-{
 
 ////////////////////////////////////////////////////////////////////////
 //
 //  Send control command 
 //
 ////////////////////////////////////////////////////////////////////////
+{
 	UChar_t cmd[5] = {1,0,0,0,0};
 	for (Int_t i = 0; i < 3; i++)
 			cmd[i+1] = data[i];
@@ -342,7 +346,6 @@ Int_t MCA8000::ReadPacket(UChar_t * data, Int_t nbytes)
 //____________________________________________________________________
 
 Int_t MCA8000::ReadData(UChar_t * data, Int_t nbytes, Int_t group )
-{
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -352,6 +355,7 @@ Int_t MCA8000::ReadData(UChar_t * data, Int_t nbytes, Int_t group )
 //  print Presettime Realtime and Livetime
 //
 ////////////////////////////////////////////////////////////////////////
+{
 	usleep(100);
 	UChar_t stat[20];
 	if (group == 0) {
@@ -364,8 +368,9 @@ Int_t MCA8000::ReadData(UChar_t * data, Int_t nbytes, Int_t group )
 	Double_t ltime = stat[14] + stat[13] * TMath::Power(2,8) + 
 				stat[12] * TMath::Power(2,16)
 				+ (1. -((Double_t)stat[15])/75.);
-	printf("ReadData Presettime: %f Realtime: %f Livetime: %f\n",
-			ptime, rtime, ltime);
+	TDatime da;
+	printf("ReadData at: %d PresetT: %f RealT: %f LiveT: %f\n",
+			da.GetTime(), ptime, rtime, ltime);
 	}
 //	PrintStatus();
 	SendDataAndChecksum(group);
@@ -701,20 +706,9 @@ Int_t MCA8000::DeleteData()
 	if (fVerbose > 0) {
 		printf("DeleteData()\n");
 	}
-	return SendCommand(cmd);
-}
-//____________________________________________________________________
-
-void MCA8000::ClearMCA() 
-
-////////////////////////////////////////////////////////////////////////
-//
-//  Reset spectrum data and elapsed times
-//
-////////////////////////////////////////////////////////////////////////
-{
-	DeleteData();
-	DeleteTime();
+	Int_t stat =  SendCommand(cmd);
+	usleep(40 * fNofBins);
+	return stat;
 }
 //_____________________________________________________________________
 
@@ -748,8 +742,9 @@ Int_t MCA8000::StartAcq(Int_t acqt, Int_t thresh)
 	dat[0] |= 0x10;     // flag = start acq
 	dat[1] = (UChar_t)threshold & 0xff;    // threshold 0-7
 	dat[2] = (UChar_t)(threshold >> 8 )& 0xff;     // threshold  8-15
-	printf("StartAcq, AcqTime: %d Threshold: %d Flag: %x\n", 
-	acqtime, threshold, dat[0]);
+	TDatime da;
+	printf("StartAcq: %d AcqTime: %d Threshold: %d Flag: %x\n", 
+	da.GetTime(), acqtime, threshold, dat[0]);
 	return SendControl(dat);
 }
 //____________________________________________________________________
@@ -858,6 +853,13 @@ Int_t MCA8000::FillHistogram()
 //
 ////////////////////////////////////////////////////////////////////////
 {
+	if ( fHist ) {
+		TH1 *hh = (TH1*)gROOT->FindObject(fHist);
+		if (hh == NULL) {
+			printf("Histogram was deleted, book new one\n");
+			fHist = NULL;
+		}
+	}
 	if (fHist && fHist->GetNbinsX() != fNofBins - fNofBins / 32) {
 		printf("Histogram has wrong number of bins: %d should be: %d\n",
 			fHist->GetNbinsX(), fNofBins - fNofBins / 32);
@@ -888,7 +890,8 @@ Int_t MCA8000::FillHistogram()
 				if (cont > max_count)
 					max_count = cont;
 			}
-			printf("Fill hist, Name: %s Sum of cont: %d Max count: %d\n", 
+			SetHistTitle();
+			printf("Fill hist:  Name: %s Sum of cont: %d Max count: %d\n", 
 			fHist->GetName(), sum, max_count);
 			if (fVerbose > 0) {
 				gBenchmark->Show("fill_hist");
@@ -912,7 +915,7 @@ void MCA8000::SetHistTitle(const char * ti)
 	fHistTitle += fThreshold;
 	fHistTitle += " AqT: ";
 	fHistTitle += fAcqTime;
-	fHistTitle += " Time: ";
+	fHistTitle += " FillT: ";
 	if ( ti ) {
 		fHistTitle += ti;
 	} else {
@@ -952,8 +955,9 @@ Int_t MCA8000::PrintStatus()
 	Double_t ltime = stat[14] + stat[13] * TMath::Power(2,8) + 
 				stat[12] * TMath::Power(2,16)
 				+ (1. -((Double_t)stat[15])/75.);
-	printf("Presettime: %f Realtime: %f Livetime: %f\n",
-			ptime, rtime, ltime);
+	TDatime da;
+	printf("WallClock: %d PresetT: %f RealT: %f LiveT: %f\n",
+			da.GetTime(), ptime, rtime, ltime);
 	Double_t time_left = -1;
 	if (ptime > 0 ) {
 		if( timer_flag ) 
@@ -1141,12 +1145,12 @@ void MCA8000::StartGui()
 //____________________________________________________________________
 
 void MCA8000::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
-{
 ////////////////////////////////////////////////////////////////////////
 //
 // Handle button press events 
 //
 ////////////////////////////////////////////////////////////////////////
+{
 	if ( bid == fBidNofBins ) {
 		fNofBins = fNofBinsString.Atoi();
 	}
@@ -1159,11 +1163,13 @@ void MCA8000::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
 //____________________________________________________________________
 
 void MCA8000::CloseDown(Int_t /*id*/)
-{
+
 ////////////////////////////////////////////////////////////////////////
 //
 // Handle end of program
 //
 ////////////////////////////////////////////////////////////////////////
+{
+	
 //	printf("CloseDown id %d\n", id);
 }
