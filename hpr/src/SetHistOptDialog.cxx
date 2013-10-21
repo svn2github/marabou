@@ -927,7 +927,7 @@ void SetHistOptDialog::SaveDefaults()
 		env.SetValue("SetHistOptDialog.StatTextColor",   fStatTextColor  );
 		env.SetValue("SetHistOptDialog.StatBorderSize",  fStatBorderSize );
 		env.SetValue("SetHistOptDialog.StatFont",        fStatFont       );
-		env.SetValue("SetHistOptDialog.fStatFormat",     fStatFormat     );
+		env.SetValue("SetHistOptDialog.StatFormat",     fStatFormat     );
 		env.SetValue("SetHistOptDialog.StatFontSize",    fStatFontSize   );
 		env.SetValue("SetHistOptDialog.StatStyle",       fStatStyle      );
 		Double_t sh = fStatBox->GetY2NDC() - fStatBox->GetY1NDC();
@@ -1052,7 +1052,7 @@ void SetHistOptDialog::RestoreDefaults(Int_t resetall)
 	fStatBorderSize=env.GetValue("SetHistOptDialog.StatBorderSize",    1);
    fStatFont=      env.GetValue("SetHistOptDialog.StatFont"     ,    62);
 	if (fStatFont < 12 || fStatFont > 123) fStatFont = 62;
-	fStatFormat=    env.GetValue("SetHistOptDialog.fStatFormat",  "6.2g");
+	fStatFormat=    env.GetValue("SetHistOptDialog.StatFormat",  "6.2g");
    fStatFontSize=  env.GetValue("SetHistOptDialog.StatFontSize",   0.04);
    fStatStyle=     env.GetValue("SetHistOptDialog.StatStyle",         0);
    fStatX=         env.GetValue("SetHistOptDialog.StatX",           0.9);
@@ -1241,6 +1241,7 @@ void SetHistOptDialog::SetDefaults(Int_t ndim)
 	gStyle->SetStatTextColor  (env.GetValue("SetHistOptDialog.StatTextColor",     1));
 	gStyle->SetStatBorderSize (env.GetValue("SetHistOptDialog.StatBorderSize",    1));
 	gStyle->SetStatFont       (env.GetValue("SetHistOptDialog.StatFont",         62));
+	gStyle->SetStatFormat     (env.GetValue("SetHistOptDialog.StatFormat",    "6.4g"));
 	gStyle->SetStatFontSize   (env.GetValue("SetHistOptDialog.StatFontSize",   0.04));
 	gStyle->SetStatStyle      (env.GetValue("SetHistOptDialog.StatStyle",      1001));
 	gStyle->SetStatX          (env.GetValue("SetHistOptDialog.StatX",           0.9));
