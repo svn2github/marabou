@@ -21,11 +21,10 @@
    if (line.Length() > 0) {
 		cout << setred << "Serial device already in use: " << line  << endl 
 		<< "Will not load MCA8000a library" << setblack<< endl;
-		return;
+	} else {
+		printf("%sLoading library for MCA8000a%s\n", setgreen, setblack);
+		gROOT->ProcessLine(".L mca8000.cxx+");
+		MCA8000 * mca = new MCA8000();
+		mca->StartGui();
 	}
-	
-	printf("%sLoading library for MCA8000a%s\n", setgreen, setblack);
-	gROOT->ProcessLine(".L mca8000.cxx+");
-	MCA8000 * mca = new MCA8000();
-	mca->StartGui();
 }

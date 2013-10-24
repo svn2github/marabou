@@ -79,6 +79,17 @@ MCA8000::MCA8000(TString device)
 	fSerComm = NULL;
 	fStatusOk = 0;
 	fSerDev = device;
+   TString line;
+ 	TString cmd ("fuser -u ");
+ 	cmd += device.Data();
+ 	cmd += " 2>&1";
+ 	FILE *fp = gSystem->OpenPipe(cmd, "r");
+   line.Gets(fp);
+   if (line.Length() > 0) {
+		cout << setred << "Serial device already in use: " << line  << endl 
+		<< "Will not load MCA8000a library" << setblack<< endl;
+		return;
+	}
 	fNofBinsCode = 2;       // flag bits 0:2
 	fNofBins = 4096; 
 	fNofBinsString = "";
@@ -1083,6 +1094,10 @@ void MCA8000::StartGui()
 	repeated.\n\
 	"
 	;
+	if ( fSerComm == NULL ) {
+		cout << setred << "Serial device not open, exit" << setblack << endl;
+		return;
+	}
 	fRowLab= new TList();
 	Int_t ind = 0;
 	
