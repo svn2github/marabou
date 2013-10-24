@@ -360,17 +360,17 @@ Int_t MCA8000::ReadData(UChar_t * data, Int_t nbytes, Int_t group )
 	UChar_t stat[20];
 	if (group == 0) {
 	GetStatus(stat, group);
-	Double_t ptime = stat[6] + stat[5] * TMath::Power(2,8) + 
+	fPresetTime = stat[6] + stat[5] * TMath::Power(2,8) + 
 				stat[4] * TMath::Power(2,16);
-	Double_t rtime = stat[10] + stat[9] * TMath::Power(2,8) + 
+	fRealTime = stat[10] + stat[9] * TMath::Power(2,8) + 
 				stat[8] * TMath::Power(2,16) 
 				+ (1. -((Double_t)stat[11])/75.);
-	Double_t ltime = stat[14] + stat[13] * TMath::Power(2,8) + 
+	fLiveTime = stat[14] + stat[13] * TMath::Power(2,8) + 
 				stat[12] * TMath::Power(2,16)
 				+ (1. -((Double_t)stat[15])/75.);
 	TDatime da;
 	printf("ReadData at: %d PresetT: %f RealT: %f LiveT: %f\n",
-			da.GetTime(), ptime, rtime, ltime);
+			da.GetTime(), fPresetTime, fRealTime, fLiveTime);
 	}
 //	PrintStatus();
 	SendDataAndChecksum(group);
@@ -486,11 +486,13 @@ Int_t MCA8000::GetData(UInt_t *data)
 	
 	nchannels = fNofBins - fNofBins /32; // upper 1/32 channels are used for sliding cal
 	for (Int_t ic = 0; ic < nchannels; ic++) {
-		if ( fVerbose > 1  && (fBuf0[ip] != 0 || fBuf0[ip+1] != 0) ) 
-			printf("%4d: %4d %4d %4d %4d\n", ic+1, fBuf0[ip], fBuf0[ip+1], 
-		                                 fBuf1[ip],fBuf1[ip+1]);
+		if ( fVerbose > 2  && (fBuf0[ip] != 0 || fBuf0[ip+1] != 0) )  { 
+			printf("%4d: %4d %4d\n", ic+1, fBuf0[ip], fBuf0[ip+1]);
+		}
 		data[ic] = fBuf0[ip] + fBuf0[ip+1] * TMath::Power(2,8);
 		if  ( fShortRead == 0) {
+			if ( fVerbose > 2  && (fBuf1[ip] != 0 || fBuf1[ip+1] != 0) ) 
+				printf("%4d %4d: %4d",ic+1, fBuf1[ip],fBuf1[ip+1]);
 			data[ic] += (fBuf1[ip] *TMath::Power(2,16) + fBuf1[ip+1] * TMath::Power(2,24));
 		}
 		ip += 2;
@@ -707,7 +709,7 @@ Int_t MCA8000::DeleteData()
 		printf("DeleteData()\n");
 	}
 	Int_t stat =  SendCommand(cmd);
-	usleep(40 * fNofBins);
+	usleep(80 * fNofBins);
 	return stat;
 }
 //_____________________________________________________________________
@@ -913,8 +915,8 @@ void MCA8000::SetHistTitle(const char * ti)
 {
 	fHistTitle = "MCA, Thr: ";
 	fHistTitle += fThreshold;
-	fHistTitle += " AqT: ";
-	fHistTitle += fAcqTime;
+	fHistTitle += " ElapsedT: ";
+	fHistTitle += Form("%6.1f", fRealTime);
 	fHistTitle += " FillT: ";
 	if ( ti ) {
 		fHistTitle += ti;

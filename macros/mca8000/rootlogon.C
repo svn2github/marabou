@@ -12,10 +12,20 @@
 		printf("Please exit HistPresent and execute:\n");
 		printf("%smodule unload marabou\n", setblue);
 		printf("module load marabou/5.34.10 %s\n", setblack);
-	} else {
-		printf("%sLoading library for MCA8000a%s\n", setgreen, setblack);
-		gROOT->ProcessLine(".L mca8000.cxx++g");
-		MCA8000 * mca = new MCA8000();
-		mca->StartGui();
+		return;
 	}
+   TString line;
+ 	TString cmd ("fuser -u /dev/ttyS0 2>&1");
+ 	FILE *fp = gSystem->OpenPipe(cmd, "r");
+   line.Gets(fp);
+   if (line.Length() > 0) {
+		cout << setred << "Serial device already in use: " << line  << endl 
+		<< "Will not load MCA8000a library" << setblack<< endl;
+		return;
+	}
+	
+	printf("%sLoading library for MCA8000a%s\n", setgreen, setblack);
+	gROOT->ProcessLine(".L mca8000.cxx+");
+	MCA8000 * mca = new MCA8000();
+	mca->StartGui();
 }

@@ -29,11 +29,15 @@ private:
 	Int_t fSleepTime;        // times needed for 1 byte
 	Int_t fAcqTime;          // preset acquistion time
 	Int_t fShortRead;        // read only lower 16 bit of spectrum data
+	Double_t fPresetTime;    // Preset acquisition time read from MCA
+//	Double_t fRealTime;      // Elepased real time read from MCA
+	Double_t fLiveTime;      // Elapsed live time read from MCA
+	
 	TH1I * fHist;            // pointer to latest booked histogram
 	UInt_t * fData;          // to keep 32 bit bin values on readout
 	UChar_t * fBuf0;         // byte buffer for readout lower 16 bits
 	UChar_t * fBuf1;         // byte buffer for readout upper 16 bits
-	TString fHistTitle;      // histogram title
+//	TString fHistTitle;      // histogram title
 	TString fHistTitleMenu;  // histogram title, variable used in menu
 	Int_t fUserTitle;        // > 0 indicates if user changed title
 	TStopwatch * fStopwatch; //
@@ -59,7 +63,10 @@ private:
 	Int_t ReadPacket(UChar_t * data, Int_t nbytes);
 	Int_t ReadData(UChar_t * data, Int_t nbytes, Int_t group );
 	Int_t SetAcqTime(UChar_t * data);
+public:	
 	
+	Double_t fRealTime;      // Elepased real time read from MCA
+	TString fHistTitle;      // histogram title
 public:	
 	MCA8000(TString serdev = "/dev/ttyS0");
 	~MCA8000();
