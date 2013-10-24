@@ -14,6 +14,7 @@
 #include "TLegend.h"
 #include "TLegendEntry.h"
 #include "Set1DimOptDialog.h"
+#include "hprbase.h"
 #include <iostream>
 
 namespace std {} using namespace std;
@@ -79,18 +80,25 @@ may be selected.\n\
 ";
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
+   cout << "ctor Set1DimOptDialog " << fCanvas->GetName() << endl;
    TIter next(fCanvas->GetListOfPrimitives());
 	TObject *obj;
 	TH1* hist;
 	fNHists = 0;
+	TPad* actpad = (TPad*)fCanvas;
    while ( (obj = next()) ) {
+		hist = NULL;
       if (obj->InheritsFrom("TH1")) {
          hist = (TH1*)obj;
-			if ( hist->GetDimension() == 1 ) {
-				fNHists++;
-				fHistList.Add(hist);
-		   }
-      }
+      } else if ( obj->InheritsFrom("TPad") ) {
+			hist = Hpr::FindHistInPad((TVirtualPad*)obj);
+			actpad= (TPad*)obj;
+		}
+		if ( hist  && hist->GetDimension() == 1 ) {
+			fNHists++;
+			fHistList.Add(hist);
+			fPadList.Add(actpad);
+		}
    }
 	if ( fNHists == 0 ) {
 	   cout << "No 1dim histogram in Canvas" << endl;
@@ -129,6 +137,7 @@ may be selected.\n\
 	fCanvas->cd();
 	for ( Int_t i =0; i < fNHists; i++ ) {
 		hist =(TH1*)fHistList.At(i);
+		((TPad*)fPadList.At(i))->cd();
 		fDrawOpt[i]   = hist->GetDrawOption();
 		fTitle[i]     = hist->GetTitle();
 		if ( i == 0 ) {
@@ -392,8 +401,11 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 			leg_entries = NULL;
 	}
 	TH1* hist;
+	TPad* pad;
 	for ( Int_t i =0; i < fNHists; i++ ) {
 		hist =(TH1*)fHistList.At(i);
+		pad = (TPad*)fPadList.At(i);
+		pad->cd();
 		if (i == 0 ) {
 			hist->SetTitle(fTitle[0]);
 			hist->GetXaxis()->SetTitle(fTitleX);
@@ -472,9 +484,15 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 		if ( gDebug > 0 )
 			cout << "Set1DimOptDialog::SetAtt " << drawopt << endl;
 		hist->SetDrawOption(drawopt);
-//		hist->SetOption(drawopt);
+		hist->SetOption(drawopt);
 	}
 	fCanvas->Pop();
+	TIter next=fCanvas->GetListOfPrimitives();
+	TObject *obj;
+	while (obj = next()) {
+		if (obj->InheritsFrom("TPad") )
+			((TPad*)obj)->Modified();
+	}
 	fCanvas->Modified();
 	fCanvas->Update();
 	if (changed) 

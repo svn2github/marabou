@@ -14,6 +14,7 @@
 #include "TSystem.h"
 #include "Set2DimOptDialog.h"
 #include "GeneralAttDialog.h"
+#include "hprbase.h"
 #include <iostream>
 
 namespace std {} using namespace std;
@@ -147,7 +148,7 @@ For further details contact ROOTs documentation.\n\
 	TRootCanvas *rc = (TRootCanvas*)win;
 	fCanvas = rc->Canvas();
 	fHist = NULL;
-	Int_t nh1 = 0, nh2 = 0;
+//	Int_t nh1 = 0, nh2 = 0;
 	TIter next(fCanvas->GetListOfPrimitives());
 	TObject *obj;
 	while ( (obj = next()) ) {
@@ -157,10 +158,12 @@ For further details contact ROOTs documentation.\n\
 				fHist = ((TGraph2D*)obj)->GetHistogram();
 //            if (!fHist) continue;
 			}
-			if (fHist->GetDimension() == 1) nh1++;
-			if (fHist->GetDimension() > 1)  nh2++;
-//			break;
+		} else if (obj->InheritsFrom("TPad")) {
+			fHist = (TH2*)Hpr::FindHistInPad((TVirtualPad*)obj);
 		}
+		cout << obj->ClassName() << " " << fHist << endl;
+		if (fHist)
+			break;
 	}
 	if ( fHist == NULL ) {
 		cout << "No Histogram in Canvas" << endl;
@@ -400,14 +403,14 @@ void Set2DimOptDialog::SetHistAttNow(TCanvas *canvas)
 		}
 	}
 	if (!canvas) return;
-	if ( fHist ) {
-		SetHistAtt((TPad*)canvas, fHist); 
+//	if ( fHist ) {
+//		SetHistAtt((TPad*)canvas, fHist); 
 /*		if ( gDebug > 0 ) 
 			cout << "SetHistAttNow: " << fDrawOpt2Dim << endl;
 		fHist->SetDrawOption(fDrawOpt2Dim);*/
-	} else {
+//	} else {
 		SetHistAttAll(canvas);
-	}
+//	}
 	canvas->Pop();
 	canvas->Modified();
 	canvas->Update();
@@ -419,7 +422,9 @@ void Set2DimOptDialog::SetHistAttAll(TCanvas *canvas)
 	TIter next(canvas->GetListOfPrimitives());
 	TObject *obj;
 	while ( (obj = next()) ) {
-		if (obj->InheritsFrom("TGraph2D")) {
+		if (obj->InheritsFrom("TH2")) {
+			SetHistAtt(canvas, ((TH2*)obj));
+		} else if (obj->InheritsFrom("TGraph2D")) {
 			((TGraph2D*)obj)->SetDrawOption(fDrawOpt);
 		} else if ((obj->InheritsFrom("TPad"))) {
 			TPad *pad = (TPad*)obj;

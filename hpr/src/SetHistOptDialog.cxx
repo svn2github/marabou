@@ -436,6 +436,8 @@ Bool_t SetHistOptDialog::SetPointers()
 			fLegendBox = (TLegend*)obj;
 		}
 	}
+	cout << "SetHistOptDialog, current selected: " << fHist->GetName()<<
+	" Title: " << fHist->GetTitle() << endl;
 	return kTRUE;
 }	
 //_______________________________________________________________________

@@ -57,6 +57,7 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*tit
    fCanvas = NULL;
    fTimer = NULL;
    fDialog = NULL;
+   fNh1Dim = fNh2Dim = 0;
    fAnyFromSocket = kFALSE;
    RestoreDefaults();
    SetColorModeDialog::RestoreDefaults();
@@ -110,6 +111,8 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*tit
    gROOT->GetListOfCleanups()->Add(this);
    BuildCanvas();
    BuildMenu();
+	if (gDebug >0) 
+		cout << "GroupOfHists *goh = (GroupOfHists*)" << this << ";" << endl;
 }
 //________________________________________________________________________
 
@@ -153,6 +156,7 @@ void GroupOfHists::BuildCanvas()
    for(Int_t i=0; i < nsel; i++) {
       fCanvas->cd(i+1);
       TPad * p = (TPad *)gPad;
+      fPadList.Add(p);
       TString cmd2("((GroupOfHists*)gROOT->GetList()->FindObject(\"");
       cmd2 += GetName();
       cmd2 += "\"))->auto_exec()";
@@ -239,10 +243,13 @@ void GroupOfHists::BuildCanvas()
       }
 
       if (hist->GetDimension() == 2) {
+			fNh2Dim++;
 			hist->SetStats(fShowStatBox2Dim);
 			if (fShowStatBox2Dim)
 				gStyle->SetOptStat(fOptStat2Dim);
          hist->Draw(fDrawOpt2Dim);
+         hist->SetLineWidth(fHistLineWidth2Dim);
+         hist->SetLineColor(fHistLineColor2Dim);
          if (lastset) {
             if (lastset->GetValue("LogZ", 0) )p->SetLogz();
             if (lastset->Lookup("fRangeLowY") )
@@ -257,16 +264,18 @@ void GroupOfHists::BuildCanvas()
             }
          }
       } else {
+			fNh1Dim++;
          if (lastset && lastset->GetValue("LogY", 0) )p->SetLogy();
 			hist->SetStats(fShowStatBox1Dim);
 			if (fShowStatBox1Dim)
 				gStyle->SetOptStat(fOptStat1Dim);
          TString drawopt;
-         hist->Draw(drawopt.Data());
+//         hist->Draw(drawopt.Data());
 //         gStyle->SetOptTitle(fHistPresent->GetShowTitle());
          if (fShowContour) drawopt = "hist";
          if (fErrorMode != "none")  drawopt += fErrorMode;
-         hist->SetLineColor(fHistLineColor);
+         hist->SetLineWidth(fHistLineWidth1Dim);
+         hist->SetLineColor(fHistLineColor1Dim);
          if (fFill1Dim) {
             hist->SetFillStyle(fHistFillStyle);
             hist->SetFillColor(fHistFillColor);
@@ -424,9 +433,12 @@ void GroupOfHists::BuildMenu()
    fOptionMenu->AddEntry("Specific to this window", M_SetOptions);
    fOptionMenu->AddEntry("Axis / title statbox attributes", M_OptionAxisAtt);
    fOptionMenu->AddEntry("Canvas / pad attributes", M_OptionCanvasAtt);
-   fOptionMenu->AddEntry("How to display a 1-dim histogram", M_Option1Dim);
-   fOptionMenu->AddEntry("How to display a 2-dim histogram ", M_Option2Dim);
-   fOptionMenu->AddEntry("Color mode of 2-dim histogram", M_Option2DimCol);
+   if (fNh1Dim > 0)
+		fOptionMenu->AddEntry("How to display a 1-dim histogram", M_Option1Dim);
+	if (fNh2Dim > 0) {
+		fOptionMenu->AddEntry("How to display a 2-dim histogram ", M_Option2Dim);
+		fOptionMenu->AddEntry("Color mode of 2-dim histogram", M_Option2DimCol);
+	}
    fOptionMenu->AddEntry("Redraw picture", M_Redraw);
    fOptionMenu->Connect("Activated(Int_t)", "GroupOfHists", this,
                         "HandleMenu(Int_t)");
@@ -816,10 +828,12 @@ void GroupOfHists::RestoreDefaults()
    fArrangeAsTiles = env.GetValue("GroupOfHists.fArrangeAsTiles", 1);
    fFill1Dim      = env.GetValue("Set1DimOptDialog.fFill1Dim", 0);
    fHistFillColor = env.GetValue("Set1DimOptDialog.fHistFillColor", 2);
-   fHistLineColor = env.GetValue("Set1DimOptDialog.fHistLineColor", 1);
+   fHistLineColor1Dim = env.GetValue("Set1DimOptDialog.fLineColor", 1);
+   fHistLineColor2Dim = env.GetValue("Set2DimOptDialog.fHistLineColor2Dim", 1);
    fHistFillStyle = env.GetValue("Set1DimOptDialog.fHistFillStyle", 0);
    fHistLineStyle = env.GetValue("Set1DimOptDialog.fHistLineStyle", 1);
-   fHistLineWidth = env.GetValue("Set1DimOptDialog.fHistLineWidth", 2);
+   fHistLineWidth1Dim = env.GetValue("Set1DimOptDialog.fLineWidth", 2);
+   fHistLineWidth2Dim = env.GetValue("Set2DimOptDialog.fHistLineWidth2Dim", 1);
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
    fErrorMode    = env.GetValue("Set1DimOptDialog.fErrorMode", "e");
    fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");

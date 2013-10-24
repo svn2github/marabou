@@ -14,6 +14,7 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
 	TList fHistList;
+	TList fPadList;
 	Int_t fNHists;
 
 	TCanvas *fCanvas;
