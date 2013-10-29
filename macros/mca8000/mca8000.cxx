@@ -905,6 +905,7 @@ Int_t MCA8000::FillHistogram()
 					max_count = cont;
 			}
 			SetHistTitle();
+			fHist->SetTitle(fHistTitle);
 			printf("Fill hist:  Name: %s Sum of cont: %d Max count: %d\n", 
 			fHist->GetName(), sum, max_count);
 			if (fVerbose > 0) {
