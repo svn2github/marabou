@@ -304,7 +304,7 @@ Bool_t  TMbsControl::StopMbs(){
    }
    rshCmd = fRshSshCmd;
    rshCmd = rshCmd  + fCurNode.Data() + " -l " + fUserName.Data() +
-            " /mbs/" + fMBSVersion.Data() + "/script/mbsshutall.sc " +
+            " /mbs/" + fMBSVersion.Data() + "/script/mbsshutall.sc /mbs/" +
             fMBSVersion.Data()+" "+ fDir.Data();
    cout << setmagenta << rshCmd << setblack<< endl;
    gSystem->Exec(rshCmd.Data());
