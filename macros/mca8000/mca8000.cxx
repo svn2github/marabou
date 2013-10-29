@@ -107,6 +107,7 @@ MCA8000::MCA8000(TString device)
 	fClearElTime = 1;
 	fClearSpData = 1;
 	fShortRead   = 0;
+	fRealTime = fLiveTime = fPresetTime = 0;
 	SetHistTitle();
 	fHistTitleMenu = fHistTitle;
 	fUserTitle = 0;
@@ -867,7 +868,7 @@ Int_t MCA8000::FillHistogram()
 ////////////////////////////////////////////////////////////////////////
 {
 	if ( fHist ) {
-		TH1 *hh = (TH1*)gROOT->FindObject(fHist);
+		TH1 *hh = (TH1*)gROOT->GetList()->FindObject(fHist);
 		if (hh == NULL) {
 			printf("Histogram was deleted, book new one\n");
 			fHist = NULL;
