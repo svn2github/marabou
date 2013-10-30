@@ -25,6 +25,10 @@
 //#include "support.h"
 
 #include <iostream>
+#ifdef MARABOUVERS
+#include "HistPresent.h"
+extern HistPresent * gHpr;
+#endif
 
 using std::cout;
 using std::endl;
@@ -131,6 +135,25 @@ The procedure to use previously fitted peaks is as follows:\n\
       cout << "Can only be used with 1-dim hist" << endl;
       return;
    }
+// find Canvas with sel hist
+   TIter next(gROOT->GetListOfCanvases());
+   fSelCanvas = NULL;
+   TCanvas *c;
+   while ( (c = (TCanvas*)next()) ) {
+      if ( (c->GetListOfPrimitives()->FindObject(fSelHist->GetName())) ) {
+         fSelCanvas = c;
+         break;
+      }
+   }
+   if (fInteractive) {
+		if (fSelCanvas == NULL) {
+     		cout << "fSelCanvas = 0!!" <<  endl;
+     		return;
+		} else {
+			cout << "TCanvas* ca = (TCanvas*)" << fSelCanvas <<   endl;
+			fParentWindow = (TRootCanvas*)fSelCanvas->GetCanvasImp();
+		}
+	}
    gROOT->GetListOfCleanups()->Add(this);
 	fDialog = NULL;
 	fDialogSetNominal = NULL;
@@ -162,26 +185,6 @@ The procedure to use previously fitted peaks is as follows:\n\
    static Int_t fFuncNumber = 0;
    fAutoAssigned = 0;
    fParentWindow =  NULL;
-// find Canvas with sel hist
-   TIter next(gROOT->GetListOfCanvases());
-   fSelCanvas = NULL;
-   TCanvas *c;
-   while ( (c = (TCanvas*)next()) ) {
-      if ( (c->GetListOfPrimitives()->FindObject(fSelHist->GetName())) ) {
-         fSelCanvas = c;
-         break;
-      }
-   }
-//   fSelPad = gPad;
-//   cout << "fSelPad " <<  fSelPad << endl;
-   if (fInteractive) {
-		if (fSelCanvas == NULL) {
-     		cout << "fSelCanvas = 0!!" <<  endl;
-		} else {
-			cout << "TCanvas* ca = (TCanvas*)" << fSelCanvas <<   endl;
-			fParentWindow = (TRootCanvas*)fSelCanvas->GetCanvasImp();
-		}
-	}
 
 //  function name
    fFuncName = fSelHist->GetName();
@@ -377,8 +380,9 @@ The following options are provided:\n\
       Int_t e = (Int_t)fGaugeEnergy[i];
       label += e;
       label += " I=";
-      label += fGaugeIntensity[i];
+      label += Form("%4.2f", fGaugeIntensity[i]);
       row_lab->Add(new TObjString(label));
+      fSetFlag[i] = 1;
       valp[ind++] = &fSetFlag[i];
    }
    row_lab->Add(new TObjString("CommandButt_Choose selected"));
@@ -956,11 +960,12 @@ void CalibrationDialog::SetValues()
             }
          }
 			fY[i]=  fGaugeEnergy[ngauge];
-			fYE[i] = Sc_EnError[ngauge];
+			fYE[i] = fGaugeError[ngauge];
          p->SetNominalEnergy(fY[i]);
          p->SetNominalEnergyError(fYE[i]);
 			cout << "SetValues() fX[" << i << "] = " << fX[i]
-				<< "fY[" << i << "] = " << fY[i]<< endl;
+				<< " fY[" << i << "] = " << fY[i] 
+				<< " fYE[" << i << "] = " << fYE[i] << endl;
 			ngauge++;
       }
    }
@@ -1209,6 +1214,7 @@ void CalibrationDialog::FillCalibratedHist()
    cout << "title_cal: " << title_cal << endl;
    TH1* hh = (TH1*)gROOT->GetList()->FindObject(hname_cal);
    if (hh) delete hh;
+/*
    if      (!strcmp(fSelHist->ClassName(), "TH1F"))
    	fCalHist = new TH1F(hname_cal, title_cal, fCalibratedNbinsX, fCalibratedXlow, fCalibratedXup);
    else if (!strcmp(fSelHist->ClassName(), "TH1D"))
@@ -1217,6 +1223,9 @@ void CalibrationDialog::FillCalibratedHist()
    	fCalHist = new TH1S(hname_cal, title_cal, fCalibratedNbinsX, fCalibratedXlow, fCalibratedXup);
    else
    	fCalHist = new TH1C(hname_cal, title_cal, fCalibratedNbinsX, fCalibratedXlow, fCalibratedXup);
+*/
+	// for safety always use double
+   fCalHist = new TH1D(hname_cal, title_cal, fCalibratedNbinsX, fCalibratedXlow, fCalibratedXup);
 
 //   under - overflows of origin hist are taken as they are
    fCalHist->SetBinContent(0, fSelHist->GetBinContent(0));
@@ -1235,16 +1244,16 @@ void CalibrationDialog::FillCalibratedHist()
          fCalHist->Fill(bcent_cal);
       }
    }
-/*
+
 #ifdef MARABOUVERS
-   if (fHistPresent) {
-      fHistPresent->ShowHist(fCalHist);
+   if (gHpr) {
+      gHpr->ShowHist(fCalHist);
 //   in case a title was set to a stored value
       fCalHist->SetTitle(title_cal);
       gPad->Modified();
    } else {
 #endif
-*/
+
    if ( fInteractive ) {
       TString title(hname_cal);
       title.Prepend("C_");
@@ -1260,11 +1269,11 @@ void CalibrationDialog::FillCalibratedHist()
       AddMenu(ch);
       ch->Update();
    }
-/*
+
 #ifdef MARABOUVERS
    }
 #endif
-*/
+
    if (bare_function) {
       delete fCalFunc;
       fCalFunc = NULL;
@@ -1384,7 +1393,8 @@ TList * CalibrationDialog::UpdatePeakList()
          p->Print(" ");
 //      }
 	   fX [fNpeaks] = p->GetMean();
-    	fXE[fNpeaks] = p->GetWidth();
+//    	fXE[fNpeaks] = p->GetWidth();
+    	fXE[fNpeaks] = p->GetMeanError();
 	   fY [fNpeaks] = 0;
 	   fYE[fNpeaks] = 1;
 	   fUse[fNpeaks] = 1;
@@ -1410,14 +1420,17 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 	TObject *obj;
 	TF1 *f;
 	TList *lof = fSelHist->GetListOfFunctions();
-//	cout <<" lof->GetSize()" <<lof->GetSize() << endl;
+	if ( fVerbose )
+		cout <<" lof->GetSize()" <<lof->GetSize() << endl;
+	fSelCanvas->cd();
 	TList *lop = gPad->GetListOfPrimitives();
 	TIter next1(lof);
 	while ( (obj = next1()) ) {
 		if (obj->IsA() == TF1::Class()) {
 			f = (TF1*)obj;
 			const char* name = f->GetName();
-//			cout << "|" << name << "|" << endl;
+			if (gDebug > 1)
+				cout << "|" << name << "|" << endl;
 			if ( lop->FindObject(name) == NULL ) {
 				temp.Add(obj);
 			}
@@ -1432,7 +1445,8 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 		}
 	}
 //
-//	cout <<" lof->GetSize()" <<lof->GetSize() << endl;
+	if (fVerbose)
+		cout <<" lof->GetSize()" <<lof->GetSize() << endl;
 	Int_t npeaks = 0;
 	TIter next(lof);
 	TString pname;
@@ -1442,8 +1456,8 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 			for (Int_t i = 0; i < f->GetNpar(); i++) {
 				pname = f->GetParName(i);
 				if (pname.BeginsWith("Ga_Mean")) {
-//					cout << "Mean: " << f->GetParameter(i)
-//							<< " Error: " << f->GetParError(i) << endl;
+					cout << "Mean: " << f->GetParameter(i)
+							<< " Error: " << f->GetParError(i) << endl;
 						npeaks++;
 				}
 			}
@@ -1529,11 +1543,12 @@ void CalibrationDialog::SaveDefaults()
 CalibrationDialog::~CalibrationDialog()
 {
    gROOT->GetListOfCleanups()->Remove(this);
-   if ( fCalValCanvas )
+   TSeqCollection *loc = gROOT->GetListOfCanvases();
+   if ( fCalValCanvas && loc->FindObject(fCalValCanvas) )
 		delete fCalValCanvas;
-   if ( fScanCanvas )
+   if ( fScanCanvas  && loc->FindObject(fScanCanvas) )
 		delete fScanCanvas;
-   if ( fEffCanvas )
+   if ( fEffCanvas  && loc->FindObject(fEffCanvas) )
 		delete fEffCanvas;
    if ( fDialogSetNominal )
      fDialogSetNominal->CloseWindowExt();
@@ -1558,8 +1573,12 @@ void CalibrationDialog::RecursiveRemove(TObject * obj)
    if ( obj == fEffCanvas )
 		fEffCanvas = NULL;
    if (obj == fSelCanvas && fInteractive) {
-//      cout << "FindPeakDialog: CloseDialog "  << endl;
-      CloseDialog();
+//      cout << "CalibrationDialog: RecursiveRemove : fSelCanvas"  << endl;
+		// called from CloseAllCanvases, avoid deleting twice
+      fCalValCanvas = NULL;
+ 		fScanCanvas = NULL;
+		fEffCanvas = NULL;
+		CloseDialog();
    }
 }
 //_______________________________________________________________________
