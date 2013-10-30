@@ -87,6 +87,9 @@ The procedure to use previously fitted peaks is as follows:\n\
     presents the lines of the calibration sources 60Co, 192Eu\n\
     and 88Y or the custom provided ones according the\n\
     selection of \"Cal source\".\n\
+    Custom provided file needs 1 line/peak:\n\
+    Name Mean MeanError BranchingRatio[0,1]|n\
+    Values are in KeV\n\
 \n\
   - An automatic procedure for this assignment is provided:\n\
     It uses a histogramming method to find the best assignments\n\
