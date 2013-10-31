@@ -61,7 +61,9 @@ private:
    Int_t    fEu152Gauge;      // Use Eu 152 gauge source
    Int_t    fCo60Gauge;       // Use Co60 gauge source
    Int_t    fY88Gauge;        // Use Y88gauge source
-   Int_t    fCustomGauge;     // Use user provided gauge peaks
+   Int_t    fCm244Gauge;      // Use Curium 244
+	Int_t    fCustomGauge;     // Use user provided gauge peaks
+	Int_t    fForceConst0;     // Force calibration function through origin (p0 = 0)
    TString  fCustomGaugeFile; // File name for user provided gauge peaks
    Int_t    fMatchNbins;      // Number of bins for peak match histogram
    Double_t fMatchMin;        // Low edge for peak match histogram
@@ -95,6 +97,7 @@ public:
    void SetValues();
    void AutoSelectDialog();
    Bool_t ExecuteAutoSelect();
+   void LabelPeaks();
    Int_t FindNumberOfPeaks();
 //   void ClearHistPeakList();
    void SaveDefaults();

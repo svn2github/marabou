@@ -33,27 +33,53 @@ extern HistPresent * gHpr;
 using std::cout;
 using std::endl;
 
-static const Int_t kSc_Npeaks = 15;
-const Char_t *Sc_Name[kSc_Npeaks] =
+static const Int_t kEu152_Npeaks = 11;
+const Char_t *Eu152_Name[kEu152_Npeaks] =
       {"152Eu",    "152Eu",     "152Eu",     "152Eu",
-       "152Eu",    "152Eu",     "152Eu",     "88Y ",   "152Eu",
-       "152Eu",    "152Eu",     "60Co",     "152Eu",
-       "60Co",    "88Y"};
-Double_t Sc_Energy[kSc_Npeaks] =
+       "152Eu",    "152Eu",     "152Eu",     "152Eu",
+       "152Eu",    "152Eu",     "152Eu"};
+Double_t Eu152_Energy[kEu152_Npeaks] =
      {121.780,  244.664,  344.306, 411.114,
-      443.968,  778.880,  867.330, 898.010, 964.013,
-      1085.817, 1112.050, 1173.231, 1408.030,
-      1332.506, 1836.111};
-Double_t Sc_EnError[kSc_Npeaks] =
+      443.968,  778.880,  867.330, 964.013,
+      1085.817, 1112.050, 1408.030};
+Double_t Eu152_EnError[kEu152_Npeaks] =
      {0.040,    0.024,    0.024,   0.038,
-      0.038,    0.041,    0.050,   0.0334, 0.041,
-      0.053,    0.041,    0.026,   0.046,
-      0.028,    0.058};
-Double_t Sc_Intensity[kSc_Npeaks]=
+      0.038,    0.041,    0.050,   0.041,
+      0.053,    0.041,    0.046};
+Double_t Eu152_Intensity[kEu152_Npeaks]=
      {0.286,   0.074,   0.267,   0.022,
-      0.031,   0.129,   0.041,   0.920, 0.146,
-      0.099,   0.135,   0.999,    0.208,
-      1.000,   0.997};
+      0.031,   0.129,   0.041,   0.146,
+      0.099,   0.135,   0.208};
+      
+static const Int_t kY88_Npeaks = 2;
+const Char_t *Y88_Name[kY88_Npeaks] =
+      {"88Y ","88Y"};
+Double_t Y88_Energy[kY88_Npeaks] =
+     {898.010,1836.111};
+Double_t Y88_EnError[kY88_Npeaks] =
+     {0.0334,0.058};
+Double_t Y88_Intensity[kY88_Npeaks]=
+     {0.920, 0.997};
+     
+static const Int_t kCo60_Npeaks = 2;
+const Char_t *Co60_Name[kCo60_Npeaks] =
+      {"60Co","60Co"};
+Double_t Co60_Energy[kCo60_Npeaks] =
+     {1173.231, 1332.506};
+Double_t Co60_EnError[kCo60_Npeaks] =
+     {0.026, 0.028};
+Double_t Co60_Intensity[kCo60_Npeaks]=
+     {0.999, 1.000};
+     
+static const Int_t kCm244_Npeaks = 4;
+const Char_t *Cm244_Name[kCm244_Npeaks] =
+      {"Pu240","Pu240","Cm144","Cm144"};
+Double_t Cm244_Energy[kCm244_Npeaks] =
+     {5124, 5168, 5763, 5805};
+Double_t Cm244_EnError[kCm244_Npeaks] =
+     {1, 1, 1, 1};
+Double_t Cm244_Intensity[kCm244_Npeaks]=
+     {0.27, 0.73, 0.235, 0.764};
 //____________________________________________________________________________________
 
 CalibrationDialog::CalibrationDialog(TH1 * hist, Int_t interactive)
@@ -82,8 +108,9 @@ The procedure to use previously fitted peaks is as follows:\n\
   - Fields \"Mean\" and \"Errors\" of the table should now\n\
     be filled. Complete / modify the table at least with\n\
     \"Nom Val\" (Nominal values)\n\
+    Mark those peaks which should be used (check \"Use it\"\n\
 \n\
-    This can be done from \"Set Nominal Vals\": This menu\n\
+    This can also be done from \"Set Nominal Vals\": This menu\n\
     presents the lines of the calibration sources 60Co, 192Eu\n\
     and 88Y or the custom provided ones according the\n\
     selection of \"Cal source\".\n\
@@ -98,11 +125,22 @@ The procedure to use previously fitted peaks is as follows:\n\
     assumes a linear calibration. For detailed info consult\n\
     the \"Help\" provided with the corresponding dialog widget\n\
 \n\
+    The used peaks will be labeled with their names and energy (KeV)\n\
+    Caveat: the label and line are drawn near the position of the\n\
+    mean and corresponding bin content of the pure gaussian part\n\
+    of the fitted function. In case of a big (>1) tail fraction\n\
+    this can be apparently quite far from the visible peak.\n\
+    With the help of the mouse labels can be moved around\n\
+    before printing the picture.\n\
+\n\
   - Execute \"Calculate Function\": A TGraphErrors is created \n\
     using the peak and nominal values. The function is\n\
     fitted to this graph to evaluate the parameters\n\
   - The parameters for the \"Calibrated Hist\" (Nbins,\n\
     Xlow, Xup) should be adjusted to reasonable values.\n\
+    In case of a linear calibration function (pol1)\n\
+    which is normally used the constant may be forced to 0\n\
+    i.e. the function is 0 at the origin.\n\
 \n\
   - Execute \"Fill Calibrated Hist\". A new histogram will be\n\
     created and filled according to the calibration function\n\
@@ -181,7 +219,7 @@ The procedure to use previously fitted peaks is as follows:\n\
       fX[i] = fY[i] = fXE[i] = fYE[i] = fCont[i] = 0;
       fUse[i] = fAssigned[i] = 0;
    }
-   cout << "Setting fMaxPeaks = " << fMaxPeaks << endl;
+//   cout << "Setting fMaxPeaks = " << fMaxPeaks << endl;
 //#ifdef MARABOUVERS
 //   fHistPresent = (HistPresent*)gROOT->GetList()->FindObject("mypres");
 //#endif
@@ -241,9 +279,9 @@ The procedure to use previously fitted peaks is as follows:\n\
 			row_lab->Add(new TObjString("CheckButton+"));
 			valp[ind++] = &fUse[i];
 		}
-		row_lab->Add(new TObjString("CommentOnly_Parameters for Calibrated Hist: "));
+		row_lab->Add(new TObjString("CommentOnly_Params for Calibrated Hist: "));
 		valp[ind++] = &dummy;
-		row_lab->Add(new TObjString("StringValue-CalFunction name"));
+		row_lab->Add(new TObjString("StringValue-Function name"));
 		valp[ind++] = &fFuncName;
 		row_lab->Add(new TObjString("PlainIntVal_Nbins"));
 		valp[ind++] = &fCalibratedNbinsX;
@@ -252,7 +290,7 @@ The procedure to use previously fitted peaks is as follows:\n\
 		row_lab->Add(new TObjString("DoubleValue+Xup"));
 		valp[ind++] = &fCalibratedXup;
 
-		row_lab->Add(new TObjString("CommentOnly_Cal source"));
+		row_lab->Add(new TObjString("CommentOnly_Cal src"));
 		valp[ind++] = &dummy;
 		row_lab->Add(new TObjString("RadioButton+Eu152"));
 		valp[ind++] = &fEu152Gauge;
@@ -260,12 +298,16 @@ The procedure to use previously fitted peaks is as follows:\n\
 		valp[ind++] = &fCo60Gauge;
 		row_lab->Add(new TObjString("RadioButton+Y88"));
 		valp[ind++] = &fY88Gauge;
+		row_lab->Add(new TObjString("RadioButton+Cm244"));
+		valp[ind++] = &fCm244Gauge;
 		row_lab->Add(new TObjString("RadioButton+Custom"));
 		valp[ind++] = &fCustomGauge;
-		row_lab->Add(new TObjString("StringValue_Custom gauge file"));
+		row_lab->Add(new TObjString("StringValue_Custom gauge f"));
 		valp[ind++] = &fCustomGaugeFile;
-      row_lab->Add(new TObjString("CheckButton-Verbose Print"));
+      row_lab->Add(new TObjString("CheckButton-Verb Print"));
       valp[ind++] = &fVerbose;
+      row_lab->Add(new TObjString("CheckButton-Force Const=0"));
+      valp[ind++] = &fForceConst0;
 
 		row_lab->Add(new TObjString("CommandButt_Update Peaklist"));
 		valp[ind++] = &udcmd;
@@ -296,36 +338,47 @@ The procedure to use previously fitted peaks is as follows:\n\
 
 void CalibrationDialog::SetBuiltinGaugeValues()
 {
-	fGaugeEnergy.Set(kSc_Npeaks);
-	fGaugeError.Set(kSc_Npeaks);
-	fGaugeIntensity.Set(kSc_Npeaks);
-   TString name;
+	Double_t *En, *Er, *In;
+	const char **Na;
    Int_t n = 0;
    if        (fEu152Gauge) {
-      name = "152Eu";
+		n  = kEu152_Npeaks;
+		En = Eu152_Energy;
+		Er = Eu152_EnError;
+		In = Eu152_Energy;
+		Na = Eu152_Name;
    } else if ( fCo60Gauge ) {
-      name = "60Co";
-   } else if ( fY88Gauge ) {
-      name = "88Y";
-   } else {
+		n  = kCo60_Npeaks;
+		En = Co60_Energy;
+		Er = Co60_EnError;
+		In = Co60_Energy;
+		Na = Co60_Name;
+  } else if ( fY88Gauge ) {
+		n = kY88_Npeaks;
+		En = Y88_Energy;
+		Er = Y88_EnError;
+		In = Y88_Energy;
+		Na = Y88_Name;
+   } else if ( fCm244Gauge ) {
+		n = kCm244_Npeaks;
+ 		En = Cm244_Energy;
+		Er = Cm244_EnError;
+		In = Cm244_Energy;
+		Na = Cm244_Name;
+  } else {
       cout << "No builtin gauge source selected" << endl;
       return;
    }
+	fGaugeEnergy.Set(n);
+	fGaugeError.Set(n);
+	fGaugeIntensity.Set(n);
    fGaugeName.Clear();
- 	for (Int_t i = 0; i < kSc_Npeaks; i++) {
-      TString gn (Sc_Name[i]);
-      if ( gn.Contains(name) ) {
-			fGaugeEnergy[n]= Sc_Energy[i];
-			fGaugeError[n] = Sc_EnError[i];
-			fGaugeIntensity[n] = Sc_Intensity[i];
-			fGaugeName.Add(new TObjString(Sc_Name[i]));
-         fSetFlag[n] = 1;
-         n++;
-      }
-//      TString cn(Sc_Name[i]);
-//      if (cn.Contains("Eu"))
-//         ofile << Sc_Name[i] << " " << Sc_Energy[i] << " "
-//            << Sc_EnError[i] << " " << Sc_Intensity[i] << endl;
+ 	for (Int_t i = 0; i < n; i++) {
+		fGaugeEnergy[i]= En[i];
+		fGaugeError[i] = Er[i];
+		fGaugeIntensity[i] = In[i];
+		fGaugeName.Add(new TObjString(Na[i]));
+		fSetFlag[i] = 1;
 	}
    fGaugeNpeaks = n;
 }
@@ -466,7 +519,7 @@ Int_t CalibrationDialog::ReadGaugeFile()
   	while ( 1 ) {
 		line.ReadLine(infile);
 		if (infile.eof()) break;
-      cout << "line: " << line << endl;
+//      cout << "line: " << line << endl;
 		oa = line.Tokenize(del);
 		Int_t nent = oa->GetEntries();
 		if ( nent < 2 ) {
@@ -809,57 +862,6 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
       }
    }
 
-// remove text and lines of possible previous selection
-   if (fSelCanvas) {
-	  TList temp;
-	  TList *lop = fSelCanvas->GetListOfPrimitives();
-	  TIter next3(lop);
-	  TObject *obj;
-	  while ( (obj = next3()) ) {
-		if (obj->InheritsFrom("TText"))
-			temp.Add(obj);
-		if (obj->InheritsFrom("TLine"))
-			temp.Add(obj);
-	  }
-	  TIter next2((&temp));
-	  while ( (obj = next2()) ) {
-		lop->Remove(obj);
-	  }
-	  temp.Delete("slow");
-		Double_t prev_y = 0;
-		for (Int_t i = 0; i < fNpeaks; i++) {
-			best = fAssigned[i];
-			if ( best < 0 ) continue;
-			Int_t bin = fSelHist->FindBin(fX[i]);
-			Double_t yv = fSelHist->GetBinContent(bin);
-			Double_t yr = fSelHist->GetMaximum();
-			Double_t xr = fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetLast())
-							- fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetFirst());
-			Double_t yn = yv + 0.025*yr;
-			if ( prev_y != 0 && TMath::Abs(yn - prev_y) < 0.02*yr ) {
-				yn  -= 0.02*yr;
-			}
-			prev_y = yn;
-			TLine * l = new TLine(fX[i] + 0.025 * xr, yn, fX[i], yv);
-			l->SetLineWidth(2);
-			l->Draw();
-
-			TString t;
-			TObjString *gn = (TObjString*)fGaugeName.At(best);
-			t = gn->String();
-
-			Int_t ie = (Int_t) fGaugeEnergy[best];
-			t +=  "(";
-			t += ie;
-			t += ")";
-			TLatex latex;
-			latex.SetTextSize(0.02);
-			latex.SetTextColor(kBlue);
-			latex.DrawLatex(fX[i] + 0.025 * xr, yn, t);
-			gPad->Modified();
-			gPad->Update();
-		}
-	}
    TIter next(&fPeakList);
    FhPeak * p;
    Int_t np = 0;
@@ -884,6 +886,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
      }
      np++;
    }
+   LabelPeaks();
    if (fVerbose) {
 		fScanCanvas = new TCanvas("cscan", "cscan", 500, 500, 500, 500);
 		hscan->GetYaxis()->SetTitleSize(0.04);
@@ -892,7 +895,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 		hscan->GetXaxis()->CenterTitle();
 		hscan->Draw("col");
 		fScanCanvas->Update();
-		cout << "Compare measured intensity with published values" << endl;
+		cout << "Compare measured intensity with literature values" << endl;
 		TGraph * eff = new TGraph(nassigned);
 		eff->SetTitle("Effeciciency vs calibrated energy");
 		Int_t na = 0;
@@ -934,9 +937,67 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 
 //________________________________________________________________________
 
+void CalibrationDialog::LabelPeaks()
+{
+// remove text and lines of possible previous selection
+	if (! fSelCanvas)
+	return;
+	TList temp;
+	Int_t best = 0;
+	fSelCanvas->cd();
+	TList *lop = fSelCanvas->GetListOfPrimitives();
+	TIter next3(lop);
+	TObject *obj;
+	while ( (obj = next3()) ) {
+	if (obj->InheritsFrom("TText"))
+		temp.Add(obj);
+	if (obj->InheritsFrom("TLine"))
+		temp.Add(obj);
+	}
+	TIter next2((&temp));
+	while ( (obj = next2()) ) {
+	lop->Remove(obj);
+	}
+	temp.Delete("slow");
+	Double_t prev_y = 0;
+	for (Int_t i = 0; i < fNpeaks; i++) {
+		best = fAssigned[i];
+		if ( best < 0 ) continue;
+		Int_t bin = fSelHist->FindBin(fX[i]);
+		Double_t yv = fSelHist->GetBinContent(bin);
+		Double_t yr = fSelHist->GetMaximum();
+		Double_t xr = fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetLast())
+						- fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetFirst());
+		Double_t yn = yv + 0.025*yr;
+		if ( prev_y != 0 && TMath::Abs(yn - prev_y) < 0.02*yr ) {
+			yn  -= 0.02*yr;
+		}
+		prev_y = yn;
+		TLine * l = new TLine(fX[i] + 0.025 * xr, yn, fX[i], yv);
+		l->SetLineWidth(2);
+		l->Draw();
+
+		TString t;
+		TObjString *gn = (TObjString*)fGaugeName.At(best);
+		t = gn->String();
+
+		Int_t ie = (Int_t) fGaugeEnergy[best];
+		t +=  "(";
+		t += ie;
+		t += ")";
+		TLatex latex;
+		latex.SetTextSize(0.02);
+		latex.SetTextColor(kBlue);
+		latex.DrawLatex(fX[i] + 0.025 * xr, yn, t);
+		gPad->Modified();
+		gPad->Update();
+	}
+}
+//________________________________________________________________________
+
 void CalibrationDialog::SetValues()
 {
-   if (fAutoAssigned) {
+  if (fAutoAssigned) {
       cout << "Assignment already done" << endl;
       return;
    }
@@ -951,6 +1012,7 @@ void CalibrationDialog::SetValues()
    }
    Int_t ngauge = 0;
    for (Int_t i = 0; i < fMaxPeaks; i++) {
+		fAssigned[i] = -1;
       FhPeak * p = (FhPeak*)fPeakList.At(i);
       if ( fUse[i] != 0 ) {
          while ( fSetFlag[ngauge] == 0 ) {
@@ -966,12 +1028,15 @@ void CalibrationDialog::SetValues()
 			fYE[i] = fGaugeError[ngauge];
          p->SetNominalEnergy(fY[i]);
          p->SetNominalEnergyError(fYE[i]);
-			cout << "SetValues() fX[" << i << "] = " << fX[i]
+         fAssigned[i] = ngauge;
+         if (gDebug > 0)
+				cout << "SetValues() fX[" << i << "] = " << fX[i]
 				<< " fY[" << i << "] = " << fY[i] 
 				<< " fYE[" << i << "] = " << fYE[i] << endl;
 			ngauge++;
       }
    }
+   LabelPeaks();
    fDialog->ReloadValues();
 }
 //____________________________________________________________________________________
@@ -980,13 +1045,13 @@ TF1 * CalibrationDialog::CalculateFunction()
 {
    if (fCalFunc) {delete fCalFunc; fCalFunc = NULL;}
    fCalFunc = new TF1(fFuncName,(const char*)fFormula);
-   if(fCalFunc->GetNpar() < 2){
+//   if(fCalFunc->GetNpar() < 2){
 //      WarnBox("Need at least pol1 (2 pars)", fParentWindow);
-      Int_t retval;
-      new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning","Need at least pol1 (2 pars)",kMBIconExclamation, kMBDismiss, &retval);
-      delete fCalFunc; fCalFunc = NULL;
-      return NULL;
-   }
+//      Int_t retval;
+//      new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning","Need at least pol1 (2 pars)",kMBIconExclamation, kMBDismiss, &retval);
+//      delete fCalFunc; fCalFunc = NULL;
+//      return NULL;
+ //  }
    TIterator * pIter = fPeakList.MakeIterator();
    FhPeak * p;
    Int_t nuse = 0, n = 0;
@@ -995,7 +1060,7 @@ TF1 * CalibrationDialog::CalculateFunction()
      p->SetNominalEnergy(fY[n]);
      p->SetNominalEnergyError(fYE[n]);
      n++;
-     cout << "n " << fUse[n] << " p->GetUsed() " << p->GetUsed()<< endl;
+//     cout << "n " << fUse[n] << " p->GetUsed() " << p->GetUsed()<< endl;
 //     if (p->GetUsed()) nuse++;
    }
    for (Int_t i = 0; i < fMaxPeaks; i++ ) {
@@ -1025,21 +1090,22 @@ TF1 * CalibrationDialog::CalculateFunction()
    Int_t np = 0;
    for (Int_t i = 0; i < fMaxPeaks; i++ ) {
      if (fUse[i] > 0) {
-        cout << " " << i << " " << fX[i] << " " << fY[i] << endl;
-        gr->SetPoint(np, fX[i], fY[i]);
-		  // make sure error is not zero
-		  if ( fXE[i] <= 0 ) 
-			  fXE[i] =  TMath::Abs(0.01 * fX[i]);
-		  if ( fXE[i] <= 0 )
-			  fXE[i] = 0.1;
-		  if ( fYE[i] <= 0 ) 
-			  fYE[i] =  TMath::Abs(0.01 * fY[i]);
-		  if ( fYE[i] <= 0 )
-			  fYE[i] = 0.1;
-		  gr->SetPointError(i, fXE[i], fYE[i]);
-        np++;
-     }
-   }
+		  if ( gDebug > 0 )
+				cout << " " << i << " " << fX[i] << " " << fY[i] << endl;
+			gr->SetPoint(np, fX[i], fY[i]);
+			// make sure error is not zero
+			if ( fXE[i] <= 0 ) 
+				fXE[i] =  TMath::Abs(0.01 * fX[i]);
+			if ( fXE[i] <= 0 )
+				fXE[i] = 0.1;
+			if ( fYE[i] <= 0 ) 
+				fYE[i] =  TMath::Abs(0.01 * fY[i]);
+			if ( fYE[i] <= 0 )
+				fYE[i] = 0.1;
+			gr->SetPointError(i, fXE[i], fYE[i]);
+			np++;
+		}
+	}
 /*
    while ( (p = (FhPeak *) pIter->Next()) ) {
      if (p->GetUsed()) {
@@ -1057,6 +1123,10 @@ TF1 * CalibrationDialog::CalculateFunction()
          fCalFunc->SetParameter(i, 0);
       }
    }
+   if (fCalFunc->GetNpar() == 2 && fForceConst0) {
+		cout << "Set polynomial const = 0" << endl;
+		fCalFunc->FixParameter(0,0);
+	}
    gr->Fit(fFuncName);
    cout << endl << "Fitted values a: "
         <<  fCalFunc->GetParameter(0)<< " +- " << fCalFunc->GetParError(0) << " b: "
@@ -1072,10 +1142,10 @@ TF1 * CalibrationDialog::CalculateFunction()
 		Double_t xl = fCalFunc->Eval(fSelHist->GetXaxis()->GetBinLowEdge(1));
 		Double_t xu = fCalFunc->Eval(fSelHist->GetXaxis()
 							->GetBinUpEdge(fSelHist->GetNbinsX()));
-		cout << "fCalibratedNbinsX ,xl, xu " << fCalibratedNbinsX << " xl " << xl<< " xu " << xu<< endl;
+		if ( gDebug > 0 )
+			cout << "fCalibratedNbinsX ,xl, xu " << fCalibratedNbinsX << " xl " << xl<< " xu " << xu<< endl;
    }
-
-   return fCalFunc;
+	return fCalFunc;
 }
 
 //________________________________________________________________________________
@@ -1214,7 +1284,7 @@ void CalibrationDialog::FillCalibratedHist()
    title_cal += ";Energy[KeV];Events[";
    title_cal += Form("%4.2f", (fCalibratedXup-fCalibratedXlow)/(Double_t)fCalibratedNbinsX);
    title_cal += " KeV]";
-   cout << "title_cal: " << title_cal << endl;
+//   cout << "title_cal: " << title_cal << endl;
    TH1* hh = (TH1*)gROOT->GetList()->FindObject(hname_cal);
    if (hh) delete hh;
 /*
@@ -1406,7 +1476,7 @@ TList * CalibrationDialog::UpdatePeakList()
    }
    if (fInteractive > 0) {
       fDialog->ReloadValues();
-      cout << "UpdatePeakList:  ReloadValues" << endl;
+//      cout << "UpdatePeakList:  ReloadValues" << endl;
       EnableDialogs();
    }
    if ( fVerbose )
@@ -1423,8 +1493,8 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 	TObject *obj;
 	TF1 *f;
 	TList *lof = fSelHist->GetListOfFunctions();
-	if ( fVerbose )
-		cout <<" lof->GetSize()" <<lof->GetSize() << endl;
+//	if ( fVerbose )
+//		cout <<" lof->GetSize()" <<lof->GetSize() << endl;
 	fSelCanvas->cd();
 	TList *lop = gPad->GetListOfPrimitives();
 	TIter next1(lof);
@@ -1467,7 +1537,7 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 		}
 	}
    if ( fVerbose )
-      cout << "Found " << npeaks << " peaks with Ga_Mean" << endl;
+      cout << "Found " << npeaks << " peaks" << endl;
 	return npeaks;
 }
 //_______________________________________________________________________
@@ -1503,11 +1573,13 @@ void CalibrationDialog::RestoreDefaults()
    fAccept   = env.GetValue("CalibrationDialog.fAccept",     2 );
    fContThresh   = env.GetValue("CalibrationDialog.fContThresh",  0.01);
    fVerbose  = env.GetValue("CalibrationDialog.fVerbose",    0 );
+   fForceConst0  = env.GetValue("CalibrationDialog.fForceConst0",    0 );
 //   fInteractive  = env.GetValue("CalibrationDialog.fInteractive", 1);
    fCustomGauge   = env.GetValue("CalibrationDialog.fCustomGauge",     0 );
    fEu152Gauge = env.GetValue("CalibationDialog.fEu152Gauge", 1);
    fCo60Gauge = env.GetValue("CalibationDialog.fCo60Gauge", 0);
    fY88Gauge = env.GetValue("CalibationDialog.fY88Gauge", 0);
+   fCm244Gauge = env.GetValue("CalibationDialog.fCm244Gauge", 0);
    fCustomGaugeFile= env.GetValue("CalibrationDialog.fCustomGaugeFile", "gauge_values.txt");
 }
 //_______________________________________________________________________
@@ -1533,11 +1605,13 @@ void CalibrationDialog::SaveDefaults()
    env.SetValue("CalibrationDialog.fAccept",  fAccept  );
    env.SetValue("CalibrationDialog.fContThresh", fContThresh);
    env.SetValue("CalibrationDialog.fVerbose", fVerbose);
+   env.SetValue("CalibrationDialog.fForceConst0", fForceConst0);
 //   env.SetValue("CalibrationDialog.fInteractive", fInteractive);
    env.SetValue("CalibrationDialog.fCustomGauge", fCustomGauge);
    env.SetValue("CalibationDialog.fEu152Gauge", fEu152Gauge);
    env.SetValue("CalibationDialog.fCo60Gauge", fCo60Gauge);
    env.SetValue("CalibationDialog.fY88Gauge", fY88Gauge);
+   env.SetValue("CalibationDialog.fCm244Gauge", fCm244Gauge);
    env.SetValue("CalibrationDialog.fCustomGaugeFile", fCustomGaugeFile.Data());
    env.SaveLevel(kEnvLocal);
 }
