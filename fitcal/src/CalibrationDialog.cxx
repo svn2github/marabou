@@ -75,11 +75,11 @@ static const Int_t kCm244_Npeaks = 4;
 const Char_t *Cm244_Name[kCm244_Npeaks] =
       {"Pu240","Pu240","Cm144","Cm144"};
 Double_t Cm244_Energy[kCm244_Npeaks] =
-     {5124, 5168, 5763, 5805};
+     {5123.82, 5168.30, 5762.835, 5804.96};
 Double_t Cm244_EnError[kCm244_Npeaks] =
-     {1, 1, 1, 1};
+     {0.23, 0.15, 0.03, 0.05};
 Double_t Cm244_Intensity[kCm244_Npeaks]=
-     {0.27, 0.73, 0.235, 0.764};
+     {0.24, 0.76, 0.236, 0.764};
 //____________________________________________________________________________________
 
 CalibrationDialog::CalibrationDialog(TH1 * hist, Int_t interactive)
@@ -363,7 +363,7 @@ void CalibrationDialog::SetBuiltinGaugeValues()
 		n = kCm244_Npeaks;
  		En = Cm244_Energy;
 		Er = Cm244_EnError;
-		In = Cm244_Energy;
+		In = Cm244_Intensity;
 		Na = Cm244_Name;
   } else {
       cout << "No builtin gauge source selected" << endl;
