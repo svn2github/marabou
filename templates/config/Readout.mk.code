@@ -53,7 +53,7 @@ POSIX   =  -mthreads
 CFLAGS  = $(POSIX) -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 CES_LIBS = -L/lib/ces -lvme -lbma -luio 
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(DIMLIB) \
-          $(LIB)/libedit.a -llynx -lnetinet
+          $(LIB)/libedit.a -lnetinet
 endif
 
 ifeq ($(GSI_OS_VERSION),3.1)
@@ -75,7 +75,7 @@ SMILIBS = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(LIB)/lib_smi.a 
 endif
 
 CFLAGS	+= -I$(RPATH) -I$(INC) $(RDO_INCL)
-LIBS	+= $(RDO_LIBS) $(CES_LIBS)
+LIBS	+= $(RDO_LIBS) $(CES_LIBS) -llynx
 
 all:	m_read_meb
 
