@@ -54,9 +54,10 @@
 
 *-*-*-*-*.LocalMemoryLength:			0x00001000
 
+*-*-SP-RIO2-*.LocalPipeBase:	 		0x01000000
 *-*-SP-RIO3-*.LocalPipeBase:	 		0x04000000
 *-*-SP-RIO4-*.LocalPipeBase:	 		0x08000000
-*-*-SP-*-*.LocalPipeBase:	 		0x02000000
+*-*-SP-*-*.LocalPipeBase:	 			0x02000000
 
 *-*-*-*-*.LocalPipeOffset:	 			0x0
 
