@@ -382,7 +382,7 @@ Bool_t TMbsSetup::SetPath(const Char_t * Path, Bool_t Create) {
 			if (remoteHome.IsNull()) {
 				gMrbLog->Err() << "Can't set path \"" << Path << "\" -" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetPath");
-				gMrbLog->Err() << "\"TMbsSetup.DefaultHomeDir\" has to be set properly first" << endl;
+				gMrbLog->Err() << "\"TMbsSetup.HomeDir\" has to be set properly first" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetPath");
 				return(kFALSE);
 			} else {
@@ -2142,7 +2142,7 @@ const Char_t * TMbsSetup::RemoteHomeDir() {
 
 	TString hostName;
 	TString rshCmd;
-	TString defaultHomeDir;
+	TString ppcHomeDir;
 	Char_t pstr[1024];
 	FILE * pwd;
 
@@ -2152,27 +2152,29 @@ const Char_t * TMbsSetup::RemoteHomeDir() {
 		gMrbLog->Flush(this->ClassName(), "RemoteHomeDir");
 		fRemoteHome.Resize(0);
 	} else {
-		defaultHomeDir = gEnv->GetValue("TMbsSetup.DefaultHomeDir", "");
-		if (defaultHomeDir.IsNull()) {
+		ppcHomeDir = gEnv->GetValue("TMbsSetup.HomeDir", "");
+		if (ppcHomeDir.IsNull()) ppcHomeDir = gEnv->GetValue("TMbsSetup.DefaultHomeDir", "");		// to be compatible with prev versions
+		if (ppcHomeDir.IsNull()) {
 			rshCmd = "rsh ";					// get home dir from remote login
 			rshCmd += hostName;
 			rshCmd += " pwd 2>&1";
 			pwd = gSystem->OpenPipe(rshCmd, "r");
-			fgets(pstr, 1024, pwd);
+			while (fgets(pstr, 1024, pwd)) {
+				fRemoteHome = pstr;
+				fRemoteHome = fRemoteHome.Strip(TString::kTrailing, '\n');
+				fRemoteHome = fRemoteHome.Strip(TString::kBoth);
+				if (fRemoteHome[0] == '/') break;
+			}
 			gSystem->ClosePipe(pwd);
-
-			fRemoteHome = pstr;
-			fRemoteHome = fRemoteHome.Strip(TString::kTrailing, '\n');
-			fRemoteHome = fRemoteHome.Strip(TString::kBoth);
-			if (fRemoteHome(0) != '/') {
+			if (fRemoteHome[0] != '/') {
 				gMrbLog->Err() << "Error during \"" << rshCmd << " - " << fRemoteHome << endl;
 				gMrbLog->Flush(this->ClassName(), "RemoteHomeDir");
-				gMrbLog->Err() << "No default given (check \"TMbsSetup.DefaultHomeDir\" in .rootrc)" << endl;
+				gMrbLog->Err() << "No home dir given (check \"TMbsSetup.HomeDir\" in .rootrc)" << endl;
 				gMrbLog->Flush(this->ClassName(), "RemoteHomeDir");
 				fRemoteHome.Resize(0);
 			}
 		} else {
-			fRemoteHome = defaultHomeDir;
+			fRemoteHome = ppcHomeDir;
 		}
 	}
 	Int_t x = fRemoteHome.Index(":", 0);
