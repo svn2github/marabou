@@ -1513,12 +1513,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						Int_t pipeType = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeType"), -1);
-						cout << "@@@ " << pipeType << endl;
 						if (pipeType == -1) {
 							UInt_t pty;
 							this->GetRcVal(pty, "LocalPipeType", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
 							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeType"), (Int_t) pty, 16);
-							cout << "@@@ " << res << " " << pty << endl;
 							pipeType = (Int_t) pty;
 						}
 						arrayData[0] = pipeType;
@@ -1535,7 +1533,6 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TString res;
 						UInt_t pipeBase = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), 0);
 						if (pipeBase == 0) {
-							cout << cType->GetName() << " " << pType->GetName() << " " << sMode << " " << mbsVersion << " " << lynxVersion << endl;
 							this->GetRcVal(pipeBase, "LocalPipeBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
 							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), (Int_t) pipeBase, 16);
 						}
