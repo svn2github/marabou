@@ -627,6 +627,7 @@ Char_t * getPhysAddr(Char_t * Addr, Int_t Size) {
 		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 		return NULL;
 	}
+
 	return (Char_t *) chains[0].address;
 }
 

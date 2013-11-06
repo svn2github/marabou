@@ -4,7 +4,7 @@ RDOINC		=	../inc
 PPCINC		=	../../include
 CESINC		=	/usr/include/ces
 
-CFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(RDOINC) -I$(PPCINC) -I$(CESINC)
+CFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(MBSROOT)/inc -I$(RDOINC) -I$(PPCINC) -I$(CESINC)
 
 ObjSuf		=	o
 SrcSuf		=	c

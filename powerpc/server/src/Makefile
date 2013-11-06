@@ -6,7 +6,7 @@ LWRINC		=	../../lwroot/inc
 M2LINC		=	../../../c2lynx/inc
 CESINC		=	/usr/include/ces
 
-CXXFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(SRVINC) -I$(LWRINC) -I$(M2LINC) -I$(PPCINC) -I$(CESINC)
+CXXFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(MBSROOT)/inc -I$(SRVINC) -I$(LWRINC) -I$(M2LINC) -I$(PPCINC) -I$(CESINC)
 
 IclSuf		=	h
 ObjSuf		=	o
