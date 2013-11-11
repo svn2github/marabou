@@ -74,6 +74,9 @@ private:
    Int_t fBackg0;            // Force background = 0
    Int_t fSlope0;            // Force background slope = 0 (use constant background)
    Int_t fOnesig;            // Use same sigma for all peaks ( if fittted together)
+   Int_t fGaussOnly;         // Pure gauss function, no tail
+   Int_t fGaussTail;         // Pure gauss + tail function
+   Int_t fTailOnly;          // Pure tail function, no gauss
    Int_t fLowtail;           // Use low tail
    Int_t fHightail;          // Use high tail
    Int_t fShowcof;           // Display components of fit
@@ -112,6 +115,7 @@ public:
    void PolExecute(Int_t draw_only = 0);
    void PrintCorrelation();
    void AddPeaktoList(TF1 *func);
+   Double_t GetParValue(const char * pname);
    void PrintPeakList();
    void FitFormExecute();
    void DrawFormExecute();
