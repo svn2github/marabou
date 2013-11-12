@@ -21,6 +21,8 @@ echo "mknew: copying calibration files: *.cal"
 cp -p $1/*.cal $2
 echo "mknew: copying config definition files: *.def"
 cp -p $1/*.def $2
+echo "mknew: copying config param files: *.par"
+cp -p $1/*.par $2
 echo "mknew: copying root environment: .rootrc"
 cp -p $1/.rootrc $2
 echo "mknew: copying root environment: .hprrc"
@@ -34,9 +36,9 @@ then
   echo "mknew: copying ROOTSYS/MARABOU setup: ./iniMrbPath"
   cp -p $1/iniMrbPath $2
 fi
-if [ -f $1/adc1Settings.rc ]
+if [ "$1/*Settings.rc" ]
 then
-  echo "mknew: copying adc/qdc settings: ./*Settings.rc"
+  echo "mknew: copying settings (adc, qdc, etc.): ./*Settings.rc"
   cp -p $1/*Settings.rc $2
 fi
 if [ -f $1/.mbssetup-localdefs ]
