@@ -191,7 +191,8 @@ The procedure to use previously fitted peaks is as follows:\n\
      		cout << "fSelCanvas = 0!!" <<  endl;
      		return;
 		} else {
-			cout << "TCanvas* ca = (TCanvas*)" << fSelCanvas <<   endl;
+			if (fVerbose > 0)
+				cout << "TCanvas* ca = (TCanvas*)" << fSelCanvas <<   endl;
 			fParentWindow = (TRootCanvas*)fSelCanvas->GetCanvasImp();
 		}
 	}
@@ -1405,7 +1406,7 @@ TList * CalibrationDialog::UpdatePeakList()
          c_sigma = -1;
          for (Int_t i = 0; i < f->GetNpar(); i++) {
             pname = f->GetParName(i);
-            if (pname.BeginsWith("Ga_Sigma_")) {
+            if (pname.BeginsWith("GaSigma_")) {
                c_sigma= f->GetParameter(i);
             }
             if (pname.BeginsWith("Ga_Mean")) {
@@ -1518,8 +1519,8 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 		}
 	}
 //
-	if (fVerbose)
-		cout <<" lof->GetSize()" <<lof->GetSize() << endl;
+//	if (fVerbose)
+//		cout <<" lof->GetSize() " <<lof->GetSize() << endl;
 	Int_t npeaks = 0;
 	TIter next(lof);
 	TString pname;
