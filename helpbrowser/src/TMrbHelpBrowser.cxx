@@ -170,7 +170,8 @@ Int_t TMrbHelpBrowser::AddHtml(const char * InputFile){
    gSystem->GetPathInfo(InputFile,&id, &size, &flags, &modtime);
    if((flags & 2) == 0)nfiles = AddHtmlFile(InputFile);  
    else               nfiles = AddHtmlDir(InputFile);
-   cout << nfiles << " files found" << endl;
+   if ( gDebug > 0 ) 
+		cout << nfiles << " help files found" << endl;
    return nfiles;
 }
 //________________________________________________________________________________
