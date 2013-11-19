@@ -80,12 +80,13 @@ private:
    Int_t fLowtail;           // Use low tail
    Int_t fHightail;          // Use high tail
    Int_t fShowcof;           // Display components of fit
+   Double_t fMeanBond;       // Bind variation of gauss mean +- this value
    Int_t fConfirmStartValues;// Present a widget with start values before fitting
    Int_t fPrintStartValues;  // Print start values
    Int_t fFitOptLikelihood;  // Use Likelihood method (default chi2)
    Int_t fFitOptQuiet;       // Suppress printout during fitting
    Int_t fFitOptOneLine;     // One line / peak
-    Int_t fFitOptVerbose;     // Verbose printout during fitting
+   Int_t fFitOptVerbose;     // Verbose printout during fitting
    Int_t fFitOptMinos;       // Use minos to improve fit after migrad
    Int_t fFitOptErrors1;     // Set all errors to 1`
    Int_t fFitOptIntegral;    // Use integral of bin

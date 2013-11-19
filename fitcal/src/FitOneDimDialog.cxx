@@ -1121,6 +1121,9 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			cout << "No tail side given, use low tail" << endl;
 		}
 	}
+	if ( fGaussOnly ) {
+		fLowtail = fHightail = 0;
+	}
 	Double_t lTailSide = 0;
 	if ( fGaussTail ) {
 		if (fHightail == 1) {
@@ -1284,12 +1287,14 @@ Bool_t FitOneDimDialog::FitGausExecute()
 
 	Double_t bgest = 0.5 * (fSelHist->GetBinContent(bin_from)
 								  + fSelHist->GetBinContent(bin_to));
+	(*par)[ind] = 0;						  
 	if (fBackg0 == 0 || fUsedbg == 1|| lTailSide != 0) {
 		fFitFunc->SetParName(ind+kFix,		"BgConst");
 		row_lab.Add(new TObjString("BgConst"));
 		if (setpars) (*par)[ind] = bgest/fSelHist->GetBinWidth(bin_from);
 		ind++;
 	}
+	(*par)[ind] = 0;						  
 	if (fSlope0 == 0 || fUsedbg == 1 || lTailSide != 0) {
 		fFitFunc->SetParName(ind+kFix,		"BgSlope");
 		row_lab.Add(new TObjString("BgSlope"));
@@ -1364,7 +1369,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			Double_t mpos = ((FhMarker *) fMarkers->At(i))->GetX();
 			Double_t mprev = ((FhMarker *) fMarkers->At(i-1))->GetX();
 			Double_t mnext = ((FhMarker *) fMarkers->At(i+1))->GetX();
-//			bin			  = fSelHist->FindBin(mpos);
+//			bin			  = fSelHist->FindBin(mpos); 
 			Double_t d1 = (mpos-mprev);
 			Double_t d2 = (mnext-mpos);
 			d1 = 0.5 * TMath::Min(d1, d2);
@@ -1402,15 +1407,55 @@ Bool_t FitOneDimDialog::FitGausExecute()
 
 		}
 	}
-	if (fUsedbg) {
-//  use predermined linear background
-		Int_t offset = 0;
-		if (lTailSide != 0) offset = 2;
-		(*par)[0 + offset] = fLinBgConst / lBinW;
-		(*par)[1 + offset] = fLinBgSlope / lBinW;
-		(*fbflags)[0 + offset] = 1;
-		(*fbflags)[1 + offset] = 1;
+	TString temp;
+	for (Int_t i = 0; i < fFitFunc->GetNpar(); i++) {
+		temp= fFitFunc->GetParName(i);
+		cout << i << " " << temp << endl;
+		if (temp.BeginsWith("BgConst")) {
+			if ( fBackg0 ) {
+				fFitFunc->SetParameter(i, 0);
+				fFitFunc->FixParameter(i,0);
+				(*par)[i-kFix] = 0;
+			} else if (fUsedbg) {
+				fFitFunc->SetParameter(i,fLinBgConst / lBinW);
+				fFitFunc->FixParameter(i,fLinBgConst / lBinW);
+				(*par)[i-kFix] = fLinBgConst / lBinW;
+				(*fbflags)[i-kFix] = 1;
+			}
+		}
+		if (temp.BeginsWith("BgSlope")) {
+			if ( fSlope0 ) {
+				fFitFunc->SetParameter(i, 0);
+				fFitFunc->FixParameter(i,0);
+				(*par)[i-kFix] = 0;
+			} else if (fUsedbg) {
+				fFitFunc->SetParameter(i,fLinBgSlope / lBinW);
+				fFitFunc->FixParameter(i,fLinBgSlope / lBinW);
+				(*par)[i-kFix] = fLinBgSlope / lBinW;
+				(*fbflags)[i-kFix] = 1;
+			}
+		}
 	}
+//  set linear background to 0 if requested
+/*
+ * 	Int_t offs = 0;
+	if (lTailSide != 0 && !fTailOnly) offs = 2;
+	if ( fBackg0 && !fGaussOnly) {
+		(*par)[0 + offs] = 0;
+		(*fbflags)[0 + offs] = 1;
+	}
+	if ( fSlope0 && !fGaussOnly) {
+		(*par)[1 + offs] = 0;
+		(*fbflags)[1 + offs] = 1;
+	}
+//  use predermined linear background
+	if (fUsedbg) {
+		(*par)[0 + offs] = fLinBgConst / lBinW;
+		(*par)[1 + offs] = fLinBgSlope / lBinW;
+		(*fbflags)[0 + offs] = 1;
+		(*fbflags)[1 + offs] = 1;
+	}
+*/
 	Int_t ret = 0;
 	Bool_t do_fit = kTRUE;
 	if (fConfirmStartValues) {
@@ -1479,11 +1524,17 @@ Bool_t FitOneDimDialog::FitGausExecute()
 //			cout << fFitFunc->GetParName(i+kFix)<< endl;
 			lab = fFitFunc->GetParName(i+kFix);
 			if ( lab.Contains("Ga_Mean") ){
-				fFitFunc->SetParLimits(i+kFix, fFrom, fTo);
+				if ( fMeanBond > 0 )
+					fFitFunc->SetParLimits(i+kFix, (*par)[i] - fMeanBond, (*par)[i] + fMeanBond);
+				else
+					fFitFunc->SetParLimits(i+kFix, fFrom, fTo);
 //				cout << " fFitFunc->SetParLimits" <<  fFitFunc->GetParName(i+kFix)<< endl;
 			} else if ( lab.Contains("Cont") ) {
 //				cout << " fFitFunc->SetParLimits" <<  fFitFunc->GetParName(i+kFix)<< endl;
 				fFitFunc->SetParLimits(i+kFix, 0, fSelHist->Integral());
+			} else if ( lab.Contains("Sigma") ) {
+//				cout << " fFitFunc->SetParLimits" <<  fFitFunc->GetParName(i+kFix)<< endl;
+				fFitFunc->SetParLimits(i+kFix, 0, fTo - fFrom);
 			}
 		}
 	}
@@ -1510,6 +1561,12 @@ Bool_t FitOneDimDialog::FitGausExecute()
 //		if (bound)				fitopt += "B";	// some pars are bound
 		fitopt += "B";                      // gaus const, mean are always bound
 		fitopt += "0";
+		Double_t statwidth = 0;
+		TPaveStats * stbox=(TPaveStats*)fSelHist->GetListOfFunctions()->FindObject("stats");
+		if (stbox) {
+			statwidth = stbox->GetX2NDC() - stbox->GetX1NDC();
+			cout << "Enter statbox: " << statwidth << " " << stbox->GetX2NDC() - stbox->GetX1NDC()<< endl;
+		}
 		cout << fFuncName.Data()<< " fitopt.Data() " << fitopt.Data() << endl;
 		if (fGraph != NULL) {
 			fGraph->Fit(fFuncName.Data(), fitopt.Data(), "");	//  here fitting is done
@@ -1553,6 +1610,14 @@ Bool_t FitOneDimDialog::FitGausExecute()
 		PrintCorrelation();
 		fFitFunc->SetFillStyle(0);
 		if (fAutoClearMarks) ClearMarkers();
+		// Resize statbox blown up by THistPainter
+		gPad->Update();
+		stbox=(TPaveStats*)fSelHist->GetListOfFunctions()->FindObject("stats");
+		if (stbox) {
+			cout << "Resize statbox: " << statwidth << " " << stbox->GetX2NDC() - stbox->GetX1NDC()<< endl;
+			if ( TMath::Abs(statwidth - (stbox->GetX2NDC() - stbox->GetX1NDC()) ) > 0.001)
+				stbox->SetX1NDC(stbox->GetX2NDC() - statwidth);
+		}
 	} else {
 //	 no fit requested draw
 		gPad->cd();
@@ -1610,6 +1675,8 @@ Bool_t FitOneDimDialog::FitGausExecute()
 //			back->SetParent(fSelHist);
 		}
 //
+		if ( fTailOnly != 0 )
+			goto ALLDONE;
 		Int_t offset = 0;
 		if (lTailSide != 0) {
 			offset = 4;
@@ -1675,6 +1742,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			}
 		}
 	}
+	ALLDONE:
 	delete fbflags;
 	gPad->Modified(kTRUE);
 	gPad->Update();
@@ -1998,6 +2066,15 @@ void FitOneDimDialog::DetLinearBackground()
 
 void FitOneDimDialog::SetFittingOptions()
 {
+	const char helptext_par[] =
+	"Most parameters are obvious, given rudimentary knowlegde\n\
+	of Minuit\n\
+	\"Confirm start values\" allows to adjust the starting\n\
+	values of the fit and fix or set limits on them.\n\
+	Extreme care must be taken when setting limits. Minuit\n\
+	might give unreasonable results.\n\
+	For \"Params for FitPeakList\" consult the Help in the FitDialog.\n\
+	";
 	TList *row_lab = new TList();
 	static void *valp[50];
 	Int_t ind = 0;
@@ -2014,7 +2091,8 @@ void FitOneDimDialog::SetFittingOptions()
 	row_lab->Add(new TObjString("CheckButton_    Print covariance matrix"));
 	row_lab->Add(new TObjString("CheckButton_       Confirm start values"));
 	row_lab->Add(new TObjString("CheckButton_         Print start values"));
-	row_lab->Add(new TObjString("CheckButton_      Draw componets of fit"));
+	row_lab->Add(new TObjString("CheckButton_     Draw components of fit"));
+	row_lab->Add(new TObjString("DoubleValue_   Bind gauss mean +- value"));
 	row_lab->Add(new TObjString("CommentOnly_     Params for FitPeakList"));
 	row_lab->Add(new TObjString("DoubleValue_     Half Fit Window[sigma]"));
 	row_lab->Add(new TObjString("DoubleValue_ Two Peak Separation[sigma]"));
@@ -2032,14 +2110,19 @@ void FitOneDimDialog::SetFittingOptions()
 	valp[ind++] = &fConfirmStartValues;
 	valp[ind++] = &fPrintStartValues;
 	valp[ind++] = &fShowcof;
+	valp[ind++] = &fMeanBond;
 	valp[ind++] = &dummy;
 	valp[ind++] = &fFitWindow;
 	valp[ind++] = &fPeakSep;
-	Bool_t ok;
-	Int_t itemwidth = 260;
-	ok = GetStringExt("Fitting options", NULL, itemwidth, fParentWindow
-							,NULL, NULL, row_lab, valp);
-	if (ok) SaveDefaults();
+	Int_t ok = -2;
+	new TGMrbValuesAndText ("Fitting options", NULL, &ok, 260,
+								fParentWindow, NULL, NULL, row_lab, valp,
+								NULL, NULL, helptext_par);
+//	Bool_t ok;
+//	Int_t itemwidth = 260;
+//	ok = GetStringExt("Fitting options", NULL, itemwidth, fParentWindow
+//							,NULL, NULL, row_lab, valp, NULL, NULL, helptext_par);
+	if (ok == 0) SaveDefaults();
 }
 //_______________________________________________________________________
 
@@ -2597,6 +2680,7 @@ void FitOneDimDialog::RestoreDefaults()
 	fLowtail			 = env.GetValue("FitOneDimDialog.Lowtail", 0);
 	fHightail			= env.GetValue("FitOneDimDialog.Hightail",0);
 	fShowcof			 = env.GetValue("FitOneDimDialog.Showcof", 1);
+	fMeanBond		= env.GetValue("FitOneDimDialog.fMeanBond", -1);
 	fExpA				 = env.GetValue("FitOneDimDialog.fExpA", 0.);
 	fExpB				 = env.GetValue("FitOneDimDialog.fExpB", 1.);
 	fExpC				 = env.GetValue("FitOneDimDialog.fExpC", 1.);
@@ -2663,6 +2747,7 @@ void FitOneDimDialog::SaveDefaults()
 	env.SetValue("FitOneDimDialog.Lowtail",			 fLowtail);
 	env.SetValue("FitOneDimDialog.Hightail",			fHightail);
 	env.SetValue("FitOneDimDialog.Showcof",			 fShowcof);
+	env.SetValue("FitOneDimDialog.fMeanBond",			 fMeanBond);
 	env.SetValue("FitOneDimDialog.fExpA",	fExpA	 );
 	env.SetValue("FitOneDimDialog.fExpB",	fExpB	 );
 	env.SetValue("FitOneDimDialog.fExpC",	fExpC	 );
