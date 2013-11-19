@@ -212,7 +212,7 @@ void GeneralAttDialog::GetCustomStyles()
 		while( (key = (TKey*)n1()) ){
 		   if(!strncmp(key->GetClassName(),"TStyle",6)) {
 		      TStyle *sty = (TStyle*)cstyle->Get(key->GetName());
-				cout << "key->GetName() " << key->GetName()<< endl;
+//				cout << "key->GetName() " << key->GetName()<< endl;
 				if (!gROOT->GetListOfStyles()->FindObject(key->GetName()))
 			      gROOT->GetListOfStyles()->Add(sty);
 		   }

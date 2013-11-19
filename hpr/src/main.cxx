@@ -10,19 +10,16 @@ int main(int argc, char **argv)
    gSystem->Load("libHistPainter.so");
    HistPresent *hp;
    TRint *theApp = new TRint("App", &argc, argv);
+   TDatime dt;
+   
 //   gEnv->SetValue("Gui.IconPath", "$MARABOU/icons");
+   cout << "Starting HistPresent at: " << dt.AsSQLString()<< endl;
    hp = new HistPresent("mypres","mypres");
-//   TString cmd("HistPresent *mypres = (HistPresent*)");
-//   cmd += Form("0x%x", hp);
-//   cout << cmd << endl;
-//   gROOT->ProcessLine(cmd);
    hp->ShowMain();
    if(!gSystem->AccessPathName(attrname, kFileExists))
       gROOT->LoadMacro(attrname);
 //loop:
    theApp->Run(kTRUE);
-//   delete gHpr;
 	gSystem->Exit(0);
-//   return 0;
 }
 

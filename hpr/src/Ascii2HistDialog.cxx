@@ -37,11 +37,14 @@ X, Y, W:    2 dim: X, Y , Weight \n\
 X, Ym Z:    3 dim: X, Y, Z values to be filled\n\
 X, Y, Z, W: 3 dim: X, Y ,Z, Weight \n\
 \n\
+Lines not starting with a number are skipped as comment\n\
+(To be exact: not TString::IsFloat())\n\
+\n\
 For convenience the first N columns of the input data\n\
 may be skipped typically if the first value is just a\n\
 a serial number.\n\
 \n\
-A common error is applied to all channels\n\
+A common error may be applied to all channels\n\
 if this value is > 0\n\
 \n\
 Before the histogram is build the values must be read\n\
@@ -130,6 +133,7 @@ Ascii2HistDialog::~Ascii2HistDialog()
 void Ascii2HistDialog::Read_Input()
 {
    fNvalues = 0;
+   cout << endl;
    ifstream infile;
    infile.open(fHistFileName.Data(), ios::in);
 	if (!infile.good()) {
@@ -158,19 +162,27 @@ void Ascii2HistDialog::Read_Input()
 	TString del(" ,\t, \r");
 	TObjArray * oa;
 	Int_t nn = 0;
+	TString val;
 	while ( 1 ) {
 		line.ReadLine(infile);
+		if (infile.eof()) break;
 		// check for DOS format
 		if ( line.EndsWith("\r") ) {
 			line.Resize(line.Length() - 1);
 		}	
-		if (infile.eof()) break;
 		oa = line.Tokenize(del);
 		Int_t nent = oa->GetEntries();
 		if (nn < 50 && gDebug > 0) {
 			cout << line << " " << nent << endl;
 			nn++;
 		}
+		if ( nent < 1 )
+			continue;
+		val = ((TObjString*)oa->At(0))->String();
+		if ( !val.IsFloat() ) {
+			cout << "Comment: " << line << endl;
+			continue;
+		} 
 		if (nval == 1 && nent > 1 )
 			continue;
 		if (nent < nval+fNskip) {
@@ -180,7 +192,7 @@ void Ascii2HistDialog::Read_Input()
 		}
 // 		if (nn < 50) cout << " val: ";
 		for (Int_t i = fNskip; i < nval+fNskip; i++) {
-			TString val = ((TObjString*)oa->At(i))->String();
+			val = ((TObjString*)oa->At(i))->String();
 			if (nn < 50 && gDebug > 0) 
 				cout << val << " " ; 
 			if (!val.IsFloat()) {

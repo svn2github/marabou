@@ -436,7 +436,8 @@ Bool_t SetHistOptDialog::SetPointers()
 			fLegendBox = (TLegend*)obj;
 		}
 	}
-	cout << "SetHistOptDialog, current selected: " << fHist->GetName()<<
+	if ( gDebug > 0 ) 
+		cout << "SetHistOptDialog, current selected: " << fHist->GetName()<<
 	" Title: " << fHist->GetTitle() << endl;
 	return kTRUE;
 }	
@@ -869,7 +870,8 @@ void SetHistOptDialog::SetHistAttPerm(TStyle * style)
 
 void SetHistOptDialog::SaveDefaults()
 {
-   cout << "SetHistOptDialog:: SaveDefaults()" << endl;
+   if ( gDebug > 0 ) 
+   	cout << "SetHistOptDialog:: SaveDefaults()" << endl;
 	TString envname;
 	TString resname;
 	TEnv env(".hprrc");
@@ -1169,7 +1171,8 @@ void SetHistOptDialog::GetValuesFromHist()
 
 void SetHistOptDialog::SetDefaults(Int_t ndim)
 {
-   cout << "SetHistOptDialog:: SetDefaults" << endl;
+	if ( gDebug > 0 ) 
+	   cout << "SetHistOptDialog:: SetDefaults" << endl;
    TEnv env(".hprrc");
 	if ( ndim == 3 ) {
 		gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetX",  0.01), "X");

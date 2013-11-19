@@ -45,6 +45,9 @@ Note: if only 3 values are given the 3rd is assumed to be Ey\n\
 X, Y, Exl, Exu, Eyl, Eyu: asymmetric errors in X and Y\n\
    Values after Y may be ommitted, they are set to 0\n\
 \n\
+Lines not starting with a number are skipped as comment\n\
+(To be exact: not TString::IsFloat())\n\
+\n\
 Select columns:\n\
    Select 2 columns to be used as X, Y of a simple graph\n\
    White space or comma are used as separators\n\
@@ -62,6 +65,10 @@ Default is to construct a new canvas\n\
    fCommandHead = "Show_Head_of_File()";
    fCommandTail = "Show_Tail_of_File()";
    RestoreDefaults();
+   
+   if ( fXaxisMax <= fXaxisMin ) {
+		fXaxisMax = fXaxisMin = 0;
+	}
    fGraphSelPad = 0;    // start with new canvas as default
    TList *row_lab = new TList();
    row_lab->Add(new TObjString("RadioButton_Empty pad only                 "));
@@ -167,6 +174,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 	fGraphLogY        = env.GetValue("GraphAttDialog.fGraphLogY", 0);
 	fGraphLogZ        = env.GetValue("GraphAttDialog.fGraphLogZ", 0);
 	HistPresent *hpr = (HistPresent*)gROOT->GetList()->FindObject("mypres");
+	cout << endl;
 	if (fEmptyPad != 0) {
 		cout << "Empty pad only" << endl;
 		TGraph *graph = new TGraph();
@@ -238,14 +246,22 @@ void Ascii2GraphDialog::Draw_The_Graph()
    TString line;
    TString del(" ,\t");
    TObjArray * oa;
+   TString val; 
 	Double_t xmin_val = 1e20, xmax_val = -1e20;
 	while ( 1 ) {
 		line.ReadLine(infile);
 		if (infile.eof()) break;
-		if (line.BeginsWith("#") ) 
-			continue;
+//		if (line.BeginsWith("#") ) 
+//			continue;
 		oa = line.Tokenize(del);
 		Int_t nent = oa->GetEntries();
+		if (nent < 1)
+			continue;
+		val = ((TObjString*)oa->At(0))->String();
+		if ( !val.IsFloat() ) {
+			cout << "Comment: " << line << endl;
+			continue;
+		} 
       if (nent < 2) {
          cout << "Not enough entries at: " << n+1 << endl;
          break;
@@ -254,7 +270,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 			x.Set(nent);
 		}
 		for (Int_t i = 0; i < nent; i++) {
-			TString val = ((TObjString*)oa->At(i))->String();
+			val = ((TObjString*)oa->At(i))->String();
 			if (!val.IsFloat()) {
 				cout << "Illegal double: " << val << " at line: " << n+1 << endl;
 				x[i] = 0;
@@ -316,8 +332,10 @@ void Ascii2GraphDialog::Draw_The_Graph()
 
    Double_t dx_low = TMath::Abs(xval[n-1] - xval[n-2]);
    Double_t dx_up  = TMath::Abs(xval[n-1] - xval[n-2]);
-   if (fXaxisMax == 0 && fXaxisMin == 0) {
+   if (fXaxisMax == 0) {
 		fXaxisMax = xmax_val + 0.5 * dx_up;
+	}
+   if (fXaxisMin == 0) {
 		fXaxisMin = xmin_val - 0.5 * dx_low;
 	}
    cout << "entries " << n << " fXaxisMin " <<fXaxisMin << " fXaxisMax " <<fXaxisMax <<   endl;
@@ -562,10 +580,11 @@ void Ascii2GraphDialog::RestoreDefaults()
    fGraphXtitle      = env.GetValue("Ascii2GraphDialog.GraphXtitle"	   , "Xvalues");
    fGraphYtitle      = env.GetValue("Ascii2GraphDialog.GraphYtitle"		, "Yvalues");
    fGraphXdiv        = env.GetValue("Ascii2GraphDialog.GraphXdiv"  		, 1);
-   fXaxisMin         = env.GetValue("Ascii2GraphDialog.XaxisMin"  		, 0);
-   fYaxisMin         = env.GetValue("Ascii2GraphDialog.YaxisMin"  		, 0);
-   fXaxisMax         = env.GetValue("Ascii2GraphDialog.XaxisMax"  		, 0);
-   fYaxisMax         = env.GetValue("Ascii2GraphDialog.YaxisMax"  		, 0);
+   fXaxisMin         = env.GetValue("Ascii2GraphDialog.XaxisMin"  		, 0.);
+   fYaxisMin         = env.GetValue("Ascii2GraphDialog.YaxisMin"  		, 0.);
+   fXaxisMax         = env.GetValue("Ascii2GraphDialog.XaxisMax"  		, 0.);
+   cout <<"fXaxisMin,fXaxisMax " << fXaxisMin << " " << fXaxisMax << endl;
+   fYaxisMax         = env.GetValue("Ascii2GraphDialog.YaxisMax"  		, 0.);
    fGraphYdiv        = env.GetValue("Ascii2GraphDialog.GraphYdiv"  		, 1);
 	fDrawOpt          = env.GetValue("GraphAttDialog.fDrawOpt"           , "PA");
    fErrorMode        = env.GetValue("Ascii2GraphDialog.fErrorMode"		, " ");
