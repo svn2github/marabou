@@ -295,8 +295,13 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	this->SetOffline(kFALSE);
 
 	fSetupPath = gEnv->GetValue("TMrbEsone.SetupPath", "/nfs/mbssys/esone");
+
+	TString lynxVersion = gEnv->GetValue("TMrbEsone.LynxVersion", "");
+	if (lynxVersion.Length() == 0) lynxVersion = gEnv->GetValue("TMbsSetup.LynxVersion", "2.5");
+
 	TString mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "");
-	if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "v22");
+	if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "v22");
+
 	Bool_t startPrompter = gEnv->GetValue("TMrbEsone.StartPrompter", kFALSE);
 
 	// reset mbs
@@ -311,12 +316,13 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += gSystem->Getenv("USER");
 	rCmd += " \"/mbs/";
 	rCmd += mbsVersion;
-	rCmd += "/script/remote_exe.sc /mbs/";
+	rCmd += "/script/remote_exe_p.sc /mbs/";
 	rCmd += mbsVersion;
 	rCmd += " ";
 	rCmd += fSetupPath;
 	rCmd += " m_remote reset -l";
 	if (!this->IsVerbose()) rCmd += " >>/dev/null";
+	rCmd += " 2>>/dev/null";
 	rCmd += "\"";
 	if (this->IsVerbose()) {
 		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
@@ -332,7 +338,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 
 	cout	<< setmagenta << "Please wait " << setblack << ends << flush;
 	fAborted = kFALSE;
-	for (i = 0; i < 30 ; i++) {
+	for (i = 0; i < 20 ; i++) {
 		gSystem->ProcessEvents();
 		if (this->IsAborted()) {
 			cout << setred << " aborted." << setblack << endl;
@@ -381,17 +387,25 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	}
 	gSystem->Exec(rCmd.Data());
 
-	rCmd = "rsh ";
-	rCmd += HostName;
-	rCmd += " -l ";
-	rCmd += gSystem->Getenv("USER");
-	rCmd += " \"cp ";
-	rCmd += fSetupPath;
-	rCmd += "/.login .";
-	if (!this->IsVerbose()) rCmd += " >>/dev/null";
-	rCmd += "\"";
+	TString ppcHomeDir = gEnv->GetValue("TMbsEsone.PPCHomeDir", "");
+	if (ppcHomeDir.IsNull()) ppcHomeDir = gEnv->GetValue("TMbsSetup.PPCHomeDir", "");
+	if (ppcHomeDir.IsNull()) {
+		gMrbLog->Err() << "No home dir given (check \"TMbsSetup.PPCHomeDir\" in .rootrc)" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartMbsServer");
+		return(kFALSE);
+	}
+	ofstream login;
+	ppcHomeDir += "/.login";
+	login.open(ppcHomeDir.Data(), ios::out);
+	login << "setenv LYNX_VERSION " << lynxVersion << endl;
+	login << "setenv MBS_VERSION " << mbsVersion << endl;
+	TString mpath = gSystem->Getenv("MARABOU");
+	login << "setenv MARABOU_PATH " << mpath << endl;
+	login << "set path = ( /bin /bin/ces /usr/bin /usr/local/bin /etc /usr/etc . ~/tools " << mpath << "/powerpc/bin/" << lynxVersion << " )" << endl;
+	login << "source /mbs/login " << mbsVersion << endl;
+	login.close();
 	if (this->IsVerbose()) {
-		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
+		gMrbLog->Out()	<< "Creating " << ppcHomeDir << endl;
 		gMrbLog->Flush(this->ClassName(), "StartMbsServer", setmagenta);
 	}
 	gSystem->Exec(rCmd.Data());
@@ -404,7 +418,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += gSystem->Getenv("USER");
 	rCmd += " \"/mbs/";
 	rCmd += mbsVersion;
-	rCmd += "/script/remote_exe.sc /mbs/";
+	rCmd += "/script/remote_exe_p.sc /mbs/";
 	rCmd += mbsVersion;
 	rCmd += " . ";
 	rCmd += prmOrDsp;
@@ -415,6 +429,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += "/startup_";
 	rCmd += mbsVersion;
 	if (!this->IsVerbose()) rCmd += " >>/dev/null";
+	rCmd += " 2>>/dev/null";
 	rCmd += "\"";
 	if (this->IsVerbose()) {
 		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
@@ -427,7 +442,6 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += " -l ";
 	rCmd += gSystem->Getenv("USER");
 	rCmd += " \"ps ax | fgrep m_\"";
-
 	cout	<< setmagenta << "Please wait " << setblack << ends << flush;
 	fAborted = kFALSE;
 	for (i = 0; i < 30 ; i++) {

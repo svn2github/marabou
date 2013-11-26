@@ -17,9 +17,9 @@
 	setup->SetNofReadouts(1);
 	TString ppcPath = gEnv->GetValue("TMbsSetup.WorkingDir", "");
 	if (ppcPath.IsNull()) {
-		ppcPath = gEnv->GetValue("TMbsSetup.DefaultHomeDir", "");		
+		ppcPath = gEnv->GetValue("TMbsSetup.HomeDir", "");		
 		if (ppcPath.IsNull()) {
-			cerr << setred << "mbssetup.C: Working directory missing: Please define \"TMbsSetup.WorkingDir\" in .rootrc (\"ppc\" recommended)" << setblack << endl;
+			cerr << setred << "mbssetup.C: Working directory missing: Please define \"TMbsSetup.PPCWorkingDir\" in .rootrc (\"ppc\" recommended)" << setblack << endl;
 			gSystem->Exit(1);
 		}
 	}
