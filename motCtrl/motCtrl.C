@@ -40,14 +40,14 @@ TString ppcPath;
 struct motBase {
 	Int_t X0;
 	Int_t Z0;
-	Int_t DX;
-	Int_t DZ;
-	Int_t NX;
-	Int_t NZ;
+	Int_t deltaX;
+	Int_t deltaZ;
+	Int_t nStepsX;
+	Int_t nStepsZ;
 	Int_t curX;
 	Int_t curZ;
-	Int_t curNX;
-	Int_t curNZ;
+	Int_t curStepX;
+	Int_t curStepZ;
 	Int_t nofSecs;
 };
 
@@ -71,10 +71,10 @@ Bool_t initMotor() {
 
 	mb.X0 = motor->posX();
 	mb.curX = mb.X0;
-	mb.curNX = 0;
+	mb.curStepX = 0;
 	mb.Z0 = motor->posZ();
 	mb.curZ = mb.Z0;
-	mb.curNZ = 0;
+	mb.curStepZ = 0;
 
 	gMrbLog->Out() << "Initializing stepping motor: X=" << mb.X0 << ", Z=" << mb.Z0 << endl;
 	gMrbLog->Flush("motCtrl.C", "initMotor", setblue);
@@ -304,13 +304,13 @@ Bool_t startMbs() {
 	return kTRUE;
 }
 	
-Bool_t startDaq(Int_t NX = -1, Int_t NZ = -1) {
+Bool_t startDaq(Int_t StepX = -1, Int_t StepZ = -1) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           startDaq()
 // Purpose:        Start DAQ
-// Arguments:      Int_t NX         -- current step in X
-//                 Int_t NZ         -- ... Z
+// Arguments:      Int_t StepX         -- current step in X
+//                 Int_t StepZ         -- ... Z
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Starts M_analyze, connects to MBS and starts DAQ
@@ -319,10 +319,10 @@ Bool_t startDaq(Int_t NX = -1, Int_t NZ = -1) {
 
 	Bool_t verbose = gEnv->GetValue("MotCtrl.VerboseMode", kFALSE);
 	
-	if (NX < 0) NX = mb.curNX;
-	if (NZ < 0) NZ = mb.curNZ;
+	if (StepX < 0) StepX = mb.curStepX;
+	if (StepZ < 0) StepZ = mb.curStepZ;
 
-	TString runId = Form("%03d%03d", NX, NZ);
+	TString runId = Form("%03d%03d", StepX, StepZ);
 	TString ofmt = gEnv->GetValue("MotCtrl.OutputFile", "run-X%02d-Z%02d.root");
 	TString hfmt = gEnv->GetValue("MotCtrl.HistoFile", "histo-X%02d-Z%02d.root");
 	TString runCmd = "./M_analyze ";
@@ -330,9 +330,9 @@ Bool_t startDaq(Int_t NX = -1, Int_t NZ = -1) {
 	runCmd += " S 0 0 ";
 	runCmd += runId;
 	runCmd += " 1 ";
-	runCmd += Form(ofmt.Data(), NX, NZ);
+	runCmd += Form(ofmt.Data(), StepX, StepZ);
 	runCmd += " 0 none ";
-	runCmd += Form(hfmt.Data(), NX, NZ);
+	runCmd += Form(hfmt.Data(), StepX, StepZ);
 	runCmd += " none 0 9090 0 &";
 	if (verbose) {
 		gMrbLog->Out() << "Starting M_analyze: " << runCmd << endl;
@@ -446,7 +446,7 @@ Bool_t stopDaq() {
 	}
 }
 
-Bool_t doScan(Int_t X0, Int_t Z0, Int_t DeltaX, Int_t DeltaZ, Int_t NX, Int_t NZ, Int_t NofSecs) {
+Bool_t doScan(Int_t X0, Int_t Z0, Int_t DeltaX, Int_t DeltaZ, Int_t NStepsX, Int_t NStepsZ, Int_t NofSecs) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           doScan()
@@ -455,8 +455,8 @@ Bool_t doScan(Int_t X0, Int_t Z0, Int_t DeltaX, Int_t DeltaZ, Int_t NX, Int_t NZ
 //                 Int_t Z0         -- ... Z
 //                 Int_t DeltaX     -- increment X
 //                 Int_t DeltaZ     -- ... Z
-//                 Int_t NX         -- number of steps in X
-//                 Int_t NZ         -- ... Z
+//                 Int_t NstepsX    -- number of steps in X
+//                 Int_t NStepsZ    -- ... Z
 //                 Int_t NofSecs    -- number of seconds to run
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -469,12 +469,12 @@ Bool_t doScan(Int_t X0, Int_t Z0, Int_t DeltaX, Int_t DeltaZ, Int_t NX, Int_t NZ
 	motor->moveAbsolute(X0, 0, Z0);
 	mb.curX = motor->posX();
 	mb.curZ = motor->posZ();
-	mb.DX = DeltaX;
-	mb.DZ = DeltaZ;
-	mb.NX = NX;
-	mb.NZ = NZ;
-	mb.curNX = 0;
-	mb.curNZ = 0;
+	mb.deltaX = DeltaX;
+	mb.deltaZ = DeltaZ;
+	mb.nStepsX = NStepsX;
+	mb.nStepsZ = NStepsZ;
+	mb.curStepX = 0;
+	mb.curStepZ = 0;
 	mb.nofSecs = NofSecs;
 
 	if (!startDaq()) return kFALSE;
@@ -500,14 +500,14 @@ Bool_t continueScan() {
 
 	if (daqRunning) {
 		stopDaq();
-		mb.curX += mb.DX;
-		mb.curNX++;
-		if (mb.curNX > mb.NX) {
+		mb.curX += mb.deltaX;
+		mb.curStepX++;
+		if (mb.curStepX > mb.nStepsX) {
 			mb.curX = mb.X0;
-			mb.curNX = 0;
-			mb.curZ += mb.DZ;
-			mb.curNZ++;
-			if (mb.curNZ > mb.NZ) {
+			mb.curStepX = 0;
+			mb.curZ += mb.deltaZ;
+			mb.curStepZ++;
+			if (mb.curStepZ > mb.nStepsZ) {
 				gMrbLog->Out() << "End of measurement: now at X=" << motor->posX() << ", Z=" << motor->posZ() << endl;
 				gMrbLog->Flush("motCtrl.C", "continueScan", setblue);
 				return kTRUE;
@@ -623,7 +623,8 @@ void usage() {
 //////////////////////////////////////////////////////////////////////////////
 
 	cout << endl << setblue << "motCtrl.C: data acquisition controlled by stepping motor" << setblack << endl << endl;
-	cout << "Start: export CPLUS_INCLUDE_PATH=.:../stepper:$MARABOU/include:$ROOTSYS/include" << endl;
+	cout << "Start: export LD_LIBRARY_PATH=.:../stepper:$LD_LIBRARY_PATH" << endl;
+	cout << "       export CPLUS_INCLUDE_PATH=.:../stepper:$MARABOU/include:$ROOTSYS/include" << endl;
 	cout << "       root motLibs.C motCtrl.C+" << endl << endl;
 	cout << "Commands:" << endl;
 	cout << "   setupMbs(Char_t * PPC, Char_t * WorkingDir)  -- perform MBS setup" << endl;
@@ -635,7 +636,7 @@ void usage() {
 	cout << "   startDaq()                                   -- start acquisition" << endl;
 	cout << "   stopDaq()                                    -- stop acquisition" << endl << endl;
 	cout << "   killAnalyze()                                -- kill an existing instance of M_analyze still running" << endl << endl;
-	cout << "   doScan(Int_t X0, Int_t Z0, Int_t DeltaX, Int_t DeltaZ, Int_t NX, Int_t NZ, Int_t NofSecs) -- start scan" << endl;
+	cout << "   doScan(Int_t X0, Int_t Z0, Int_t DeltaX, Int_t DeltaZ, Int_t NStepsX, Int_t NStepsZ, Int_t NofSecs) -- start scan" << endl;
 	cout << "   abortScan()                                  -- abort scan in progress" << endl;
 	cout << endl << endl;
 	cout << "Motor control:" << endl;
@@ -645,7 +646,7 @@ void usage() {
 	cout << "   motor->minPosX(), motor->minPosZ(), motor->maxPosX(), motor->maxPosZ()   -- show limits" << endl;
 	cout << "   motor->setSpeed(Int_t SX, Int_t SY, Int_t SZ);      -- set speed (default 100)" << endl;
 	cout << "   motor->moveAbsolute(Int_t X, Int_t Y, Int_t Z);     -- move to given (X,Z)" << endl;
-	cout << "   motor->moveRelative(Int_t DX, Int_t DY, Int_t DZ);  -- move on to (X+DX,Z+DZ)" << endl;
+	cout << "   motor->moveRelative(Int_t DeltaX, Int_t DeltaY, Int_t DeltaZ);  -- move on to (X+DeltaX,Z+DeltaZ)" << endl;
 	cout << "   motor->setMinPositions(Int_t X, Int_t Y, Int_t Z);  -- set min position (default 0)" << endl;
 	cout << "   motor->setMaxPositions(Int_t X, Int_t Y, Int_t Z);  -- set max position (default 6600/0/8000)" << endl;
 	cout << "   motor->setActiveAxes(AXES activeAxes);              -- define axes (default XZ)" << endl;
