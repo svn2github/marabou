@@ -61,6 +61,13 @@ ARFLAGS = -srv
 .PHONY: all
 all: $(LIB_TARGETS) $(TARGETS)
 
+motorDict.C:		motor.C
+			rootcint -f motorDict.C -c -I. motor.h motorLinkDef.h
+
+libStepper.so:		motor.o motorDict.o
+				$(CXX) $(LDFLAGS) -shared motor.o motorDict.o -o libStepper.so
+				cp libStepper.so ../lib
+				
 .PHONY: clean 
 clean:
 	rm -f *.o core core.*
@@ -88,10 +95,5 @@ currentposition.o: 	currentposition.C motor.h
 testrun.o:		testrun.C motor.h
 
 motor.o:		motor.C motor.h
-
-motorDict.C:		motor.C
-			rootcint -f motorDict.C -c -I. motor.h motorLinkDef.h
-
-libStepper.so:		motor.o motorDict.o
 
 
