@@ -321,7 +321,7 @@ Bool_t TMbsControl::Startup(Bool_t debug){
       ok = SendToPrompter("@startup_d");
    } else {
       cout << setblue << "c_mbs: Starting DAQ processes " << setblack << endl;
-      ok = SendToPrompter("@startup");
+     ok = SendToPrompter("@startup");
    }
    if(ok == 0){
       cout << setgreen<< "c_mbs: startup ok " << setblack<< endl;

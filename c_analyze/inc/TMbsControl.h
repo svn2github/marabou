@@ -166,6 +166,7 @@ public:
    Int_t  GetNodeNames();
    Int_t  GetMbsNodes();
    Int_t  GetNofMbsProcs();
+   TSocket * GetPrompterSocket() {return fPrompterSocket;};
    Bool_t IdentifyMbsNodes();
    Bool_t StartMbs(Int_t Interrupt = 0);
    Bool_t StopMbs();

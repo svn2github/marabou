@@ -26,6 +26,7 @@ const char setblack[]    =   "\033[39m";
 
 Bool_t setupDone = kFALSE;
 Bool_t daqRunning = kFALSE;
+Bool_t motionInitDone = kFALSE;
 
 TTimer * motTimer = NULL;
 Motor * motor = NULL;
@@ -38,30 +39,113 @@ TString ppcName;
 TString ppcPath;
 
 struct motBase {
-	Int_t X0;
-	Int_t Z0;
-	Int_t DX;
-	Int_t DZ;
-	Int_t NX;
-	Int_t NZ;
-	Int_t curX;
-	Int_t curZ;
-	Int_t curNX;
-	Int_t curNZ;
+	Int_t origX;
+	Int_t origZ;
+	Double_t calibX;
+	Double_t calibZ;
+	Int_t speedX;
+	Int_t speedZ;
+	Double_t startX;
+	Double_t startZ;
+	Double_t deltaX;
+	Double_t deltaZ;
+	Int_t stepsX;
+	Int_t stepsZ;
+	Double_t curX;
+	Double_t curZ;
+	Int_t curStepX;
+	Int_t curStepZ;
 	Int_t nofSecs;
 };
 
 struct motBase mb;
 
-Bool_t initMotor() {
+Double_t getX() {
+	if (!motionInitDone) {
+		gMrbLog->Err() << "Calibration not done - call initMotion() first" << endl;
+		gMrbLog->Flush("motCtrl.C", "getX");
+		return -1.;
+	}
+	Int_t posX = motor->posX();
+	Double_t x = (mb.origX - posX) / mb.calibX;
+	return x;
+}
+
+Double_t getZ() {
+	if (!motionInitDone) {
+		gMrbLog->Err() << "Calibration not done - call initMotion() first" << endl;
+		gMrbLog->Flush("motCtrl.C", "getZ");
+		return -1.;
+	}
+	Int_t posZ = motor->posZ();
+	Double_t z = (mb.origZ - posZ) / mb.calibZ;
+	return z;
+}
+
+Bool_t moveTo(Double_t X, Double_t Z) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           initMotor()
-// Purpose:        Initialize stepping motor
+// Name:           moveTo()
+// Purpose:        Move to (calibrated) position (X,Z)
+// Arguments:      Double_t X          -- position X
+//                 Double_t Z          -- ... Z
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Moves motor.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!motionInitDone) {
+		gMrbLog->Err() << "Calibration not done - call initMotion() first" << endl;
+		gMrbLog->Flush("motCtrl.C", "moveTo");
+		return kFALSE;
+	}
+
+	Int_t posX = (Int_t) (mb.origX - mb.calibX * X);
+	Int_t posZ = (Int_t) (mb.origZ - mb.calibZ * Z);
+	motor->moveAbsolute(posX, 0, posZ);
+	return kTRUE;
+}
+
+Bool_t atPosition() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           atPosition()
+// Purpose:        Output current (calibrated) position to stdout
 // Arguments:      --
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Performs a reference run.
+// Description:    Outputs position and stores values in database.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!motionInitDone) {
+		gMrbLog->Err() << "Calibration not done - call initMotion() first" << endl;
+		gMrbLog->Flush("motCtrl.C", "atPosition");
+		return kFALSE;
+	}
+
+	mb.curX = getX();
+	mb.curZ = getZ();
+	gMrbLog->Out() << "Motor now at X=" << mb.curX << "mm, Z=" << mb.curZ << "mm (steps: " << motor->posX() << "," << motor->posZ() << ")" << endl;
+	gMrbLog->Flush("motCtrl.C", "atPosition", setblue);
+	return kTRUE;
+}
+
+Bool_t initMotion(Int_t OrigX, Int_t OrigZ, Double_t CalibX, Double_t CalibZ, Int_t SpeedX, Int_t SpeedZ) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           initMotion()
+// Purpose:        Initialize stepping motor
+// Arguments:      Int_t OrigX         -- origin X
+//                 Int_t OrigZ         -- ... Z
+//                 Double_t CalibX     -- calibration X
+//                 Double_t CalibZ     -- ... Z
+//                 Int_t SpeedX        -- speed X
+//                 Int_t SpeedZ        -- ... Z
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Initializes motor and preforms reference run.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -69,16 +153,20 @@ Bool_t initMotor() {
 
 	motor->referenceRun();
 
-	mb.X0 = motor->posX();
-	mb.curX = mb.X0;
-	mb.curNX = 0;
-	mb.Z0 = motor->posZ();
-	mb.curZ = mb.Z0;
-	mb.curNZ = 0;
-
-	gMrbLog->Out() << "Initializing stepping motor: X=" << mb.X0 << ", Z=" << mb.Z0 << endl;
-	gMrbLog->Flush("motCtrl.C", "initMotor", setblue);
-
+	mb.origX = OrigX;
+	mb.origZ = OrigZ;
+	mb.calibX = CalibX;
+	mb.calibZ = CalibZ;
+	mb.speedX = SpeedX;
+	mb.speedZ = SpeedZ;
+	motor->setSpeed(SpeedX, 0, SpeedZ);
+	mb.stepsX = 0;
+	mb.stepsZ = 0;
+	mb.curStepX = 0;
+	mb.curStepZ = 0;
+	motionInitDone = kTRUE;
+	moveTo(0, 0);
+	atPosition();
 	return kTRUE;
 }
 
@@ -116,18 +204,16 @@ Bool_t motCtrl() {
 
 	if (ok) {
 		gMbsSetup = new TMbsSetup(".mbssetup");
-
 		TString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "v45");
 		gMbsCtrl = new TMbsControl(ppcName.Data(), "S", kFALSE, mbsVersion.Data(), ppcPath.Data());
 		setupDone = kTRUE;
 	}
 
-	initMotor();
-
 	if (motTimer == NULL) motTimer = new TTimer(0, "continueScan()");
 
 	if (!ok) cout << setred << "           Call setupMbs() to define PPC and/or working dir!" << setblack << endl << endl;
 
+	cout << "[Don't forget to call initMotion() to calibrate motor]" << endl;
 	return ok;
 }
 
@@ -304,13 +390,12 @@ Bool_t startMbs() {
 	return kTRUE;
 }
 	
-Bool_t startDaq(Int_t NX = -1, Int_t NZ = -1) {
+Bool_t startDaq() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           startDaq()
 // Purpose:        Start DAQ
-// Arguments:      Int_t NX         -- current step in X
-//                 Int_t NZ         -- ... Z
+// Arguments:      --
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Starts M_analyze, connects to MBS and starts DAQ
@@ -319,10 +404,9 @@ Bool_t startDaq(Int_t NX = -1, Int_t NZ = -1) {
 
 	Bool_t verbose = gEnv->GetValue("MotCtrl.VerboseMode", kFALSE);
 	
-	if (NX < 0) NX = mb.curNX;
-	if (NZ < 0) NZ = mb.curNZ;
-
-	TString runId = Form("%03d%03d", NX, NZ);
+	Int_t sx = (Int_t) getX();
+	Int_t sz = (Int_t) getZ();
+	TString runId = Form("%02d%02d", sx, sz);
 	TString ofmt = gEnv->GetValue("MotCtrl.OutputFile", "run-X%02d-Z%02d.root");
 	TString hfmt = gEnv->GetValue("MotCtrl.HistoFile", "histo-X%02d-Z%02d.root");
 	TString runCmd = "./M_analyze ";
@@ -330,9 +414,9 @@ Bool_t startDaq(Int_t NX = -1, Int_t NZ = -1) {
 	runCmd += " S 0 0 ";
 	runCmd += runId;
 	runCmd += " 1 ";
-	runCmd += Form(ofmt.Data(), NX, NZ);
+	runCmd += Form(ofmt.Data(), sx, sz);
 	runCmd += " 0 none ";
-	runCmd += Form(hfmt.Data(), NX, NZ);
+	runCmd += Form(hfmt.Data(), sx, sz);
 	runCmd += " none 0 9090 0 &";
 	if (verbose) {
 		gMrbLog->Out() << "Starting M_analyze: " << runCmd << endl;
@@ -349,8 +433,8 @@ Bool_t startDaq(Int_t NX = -1, Int_t NZ = -1) {
 	}
 	ifstream pf;
 	Bool_t pfx = kFALSE;
-	Int_t timeout = 10;
-	cout << setblue << "motCtrl: Waiting for M_analyze to start ." << ends;
+	Int_t timeout = 50;
+	cout << setblue << "motCtrl.C:Waiting for M_analyze to start ." << ends;
 	gSystem->Exec(runCmd);
 	while (!pfx && timeout--) {
 		cout << "." << ends;
@@ -370,7 +454,7 @@ Bool_t startDaq(Int_t NX = -1, Int_t NZ = -1) {
 	gMrbLog->Out() << "M_analyze running, starting DAQ" << endl;
 	gMrbLog->Flush("motCtrl.C", "startDAQ", setblue);
 
-	gMbsCtrl->SendToPrompter("sta ac");
+	gMbsCtrl->StartAcquisition();
 	daqRunning = kTRUE;
 
 	return daqRunning;
@@ -423,7 +507,7 @@ Bool_t stopDaq() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (daqRunning) {
-		gMbsCtrl->SendToPrompter("sto ac");
+		gMbsCtrl->StopAcquisition();
 		TString pidFile = "/tmp/M_analyze_";
 		pidFile += gSystem->Getenv("USER");
 		pidFile += ".9090";
@@ -436,9 +520,13 @@ Bool_t stopDaq() {
 			gSystem->Sleep(1000);
 		}
 		cout << endl;
-		gMbsCtrl->SendToPrompter("@init");
-		if (!gSystem->AccessPathName(pidFile.Data())) killAnalyze();
+		if (!gSystem->AccessPathName(pidFile.Data())) {
+			gMrbLog->Err() << "M_analyze still running - file \"" << pidFile << "\"" << endl;
+			gMrbLog->Flush("motCtrl.C", "stopDaq");
+			return kFALSE;
+		}
 		daqRunning = kFALSE;
+		gMbsCtrl->InitMbs();
 		return kTRUE;
 	} else {
 		cout << setred << "DAQ not running" << setblack << endl;
@@ -446,43 +534,74 @@ Bool_t stopDaq() {
 	}
 }
 
-Bool_t doScan(Int_t X0, Int_t Z0, Int_t DeltaX, Int_t DeltaZ, Int_t NX, Int_t NZ, Int_t NofSecs) {
+void tryToStart(Int_t Try = 5) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           tryToStart()
+// Purpose:        Perform clear/start in a loop
+// Arguments:      Int_t Try     -- number of tries
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Try to start MBS.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	killAnalyze();
+	Bool_t ok = kFALSE;
+	for (; Try--;) {
+		clearMbs();
+		if (startMbs()) { ok = kTRUE; break; }
+	}
+	if (!ok) {
+		gMrbLog->Err() << "Can't start MBS - maybe a \"reboot\" of ppc will help ..." << endl;
+		gMrbLog->Flush("motCtrl.C", "tryToStart");
+	}
+}
+
+Bool_t doScan(Int_t StartX, Int_t StartZ, Int_t DeltaX, Int_t DeltaZ, Int_t StepsX, Int_t StepsZ, Int_t NofSecs) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           doScan()
 // Purpose:        Perform a XZ scan
-// Arguments:      Int_t X0         -- starting point X
-//                 Int_t Z0         -- ... Z
+// Arguments:      Int_t StartX     -- starting point X
+//                 Int_t StartZ     -- ... Z
 //                 Int_t DeltaX     -- increment X
 //                 Int_t DeltaZ     -- ... Z
-//                 Int_t NX         -- number of steps in X
-//                 Int_t NZ         -- ... Z
+//                 Int_t StepsX     -- number of steps in X
+//                 Int_t StepsZ         -- ... Z
 //                 Int_t NofSecs    -- number of seconds to run
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Moves to (X,Z), sets a timer, calls startDaq(), stopDaq(), moves on one step ...
+// Description:    Moves to (StartX,StartZ), sets timer, calls startDaq().
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	initMotor();
+	if (!motionInitDone) {
+		gMrbLog->Err() << "Calibration not done - call initMotion() first" << endl;
+		gMrbLog->Flush("motCtrl.C", "atPosition");
+		return kFALSE;
+	}
 
-	motor->moveAbsolute(X0, 0, Z0);
-	mb.curX = motor->posX();
-	mb.curZ = motor->posZ();
-	mb.DX = DeltaX;
-	mb.DZ = DeltaZ;
-	mb.NX = NX;
-	mb.NZ = NZ;
-	mb.curNX = 0;
-	mb.curNZ = 0;
+	moveTo(StartX, StartZ);
+	mb.startX = StartX;
+	mb.startZ = StartZ;
+	mb.curX = StartX;
+	mb.curZ = StartZ;
+	mb.deltaX = DeltaX;
+	mb.deltaZ = DeltaZ;
+	mb.stepsX = StepsX;
+	mb.stepsZ = StepsZ;
+	mb.curStepX = 0;
+	mb.curStepZ = 0;
 	mb.nofSecs = NofSecs;
 
 	if (!startDaq()) return kFALSE;
-	gMrbLog->Out() << "Now at X=" << mb.curX << ", Z=" << mb.curZ << endl;
-	gMrbLog->Flush("motCtrl.C", "doScan", setblue);
+	atPosition();
 	motTimer->SetCommand("continueScan()");
 	motTimer->Start(NofSecs * 1000, kTRUE);
-	
+	TDatime dstart;
+	gMrbLog->Out() << "Timer start at: " << dstart.AsString() << endl;
+	gMrbLog->Flush("motCtrl.C", "doScan", setblue);
 	return kTRUE;
 }
 
@@ -499,31 +618,39 @@ Bool_t continueScan() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (daqRunning) {
-		stopDaq();
-		mb.curX += mb.DX;
-		mb.curNX++;
-		if (mb.curNX > mb.NX) {
-			mb.curX = mb.X0;
-			mb.curNX = 0;
-			mb.curZ += mb.DZ;
-			mb.curNZ++;
-			if (mb.curNZ > mb.NZ) {
-				gMrbLog->Out() << "End of measurement: now at X=" << motor->posX() << ", Z=" << motor->posZ() << endl;
+		TDatime dstop;
+		gMrbLog->Out() << "Timer stop at: " << dstop.AsString() << endl;
+		gMrbLog->Flush("motCtrl.C", "continueScan", setblue);
+		if (!stopDaq()) {
+			gMrbLog->Err() << "Aborting scan" << endl;
+			gMrbLog->Flush("motCtrl.C", "continueScan");
+			return kFALSE;
+		}
+		mb.curX += mb.deltaX;
+		mb.curStepX++;
+		if (mb.curStepX >= mb.stepsX) {
+			mb.curX = mb.startX;
+			mb.curStepX = 0;
+			mb.curZ += mb.deltaZ;
+			mb.curStepZ++;
+			if (mb.curStepZ >= mb.stepsZ) {
+				atPosition();
+				gMrbLog->Out() << "End of measurement" << endl;
 				gMrbLog->Flush("motCtrl.C", "continueScan", setblue);
 				return kTRUE;
 			}
 		}
-		motor->moveAbsolute(mb.curX, 0, mb.curZ);
+		moveTo(mb.curX, mb.curZ);
+		atPosition();
 		if (!startDaq()) {
 			gMrbLog->Err() << "DAQ not running - giving up" << endl;
 			gMrbLog->Flush("motCtrl.C", "continueScan");
 			return kFALSE;
 		}
-		mb.curX = motor->posX();
-		mb.curZ = motor->posZ();
-		gMrbLog->Out() << "Now at X=" << mb.curX << ", Z=" << mb.curZ << endl;
-		gMrbLog->Flush("motCtrl.C", "continueScan", setblue);
 		motTimer->Start(mb.nofSecs * 1000, kTRUE);
+		TDatime dstart;
+		gMrbLog->Out() << "Timer start at: " << dstart.AsString() << endl;
+		gMrbLog->Flush("motCtrl.C", "continueScan", setblue);
 	}
 	return kTRUE;
 }
@@ -542,9 +669,8 @@ Bool_t abortScan() {
 
 	motTimer->Stop();
 	stopDaq();
-	mb.curX = motor->posX();
-	mb.curZ = motor->posZ();
-	gMrbLog->Out() << "Aborting scan at X=" << mb.curX << ", Z=" << mb.curZ << endl;
+	atPosition();
+	gMrbLog->Out() << "Aborting scan" << endl;
 	gMrbLog->Flush("motCtrl.C", "abortScan", setblue);
 	return kTRUE;
 }
@@ -623,7 +749,11 @@ void usage() {
 //////////////////////////////////////////////////////////////////////////////
 
 	cout << endl << setblue << "motCtrl.C: data acquisition controlled by stepping motor" << setblack << endl << endl;
-	cout << "Start: export CPLUS_INCLUDE_PATH=.:../stepper:$MARABOU/include:$ROOTSYS/include" << endl;
+	cout << "Start: (once at the beginning)" << endl;
+        cout << "       export CPLUS_INCLUDE_PATH=.:$MARABOU/include:$ROOTSYS/include" << endl;
+	cout << "       cp $MARABOU/macros/motLibs.C ." << endl;
+	cout << "       cp $MARABOU/macros/motCtrl.C ." << endl;
+	cout << "       (on every restart)" << endl;
 	cout << "       root motLibs.C motCtrl.C+" << endl << endl;
 	cout << "Commands:" << endl;
 	cout << "   setupMbs(Char_t * PPC, Char_t * WorkingDir)  -- perform MBS setup" << endl;
@@ -635,10 +765,13 @@ void usage() {
 	cout << "   startDaq()                                   -- start acquisition" << endl;
 	cout << "   stopDaq()                                    -- stop acquisition" << endl << endl;
 	cout << "   killAnalyze()                                -- kill an existing instance of M_analyze still running" << endl << endl;
+        cout << "   initMotion(Int_t OrigX, Int_t OrigZ, Double_t CalibX, Double_t CalibZ, Int_t SpeedX, Int_t SpeedZ) -- initialize motor" << endl;
 	cout << "   doScan(Int_t X0, Int_t Z0, Int_t DeltaX, Int_t DeltaZ, Int_t NX, Int_t NZ, Int_t NofSecs) -- start scan" << endl;
 	cout << "   abortScan()                                  -- abort scan in progress" << endl;
+	cout << "   moveTo(Double_t X, Double_t Z)               -- move to position (X,Z) in mm" << endl;
+	cout << "   atPosition()                                 -- output current position" << endl;
 	cout << endl << endl;
-	cout << "Motor control:" << endl;
+	cout << "Motor control (intrinsic functions):" << endl;
 	cout << "   motor->activeAxes()                                 -- show active axes" << endl;
 	cout << "   motor->posX(), motor->posZ()                        -- show current position" << endl;
 	cout << "   motor->speedX(), motor->speedZ()                    -- show current speed" << endl;
