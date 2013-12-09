@@ -12,6 +12,7 @@ ClassImp(THprLatex)
 THprLatex::THprLatex(Double_t x, Double_t y, const Char_t * text)
            : TLatex(x, y, text)
 {
+//	cout << "THprLatex " << text << endl;
    SetDaughter(this);
 }
 //________________________________________________________________________
@@ -27,7 +28,7 @@ void THprLatex::Paint(const Option_t *opt)
       TLatex::Paint(opt);
 }
 //______________________________________________________________________________
-
+/*
 THprLatex *THprLatex::DrawLatex(Double_t x, Double_t y, const char *text)
 {
    // Make a copy of this object with the new parameters
@@ -50,7 +51,11 @@ void THprLatex::PaintLatex(Double_t x, Double_t y, Double_t angle, Double_t size
    //
    // Warning: Unlike most others "XYZ::PaintXYZ" methods, PaintLatex modifies
    //          the TLatex data members.
-
+	TString stext(text1);
+	if (stext.Contains("\\")) {
+		TLatex::PaintLatex(x,y,angle, size,text1);
+		return;
+	}
    TAttText::Modify();  //Change text attributes only if necessary
 
    // do not use Latex if font is low precision
@@ -63,7 +68,7 @@ void THprLatex::PaintLatex(Double_t x, Double_t y, Double_t angle, Double_t size
    
    TString newText = text1;
 	if( newText.Length() == 0) return;
-	
+	cout <<"PaintLatex: " << text1 << endl;
    Double_t saveSize = size;
    Int_t saveFont = fTextFont;
    if (fTextFont%10 > 2) {
@@ -159,4 +164,4 @@ void THprLatex::PaintLatex(Double_t x, Double_t y, Double_t angle, Double_t size
 
    if (gVirtualPS) gVirtualPS->ResetBit(kLatex);
 }
-
+*/

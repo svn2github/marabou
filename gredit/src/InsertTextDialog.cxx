@@ -180,7 +180,7 @@ InsertTextDialog::InsertTextDialog(Bool_t from_file, TObject *calling_object)
 static const Char_t helptext[] =
 "This widget is used to insert text either directly\n\
 from the keyboard or from a file. In the keyboard case\n\
-text is edit in this widget and placed by clicking \n\
+text is edited in this widget and placed by clicking \n\
 \"ExecuteTextInsert\" and then at the desired position.\n\
 In the file case serveral lines may be arranged as a compound\n\
 which may shifted together\n\
@@ -190,6 +190,13 @@ e.g. Angle: 90 Align: Center will place the text centered\n\
 at top of a circle\n\
 \"Char Sep\" allows extra space between characters \n\
 measured in fractions of the length of an \"a\".\n\
+\n\
+Since ROOT Version 5.34.13 pure LaTeX input is supported\n\
+To profit from this use \"\\\" instead of \"#\" and let\n\
+\"Apply latex filter\" off.\n\
+If the canvas is Saved As \".tex\" the LateX code is inserted\n\
+directly into the TeX file, e.g. formula will be rendered by\n\
+LaTeX itself.\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
@@ -302,7 +309,7 @@ void InsertTextDialog::InsertTextExecute(Int_t onarc)
       fEditTextY0 = mark->GetY();
       delete mark;
    }
-
+	fCanvas->cd();
    ifstream infile;
    TString line;
    TString cmd;
@@ -344,7 +351,20 @@ void InsertTextDialog::InsertTextExecute(Int_t onarc)
 //         cout << fEditTextPointer << " " << cmd.Data() << endl;
          loop = kFALSE;
       }
-      cout << fEditTextFont << " " << fEditTextFont<< endl;
+//      cout << "Text:  " << cmd << endl;
+      Int_t nbrace_open = 0;
+      Int_t nbrace_close = 0;
+      for (Int_t i = 0; i < cmd.Length(); i++) {
+			if (cmd[i] == '}')
+				nbrace_close++;
+			if (cmd[i] == '{')
+				nbrace_open++;
+		}
+		if (nbrace_close != nbrace_open) {
+			cout << "Braces dont match, open:	" << nbrace_open 
+			<< " close: " << nbrace_close << endl;
+			continue;
+		}
 		if ( onarc == 1 ) {
 		    TextOnArc *tt = new TextOnArc(fEditTextX0, fEditTextY0, fEditTextRadius, 
 								 cmd, fEditTextStartAngle, fEditTextAlign/10);
@@ -356,13 +376,17 @@ void InsertTextDialog::InsertTextExecute(Int_t onarc)
 		} else {
 			if (fEditTextLatexFilter > 0) converted_line = lat2root(cmd);
 			else                          converted_line = cmd;
+//			latex = new TLatex(xt, yt, converted_line.Data());
 			latex = new THprLatex(xt, yt, converted_line.Data());
 			latex->SetTextAlign(fEditTextAlign);
 			latex->SetTextFont(10 * (fEditTextFont/10) + fEditTextPrec);
 			latex->SetTextSize(fEditTextSize);
 			latex->SetTextColor(fEditTextColor);
 			latex->SetTextAngle(fEditTextAngle);
-			latex->Draw();
+//			cout << "Text ent: |" << converted_line <<"| " << converted_line.Length()<< endl;
+//			converted_line="\\frac{\\pi}{BB}";
+//			cout << "Text set: |" << converted_line <<"|" << converted_line.Length()<< endl;
+			latex->DrawLatex(xt, yt, converted_line.Data());
 			llist.Add(latex);
 			yt -= fEditTextDy;
 			cmd.Resize(0);
@@ -488,7 +512,7 @@ void InsertTextDialog::RestoreDefaults()
    fEditTextSize        = env.GetValue("InsertTextDialog.EditTextSize"		  , 0.02);
    fEditTextCharSep     = env.GetValue("InsertTextDialog.EditTextCharSep"	  , 0.);
    fEditTextAngle       = env.GetValue("InsertTextDialog.EditTextAngle"  	  , 0.);
-   fEditTextLatexFilter = env.GetValue("InsertTextDialog.EditTextLatexFilter", 1);
+   fEditTextLatexFilter = env.GetValue("InsertTextDialog.EditTextLatexFilter", 0);
    fEditTextStartAngle  = env.GetValue("InsertTextDialog.EditTextStartAngle" , 90.);
    fEditTextRadius      = env.GetValue("InsertTextDialog.EditTextRadius"     , 30.);
 	
