@@ -103,6 +103,8 @@ by simulating the movement of the pressed mouse\n\
    fHist = NULL;
 	fView3D = NULL;
 	fRangeChanged = kFALSE;
+	fContMin = 0;
+	fContMax = 1.e10;
 
    Int_t nh1 = 0, nh2 = 0;
    TIter next(fCanvas->GetListOfPrimitives());
@@ -144,6 +146,8 @@ by simulating the movement of the pressed mouse\n\
 		fRangeY1 = ya->GetBinLowEdge(ya->GetLast())+ ya->GetBinWidth(ya->GetLast());
 		fRangeZ0 = za->GetBinLowEdge(za->GetFirst());
 		fRangeZ1 = za->GetBinLowEdge(za->GetLast())+ za->GetBinWidth(za->GetLast());
+		fContMin = fHist->GetMinimum();
+		fContMax = fHist->GetMaximum();
 	}
    RestoreDefaults();
 	fPhi3Dim = fCanvas->GetPhi();
@@ -212,7 +216,7 @@ by simulating the movement of the pressed mouse\n\
 	
 	fRow_lab->Add(new TObjString("CommentOnly_Display ranges"));
 	fValp[ind++] = &dummy;
-   fRow_lab->Add(new TObjString("CommandButt-Set ranges"));
+   fRow_lab->Add(new TObjString("CommandButt-Set ranges, min, max"));
    fValp[ind++] = &srgcmd;
    fRow_lab->Add(new TObjString("DoubleValue_X1"));
 	fBidRangeX0 = ind;
@@ -228,6 +232,15 @@ by simulating the movement of the pressed mouse\n\
    fRow_lab->Add(new TObjString("DoubleValue+Z2"));
 	fBidRangeZ1 = ind;
    fValp[ind++] = &fRangeZ1;
+   fRow_lab->Add(new TObjString("DoubleValue_Cont_Min"));
+	fBidContMin = ind;
+   fValp[ind++] = &fContMin;
+   fRow_lab->Add(new TObjString("DoubleValue+Cont_Max"));
+	fBidContMax= ind;
+   fValp[ind++] = &fContMax;
+   fRow_lab->Add(new TObjString("CheckButton+Cont_Log"));
+ 	fBidContLog= ind;
+	fValp[ind++] = &fContLog;
 	
 	fRow_lab->Add(new TObjString("CommentOnly_Parameters for OpenGL"));
 	fValp[ind++] = &dummy;
@@ -409,9 +422,11 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 // 				}
 // 			}
 		} else if (obj->InheritsFrom("TPolyMarker3D")){
-			((TPolyMarker3D*)obj)->SetMarkerSize (fMarkerSize3Dim); 
-			((TPolyMarker3D*)obj)->SetMarkerStyle (fMarkerStyle3Dim); 
-
+			TPolyMarker3D* pm3 = (TPolyMarker3D*)obj;
+			if (pm3->GetMarkerSize() > 0) {
+				pm3->SetMarkerSize (fMarkerSize3Dim); 
+				pm3->SetMarkerStyle (fMarkerStyle3Dim);
+			}
       } else if ((obj->InheritsFrom("TPad"))) {
          TPad *pad = (TPad*)obj;
          TIter next1(pad->GetListOfPrimitives());
@@ -427,9 +442,10 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 	      pad->Update();
       }
    }
-	if ( fView3D && fRangeChanged ) {
+	if ( fRangeChanged ) {
 		TPolyLine3D * pl3d = NULL;
-		fView3D->SetRange(fRangeX0, fRangeY0, fRangeZ0, fRangeX1, fRangeY1, fRangeZ1);
+		if (fView3D)
+			fView3D->SetRange(fRangeX0, fRangeY0, fRangeZ0, fRangeX1, fRangeY1, fRangeZ1);
 		TIter next1(canvas->GetListOfPrimitives());
 		TList tempdel;
 		TPolyMarker3D *pm;
@@ -439,11 +455,17 @@ void Set3DimOptDialog::SetHistAtt(TCanvas *canvas)
 				pm = (TPolyMarker3D*)obj;
 				if ( pm->GetN() == 1 ) {
 					pm->GetPoint(0,pmx, pmy, pmz);
+					Double_t cont = (Double_t)pm->GetUniqueID();
 					if (  pmx < fRangeX0 || pmx > fRangeX1 
 						|| pmy < fRangeY0 || pmy > fRangeX1
-						|| pmz < fRangeZ0 || pmz > fRangeZ1) {
-						tempdel.Add(pm);
+						|| pmz < fRangeZ0 || pmz > fRangeZ1
+						|| cont < fContMin || cont > fContMax) {
+						pm->SetMarkerSize(0);
+					} else {
+						pm->SetMarkerSize(fMarkerSize3Dim);
 					}
+//						tempdel.Add(pm);
+//					}
 				}
 			}
 			if (obj->InheritsFrom("TPolyLine3D")) {
@@ -489,7 +511,7 @@ void Set3DimOptDialog::Rotate()
 // 0, 2 rotate about x axis
 // 2, 0        about y axis
 	Int_t cont_cycles = 1;
-	Int_t tot_cycles = fRotCycles;
+//	Int_t tot_cycles = fRotCycles;
 	TGLHistPainter *hp = NULL;
 	if ( fHist ) {
 	TVirtualHistPainter* vp  = fHist->GetPainter();
@@ -502,7 +524,7 @@ void Set3DimOptDialog::Rotate()
 	TView *view = NULL;
 	if ( !hp) {
 		view=fCanvas->GetView();
-		tot_cycles = fRotCycles * 20;
+//		tot_cycles = fRotCycles * 20;
 	} else {
 		// with OpenGL picture moves with mouse
 		// otherwise picture is updated with kButton1Up only
@@ -636,6 +658,9 @@ void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
 	fApplyTranspCut    = env.GetValue("Set3DimOptDialog.fApplyTranspCut",    1);
 	fPhi3Dim           = env.GetValue("Set3DimOptDialog.fPhi3Dim", 135.);
 	fTheta3Dim         = env.GetValue("Set3DimOptDialog.fTheta3Dim", 30);
+	fContMin           = env.GetValue("Set3DimOptDialog.fContMin", fContMin);
+	fContMax           = env.GetValue("Set3DimOptDialog.fContMax", fContMax);
+	fContLog           = env.GetValue("Set3DimOptDialog.fContLog", 0);
 // 	fRangeX0           = env.GetValue("Set3DimOptDialog.fRangeX0", fRangeX0);
 // 	fRangeX1           = env.GetValue("Set3DimOptDialog.fRangeX1", fRangeX1);
 // 	fRangeY0           = env.GetValue("Set3DimOptDialog.fRangeY0", fRangeY0);
@@ -666,6 +691,34 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 		cout << "CRButtonPressed fDrawOpt3Dim " << fDrawOpt3Dim << endl;
 		if (obj) cout  << ", " << canvas->GetName() << ")";
 		cout << endl;
+	}
+	
+	if ( bid == fBidContMax ||bid == fBidContMin || bid == fContLog) {
+		TEnv env(".hprrc");
+		if ( bid == fBidContMin ) {
+			env.SetValue("Set3DimOptDialog.fContMin", fContMin);
+//			fHist->SetMinimum(fContMin);
+//			cout << "CRButtonPressed: " << fHist << " " << fContMin << endl;
+		}
+		if ( bid == fBidContMax ) {
+			env.SetValue("Set3DimOptDialog.fContMax", fContMax);
+//			fHist->SetMaximum(fContMax);
+		}
+		if ( bid == fBidContLog ) {
+			env.SetValue("Set3DimOptDialog.fContLog", fContLog);
+		}
+		SetHistAttNow(canvas);
+		env.SaveLevel(kEnvLocal);
+	}
+	// make sure marker is scalable
+	if ( bid == fBidMarkerStyle) {
+		if (fMarkerStyle3Dim == 1 || fMarkerStyle3Dim == 6
+			|| fMarkerStyle3Dim == 7 ) {
+				fMarkerStyle3Dim = 21;
+			fDialog->ReloadValues();
+			fDialog->DoNeedRedraw();
+			cout << "Markerstyle forced scalable: " << fMarkerStyle3Dim << endl;
+		}
 	}
 	if ( bid >= fBidRangeX0 && bid <= fBidRangeZ1 )
 		return;

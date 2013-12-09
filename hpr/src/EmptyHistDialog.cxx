@@ -140,7 +140,7 @@ void EmptyHistDialog::Draw_The_Hist()
 		ymin = fYaxisMin;
 		ymax = fYaxisMax;
 	}
-	gStyle->SetOptStat(0);
+//	gStyle->SetOptStat(0);
 	fHist = new TH1D(fHistName, fHistTitle, fNbins, xmin, xmax);
 	fCanvas->GetHandleMenus()->SetHist(fHist);
 	fHist->Draw();

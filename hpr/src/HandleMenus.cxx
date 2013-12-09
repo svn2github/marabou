@@ -17,7 +17,7 @@
 #include "TImage.h"
 //#include "TError.h"
 #include "TContextMenu.h"
-//#include "TVirtualPadEditor.h"
+#include "TRegexp.h"
 
 #include "GEdit.h"
 #include "HTCanvas.h"
@@ -58,6 +58,7 @@ enum ERootCanvasCommands {
    kFileSaveAsC,
    kFileSaveAsPS,
    kFileSaveAsEPS,
+   kFileSaveAsTEX,
    kFileSaveAsPDF,
    kFileSaveAsGIF,
    kFileSaveAsJPG,
@@ -208,6 +209,7 @@ enum ERootCanvasCommands {
    kFHFitExp,
    kFHFitPol,
    kFHFitForm,
+   kFHFillRandom,
    kFHFitUserG,
    kFHGausFitG,
    kFHExpFitG,
@@ -307,6 +309,7 @@ static const char *gOpenTypes[] = { "ROOT files",   "*.root",
 static const char *gSaveAsTypes[] = { "PostScript",   "*.ps",
                                       "Encapsulated PostScript", "*.eps",
                                       "PDF",          "*.pdf",
+                                      "TeX",          "*.tex",
                                       "SVG",          "*.svg",
                                       "GIF",          "*.gif",
                                       "ROOT macros",  "*.C",
@@ -406,6 +409,7 @@ again:
                             fn.EndsWith(".ps")   ||
                             fn.EndsWith(".eps")  ||
                             fn.EndsWith(".pdf")  ||
+                            fn.EndsWith(".tex")  ||
                             fn.EndsWith(".svg")  ||
                             fn.EndsWith(".gif")  ||
                             fn.EndsWith(".xml")  ||
@@ -414,8 +418,12 @@ again:
                             fn.EndsWith(".png")  ||
                             fn.EndsWith(".tiff")) {
 //                           fHCanvas->RemoveEditGrid();
+									fHCanvas->cd();
                            gSystem->Sleep(60); // give X server time to refresh
-                           fHCanvas->SaveAs(fn);
+									fHCanvas->SaveAs(fn);
+									if ( fn.EndsWith(".tex")) {
+										Hpr::ReplaceUS(fn);
+									}
                         } else if (fn.EndsWith(".C"))
                            fHCanvas->SaveSource(fn);
                         else {
@@ -448,6 +456,19 @@ again:
                      break;
                   case kFileSaveAsEPS:
                      fHCanvas->SaveAs(".eps");
+                     break;
+                  case kFileSaveAsTEX:
+							{
+							TString fname(fHCanvas->GetName());
+							if (fname.BeginsWith("C_F")) {
+								fname = fname(3,fname.Length());
+							}
+							fname+=".tex";
+                     fHCanvas->SaveAs(fname);
+                     Int_t latex_header = 1;
+                     Hpr::ReplaceUS(fname, latex_header);
+                     cout << "Canvas saved as: " << fname << endl;
+							}
                      break;
                   case kFileSaveAsPDF:
                      fHCanvas->SaveAs(".pdf");
@@ -1003,6 +1024,10 @@ again:
 							 new FitOneDimDialog(fSelHist, 4);
 //							 fFitHist->Fit1DimDialog(4);
                      break;
+                   case kFHFillRandom:
+							 Hpr::FillHistRandom(fHCanvas);
+//							 fFitHist->Fit1DimDialog(4);
+                     break;
                   case kFHFitUserG:
                      ExecFitMacroG(fGraph, fRootCanvas);   // global function !!
                      break;
@@ -1377,6 +1402,7 @@ void HandleMenus::BuildMenus()
 		fFileMenu->AddEntry("Picture to PS-File",  kFHPictToPS);
 		fFileMenu->AddEntry("Save As....",   kFileSaveAs);
 		fFileMenu->AddEntry("Save As .eps",  kFileSaveAsEPS);
+		fFileMenu->AddEntry("Save As LaTeX incl header",  kFileSaveAsTEX);
 		fFileMenu->AddEntry("Save As .pdf",  kFileSaveAsPDF);
 		fFileMenu->AddEntry("Save As .gif",  kFileSaveAsGIF);
 		fFileMenu->AddEntry("Save As .C",    kFileSaveAsC);
@@ -1622,6 +1648,7 @@ void HandleMenus::BuildMenus()
          fFitMenu->AddEntry("Exponential",     kFHFitExp);
          fFitMenu->AddEntry("Polynomial",      kFHFitPol);
          fFitMenu->AddEntry("User formula",    kFHFitForm);
+         fFitMenu->AddEntry("Fill Random acc Function",    kFHFillRandom);
       }
 		if ( fFitHist ) {
 			fFitMenu->AddSeparator();

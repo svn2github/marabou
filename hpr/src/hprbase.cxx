@@ -5,6 +5,7 @@
 #include "TGraphAsymmErrors.h"
 #include "TFrame.h"
 #include "THStack.h"
+#include "TH3.h"
 #include "TString.h"
 #include "TObjString.h"
 #include "TSystem.h"
@@ -150,10 +151,10 @@ and write the Graph to a ROOT file\n\
 If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 // *INDENT-ON*
 	
-	if ( hist->GetDimension() == 3 ) {
-		WarnBox(" WriteHistasASCII: 3-dim not yet supported ", window);
-		return;
-	}
+//	if ( hist->GetDimension() == 3 ) {
+//		WarnBox(" WriteHistasASCII: 3-dim not yet supported ", window);
+//		return;
+//	}
 	if ( hist->GetDimension() != 1 && ascii_graph == 1) {
 		WarnBox(" WriteHistasGraph: only 1-dim supported", window);
 		return;
@@ -161,16 +162,20 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 	static Int_t channels   = 0;
 	static Int_t bincenters = 1;
 	static Int_t binw2      = 0;
-	static Int_t errors     = 1;
+	static Int_t errors     = 0;
+	if ( hist->GetDimension() == 1 )
+		errors     = 1;
 	static Int_t first_binX  = 0;
 	static Int_t last_binX   = 0;
 	static Int_t first_binY  = 0;
 	static Int_t last_binY   = 0;
+	static Int_t first_binZ  = 0;
+	static Int_t last_binZ   = 0;
 	Int_t transX             = 0;
 	Double_t offsetX = 0;
 	Double_t slope = 1;
 	Int_t dummy;
-	static Int_t suppress_zeros = 0;
+	static Int_t suppress_zeros = 1;
 	TString formX("%10.10g");
 	TString formY("%10.10g");
 	TFile *rfile = NULL;
@@ -222,10 +227,16 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 	valp[ind++] = &first_binX;
 	row_lab->Add(new TObjString("PlainIntVal+Last_binX"));
 	valp[ind++] = &last_binX;
-	if (hist->GetDimension() == 2 && ascii_graph == 0) {
+	if (hist->GetDimension() > 1 && ascii_graph == 0) {
 		row_lab->Add(new TObjString("PlainIntVal_First_binY"));
 		valp[ind++] = &first_binY;
-		row_lab->Add(new TObjString("PlainIntVal_Last_binY"));
+		row_lab->Add(new TObjString("PlainIntVal+Last_binY"));
+		valp[ind++] = &last_binY;
+	}
+	if (hist->GetDimension() > 2 && ascii_graph == 0) {
+		row_lab->Add(new TObjString("PlainIntVal_First_binZ"));
+		valp[ind++] = &first_binY;
+		row_lab->Add(new TObjString("PlainIntVal+Last_binZ"));
 		valp[ind++] = &last_binY;
 	}
 	row_lab->Add(new TObjString("CheckButton_Suppress empty channels"));
@@ -316,7 +327,7 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 			nl++;
 		}
 
-	} else {
+	} else if ( hist->GetDimension() == 2 ) {
 		Int_t nby1 = 1;
 		Int_t nby2 = hist->GetNbinsY();
 		if (first_binY > 0) nby1 = first_binY;
@@ -327,13 +338,44 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 			for (Int_t k = nby1; k <= nby2; k++) {
 				if (suppress_zeros && hist->GetCellContent(i, k)  == 0) continue;
 				*outfile << Form(formX.Data(), xa->GetBinCenter(i)) << " ";
-				*outfile << Form(formY.Data(), ya->GetBinCenter(k)) << " ";
+				*outfile << Form(formX.Data(), ya->GetBinCenter(k)) << " ";
 
 				*outfile << Form(formY.Data(), hist->GetCellContent(i,k));
 				if (errors)
 				*outfile << " " << Form(formY.Data(), hist->GetCellError(i,k));
 				*outfile << std::endl;
 				nl++;
+			}
+		}
+	} else if ( hist->GetDimension() == 3 ) {
+		TH3S *h3 = (TH3S*)hist;
+		Int_t nby1 = 1;
+		Int_t nby2 = hist->GetNbinsY();
+		if (first_binY > 0) nby1 = first_binY;
+		if (last_binY > 0)  nby2 = last_binY;
+		Int_t nbz1 = 1;
+		Int_t nbz2 = hist->GetNbinsZ();
+		if (first_binZ > 0) nbz1 = first_binZ;
+		if (last_binZ > 0)  nbz2 = last_binZ;
+		TAxis * xa = h3->GetXaxis();
+		TAxis * ya = h3->GetYaxis();
+		TAxis * za = h3->GetZaxis();
+		if (gDebug > 0)
+			h3->Dump();
+		for (Int_t i = nbx1; i <= nbx2; i++) {
+			for (Int_t k = nby1; k <= nby2; k++) {
+				for (Int_t l = nbz1; l <= nbz2; l++) {
+					if (suppress_zeros && h3->GetBinContent(i, k, l)  == 0) continue;
+					*outfile << Form(formX.Data(), xa->GetBinCenter(i)) << " ";
+					*outfile << Form(formX.Data(), ya->GetBinCenter(k)) << " ";
+					*outfile << Form(formX.Data(), za->GetBinCenter(l)) << " ";
+
+					*outfile << Form(formY.Data(), h3->GetBinContent(i,k,l));
+					if (errors)
+					*outfile << " " << Form(formY.Data(), hist->GetBinError(i,k,l));
+					*outfile << std::endl;
+					nl++;
+				}
 			}
 		}
 	}
@@ -1232,5 +1274,139 @@ void BoundingB3D(TPolyLine3D * pl,  Double_t x0, Double_t y0, Double_t z0,
 	pl3->SetPoint(15, x0, y1, z0);
 	pl3->Draw();
 }
+//________________________________________________________________________
 
+TF1 * FindFunctionInPad(TVirtualPad * pad)
+{
+	if (pad )
+		pad->cd();
+	TList * lop = gPad->GetListOfPrimitives();
+	TIter next(lop);
+	TF1 *func = NULL;
+	Int_t nfound = 0;
+	while (TObject *obj = next()) {
+		if(obj->InheritsFrom("TF1")) {
+			func = (TF1*)obj;
+			nfound ++;
+//			break;
+		}
+	}
+	if (nfound > 1) {
+		cout << "Warning: More than 1 function found " << nfound << endl;
+		cout << "Using: " << func->GetName() << endl;
+	}
+	return func;
+}
+//________________________________________________________________________
+
+void FillHistRandom(TVirtualPad* pad)
+{
+	if ( pad == NULL ) {
+		cout << "NULL pointer to pad" << endl;
+		return;
+	}
+		
+	pad->cd();
+	TF1 * func = FindFunctionInPad(pad);
+	if ( func == 0 ) {
+		cout << "No function found in: " << pad->GetName() << endl;
+		return;
+	}
+	TH1 * hist = FindHistInPad(pad);
+	if ( hist == 0 ) {
+		cout << "No hist found in: " << pad->GetName() << endl;
+		return;
+	}
+	Double_t integral = func->Integral(hist->GetXaxis()->GetXmin(),
+													hist->GetXaxis()->GetXmax());
+	cout << "Integral[" <<hist->GetXaxis()->GetXmin() << ", "
+	<< hist->GetXaxis()->GetXmax() << "] = " << integral << endl;
+//	func->Dump();
+//	Int_t fillN = fNevents;
+	Int_t fillN = (Int_t) integral / hist->GetBinWidth(1);
+	if ( fillN <= 10 ) {
+		fillN = 10000;
+		cout << "Setting nentries to: " << fillN << endl;
+	}
+	if ( hist->GetEntries() != 0 ) {
+		TRootCanvas * rc = NULL;
+		if ( pad->GetCanvas() ) {
+			rc = (TRootCanvas *)pad->GetCanvasImp();
+		}
+		if (Hpr::QuestionBox("Histogram not empty,\n Reset before filling?", rc) ) {
+			hist->Reset();
+		}
+	}
+	hist->FillRandom(func->GetName(), fillN);
+	hist->SetLineColor(func->GetLineColor());
+	hist->SetMarkerColor(func->GetLineColor());
+	hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin()));
+//	hist->Print();
+	gPad->Modified();
+	gPad->Update();
+}
+//______________________________________
+void ReplaceUS(const char * fname, Int_t latex_header)
+{
+	ifstream infile;
+	ofstream ofile;
+   infile.open(fname, ios::in);
+	if (!infile.good()) {
+	cerr	<< "ReplaceUS: "
+			<< gSystem->GetError() << " - " << fname
+			<< endl;
+		return;
+	}
+	const char repl[] = "\\textunderscore ";
+	TString oname(fname);
+	oname+= "_mod";
+   ofile.open(oname.Data(), ios::out);
+	if (!ofile.good()) {
+	cerr	<< "ReplaceUS: "
+			<< gSystem->GetError() << " - " << oname
+			<< endl;
+		return;
+	}
+	if (latex_header > 0) {
+		ofile << "\\documentclass[a4paper,12pt]{article}" << endl;
+		ofile << "\\usepackage{tikz}" << endl;
+		ofile << "\\usetikzlibrary{patterns}" << endl;
+		ofile << "\\usetikzlibrary{plotmarks}" << endl;
+		ofile << "\\setlength{\\topmargin}{-2.5cm}" << endl;
+		ofile << "\\setlength{\\oddsidemargin}{-0.5cm}" << endl;
+		ofile << "\\setlength{\\evensidemargin}{-0.5cm}" << endl;
+		ofile << "\\setlength{\\textwidth}{17cm}" << endl;
+		ofile << "\\setlength{\\textheight}{28cm}" << endl;
+		ofile << "\\begin{document}" << endl;
+		ofile << "\\begin{figure}[htbp]" << endl;
+		ofile << "\\begin{center}" << endl;
+		ofile << "\\scalebox{0.8}{" << endl;
+		ofile << "%% Begin code generated by TTexDump" << endl;
+	}
+   TString line;
+	TRegexp us("_");
+	while ( 1 ) {
+		line.ReadLine(infile);
+		if (infile.eof()) break;
+		if (line.Contains("_") && !line.Contains("$") ) {
+			while (line.Contains("_") ) {
+				line(us) = repl;
+			}
+		}
+		ofile << line.Data() << endl;
+	}
+	if (latex_header > 0) {
+		ofile << "%% End code generated by TTeXDump" << endl;
+		ofile << "}"<< endl;
+		ofile << "\\caption{Image ({\tt hp2.tex}) generated by {\tt TTeXDump}}" << endl;
+		ofile << "\\end{center}" << endl;
+		ofile << "\\end{figure}" << endl;
+		ofile << "\\end{document}" << endl;
+	}
+	TString cmd("mv ");
+	cmd += oname;
+	cmd += " ";
+	cmd += fname;
+	gSystem->Exec(cmd);
+}
 }   // end namespace Hpr

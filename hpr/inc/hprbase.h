@@ -2,6 +2,7 @@
 #define HPRBASE
 #include "TCanvas.h"
 #include "TGWindow.h"
+#include "TF1.h"
 #include "TH1.h"
 #include "THStack.h"
 #include "TGraph.h"
@@ -31,5 +32,8 @@ namespace Hpr
 	Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp);
 	void BoundingB3D(TPolyLine3D * pl,  Double_t x0, Double_t y0, Double_t z0, 
 						  Double_t x1, Double_t y1, Double_t z1);
+	TF1 * FindFunctionInPad(TVirtualPad * ca);
+	void FillHistRandom(TVirtualPad * ca);
+	void ReplaceUS(const char * fname, Int_t latexheader=0);
 }
 #endif

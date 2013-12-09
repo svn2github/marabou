@@ -64,6 +64,12 @@ private:
 	Int_t   fBidRangeX0;
 	Int_t   fBidRangeZ1;
 	Bool_t  fRangeChanged;
+	Double_t fContMin;
+	Double_t fContMax;
+	Int_t fContLog;
+	Int_t fBidContMin;
+	Int_t fBidContMax;
+	Int_t fBidContLog;
 
 public:
 

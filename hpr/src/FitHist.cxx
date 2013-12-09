@@ -3471,8 +3471,19 @@ void FitHist::Draw3DimPolyMarker()
 	}
 	hempty->Draw();
 	hempty->SetStats(0);
-	Float_t min = fSelHist->GetMinimum();
-	Float_t max = fSelHist->GetMaximum();
+	Double_t hmin = fSelHist->GetMinimum();
+	Double_t hmax = fSelHist->GetMaximum();
+	Int_t logc;
+	TEnv env(".hprrc");
+	Double_t min = env.GetValue("Set3DimOptDialog.fContMin", hmin);
+	Double_t max = env.GetValue("Set3DimOptDialog.fContMax", hmax);
+	if (max > hmax)
+		max = hmax;
+	if (hmin < min)
+		min = hmin;
+	logc = env.GetValue("Set3DimOptDialog.fContLog", logc);
+	cout << "Draw3DimPolyMarker: hist Min, Max, log: "
+	<< fSelHist << " " << min << " " << max << " " << logc<< endl;
 //	gStyle->SetPalette(1);
 	TAxis * ax = fSelHist->GetXaxis();
 	TAxis * ay = fSelHist->GetYaxis();
@@ -3487,7 +3498,7 @@ void FitHist::Draw3DimPolyMarker()
 		for (Int_t iy = 0; iy < ay->GetNbins(); iy++) {
 			for (Int_t iz = 0; iz < az->GetNbins(); iz++) {
 				Float_t cont = fSelHist->GetBinContent(ix, iy, iz);
-				if (cont != 0) {
+				if (cont != 0 && cont >= min && cont <= max ) {
 					pm = new TPolyMarker3D(1);
 					x = ax->GetBinCenter(ix);
 					y = ay->GetBinCenter(iy);
