@@ -45,7 +45,6 @@
 #include "mapping_protos.h"
 
 #include "sbs_def.h"
-#include "f_user_trig_clear.h"
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Common indices used by readout as well as analysis
