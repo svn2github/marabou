@@ -1507,7 +1507,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 					break;
 
 				case kSetLocPipeType:
-					{
+					if (mbsVersion.CompareTo("v22") != 0) {
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
