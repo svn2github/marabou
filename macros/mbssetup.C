@@ -15,6 +15,12 @@
 	setup->EvtBuilder()->SetProcName(evtBuilder.Data());
 	setup->SetNofReadouts(1);
 	TString cwd = gSystem->WorkingDirectory();
+	TString remoteHome = setup->RemoteHomeDir();
+	if (remoteHome.IsNull()) {
+		cerr << setred << "mbssetup.C: Can't determine PPC's home dir: Please define \"TMbsSetup.PPCHomeDir\" in .rootrc" << setblack << endl;
+		gSystem->Exit(1);
+	}
+	setup->Set("HomeDir", remoteHome.Data());
 	TString ppcPath = gEnv->GetValue("TMbsSetup.PPCWorkingDir", "");
 	if (ppcPath.IsNull()) {
 		cerr << setred << "mbssetup.C: PPC's working directory missing: Please define \"TMbsSetup.PPCWorkingDir\" in .rootrc (\"ppc\" recommended)" << setblack << endl;

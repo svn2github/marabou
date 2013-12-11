@@ -351,7 +351,7 @@ const Char_t * TMbsSetup::GetHomeDir() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	this->Get(fHomeDir, "PPCHomeDir");
+	this->Get(fHomeDir, "HomeDir");
 	return(fHomeDir.Data());
 }
 
