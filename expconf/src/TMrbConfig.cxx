@@ -979,7 +979,7 @@ const Char_t * TMrbConfig::GetMbsVersion(Bool_t Vformat, Bool_t Verbose)  {
 // Results:        Char_t * MbsVersion  -- result
 // Exceptions:
 // Description:    Returns MBS version as vNN or N.M
-//                 Version is read from rootrc environment: TMbsSetup.MBsVersion
+//                 Version is read from rootrc environment: TMbsSetup.MbsVersion
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 

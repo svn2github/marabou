@@ -382,7 +382,7 @@ Bool_t TMbsSetup::SetPath(const Char_t * Path, Bool_t Create) {
 			if (remoteHome.IsNull()) {
 				gMrbLog->Err() << "Can't set path \"" << Path << "\" -" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetPath");
-				gMrbLog->Err() << "\"TMbsSetup.HomeDir\" has to be set properly first" << endl;
+				gMrbLog->Err() << "\"TMbsSetup.PPCHomeDir\" has to be set properly first" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetPath");
 				return(kFALSE);
 			} else {
@@ -1097,7 +1097,6 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 		gMrbLog->Flush(this->ClassName(), "ExpandFile");
 		return(kFALSE);
 	}
-
 	TString lynxVersion;
 	this->Get(lynxVersion, "LynxVersion");
 	if (lynxVersion.IsNull()) {
@@ -2149,7 +2148,7 @@ const Char_t * TMbsSetup::RemoteHomeDir() {
 		gMrbLog->Flush(this->ClassName(), "RemoteHomeDir");
 		fRemoteHome.Resize(0);
 	} else {
-		ppcHomeDir = gEnv->GetValue("TMbsSetup.HomeDir", "");
+		ppcHomeDir = gEnv->GetValue("TMbsSetup.PPCHomeDir", "");
 		if (ppcHomeDir.IsNull()) ppcHomeDir = gEnv->GetValue("TMbsSetup.DefaultHomeDir", "");		// to be compatible with prev versions
 		if (ppcHomeDir.IsNull()) {
 			rshCmd = "rsh ";					// get home dir from remote login
