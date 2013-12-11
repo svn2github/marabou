@@ -61,20 +61,6 @@
 
 %%BeginOfCode%%
 					evt.out32 += mqdc32_readout(s_$moduleName, (uint32_t *) evt.out32);	/* read data */
-					if (s_$moduleName->updSettings) { 				/* update settings? */
-						s_$moduleName->updCountDown--;
-						if ((s_$moduleName->updCountDown <= 0) && mqdc32_updateSettings(s_$moduleName, "$updateFile")) {
- 							sprintf(msg, "Updating settings for module $moduleName after %d count(s)\n", s_$moduleName->updInterval);
- 							f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
-							mqdc32_stopAcq(s_$moduleName);
-							mqdc32_soft_reset(s_$moduleName);
-							mqdc32_fillStruct(s_$moduleName, "$settingsFile");
-							mqdc32_loadFromDb(s_$moduleName, $chnPattern);
-							mqdc32_resetReadout(s_$moduleName);
-							mqdc32_resetFifo(s_$moduleName);
-							mqdc32_startAcq(s_$moduleName);
-						}
-					}
 %%EndOfCode%%
 %%READ_MODULE%%
 

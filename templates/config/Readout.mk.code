@@ -53,7 +53,7 @@ POSIX   =  -mthreads
 CFLAGS  = $(POSIX) -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 CES_LIBS = -L/lib/ces -lvme -lbma -luio 
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(DIMLIB) \
-          $(LIB)/libedit.a -lnetinet
+          $(LIB)/libedit.a -lposix4d9 -lnetinet
 endif
 
 ifeq ($(GSI_OS_VERSION),3.1)
