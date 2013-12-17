@@ -805,8 +805,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			row_lab->Add(new TObjString("PlainIntVal+N Segs Graph"));
 			valp[ind++] = &fNsegsGraph;
 		}
-		row_lab->Add(new TObjString("CommandButt_Exe Fit"));
-		if (type == 1) {
+		row_lab->Add(new TObjString("CommandButt_Exe Fit/Draw"));
+		if (type == 1) { 
 			valp[ind++] = &exgcmd;
 			row_lab->Add(new TObjString("CommandButt+Det Lin BG"));
 			valp[ind++] = &lbgcmd;
@@ -1343,7 +1343,10 @@ Bool_t FitOneDimDialog::FitGausExecute()
 		lab += "0";
 		fFitFunc->SetParName(ind+kFix, lab);
 		row_lab.Add(new TObjString(lab));
-		if (setpars || range_changed) (*par)[ind]	  = gpar[0];
+		if (setpars || range_changed) {
+			if ( gpar[0] <= 0 ) gpar[0] = 10;
+			(*par)[ind]	  = gpar[0];
+		}
 		ind++;
 		if (lTailSide != 0) (*par)[ind -1] *= 0.5;
 		fFitFunc->SetParName(ind+kFix, "Ga_Mean0");
@@ -1353,8 +1356,8 @@ Bool_t FitOneDimDialog::FitGausExecute()
 		if (fOnesig == 1) {
 			if (setpars) {
 				(*par)[ind_sigma] = gpar[2];
-				if (ind_tail > 0)
-					(*par)[ind_tail] = gpar[2];
+//				if (ind_tail > 0)
+//					(*par)[ind_tail] = gpar[2];
 			}
 		} else {
 			fFitFunc->SetParName(ind+kFix, "GaSigma_");
@@ -1381,8 +1384,11 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			lab += (i - 1);
 			fFitFunc->SetParName(ind+kFix,  lab.Data() );
 			row_lab.Add(new TObjString(lab.Data()));
-			if (setpars || range_changed)
+			if (setpars || range_changed) {
+				// make sure content is > 0
+				if ( gpar[0] <= 0 ) gpar[0] = 10;
 				(*par)[ind] = gpar[0];
+			}
 			ind++;
 			lab = "Ga_Mean";
 			lab += (i - 1);
@@ -1394,7 +1400,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			if (fOnesig == 1) {
 				if (gpar[2] > (*par)[ind_sigma] && setpars)  {		 // use biggest sigma as est
 					(*par)[ind_sigma] = gpar[2];
-					(*par)[ind_tail] = gpar[2];
+//					(*par)[ind_tail]  = gpar[2];
 				}
 			} else {
 				lab = "GaSigma";
@@ -1410,7 +1416,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 	TString temp;
 	for (Int_t i = 0; i < fFitFunc->GetNpar(); i++) {
 		temp= fFitFunc->GetParName(i);
-		cout << i << " " << temp << endl;
+//		cout << i << " " << temp << endl;
 		if (temp.BeginsWith("BgConst")) {
 			if ( fBackg0 ) {
 				fFitFunc->SetParameter(i, 0);
@@ -1622,6 +1628,8 @@ Bool_t FitOneDimDialog::FitGausExecute()
 //	 no fit requested draw
 		gPad->cd();
 		fFitFunc->Draw("same");
+		if ( fFitFunc->GetMaximum() > fSelHist->GetMaximum() )
+			fSelHist->SetMaximum(1.05 * fFitFunc->GetMaximum());
 		cout << setblue << "No fit done, function drawn with start parameters"
 			 << setblack << endl;
 	}
@@ -2708,16 +2716,17 @@ void FitOneDimDialog::RestoreDefaults()
 		tagname += i;
 		fFormFixPar[i] = env.GetValue(tagname, 0);
 	}
-	fGausFuncName	  = env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_fun");
-	fExpFuncName		= env.GetValue("FitOneDimDialog.fExpFuncName", "exp_fun");
-	fPolFuncName		= env.GetValue("FitOneDimDialog.fPolFuncName", "pol_fun");
-	fFormFuncName	  = env.GetValue("FitOneDimDialog.fFormFuncName", "form_fun");
-	fNevents			 = env.GetValue("FitOneDimDialog.fNevents", 10000);
-	fPeakSep			 = env.GetValue("FitOneDimDialog.fPeakSep", 3);
-	fFitWindow		  = env.GetValue("FitOneDimDialog.fFitWindow", 3);
-	fConfirmStartValues = env.GetValue("FitOneDimDialog.fConfirmStartValues", 0);
-	fPrintStartValues  = env.GetValue("FitOneDimDialog.fPrintStartValues", 0);
-	fFuncFromFile		= env.GetValue("FitOneDimDialog.fFuncFromFile", "f1");
+	fGausFuncName			= env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_fun");
+	fExpFuncName			= env.GetValue("FitOneDimDialog.fExpFuncName", "exp_fun");
+	fPolFuncName			= env.GetValue("FitOneDimDialog.fPolFuncName", "pol_fun");
+	fFormFuncName			= env.GetValue("FitOneDimDialog.fFormFuncName", "form_fun");
+	fNevents					= env.GetValue("FitOneDimDialog.fNevents", 10000);
+	fPeakSep					= env.GetValue("FitOneDimDialog.fPeakSep", 3);
+	fFitWindow				= env.GetValue("FitOneDimDialog.fFitWindow", 3);
+	fUseoldpars				= env.GetValue("FitOneDimDialog.fUseoldpars", 0);
+	fConfirmStartValues	= env.GetValue("FitOneDimDialog.fConfirmStartValues", 0);
+	fPrintStartValues		= env.GetValue("FitOneDimDialog.fPrintStartValues", 0);
+	fFuncFromFile			= env.GetValue("FitOneDimDialog.fFuncFromFile", "f1");
 }
 //_______________________________________________________________________
 
@@ -2783,6 +2792,7 @@ void FitOneDimDialog::SaveDefaults()
 	env.SetValue("FitOneDimDialog.fPeakSep", fPeakSep);
 	env.SetValue("FitOneDimDialog.fFitWindow", fFitWindow);
 	env.SetValue("FitOneDimDialog.fConfirmStartValues", fConfirmStartValues);
+	env.SetValue("FitOneDimDialog.fUseoldpars", fUseoldpars);
 	env.SetValue("FitOneDimDialog.fPrintStartValues", fPrintStartValues);
 	env.SetValue("FitOneDimDialog.fFuncFromFile", fFuncFromFile);
 	env.SaveLevel(kEnvLocal);
