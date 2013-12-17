@@ -9,6 +9,7 @@
 #include "TVirtualPad.h"
 #include "TRootCanvas.h"
 #include "TSystem.h"
+#include "TH1.h"
 //#include "TGMrbValuesAndText.h"
 #include "Save2FileDialog.h"
 #include "HTCanvas.h"
@@ -30,6 +31,7 @@ more than one level of subdirs is allowed";
    RestoreDefaults();
    SetBit(kMustCleanup);
    fKeepDialog = 0;
+   fHistInRange = 0;
    fObject = obj;
    fObjName = obj->GetName();
    if (lname)
@@ -48,21 +50,22 @@ more than one level of subdirs is allowed";
 
    TList *row_lab = new TList();
    row_lab->Add(new TObjString("StringValue_Name of Output root file"));
+   valp[ind++] = &fFileName;
    row_lab->Add(new TObjString("StringValue_Name of dir in root file"));
+   valp[ind++] = &fDir;
    row_lab->Add(new TObjString("StringValue_Save object with name"));
-   if (fList)
+   valp[ind++] = &fObjName;
+   if ( obj->InheritsFrom("TH1") ){ 
+      row_lab->Add(new TObjString("CheckButton_Save hist with current ranges only"));
+		valp[ind++] = &fHistInRange;
+	}
+   if (fList) {
       row_lab->Add(new TObjString("CheckButton_Write functions as list"));
-//   row_lab->Add(new TObjString("CheckButton_Keep Dialog"));
-//   row_lab->Add(new TObjString("CommandButt_Execute Save"));
+      valp[ind++] = &fAsList;
+	}
    Int_t itemwidth = 320;
 
-   valp[ind++] = &fFileName;
-   valp[ind++] = &fDir;
-   valp[ind++] = &fObjName;
-   if (fList)
-      valp[ind++] = &fAsList;
-//   valp[ind++] = &fKeepDialog;
-   valp[ind++] = &fCommand;
+//   valp[ind++] = &fCommand;
    TRootCanvas* window = win;
    if ( window == NULL)
       win = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
@@ -122,21 +125,103 @@ void Save2FileDialog::ExecuteSave()
       else
          fList->Write();
       outfile->Close();
-   } else {
-      TString sname;
-		TNamed * tn = NULL;
-		if ( fObject->InheritsFrom("TNamed") ) {
-			sname = fObject->GetName();
-			if ( sname != fObjName) {
-				tn = (TNamed *)fObject;
-				tn->SetName(fObjName);
+      return;
+   }
+   TNamed * objorig = 0;
+   if (fObject->InheritsFrom("TNamed"))
+		objorig = (TNamed*)fObject;
+	if ( fObject->InheritsFrom("TH1") ) {
+		TH1* ohist = (TH1*)fObject;
+		cout << "Save2FileDialog: TH1 " << ohist->GetName() << endl;
+		TAxis *xa = ohist->GetXaxis();
+		TAxis *ya = NULL;
+		if (ohist->GetDimension() > 1)
+			ya = ohist->GetYaxis();
+		TAxis *za = NULL;
+		if (ohist->GetDimension() > 2)
+			za = ohist->GetZaxis();
+			
+		Bool_t fulld = xa->GetFirst() == 1 && xa->GetLast() == xa->GetNbins();
+		if (fulld && ya)
+			fulld = ya->GetFirst() == 1 && ya->GetLast() == ya->GetNbins();
+		if (fulld && za)
+			fulld = za->GetFirst() == 1 && za->GetLast() == za->GetNbins();
+		if ( !fulld ) {	
+			TH1* nhist = (TH1*)ohist->Clone();
+			nhist->Reset();
+			Int_t nx1 =  xa->GetFirst();
+			Int_t nx2 =  xa->GetLast();
+			if (ohist->GetDimension() == 1) {
+				nhist->SetBins(nx2 - nx1 + 1,
+						xa->GetBinLowEdge(nx1),
+						xa->GetBinLowEdge(nx2)+ xa->GetBinWidth(nx2));
+				Int_t n=1;
+				for (Int_t i = nx1; i <= nx2; i++ ) {
+					nhist->SetBinContent(n, ohist->GetBinContent(i));
+					n++;
+				}
+			} else {
+				Int_t ny1 =  ya->GetFirst();
+				Int_t ny2 =  ya->GetLast();
+				if ( ohist->GetDimension() == 2) {
+					nhist->SetBins(nx2 - nx1 + 1,
+						xa->GetBinLowEdge(nx1),
+						xa->GetBinLowEdge(nx2)+ xa->GetBinWidth(nx2),
+						ny2 - ny1 + 1,
+						ya->GetBinLowEdge(ny1),
+						ya->GetBinLowEdge(ny2)+ ya->GetBinWidth(ny2));
+					Int_t nx=1;
+					for (Int_t i = nx1; i <= nx2; i++ ) {
+						Int_t ny=1;
+						for (Int_t j = ny1; j <= ny2; j++ ) {
+							nhist->SetBinContent(nx, ny, ohist->GetBinContent(i,j));
+							ny++;
+						}
+						nx++;
+					}
+				} else {
+					Int_t nz1 =  za->GetFirst();
+					Int_t nz2 =  za->GetLast();
+					nhist->SetBins(nx2 - nx1 + 1,
+						xa->GetBinLowEdge(nx1),
+						xa->GetBinLowEdge(nx2)+ xa->GetBinWidth(nx2),
+						ny2 - ny1 + 1,
+						ya->GetBinLowEdge(ny1),
+						ya->GetBinLowEdge(ny2)+ ya->GetBinWidth(ny2),
+						nz2 - nz1 + 1,
+						za->GetBinLowEdge(nz1),
+						za->GetBinLowEdge(nz2)+ za->GetBinWidth(nz2));
+					Int_t nx=1;
+					for (Int_t i = nx1; i <= nx2; i++ ) {
+						Int_t ny = 1;
+						for (Int_t j = ny1; j <= ny2; j++ ) {
+							Int_t nz = 1;
+							for (Int_t k = nz1; k <= nz2; k++ ) {
+								nhist->SetBinContent(nx, ny, nz, ohist->GetBinContent(i,j,k));
+								nz++;
+							}
+							ny++;
+						}
+						nx++;
+					}
+				}
 			}
+			fObject = nhist;
 		}
-		fObject->Write();
-      outfile->Close();
-		if ( tn ) {
-			tn->SetName(sname);
+	}
+	TString sname;
+	TNamed * tn = NULL;
+	if ( fObject->InheritsFrom("TNamed") ) {
+		sname = fObject->GetName();
+		if ( sname != fObjName) {
+			tn = (TNamed *)fObject;
+			tn->SetName(fObjName);
 		}
+	}
+	fObject->Write();
+	outfile->Close();
+	if ( tn && fObject == objorig) {
+		objorig->SetName(sname);
 	}
 };
 //_________________________________________________________________________

@@ -18,6 +18,7 @@ private:
    TString fObjName;
    TString fFileName;
    TString fDir;
+   Int_t   fHistInRange;
    Int_t   fKeepDialog;
    Int_t   fAsList;
    TGMrbValuesAndText * fWidget;

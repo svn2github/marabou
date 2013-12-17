@@ -554,7 +554,7 @@ static alignDescription_t* GetAlignByNumber(int number)
 
 static const char *filetypes[] = { "All files",     "*",
                             "ROOTfile",    "*.root",
-                            "Textfile",    "*.[t|d|a][x|a|s][t|t|c]",
+                            "Textfile",    "*.[t|d|a][x|a|s][t|t|c][ii]",
 			    "Imagefiles", "*.[p|j|g][n|p|i][g|g|f]", 
                             0,               0 };
 
