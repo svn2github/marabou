@@ -76,7 +76,8 @@ extern TString* GetTitleString(TObject* obj);
 extern void     SelectButton(TString & , Float_t, Float_t, Float_t, Float_t,
                              Bool_t selected = 0);
 HTCanvas*       CommandPanel(const char *, TList *, Int_t xpos, Int_t ypos,
-                              HistPresent * hpr =0, Int_t xwid =0);
+                              HistPresent * hpr =0, Int_t xwid =0,
+                              Int_t maxe = 0, Int_t skip = 0);
 Int_t XBinNumber(TH1*, Axis_t);
 Int_t YBinNumber(TH1*, Axis_t);
 Stat_t Content(TH1*, Axis_t xlow, Axis_t xup, Stat_t * mean,  Stat_t * sigma);

@@ -549,44 +549,61 @@ void HistPresent::ShowFiles(const char *how, const char */*bp*/)
       activeFile=NULL;
       fFileList=NULL;
    }
-   const char *fname;
+   TString fname;
    void* dirp=gSystem->OpenDirectory(gHprWorkDir);
-   TRegexp endwithroot("\\.root$");
-   TRegexp endwithmap("\\.map$");
-   TRegexp endwithlist("\\.histlist$");
-   while ( (fname=gSystem->GetDirEntry(dirp)) ) {
-      TString sname(fname);
-      if (sname.Index(endwithroot) >= 0 || sname.Index(endwithlist) >= 0 ||
-         sname.Index(endwithmap) >= 0) {
-         if (sname.Index(endwithlist) >= 0 &&
-            contains_filenames(fname) <= 0) continue;
-         if (fFileSelMask.Length() > 0 ) {
-            if ( !Hpr::IsSelected(fname, &fFileSelMask, fFileUseRegexp) )
-					continue;
-         }
-         Long_t  id, flags, modtime;
-         Long64_t size;
-         gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
-         TString nam=fname;
-//          cout << fname << " " << modtime << endl;
-         TString cmd = "gHpr->Show";
-         if (sname.Index(endwithlist) >= 0) {
-            cmd = cmd + "List(\"\",\"" + gHprWorkDir.Data() +"/" + fname + "\")";
-         } else {
-            cmd = cmd + "Contents(\"" + gHprWorkDir.Data() +"/"+ fname + "\", \"\" )";
-         }
+	Int_t nfiles = 0;
+	const Char_t * na;
+	if ( fFileSelMask.Length() > 0 ) {
+		cout << setblue << "Using file selction mask: \""
+		<< fFileSelMask<< "\""<< setblack<< endl;
+	}
+   while ( (na=gSystem->GetDirEntry(dirp)) ) {
+		fname = na;
+		if (!fname.EndsWith(".root") && !fname.EndsWith(".histlist"))
+			continue;
+		if (fFileSelMask.Length() > 0 
+			&& !Hpr::IsSelected(fname, &fFileSelMask, fFileUseRegexp) )
+				continue;
+		 Long_t  id, flags, modtime;
+		 Long64_t size;
+		 gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
+		 TString nam=fname;
+		 TString cmd = "gHpr->Show";
+		 if (fname.EndsWith(".histlist")) {
+			 cmd = cmd + "List(\"\",\"" + gHprWorkDir.Data() +"/" + fname + "\")";
+		 } else {
+			 cmd = cmd + "Contents(\"" + gHprWorkDir.Data() +"/"+ fname + "\", \"\" )";
+		 }
 
-         TString tit;
-         TString sel;
+		 TString tit;
+		 TString sel;
 
-         if      (!strcmp(how,"A"))
-            fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel));
-         else if (!strcmp(how,"R"))
-            fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel, kTRUE));
-         else
-            fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel,modtime));
-      }
-   }
+		 if      (!strcmp(how,"A"))
+			 fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel));
+		 else if (!strcmp(how,"R"))
+			 fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel, kTRUE));
+		 else
+			 fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel,modtime));
+		 nfiles++;
+	}
+	fCmdLine->Sort();
+	if ( GeneralAttDialog::fMaxListEntries <= 0 )
+		GeneralAttDialog::fMaxListEntries = 100;
+	if ( nfiles > GeneralAttDialog::fMaxListEntries ) {
+		cout << endl<< setred << "More than " << GeneralAttDialog::fMaxListEntries 
+		<< " selected files in directory" << endl;
+		cout << "Please reduce number of files in directory" << endl <<
+		"or apply a \"File selection mask\"" << setblack << endl;
+		cout<< setblue << "Another " << nfiles - GeneralAttDialog::fMaxListEntries << 
+		" entries are not shown" << endl;
+		cout << setblack;
+		nfiles = GeneralAttDialog::fMaxListEntries;
+//		skipfirst = GeneralAttDialog::fSkipFirst;
+	}
+	if ( GeneralAttDialog::fSkipFirst > 0 )
+		cout << setblue << "First " << GeneralAttDialog::fSkipFirst
+		<< " entries  skipped" << setblack << endl;  
+
    if (fCmdLine->GetSize() <= 0) {
       Int_t buttons= kMBYes | kMBNo, retval=0;
       EMsgBoxIcon icontype = kMBIconQuestion;
@@ -609,16 +626,14 @@ Should we create a sample file",
       }
 //      WarnBox("No files found, check File Selection Mask");
    } else {
-      fCmdLine->Sort();
       Int_t yoff = (Int_t)(WindowSizeDialog::fMainWidth * 1.6 + 30);
       fFileList = CommandPanel(gSystem->BaseName(gSystem->WorkingDirectory()),
-                               fCmdLine, 5, yoff, this, WindowSizeDialog::fWinwidx_hlist);
+                               fCmdLine, 5, yoff, this,
+                               WindowSizeDialog::fWinwidx_hlist,
+                               nfiles, GeneralAttDialog::fSkipFirst);
       fFileList->SetName("FileList");
    }
-//   fCmdLine->Print();
    fCmdLine->Delete();
-//   fcmd->Delete();
-//   ftit->Delete();
 };
 //________________________________________________________________________________________
 
@@ -3208,9 +3223,9 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 	if (gDebug > 0)
 		cout << "HistPresent::ShowHist new FitHist: "<< FHname << endl<< flush;
    fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname.Data(),
-          WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, wwidx, wwidy);
+          WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, wwidx, wwidy, b);
    fLastWindow = fh->GetMyCanvas();
-	fh->SetCmdButton(b);
+//	fh->SetCmdButton(b);
    return fh;
 }
 //_______________________________________________________________________

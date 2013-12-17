@@ -902,19 +902,23 @@ again:
 							break;
 						case kFHHistToFile:
 							fHistInPad = Hpr::FindHistInPad(fHCanvas);
-							if ( fHistInPad )
+							if ( fHistInPad ) {
 								if ( fHistInPad->GetEntries() < 1 ) {
 									TGraph *gr =  Hpr::FindGraphInPad(fHCanvas);
 									if ( gr ) {
 										new Save2FileDialog(gr, NULL, fRootCanvas);
+										break;
 									}
-								} else {
-									new Save2FileDialog(fHistInPad, NULL, fRootCanvas);
 								}
-							else
-								cout << "No hist in pad" << endl;
-//                      fFitHist->WriteOutHist();
-                     break;
+								new Save2FileDialog(fHistInPad, NULL, fRootCanvas);
+							} else {
+								cout << setblue << "No hist in pad, " << endl
+								<< "In case of 3Dim hist: use Scatter or Box option"
+								<< setblack << endl;
+//								fFitHist->WriteOutHist();
+							}
+							break;
+							
                   case kFHGraphToFile:
                      Hpr::WriteOutGraph(fGraph, fRootCanvas);
                      break;

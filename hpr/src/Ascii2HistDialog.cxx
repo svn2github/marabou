@@ -25,7 +25,7 @@ ClassImp(Ascii2HistDialog)
 Ascii2HistDialog::Ascii2HistDialog( TGWindow * win)
 {
 
-static const Char_t helpText[] =
+static const Char_t helptext[] =
 "Read values from ASCII file and fill histogram\n\
 Input data can have the formats:\n\
 W:          1 dim: Spectrum, Channel Contents only\n\
@@ -56,7 +56,6 @@ for the axis can be calculated if the option\n\
 
    static void *valp[50];
    Int_t ind = 0;
-   Bool_t ok = kTRUE;
    fNvalues = 0;
    fCommand = "Draw_The_Hist()";
    fReadCommand = "Read_Input()";
@@ -98,6 +97,7 @@ for the axis can be calculated if the option\n\
    valp[ind++] = &f2DimWithWeight;
    valp[ind++] = &f3Dim;
    valp[ind++] = &f3DimWithWeight;
+   fBidSelection = ind;
    valp[ind++] = &fNskip;
 	valp[ind++] = &fHistFileName;
 	valp[ind++] = &fHistName;
@@ -116,11 +116,17 @@ for the axis can be calculated if the option\n\
    valp[ind++] = &fCommandHead;
    valp[ind++] = &fReadCommand;
    valp[ind++] = &fCommand;
-
+   Int_t ok;
    Int_t itemwidth = 380;
-   ok = GetStringExt("Hists parameters", NULL, itemwidth, win,
-                   NULL, NULL, row_lab, valp,
-                   NULL, NULL, &helpText[0], this, this->ClassName());
+   fDialog =
+      new TGMrbValuesAndText("Hists parameters", NULL, &ok,itemwidth, win,
+                      NULL, NULL, row_lab, valp,
+                      NULL, NULL, helptext, this, this->ClassName());
+
+//   Int_t itemwidth = 380;
+//   ok = GetStringExt("Hists parameters", NULL, itemwidth, win,
+//                   NULL, NULL, row_lab, valp,
+//                   NULL, NULL, &helpText[0], this, this->ClassName());
 };
 //_________________________________________________________________________
 
@@ -128,6 +134,16 @@ Ascii2HistDialog::~Ascii2HistDialog()
 {
    SaveDefaults();
 };
+//______________________________________________________________________
+
+void Ascii2HistDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
+{
+	if (bid  < fBidSelection ) {
+		GetDim();
+		SetDim();
+		fDialog->ReloadValues();
+	}
+}
 //_________________________________________________________________________
 
 void Ascii2HistDialog::Read_Input()
@@ -250,11 +266,17 @@ void Ascii2HistDialog::Read_Input()
     	}
       if (f3Dim || f3DimWithWeight) {
          if (fKeepLimits <= 0) {
+      	   fYlow = fYval[TMath::LocMin(fNvalues, fYval.GetArray())];
+      	   fYup  = fYval[TMath::LocMax(fNvalues, fYval.GetArray())];
+      	   Double_t binw2 = 0.5 * (fYup - fYlow) / (Double_t) fNbinsY;
+      	   fYlow -= binw2;
+      	   fYup  += binw2;
+            cout << " fYlow " << fYlow  << " fYup " << fYup;
       	   fZlow = fZval[TMath::LocMin(fNvalues, fZval.GetArray())];
       	   fZup  = fZval[TMath::LocMax(fNvalues, fZval.GetArray())];
-      	   Double_t binw2 = 0.5 * (fZup - fZlow) / (Double_t) fNbinsZ;
-      	   fZlow -= binw2;
-      	   fZup  += binw2;
+      	   Double_t binw3 = 0.5 * (fZup - fZlow) / (Double_t) fNbinsZ;
+      	   fZlow -= binw3;
+      	   fZup  += binw3;
             cout << " fZlow " << fZlow  << " fZup " << fZup;
    	   }
    	   if (f3DimWithWeight) {
@@ -391,8 +413,45 @@ void Ascii2HistDialog::SaveDefaults()
    env.SetValue("Ascii2HistDialog.fNbinsZ",  		  fNbinsZ);
    env.SetValue("Ascii2HistDialog.fZlow",  			  fZlow);
    env.SetValue("Ascii2HistDialog.fZup",   			  fZup);
+   GetDim();
+   if (fDim == 1) {
+		env.SetValue("Ascii2HistDialog.f1DimNbinsX",			fNbinsX); 
+	} else if (fDim == 2) {
+		env.SetValue("Ascii2HistDialog.f2DimNbinsX",			fNbinsX); 
+		env.SetValue("Ascii2HistDialog.f2DimNbinsY",			fNbinsY); 
+   } else if (fDim == 3) {
+		env.SetValue("Ascii2HistDialog.f3DimNbinsX",			fNbinsX); 
+		env.SetValue("Ascii2HistDialog.f3DimNbinsY",			fNbinsY);
+		env.SetValue("Ascii2HistDialog.fNbinsZ",  			fNbinsZ);
+	}
+
    env.SetValue("Ascii2HistDialog.fKeepLimits",		  fKeepLimits);
    env.SaveLevel(kEnvLocal);
+}
+//_________________________________________________________________________
+
+void Ascii2HistDialog::GetDim()
+{
+	fDim = 1;
+	if (f2Dim != 0 || f2DimWithWeight != 0) {
+		fDim = 2;
+	} else if ( f3Dim != 0 || f3DimWithWeight != 0)	{
+		fDim = 3;
+	}
+}
+//_________________________________________________________________________
+
+void Ascii2HistDialog::SetDim()
+{
+  if (fDim == 1) {
+		fNbinsX = f1DimNbinsX; 
+	} else if (fDim == 2) {
+		fNbinsX = f2DimNbinsX; 
+		fNbinsY = f2DimNbinsY; 
+   } else if (fDim == 3) {
+		fNbinsX = f3DimNbinsX; 
+		fNbinsY = f3DimNbinsY;
+	}
 }
 //_________________________________________________________________________
 
@@ -422,6 +481,14 @@ void Ascii2HistDialog::RestoreDefaults()
    fZlow    		  = env.GetValue("Ascii2HistDialog.fZlow", 			   0.);
    fZup     		  = env.GetValue("Ascii2HistDialog.fZup",  			 100.);
    fKeepLimits      = env.GetValue("Ascii2HistDialog.fKeepLimits",  		0 );
+	f1DimNbinsX =	env.GetValue("Ascii2HistDialog.f1DimNbinsX",		1000); 
+	f2DimNbinsX =	env.GetValue("Ascii2HistDialog.f2DimNbinsX",		100); 
+	f2DimNbinsY =	env.GetValue("Ascii2HistDialog.f2DimNbinsY",		100); 
+	f3DimNbinsX =	env.GetValue("Ascii2HistDialog.f3DimNbinsX",		50); 
+	f3DimNbinsY =	env.GetValue("Ascii2HistDialog.f3DimNbinsX",		50); 
+ 	fNbinsZ 		=	env.GetValue("Ascii2HistDialog.f3NbinsZ",			50); 
+ 	GetDim();
+ 	SetDim();
 //   cout << "fXup " << fXup<< endl;
 }
 //_________________________________________________________________________

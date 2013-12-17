@@ -32,6 +32,7 @@ Int_t GeneralAttDialog::fRememberStatBox = 0;
 Int_t GeneralAttDialog::fRememberLegendBox = 1;
 Int_t GeneralAttDialog::fUseAttributeMacro = 0;
 Int_t GeneralAttDialog::fMaxListEntries = 333;
+Int_t GeneralAttDialog::fSkipFirst = 0;
 Int_t GeneralAttDialog::fContentLowLimit = 0;
 Int_t GeneralAttDialog::fVertAdjustLimit =0;
 Int_t GeneralAttDialog::fAdjustMinY      =0;
@@ -67,11 +68,17 @@ ___________________________________________________________\n\
 Global style, activate roots style options\n\
 ------------------------------------------\n\
 ___________________________________________________________\n\
-Max Entries in Lists\n\
+fMaxListEntries: Max Entries in Lists\n\
 --------------------\n\
-Too many entries in histlists (e.g. > 1000) make build up\n\
-of lists slow and may even crash X on some older systems\n\
+Too many entries in histlists (default 333)  may crash X \n\
+on some systems\n\
 With this option one can limit this number\n\
+Only the first fMaxListEntries are shown\n\
+___________________________________________________________\n\
+fSkipFirst: Skip first Entries in Lists\n\
+---------------------------\n\
+If the above fMaxListEntries are exceeded this value \n\
+allows to skip the first fSkipFirst entires.\n\
 ___________________________________________________________\n\
 Show lists only\n\
 -----------------------------\n\
@@ -172,8 +179,10 @@ ____________________________________________________________\n\
    fValp[ind++] = &fUseAttributeMacro;
    fRow_lab->Add(new TObjString("CheckButton_    Use Regular expression syntax"));
    fValp[ind++] = &fUseRegexp;
-   fRow_lab->Add(new TObjString("PlainIntVal_            Max Entriess in Lists"));
+   fRow_lab->Add(new TObjString("PlainIntVal_             Max Entries in Lists"));
    fValp[ind++] = &fMaxListEntries;
+   fRow_lab->Add(new TObjString("PlainIntVal_      Skip first Entries in Lists"));
+   fValp[ind++] = &fSkipFirst;
 	fRow_lab->Add(new TObjString("CheckButton_ Adjust min Y to min cont, (1dim)"));
    fAdjustMinYButton = ind;
 	fValp[ind++] = &fAdjustMinY;
@@ -272,6 +281,7 @@ void GeneralAttDialog::SaveDefaults()
 	env.SetValue("GeneralAttDialog.fRememberLegendBox", fRememberLegendBox);
 	env.SetValue("GeneralAttDialog.fUseAttributeMacro", fUseAttributeMacro);
    env.SetValue("GeneralAttDialog.fMaxListEntries",    fMaxListEntries);
+   env.SetValue("GeneralAttDialog.fSkipFirst",         fSkipFirst);
    env.SetValue("GeneralAttDialog.fVertAdjustLimit",   fVertAdjustLimit);
    env.SetValue("GeneralAttDialog.fAdjustMinY",        fAdjustMinY);
    env.SetValue("GeneralAttDialog.fContentLowLimit",   fContentLowLimit);
@@ -307,6 +317,12 @@ void GeneralAttDialog::RestoreDefaults()
 	fUseAttributeMacro = env.GetValue("GeneralAttDialog.fUseAttributeMacro", 0);
    fMaxListEntries =
    env.GetValue("GeneralAttDialog.fMaxListEntries", 333);
+	if ( fMaxListEntries <= 0 )
+		fMaxListEntries = 333;
+   fSkipFirst =
+   env.GetValue("GeneralAttDialog.fSkipFirst", 0);
+	if ( fSkipFirst <= 0 )
+		fSkipFirst = 0;
    fVertAdjustLimit = env.GetValue("GeneralAttDialog.fVertAdjustLimit", 0);
    fAdjustMinY      = env.GetValue("GeneralAttDialog.fAdjustMinY",      1);
    fContentLowLimit = env.GetValue("GeneralAttDialog.fContentLowLimit", 0);

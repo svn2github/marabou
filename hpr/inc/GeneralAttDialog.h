@@ -30,6 +30,7 @@ public:
 	static Int_t fRememberLegendBox;
 	static Int_t fUseAttributeMacro;
    static Int_t fMaxListEntries;
+   static Int_t fSkipFirst;
    static Int_t fContentLowLimit;
    static Int_t fVertAdjustLimit;
    static Int_t fAdjustMinY;

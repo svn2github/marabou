@@ -57,46 +57,48 @@ Set3DimOptDialog::Set3DimOptDialog(Int_t batch)
 Set3DimOptDialog::Set3DimOptDialog(TGWindow * win, TButton *b)
 {
 static const Char_t helptext[] =
-"Note: Changeing options only influence the current histogram\n\
-       To make them active for subsequently displayed histograms\n\
-		 press: \"Set as global default\"\n\
-\n\
-Most of the value in this widget are self explaining\n\
-If \"Live statbox\" a box is displayed when dragging the\n\
-pressed mouse in the histogram area showing various statistics\n\
-values.\n\
-\n\
-\" \"  : Draw a scatter-plot, swarm of points\n\
+"\n\
+\"Scatter \"  : Draw a scatter-plot, swarm of points\n\
 BOX   : a box is drawn for each cell with surface proportional to the\n\
           content's absolute value. \n\
-BOX1  : With GL option: Draw a sphere instead of box.\n\
-ISO   :	Draw a Gouraud shaded 3d iso surface through a 3d histogram.\n\
-         It paints one surface at the value computed as follow: \n\
-         SumOfWeights/(NbinsX*NbinsY*NbinsZ). \n\
 \n\
-Option GL:\n\
-Use OpenGL to display histogram together with BOX, BOX1 or ISO options\n\
-With BOX options axis are displayed\n\
+OpenGL: Use Open Gl \n\
 To enhance part of the plot the transparency of the bins may be adjusted\n\
 according to their bin content. Typically the treshold is set to one\n\
-the transparency \"below\" to a small value (tranparent) and a \"above\"\n\
+the transparency \"below\" to a small value (transparent) and a \"above\"\n\
 to e.g. 0.5. In this way non filled bin are invisible.\n\
+\n\
+PolyM:  Custom (HistPresent) method. A 3d PolyMarker is drawn\n\
+        Colors are coded according to cell content. Ranges, min max\n\
+        may be set and changed. Logarithmic color coding may be used\n\
+        however - at least currently - no pallette axis is drawn\n\
+        in this case since that would conflict with the Z-axis.\n\
+\"View3D\":  ROOTs standard TView3D\n\
 \n\
 Caveat: When switching between display modes the histogram will be\n\
 redisplayed.\n\
 \n\
 A first attempt to automatically rotate the picture is implemented\n\
 by simulating the movement of the pressed mouse\n\
+\n\
+The histogram displayed may be saved with the current ranges from the\n\
+File popup menu, however only when shown with Scatter or Box option\n\
+since the other options dont have a real histogram anymore\n\
 ";
    const char *fDrawOpt3[kNopt3] =
-   {"SCAT", "BOX0", "GLCOL", "PolyMHist","PolyMView"};
+   {"SCAT", "BOX0", "GLCOL", "PolyMHist"};
    const char *fDrawOpt3Title[kNopt3] =
-   {"Scatter", "BOX", "OpenGL", "PolyM","View3D"};
+   {"Scatter", "BOX", "OpenGL", "PolyM"};
+//   const char *fDrawOpt3[kNopt3] =
+//   {"SCAT", "BOX0", "GLCOL", "PolyMHist","PolyMView"};
+//  const char *fDrawOpt3Title[kNopt3] =
+//   {"Scatter", "BOX", "OpenGL", "PolyM","View3D"};
 	
 //	gTranspThresh = 1;
 //	gTranspAbove = 0.4;
 //	gTranspBelow = 0.005;
 	fCmdButton = b;
+//	cout << "fCmdButton " << fCmdButton<< endl;
 	fApplyTranspCut = 0;
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
@@ -149,6 +151,8 @@ by simulating the movement of the pressed mouse\n\
 		fContMin = fHist->GetMinimum();
 		fContMax = fHist->GetMaximum();
 	}
+//	if ( fHist )
+//		fHist->Dump();
    RestoreDefaults();
 	fPhi3Dim = fCanvas->GetPhi();
 	fTheta3Dim = fCanvas->GetTheta();
@@ -314,7 +318,7 @@ void Set3DimOptDialog::SetRanges()
 		return;
 	}
 	TString cname = fCanvas->GetName();
-	cout << "Canvas name: " << cname << endl;
+//	cout << "Canvas name: " << cname << endl;
 	if ( !cname.BeginsWith("C_F") ) {
 		cout << "Illegal canvas name " << endl;
 	} else {
@@ -693,7 +697,7 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 		cout << endl;
 	}
 	
-	if ( bid == fBidContMax ||bid == fBidContMin || bid == fContLog) {
+	if ( bid == fBidContMax ||bid == fBidContMin || bid == fBidContLog) {
 		TEnv env(".hprrc");
 		if ( bid == fBidContMin ) {
 			env.SetValue("Set3DimOptDialog.fContMin", fContMin);
@@ -734,7 +738,7 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 		fCanvas->Update();
 	}
 	
-	if (bid >= fBidSCAT && bid <= fBidView3D && fDrawOpt3Dim != fDrawOptPrev) {
+	if (bid >= fBidSCAT && bid <= fBidView3D /*&& fDrawOpt3Dim != fDrawOptPrev*/) {
 		fDrawOptPrev = fDrawOpt3Dim;
 		SaveDefaults();
 //		delete fCanvas;
@@ -743,7 +747,9 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 //			cout << "CRButtonPressed exe: " << fCmdButton->GetMethod() << endl;
 			gROOT->ProcessLine(fCmdButton->GetMethod());
 			gSystem->ProcessEvents();
-		} 
+		} else {
+			cout << "Cant auto redisplay, please redisplay manually" << endl;
+		}
 	} else {
 		fDrawOptPrev = fDrawOpt3Dim;
 	}

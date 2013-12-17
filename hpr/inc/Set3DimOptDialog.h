@@ -5,7 +5,7 @@
 #include "TGMrbValuesAndText.h"
 #include <iostream>
 //_____________________________________________________________________________________
-static const Int_t kNopt3 = 5;
+static const Int_t kNopt3 = 4;
 
 class TButton;
 class TView3D;

@@ -183,7 +183,7 @@ private:
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
            const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5,
-           Int_t win_widx = 750, Int_t win_widy = 550);
+           Int_t win_widx = 750, Int_t win_widy = 550, TButton * cmdb = NULL);
    ~FitHist();
 	void SetCmdButton(TButton * b) {fCmdButton = b;};
 	TButton * GetCmdButton() { return fCmdButton; };

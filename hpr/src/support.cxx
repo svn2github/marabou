@@ -399,7 +399,8 @@ void SetSelected(TButton *b, Bool_t sel)
 //______________________________________________________________________________________
 
 HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
-							  Int_t xpos, Int_t ypos, HistPresent * hpr, Int_t xwid)
+							  Int_t xpos, Int_t ypos, HistPresent * hpr,
+								Int_t xwid, Int_t maxentries, Int_t skipfirst)
 {
 	Int_t xwid_default = 250;
 	xwid_default = WindowSizeDialog::fMainWidth;
@@ -411,11 +412,23 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 	Int_t xw = xwid_default;
 	Int_t yw = ywid_default;
 	if (xwid > 0) xwid_default = xwid;
-	Int_t Nentries = fcmdline->GetSize();
 	Int_t maxlen_tit = 0;
 	Int_t maxlen_nam = 0;
 	Bool_t anysel = kFALSE;
-	for (Int_t i = 0; i < Nentries; i++) {
+	Int_t Nentries = fcmdline->GetSize();
+	Int_t maxe = maxentries;
+	if (maxe <= 0)
+		maxe = 100;
+	Int_t first = 0;
+	Int_t last = Nentries;
+	if (skipfirst > 0 && skipfirst < Nentries-1)
+		first = skipfirst;
+	if (maxe > 0 && last - first >  maxe)
+		last = first + maxe;
+	if (last > Nentries)
+		last = Nentries;
+	Nentries = last - first;
+	for (Int_t i = first; i < last; i++) {
 		CmdListEntry *cle = (CmdListEntry *) fcmdline->At(i);
 		if (cle->fNam.Length() > maxlen_nam)
 			maxlen_nam = cle->fNam.Length();
@@ -463,7 +476,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 	y = y0 - dy;
 	TString sel;
 	TString title;
-	for (Int_t i = 0; i < Nentries; i++) {
+	for (Int_t i = first; i < last; i++) {
 		Float_t xcmd = xcmd_no_sel;
 		CmdListEntry *cle = (CmdListEntry *) fcmdline->At(i);
 //      cout << "new: " << cle->fCmd << endl;

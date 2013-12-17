@@ -35,5 +35,6 @@ namespace Hpr
 	TF1 * FindFunctionInPad(TVirtualPad * ca);
 	void FillHistRandom(TVirtualPad * ca);
 	void ReplaceUS(const char * fname, Int_t latexheader=0);
+	Int_t NofLines(TString& str);
 }
 #endif

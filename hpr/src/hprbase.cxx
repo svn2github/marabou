@@ -441,7 +441,25 @@ TH1 * FindHistInPad(TVirtualPad * ca, Int_t lfgraph, Int_t lfstack, TObject **pa
 		if ( parent )
 			*parent = obj;
 		if (obj->InheritsFrom("TH1")) {
-			return (TH1*)obj;
+			TH1* h = (TH1*)obj;
+			if ( h->GetEntries() == 0 ) {
+				TString na = h->GetName();
+				if ( na.EndsWith("_Clone") ) {
+					na = na(0, na.Length()-6);
+					TH1* ho = (TH1*)gROOT->GetList()->FindObject(na);
+					if ( ho ) {
+						ho->GetXaxis()->SetRange(h->GetXaxis()->GetFirst(),h->GetXaxis()->GetLast()); 
+						if (ho->GetDimension() > 1)
+							ho->GetYaxis()->SetRange(h->GetYaxis()->GetFirst(),h->GetYaxis()->GetLast()); 
+						if (ho->GetDimension() > 2)
+							ho->GetZaxis()->SetRange(h->GetZaxis()->GetFirst(),h->GetZaxis()->GetLast()); 
+						cout << setblue << "Selected hist was a clone, using original one" 
+						<< setblack << endl;
+						h = ho;
+					}
+				}
+			}	
+			return h;
 		}
 		if (lfgraph && obj->InheritsFrom("TGraph")) {
 			return ((TGraph*)obj)->GetHistogram();

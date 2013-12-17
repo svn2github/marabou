@@ -3,6 +3,7 @@
 #include "TArrayD.h"
 #include "TGWindow.h"
 #include "TString.h"
+#include "TGMrbValuesAndText.h"
 #include <iostream>
 //_____________________________________________________________________________________
 
@@ -16,6 +17,7 @@ private:
    TArrayD  fZval;
    TArrayD  fWval;
 
+   TGMrbValuesAndText *fDialog;
    TString  fCommand;
    TString  fCommandHead;
    TString  fReadCommand;
@@ -23,6 +25,7 @@ private:
    TString  fHistName;
    TString  fHistTitle;
    Int_t    fNvalues;
+   Int_t		fDim;					// dimension of histogram
    Int_t    fSpectrum;        // Channel Contents only, no X values
    Int_t    f1Dim;            // X values to be filled
    Int_t    f1DimWithWeight;  // X, Weight
@@ -31,6 +34,7 @@ private:
    Int_t    f2DimWithWeight;  // X,Y,  Weight
    Int_t    f3Dim;            // X, Y, Z values to be filled
    Int_t    f3DimWithWeight;  // X,Y,Z,  Weight
+   Int_t    fBidSelection;
    Int_t    fNskip;
    Double_t fError;  
    Int_t    fNbinsX; 
@@ -42,6 +46,11 @@ private:
    Int_t    fNbinsZ; 
    Double_t fZlow;  
    Double_t fZup;   
+   Int_t    f1DimNbinsX; 
+   Int_t    f2DimNbinsX; 
+   Int_t    f3DimNbinsX; 
+   Int_t    f2DimNbinsY; 
+   Int_t    f3DimNbinsY; 
    Int_t    fKeepLimits;
  
 public:
@@ -51,9 +60,11 @@ public:
    void Read_Input();
    void Show_Head_of_File();
    void SaveDefaults();
+   void GetDim();
+   void SetDim();
    void RestoreDefaults();
    void CloseDown(Int_t wid);
-   void CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/) {};
+   void CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/);
 
 ClassDef(Ascii2HistDialog,0)
 };

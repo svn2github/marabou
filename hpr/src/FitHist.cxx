@@ -74,6 +74,7 @@
 #include "Save2FileDialog.h"
 #include "FitOneDimDialog.h"
 #include "Fit2DimDialog.h"
+#include "Set3DimOptDialog.h"
 #include "SetHistOptDialog.h"
 #include "SetColorModeDialog.h"
 #include "WindowSizeDialog.h"
@@ -101,8 +102,8 @@ ClassImp(FitHist)
 
 FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 					const Text_t * hname, Int_t win_topx, Int_t win_topy,
-					Int_t win_widx, Int_t win_widy)
-		  :TNamed(name, title)
+					Int_t win_widx, Int_t win_widy, TButton *cmdb)
+		  :TNamed(name, title), fCmdButton(cmdb)
 {
 	if (!hist) {
 		cout << "NULL pointer in: " << name << endl;
@@ -3413,10 +3414,13 @@ void FitHist::Draw3Dim()
 	fSelHist->GetZaxis()->SetTitleOffset(env.GetValue("SetHistOptDialog.fTitleOffsetZ3Dim", 1.5));
 	if ( fDrawOpt3Dim.Contains("PolyMHist") ) {
 		Draw3DimPolyMarker();
+		TButton *cb = this->GetCmdButton();
+		new Set3DimOptDialog((TRootCanvas*)fCanvas->GetCanvasImp(), cb);
 		return;
 	}
 	if ( fDrawOpt3Dim.Contains("PolyMView") ) {
 		Draw3DimView();
+//		new Set3DimOptDialog((TRootCanvas*)fCanvas->GetCanvasImp(), GetCmdButton());
 		return;
 	}
 	if (fShowStatBox) {
@@ -3463,6 +3467,9 @@ void FitHist::Draw3DimPolyMarker()
 {
 	TH3F * hempty = (TH3F*)fSelHist->Clone();
 	hempty->Reset();
+	TString nname = fSelHist->GetName();
+	nname += "_Clone";
+	hempty->SetName(nname);
 	fCanvas->SetRightMargin(0.16);
 	TGStatusBar *sb = ((TRootCanvas*)fCanvas->GetCanvasImp())->GetStatusBar();
 	if ( sb ) {
@@ -3470,6 +3477,7 @@ void FitHist::Draw3DimPolyMarker()
 		sb->SetParts(parts, 4);
 	}
 	hempty->Draw();
+
 	hempty->SetStats(0);
 	Double_t hmin = fSelHist->GetMinimum();
 	Double_t hmax = fSelHist->GetMaximum();
@@ -3479,32 +3487,47 @@ void FitHist::Draw3DimPolyMarker()
 	Double_t max = env.GetValue("Set3DimOptDialog.fContMax", hmax);
 	if (max > hmax)
 		max = hmax;
-	if (hmin < min)
+	if (min < hmin)
 		min = hmin;
 	logc = env.GetValue("Set3DimOptDialog.fContLog", logc);
-	cout << "Draw3DimPolyMarker: hist Min, Max, log: "
-	<< fSelHist << " " << min << " " << max << " " << logc<< endl;
 //	gStyle->SetPalette(1);
 	TAxis * ax = fSelHist->GetXaxis();
 	TAxis * ay = fSelHist->GetYaxis();
 	TAxis * az = fSelHist->GetZaxis();
+	Double_t min_col = min;
+	Double_t max_col = max;
+	if ( logc ) {
+		if ( min_col <= 0 ) 
+			min_col = 0.01;
+		min_col = TMath::Log10(min_col);
+		max_col = TMath::Log10(max_col);
+	}
 	// this corrects a bug in root?
 	hempty->GetYaxis()->SetTickLength(hempty->GetXaxis()->GetTickLength());
 	TPolyMarker3D * pm;
 	Double_t x, y, z;
 	Int_t ncolors = gStyle->GetNumberOfColors();
+	if ( gDebug > 0)
+		cout << "Draw3DimPolyMarker: hist Min, Max, log, ncolors: "
+		<< fSelHist << " " << min << " " << max << " " << logc<< " " << ncolors << endl;
 	
 	for (Int_t ix = 0; ix < ax->GetNbins(); ix++) {
 		for (Int_t iy = 0; iy < ay->GetNbins(); iy++) {
 			for (Int_t iz = 0; iz < az->GetNbins(); iz++) {
 				Float_t cont = fSelHist->GetBinContent(ix, iy, iz);
-				if (cont != 0 && cont >= min && cont <= max ) {
+				if (cont <= 0 )
+					continue;
+				Float_t cont_col = cont;	
+				if ( logc > 0 )
+					cont_col = TMath::Log10(cont);
+//				if (cont != 0 && cont >= min && cont <= max ) {
+				if ( cont != 0 ) {
 					pm = new TPolyMarker3D(1);
 					x = ax->GetBinCenter(ix);
 					y = ay->GetBinCenter(iy);
 					z = az->GetBinCenter(iz);
 					pm->SetPoint(0,x, y, z);
-					Int_t col = (Int_t)((cont / (max-min) )* ncolors);
+					Int_t col = (Int_t)((cont_col / (max_col-min_col) )* ncolors);
 					Int_t theColor = Int_t((col+0.99)*Float_t(ncolors)/Float_t(ncolors));
 					if (theColor > ncolors-1) theColor = ncolors-1;
 //					cout << " max  cont Col "<< max << " "  << cont << " " << col << endl;
@@ -3514,7 +3537,11 @@ void FitHist::Draw3DimPolyMarker()
 										  x, y, z, cont));
 					pm->SetMarkerColor(gStyle->GetColorPalette(theColor));
 					pm->SetMarkerStyle(fMarkerStyle3Dim);
-					pm->SetMarkerSize(fMarkerSize3Dim);
+					if (cont >= min && cont <= max ) {
+						pm->SetMarkerSize(fMarkerSize3Dim);
+					} else {
+						pm->SetMarkerSize(0);
+					}
 					pm->Draw();
 				}
 			}
@@ -3525,12 +3552,22 @@ void FitHist::Draw3DimPolyMarker()
 		h3 = new TH2F("DummyForTPaletteAxis","v",2,0,10, 2,0,10);
 	h3->SetMinimum(min);
 	h3->SetMaximum(max);
-	Double_t uc[20];
-	for (int i=0; i < 20; i++) uc[i] = min + i * (max - min) / 20.;
-	h3->SetContour(20,uc);
-	TPaletteAxis *pa = new TPaletteAxis(0.85, -0.9,0.9,0.9, h3);
-	pa->Draw();
-
+	/*
+	Double_t uc;
+	h3->SetContour(ncolors);
+	for (int i=0; i < ncolors; i++) {
+		uc = min + i * (max - min) / ncolors;
+		if (logc > 0)
+			uc = TMath::Log10(uc);
+	}
+	*/
+	if ( logc == 0) {
+		TArrayD uc(ncolors);
+		for (int i=0; i < ncolors; i++) uc[i] = min + i * (max - min) / ncolors;
+		h3->SetContour(ncolors, uc.GetArray());
+		TPaletteAxis *pa = new TPaletteAxis(0.85, -0.95,0.9,0.9, h3);
+		pa->Draw();
+	}
 }
 
 ///____________________________________________________________________________
