@@ -82,7 +82,7 @@ Int_t TMbsControl::GetNofMbsProcs(){
 
    if(fNodeNames->GetSize() == 0) GetNodeNames();
    if(fNodeNames->GetSize() < 1) return -1;
-   cout << setblue<< "c_mbs:  Get Process name m_*" << setblack<< endl;
+   cout << setblue<< "TMbsControl:  Get Process name m_*" << setblack<< endl;
    char line[256];
    Bool_t not_mine = kFALSE;
    TObjString * obj;
@@ -92,7 +92,7 @@ Int_t TMbsControl::GetNofMbsProcs(){
       TString cmd = fRshSshCmd;
       cmd += obj->GetString();
       cmd += fCurDomain;
-      cout << "c_mbs: on node: " <<  obj->GetString().Data()
+      cout << "TMbsControl: on node: " <<  obj->GetString().Data()
       << fCurDomain.Data() << endl;
       cmd += " ps ax | grep m_";
       FILE *fp = gSystem->OpenPipe(cmd.Data(), "r");
@@ -129,7 +129,7 @@ Int_t TMbsControl::GetNodeNames(){
    } else {
       dir = fDir;
    }
-   cout << setblue<< "c_mbs:  Get Node names from " << fDir << "/node_list.txt"<< setblack << endl;
+   cout << setblue<< "TMbsControl:  Get Node names from " << fDir << "/node_list.txt"<< setblack << endl;
 
    cmd = fRshSshCmd; cmd += fCurNode;  cmd += " cat ";
    cmd += dir; cmd += "/node_list.txt";
@@ -149,7 +149,7 @@ Int_t TMbsControl::GetNodeNames(){
 Int_t TMbsControl::GetMbsNodes(){
    Int_t Endian, Status;
    if(!fPrompterSocket)if(!ConnectPrompter(10))return -1;
-//   cout << setblue<< "c_mbs: Getting node list"<< setblack<< endl;
+//   cout << setblue<< "TMbsControl: Getting node list"<< setblack<< endl;
    Int_t nlines = SendToPrompter("$nodes");
    if(nlines < 2){
       cout<< setred << "failed, nlines = " << nlines << setblack<< endl;
@@ -163,14 +163,14 @@ Int_t TMbsControl::GetMbsNodes(){
    for(Int_t i=0; i < nlines-1; i++){
       nbytes = fPrompterSocket->RecvRaw(line, 64);
       if(nbytes <= 0){cout<< setred<< " cant get node name " << setblack<< endl; return kFALSE;};
-      cout << "c_mbs: Node: " << line << endl;
+      cout << "TMbsControl: Node: " << line << endl;
       mbsnode = new TMbsNode(line);
       fNodes->Add(mbsnode);
    }
    nbytes = fPrompterSocket->RecvRaw(line, 64);
-   cout << "c_mbs: Dir:  " << line << endl;
+   cout << "TMbsControl: Dir:  " << line << endl;
    fFullDir = line;
-//   cout << "c_mbs: Dir: " << line << endl;
+//   cout << "TMbsControl: Dir: " << line << endl;
    fPrompterSocket->RecvRaw(&Endian, 4);
    fPrompterSocket->RecvRaw(&Status, 4);
    Swap(&Status, 1, Endian);
@@ -179,7 +179,7 @@ Int_t TMbsControl::GetMbsNodes(){
 //_________________________________________________________________________________________
 
 Bool_t TMbsControl:: IdentifyMbsNodes(){
-  if(!fNodes){cout << setred<< "c_mbs: No nodes known" << setblack<< endl; return kFALSE;};
+  if(!fNodes){cout << setred<< "TMbsControl: No nodes known" << setblack<< endl; return kFALSE;};
   TMbsNode * mbsnode;
   if (fNodes->GetSize() > 1) {
      TIter next(fNodes);
@@ -188,23 +188,23 @@ Bool_t TMbsControl:: IdentifyMbsNodes(){
 //        mbsnode->PrintHeader();
         if(mbsnode->iTrigger()){
            fTriggerNode = mbsnode;
-           cout << "c_mbs: TriggerNode: " << mbsnode->GetName()<< endl;
+           cout << "TMbsControl: TriggerNode: " << mbsnode->GetName()<< endl;
         }
         if(mbsnode->iPrompt()){
            fPrompterNode = mbsnode;
-           cout << "c_mbs: PrompterNode: " << mbsnode->GetName()<< endl;
+           cout << "TMbsControl: PrompterNode: " << mbsnode->GetName()<< endl;
         }
         if(mbsnode->iCollector()){
            fCollectorNode = mbsnode;
-           cout << "c_mbs: CollectorNode: " << mbsnode->GetName()<< endl;
+           cout << "TMbsControl: CollectorNode: " << mbsnode->GetName()<< endl;
         }
       }
    } else {
       mbsnode = (TMbsNode *) fNodes->First();
       fTriggerNode = fPrompterNode = fCollectorNode = mbsnode;
-      cout << "c_mbs: TriggerNode: " << mbsnode->GetName()<< endl;
-      cout << "c_mbs: PrompterNode: " << mbsnode->GetName()<< endl;
-      cout << "c_mbs: CollectorNode: " << mbsnode->GetName()<< endl;
+      cout << "TMbsControl: TriggerNode: " << mbsnode->GetName()<< endl;
+      cout << "TMbsControl: PrompterNode: " << mbsnode->GetName()<< endl;
+      cout << "TMbsControl: CollectorNode: " << mbsnode->GetName()<< endl;
    }
    return kTRUE;
 };
@@ -281,11 +281,11 @@ Bool_t  TMbsControl::StartMbs(Int_t Interrupt){
    gSystem->Exec(rshCmd.Data());
    gSystem->Sleep(2000);      // wait 2 seconds
    Int_t SecsToWait = gEnv->GetValue("TMrbAnalyze.WaitForPrompter", 10);
-	cout << setblue<< "c_mbs: Connecting prompter, (max " << SecsToWait << " sec) " << endl;
+	cout << setblue<< "TMbsControl: Connecting prompter, (max " << SecsToWait << " sec) " << endl;
    if(!ConnectPrompter(SecsToWait)) {cout << setred<< " failed !!!!!!!! " << setblack<< endl; return kFALSE;};
    cout << setgreen<< " succeeded "<< setblack << endl;
    if(GetMbsNodes() < 1) return kFALSE;
-//   cout << "c_mbs: Status: " << Status << endl;
+//   cout << "TMbsControl: Status: " << Status << endl;
    TString cmd = "set xdisp ";
    cmd += fDisplay;
    SendToPrompter(cmd.Data());
@@ -308,7 +308,7 @@ Bool_t  TMbsControl::StopMbs(){
             fMBSVersion.Data()+" "+ fDir.Data();
    cout << setmagenta << rshCmd << setblack<< endl;
    gSystem->Exec(rshCmd.Data());
-   cout << setgreen<< " c_mbs: --------------- Reset done  --------------------" << setblack<< endl;
+   cout << setgreen<< " TMbsControl: --------------- Reset done  --------------------" << setblack<< endl;
    return ok;
 }
 //_________________________________________________________________________________________
@@ -317,18 +317,18 @@ Bool_t TMbsControl::Startup(Bool_t debug){
    Int_t ok;
    
    if(debug){
-      cout << setblue << "c_mbs: Starting DAQ processes in debug mode" << setblack << endl;
+      cout << setblue << "TMbsControl: Starting DAQ processes in debug mode" << setblack << endl;
       ok = SendToPrompter("@startup_d");
    } else {
-      cout << setblue << "c_mbs: Starting DAQ processes " << setblack << endl;
+      cout << setblue << "TMbsControl: Starting DAQ processes " << setblack << endl;
      ok = SendToPrompter("@startup");
    }
    if(ok == 0){
-      cout << setgreen<< "c_mbs: startup ok " << setblack<< endl;
+      cout << setgreen<< "TMbsControl: startup ok " << setblack<< endl;
       IdentifyMbsNodes();
       return kTRUE;
    } else {
-      cout << setred<< "c_mbs: startup failed, code: "
+      cout << setred<< "TMbsControl: startup failed, code: "
            << setbase(16) << ok << setblack<< endl;
       return kFALSE;
    }
@@ -338,18 +338,18 @@ Bool_t TMbsControl::Startup(Bool_t debug){
 Bool_t TMbsControl:: Reload(Bool_t debug){
    Int_t ok;
    if(debug){
-      cout << setblue << "c_mbs: Reloading m_read_meb in debug mode" << setblack << endl;
+      cout << setblue << "TMbsControl: Reloading m_read_meb in debug mode" << setblack << endl;
       ok = SendToPrompter("@reload_meb_d");
    } else {
-      cout << setblue << "c_mbs: Reloading m_read_meb" << setblack << endl;
+      cout << setblue << "TMbsControl: Reloading m_read_meb" << setblack << endl;
       ok = SendToPrompter("@reload_meb");
    }
    if(ok == 0){
-      cout << setgreen<< "c_mbs: reload ok " << setblack<< endl;
+      cout << setgreen<< "TMbsControl: reload ok " << setblack<< endl;
       IdentifyMbsNodes();
       return kTRUE;
    } else {
-      cout << setred<< "c_mbs: reload failed, code: "
+      cout << setred<< "TMbsControl: reload failed, code: "
            << setbase(16) << ok << setblack<< endl;
       return kFALSE;
    }
@@ -375,7 +375,7 @@ Bool_t  TMbsControl::StartAcquisition(){
       TString setnode = "set disp "; setnode += fTriggerNode->GetName();
       SendToPrompter(setnode.Data());
    } else {
-      cout << setred<< "c_mbs: TriggerNode not set, probably no @Startup given" << setblack<< endl;
+      cout << setred<< "TMbsControl: TriggerNode not set, probably no @Startup given" << setblack<< endl;
       return kFALSE;
    }
    stat = SendToPrompter("sta ac");
@@ -407,6 +407,10 @@ Bool_t  TMbsControl::StopAcquisition() {
 
 Bool_t TMbsControl:: ConnectPrompter(Int_t tmout){
    Int_t timeout = tmout;
+   if (!gSystem->AccessPathName(fCurNode.Data()) || fCurNode[0] == '/') {
+      cout << setred<< "TMbsControl: Cant connect to " << fCurNode << " (remove file with same name first!)" << endl;
+      return kFALSE;
+   }
    while(timeout > 0){
       fPrompterSocket = new TSocket(fCurNode.Data(), kCommandPort);
       if(fPrompterSocket->IsValid()) return kTRUE;
@@ -416,7 +420,7 @@ Bool_t TMbsControl:: ConnectPrompter(Int_t tmout){
       fPrompterSocket = 0;
       gSystem->Sleep(1000);      // wait one second
    }
-   cout << setred<< "c_mbs: Cant access prompter on: " << fCurNode.Data()
+   cout << setred<< "TMbsControl: Cant access prompter on: " << fCurNode.Data()
         << " at port: " << kCommandPort << setblack<< endl;
    return kFALSE;
 }
@@ -424,14 +428,14 @@ Bool_t TMbsControl:: ConnectPrompter(Int_t tmout){
 
 Bool_t TMbsControl:: DisConnectPrompter(){
    if(fPrompterSocket){
-      cout << setblue<< "c_mbs: Close connection to prompter on: " << fCurNode.Data()
+      cout << setblue<< "TMbsControl: Close connection to prompter on: " << fCurNode.Data()
            << " at port: " << kCommandPort << setblack<< endl;
       fPrompterSocket->Close();
       delete fPrompterSocket;
       fPrompterSocket = 0;
       return kTRUE;
    } else {
-      cout << setred << "c_mbs: No connection open to prompter on: " << fCurNode.Data()
+      cout << setred << "TMbsControl: No connection open to prompter on: " << fCurNode.Data()
            << " at port: " << kCommandPort  << setblack<< endl;
       return kFALSE;
    }
@@ -443,7 +447,7 @@ Int_t TMbsControl:: SendToPrompter(const char * cmd){
       Int_t Endian, Status;
       TString command(fGuiNode.Data());
       command=command + ":" + cmd + "\0";
-      cout << "c_mbs: Send to prompter: "<< setmagenta << command.Data()<< setblack << endl;
+      cout << "TMbsControl: Send to prompter: "<< setmagenta << command.Data()<< setblack << endl;
       Int_t last = command.Length();
       command.Resize(256);
       command[last] = '\0';
@@ -705,13 +709,13 @@ MessageServer::MessageServer(const char *msgnode, Long_t ms, Bool_t synch)
 
 Bool_t MessageServer::DisConnect(){
    if(fMessageSocket){
-      cout << setblue<< "c_mbs: Close connection to : "  <<fMessageSocket  << setblack<< endl;
+      cout << setblue<< "MessageServer: Close connection to : "  <<fMessageSocket  << setblack<< endl;
       fMessageSocket->Close();
       delete fMessageSocket;
       fMessageSocket = 0;
       return kTRUE;
    } else {
-      cout << setred << "c_mbs: No connection open to: " << fMessageSocket << setblack<< endl;
+      cout << setred << "MessageServer: No connection open to: " << fMessageSocket << setblack<< endl;
       return kFALSE;
    }
 }
@@ -745,8 +749,8 @@ Bool_t MessageServer::Notify() {
                || strstr(mess, "removed")){
                   cout << setred << &mess[0]<< setblack << endl;
                   if(strstr(mess, "SIGBUS")){
-                     cout <<  setred << "c_mbs: !!!! Check hardware " << endl;
-                     cout << "c_mbs: !!!! Could be wrong Trigger module (CAMAC/VME)"
+                     cout <<  setred << "MessageServer: !!!! Check hardware " << endl;
+                     cout << "MessageServer: !!!! Could be wrong Trigger module (CAMAC/VME)"
                        << setblack << endl;
                   }
                } else if (fLogLevel > 1 || strstr(mess, "read_meb")){
