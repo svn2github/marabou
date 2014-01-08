@@ -144,6 +144,12 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 		return(kFALSE);
 	}
 
+	if (!gSystem->AccessPathName(fHost.Data()) || fHost[0] == '/') {
+		gMrbLog->Err() << "Can't connect to server " << fCurNode << " (remove file with same name first!)" << endl;
+		gMrbLog->Flush(this->ClassName(), "Connect");
+		return kFALSE;
+	}
+	
 	TSocket * s = new TSocket(fHost.Data(), fPort);
 	Bool_t sockOk = s->IsValid();
 	if (sockOk) {
