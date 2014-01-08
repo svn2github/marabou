@@ -145,7 +145,7 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 	}
 
 	if (!gSystem->AccessPathName(fHost.Data()) || fHost[0] == '/') {
-		gMrbLog->Err() << "Can't connect to server " << fCurNode << " (remove file with same name first!)" << endl;
+		gMrbLog->Err() << "Can't connect to server " << fHost << " (remove file with same name first!)" << endl;
 		gMrbLog->Flush(this->ClassName(), "Connect");
 		return kFALSE;
 	}
