@@ -1,0 +1,432 @@
+#include "TROOT.h"
+#include "TCanvas.h"
+#include "TFrame.h"
+#include "TRootCanvas.h"
+#include "TGraph2D.h"
+#include "TMath.h"
+#include "TObjString.h"
+#include "TObject.h"
+#include "TEnv.h"
+#include "TGraph.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TStyle.h"
+#include "TSystem.h"
+#include "Set2DimGraphDialog.h"
+#include "GeneralAttDialog.h"
+#include "hprbase.h"
+#include "SetColor.h"
+#include <iostream>
+
+namespace std {} using namespace std;
+
+//_______________________________________________________________________
+
+Set2DimGraphDialog::Set2DimGraphDialog(Int_t batch)
+{
+	if (batch);
+	cout << "ctor Set2DimGraphDialog, non interactive" <<endl;
+	fDialog = NULL;
+}
+//_______________________________________________________________________
+
+Set2DimGraphDialog::Set2DimGraphDialog(TGWindow * win)
+{
+static const Char_t helptext[] =
+"Note: Changeing options only influence the current histogram\n\
+		 To make them active for subsequently displayed histograms\n\
+		 press: \"Set as global default\"\n\
+\n\
+Most of the value in this widget are self explaining\n\
+If \"Live statbox\" a box is displayed when dragging the\n\
+pressed mouse in the histogram area showing various statistics\n\
+values.\n\
+\n\
+X, Y and Z scales can be set by default to logarithmic or linear.\n\
+This can still be reset for individual histograms.\n\
+In detail: If a canvas is closed and its lin-log state differs\n\
+from the global default its state is stored and restored when\n\
+the histogram is shown again.\n\
+\n\
+Specific drawing options can be used to paint a TGraph2D:\n\
+\n\
+TRI   : The Delaunay triangles are drawn using filled area.\n\
+		  An hidden surface drawing technique is used. The surface is\n\
+		  painted with the current fill area color. The edges of each\n\
+		  triangles are painted with the current line color.\n\
+TRIW  : The Delaunay triangles are drawn as wire frame\n\
+TRI1  : The Delaunay triangles are painted with color levels. The edges\n\
+		  of each triangles are painted with the current line color.\n\
+TRI2  : the Delaunay triangles are painted with color levels.\n\
+P     : Draw a marker at each vertex\n\
+P0    : Draw a circle at each vertex. Each circle background is white.\n\
+PCOL  : Draw a marker at each vertex. The color of each marker is\n\
+		  defined according to its Z position.\n\
+CONT  : Draw contours\n\
+LINE  : Draw a 3D polyline\n\
+\n\
+CONT0 : Draw a contour plot using surface colors to distinguish contours\n\
+CONT1 : Draw a contour plot using line styles to distinguish contours\n\
+CONT2 : Draw a contour plot using the same line style for all contours\n\
+CONT3 : Draw a contour plot using fill area colors\n\
+CONT4 : Draw a contour plot using surface colors (SURF option at theta = 0)\n\
+CONT5 : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
+LEGO  : Draw a lego plot with hidden line removal\n\
+LEGO1 : Draw a lego plot with hidden surface removal\n\
+LEGO2 : Draw a lego plot using colors to show the cell contents\n\
+SURF  : Draw a surface plot with hidden line removal\n\
+SURF1 : Draw a surface plot with hidden surface removal\n\
+SURF2 : Draw a surface plot using colors to show the cell contents\n\
+SURF3 : same as SURF with in addition a contour view drawn on the top\n\
+SURF4 : Draw a surface using Gouraud shading\n\
+SURF5 : Same as SURF3 but only the colored contour is drawn. Used with\n\
+			 option CYL, SPH or PSR it allows to draw colored contours on a\n\
+			 sphere, a cylinder or a in pseudo rapidy space. In cartesian\n\
+			 or polar coordinates, option SURF3 is used.\n\
+\n\
+Surface with option \"GLSURF\"\n\
+The surface profile is displayed on the slicing plane. The profile\n\
+projection is drawn\n\
+on the back plane by pressing 'p' or 'P' key.\n\
+For further details contact ROOTs documentation.\n\
+";
+
+	const char *fDrawOpt2[kNGraph2Dopt] =
+	{"TRI ", "TRIW",   "TRI1",  "TRI2",
+	"CONT0", "CONT1" , "CONT2", "CONT3", "CONT4", "SURF0",
+	"SURF1", "SURF2",  "SURF3", "SURF4", "SURF5", "LEGO",
+	"LEGO1", "LEGO2",  "P",     "P0",    "PCOL",  "LINE"};
+	
+	TRootCanvas *rc = (TRootCanvas*)win;
+	fCanvas = (HTCanvas*)rc->Canvas();
+	fCmdButton = fCanvas->GetCmdButton();
+	fHist = NULL;
+	cout << "Enter Set2DimGraphDialog" << endl;
+	//	Int_t nh1 = 0, nh2 = 0;
+	TIter next(fCanvas->GetListOfPrimitives());
+	TObject *obj;
+	while ( (obj = next()) ) {
+		if (obj->InheritsFrom("TGraph2D")) {
+			fGraph2D = (TGraph2D*)obj;
+//			fHist = fGraph2D->GetHistogram();
+		}
+	}
+	if ( fHist == NULL ) {
+		cout << "No Histogram in Canvas" << endl;
+//		return;
+	} else {
+		if ( gDebug > 0 )
+			cout << "Set2DimGraphDialog: " << endl
+			<< "TCanvas* canvas = (TCanvas*)" << fCanvas
+			<< "; TH2* hist = (TH2*)" << fHist 
+			<< "; Set2DimGraphDialog * d2 = (Set2DimGraphDialog*)" << this << endl;
+	}
+	RestoreDefaults();
+	cout << "fDrawOpt2Dim " << fDrawOpt2Dim << endl;
+//   Int_t selected = -1;
+	for (Int_t i = 0; i < kNGraph2Dopt; i++) {
+		fDrawOpt2DimArray[i] = fDrawOpt2[i];
+	}
+	fSameOpt = "";
+	if ( fHist ) {
+		GetValuesFrom();
+	}
+	if (fDrawOpt2Dim.Contains("GL")) fUseGL = 1;
+	else                             fUseGL = 0;
+// extract draw option
+	cout << "fDrawOpt2Dim " << fDrawOpt2Dim << endl;
+	for (Int_t i = kNGraph2Dopt-1; i >= 0; i--) {
+//		cout << "fDrawOpt2DimArray "<< i << " "
+//     << fDrawOpt2DimArray[i] << endl;
+		Int_t ind = fDrawOpt2Dim.Index(fDrawOpt2DimArray[i]);
+		if ( ind >= 0 ) {
+			Int_t len = strlen(fDrawOpt2DimArray[i]);
+			fDrawOpt2Dim = fDrawOpt2Dim.Replace(ind, len, "");
+			fOptRadio[i] = 1;
+		} else {
+			fOptRadio[i] = 0;
+		}
+	}
+	gROOT->GetListOfCleanups()->Add(this);
+	fRow_lab = new TList();
+
+	Int_t ind = 0;
+	Int_t indopt = 0;
+	Int_t fDummy;
+//   static Int_t dummy;
+	static TString stycmd("SetAttPerm()");
+	static TString sadcmd("SetAllToDefault()");
+
+	
+	for (Int_t i = 0; i < kNGraph2Dopt; i++) {
+//   cout << " indopt  " <<  indopt << endl;
+		TString text("RadioButton");
+		if ( i%6 == 0 )text += "_";
+		else       text += "+";
+		if (strlen(fDrawOpt2DimArray[indopt]) < 5)
+			text += " ";
+		else if (strlen(fDrawOpt2DimArray[indopt]) < 4)
+			text += "  ";
+		else if (strlen(fDrawOpt2DimArray[indopt]) < 3)
+			text += "   ";
+		else if (strlen(fDrawOpt2DimArray[indopt]) < 2)
+			text += "    ";
+		text += fDrawOpt2DimArray[indopt];
+		fRow_lab->Add(new TObjString(text.Data()));
+		fValp[ind++] = &fOptRadio[indopt++];
+	}
+	fRow_lab->Add(new TObjString("CommentOnly+ OpenGL:"));
+	fValp[ind++] = &fDummy;
+	fRow_lab->Add(new TObjString("CheckButton+Use"));
+	fBidGL = ind;
+	fValp[ind++] = &fUseGL;
+//   cout << " indopt  " <<  indopt << endl;
+//	fRow_lab->Add(new TObjString("PlainShtVal+LineWid"));
+//	fValp[ind++] = &fHistLineWidth2Dim;
+	
+	fRow_lab->Add(new TObjString("ColorSelect_MColor "));
+	fBidMarkerColor = ind; fValp[ind++] = &fMarkerColor2Dim;
+	fRow_lab->Add(new TObjString("Mark_Select+MStyle "));
+	fBidMarkerStyle = ind; fValp[ind++] = &fMarkerStyle2Dim;
+	fRow_lab->Add(new TObjString("Float_Value+MSize  "));
+	fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
+	fRow_lab->Add(new TObjString("CheckButton_Log X"));
+	fRow_lab->Add(new TObjString("CheckButton+Log Y"));
+	fRow_lab->Add(new TObjString("CheckButton+Log Z"));
+	fValp[ind++] = &fTwoDimLogX;
+	fValp[ind++] = &fTwoDimLogY;
+	fValp[ind++] = &fTwoDimLogZ;
+
+	fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
+	fValp[ind++] = &stycmd;
+	fRow_lab->Add(new TObjString("CommandButt+Reset all to default"));
+	fValp[ind++] = &sadcmd;
+
+	static Int_t ok;
+	Int_t itemwidth = 380;
+	fDialog =
+		new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
+							 NULL, NULL, fRow_lab, fValp,
+							 NULL, NULL, helptext, this, this->ClassName());
+}
+//_______________________________________________________________________
+
+void Set2DimGraphDialog::RecursiveRemove(TObject * obj)
+{
+	if (obj == fCanvas) {
+ //     cout << "Set2DimGraphDialog: CloseDialog "  << endl;
+		CloseDialog();
+	}
+}
+//_______________________________________________________________________
+
+void Set2DimGraphDialog::CloseDialog()
+{
+//   cout << "Set2DimGraphDialog::CloseDialog() " << endl;
+	gROOT->GetListOfCleanups()->Remove(this);
+	if (fDialog) fDialog->CloseWindowExt();
+	fRow_lab->Delete();
+	delete fRow_lab;
+	delete this;
+}
+//_______________________________________________________________________
+
+void Set2DimGraphDialog::SetAttNow(TCanvas *canvas)
+{
+	if (!canvas) return;
+	fDrawOpt2Dim = "";
+	for (Int_t i = 0; i < kNGraph2Dopt; i++) {
+		if (fOptRadio[i] == 1) {
+//			cout << "fDrawOpt2DimArray[" << i << "]" << endl;
+			fDrawOpt2Dim += fDrawOpt2DimArray[i];
+			if (fUseGL && !fDrawOpt2Dim.Contains("GL"))
+				fDrawOpt2Dim.Prepend("GL");
+		}
+	}
+	SetAttAll(canvas);
+	SetPadAtt(canvas);
+	canvas->Pop();
+	canvas->Modified();
+	canvas->Update();
+}
+//_______________________________________________________________________
+
+void Set2DimGraphDialog::SetAttAll(TCanvas *canvas)
+{
+	TIter next(canvas->GetListOfPrimitives());
+	TObject *obj;
+	canvas->cd();
+	while ( (obj = next()) ) {
+		if (obj->InheritsFrom("TGraph2D")) {
+			TGraph2D* gr = (TGraph2D*)obj;
+			gr->SetDrawOption(fDrawOpt2Dim);
+			if ( fDrawOpt2Dim.Contains("P")){
+				gr->SetMarkerColor(fMarkerColor2Dim);  
+				gr->SetMarkerStyle(fMarkerStyle2Dim);  
+				gr->SetMarkerSize (fMarkerSize2Dim);
+			} 
+//			if ( gDebug > 0 ) 
+				cout << "SetAttAll: " << fDrawOpt2Dim<< endl;
+		}
+	}
+}
+//_______________________________________________________________________
+
+void Set2DimGraphDialog::SetPadAtt(TPad *pad)
+{
+	if ( !pad ) return;
+	pad->cd();
+	pad->SetLogx(fTwoDimLogX);
+	pad->SetLogy(fTwoDimLogY);
+	pad->SetLogz(fTwoDimLogZ);
+	if (f2DimBackgroundColor == 0) {
+		if (gStyle->GetCanvasColor() == 0) {
+			pad->GetFrame()->SetFillStyle(0);
+		} else {
+			pad->GetFrame()->SetFillStyle(1001);
+			pad->GetFrame()->SetFillColor(10);
+		}
+	} else {
+		pad->GetFrame()->SetFillStyle(1001);
+		pad->GetFrame()->SetFillColor(f2DimBackgroundColor);
+	}
+	
+}
+//______________________________________________________________________
+
+void Set2DimGraphDialog::SetAttPerm()
+{
+	if (gDebug > 0)
+		cout << "Set2DimGraphDialog:: SetHistAttPerm()" << endl;
+	TEnv env(".hprrc");
+	env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim);
+	env.SetValue("Set2DimGraphDialog.fDrawOpt2Dim", fDrawOpt2Dim);
+	env.SetValue("Set2DimGraphDialog.fShowZScale", fShowZScale);
+	env.SetValue("Set2DimGraphDialog.f2DimBackgroundColor",f2DimBackgroundColor);
+	env.SetValue("Set2DimGraphDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
+	env.SetValue("Set2DimGraphDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
+	env.SetValue("Set2DimGraphDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
+	env.SetValue("Set2DimGraphDialog.fTwoDimLogX",       fTwoDimLogX       );
+	env.SetValue("Set2DimGraphDialog.fTwoDimLogY",       fTwoDimLogY       );
+	env.SetValue("Set2DimGraphDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	env.SetValue("Set2DimGraphDialog.fUseGL",            fUseGL            );
+	env.SetValue("Set2DimGraphDialog.fContourLevels",    fContourLevels    );
+	
+	env.SaveLevel(kEnvLocal);
+}
+//______________________________________________________________________
+
+void Set2DimGraphDialog::SaveDefaults()
+{
+	TEnv env(".hprrc");
+	env.SetValue("Set2DimGraphDialog.fDrawOpt2Dim",      fDrawOpt2Dim);
+	env.SetValue("Set2DimGraphDialog.fShowZScale",       fShowZScale);
+	env.SetValue("Set2DimGraphDialog.f2DimBackgroundColor",f2DimBackgroundColor);
+	env.SetValue("Set2DimGraphDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
+	env.SetValue("Set2DimGraphDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
+	env.SetValue("Set2DimGraphDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
+	env.SetValue("Set2DimGraphDialog.fTwoDimLogX",       fTwoDimLogX       );
+	env.SetValue("Set2DimGraphDialog.fTwoDimLogY",       fTwoDimLogY       );
+	env.SetValue("Set2DimGraphDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	env.SetValue("Set2DimGraphDialog.fUseGL",            fUseGL            );
+	env.SetValue("Set2DimGraphDialog.fContourLevels",    fContourLevels    );
+	env.SaveLevel(kEnvLocal);
+}
+//______________________________________________________________________
+
+void Set2DimGraphDialog::SetAllToDefault()
+{
+	RestoreDefaults(1);
+}
+//______________________________________________________________________
+
+void Set2DimGraphDialog::GetValuesFrom()
+{
+	if ( !fGraph2D ) return;
+	fCanvas->cd();
+	fDrawOpt2Dim = fGraph2D->GetDrawOption();
+	fDrawOpt2Dim.ToUpper();
+	if ( fDrawOpt2Dim.Contains("SAME") )
+		fSameOpt = "SAME";
+	if ( gDebug > 0 )
+		cout << "fDrawOpt2Dim::GetValuesFrom() " << fDrawOpt2Dim << endl;
+	fTwoDimLogX        = fCanvas->GetLogx();
+	fTwoDimLogY        = fCanvas->GetLogy();
+	fTwoDimLogZ        = fCanvas->GetLogz();
+	fMarkerColor2Dim   = fHist->GetMarkerColor();
+	fMarkerStyle2Dim   = fHist->GetMarkerStyle();
+	fMarkerSize2Dim    = fHist->GetMarkerSize();
+}
+//______________________________________________________________________
+
+void Set2DimGraphDialog::RestoreDefaults(Int_t resetall)
+{
+	if ( gDebug > 0 )
+		cout << "Set2DimGraphDialog:: RestoreDefaults(resetall) " << resetall<< endl;
+	TString envname;
+	if (resetall == 0 ) {
+		envname = ".hprrc";
+	} else {
+		// force use of default values by giving an empty resource file
+		gSystem->TempFileName(envname);
+	}
+	TEnv env(envname);
+	fDrawOpt2Dim       = env.GetValue("Set2DimGraphDialog.fDrawOpt2Dim", "TRI1");
+	fShowZScale        = env.GetValue("Set2DimGraphDialog.fShowZScale", 1);
+	f2DimBackgroundColor = env.GetValue("Set2DimGraphDialog.f2DimBackgroundColor", 0);
+	fMarkerColor2Dim   = env.GetValue("Set2DimGraphDialog.fMarkerColor2Dim",   1);
+	fMarkerStyle2Dim   = env.GetValue("Set2DimGraphDialog.fMarkerStyle2Dim",   1);
+	fMarkerSize2Dim    = env.GetValue("Set2DimGraphDialog.fMarkerSize2Dim",    1);
+	fTwoDimLogX        = env.GetValue("Set2DimGraphDialog.fTwoDimLogX",        0);
+	fTwoDimLogY        = env.GetValue("Set2DimGraphDialog.fTwoDimLogY",        0);
+	fTwoDimLogZ        = env.GetValue("Set2DimGraphDialog.fTwoDimLogZ",        0);
+	fUseGL             = env.GetValue("Set2DimGraphDialog.fUseGL",             0);
+	fContourLevels     = env.GetValue("Set2DimGraphDialog.fContourLevels",    20);
+}
+//______________________________________________________________________
+
+void Set2DimGraphDialog::CloseDown(Int_t wid)
+{
+//   cout << "CloseDown(" << wid<< ")" <<endl;
+	fDialog = NULL;
+	if (wid == -1)
+		SaveDefaults();
+}
+//______________________________________________________________________
+
+void Set2DimGraphDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+{
+	TCanvas *canvas = (TCanvas *)obj;
+	if ( gDebug > 0 ) {
+		cout << "CRButtonPressed:" << wid<< ", " <<bid << " canvas "  << canvas << endl;
+	}
+	if ( bid == fBidGL ) {
+		TString opt = fGraph2D->GetDrawOption();
+		opt.ToUpper();
+		cout << "CRButtonPressed: " << opt << " " << fUseGL<< endl;
+		Int_t indgl = opt.Index("GL");
+		if ( indgl >= 0 && fUseGL == 0 ) {
+			opt(indgl,2) = "";
+		} else if ( indgl < 0 && fUseGL == 1 ) {
+			opt.Prepend("GL");
+		}
+		if (fCanvas->UseGL() != ((Bool_t)fUseGL) ) {
+			TEnv env(".hprrc");
+			env.SetValue("Set2DimGraphDialog.fDrawOpt2Dim", opt);
+			env.SaveLevel(kEnvLocal);
+			if ( fCmdButton && fCmdButton->TestBit(TObject::kNotDeleted) ) { 
+				gROOT->ProcessLine(fCmdButton->GetMethod());
+				gSystem->ProcessEvents();
+				fCanvas->Close();
+				CloseDialog();
+			} else {
+				cout << setred << "Did you close the list of objects?" << endl
+					<< "Cant auto redisplay, please redisplay manually"
+					<< setblack  << endl;
+			}
+			return;
+		}
+	}		
+	SetAttNow(canvas);
+}
+
