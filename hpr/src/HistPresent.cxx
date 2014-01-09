@@ -3932,6 +3932,9 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 		TString opt2d = env.GetValue("Set2DimGraphDialog.fDrawOpt2Dim", "TRI1");
 		cout << setgreen << "HistPresent, opt2d: " << opt2d << " number of points: " <<
 		graph2d->GetN() << setblack << endl;
+		TRegexp sa("SAME");
+		opt2d(sa) = "";
+
 		Double_t texpected = 4 * TMath::Power(3, graph2d->GetN() / 900.) - 10;
 		if (texpected > 1) {
 			cout << setmagenta << "Warning rendering may take: " << texpected

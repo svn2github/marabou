@@ -12,6 +12,7 @@
 #include "TH2.h"
 #include "TStyle.h"
 #include "TSystem.h"
+#include "TRegexp.h"
 #include "Set2DimGraphDialog.h"
 #include "GeneralAttDialog.h"
 #include "hprbase.h"
@@ -299,6 +300,8 @@ void Set2DimGraphDialog::SetAttPerm()
 	if (gDebug > 0)
 		cout << "Set2DimGraphDialog:: SetHistAttPerm()" << endl;
 	TEnv env(".hprrc");
+	TRegexp sa("SAME");
+	fDrawOpt2Dim(sa) = "";
 	env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim);
 	env.SetValue("Set2DimGraphDialog.fDrawOpt2Dim", fDrawOpt2Dim);
 	env.SetValue("Set2DimGraphDialog.fShowZScale", fShowZScale);
@@ -319,6 +322,8 @@ void Set2DimGraphDialog::SetAttPerm()
 void Set2DimGraphDialog::SaveDefaults()
 {
 	TEnv env(".hprrc");
+	TRegexp sa("SAME");
+	fDrawOpt2Dim(sa) = "";
 	env.SetValue("Set2DimGraphDialog.fDrawOpt2Dim",      fDrawOpt2Dim);
 	env.SetValue("Set2DimGraphDialog.fShowZScale",       fShowZScale);
 	env.SetValue("Set2DimGraphDialog.f2DimBackgroundColor",f2DimBackgroundColor);
@@ -372,6 +377,8 @@ void Set2DimGraphDialog::RestoreDefaults(Int_t resetall)
 	}
 	TEnv env(envname);
 	fDrawOpt2Dim       = env.GetValue("Set2DimGraphDialog.fDrawOpt2Dim", "TRI1");
+	TRegexp sa("SAME");
+	fDrawOpt2Dim(sa) = "";
 	fShowZScale        = env.GetValue("Set2DimGraphDialog.fShowZScale", 1);
 	f2DimBackgroundColor = env.GetValue("Set2DimGraphDialog.f2DimBackgroundColor", 0);
 	fMarkerColor2Dim   = env.GetValue("Set2DimGraphDialog.fMarkerColor2Dim",   1);
