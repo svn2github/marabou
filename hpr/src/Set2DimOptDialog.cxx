@@ -425,7 +425,14 @@ void Set2DimOptDialog::SetHistAttAll(TCanvas *canvas)
 		if (obj->InheritsFrom("TH2")) {
 			SetHistAtt(canvas, ((TH2*)obj));
 		} else if (obj->InheritsFrom("TGraph2D")) {
-			((TGraph2D*)obj)->SetDrawOption(fDrawOpt);
+			canvas->cd();
+			((TGraph2D*)obj)->SetDrawOption(fDrawOpt2Dim);
+			if ( gDebug > 0 ) 
+				cout << "SetHistAttAll: " << fDrawOpt2Dim<< endl;
+//			if ( ((TGraph2D*)obj)->GetHistogram() ) {
+//				((TGraph2D*)obj)->GetHistogram()->SetDrawOption(fDrawOpt);
+				canvas->Modified();
+//			}
 		} else if ((obj->InheritsFrom("TPad"))) {
 			TPad *pad = (TPad*)obj;
 			TIter next1(pad->GetListOfPrimitives());

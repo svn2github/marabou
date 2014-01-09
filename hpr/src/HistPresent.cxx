@@ -45,6 +45,7 @@
 #include "TLegendEntry.h"
 #include "TQObject.h"
 #include "TProof.h"
+#include "TBenchmark.h"
 
 #include "CmdListEntry.h"
 #include "HistPresent.h"
@@ -2252,7 +2253,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
 //________________________________________________________________________________________
 //
 
-TGraph* HistPresent::GetSelGraphAt(Int_t pos)
+TObject* HistPresent::GetSelGraphAt(Int_t pos)
 {
    TList * hlist = fSelectGraph;
    if (hlist->IsEmpty()) {
@@ -2267,7 +2268,7 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
    TObjString * obj = (TObjString *)hlist->At(pos);
 
    TString fname = obj->String();
-//	cout << "GetSelGraphAt |" << fname << "|" << endl;
+	cout << "GetSelGraphAt |" << fname << "|" << endl;
    Int_t pp = fname.Index(" ");
    if (pp <= 0) {cout << "No file name in: " << obj->String() << endl; return NULL;};
    fname.Resize(pp);
@@ -2279,14 +2280,14 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
    if (pp <= 0) {cout << "No graph name in: " << obj->String()<< endl; return NULL;};
    hname.Resize(pp);
    dname.Remove(0,pp+1);
-//   cout << fname << "|" << hname << "|" << dname << "|" << endl;
+   cout << fname << "|" << hname << "|" << dname << "|" << endl;
 
    hname = hname.Strip(TString::kBoth);
    pp = hname.Index(";");
    if (pp >0) hname.Resize(pp);
    dname = dname.Strip(TString::kBoth);
-   TGraph* hist;
-   hist = (TGraph*)gROOT->GetList()->FindObject(hname);
+   TObject* graph;
+	graph = gROOT->GetList()->FindObject(hname);
 /*
 	if (!hist) {
 	   TString newname(fname.Data());
@@ -2299,15 +2300,23 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
 	}
 */
 //   if (hist) hist->Print();
-   if (hist && (fname == "Memory")) return hist;
+   if (graph && (fname == "Memory")) return graph;
    if (fRootFile) fRootFile->Close();
    fRootFile=new TFile((const char *)fname);
    if (dname.Length() > 0) fRootFile->cd(dname);
-   hist = (TGraph*)gDirectory->Get(hname);
+   graph = gDirectory->Get(hname);
+   if (graph->InheritsFrom("TGraph")) {
+//		((TGraph*)graph)->SetDirectory(gROOT);
+	} else if (graph->InheritsFrom("TGraph2D")) {
+		((TGraph2D*)graph)->SetDirectory(gROOT);
+	} else {
+		graph = NULL;
+	}
    if (fRootFile) {fRootFile->Close(); fRootFile=NULL;};
 
    gDirectory=gROOT;
 //  gROOT->ls();
+/*
    TString newname(hname.Data());
    newname += "_",
    newname += pos;
@@ -2320,8 +2329,9 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
 		title.Prepend(fname);
 		hist->SetTitle(title);
 	}
-	if (hist) hist->SetName(newname.Data());
-   return hist;
+	if (hist && hi) hist->SetName(newname.Data());
+	*/
+   return graph;
 }
 //________________________________________________________________________________________
 // Get Ccut
@@ -3857,7 +3867,7 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 //________________________________________________________________________________________
 // Show a graph
 
-void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name, const char* /*bp*/)
+void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name, const char* bp)
 {
 	TGraph     * graph1d = NULL;
 	TGraph2D   * graph2d = NULL;
@@ -3919,10 +3929,32 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 	//      graph->SetName(hname);
 	//      graph->SetTitle(htitle);
 	if ( graph2d ) {
+		TString opt2d = env.GetValue("Set2DimGraphDialog.fDrawOpt2Dim", "TRI1");
+		cout << setgreen << "HistPresent, opt2d: " << opt2d << " number of points: " <<
+		graph2d->GetN() << setblack << endl;
+		Double_t texpected = 4 * TMath::Power(3, graph2d->GetN() / 900.) - 10;
+		if (texpected > 1) {
+			cout << setmagenta << "Warning rendering may take: " << texpected
+			<< " Seconds" << setblack << endl;
+		}
+		if (opt2d.Contains("GL")) {
+			gStyle->SetCanvasPreferGL(kTRUE);
+		} else {
+			gStyle->SetCanvasPreferGL(kFALSE);
+		}
+
 		graph2d->SetName(gname);
+		HTCanvas * htc =
 		new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
 								WindowSizeDialog::fWinwidx_1dim, WindowSizeDialog::fWinwidy_1dim, this, 0, (TGraph*)graph2d);
-								graph2d->Draw(env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "cont5"));
+		gBenchmark->Start("graph2d");
+//		graph2d->SetMaxIter(3000);
+  		graph2d->Draw(opt2d);
+		TButton * b = NULL;
+		if (bp) {
+			b = (TButton *)strtoul(bp, 0, 16);
+		}
+		htc->SetCmdButton(b);
 	} else {
 		graph1d->SetName(gname);
 		new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
@@ -3997,6 +4029,8 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 	//	GraphAttDialog::SetGraphAtt(cg);
 	gPad->Modified();
 	gPad->Update();
+  	gBenchmark->Show("graph2d");
+  	gBenchmark->Reset();
 }
 //____________________________________________________________
 
@@ -4033,8 +4067,10 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
       cout << "Please select exactly  one graph" << endl;
       return;
    }
-   TGraph * gr = GetSelGraphAt(0);
-	if ( !gr ) return;
+   TObject * obj  = GetSelGraphAt(0);
+   if (!obj ||!obj->InheritsFrom("TGraph") )
+		return;
+   TGraph * gr = (TGraph*)obj;
 	TEnv env(".hprrc");
 	Double_t xmin, xmax, ymin, ymax;
 	Double_t hxmin, hxmax, hymin, hymax;
@@ -4266,7 +4302,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	if ( lLegend != 0 ) {
 		// remove possible TLegend
  		TIter next2( current->GetListOfPrimitives() );
-		TObject *obj;
+//		TObject *obj;
 		TLegend * leg = NULL;
 		while ( obj = next2() ) {
 			if ( obj->InheritsFrom("TLegend") ) {

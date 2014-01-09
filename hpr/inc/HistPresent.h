@@ -250,9 +250,10 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
 	TList* GetWindowList(){return fAllWindows;};
    TList* GetFunctionList(){return fAllFunctions;};
    TList* GetCutList(){return fAllCuts;};
+   TList* GetGraphList(){return fSelectGraph;};
 	TH1*   GetSelHistAt(Int_t pos = 0, TList * hl = NULL, Bool_t try_memory = kFALSE,
 							  const char * hsuffix = NULL);
-   TGraph* GetSelGraphAt(Int_t pos = 0);
+   TObject* GetSelGraphAt(Int_t pos = 0);
    void TurnButtonGreen(TVirtualPad **);
    TList* GetSelections(){return fSelectHist;};
 

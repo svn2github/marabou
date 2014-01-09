@@ -33,6 +33,7 @@
 #include "SetHistOptDialog.h"
 #include "Set1DimOptDialog.h"
 #include "Set2DimOptDialog.h"
+#include "Set2DimGraphDialog.h"
 #include "Set3DimOptDialog.h"
 #include "SetColorModeDialog.h"
 #include "SetCanvasAttDialog.h"
@@ -113,6 +114,7 @@ enum ERootCanvasCommands {
    kOptionDisp,
    kOption1Dim,
    kOption2Dim,
+   kOption2DimGraph,
    kOption3Dim,
    kOption2DimCol,
    kOptionGraph,
@@ -144,6 +146,7 @@ enum ERootCanvasCommands {
    kFHRebinDimDialog,
    kFHSuperimposeGraph,
    kFHSuperimposeGraphScale,
+   kFHSuperimposeGraph2Dim,
 	kFHSetAxisGraphX,
    kFHSetAxisGraphY,
    kFHKolmogorov,
@@ -678,6 +681,11 @@ again:
                      new Set2DimOptDialog(fRootCanvas);
                      }
                      break;
+                  case kOption2DimGraph:
+                     {
+                     new Set2DimGraphDialog(fRootCanvas);
+                     }
+                     break;
                   case kOption3Dim:
                      {
 							TButton *b = 0;
@@ -825,6 +833,9 @@ again:
 							break;
 						case kFHSuperimposeGraph:
                      fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas, 0);
+                     break;
+						case kFHSuperimposeGraph2Dim:
+                     Hpr::SuperimposeGraph2Dim((TCanvas*)fHCanvas);
                      break;
 						case kFHSuperimposeGraphScale:
                      fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas, 1);
@@ -1437,7 +1448,10 @@ void HandleMenus::BuildMenus()
    if ( nDim == 1)
       fOptionMenu->AddEntry("How to display a 1-dim histogram", kOption1Dim);
    if ( graph2d || (fFitHist && fFitHist->Its2dim())) {
-      fOptionMenu->AddEntry("How to display a 2-dim histogram ", kOption2Dim);
+		if ( graph2d ) 
+			fOptionMenu->AddEntry("How to display a Graph2D ", kOption2DimGraph);
+		else 
+			fOptionMenu->AddEntry("How to display a 2-dim histogram ", kOption2Dim);
       fOptionMenu->AddEntry("Color Palette", kOption2DimCol);
    }
    if ( graph3d || nDim == 3) {
@@ -1484,6 +1498,10 @@ void HandleMenus::BuildMenus()
 	fViewMenu->AddSeparator();
    fViewMenu->AddEntry("View with OpenGL",        kViewOpenGL);
 
+   if ( graph2d ) {
+   	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
+      fDisplayMenu->AddEntry("Superimpose selected graph", kFHSuperimposeGraph2Dim);
+   }
    if ( graph1d ) {
    	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
       fDisplayMenu->AddEntry("Superimpose selected graph", kFHSuperimposeGraph);

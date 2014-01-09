@@ -485,6 +485,47 @@ TGraph * FindGraphInPad(TVirtualPad * ca)
 };
 //_______________________________________________________________________________________
 
+TGraph2D * FindGraph2D(TVirtualPad * ca)
+{
+	if (!ca) return NULL;
+	TGraph2D * gr = NULL;
+	TIter next(ca->GetListOfPrimitives());
+	while (TObject * obj = next()) {
+		if (obj->InheritsFrom("TGraph2D")) {
+			 gr = (TGraph2D*)obj;
+		}
+	}
+	return gr;
+};
+//____________________________________________________________
+
+void SuperimposeGraph2Dim(TCanvas * current)
+{
+/*	static const char helptext[] =
+	"\n\
+	A selected graph is drawn in the same pad\n\
+	";
+*/
+	current->cd();
+	TObject * obj = gHpr->GetSelGraphAt(0);
+   if ( !obj || !obj->InheritsFrom("TGraph2D") ) {
+      cout << "Please select exactly  one Graph2D" << endl;
+      return;
+   }
+   TGraph2D * gr = (TGraph2D*)obj;
+   TGraph2D * gr_exist = FindGraph2D(current);
+	if ( !gr_exist )
+		return;
+	TString opt(gr_exist->GetDrawOption());
+	opt+= "SAME";
+	cout << "SuperimposeGraph2Dim " << opt << endl;
+	gr->Draw(opt);
+	current->Modified();
+	current->Update();
+
+}
+//_______________________________________________________________________________________
+
 TLegend * FindLegendInPad(TVirtualPad * ca)
 {
 	if (!ca) return NULL;

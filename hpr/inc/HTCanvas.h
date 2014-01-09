@@ -23,6 +23,7 @@ class FitHist;
 class HistPresent;
 class HandleMenus;
 class TGraph;
+class TButton;
 
 class HTCanvas : public GrCanvas {
 
@@ -33,7 +34,8 @@ private:
    FitHist        * fFitHist;         //! dont stream
    TGraph         * fGraph;           //! dont stream
    HandleMenus    * fHandleMenus;     //! dont stream
-   TTimer         fTimer;
+   TButton        * fCmdButton;       //!
+   TTimer         fTimer;					//! dont stream
 //
 public:
    HTCanvas();
@@ -51,6 +53,8 @@ public:
    void          SetFitHist(FitHist* fh) {fFitHist = fh;};
    void          BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr);
 	HandleMenus   *GetHandleMenus() { return fHandleMenus;};
+	void          SetCmdButton(TButton *b) { fCmdButton = b; };
+	TButton       *GetCmdButton() { return fCmdButton; };
    ClassDef(HTCanvas,5)  //Graphics canvas
 };
 

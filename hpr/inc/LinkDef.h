@@ -20,6 +20,7 @@
 #pragma link C++ class SetHistOptDialog;
 #pragma link C++ class Set1DimOptDialog;
 #pragma link C++ class Set2DimOptDialog;
+#pragma link C++ class Set2DimGraphDialog;
 #pragma link C++ class Set3DimOptDialog;
 #pragma link C++ class SetColorModeDialog;
 #pragma link C++ class SetCanvasAttDialog;

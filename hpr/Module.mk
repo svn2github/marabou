@@ -38,6 +38,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/SetHistOptDialog.h \
  					$(HPRDIRI)/Set1DimOptDialog.h \
  					$(HPRDIRI)/Set2DimOptDialog.h \
+ 					$(HPRDIRI)/Set2DimGraphDialog.h \
  					$(HPRDIRI)/Set3DimOptDialog.h \
  					$(HPRDIRI)/SetColorModeDialog.h \
  					$(HPRDIRI)/SetCanvasAttDialog.h \

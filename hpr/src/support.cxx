@@ -9,6 +9,7 @@
 #include "TArc.h"
 #include "TGraphErrors.h"
 #include "TGraphAsymmErrors.h"
+#include "TGraph2D.h"
 #include "TH1.h"
 #include "TF1.h"
 #include "TRegexp.h"
@@ -56,7 +57,7 @@ int GetBPars(const char *cmd, TObject * /*cc*/, int xpos, int ypos, float dx,
 		return 0;
 	}
 	*tmp = "gHpr";
-//   *tmp = cc->GetName();
+//	*tmp = cc->GetName();
 	(*tmp) += "->";
 	(*tmp) += cmd;
 	(*tmp) += "();";
@@ -153,6 +154,11 @@ TH1 * GetHistOfGraph(TVirtualPad * pad)
 	while ( (obj = next()) ) {
 		if (obj->InheritsFrom("TGraph")) {
 			hist = ((TGraph*)obj)->GetHistogram();
+			if ( hist ) 
+				return hist;
+		}
+		if (obj->InheritsFrom("TGraph2D")) {
+			hist = ((TGraph2D*)obj)->GetHistogram();
 			if ( hist ) 
 				return hist;
 		}
@@ -258,10 +264,10 @@ Int_t CheckList(TList * list, const char *name)
 	}
 	if (entries > 0) {
 		old_entries = entries;
-//      cout << "CheckList: entries: " << entries << endl;
+//		cout << "CheckList: entries: " << entries << endl;
 		for (Int_t i = 0; i < entries; i++) {
 			obj = list->At(i);
-//         cout    << "at[i] " << i << " obj: " <<  obj << endl;
+//			cout	 << "at[i] " << i << " obj: " <<  obj << endl;
 			if (!obj->TestBit(TObject::kNotDeleted) ||
 				 obj->TestBit(0xf0000000)) {
 				cout << " remove deleted " << obj << " name: " << name <<
@@ -304,7 +310,7 @@ TButton *CommandButton(TString & cmd, TString & tit,
 		buf << "\"" << button << "\")";
 	}
 	newcmd(brace) = buf.str();
-//   cout << "CommandButton: " << newcmd << endl;
+//	cout << "CommandButton: " << newcmd << endl;
 	button->SetBit(kCommand);
 	if (selected) {
 		button->SetFillColor(3);
@@ -315,18 +321,18 @@ TButton *CommandButton(TString & cmd, TString & tit,
 	}
 	button->SetMethod((char *) newcmd.Data());
 	button->SetTextAlign(12);
-//   button->SetTextFont(101);
+//	button->SetTextFont(101);
 	button->SetTextFont(100);
 	button->SetTextSize(0.72);
-//   if(selected)button->SetFillColor(3);
-//   if(gROOT->GetVersionInt() <= 22308){
-//      TText *text = GetPadText(button);
-//      if(text)text->SetX(0.03);
+//	if(selected)button->SetFillColor(3);
+//	if(gROOT->GetVersionInt() <= 22308){
+//		TText *text = GetPadText(button);
+//		if(text)text->SetX(0.03);
 	//  } else {
 	TLatex *text = GetPadLatex(button);
 	if (text && tit.Length() > 0)
 		text->SetX(0.2 / (Double_t)tit.Length());
-//   }
+//	}
 	button->Draw();
 	return button;
 }
@@ -357,7 +363,7 @@ void SelectButton(TString & cmd,
 						Float_t x0, Float_t y, Float_t x1, Float_t y1,
 						Bool_t selected)
 {
-//   cout << ctitle << endl;
+//	cout << ctitle << endl;
 	TButton *button = new TButton("", "", x0, y, x1, y1);
 	TRegexp brace(")");
 	TString newcmd(cmd);
@@ -371,7 +377,7 @@ void SelectButton(TString & cmd,
 
 	button->SetMethod((char *) newcmd.Data());
 	button->SetBit(kSelection);
-//   cout << "SelectButton: " << newcmd << endl;
+//	cout << "SelectButton: " << newcmd << endl;
 	if (selected) {
 		button->SetFillColor(3);
 		button->SetBit(kSelected);
@@ -406,8 +412,8 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 	xwid_default = WindowSizeDialog::fMainWidth;
 	Int_t ywid_default = (Int_t)((Float_t)xwid_default * 2.4);
 	Float_t magfac = (Float_t)xwid_default / 250.;
-//   Int_t xwid_default = 250;
-//   Int_t ywid_default = 600;
+//	Int_t xwid_default = 250;
+//	Int_t ywid_default = 600;
 
 	Int_t xw = xwid_default;
 	Int_t yw = ywid_default;
@@ -436,9 +442,9 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 			maxlen_tit = cle->fTit.Length();
 		if (cle->fSel.Length() > 0)
 			anysel = kTRUE;
-//      if(cle->fSel != "NoOp") anysel=kTRUE;
+//		if(cle->fSel != "NoOp") anysel=kTRUE;
 	}
-//   cout << "xw " << xw << " maxlen_nam " << maxlen_nam << endl;
+//	cout << "xw " << xw << " maxlen_nam " << maxlen_nam << endl;
 	if (maxlen_nam < 15) maxlen_nam = 13;
 	xw = 40 + Int_t((Float_t)(maxlen_nam) * 9 * magfac) ;
 
@@ -446,14 +452,14 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 
 	if (Nentries < 25)
 		yw = (Int_t)(magfac * 24.) * (Nentries + 2);
-//      yw = 40 * (Nentries + 1);
+//		yw = 40 * (Nentries + 1);
 //	cout << fname << " xpos " << xpos << " ypos " << ypos << " xw " << xw << " yw " << yw << endl;
 
 	TString pname(fname);
-//   pname.Prepend("CWD:");
+	gStyle->SetCanvasPreferGL(kFALSE);
 	HTCanvas *cHCont = new HTCanvas(pname.Data(), pname.Data(),
 											  -xpos, ypos, xw, yw, hpr, 0);
-//                                   xpos, ypos, -xw, yw, hpr, 0);
+//											  xpos, ypos, -xw, yw, hpr, 0);
 	Int_t item_height = TMath::Min(Int_t(magfac * 24.), 10000/Nentries);
 //	cout << " Nentries " << Nentries << endl;
 
@@ -462,16 +468,16 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 
 	Float_t expandx = xw / (250. * magfac);
 	if(expandx < 1.) expandx=1.;
-//   Float_t expandy = (Float_t) Nentries / 25;
+//	Float_t expandy = (Float_t) Nentries / 25;
 	Float_t expandy = (Float_t) Nentries / 20;
 
 	Float_t x1, y0, y, dy;
 	Float_t xcmd_with_sel = 0.08 / expandx;
-	Float_t xcmd_no_sel   = 0.01 / expandx;
+	Float_t xcmd_no_sel	= 0.01 / expandx;
 	x1 = 0.99;
 	dy = .999 / (Float_t) (Nentries);
 
-//    cout << "Nentries, dy " << Nentries << " " <<  dy << endl;
+//	 cout << "Nentries, dy " << Nentries << " " <<  dy << endl;
 	y0 = 1.;
 	y = y0 - dy;
 	TString sel;
@@ -479,7 +485,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 	for (Int_t i = first; i < last; i++) {
 		Float_t xcmd = xcmd_no_sel;
 		CmdListEntry *cle = (CmdListEntry *) fcmdline->At(i);
-//      cout << "new: " << cle->fCmd << endl;
+//		cout << "new: " << cle->fCmd << endl;
 		if (anysel) {
 			sel = cle->fSel;
 			if (sel != "NoOp" && sel.Length() > 0) {
@@ -498,19 +504,19 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 		}
 		title = cle->fNam;
 		title.Resize(maxlen_nam + 1);
-//      title += cle->fTit;
-//      cout << "y, dy " << y << " " << dy << endl;
+//		title += cle->fTit;
+//		cout << "y, dy " << y << " " << dy << endl;
 		CommandButton(cle->fCmd, title, xcmd, y, x1, y + dy, kFALSE);
-//      if((cle->fTit).Length()>0)b->SetToolTipText((const char *)cle->fTit,500);
+//		if((cle->fTit).Length()>0)b->SetToolTipText((const char *)cle->fTit,500);
 
-//      b->SetName((const char *)cle->fNam);
+//		b->SetName((const char *)cle->fNam);
 		y -= dy;
 	}
 	Int_t usedxw = cHCont->GetWw();
 	Int_t usedyw = cHCont->GetWh();
-//   cout << "usedxw  " << usedxw << " usedyw  " << usedyw << endl;
+//	cout << "usedxw  " << usedxw << " usedyw  " << usedyw << endl;
 
-//   Int_t newxw = (Int_t) ((Float_t) usedxw * expandx);
+//	Int_t newxw = (Int_t) ((Float_t) usedxw * expandx);
 	Int_t newxw = usedxw;
 	Int_t newyw;
 	if (Nentries > 25)
@@ -672,12 +678,12 @@ Int_t GetObjects(TList & list, TDirectory * rfile, const char * classname)
 	if (!rfile)
 		return maxkey;
 	TIter next(rfile->GetListOfKeys());
-//   TList *list = 0;
+//	TList *list = 0;
 	TKey *key;
 	TString cn;
 	while ( (key = (TKey *) next()) ) {
 		cn = key->GetClassName();
-//      cout << "GetObjects: " << cn << endl;
+//		cout << "GetObjects: " << cn << endl;
 		if (cn.BeginsWith(classname)) {
 			TString kn(key->GetName());
 			kn += ";";
@@ -747,7 +753,7 @@ TH1 *GetTheHist(TVirtualPad * pad)
 void Canvas2LP(TCanvas * ca, Bool_t to_printer, TGWindow * win)
 {
 // if opt contains plain: force white background
-//                    ps: write to PostScript file
+//						  ps: write to PostScript file
 	const char helpText_PS[] =
 "Write picture to PostScript file or send\n\
 directly to a printer. With Option\"Force white background\"\n\
@@ -778,15 +784,15 @@ a shift value of 10 will only shift by 5 cm";
 	const char hist_file[] = {"printer_hist.txt"};
 	Bool_t ok;
 	Int_t itemwidth = 320;
-//   ofstream hfile(hist_file);
+//	ofstream hfile(hist_file);
 	static Int_t plain = 0;
 	static Double_t xpaper;  // A4 and letter
 	static Double_t ypaper;  // A4 24, letter 26
 	static Double_t scale;
 	static Double_t xshift;
 	static Double_t yshift;
-	static Int_t    view_ps;
-	static Int_t    remove_picture = 0;
+	static Int_t	 view_ps;
+	static Int_t	 remove_picture = 0;
 
 	TEnv env(".hprrc");
 	xpaper = env.GetValue("HistPresent.PaperSizeX", 20.);
@@ -833,7 +839,7 @@ a shift value of 10 will only shift by 5 cm";
 		cmd_name = ccmd;
 	} else {
 		cmd_name = ca->GetName();
-		Int_t last_sem = cmd_name.Last(';');    // chop off version
+		Int_t last_sem = cmd_name.Last(';');	 // chop off version
 		if (last_sem >0) cmd_name.Remove(last_sem);
 		cmd_name += ".ps";
 		prompt = "PS file name";
@@ -880,13 +886,13 @@ a shift value of 10 will only shift by 5 cm";
 		ca->GetFrame()->SetFillStyle(0);
 		ca->SetBorderMode(0);
 	}
-//   cout << "xshift "  << xshift<< " yshift " << yshift << endl;
+//	cout << "xshift "  << xshift<< " yshift " << yshift << endl;
 	gStyle->SetPaperSize((Float_t) xpaper, (Float_t) ypaper);
 	if (scale != 1 || xshift != 0 || yshift != 0) {
 		TString extra_ps;
 		extra_ps = "";
 		if (xshift != 0 || yshift != 0) {
-//    convert to points (* 4 to compensate for ROOTs .25)
+//	 convert to points (* 4 to compensate for ROOTs .25)
 			Int_t xp = (Int_t) (xshift * 4 * 72. / 2.54);
 			Int_t yp = (Int_t) (yshift * 4 * 72. / 2.54);
 			extra_ps += Form("%d %d  translate ", xp, yp);
@@ -971,16 +977,16 @@ TEnv *GetDefaults(const char * hname, Bool_t mustexist, Bool_t renew)
 {
 	TEnv *lastset = 0;
 	TString defname("default/Last");
-	TEnv env(".hprrc");         // inspect ROOT's environment
+	TEnv env(".hprrc");			// inspect ROOT's environment
 	defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
-//   cout << "Got : " << defname.Data() << endl;
+//	cout << "Got : " << defname.Data() << endl;
 	if (defname.Length() > 0) {
 		defname += "_";
 		defname += hname;
 		Int_t ip = defname.Index(";");
 		if (ip > 0) defname.Resize(ip);
 		defname += ".def";
-//      cout << "Look for : " << defname.Data() << endl;
+//		cout << "Look for : " << defname.Data() << endl;
 		if (mustexist && gSystem->AccessPathName(defname.Data()))
 			return 0;
 		if (renew && ! gSystem->AccessPathName(defname.Data())) {
@@ -989,7 +995,7 @@ TEnv *GetDefaults(const char * hname, Bool_t mustexist, Bool_t renew)
 			gSystem->Exec(cmd.Data());
 //			cout << "Removing: " << cmd.Data() << endl;
 		}
-//      cout << "GetDefaults: Looked for : " << defname.Data() << endl;
+//		cout << "GetDefaults: Looked for : " << defname.Data() << endl;
 		lastset = new TEnv(defname.Data());
 	}
 	return lastset;
@@ -1005,13 +1011,13 @@ TH1 *gethist(const char *hname, TSocket * sock)
 	TMessage *message;
 	TString mess("M_client gethist ");
 	mess += hname;
-	sock->Send(mess);            // send message
+	sock->Send(mess);				// send message
 
 	while ((nobs = sock->Recv(message)))	// receive next message
 	{
 		if (nobs <= 0)
 			break;
-//     cout << "nobs " << nobs << endl;
+//	  cout << "nobs " << nobs << endl;
 		if (message->What() == kMESS_STRING) {
 			char *str0 = new char[nobs];
 			message->ReadString(str0, nobs);
@@ -1041,13 +1047,13 @@ TMrbStatistics *getstat(TSocket * sock)
 	TMessage *message;
 	TString mess("M_client getstat ");
 
-	sock->Send(mess);            // send message
+	sock->Send(mess);				// send message
 
 	while ((nobs = sock->Recv(message)))	// receive next message
 	{
 		if (nobs <= 0)
 			break;
-//     cout << "nobs " << nobs << endl;
+//	  cout << "nobs " << nobs << endl;
 		if (message->What() == kMESS_STRING) {
 			char *str0 = new char[nobs];
 			message->ReadString(str0, nobs);
@@ -1171,11 +1177,11 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
 					TFile * f = new TFile(fname, "update");
 					if (f->Get(entry.Data())) {
 						list->Remove(sel);
-	//               Int_t cycle = f->GetKey(name.Data())->GetCycle();
-	//               if (cycle > 0) {
-	//                  name += ";";
-	//                  name += cycle;
-	//               }
+	//					Int_t cycle = f->GetKey(name.Data())->GetCycle();
+	//					if (cycle > 0) {
+	//						name += ";";
+	//						name += cycle;
+	//					}
 						cout << "Deleting: " << name.Data() << endl;
 						f->Delete(entry.Data());
 						ndeleted++;
@@ -1197,8 +1203,8 @@ void PrintGraph(TGraphErrors * gr)
 	cout << endl << "Graph Object, Npoints: " << gr->GetN()<< endl;
 	gr->Print();
 /*
-	cout << "           X" << "    Error(X)"
-		  << "           Y" << "    Error(Y)" << endl;
+	cout << "			  X" << "	 Error(X)"
+		  << "			  Y" << "	 Error(Y)" << endl;
 	for (Int_t i = 0; i < gr->GetN(); i++) {
 		cout << setw(12) << (gr->GetX())[i] << setw(12) << (gr->GetEX())[i]
 			  << setw(12) << (gr->GetY())[i] << setw(12) << (gr->GetEY())[i]
@@ -1226,7 +1232,7 @@ void PrintGraph(TGraphErrors * gr)
 
 Bool_t IsInsideFrame(TCanvas * c, Int_t px, Int_t py)
 {
-//   Bool_t inside = kFALSE;
+//	Bool_t inside = kFALSE;
 	TIter next(c->GetListOfPrimitives());
 	TObject * obj =0;
 	Axis_t x = gPad->AbsPixeltoX(px);
@@ -1255,7 +1261,7 @@ TGraph * FindGraph(TVirtualPad * ca)
 		}
 	}
 // look for subpads
-/*   TIter next1(ca->GetListOfPrimitives());
+/*	TIter next1(ca->GetListOfPrimitives());
 	while (TObject * obj = next1()) {
 		if (obj->InheritsFrom("TPad")) {
 			 TPad * p = (TPad*)obj;
@@ -1368,6 +1374,7 @@ Int_t FindPaveStats(TVirtualPad * ca, TList * lops, TList * pads)
 void Show_Fonts()
 {
 	const char text[] = "The big brown fox jumps over the lazy dog.";
+	gStyle->SetCanvasPreferGL(kFALSE);
 	HTCanvas * cc = new HTCanvas("ct", "Text fonts used by root", 100, 100, 600, 600);
 	Float_t x0 = 0.05, y = 0.9, dy = 0.05;
 	TText *t1;
@@ -1406,18 +1413,18 @@ void Show_Fonts()
 	t = new TText(0.05, 0.95, "13"); t->SetTextAlign(13);t->SetNDC();
 	t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
 
-	t = new TText(0.5, 0.05, "21");   t->SetTextAlign(21);t->SetNDC();
+	t = new TText(0.5, 0.05, "21");	t->SetTextAlign(21);t->SetNDC();
 	t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-	t = new TText(0.5, 0.5, "22");   t->SetTextAlign(22);t->SetNDC();
+	t = new TText(0.5, 0.5, "22");	t->SetTextAlign(22);t->SetNDC();
 	t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-	t = new TText(0.5, 0.95, "23");   t->SetTextAlign(23);t->SetNDC();
+	t = new TText(0.5, 0.95, "23");	t->SetTextAlign(23);t->SetNDC();
 	t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
 
-	t = new TText(0.95, 0.05, "31");   t->SetTextAlign(31);t->SetNDC();
+	t = new TText(0.95, 0.05, "31");	t->SetTextAlign(31);t->SetNDC();
 	t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-	t = new TText(0.95, 0.5, "32");   t->SetTextAlign(32);t->SetNDC();
+	t = new TText(0.95, 0.5, "32");	t->SetTextAlign(32);t->SetNDC();
 	t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
-	t = new TText(0.95, 0.95, "33");   t->SetTextAlign(33);t->SetNDC();
+	t = new TText(0.95, 0.95, "33");	t->SetTextAlign(33);t->SetNDC();
 	t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
 	cc->Modified();
 	cc->Update();
@@ -1427,9 +1434,9 @@ void Show_Fonts()
 
 void DrawColors()
 {
-//   TString hexcol;
+//	TString hexcol;
 	TString scol;
-//   TString cmd;
+//	TString cmd;
 	new TCanvas("rgb_colors", "Predefined RGB colors", -400, 20, 800, 400);
 	Float_t dx = 1./10.2 , dy = 1./10.2 ;
 	Float_t x0 = 0.1 * dx,  y0 =0.1 *  dy;
@@ -1439,7 +1446,7 @@ void DrawColors()
 	Int_t maxcolors = 100;
 	Int_t basecolor = 1;
 	Int_t colindex = basecolor;
-//   Int_t palette = new Int_t[maxcolors];
+//	Int_t palette = new Int_t[maxcolors];
 	for (Int_t i=basecolor; i<= maxcolors; i++) {
 		scol = Form("%d", colindex);
 		b = new TButton(scol.Data(), scol.Data(), x, y, x + .9*dx , y + .9*dy );
@@ -1450,7 +1457,7 @@ void DrawColors()
 		c = GetColorByInd(colindex);
 		if (c) {
 			if ( c->GetRed() + c->GetBlue() + c->GetGreen() < 1.5 ) b->SetTextColor(0);
-			else                   b->SetTextColor(1);
+			else						 b->SetTextColor(1);
 		} else {
 			cout << "color not found " << colindex << endl;
 		}
@@ -1485,7 +1492,7 @@ void DrawColors()
 		if (col) delete col;
 		col = new TColor(ind, red,green,blue);
 		a = new TArc(x1, y1, radius, phi1, phi2);
- //     col->Print();
+ //	  col->Print();
 		a->SetFillColor(ind);
 		a->SetLineColor(0);
 		a->SetLineWidth(0);
@@ -1515,17 +1522,17 @@ void DrawFillStyles()
 	for (Int_t i=1; i<= 25; i++) styles[3 + i] = i +3000;
 
 	TString scol;
-//   TString cmd;
+//	TString cmd;
 	new TCanvas("fillstyles", "fillstyles", 400, 20, 800, 400);
 	Float_t dx = 1./7.2 , dy = 1./5.2 ;
 	Float_t x0 = 0.1 * dx,  y0 = 1 - 1.1 *  dy;
 	Float_t x = x0, y = y0;
 	TPaveText * b;
-//   Int_t palette = new Int_t[maxcolors];
+//	Int_t palette = new Int_t[maxcolors];
 
 	for (Int_t i=0; i< 29 ; i++) {
 		scol = Form("%d", styles[i]);
-		if      (i==0) scol = Form("%d \n hollow", styles[i]);
+		if		(i==0) scol = Form("%d \n hollow", styles[i]);
 		else if (i==1) scol += "\n solid";
 
 		b = new TPaveText(x, y, x + .9*dx , y + .9*dy );
@@ -1589,7 +1596,7 @@ Bool_t CreateDefaultsDir(TRootCanvas * /*mycanvas*/, Bool_t checkonly)
 {
 	TString defname("default/Last");
 	Bool_t fok = kFALSE;
-	TEnv env(".hprrc");         // inspect ROOT's environment
+	TEnv env(".hprrc");			// inspect ROOT's environment
 	defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
 	if (env.Lookup("HistPresent.LastSettingsName") == NULL) {
 		cout << "Setting defaults dir/name to: " << defname.Data() << endl;
@@ -1612,9 +1619,9 @@ Bool_t CreateDefaultsDir(TRootCanvas * /*mycanvas*/, Bool_t checkonly)
 					dirname.Append(": ");
 					dirname.Append(gSystem->GetError());
 					cout << dirname.Data() << endl;
-//               WarnBox(dirname.Data());
+//					WarnBox(dirname.Data());
 				}
-//         }
+//			}
 		} else {
 			return kTRUE;
 		}
@@ -1629,7 +1636,7 @@ Bool_t fixnames(TFile * * infile, Bool_t checkonly)
 	TString outfile_n((*infile)->GetName());
 	if (!checkonly) {
 		if (outfile_n.EndsWith(".root")) outfile_n.Resize(outfile_n.Length()-5);
-		else                             cout << "Warning: " << outfile_n
+		else									  cout << "Warning: " << outfile_n
 												<< " doesnt end with .root" << endl;
 		outfile_n += "_cor.root";
 		outfile = new TFile(outfile_n, "RECREATE");
@@ -1639,7 +1646,7 @@ Bool_t fixnames(TFile * * infile, Bool_t checkonly)
 	TNamed * obj;
 	TString name;
 	Bool_t needsfix = kFALSE;
-//   cout << "enter fixnames" << endl;
+//	cout << "enter fixnames" << endl;
 	TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
 	while( (key = (TKey*)next()) ){
 		(*infile)->cd();
@@ -1669,14 +1676,14 @@ Bool_t fixnames(TFile * * infile, Bool_t checkonly)
 		}
 	}
 	if (outfile) {
-//      cout << "new file ++++++++++++++++++++++++++++++++++++++++++++=" <<endl;
- //     outfile->ls();
+//		cout << "new file ++++++++++++++++++++++++++++++++++++++++++++=" <<endl;
+ //	  outfile->ls();
 		outfile->Close();
 		if (needsfix) {
-//          cout << "new file: " <<outfile_n<<endl;
+//			 cout << "new file: " <<outfile_n<<endl;
 			(*infile)->Close();
 			*infile = new TFile(outfile_n, "READ");
-//         (*infile)->ls();
+//			(*infile)->ls();
 		}
 	}
 	return needsfix;
@@ -1707,7 +1714,7 @@ TGraph * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color)
 
 Int_t getcol()
 {
-//   TString hexcol;
+//	TString hexcol;
 	TNamed * colobj = new TNamed("colobj", "colobj");
 	gROOT->GetListOfSpecials()->Add(colobj);
 	colobj->SetUniqueID(0);
@@ -1722,7 +1729,7 @@ Int_t getcol()
 	Int_t maxcolors = 100;
 	Int_t basecolor = 1;
 	Int_t colindex = basecolor;
-//   Int_t palette = new Int_t[maxcolors];
+//	Int_t palette = new Int_t[maxcolors];
 	for (Int_t i=basecolor; i<= maxcolors; i++) {
 		scol = Form("%d", colindex);
 		cmd = "gROOT->GetListOfSpecials()->FindObject(\"colobj\")->SetUniqueID(";
@@ -1736,12 +1743,12 @@ Int_t getcol()
 		c = GetColorByInd(colindex);
 		if (c) {
 		  if ( c->GetRed() + c->GetBlue() + c->GetGreen() < 1.5 ) b->SetTextColor(0);
-			else                   b->SetTextColor(1);
+			else						 b->SetTextColor(1);
 		} else {
 			cout << "color not found " << colindex << endl;
 		}
-//      if (colindex == 1) b->SetTextColor(10);
-//      else               b->SetTextColor(1);
+//		if (colindex == 1) b->SetTextColor(10);
+//		else					b->SetTextColor(1);
 		if ( (colindex++ >= maxcolors + basecolor) ) {
 			cout << "Too many colors " << maxcolors << endl;
 			break;
@@ -1824,9 +1831,9 @@ TList * BuildList(const char *bp)
 {
 	TButton * b;
 	b = (TButton *)strtoul(bp, 0, 16);
-//      cout << "bp " << b << endl;
+//		cout << "bp " << b << endl;
 	TCanvas * mcanvas = b->GetCanvas();
-//   cp_many title start
+//	cp_many title start
 	TString ctitle(mcanvas->GetTitle());
 	TRegexp cprefix("CP_");
 	TRegexp cpostfix(".histlist");
@@ -1834,7 +1841,7 @@ TList * BuildList(const char *bp)
 	ctitle(cpostfix) = "";
 	TList * hlist = new TList();
 	hlist->SetName(ctitle);
-//   cout << "Title of mcanvas: " << ctitle.Data() << endl;
+//	cout << "Title of mcanvas: " << ctitle.Data() << endl;
 //  cp_many title end
 	TIter next(mcanvas->GetListOfPrimitives());
 	TString cmdline;
@@ -1845,7 +1852,7 @@ TList * BuildList(const char *bp)
 			TButton * button = (TButton*)obj;
 			cmdline = button->GetMethod();
 			if (cmdline.Contains("Select")) {
-//            cout << cmdline  << endl;
+//				cout << cmdline  << endl;
 				arg = GetStringArg(&cmdline, 0);
 				if (arg) {
 					entry = *arg;
@@ -1901,7 +1908,7 @@ Int_t FindHistsInFile(const char * rootf, const char * listf)
 		TObject * obj = f.Get(line);
 		if (obj) nfound ++;
 	}
-//   cout << "FindHistsInFile " << rootf<< " " << listf << " : " << nfound<< endl;
+//	cout << "FindHistsInFile " << rootf<< " " << listf << " : " << nfound<< endl;
 	return nfound;
 }
 //__________________________________________________________________________
@@ -1909,7 +1916,7 @@ Int_t FindHistsInFile(const char * rootf, const char * listf)
 TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 {
 	if (!hist) return NULL;
-//   cout << "Enter rotate_hist" << endl << flush;
+//	cout << "Enter rotate_hist" << endl << flush;
 	TString hname(hist->GetName());
 	Int_t us = hname.Index("_");
 	if (us >= 0) hname.Remove(0, us + 1); // remove all before first underscore
@@ -1921,28 +1928,28 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 	TH1 * hold = (TH1*)gROOT->GetList()->FindObject(hname);
 	if (hold) {
 		delete hold;
-//      cout << "rotate_hist,hold: " << hold << endl;
+//		cout << "rotate_hist,hold: " << hold << endl;
 	}
-//   cout << "rotate_hist before  hist->Clone()" << endl << flush;
+//	cout << "rotate_hist before  hist->Clone()" << endl << flush;
 	TH2 * hrot = (TH2*)hist->Clone();
-//   cout << "rotate_hist after hist->Clone()" << endl << flush;
+//	cout << "rotate_hist after hist->Clone()" << endl << flush;
 	hrot->Reset();
 	hrot->SetName(hname);
 	hrot->SetTitle(htitle);
-//   TH2F * hrot = new TH2F(hname, htitle, nbinx, 0, xa, nbiny, 0, ya);
+//	TH2F * hrot = new TH2F(hname, htitle, nbinx, 0, xa, nbiny, 0, ya);
 	Int_t firstx = hist->GetXaxis()->GetFirst();
 	Int_t lastx  = hist->GetXaxis()->GetLast();
 	Int_t firsty = hist->GetYaxis()->GetFirst();
 	Int_t lasty  = hist->GetYaxis()->GetLast();
 	Int_t nbinsx = hist->GetXaxis()->GetNbins();
 	Int_t nbinsy = hist->GetYaxis()->GetNbins();
-//   Axis_t xoff = 0.5 * (Axis_t)(lastx - firstx + 2);
-//   Axis_t yoff = 0.5 * (Axis_t)(lasty - firsty + 2);
+//	Axis_t xoff = 0.5 * (Axis_t)(lastx - firstx + 2);
+//	Axis_t yoff = 0.5 * (Axis_t)(lasty - firsty + 2);
 	Axis_t xoff = 0.5 * (Axis_t)(nbinsx + 1);
 	Axis_t yoff = 0.5 * (Axis_t)(nbinsy + 1);
-//   cout << xoff << " " << yoff << endl;
+//	cout << xoff << " " << yoff << endl;
 	Float_t angle = TMath::Pi() * angle_deg / 180.;
-//   Float_t angle = TMath::ATan(tan_a);
+//	Float_t angle = TMath::ATan(tan_a);
 	Float_t sina = TMath::Sin(angle);
 	Float_t cosa = TMath::Cos(angle);
 	for (Int_t binx = firstx; binx <= lastx; binx++) {
@@ -1955,7 +1962,7 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 				hrot->SetBinContent(binx, biny, hist->GetBinContent(xr, yr));
 		}
 	}
-//   cout << "Exit rotate_hist" << endl << flush;
+//	cout << "Exit rotate_hist" << endl << flush;
 	return hrot;
 }
 
@@ -2057,14 +2064,14 @@ void SetAxisHistX(TCanvas *c, TAxis * xa)
 
 	TList *row_lab = new TList();
 	TRootCanvas * win = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
-//   TH1 * hist = gr->GetHistogram();
+//	TH1 * hist = gr->GetHistogram();
  //  if (hist == NULL) return;
-//   TAxis * xa = hist->GetXaxis();
+//	TAxis * xa = hist->GetXaxis();
 	xl = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
 	xu = xa->GetBinUpEdge(TMath::Min(xa->GetLast(),xa->GetNbins()));
-//   xl = xa->GetXmin();
-//   xu = xa->GetXmax();
-//   cout << " xl, xu " << xl << " " << xu << endl;
+//	xl = xa->GetXmin();
+//	xu = xa->GetXmax();
+//	cout << " xl, xu " << xl << " " << xu << endl;
 	if (xa->GetTimeDisplay()) {
 		ixl = (Int_t)xl;
 		ixu = (Int_t)xu;
@@ -2072,7 +2079,7 @@ void SetAxisHistX(TCanvas *c, TAxis * xa)
 		tofinit = tof;
 		ixl += tof;
 		ixu += tof;
- //     cout << " ixl, ixu, tof " << ixl << " " << ixu << " " << tof << endl;
+ //	  cout << " ixl, ixu, tof " << ixl << " " << ixu << " " << tof << endl;
 		ConvertTimeToString(ixl, xa, &starttime);
 		ConvertTimeToString(ixu, xa, &endtime);
 		ConvertTimeToString(tof, xa, &timeoffset);
@@ -2083,10 +2090,10 @@ void SetAxisHistX(TCanvas *c, TAxis * xa)
 		valp[ind++] = &endtime;
 		valp[ind++] = &timeoffset;
 
-//      row_lab->Add(new TObjString("PlainIntVal_Xaxis min"));
-//      row_lab->Add(new TObjString("PlainIntVal_Xaxis max"));
-//      valp[ind++] = &ixl;
-//      valp[ind++] = &ixu;
+//		row_lab->Add(new TObjString("PlainIntVal_Xaxis min"));
+//		row_lab->Add(new TObjString("PlainIntVal_Xaxis max"));
+//		valp[ind++] = &ixl;
+//		valp[ind++] = &ixu;
 	} else {
 		row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
 		row_lab->Add(new TObjString("DoubleValue_Xaxis max"));
@@ -2105,7 +2112,7 @@ void SetAxisHistX(TCanvas *c, TAxis * xa)
 			tof = (Int_t)ConvertToTimeOrDouble(timeoffset.Data(), xa);
 			if  (tof > 0)
 				gStyle->SetTimeOffset((Double_t)tof);
- //        cout << xl << " " << xu << endl;
+ //		  cout << xl << " " << xu << endl;
 			if (gStyle->GetTimeOffset() != 0) {
 				xl -= tofinit;
 				xu -= tofinit;
@@ -2114,13 +2121,13 @@ void SetAxisHistX(TCanvas *c, TAxis * xa)
 			Int_t bin1 = xa->FindBin(xl);
 			Int_t bin2 = xa->FindBin(xu);
 			xa->SetRange(bin1, bin2);
-//         xa->SetLimits(xl, xu);
+//			xa->SetLimits(xl, xu);
 			xa->SetTimeDisplay(kTRUE);
 		} else {
 			Int_t bin1 = xa->FindBin(xl);
 			Int_t bin2 = xa->FindBin(xu);
 			xa->SetRange(bin1, bin2);
-//        xa->SetLimits(xl, xu);
+//		  xa->SetLimits(xl, xu);
 		}
 	}
 	c->cd();

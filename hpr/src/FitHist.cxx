@@ -3481,7 +3481,7 @@ void FitHist::Draw3DimPolyMarker()
 	hempty->SetStats(0);
 	Double_t hmin = fSelHist->GetMinimum();
 	Double_t hmax = fSelHist->GetMaximum();
-	Int_t logc;
+	Int_t logc = 0;
 	TEnv env(".hprrc");
 	Double_t min = env.GetValue("Set3DimOptDialog.fContMin", hmin);
 	Double_t max = env.GetValue("Set3DimOptDialog.fContMax", hmax);
