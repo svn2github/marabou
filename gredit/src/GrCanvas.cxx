@@ -858,14 +858,18 @@ TObject * GrCanvas::WaitForCreate(const char * what, TPad **pad)
 void GrCanvas::ListPrimitives()  
 {
 	cout << endl << "HTCanvas* hc = (HTCanvas*)" << this << ";" << endl;
+	TString cn;
 	TObjLink * lnk = gPad->GetListOfPrimitives()->FirstLink();
 	Int_t ind = 0;
 	while ( lnk ) {
 		TObject * obj = lnk->GetObject();
-		cout << "" << obj->ClassName()<< " * l" << ind << " = " 
-		<< "(" << obj->ClassName()<< "*)" << obj << "; " << obj->GetName()
-			<< " Option: \"" <<lnk->GetOption()<< "\"" << endl; 
-		ind++;
+		cn = obj->ClassName();
+		if ( !cn.Contains("Marker") ) {
+			cout << "" << obj->ClassName()<< " * l" << ind << " = " 
+			<< "(" << obj->ClassName()<< "*)" << obj << "; " << obj->GetName()
+				<< " Option: \"" <<lnk->GetOption()<< "\"" << endl; 
+			ind++;
+		}
 		lnk = lnk->Next();
 	}
 }; 
