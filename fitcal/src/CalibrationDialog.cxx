@@ -73,7 +73,7 @@ Double_t Co60_Intensity[kCo60_Npeaks]=
      
 static const Int_t kCm244_Npeaks = 4;
 const Char_t *Cm244_Name[kCm244_Npeaks] =
-      {"Pu240","Pu240","Cm144","Cm144"};
+      {"Pu240","Pu240","Cm244","Cm244"};
 Double_t Cm244_Energy[kCm244_Npeaks] =
      {5123.82, 5168.30, 5762.835, 5804.96};
 Double_t Cm244_EnError[kCm244_Npeaks] =
