@@ -321,8 +321,8 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += " ";
 	rCmd += fSetupPath;
 	rCmd += " m_remote reset -l";
-	if (!this->IsVerbose()) rCmd += " >>/dev/null";
-	rCmd += " 2>>/dev/null";
+	rCmd += " 2>>&/dev/null ";
+	if (!this->IsVerbose()) rCmd += " >>&/dev/null";
 	rCmd += "\"";
 	if (this->IsVerbose()) {
 		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
@@ -335,6 +335,11 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += " -l ";
 	rCmd += gSystem->Getenv("USER");
 	rCmd += " \"ps ax | fgrep m_\"";
+	if (this->IsVerbose()) {
+		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartMbsServer", setmagenta);
+	}
+	gSystem->Exec(rCmd.Data());
 
 	cout	<< setmagenta << "Please wait " << setblack << ends << flush;
 	fAborted = kFALSE;
@@ -350,6 +355,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 		pCmd = gSystem->OpenPipe(rCmd.Data(), "r");
 		while (fgets(line, 100, pCmd) != NULL) {
 			pLine = line;
+			if (this->IsVerbose()) cout << "--- " << line << endl;
 			if (pLine.Index("m_") == -1) break;
 			found = kTRUE;
 		}
@@ -428,8 +434,8 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += fController.GetName();
 	rCmd += "/startup_";
 	rCmd += mbsVersion;
-	if (!this->IsVerbose()) rCmd += " >>/dev/null";
-	rCmd += " 2>>/dev/null";
+	rCmd += " 2>>&/dev/null ";
+	if (!this->IsVerbose()) rCmd += " >>&/dev/null";
 	rCmd += "\"";
 	if (this->IsVerbose()) {
 		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
@@ -442,6 +448,11 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += " -l ";
 	rCmd += gSystem->Getenv("USER");
 	rCmd += " \"ps ax | fgrep m_\"";
+	if (this->IsVerbose()) {
+		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartMbsServer", setmagenta);
+	}
+	gSystem->Exec(rCmd.Data());
 	cout	<< setmagenta << "Please wait " << setblack << ends << flush;
 	fAborted = kFALSE;
 	for (i = 0; i < 30 ; i++) {
@@ -456,6 +467,8 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 		pCmd = gSystem->OpenPipe(rCmd.Data(), "r");
 		while (fgets(line, 100, pCmd) != NULL) {
 			pLine = line;
+			if (this->IsVerbose()) cout << "--- " << line << endl;
+			if (pLine.Index("m_") == -1) break;
 			if (pLine.Index("m_esone") != -1) {
 				found = kTRUE;
 				break;
