@@ -2294,12 +2294,12 @@ void TMrbAnalyze::PrintCalibration(ostream & Out, Int_t ModuleIndex, Int_t RelPa
 	}
 }
 
-Double_t TMrbAnalyze::Calibrate(Double_t Energy, Int_t ModuleNumber, Int_t Channel, Bool_t Randomize, Bool_t WithinLimits) {
+Double_t TMrbAnalyze::Calibrate(Int_t Energy, Int_t ModuleNumber, Int_t Channel, Bool_t Randomize, Bool_t WithinLimits) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::Calibrate
 // Purpose:        Return energy calibrated
-// Arguments:      Double_t Energy     -- energy value, uncalibrated
+// Arguments:      Int_t Energy     -- energy value, uncalibrated
 //                 Int_t ModuleNumber  -- module number
 //                 Int_t Channel       -- channel number
 //                 Bool_t Randomize    -- add random number if kTRUE
@@ -2311,12 +2311,13 @@ Double_t TMrbAnalyze::Calibrate(Double_t Energy, Int_t ModuleNumber, Int_t Chann
 //////////////////////////////////////////////////////////////////////////////
 
 	TF1 * cal = this->GetCalibration(ModuleNumber, Channel);
+	Double_t e = Energy;
 	if (cal) {
-		if(WithinLimits && (Energy < cal->GetXmin() || Energy > cal->GetXmax())) return(0);
-		if (Randomize && (cal->GetParameter(1) != 1.0)) Energy += gRandom->Rndm() - 0.5;
-		Energy = cal->Eval(Energy);
+		if(WithinLimits && (e < cal->GetXmin() || e > cal->GetXmax())) return(0);
+		if (Randomize && (cal->GetParameter(1) != 1.0)) e += gRandom->Rndm() - 0.5;
+		e = cal->Eval(e);
 	}
-	return(Energy);
+	return(e);
 }
 
 TF1 * TMrbAnalyze::GetDCorr(const Char_t * DCorrName) const {
