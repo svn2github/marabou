@@ -20,6 +20,7 @@
 #include "TObjString.h"
 #include "THashList.h"
 #include "TMath.h"
+#include "TRandom.h"
 #include "TF1.h"
 #include "TF2.h"
 
@@ -2291,6 +2292,31 @@ void TMrbAnalyze::PrintCalibration(ostream & Out, Int_t ModuleIndex, Int_t RelPa
 			Out << endl;
 		}
 	}
+}
+
+Double_t TMrbAnalyze::Calibrate(Double_t Energy, Int_t ModuleNumber, Int_t Channel, Bool_t Randomize, Bool_t WithinLimits) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::Calibrate
+// Purpose:        Return energy calibrated
+// Arguments:      Double_t Energy     -- energy value, uncalibrated
+//                 Int_t ModuleNumber  -- module number
+//                 Int_t Channel       -- channel number
+//                 Bool_t Randomize    -- add random number if kTRUE
+//                 Bool_t WithinLimits -- check limits if kTRUE
+// Results:        Double_t Energy     -- calibrated energy value
+// Exceptions:
+// Description:
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TF1 * cal = this->GetCalibration(ModuleNumber, Channel);
+	if (cal) {
+		if(WithinLimits && (Energy < cal->GetXmin() || Energy > cal->GetXmax())) return(0);
+		if (Randomize && (cal->GetParameter(1) != 1.0)) Energy += gRandom->Rndm() - 0.5;
+		Energy = cal->Eval(Energy);
+	}
+	return(Energy);
 }
 
 TF1 * TMrbAnalyze::GetDCorr(const Char_t * DCorrName) const {

@@ -211,13 +211,15 @@ class TMrbAnalyze : public TObject {
 		inline void PrintCalibration(Int_t AbsParamIndex) const { this->PrintCalibration(cout, AbsParamIndex); };
 		inline void PrintCalibration(const Char_t * CalibrationName) const { this->PrintCalibration(cout, CalibrationName); };
 
-		Int_t ReadDCorrFromFile(const Char_t * DCorrFile);		// read calibration data from file
-		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
+		Double_t Calibrate(Double_t Energy, Int_t ModuleNumber, Int_t Channel, Bool_t Randomize = kFALSE, Bool_t WithinLimits = kFALSE);
+		
+		Int_t ReadDCorrFromFile(const Char_t * DCorrFile);		// read doppler corr data from file
+		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add doppler corr
 		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex);
 		TF1 * AddDCorrToList(const Char_t * Name, const Char_t * Formula, Double_t Xmin, Double_t Xmax, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
-		TF1 * GetDCorr(const Char_t * DCorrName) const; 				// get calibration by name
-		TF1 * GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex) const;		// get calibration by module + param
-		TF1 * GetDCorr(Int_t AbsParamIndex) const;							// get calibration by absolute param index
+		TF1 * GetDCorr(const Char_t * DCorrName) const; 				// get doppler corr by name
+		TF1 * GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex) const;		// get doppler corr by module + param
+		TF1 * GetDCorr(Int_t AbsParamIndex) const;							// get doppler corr by absolute param index
 		TF1 * GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Factor) const;
 		TF1 * GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Beta, Double_t & Angle) const;
 		TF1 * GetDCorr(Int_t AbsParamIndex, Double_t & Factor) const;
