@@ -211,7 +211,7 @@ class TMrbAnalyze : public TObject {
 		inline void PrintCalibration(Int_t AbsParamIndex) const { this->PrintCalibration(cout, AbsParamIndex); };
 		inline void PrintCalibration(const Char_t * CalibrationName) const { this->PrintCalibration(cout, CalibrationName); };
 
-		Double_t Calibrate(Double_t Energy, Int_t ModuleNumber, Int_t Channel, Bool_t Randomize = kFALSE, Bool_t WithinLimits = kFALSE);
+		Double_t Calibrate(Int_t Energy, Int_t ModuleNumber, Int_t Channel, Bool_t Randomize = kFALSE, Bool_t WithinLimits = kFALSE);
 		
 		Int_t ReadDCorrFromFile(const Char_t * DCorrFile);		// read doppler corr data from file
 		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add doppler corr
