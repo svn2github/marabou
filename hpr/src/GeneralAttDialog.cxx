@@ -32,6 +32,7 @@ Int_t GeneralAttDialog::fRememberStatBox = 0;
 Int_t GeneralAttDialog::fRememberLegendBox = 1;
 Int_t GeneralAttDialog::fUseAttributeMacro = 0;
 Int_t GeneralAttDialog::fMaxListEntries = 333;
+Int_t GeneralAttDialog::fMaxFileListEntries = 333;
 Int_t GeneralAttDialog::fSkipFirst = 0;
 Int_t GeneralAttDialog::fContentLowLimit = 0;
 Int_t GeneralAttDialog::fVertAdjustLimit =0;
@@ -74,10 +75,20 @@ Too many entries in histlists (default 333)  may crash X \n\
 on some systems\n\
 With this option one can limit this number\n\
 Only the first fMaxListEntries are shown\n\
-___________________________________________________________\n\
+____________________________________________________________\n\
+fMaxFileListEntries: Max Entries in File Lists\n\
+--------------------\n\
+Too many entries in filelists (default 333)  may crash X \n\
+on some systems\n\
+With this option one can limit this number\n\
+Only the first fMaxFileListEntries are shown\n\
+Setting fSkipFirst allows to access any part of the\n\
+complete list.\n\
+Sorting is done b e f o r e the cut of the list is applied.\n\
+__________________________________________________________\n\
 fSkipFirst: Skip first Entries in Lists\n\
 ---------------------------\n\
-If the above fMaxListEntries are exceeded this value \n\
+If the above fMaxFileListEntries are exceeded this value \n\
 allows to skip the first fSkipFirst entires.\n\
 ___________________________________________________________\n\
 Show lists only\n\
@@ -136,7 +147,7 @@ ____________________________________________________________\n\
    fRow_lab = new TList();
 
    Int_t ind = 0;
-//   static Int_t dummy;
+   static Int_t dummy;
 	GetCustomStyles();
 	TObject *obj;
    TString style_menu ("ComboSelect_         Set / Apply global style");
@@ -146,6 +157,7 @@ ____________________________________________________________\n\
 	   style_menu += ((TStyle*)obj)->GetName();
 	}
 	TString rescmd("RestoreSavedSettings()");
+	TString mskcmd("SetSelectionMask()");
    RestoreDefaults();
    fRow_lab->Add(new TObjString("CheckButton_              Force current style"));
    fValp[ind++] = &fForceStyle;
@@ -155,18 +167,17 @@ ____________________________________________________________\n\
 	fRow_lab->Add(new TObjString("CommandButt_Apply saved settings"));
    fValp[ind++] = &rescmd;
 
+   fRow_lab->Add(new TObjString("CommentOnly_    How to modify names in display    "));
+   fValp[ind++] = &dummy;
    fRow_lab->Add(new TObjString("CheckButton_  Append Timestamp to histo names"));
    fValp[ind++] = &fAppendTimestampToHistname;
    fRow_lab->Add(new TObjString("CheckButton_  Prepend filename to histo names"));
    fValp[ind++] = &fPrependFilenameToName;
    fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo titles"));
    fValp[ind++] = &fPrependFilenameToTitle;
-	fRow_lab->Add(new TObjString("CheckButton_              Show histlists only"));
-	fValp[ind++] = &fShowListsOnly;
-	fRow_lab->Add(new TObjString("CheckButton_        Suppress warning messages"));
-   fValp[ind++] = &fSuppressWarnings;
-   fRow_lab->Add(new TObjString("CheckButton_      Show PS file after creation"));
-   fValp[ind++] = &fShowPSFile;
+   
+   fRow_lab->Add(new TObjString("CommentOnly_    What to remember across sessions   "));
+   fValp[ind++] = &dummy;
    fRow_lab->Add(new TObjString("CheckButton_ Remember Expand settings (Marks)"));
    fValp[ind++] = &fRememberLastSet;
    fRow_lab->Add(new TObjString("CheckButton_Remember Zoomings (by left mouse)"));
@@ -175,14 +186,21 @@ ____________________________________________________________\n\
    fValp[ind++] = &fRememberStatBox;
 	fRow_lab->Add(new TObjString("CheckButton_   Remember position of LegendBox"));
 	fValp[ind++] = &fRememberLegendBox;
-	fRow_lab->Add(new TObjString("CheckButton_              Use Attribute Macro"));
-   fValp[ind++] = &fUseAttributeMacro;
-   fRow_lab->Add(new TObjString("CheckButton_    Use Regular expression syntax"));
-   fValp[ind++] = &fUseRegexp;
-   fRow_lab->Add(new TObjString("PlainIntVal_             Max Entries in Lists"));
+   fRow_lab->Add(new TObjString("CommentOnly_     How to limit length of lists     "));
+   fValp[ind++] = &dummy;
+	fRow_lab->Add(new TObjString("CheckButton_              Show histlists only"));
+	fValp[ind++] = &fShowListsOnly;
+//   fRow_lab->Add(new TObjString("CheckButton_    Use Regular expression syntax"));
+//   fValp[ind++] = &fUseRegexp;
+   fRow_lab->Add(new TObjString("PlainIntVal_        Max Entries in Hist Lists"));
    fValp[ind++] = &fMaxListEntries;
-   fRow_lab->Add(new TObjString("PlainIntVal_      Skip first Entries in Lists"));
+   fRow_lab->Add(new TObjString("PlainIntVal_        Max Entries in File Lists"));
+   fValp[ind++] = &fMaxFileListEntries;
+   fRow_lab->Add(new TObjString("PlainIntVal_ Skip first Entries in File Lists"));
    fValp[ind++] = &fSkipFirst;
+	fRow_lab->Add(new TObjString("CommandButt_Set File/Histgram selection masks"));
+   fValp[ind++] = &mskcmd;
+/*
 	fRow_lab->Add(new TObjString("CheckButton_ Adjust min Y to min cont, (1dim)"));
    fAdjustMinYButton = ind;
 	fValp[ind++] = &fAdjustMinY;
@@ -192,9 +210,18 @@ ____________________________________________________________\n\
 	fValp[ind++] = &fVertAdjustLimit;
 	fRow_lab->Add(new TObjString("CheckButton_Dont draw cells with 0 cont(LEGO)"));
 	fValp[ind++] = &fLegoSuppressZero;
-
+*/
+   fRow_lab->Add(new TObjString("CommentOnly_       Miscellaneous       "));
+   fValp[ind++] = &dummy;
+	fRow_lab->Add(new TObjString("CheckButton_        Suppress warning messages"));
+   fValp[ind++] = &fSuppressWarnings;
+   fRow_lab->Add(new TObjString("CheckButton_      Show PS file after creation"));
+   fValp[ind++] = &fShowPSFile;
+	fRow_lab->Add(new TObjString("CheckButton_              Use Attribute Macro"));
+   fValp[ind++] = &fUseAttributeMacro;
+/*
    fRow_lab->Add(new TObjString("CommentOnly_Option for stacked hists"));
-   fValp[ind++] = &fScaleStack;
+   fValp[ind++] = &dummy;
    fRow_lab->Add(new TObjString("CheckButton_     Apply scale to stacked hists"));
 	fValp[ind++] = &fScaleStack;
 	fRow_lab->Add(new TObjString("RadioButton_ Really stack"));
@@ -203,7 +230,7 @@ ____________________________________________________________\n\
    fValp[ind++] = &fStackedNostack;
    fRow_lab->Add(new TObjString("RadioButton+Separate Pads"));
    fValp[ind++] = &fStackedPads;
-
+*/
    static Int_t ok;
    Int_t itemwidth = 360;
    fDialog =
@@ -281,6 +308,7 @@ void GeneralAttDialog::SaveDefaults()
 	env.SetValue("GeneralAttDialog.fRememberLegendBox", fRememberLegendBox);
 	env.SetValue("GeneralAttDialog.fUseAttributeMacro", fUseAttributeMacro);
    env.SetValue("GeneralAttDialog.fMaxListEntries",    fMaxListEntries);
+   env.SetValue("GeneralAttDialog.fMaxFileListEntries",fMaxFileListEntries);
    env.SetValue("GeneralAttDialog.fSkipFirst",         fSkipFirst);
    env.SetValue("GeneralAttDialog.fVertAdjustLimit",   fVertAdjustLimit);
    env.SetValue("GeneralAttDialog.fAdjustMinY",        fAdjustMinY);
@@ -358,6 +386,13 @@ void GeneralAttDialog::RestoreDefaults()
 		cout << " to  " << tp << endl;
 	}
 }
+//______________________________________________________________________
+
+void GeneralAttDialog::SetSelectionMask()
+{
+	gHpr->GetFileSelMask();
+}
+
 //______________________________________________________________________
 
 void GeneralAttDialog::CloseDown(Int_t wid)

@@ -52,7 +52,7 @@ private:
 	Int_t   fTwoDimLogZ;
 	Int_t   fUseGL;
 	Int_t   fContourLevels;
-	
+	Int_t   fUseNPoints;
 public:
 
    Set2DimGraphDialog(TGWindow * win = NULL);

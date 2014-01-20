@@ -542,7 +542,7 @@ void SetColorModeDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject *
 //   cout << endl;
    if ( fMrbow ) {
 		TH1* hh = Hpr::FindHistInPad((TVirtualPad *)fCanvas);
-		if (hh->GetDimension() == 2) {
+		if (hh && hh->GetDimension() == 2) {
 			hh->SetContour(fNofTransLevels);
 		}
 	}

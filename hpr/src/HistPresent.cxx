@@ -588,17 +588,17 @@ void HistPresent::ShowFiles(const char *how, const char */*bp*/)
 		 nfiles++;
 	}
 	fCmdLine->Sort();
-	if ( GeneralAttDialog::fMaxListEntries <= 0 )
-		GeneralAttDialog::fMaxListEntries = 100;
-	if ( nfiles > GeneralAttDialog::fMaxListEntries ) {
-		cout << endl<< setred << "More than " << GeneralAttDialog::fMaxListEntries 
+	if ( GeneralAttDialog::fMaxFileListEntries <= 0 )
+		GeneralAttDialog::fMaxFileListEntries = 100;
+	if ( nfiles > GeneralAttDialog::fMaxFileListEntries ) {
+		cout << endl<< setred << "More than " << GeneralAttDialog::fMaxFileListEntries 
 		<< " selected files in directory" << endl;
 		cout << "Please reduce number of files in directory" << endl <<
 		"or apply a \"File selection mask\"" << setblack << endl;
-		cout<< setblue << "Another " << nfiles - GeneralAttDialog::fMaxListEntries << 
+		cout<< setblue << "Another " << nfiles - GeneralAttDialog::fMaxFileListEntries << 
 		" entries are not shown" << endl;
 		cout << setblack;
-		nfiles = GeneralAttDialog::fMaxListEntries;
+		nfiles = GeneralAttDialog::fMaxFileListEntries;
 //		skipfirst = GeneralAttDialog::fSkipFirst;
 	}
 	if ( GeneralAttDialog::fSkipFirst > 0 )
@@ -757,7 +757,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    TString sel;
    Int_t maxkey = 0;
    if (GeneralAttDialog::fMaxListEntries > 1000) {
-      cout << "Warning: Max number of entries in list of histograms set to: 1000"
+      cout << "Warning: Max number of entries in list\n\
+ of histograms set to: 1000"
            << endl;
       GeneralAttDialog::fMaxListEntries = 1000;
    }
@@ -843,6 +844,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "GrCanvas"),      maxkey);
       maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "HTCanvas"),      maxkey);
       maxkey = TMath:: Max(GetObjects(lofG, gDirectory, "TGraph"),       maxkey);
+		maxkey = TMath:: Max(GetObjects(lofG, gDirectory, "TGraph2D"),       maxkey);
       maxkey = TMath:: Max(GetObjects(lofUc, gDirectory, "FhContour"),   maxkey);
       maxkey = TMath:: Max(GetObjects(lofW1, gDirectory, "TMrbWindowF"), maxkey);
       maxkey = TMath:: Max(GetObjects(lofW1, gDirectory, "TMrbWindowI"), maxkey);
@@ -956,6 +958,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
        return;
    }
    // histograms
+//   Int_t n_enter = 0;
    Int_t not_shown = 0;
    if (nstat > 0) {
 
@@ -1021,14 +1024,19 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             sel += " YES";
          }
          if (fCmdLine->GetSize() < GeneralAttDialog::fMaxListEntries) {
+//				cout << " Add: " << n_enter<< " " << stent->GetName()<<endl;
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
             anything_to_delete++;
+//            n_enter++;
          } else {
             if (not_shown <= 0){
-               cout << setred << "Too many entries in list: " << endl;
+               cout << setred << "Too many entries in list: "
+               << fCmdLine->GetSize()<< endl;
                cout << "this might crash X, please use selection mask"<< endl;
-               cout << "to reduce number of entries below: " <<  GeneralAttDialog::fMaxListEntries  << endl;
-               cout << "On your own risk you may increase value beyond: " << GeneralAttDialog::fMaxListEntries << endl;
+               cout << "to reduce number of entries below: "
+               <<  GeneralAttDialog::fMaxListEntries  << endl;
+               cout << "On your own risk you may increase value beyond: "
+               << GeneralAttDialog::fMaxListEntries << endl;
                cout << "WARNING: not all hists will be shown" << setblack << endl;
             }
             not_shown++;
@@ -1036,7 +1044,10 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
          }
       }
    }
-   if ( not_shown > 0 )
+   cout << "Number of entries shown: " <<  fCmdLine->GetSize()
+//		<< " n_enter: " << n_enter
+		<< endl;
+   if ( not_shown > 0 ) 
 		cout << "Another: " << not_shown << " hists are not shown" << endl;
 //   if (fHistSelMask->Length() <=0) {
 //  windows
@@ -1126,10 +1137,13 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 					if (not_shown <= 0){
 						cout << setred << endl<< 
 						"Too many entries in list this might crash X." << endl;
-						cout << "Please use selection mask to reduce number of entries below: " 
+						cout << "Please use selection mask to reduce number\n\
+of entries below: " 
 						<<  GeneralAttDialog::fMaxListEntries  << endl;
-						cout << "On your own risk you may increase value beyond: " << GeneralAttDialog::fMaxListEntries << endl;
-						cout << "WARNING: not all canvases will be shown" << setblack << endl;
+						cout << "On your own risk you may increase value beyond: "
+						<< GeneralAttDialog::fMaxListEntries << endl;
+						cout << "WARNING: not all canvases will be shown"
+						<< setblack << endl;
 					}
 					not_shown++;
 					//            cout << "Not shown: " << stent->GetName() << endl;
@@ -1249,7 +1263,9 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
          TString cmd_title(fname);
          if (dir && strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
          HTCanvas *ccont = CommandPanel(cmd_title, fCmdLine,
-                           WindowSizeDialog::fMainWidth + 10, ycanvas, this, WindowSizeDialog::fWinwidx_hlist);
+                           WindowSizeDialog::fMainWidth + 10, ycanvas,
+                           this, WindowSizeDialog::fWinwidx_hlist,
+                           fCmdLine->GetSize());
          ccont->SetName("ContentList");
 //         cout << "HistPresent: CommandPanel: " <<ccont->GetName() << " " << ccont->GetTitle() << endl;
 
@@ -1612,8 +1628,8 @@ void HistPresent::GetFileSelMask(const char* bp)
 
 void HistPresent::GetHistSelMask(const char* /*bp*/)
 {
-	Bool_t yesno = kFALSE;
-	if (GeneralAttDialog::fUseRegexp) yesno=kTRUE;
+//	Bool_t yesno = kFALSE;
+//	if (GeneralAttDialog::fUseRegexp) yesno=kTRUE;
 	void * Valp[20];
 	TList * row_lab = new TList();
 	Int_t ind = 0;
@@ -3929,13 +3945,55 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 	//      graph->SetName(hname);
 	//      graph->SetTitle(htitle);
 	if ( graph2d ) {
-		TString opt2d = env.GetValue("Set2DimGraphDialog.fDrawOpt2Dim", "TRI1");
-		cout << setgreen << "HistPresent, opt2d: " << opt2d << " number of points: " <<
-		graph2d->GetN() << setblack << endl;
+		graph2d->SetName(gname);
+		TGraph2D * grnew = graph2d;
+		TString opt2d = env.GetValue("Set2DimGraphDialog.fDrawOpt2Dim", "TRI2");
+		Int_t nuse = env.GetValue("Set2DimGraphDialog.fUseNPoints", 1000);
+		Int_t np = graph2d->GetN();
+		if (nuse > np)
+			nuse = np;
+		cout << setgreen << "HistPresent, Opt2d: " << opt2d
+		<< " number of points: " << np
+		<< " for display use: " << nuse << setblack << endl;
+		opt2d.Strip(TString::kBoth);
+		if (opt2d == "GL" || opt2d.Length() == 0) {
+			opt2d += "TRi2";
+			cout << setblue << "HistPresent, resetting Opt2d: " << opt2d << setblack<< endl;
+		}
+		if ( nuse > 0 ) {
+			grnew = new TGraph2D(nuse);
+			grnew->SetDirectory(gROOT);
+			np = Hpr::MixPointsInGraph2D(graph2d, grnew, nuse);
+//			grnew->Dump();
+			TString nname(gname);
+			nname += "_rdm";
+			grnew->SetName(nname);
+			Double_t *xx = grnew->GetX();
+			Double_t *yy = grnew->GetY();
+			Double_t *zz = grnew->GetZ();
+			for (Int_t i=0; i < np; i++) {
+				if (TMath::Abs(zz[i]) < 0.00001)
+					cout <<">>> "<< i <<" "<<xx[i]<<" "<<yy[i]<<" " << zz[i]<< endl;
+			}
+//			TFile * ft = new TFile("temp.root", "RECREATE");
+//			grnew->Write();
+//			ft->Close();
+			
+			if (np < nuse) {
+				cout << setred << "Something wrong nuse: " << nuse
+						<< " np " << endl;
+				if (np < 100)
+					return;
+			}
+		} else {
+			nuse = np;
+		}
 		TRegexp sa("SAME");
 		opt2d(sa) = "";
-
-		Double_t texpected = 4 * TMath::Power(3, graph2d->GetN() / 900.) - 10;
+		if ( nuse <= 0 ) 
+			nuse = np;
+		Double_t texpected = -3 + 0.0024 * nuse + 2.30782e-06 * nuse*nuse;
+//		Double_t texpected = 4 * TMath::Power(3, graph2d->GetN() / 900.) - 10;
 		if (texpected > 1) {
 			cout << setmagenta << "Warning rendering may take: " << texpected
 			<< " Seconds" << setblack << endl;
@@ -3946,13 +4004,13 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			gStyle->SetCanvasPreferGL(kFALSE);
 		}
 
-		graph2d->SetName(gname);
 		HTCanvas * htc =
 		new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
 								WindowSizeDialog::fWinwidx_1dim, WindowSizeDialog::fWinwidy_1dim, this, 0, (TGraph*)graph2d);
 		gBenchmark->Start("graph2d");
 //		graph2d->SetMaxIter(3000);
-  		graph2d->Draw(opt2d);
+//		htc->cd();
+  		grnew->Draw(opt2d);
 		TButton * b = NULL;
 		if (bp) {
 			b = (TButton *)strtoul(bp, 0, 16);

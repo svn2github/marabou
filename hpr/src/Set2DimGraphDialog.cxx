@@ -90,6 +90,18 @@ The surface profile is displayed on the slicing plane. The profile\n\
 projection is drawn\n\
 on the back plane by pressing 'p' or 'P' key.\n\
 For further details contact ROOTs documentation.\n\
+\n\
+When surface options are selected rendering of the TGraph2D\n\
+uses the DeLaunay triangulation algorithm. With many points\n\
+(> 1000) this may take minutes especially if the points are\n\
+ordered by rows and columns as a typical result of a scan.\n\
+In this case reordering the points randomly may gain\n\
+a factor upto 10 in speed. In addition for display\n\
+purposes in draft mode e.g. 500 points may be sufficient\n\
+The parameter fUseNPoints is used to control this.\n\
+If <= no reordering is done, all points are used.\n\
+> 0 reorder and use only fUseNPoints but of course\n\
+only max number of points of the graph.\n\
 ";
 
 	const char *fDrawOpt2[kNGraph2Dopt] =
@@ -102,7 +114,7 @@ For further details contact ROOTs documentation.\n\
 	fCanvas = (HTCanvas*)rc->Canvas();
 	fCmdButton = fCanvas->GetCmdButton();
 	fHist = NULL;
-	cout << "Enter Set2DimGraphDialog" << endl;
+//	cout << "Enter Set2DimGraphDialog" << endl;
 	//	Int_t nh1 = 0, nh2 = 0;
 	TIter next(fCanvas->GetListOfPrimitives());
 	TObject *obj;
@@ -113,7 +125,7 @@ For further details contact ROOTs documentation.\n\
 		}
 	}
 	if ( fHist == NULL ) {
-		cout << "No Histogram in Canvas" << endl;
+//		cout << "No Histogram in Canvas" << endl;
 //		return;
 	} else {
 		if ( gDebug > 0 )
@@ -123,7 +135,8 @@ For further details contact ROOTs documentation.\n\
 			<< "; Set2DimGraphDialog * d2 = (Set2DimGraphDialog*)" << this << endl;
 	}
 	RestoreDefaults();
-	cout << "fDrawOpt2Dim " << fDrawOpt2Dim << endl;
+	if (gDebug > 0)
+		cout << "Set2DimGraphDialog: fDrawOpt2Dim " << fDrawOpt2Dim << endl;
 //   Int_t selected = -1;
 	for (Int_t i = 0; i < kNGraph2Dopt; i++) {
 		fDrawOpt2DimArray[i] = fDrawOpt2[i];
@@ -192,11 +205,13 @@ For further details contact ROOTs documentation.\n\
 	fRow_lab->Add(new TObjString("Float_Value+MSize  "));
 	fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
 	fRow_lab->Add(new TObjString("CheckButton_Log X"));
-	fRow_lab->Add(new TObjString("CheckButton+Log Y"));
-	fRow_lab->Add(new TObjString("CheckButton+Log Z"));
+	fRow_lab->Add(new TObjString("CheckButton-Log Y"));
+	fRow_lab->Add(new TObjString("CheckButton-Log Z"));
 	fValp[ind++] = &fTwoDimLogX;
 	fValp[ind++] = &fTwoDimLogY;
 	fValp[ind++] = &fTwoDimLogZ;
+	fRow_lab->Add(new TObjString("PlainIntVal-UseNPoints"));
+	fValp[ind++] = &fUseNPoints;
 
 	fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
 	fValp[ind++] = &stycmd;
@@ -266,7 +281,7 @@ void Set2DimGraphDialog::SetAttAll(TCanvas *canvas)
 				gr->SetMarkerStyle(fMarkerStyle2Dim);  
 				gr->SetMarkerSize (fMarkerSize2Dim);
 			} 
-//			if ( gDebug > 0 ) 
+			if ( gDebug > 0 ) 
 				cout << "SetAttAll: " << fDrawOpt2Dim<< endl;
 		}
 	}
@@ -314,7 +329,8 @@ void Set2DimGraphDialog::SetAttPerm()
 	env.SetValue("Set2DimGraphDialog.fTwoDimLogZ",       fTwoDimLogZ       );
 	env.SetValue("Set2DimGraphDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set2DimGraphDialog.fContourLevels",    fContourLevels    );
-	
+	env.SetValue("Set2DimGraphDialog.fUseNPoints",       fUseNPoints    );
+
 	env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
@@ -335,6 +351,7 @@ void Set2DimGraphDialog::SaveDefaults()
 	env.SetValue("Set2DimGraphDialog.fTwoDimLogZ",       fTwoDimLogZ       );
 	env.SetValue("Set2DimGraphDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set2DimGraphDialog.fContourLevels",    fContourLevels    );
+	env.SetValue("Set2DimGraphDialog.fUseNPoints",       fUseNPoints    );
 	env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
@@ -389,6 +406,7 @@ void Set2DimGraphDialog::RestoreDefaults(Int_t resetall)
 	fTwoDimLogZ        = env.GetValue("Set2DimGraphDialog.fTwoDimLogZ",        0);
 	fUseGL             = env.GetValue("Set2DimGraphDialog.fUseGL",             0);
 	fContourLevels     = env.GetValue("Set2DimGraphDialog.fContourLevels",    20);
+	fUseNPoints        = env.GetValue("Set2DimGraphDialog.fUseNPoints",      500);
 }
 //______________________________________________________________________
 
@@ -410,7 +428,8 @@ void Set2DimGraphDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 	if ( bid == fBidGL ) {
 		TString opt = fGraph2D->GetDrawOption();
 		opt.ToUpper();
-		cout << "CRButtonPressed: " << opt << " " << fUseGL<< endl;
+		if ( gDebug > 0 )
+			cout << "CRButtonPressed: " << opt << " fUseGL: " << fUseGL<< endl;
 		Int_t indgl = opt.Index("GL");
 		if ( indgl >= 0 && fUseGL == 0 ) {
 			opt(indgl,2) = "";

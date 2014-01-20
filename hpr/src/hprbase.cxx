@@ -13,6 +13,7 @@
 #include "TMath.h"
 #include "TGMsgBox.h"
 #include "TRootCanvas.h"
+#include "TRandom.h"
 #include "TRegexp.h"
 #include "TPolyLine3D.h"
 #include "TGMrbValuesAndText.h"
@@ -20,6 +21,8 @@
 #include "TGMrbInputDialog.h"
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <algorithm>
 #include "hprbase.h"
 #include "HistPresent.h"
 #include "SetColor.h"
@@ -1468,4 +1471,41 @@ void ReplaceUS(const char * fname, Int_t latex_header)
 	cmd += fname;
 	gSystem->Exec(cmd);
 }
+//_________________________________________________________
+
+Int_t MixPointsInGraph2D(TGraph2D * grin, TGraph2D * grout, Int_t npoints)
+{
+//
+// Fill TGraph2D grout with points randomly reordered
+// from grin. If npoints > 0 only npoints are filled
+//
+// With points ordered by increasing X, Y values 
+// as a typical result from scanning procedures the
+// Delaunay triangulation algorithm converges very
+// slowly. Reordering can gain a factor 5 - 10 in speed
+//
+
+	Int_t np = grin->GetN();
+	Int_t npuse = np;
+	if (npoints > 0 && npoints < np) {
+		npuse = npoints;
+	} 
+	Double_t *x = grin->GetX();
+	Double_t *y = grin->GetY();
+	Double_t *z = grin->GetZ();
+	// fill index array
+	std::vector<int>indarr;
+	for (int i=0; i<np; ++i) {
+		indarr.push_back(i);
+	}
+// shuffle using built-in random generator of std
+	std::random_shuffle ( indarr.begin(), indarr.end() );
+	Int_t n = 0;
+	for (Int_t i=0; i<npuse; i++) {
+		grout->SetPoint(i, x[indarr[i]], y[indarr[i]], z[indarr[i]]);
+		n++;
+	}
+	return n;
+}
+
 }   // end namespace Hpr

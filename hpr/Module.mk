@@ -9,16 +9,20 @@ MODDIRI      := $(MODDIR)/inc
 HPRDIR      := $(MODDIR)
 HPRDIRS     := $(HPRDIR)/src
 HPRDIRI     := $(HPRDIR)/inc
+HPRDUMMY    := $(MODDIRS)/hpr_dummy.o
 
 ##### lib #####
 HPRL        := $(MODDIRI)/LinkDef.h
 HPRDS       := $(MODDIRS)/G__HistPresentDict.cxx
-HPRDO       := $(HPRDS:.cxx=.o)
+HPRDO      := $(HPRDS:.cxx=.o)
 HPRH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 HPRS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 HPROM       := $(HPRS:.cxx=.o)
 HPRMAINO    := $(MODDIRS)/main.o
-HPRO        := $(filter-out $(HPRMAINO),$(HPROM))
+HPROA       := $(filter-out $(HPRMAINO),$(HPROM))
+# hpr_dummy is used to make a dummy libHprDummy with only the pointer gHpr=0
+# must not be linked in standard libHpr
+HPRO        := $(filter-out $(HPRDUMMY), $(HPROA))
 
 
 HPRDH			:= $(HPRDIRI)/defineMarabou.h \
@@ -60,10 +64,12 @@ HPRDEP      += $(MODDIRS)/main.d
 
 HPREXE      := bin/HistPresent
 HPRLIB      := $(LPATH)/libHpr.so
+HPRDUMMYLIB := $(LPATH)/libHprDummy.so
 
 ALLEXECS    += $(HPREXE)
 
 ALLLIBS     += $(HPRLIB)
+ALLLIBS     += $(HPRDUMMYLIB)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HPRH))
 
@@ -92,9 +98,15 @@ $(HPREXE):      $(HPRMAINO) $(OHPRLIBS) $(HPRLIB)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)
 #		@echo "objs: $(HPRO)"
-		@echo "$(HPRLIB) make shared lib EXPLICITLINK = $(EXPLICITLINK) ----------------------"
+		@echo "make shared lib  $(HPRLIB)----------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libHpr.$(SOEXT) $@ "$(HPRO) $(HPRDO) $(HPRLIBEXTRA)"
+		@echo "make shared lib  $(HPRDUMMYLIB)----------------------"
+		
+$(HPRDUMMYLIB):     $(HPRDUMMY)
+		   
+		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
+		   "$(SOFLAGS)" libHprDummy.$(SOEXT) $(HPRDUMMYLIB) $(HPRDUMMY)
 
 $(HPRDS):     $(HPRDH) $(HPRL)
 		@echo "Generating dictionary $@..."
@@ -103,7 +115,7 @@ $(HPRDS):     $(HPRDH) $(HPRL)
 $(HPRDO):     $(HPRDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<
 
-all-hpr:       $(HPREXE)
+all-hpr:       $(HPREXE) $(HPRDUMMYLIB)
 
 clean-hpr:
 		@rm -f $(HPRO) $(HPRMAINO) $(HPRDO) $(HPRDS)
