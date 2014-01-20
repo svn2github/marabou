@@ -24,7 +24,8 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=/usr/local/opt/root/root5.30-00_gcc-412_qt_ia64
+# ROOTSYS must be set by user
+#  ROOTSYS=
 MARABOU=`pwd`
 MARABOU_INSTALL_PATH=/cant_be_installed
 
