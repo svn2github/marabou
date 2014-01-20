@@ -1311,7 +1311,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 	else
 		cont_name = "Ga_Cont";
 	TString lab;
-	Int_t ind_sigma = 0, ind_tail = 0;
+	Int_t ind_sigma = 0;
 	if (fOnesig == 1) {
 //  use same sigma for all peaks
 		fFitFunc->SetParName(ind+kFix,"GaSigma_");
@@ -1324,7 +1324,6 @@ Bool_t FitOneDimDialog::FitGausExecute()
 	if (fTailOnly != 0) {
 		fFitFunc->SetParName(ind+kFix,"TaWidth");
 		row_lab.Add(new TObjString("TaWidth"));
-		ind_tail = ind;
 		if (setpars) (*par)[ind] = 5;
 		ind++;
 
