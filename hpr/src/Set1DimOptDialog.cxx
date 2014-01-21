@@ -64,6 +64,7 @@ X ErrorSz controls drawing of error bars in X.\n\
 A value of 0.5 draws a line X +- 0.5*BinWidth\n\
 \"EndErrorSz\" controls the length of the perpendicular lines\n\
 at the edges (option \"E1\").\n\
+\"Min Y=Min Cont\": Set minimimum of Y scale to minumum of content\n\
 \n\
 X and Y scales can be set as default to logarithmic or linear.\n\
 This can still be reset for individual histograms.\n\
@@ -281,10 +282,13 @@ may be selected.\n\
 	fRow_lab->Add(new TObjString("StringValue+Title Y "));
 	fValp[ind++] = &fTitleY;
 	
-	fRow_lab->Add(new TObjString("Float_Value_EndErrorSz "));
+	fRow_lab->Add(new TObjString("Float_Value_EndErrSz "));
 	fValp[ind++] = &fEndErrorSize;
-	fRow_lab->Add(new TObjString("Float_Value+X ErrorSz;0.0,0.5"));
+	fRow_lab->Add(new TObjString("Float_Value-X ErrSz;0.0,0.5"));
 	fValp[ind++] = &fErrorX;
+	fRow_lab->Add(new TObjString("CheckButton-Set Min Y=Min Cont"));
+   fAdjustMinYButton = ind;
+	fValp[ind++] = &fAdjustMinY;
    fRow_lab->Add(new TObjString("CheckButton_     Log X"));
    fValp[ind++] = &fOneDimLogX;
    fRow_lab->Add(new TObjString("CheckButton+     Log Y"));
@@ -565,6 +569,7 @@ void Set1DimOptDialog::SetDefaults()
    gStyle->SetHistLineWidth(env.GetValue("Set1DimOptDialog.fLineWidth", 2));
    gStyle->SetEndErrorSize (env.GetValue("Set1DimOptDialog.fEndErrorSize",  1));
    gStyle->SetErrorX       (env.GetValue("Set1DimOptDialog.fErrorX", 0.5));
+//   fAdjustMinY            = env.GetValue("Set1DimOptDialog.fAdjustMinY", 1);
 	TString temp =  env.GetValue("Set1DimOptDialog.fErrorMode", "");
    if (  temp != "none" )
       gStyle->SetDrawOption(temp);
@@ -632,6 +637,7 @@ void Set1DimOptDialog::SaveDefaults()
 	env.SetValue("Set1DimOptDialog.fOneDimLogY"    , fOneDimLogY   );
    env.SetValue("Set1DimOptDialog.fEndErrorSize" , fEndErrorSize  );
    env.SetValue("Set1DimOptDialog.fErrorX",        fErrorX        );
+   env.SetValue("Set1DimOptDialog.fAdjustMinY",    fAdjustMinY    );
    env.SetValue("Set1DimOptDialog.fSmoothLine",    fSmoothLine    );
    env.SetValue("Set1DimOptDialog.fSimpleLine",    fSimpleLine    );
    env.SetValue("Set1DimOptDialog.fBarChart",      fBarChart      );
@@ -678,6 +684,7 @@ void Set1DimOptDialog::RestoreDefaults(Int_t resetall)
 
  	fEndErrorSize   = env.GetValue("Set1DimOptDialog.fEndErrorSize" , 1);
  	fErrorX         = env.GetValue("Set1DimOptDialog.fErrorX",      0.5);
+   fAdjustMinY     = env.GetValue("Set1DimOptDialog.fAdjustMinY",    1);
 	fLiveStat1Dim   = env.GetValue("Set1DimOptDialog.fLiveStat1Dim"  ,0);
 	fLiveGauss      = env.GetValue("Set1DimOptDialog.fLiveGauss"     ,0);
 	fLiveBG         = env.GetValue("Set1DimOptDialog.fLiveBG"        ,1);

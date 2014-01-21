@@ -25,7 +25,8 @@ private:
    Int_t fUseTimeOfDisplay;
    Int_t fShowTitle;
    Int_t fShowFitBox;
-
+   Int_t fLegoSuppressZero;
+   
 public:
 
    WhatToShowDialog(TGWindow * win = NULL);

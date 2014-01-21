@@ -60,7 +60,8 @@ private:
 	Int_t   fOneDimLogX;
 	Int_t   fOneDimLogY;
 	Int_t   fAdvanced1Dim;
-	
+	Int_t   fAdjustMinY;
+	Int_t   fAdjustMinYButton;
 public:
 
    Set1DimOptDialog(TGWindow * win = NULL);

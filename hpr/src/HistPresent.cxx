@@ -958,13 +958,17 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
        return;
    }
    // histograms
-//   Int_t n_enter = 0;
+   Int_t n_enter = 0;
    Int_t not_shown = 0;
    if (nstat > 0) {
-
+		if ( fHistSelMask.Length() > 0) {
+			cout << setblue << "Using selectionmask: " << fHistSelMask 
+			<< setblack << endl;
+		}
       TMrbStatEntry * stent;
       TIter nextentry(st->GetListOfEntries());
       while ( (stent = (TMrbStatEntry*)nextentry()) ) {
+			n_enter++;
 			if ( !Hpr::IsSelected( stent->GetName(), &fHistSelMask, fHistUseRegexp ) )
 				continue;
 			TString shn(stent->GetName());
@@ -1037,16 +1041,15 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
                <<  GeneralAttDialog::fMaxListEntries  << endl;
                cout << "On your own risk you may increase value beyond: "
                << GeneralAttDialog::fMaxListEntries << endl;
-               cout << "WARNING: not all hists will be shown" << setblack << endl;
+               cout << "Warning: not all hists will be shown" << setblack << endl;
             }
             not_shown++;
 //            cout << "Not shown: " << stent->GetName() << endl;
          }
       }
    }
-   cout << "Number of entries shown: " <<  fCmdLine->GetSize()
-//		<< " n_enter: " << n_enter
-		<< endl;
+   cout << "Total number of entries: " << n_enter 
+   << " Selected: " <<  fCmdLine->GetSize() << endl;
    if ( not_shown > 0 ) 
 		cout << "Another: " << not_shown << " hists are not shown" << endl;
 //   if (fHistSelMask->Length() <=0) {

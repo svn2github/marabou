@@ -240,7 +240,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 //   cout << "FitMacroName " << fFitMacroName.Data()<< endl;
 
 	fTemplateMacro = "TwoGaus";
-	fAdjustMinY    = env.GetValue("GeneralAttDialog.fAdjustMinY",1);
+	fAdjustMinY    = env.GetValue("Set1DimOptDialog.fAdjustMinY",1);
 	fFill1Dim      = env.GetValue("Set1DimOptDialog.fFill1Dim",  0);
 	fFillColor     = env.GetValue("Set1DimOptDialog.fFillColor", 1);
 	fLineColor     = env.GetValue("Set1DimOptDialog.fLineColor", 1);
@@ -3287,8 +3287,8 @@ void FitHist::Draw2Dim()
 		<< " fHistFillColor2Dim :" <<fHistFillColor2Dim<< endl
 		<< " fHistFillStyle2Dim :" <<fHistFillStyle2Dim<< endl;
 	}
+	TEnv env(".hprrc");
 	if (fShowStatBox) {
-		TEnv env(".hprrc");
 		//      cout << "fSelHist->SetStats(1); " << fOptStat << endl;
 		gStyle->SetStatX(env.GetValue("SetHistOptDialog.StatX2D",0.9));
 		gStyle->SetStatY(env.GetValue("SetHistOptDialog.StatY2D",0.9));
@@ -3299,7 +3299,8 @@ void FitHist::Draw2Dim()
 	} else {
 		fSelHist->SetStats(0);
 	} 
-	if ( fDrawOpt2Dim.Contains("LEGO") && GeneralAttDialog::fLegoSuppressZero == 1 )
+	if ( fDrawOpt2Dim.Contains("LEGO") 
+		&& env.GetValue("WhatToShowDialog.fLegoSuppressZero", 1) )
 		fDrawOpt2Dim.Prepend("0");
 
 	fSelHist->Draw(fDrawOpt2Dim);

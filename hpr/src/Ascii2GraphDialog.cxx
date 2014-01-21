@@ -449,7 +449,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
             cg->Divide(fGraphXdiv, fGraphYdiv);
             cg->cd(1);
          }
-         cout <<"drawopt: " << drawopt<< endl;
+         fDrawOpt = drawopt;
          graph->Draw(drawopt);
 //            gPad->Modified();
 //            gPad->Update();
@@ -478,10 +478,10 @@ void Ascii2GraphDialog::Draw_The_Graph()
       graph->SetLineWidth(fGraphLineWidth);
       if (fXaxisMin != 0 || fXaxisMax != 0) graph->GetXaxis()->SetLimits(fXaxisMin, fXaxisMax);
       if (fYaxisMin != 0) graph->SetMinimum(fYaxisMin);
-      if (fYaxisMax != 0) graph->SetMaximum(fYaxisMin);
+      if (fYaxisMax != 0) graph->SetMaximum(fYaxisMax);
       gPad->Modified();
       gPad->Update();
-      cout << "TGraph *gr = (TGraph*)" << graph << endl;
+      cout << "TGraph *gr = (TGraph*)" << graph << "; << opt: " << fDrawOpt<< endl;
    }
    SaveDefaults();
    return;
@@ -555,6 +555,7 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.fErrorX"			 , fErrorX          );
    env.SetValue("Ascii2GraphDialog.fEndErrorSize"   , fEndErrorSize    );
 	env.SetValue("Ascii2GraphAttDialog.fGraphFill"   , fGraphFill       );
+	env.SetValue("GraphAttDialog.fDrawOpt"           , fDrawOpt         );
    env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________

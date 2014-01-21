@@ -20,7 +20,8 @@ WhatToShowDialog::WhatToShowDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
 "This determines what to show for a histogram,\n\
-especially which values to display in the statistics box";
+especially which values to display in the statistics box\n\
+\"Suppr Zero\": dont draw channels with 0 content";
 
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
@@ -47,9 +48,16 @@ especially which values to display in the statistics box";
 
    RestoreDefaults();
    fRow_lab->Add(new TObjString("CheckButton_   Title"));
+   fValp[ind++] = &fShowTitle ;
    fRow_lab->Add(new TObjString("CheckButton+Stat Box"));
-   fRow_lab->Add(new TObjString("CheckButton+Date Box"));
-   fRow_lab->Add(new TObjString("CheckButton+CurrTime"));
+   fValp[ind++] = &fShowStatBox ;
+   
+	if ( fHist->GetDimension() == 2) {
+		fRow_lab->Add(new TObjString("CheckButton+Suppr Zero"));
+		fValp[ind++] = &fLegoSuppressZero;
+	}
+   fRow_lab->Add(new TObjString("CheckButton_Date Box"));
+   fRow_lab->Add(new TObjString("CheckButton+Use CurrTime"));
    fRow_lab->Add(new TObjString("CommentOnly_Content in Statistics Box"));
    fRow_lab->Add(new TObjString("CheckButton_HistName"));
    fRow_lab->Add(new TObjString("CheckButton+ Entries"));
@@ -59,8 +67,6 @@ especially which values to display in the statistics box";
    fRow_lab->Add(new TObjString("CheckButton+ Ovrflow"));
    fRow_lab->Add(new TObjString("CheckButton+Integral"));
    fRow_lab->Add(new TObjString("CheckButton+Fit Pars"));
-   fValp[ind++] = &fShowTitle ;
-   fValp[ind++] = &fShowStatBox ;
 	fValp[ind++] = &fShowDateBox ;
 	fValp[ind++] = &fUseTimeOfDisplay ;
    fValp[ind++] = &dummy;
@@ -196,6 +202,7 @@ void WhatToShowDialog::SaveDefaults()
 		env.SetValue("WhatToShowDialog.fUseTimeOfDisplay2Dim", fUseTimeOfDisplay);
 		env.SetValue("WhatToShowDialog.fShowTitle2Dim",        fShowTitle);
 		env.SetValue("WhatToShowDialog.fShowFitBox2Dim",       fShowFitBox);
+		env.SetValue("WhatToShowDialog.fLegoSuppressZero",     fLegoSuppressZero);
    } else {
 		env.SetValue("WhatToShowDialog.fOptStat3Dim",          fOptStat);
 		env.SetValue("WhatToShowDialog.fShowDateBox3Dim",      fShowDateBox);
@@ -225,6 +232,7 @@ void WhatToShowDialog::RestoreDefaults()
 		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox2Dim", 1);
 		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox2Dim", 1);
 		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay2Dim", 1);
+		fLegoSuppressZero = env.GetValue("WhatToShowDialog.fLegoSuppressZero",  1);
    } else {
 		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat3Dim", 11111);
 		fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle3Dim", 1);
