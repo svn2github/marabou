@@ -51,33 +51,53 @@ GeneralAttDialog::GeneralAttDialog(TGWindow * win)
 static const char helptext[] =
 "\n\
 ___________________________________________________________\n\
-Append Timestamp to histo names\n\
--------------------------------\n\
-With this option histograms get unique names when displayed\n\
-In this way one may display the same histograms serveral times\n\
-Prepend filename to histo titles\n\
---------------------------------\n\
-This is useful when superimposing, stacking or showing histograms\n\
-in one canvas with same titles from files e.g. from different runs\n\
-since the title is used in legends.\n\
-___________________________________________________________\n\
-Force style, show hist with current style\n\
------------------------------------------\n\
+Force current style\n\
+\n\
 Use graphics option currently in use instead of options\n\
 stored with the histogram on file\n\
 ___________________________________________________________\n\
-Global style, activate roots style options\n\
-------------------------------------------\n\
+Global style\n\
+\n\
+Activate roots style options\n\
+\n\
+___________________________________________________________\n\
+Append timestamp to histo names\n\
+\n\
+With this option histograms get unique names when displayed\n\
+coming from different files\n\
+\n\
+___________________________________________________________\n\
+Append filename to histo names\n\
+\n\
+With this option histograms get unique names when displayed\n\
+In this way one may display the same histograms residing in\n\
+memory several times\n\
+\n\
+____________________________________________________________\n\
+Append Timestamp to histo names\n\
+\n\
+With this option histograms get unique names when displayed\n\
+In this way one may display the same histograms residing in\n\
+memory several times\n\
+\n\
+__________________________________________________________\n\
+Prepend filename to histo titles\n\
+\n\
+This is useful when superimposing, stacking or showing histograms\n\
+in one canvas with same titles from files e.g. from different runs\n\
+since the title is used in legends.\n\
+\n\
 ___________________________________________________________\n\
 fMaxListEntries: Max Entries in Lists\n\
---------------------\n\
+\n\
 Too many entries in histlists (default 333)  may crash X \n\
 on some systems\n\
 With this option one can limit this number\n\
 Only the first fMaxListEntries are shown\n\
+\n\
 ____________________________________________________________\n\
 fMaxFileListEntries: Max Entries in File Lists\n\
---------------------\n\
+\n\
 Too many entries in filelists (default 333)  may crash X \n\
 on some systems\n\
 With this option one can limit this number\n\
@@ -85,36 +105,35 @@ Only the first fMaxFileListEntries are shown\n\
 Setting fSkipFirst allows to access any part of the\n\
 complete list.\n\
 Sorting is done b e f o r e the cut of the list is applied.\n\
+\n\
 __________________________________________________________\n\
 fSkipFirst: Skip first Entries in Lists\n\
----------------------------\n\
+\n\
 If the above fMaxFileListEntries are exceeded this value \n\
 allows to skip the first fSkipFirst entires.\n\
 ___________________________________________________________\n\
+\n\
 Show lists only\n\
------------------------------\n\
+\n\
 If very many histograms are used this option allows\n\
 to display user defined lists of histograms only.\n\
 \n\
-Show PS file after creation\n\
----------------------------\n\
-Automatically invoke ghostview when a PostScript file is\n\
-generated.\n\
 ____________________________________________________________\n\
 Remember Expand settings (Marks) \n\
------------------------------------\n\
+\n\
 Using marks expanded parts of hists may be shown. This\n\
 option allows to remember these settings in later sessions.\n\
 ____________________________________________________________\n\
 Remember Zoomings (by left mouse)\n\
----------------------------------\n\
+\n\
 Pressing the left mouse button in the scale of a histogram\n\
 and dragging to the required limit allows to zoom\n\
 in the picture. This  option allows to remember these\n\
 settings in later sessions.\n\
+\n\
 ____________________________________________________________\n\
 Remember position of StatBox, LegendBox\n\
---------------------------------------------\n\
+\n\
 Position / size of StatBox, LegendBox can be adjusted from the\n\
 menu \"Graphic_defaults\". Using there the command \n\
 \"Save as global default\" make these settings persistent\n\
@@ -127,18 +146,18 @@ Movements of the boxes by the mouse are not remembered.\n\
 \n\
 If this option is activated position of the boxes\n\
 are remembered when moved with the mouse\n\
+___________________________________________________________\n\
 \n\
+Show PS file after creation\n\
+\n\
+Automatically invoke ghostview when a PostScript file is\n\
+generated.\n\
+\n\
+___________________________________________________________\n\
 Use Attribute Macro \n\
--------------------\n\
+\n\
 With this option activ each time after a histogram is\n\
 displayed a macro (FH_setdefaults.C) is executed.\n\
-____________________________________________________________\n\
-Use Regular expression syntax\n\
-------------------------------\n\
-Normally wild card syntax (e.g. ls *.root to list all\n\
-files ending with .root) is used in file/histo selection\n\
-masks. One may switch to the more powerful Regular expression\n\
-For details consult a book on Unix.\n\
 ____________________________________________________________\n\
 ";
    TRootCanvas *rc = (TRootCanvas*)win;

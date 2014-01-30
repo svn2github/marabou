@@ -183,7 +183,7 @@ fit_user_function(const char *hname)\n\
 	TCanvas * mc  = (TCanvas *) gPad;\n\
 	Int_t wtopx = 100, wtopy = 100;\n\
 	UInt_t ww = 750, wh = 750;\n\
-	Double_t theta = 0, phi = 0; \n\
+	Double_t theta = 0, phi = 0; projectf\n\
 	TString cname(\"canvas_2d\");\n\
 	if (mc) {\n\
 		mc->GetCanvasPar(wtopx, wtopy, ww, wh);\n\
@@ -691,7 +691,8 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	temp_hname +=fFuncNumb;
 	cout << " <<<<<<<<<<<<<<<<<<<<<" << endl;
 
-	TH1D *fithist = new TH1D(temp_hname, funcname, nxbins, edgelx, edgeux);
+	TH1D *fithist;
+	fithist = new TH1D(temp_hname, funcname, nxbins, edgelx, edgeux);
 	cout << " >>>>>>>>>>>>>>>>>>>>>" <<endl;
 // case fit to histogram
 
@@ -871,11 +872,9 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	fithist->GetFunction(funcname)->ResetBit(TF1::kNotDraw);
 	TString FHname(fithist->GetName());
 	FHname.Prepend("Fh_");
-	FitHist *fith =
-	new FitHist(FHname,FHname,fithist,fithist->GetName() ,750,800, 800,400);
-//          WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, 800,400);
-
-//   ccc->Update();
+//	FitHist * fith = NULL;
+	if (gDebug > 0)
+		new FitHist(FHname,FHname,fithist,fithist->GetName() ,750,800, 800,400);
 	if (fOrigHist != fSelHist)
 		fOrigHist->GetListOfFunctions()->Add(pol);
 	fSelHist->GetListOfFunctions()->Add(pol);
@@ -905,7 +904,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	fSelPad->Update();
 //  if ( fDialog != NULL )
 //     fDialog->CloseDialog();
-	new Save2FileDialog(pol, NULL, fith->GetMyCanvas());
+	new Save2FileDialog(pol, NULL, (TRootCanvas*)fCanvas->GetCanvasImp());
 	if (what == 0)
 		ClearMarks();
 	if (what == 1)
