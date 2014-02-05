@@ -73,6 +73,7 @@ Default is to construct a new canvas\n\
    TList *row_lab = new TList();
    row_lab->Add(new TObjString("RadioButton_Empty pad only                 "));
    row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors         "));
+   row_lab->Add(new TObjString("RadioButton_Simple: X, Y draw as histogram "));
    row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, (Ex), Ey     "));
    row_lab->Add(new TObjString("RadioButton_Asym Ers: X,Y,Exl,Exu,Eyl,Eyu  "));
    row_lab->Add(new TObjString("RadioButton_Select columns, X, Y           "));
@@ -117,6 +118,7 @@ Default is to construct a new canvas\n\
 
    valp[ind++] = &fEmptyPad;
    valp[ind++] = &fGraph_Simple;
+   valp[ind++] = &fGraph_AsHist;
    valp[ind++] = &fGraph_Error;
    valp[ind++] = &fGraph_AsymError;
    valp[ind++] = &fGraphColSelect;
@@ -361,7 +363,23 @@ void Ascii2GraphDialog::Draw_The_Graph()
       graph = new TGraphAsymmErrors(n, xval.GetArray(), yval.GetArray(),
                                        zval.GetArray(), wval.GetArray(),
                                        eyl.GetArray(),  eyh.GetArray());
-   }
+   } else if (fGraph_AsHist == 1) {
+		graph = new TGraph(2 * n);
+		Int_t ipg = 0;
+		Double_t dx = 1;
+		for (Int_t i=0; i < n; i++) {
+			if ( i == 0 && n>2) {
+				dx = (xval[i + 1] - xval[i]) - 0.5 * (xval[i + 2] - xval[1]);
+			} else if ( i < n-1 ) {
+				dx = 0.5 * (xval[i + 1] - xval[i]);
+			}
+			graph->SetPoint(ipg, xval[i]-dx, yval[i]);
+			ipg++;
+			graph->SetPoint(ipg, xval[i]+dx, yval[i]);
+			ipg++;
+		}
+	}
+		
    if (graph) {
       if (fGraphName.Length() <= 0) {
          graph->SetName(fGraphFileName.Data());
@@ -525,6 +543,7 @@ void Ascii2GraphDialog::SaveDefaults()
    TEnv env(gHprLocalEnv);
    env.SetValue("Ascii2GraphDialog.fEmptyPad"  	    , fEmptyPad        );
    env.SetValue("Ascii2GraphDialog.Graph_Simple"	 , fGraph_Simple    );
+   env.SetValue("Ascii2GraphDialog.Graph_AsHist"	 , fGraph_AsHist    );
    env.SetValue("Ascii2GraphDialog.Graph_Error" 	 , fGraph_Error     );
    env.SetValue("Ascii2GraphDialog.Graph_AsymError" , fGraph_AsymError );
    env.SetValue("Ascii2GraphDialog.fGraphColSelect" , fGraphColSelect  );
@@ -565,6 +584,7 @@ void Ascii2GraphDialog::RestoreDefaults()
    TEnv env(gHprLocalEnv);
    fEmptyPad         = env.GetValue("Ascii2GraphDialog.fEmptyPad"  	   , 0);
    fGraph_Simple     = env.GetValue("Ascii2GraphDialog.Graph_Simple"  	, 0);
+   fGraph_AsHist     = env.GetValue("Ascii2GraphDialog.Graph_AsHist"  	, 0);
    fGraph_Error      = env.GetValue("Ascii2GraphDialog.Graph_Error"		, 1);
    fGraph_AsymError  = env.GetValue("Ascii2GraphDialog.Graph_AsymError" , 0);
    fGraphColSelect   = env.GetValue("Ascii2GraphDialog.fGraphColSelect" , 0);

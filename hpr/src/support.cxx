@@ -1161,6 +1161,15 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
 			}
 //			Int_t ip = name.Index(";");
 //			if (ip > 0) name.Resize(ip);
+			// is there a FitHist object with this name
+			TString fhn(entry.Data());
+			fhn.Prepend("F");
+			if ( gROOT->FindObject(fhn) ) {
+				cout << "A canvas containing this object: "
+				<< entry << " seems on screen" << endl;
+				continue;
+			}
+
 			TString question("Delete: ");
 			question += entry;
 			question += " from ";

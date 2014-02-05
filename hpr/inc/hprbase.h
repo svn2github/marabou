@@ -39,6 +39,6 @@ namespace Hpr
 	void ReplaceUS(const char * fname, Int_t latexheader=0);
 	Int_t NofLines(TString& str);
 	Int_t MixPointsInGraph2D(TGraph2D * grin, TGraph2D * grout, Int_t npoints = 0);
-
+	TCanvas * FindCanvas(const Char_t * pat);
 }
 #endif

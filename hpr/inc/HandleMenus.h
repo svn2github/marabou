@@ -25,6 +25,8 @@ private:
 	GEdit          * fEditor;
 	TH1            * fHistInPad;
 	TH1				* fSelHist;
+	Int_t fNbinLiveSliceX;
+	Int_t fNbinLiveSliceY;
 //  from HTRootCanvas
    TRootCanvas        * fRootCanvas;
    TGMenuBar           *fRootsMenuBar;       // menubar
@@ -55,6 +57,8 @@ public:
    void Canvas2RootFile();
 	void SetHist(TH1 *hist) { fSelHist = hist; };
 	TH1 *GetHist() { return fSelHist; };
+	void SetLiveSliceX(Int_t state);
+	void SetLiveSliceY(Int_t state);
    ClassDef(HandleMenus,0)  
 }; 
  

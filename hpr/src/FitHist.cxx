@@ -695,15 +695,39 @@ void FitHist::handle_mouse()
 	static TBox * box = 0;
 	static Int_t nrows = 4;
 	static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi());
+
+//	static Int_t InitSetSP = 0;
 	Int_t px, py;
 	
 	if (gROOT->GetEditorMode() != 0) return;
 	if (gStyle->GetCanvasPreferGL()) return;
+	TEnv env(".hprrc");
 	Int_t event = gPad->GetEvent();
 //	cout << "px: "  << (char)gPad->GetEventX() << endl;
 	if (event ==  kKeyPress) {
-//    cout << "px: "  << (char)gPad->GetEventX() << endl;
+//		cout << "px: "  << (char)gPad->GetEventX() << endl;
 		char ch = (char)gPad->GetEventX();
+		if ( ch == 'Q' ||ch == 'q') {
+			TCanvas * canpro = Hpr::FindCanvas("_projection_");
+			if ( canpro ) {
+				TString cname = canpro->GetName();
+				// hide canvas from root
+				TRegexp pr("_projection_");
+				cname(pr) = "_Projection_";
+				canpro->SetName(cname);
+				env.SetValue("Set2DimOptDialog.fNbinLiveSliceX",0);
+				env.SetValue("Set2DimOptDialog.fNbinLiveSliceY",0);
+				if (fCanvas->GetHandleMenus() ) {
+					fCanvas->GetHandleMenus()->SetLiveSliceX(0);
+					fCanvas->GetHandleMenus()->SetLiveSliceY(0);
+				}
+				env.SaveLevel(kEnvLocal);
+			}
+			gSystem->ProcessEvents();
+			fCanvas->Modified();
+			fCanvas->Update();
+			return;
+		}
 		if ( ch == 'C' ||ch == 'c') {
 			TRootCanvas *rc =  (TRootCanvas*)fCanvas->GetCanvasImp();
 //        if (fCanvas->GetAutoExec()) fCanvas->ToggleAutoExec();
@@ -761,16 +785,71 @@ void FitHist::handle_mouse()
 //   if ( (!fLiveStat1Dim && fDimension == 1) || (!fLiveStat2Dim && fDimension == 2) ||
 //         fDimension == 3 )  return;
 	if ( fDimension == 3 )  return;
-	TEnv env(".hprrc");
+//	TEnv env(".hprrc");
 	if ( fDimension == 1) { 
 		fLiveStat1Dim = (Int_t)env.GetValue("Set1DimOptDialog.fLiveStat1Dim",0);
 		if (fLiveStat1Dim == 0)
 			return;
 	}
-	if ( fDimension == 2) { 
-		fLiveStat2Dim = (Int_t)env.GetValue("Set2DimOptDialog.fLiveStat2Dim",0);
-		if (fLiveStat2Dim == 0)
+	if ( fDimension == 2) {
+		Int_t NbinSliceX = env.GetValue("Set2DimOptDialog.fNbinLiveSliceX",0);
+		Int_t NbinSliceY = env.GetValue("Set2DimOptDialog.fNbinLiveSliceY",0);
+		if (NbinSliceX  > 0 ) {
+			THistPainter * hip= (THistPainter*)fSelHist->GetPainter();
+			if (hip) {
+				TCanvas * canpro = Hpr::FindCanvas("_projection_");
+				if ( canpro == NULL ) {
+					hip->SetShowProjection("x", NbinSliceX);
+					
+					canpro = Hpr::FindCanvas("_projection_");
+					if (canpro == NULL) {
+						cout << "No canvas created, strange" << endl;
+						return;
+					}
+					UInt_t ww, wh;
+					Int_t wx, wy;
+					wx = fCanvas->GetWindowTopX();
+					wy = fCanvas->GetWindowTopY();
+					ww = fCanvas->GetWindowWidth();
+					wh = fCanvas->GetWindowHeight();
+					canpro->SetWindowSize(500,wh/2-20);
+					canpro->SetWindowPosition(wx+ww+4, wy-20);
+					cout<< setblue << "To terminate press: \"q\"" << setblack<< endl;
+				}
+				hip->ShowProjectionX(px,py);
+				return;
+			}
+		} else if (NbinSliceY  > 0 ) {
+			THistPainter * hip= (THistPainter*)fSelHist->GetPainter();
+			if (hip) {
+				TCanvas * canpro = Hpr::FindCanvas("_projection_");
+				if ( canpro == NULL ) {
+					hip->SetShowProjection("y", NbinSliceY);
+					
+					canpro = Hpr::FindCanvas("_projection_");
+					if (canpro == NULL) {
+						cout << "No canvas created, strange" << endl;
+						return;
+					}
+					UInt_t ww, wh;
+					Int_t wx, wy;
+					wx = fCanvas->GetWindowTopX();
+					wy = fCanvas->GetWindowTopY();
+					ww = fCanvas->GetWindowWidth();
+					wh = fCanvas->GetWindowHeight();
+					canpro->SetWindowSize(500,wh/2-20);
+					canpro->SetWindowPosition(wx+ww+4, wy + wh/2);
+					cout<< setblue << "To terminate press: \"q\"" << setblack<< endl;
+				}
+				hip->ShowProjectionY(px,py);
+				return;
+			}
+		} else {
+			fLiveStat2Dim = (Int_t)env.GetValue("Set2DimOptDialog.fLiveStat2Dim",0);
+			if (fLiveStat2Dim == 0)
 			return;
+		}
+		return;
 	}
 	
 	if (event == kButton1Down) {

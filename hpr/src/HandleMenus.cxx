@@ -164,6 +164,8 @@ enum ERootCanvasCommands {
    kFHProjectX,
    kFHProjectY,
    kFHProjectF,
+	kFHLiveSliceX,
+	kFHLiveSliceY,
    kFHProjectB,
    kFHStackMax,
    kFHStackMin,
@@ -759,10 +761,10 @@ again:
                   case kFHSelectInside:
                      if(fFitHist->InsideState()) {
                          fFitHist->SetInside(kFALSE);
-                         fDisplayMenu->UnCheckEntry(kFHSelectInside);
+                         fCutsMenu->UnCheckEntry(kFHSelectInside);
                      } else {
                          fFitHist->SetInside(kTRUE);
-                         fDisplayMenu->CheckEntry(kFHSelectInside);
+                         fCutsMenu->CheckEntry(kFHSelectInside);
                      }
                      break;
                   case  kFHMarksToWindow:
@@ -905,7 +907,63 @@ again:
                   case kFHProjectB:
                      fFitHist->ProjectBoth();
                      break;
-                  case kFHOutputStat:
+                  case kFHLiveSliceX:
+							{
+							TEnv env(".hprrc");
+							if (fNbinLiveSliceX) {
+								env.SetValue("Set2DimOptDialog.fNbinLiveSliceX", 0);
+								env.SaveLevel(kEnvLocal);
+								fDisplayMenu->UnCheckEntry(kFHLiveSliceX);
+								fNbinLiveSliceX = 0;
+								TCanvas * canpro = Hpr::FindCanvas("_projection_");
+								if ( canpro ) {
+									TString cname = canpro->GetName();
+									// hide canvas from root
+									if (cname.EndsWith("1")) {
+										TRegexp pr("_projection_");
+										cname(pr) = "_Projection_";
+										canpro->SetName(cname);
+									}
+								}
+							} else {
+								Int_t nb= env.GetValue("Set2DimOptDialog.fNbinSliceX", 1);
+								env.SetValue("Set2DimOptDialog.fNbinLiveSliceX", nb);
+								env.SaveLevel(kEnvLocal);
+								fDisplayMenu->CheckEntry(kFHLiveSliceX);
+								fNbinLiveSliceX = 1;
+							}
+							
+//							((TH2*)fSelHist)->SetShowProjectionX(fNbinLiveSliceX);
+							break;
+							}
+                   case kFHLiveSliceY:
+							{
+							TEnv env(".hprrc");
+							if (fNbinLiveSliceY) {
+								env.SetValue("Set2DimOptDialog.fNbinLiveSliceY", 0);
+								env.SaveLevel(kEnvLocal);
+								fDisplayMenu->UnCheckEntry(kFHLiveSliceY);
+								fNbinLiveSliceY = 0;
+								TCanvas * canpro = Hpr::FindCanvas("_projection_");
+								if ( canpro ) {
+									TString cname = canpro->GetName();
+									// hide canvas from root
+									if (cname.EndsWith("2")) {
+										TRegexp pr("_projection_");
+										cname(pr) = "_Projection_";
+										canpro->SetName(cname);
+									}
+								}
+							} else {
+								Int_t nb= env.GetValue("Set2DimOptDialog.fNbinSliceY", 1);
+								env.SetValue("Set2DimOptDialog.fNbinLiveSliceY", nb);
+								env.SaveLevel(kEnvLocal);
+								fDisplayMenu->CheckEntry(kFHLiveSliceY);
+								fNbinLiveSliceY = 1;
+							}
+							break;
+							}
+                 case kFHOutputStat:
                      fFitHist->OutputStat(0);
                      break;
 						case kFHContHist:
@@ -1229,6 +1287,13 @@ void HandleMenus::BuildMenus()
    Bool_t graph2d = kFALSE;
    Bool_t graph3d = kFALSE;
 	Bool_t its_start_window = kFALSE;
+// turn of auto slicing	
+	fNbinLiveSliceX = fNbinLiveSliceY = 0;
+	TEnv env(".hprrc");
+	env.SetValue("Set2DimOptDialog.fNbinLiveSliceX", 0);
+	env.SetValue("Set2DimOptDialog.fNbinLiveSliceY", 0);
+	env.SaveLevel(kEnvLocal);
+	
 	TString cn(fHCanvas->GetName());
 	if ( cn == "cHPr" )
 		its_start_window = kTRUE;
@@ -1292,7 +1357,8 @@ void HandleMenus::BuildMenus()
    }
 
    pm = fRootsMenuBar->GetPopup("Edit");
-   if (pm && fFitHist == 0 ) {
+   if (pm ) {
+//   if (pm && fFitHist == 0 ) {
       l = pm->GetListOfEntries();
       if (l) {
          TIter next(l);
@@ -1412,6 +1478,9 @@ void HandleMenus::BuildMenus()
 		fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
 		fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
 		fFileMenu->AddEntry("Hist_as_Graph_to_ROOT-File", kFHHistToGraph);
+		if ( nDim < 3)
+			fFileMenu->AddEntry("Histogram bin content",  kFHContHist );
+
 		fFileMenu->AddSeparator();
 		fFileMenu->AddEntry("Picture to Printer",  kFHCanvas2LP);
 		fFileMenu->AddEntry("Picture to PS-File",  kFHPictToPS);
@@ -1517,44 +1586,42 @@ void HandleMenus::BuildMenus()
          if (nDim < 3) {
 				fDisplayMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
 				fDisplayMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
-				fDisplayMenu->AddEntry("Set X Axis Range",      kFHXaxisRange     );
-				if (fFitHist->GetSelHist()->GetDimension() > 1)
-					fDisplayMenu->AddEntry("Set Y Axis Range",      kFHYaxisRange     );
-				if (fFitHist->GetSelHist()->GetDimension() > 2)
-					fDisplayMenu->AddEntry("Set Z Axis Range",      kFHZaxisRange     );
-				fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
-				if ( nDim == 2 ) {
-					fDisplayMenu->AddSeparator();
-					fDisplayMenu->AddEntry("Rebin/Clip",   kFHRebinDimDialog  );
-					fDisplayMenu->AddEntry("Set User Contours",   kFHUserCont);
-					fDisplayMenu->AddEntry("Use Selected Contours",   kFHUserContUse);
-					fDisplayMenu->AddEntry("Clear User Contours",   kFHUserContClear);
-					fDisplayMenu->AddEntry("Save User Contours",   kFHUserContSave);
-				}
 				fDisplayMenu->AddSeparator();
 				fDisplayMenu->AddEntry("ClearMarks",   kFHClearMarks);
 				fDisplayMenu->AddEntry("PrintMarks",   kFHPrintMarks);
 				fDisplayMenu->AddEntry("Set2Marks",    kFHSet2Marks);
-				fDisplayMenu->AddEntry("Highlight marked area",    kFHColorMarked);
+				fDisplayMenu->AddEntry("Highlight marked area", kFHColorMarked);
 		//      fDisplayMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
 				fDisplayMenu->AddSeparator();
          }
       	if ( nDim == 2 ) {
-				fDisplayMenu->AddEntry("ProjectX",    kFHProjectX   );
-				fDisplayMenu->AddEntry("ProjectY",    kFHProjectY   );
-      	   fDisplayMenu->AddEntry("ProjectBoth", kFHProjectB   );
-      	   fDisplayMenu->AddEntry("ProjectAlongFunction",    kFHProjectF   );
-      	   fDisplayMenu->AddEntry("ProfileX",    kFHProfileX   );
-      	   fDisplayMenu->AddEntry("ProfileY",    kFHProfileY   );
+				fDisplayMenu->AddEntry("ProjectX",     kFHProjectX   );
+				fDisplayMenu->AddEntry("ProjectY",     kFHProjectY   );
+      	   fDisplayMenu->AddEntry("ProjectBoth",  kFHProjectB   );
+      	   fDisplayMenu->AddEntry("ProjectAlongFunction", kFHProjectF);
+      	   fDisplayMenu->AddEntry("Live slice X", kFHLiveSliceX);
+      	   fDisplayMenu->UnCheckEntry(kFHLiveSliceX);
+      	   fDisplayMenu->AddEntry("Live slice Y", kFHLiveSliceY);
+      	   fDisplayMenu->UnCheckEntry(kFHLiveSliceY);
+      	   fDisplayMenu->AddEntry("ProfileX",     kFHProfileX   );
+      	   fDisplayMenu->AddEntry("ProfileY",     kFHProfileY   );
+				fDisplayMenu->AddSeparator();
       	   fDisplayMenu->AddEntry("Transpose",   kFHTranspose  );
       	   fDisplayMenu->AddEntry("Rotate Clockwise", kFHRotateClock);
       	   fDisplayMenu->AddEntry("Rotate Counter Clockwise", kFHRotateCClock);
-         } else if ( nDim == 1 ){
+				fDisplayMenu->AddSeparator();
+         } 
+         // for all types
+      	fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
+			if ( nDim == 1 ){
       	   fDisplayMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
          }
-// for all typ
-      	fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
-      	fDisplayMenu->AddEntry("Show in same Range",    kFHGetRange   );
+      	fDisplayMenu->AddEntry("Show in same Range", kFHGetRange);
+			if ( nDim == 1 ) {
+				fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
+			} else if ( nDim == 2 ) {
+				fDisplayMenu->AddEntry("Rebin/Clip",   kFHRebinDimDialog  );
+			}
          if ( nDim == 3 ) {
           	fDisplayMenu->AddEntry("TH3 Dialog", kFHTh3Dialog);
          }
@@ -1562,18 +1629,32 @@ void HandleMenus::BuildMenus()
          if ( nDim < 3 ) {
 				fDisplayMenu->AddSeparator();
 				fDisplayMenu->AddEntry("Show Statistics only",  kFHOutputStat );
-				fDisplayMenu->AddEntry("Histogram bin content",  kFHContHist );
-				fDisplayMenu->AddEntry("SelectInside",  kFHSelectInside);
-				if(fFitHist->InsideState()) fDisplayMenu->CheckEntry(kFHSelectInside);
-				else                        fDisplayMenu->UnCheckEntry(kFHSelectInside);
 				fDisplayMenu->AddSeparator();
-				fDisplayMenu->AddEntry("Magnify",     kFHMagnify    );
-				fDisplayMenu->AddEntry("Redefine Axis",     kFHRedefineAxis);
-				fDisplayMenu->AddEntry("Restore orig Axis",     kFHRestoreAxis);
-				fDisplayMenu->AddEntry("Add new X axis",     kFHAddAxisX);
-				fDisplayMenu->AddEntry("Add new Y axis",     kFHAddAxisY);
-				fDisplayMenu->AddEntry("Repaint extra axis", kFHReDoAxis);
-
+// Axes 				
+				TGPopupMenu  * casc_axis= new TGPopupMenu(fRootCanvas->GetParent());
+				casc_axis->AddEntry("Set Display Range X", kFHXaxisRange);
+				if ( nDim > 1)
+					casc_axis->AddEntry("Set Display Range Y", kFHYaxisRange);
+				if ( nDim > 2)
+					casc_axis->AddEntry("Set Display Range Z", kFHZaxisRange);
+				if ( nDim == 1)	
+					casc_axis->AddEntry("Magnify",     kFHMagnify    );
+				casc_axis->AddEntry("Redefine Axis",     kFHRedefineAxis);
+				casc_axis->AddEntry("Restore orig Axis",     kFHRestoreAxis);
+				casc_axis->AddEntry("Add new X axis",     kFHAddAxisX);
+				casc_axis->AddEntry("Add new Y axis",     kFHAddAxisY);
+				casc_axis->AddEntry("Repaint extra axis", kFHReDoAxis);
+				fDisplayMenu->AddPopup("Manipulate Axes (new, ranges etc.)", casc_axis);
+// user contours				
+				if ( nDim == 2 ) {
+					TGPopupMenu  * casc_cont= new TGPopupMenu(fRootCanvas->GetParent());
+					casc_cont->AddEntry("Set User Contours",   kFHUserCont);
+					casc_cont->AddEntry("Use Selected Contours",   kFHUserContUse);
+					casc_cont->AddEntry("Clear User Contours",   kFHUserContClear);
+					casc_cont->AddEntry("Save User Contours",   kFHUserContSave);
+					fDisplayMenu->AddPopup("User Contours", casc_cont);
+				}
+				
 				if (fFitHist->GetSelHist()->GetDimension() == 1) {
 					fDisplayMenu->AddEntry("Log Y scale",  kFHLogY);
 					if (fHCanvas->GetLogy()) fDisplayMenu->CheckEntry(kFHLogY);
@@ -1622,6 +1703,9 @@ void HandleMenus::BuildMenus()
 				fCutsMenu->AddEntry("Writeout Windows", kFHWriteOutWindows);
 			}
 			fCutsMenu->AddSeparator();
+			fCutsMenu->AddEntry("SelectInside",  kFHSelectInside);
+			if(fFitHist->InsideState()) fCutsMenu->CheckEntry(kFHSelectInside);
+			else                        fCutsMenu->UnCheckEntry(kFHSelectInside);
 			fCutsMenu->AddEntry("ClearMarks",   kFHClearMarks);
 			fCutsMenu->AddEntry("PrintMarks",   kFHPrintMarks);
 			fCutsMenu->AddEntry("Set2Marks",    kFHSet2Marks);
@@ -1715,9 +1799,9 @@ void HandleMenus::BuildMenus()
    fOptionMenu->Associate((TGWindow*)this);
    fAttrMenu->Associate((TGWindow*)this);
    fAttrMenu->Associate((TGWindow*)this);
-   if (fFitHist)
-      fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, fRootsMenuBar->GetPopup("Edit"));
-   else
+//   if (fFitHist)
+ //     fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, fRootsMenuBar->GetPopup("Edit"));
+//   else
       fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, pmi);
 
    if (fHistPresent) 
@@ -1764,6 +1848,26 @@ void HandleMenus::SetLog(Int_t state)
 }
 //______________________________________________________________________________
 
+void HandleMenus::SetLiveSliceX(Int_t state)
+{
+	fNbinLiveSliceX = state;
+	if (state > 0)
+		fDisplayMenu->CheckEntry(kFHLiveSliceX);
+	else 
+		fDisplayMenu->UnCheckEntry(kFHLiveSliceX);
+}
+//______________________________________________________________________________
+
+void HandleMenus::SetLiveSliceY(Int_t state)
+{
+	fNbinLiveSliceY = state;
+	if (state > 0)
+		fDisplayMenu->CheckEntry(kFHLiveSliceY);
+	else 
+		fDisplayMenu->UnCheckEntry(kFHLiveSliceY);
+}
+
+void HandleMenus::SetLiveSliceY(Int_t state);
 //_______________________________________________________________________________________
 void HandleMenus::Canvas2RootFile()
 {

@@ -54,6 +54,10 @@ private:
 	Int_t   fContourLevels;
 	Int_t   fHistNo;
 	Int_t   fBidHistNo;
+	Int_t   fNbinSliceX;
+	Int_t   fNbinSliceY;
+	Int_t   fBidNbinSliceX;
+	Int_t   fBidNbinSliceY;
 	
 public:
 

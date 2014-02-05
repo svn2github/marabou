@@ -333,6 +333,12 @@ For further details contact ROOTs documentation.\n\
 	fValp[ind++] = &fTwoDimLogX;
 	fValp[ind++] = &fTwoDimLogY;
 	fValp[ind++] = &fTwoDimLogZ;
+	fRow_lab->Add(new TObjString("PlainIntVal_Nbins in LiveSliceX"));
+	fBidNbinSliceX = ind;
+	fValp[ind++] = &fNbinSliceX;
+	fRow_lab->Add(new TObjString("PlainIntVal+Nbins in LiveSliceY"));
+	fBidNbinSliceY = ind;
+	fValp[ind++] = &fNbinSliceY;
 //	fRow_lab->Add(new TObjString("PlainIntVal-Hist No"));
 //	fBidHistNo = ind;
 //	fValp[ind++] = &fHistNo;
@@ -544,6 +550,8 @@ void Set2DimOptDialog::SetHistAttPerm()
 	env.SetValue("Set2DimOptDialog.fTwoDimLogX",       fTwoDimLogX       );
 	env.SetValue("Set2DimOptDialog.fTwoDimLogY",       fTwoDimLogY       );
 	env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	env.SetValue("Set2DimOptDialog.fNbinSliceX",       fNbinSliceX       );
+	env.SetValue("Set2DimOptDialog.fNbinSliceY",       fNbinSliceY       );
 	env.SetValue("Set2DimOptDialog.fUseGL",            fUseGL            );
 	
 	env.SaveLevel(kEnvLocal);
@@ -570,6 +578,8 @@ void Set2DimOptDialog::SaveDefaults()
 	env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
 	env.SetValue("Set2DimOptDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set2DimOptDialog.fContourLevels",    fContourLevels    );
+	env.SetValue("Set2DimOptDialog.fNbinSliceX",       fNbinSliceX       );
+	env.SetValue("Set2DimOptDialog.fNbinSliceY",       fNbinSliceY       );
 	env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
@@ -642,6 +652,8 @@ void Set2DimOptDialog::RestoreDefaults(Int_t resetall)
 	fTwoDimLogZ        = env.GetValue("Set2DimOptDialog.fTwoDimLogZ",        0);
 	fUseGL             = env.GetValue("Set2DimOptDialog.fUseGL",             0);
 	fContourLevels     = env.GetValue("Set2DimOptDialog.fContourLevels",    20);
+	fNbinSliceX        = env.GetValue("Set2DimOptDialog.fNbinSliceX",        1);
+	fNbinSliceY        = env.GetValue("Set2DimOptDialog.fNbinSliceY",        1);
 }
 //______________________________________________________________________
 
@@ -670,7 +682,19 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 */
 	if ( bid == fBidLiveStat ) {
 		TEnv env(".hprrc");
-		env.SetValue("Set2DimOptDialog.fLiveStat2Dim",     fLiveStat2Dim);
+		env.SetValue("Set2DimOptDialog.fLiveStat2Dim", fLiveStat2Dim);
+		env.SaveLevel(kEnvLocal);
+		return;
+	}
+	if ( bid == fBidNbinSliceX ) {
+		TEnv env(".hprrc");
+		env.SetValue("Set2DimOptDialog.fNbinSliceX", fNbinSliceX);
+		env.SaveLevel(kEnvLocal);
+		return;
+	}
+	if ( bid == fBidNbinSliceY ) {
+		TEnv env(".hprrc");
+		env.SetValue("Set2DimOptDialog.fNbinSliceY", fNbinSliceY);
 		env.SaveLevel(kEnvLocal);
 		return;
 	}

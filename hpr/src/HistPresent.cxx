@@ -1225,12 +1225,14 @@ of entries below: "
    		sel.Resize(0);
    		fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
    	}
-   	cmd = "gHpr->DeleteSelectedEntries(\"";
-   	cmd = cmd + fname +  "\")";
-   	title = "Delete Sel Entries";
-   	hint = "Delete selected entries";
-   	sel.Resize(0);
-   	fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
+//   	if (!strstr(fname,"Memory")) {
+			cmd = "gHpr->DeleteSelectedEntries(\"";
+			cmd = cmd + fname +  "\")";
+			title = "Delete Sel Entries";
+			hint = "Delete selected entries";
+			sel.Resize(0);
+			fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
+//		}
    }
    cmd = "gHpr->ShowStatOfAll(\"";
    cmd = cmd + fname + "\",\"" + dir + "\")";
@@ -3105,6 +3107,7 @@ void HistPresent::CleanWindowLists(TH1* hist)
 void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname, const char* bp)
 {
    TButton * b = NULL;
+	TString fn(fname);
    HTCanvas *mother_canvas = NULL;
    if (bp) {
       b = (TButton *)strtoul(bp, 0, 16);
@@ -3137,7 +3140,6 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 //      TurnButtonGreen(&activeHist);
 		if ( GeneralAttDialog::fPrependFilenameToTitle != 0 ) {
 			TString title = hist->GetTitle();
-			TString fn(fname);
 			fn = gSystem->BaseName(fn);
 			Int_t pp = fn.Index(".");
 			fn.Resize(pp);
@@ -3145,7 +3147,7 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 			title.Prepend(fn);
 			hist->SetTitle(title);
 		}
-		if ( GeneralAttDialog::fAppendTimestampToHistname != 0 ) {
+		if ( fn != "Memory" && GeneralAttDialog::fAppendTimestampToHistname != 0 ) {
 			TString name = hist->GetName();
 			TDatime dt;
 			name += "_";

@@ -34,6 +34,7 @@ private:
    Int_t   fGraphYdiv;
    Int_t   fEmptyPad;
    Int_t   fGraph_Simple;
+   Int_t   fGraph_AsHist;
    Int_t   fGraph_Error;
    Int_t   fGraph_AsymError;
    Int_t   fGraphSerialNr;

@@ -1507,5 +1507,19 @@ Int_t MixPointsInGraph2D(TGraph2D * grin, TGraph2D * grout, Int_t npoints)
 	}
 	return n;
 }
+//_______________________________________________________________________________________
+
+TCanvas * FindCanvas(const Char_t * pat)
+{
+	TIter next(gROOT->GetListOfCanvases());
+	while (TObject * obj = next()) {
+		if (obj->InheritsFrom("TCanvas")) {
+			TString cname = ((TCanvas*)obj)->GetName();
+			if (cname.Contains(pat))
+				return (TCanvas*)obj;
+		}
+	}
+	return NULL;
+};
 
 }   // end namespace Hpr
