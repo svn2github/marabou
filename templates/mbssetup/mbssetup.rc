@@ -61,8 +61,8 @@
 
 *-*-*-*-*.LocalPipeOffset:	 			0x0
 
-*-*-SP-RIO4-*.LocalPipeSegmentLength:	0x0c000000
-*-*-SP-RIO3-*.LocalPipeSegmentLength:	0x02000000
+*-*-SP-RIO4-*.LocalPipeSegmentLength:		0x02000000
+*-*-SP-RIO3-*.LocalPipeSegmentLength:		0x02000000
 *-*-SP-*-*.LocalPipeSegmentLength:	 	0x00100000
 
 *-*-SP-*-*.LocalPipeType:				0
