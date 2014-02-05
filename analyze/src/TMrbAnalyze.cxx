@@ -125,6 +125,7 @@ TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 										// create a histogram to store dead-time history of last 300 secs
 		hDTimeHistory = new TH1F("DeadTime", "Dead time history (last 300 seconds)", 300, -300, 0);
 		fDumpCount = gEnv->GetValue("TMrbAnalyze.DumpCount", 0);
+		if (gEnv->GetValue("TMrbAnalyze.ForcedDump", kFALSE)) fDumpCount = -1;	// dump always
 
 		fResourceFile.Resize(0);		// reset resource name
 		fResourceName.Resize(0);
