@@ -75,7 +75,11 @@ SMILIBS = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(LIB)/lib_smi.a 
 endif
 
 CFLAGS	+= -I$(RPATH) -I$(INC) $(RDO_INCL)
-LIBS	+= $(RDO_LIBS) $(CES_LIBS) -llynx
+LIBS	+= $(RDO_LIBS) $(CES_LIBS)
+
+ifneq ($(GSI_OS_VERSION),4.0)
+LIBS	+= -llynx
+endif
 
 all:	m_read_meb
 
