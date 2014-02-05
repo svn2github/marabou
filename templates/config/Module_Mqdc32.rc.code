@@ -103,6 +103,9 @@ MQDC32.$moduleName.SkipOutOfRange:		$skipOutOfRange
 
 # ignore thresholds     true/false
 MQDC32.$moduleName.IgnoreThresh:		$ignoreThresh
+
+# repair raw data       true/false
+MQDC32.$moduleName.RepairRawData:		$repairRawData
 %%End(OperationMode)%%
 
 %%Begin(GateGenerator)%%

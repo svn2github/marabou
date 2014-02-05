@@ -79,6 +79,7 @@ struct s_madc32 {
 	int memorySize;
 
 	bool_t blockXfer;			/* TRUE if block xfer enabled */
+	bool_t repairRawData;		/* TRUE if raw data should be repaired (missing EOEs) */
 
 	unsigned long mcstSignature;		/* MCST signature */
 	volatile char * mcstAddr;		/* ... after mapping */

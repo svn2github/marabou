@@ -118,6 +118,9 @@ MADC32.$moduleName.SkipOutOfRange:		$skipOutOfRange
 
 # ignore thresholds     true/false
 MADC32.$moduleName.IgnoreThresh:		$ignoreThresh
+
+# repair raw data       true/false
+MADC32.$moduleName.RepairRawData:		$repairRawData
 %%End(OperationMode)%%
 
 %%Begin(GateGenerator)%%

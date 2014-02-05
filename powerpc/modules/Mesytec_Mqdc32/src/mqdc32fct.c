@@ -74,10 +74,18 @@ void mqdc32_initialize(struct s_mqdc32 * s)
 	mqdc32_resetReadout(s);
 	sprintf(msg, "[%sinitialize] %s: Block xfer is %s", s->mpref, s->moduleName, s->blockXfer ? "ON" : "OFF");
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	if (s->repairRawData) {
+		sprintf(msg, "[%sinitialize] %s: Raw data will be repaired (missing EOEs inserted)", s->mpref, s->moduleName);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	}
 }
 
 bool_t mqdc32_useBLT(struct s_mqdc32 * s) {
 	return s->blockXfer;
+}
+
+bool_t mqdc32_repairRawData(struct s_mqdc32 * s) {
+	return s->repairRawData;
 }
 
 void mqdc32_soft_reset(struct s_mqdc32 * s)
@@ -489,6 +497,9 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 	sprintf(res, "MQDC32.%s.BlockXfer", mnUC);
 	s->blockXfer = root_env_getval_b(res, FALSE);
 
+	sprintf(res, "MADC32.%s.RepairRawData", mnUC);
+	s->repairRawData = root_env_getval_b(res, FALSE);
+
 	for (i = 0; i < MQDC_NOF_CHANNELS; i++) {
 		sprintf(res, "MQDC32.%s.Thresh.%d", mnUC, i);
 		s->threshold[i] = root_env_getval_i(res, MQDC32_THRESHOLD_DEFAULT);
@@ -829,6 +840,8 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 		for (i = 0; i < numData; i++) *pointer++ = GET32(s->md->vmeBase, MQDC32_DATA);
 	}
 
+	if (s->repairRawData) pointer = mpdc32_repairRawData(s, pointer, dataStart);
+	
 	mqdc32_resetReadout(s);
 
 	return (pointer - dataStart);

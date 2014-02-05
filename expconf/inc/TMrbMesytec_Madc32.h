@@ -187,6 +187,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline void SetBlockXfer(Bool_t Flag = kTRUE) { fBlockXfer = Flag; };
 		inline Bool_t BlockXferEnabled() { return(fBlockXfer); };
 
+		inline void RepairRawData(Bool_t Flag = kTRUE) { fRepairRawData = Flag; };
+		inline Bool_t RawDataToBeRepaired() { return(fRepairRawData); };
+
 		inline Bool_t SetThreshold(Int_t Thresh, Int_t Channel = -1) { return(this->Set(TMrbMesytec_Madc32::kRegThreshold, Thresh, Channel)); };
 		inline Int_t GetThreshold(Int_t Channel) { return(this->Get(TMrbMesytec_Madc32::kRegThreshold, Channel)); };
 
@@ -338,6 +341,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		Bool_t fUpdateSettings;
 		Int_t fUpdateInterval;
 		Bool_t fBlockXfer;
+		Bool_t fRepairRawData;
 		Bool_t fSlidingScaleOff;
 		Bool_t fSkipOutOfRange;
 		Bool_t fIgnoreThresh;

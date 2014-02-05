@@ -80,10 +80,18 @@ void madc32_initialize(struct s_madc32 * s)
 	madc32_resetReadout(s);
 	sprintf(msg, "[%sinitialize] %s: Block xfer is %s", s->mpref, s->moduleName, s->blockXfer ? "ON" : "OFF");
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	if (s->repairRawData) {
+		sprintf(msg, "[%sinitialize] %s: Raw data will be repaired", s->mpref, s->moduleName);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	}
 }
 
 bool_t madc32_useBLT(struct s_madc32 * s) {
 	return s->blockXfer;
+}
+
+bool_t mqdc32_repairRawData(struct s_mqdc32 * s) {
+	return s->repairRawData;
 }
 
 void madc32_soft_reset(struct s_madc32 * s)
@@ -531,6 +539,9 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	sprintf(res, "MADC32.%s.BlockXfer", mnUC);
 	s->blockXfer = root_env_getval_b(res, FALSE);
 
+	sprintf(res, "MADC32.%s.RepairRawData", mnUC);
+	s->repairRawData = root_env_getval_b(res, FALSE);
+
 	for (i = 0; i < MADC_NOF_CHANNELS; i++) {
 		sprintf(res, "MADC32.%s.Thresh.%d", mnUC, i);
 		s->threshold[i] = root_env_getval_i(res, MADC32_THRESHOLD_DEFAULT);
@@ -875,6 +886,8 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 		for (i = 0; i < numData; i++) *pointer++ = GET32(s->md->vmeBase, MADC32_DATA);
 	}
 
+	if (s->repairRawData) pointer = madc32_repairRawData(s, pointer, dataStart);
+	
 	madc32_resetReadout(s);
 
 	return (pointer - dataStart);

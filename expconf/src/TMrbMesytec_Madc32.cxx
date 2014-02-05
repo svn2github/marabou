@@ -225,6 +225,7 @@ TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAdd
 				fNofDataBits = 13;
 				fBlockReadout = kTRUE;			// module has block readout
 				fBlockXfer = kFALSE;
+				fRepairRawData = kFALSE;
 
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
 
@@ -568,6 +569,7 @@ TEnv * TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetUpdateInterval(madcEnv->Get(moduleName.Data(), "UpdateInterval", 0));
 
 	this->SetBlockXfer(madcEnv->Get(moduleName.Data(), "BlockXfer", kFALSE));
+	this->RepairRawData(madcEnv->Get(moduleName.Data(), "RepairRawData", kFALSE));
 	this->SetAddressSource(madcEnv->Get(moduleName.Data(), "AddressSource", kAddressBoard));
 	this->SetAddressRegister(madcEnv->Get(moduleName.Data(), "AddressRegister", 0));
 	this->SetMcstSignature(madcEnv->Get(moduleName.Data(), "MCSTSignature", 0x0));
@@ -704,6 +706,7 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$multiEvent", this->GetMultiEvent());
 						tmpl.Substitute("$markingType", this->GetMarkingType());
 						tmpl.Substitute("$blockXfer", this->BlockXferEnabled() ? "TRUE" : "FALSE");
+						tmpl.Substitute("$repairRawData", this->RawDataToBeRepaired() ? "TRUE" : "FALSE");
 						tmpl.Substitute("$bufferThresh", this->GetBufferThresh());
 						tmpl.WriteCode(settings);
 
@@ -1023,6 +1026,7 @@ void TMrbMesytec_Madc32::PrintSettings(ostream & Out) {
 	Out << " Single/multi event  : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegMultiEvent) << endl;
 	Out << " Marking type        : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegMarkingType) << endl;
 	Out << " Block tansfer       : "	<< (this->BlockXferEnabled() ? "off" : "on") << endl;
+	Out << " Repair raw data     : "	<< (this->RawDataToBeRepaired() ? "off" : "on") << endl;
 	Out << " Bank operation      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegBankOperation) << endl;
 	Out << " ADC resolution      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAdcResolution) << endl;
 	Out << " Output format       : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegOutputFormat) << endl;
