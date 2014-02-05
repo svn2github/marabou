@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <allParam.h>
 #include <ces/uiocmd.h>
 #include <ces/bmalib.h>
 #include <errno.h>
@@ -82,10 +81,6 @@ void mqdc32_initialize(struct s_mqdc32 * s)
 
 bool_t mqdc32_useBLT(struct s_mqdc32 * s) {
 	return s->blockXfer;
-}
-
-bool_t mqdc32_repairRawData(struct s_mqdc32 * s) {
-	return s->repairRawData;
 }
 
 void mqdc32_soft_reset(struct s_mqdc32 * s)
@@ -840,7 +835,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 		for (i = 0; i < numData; i++) *pointer++ = GET32(s->md->vmeBase, MQDC32_DATA);
 	}
 
-	if (s->repairRawData) pointer = mpdc32_repairRawData(s, pointer, dataStart);
+	if (s->repairRawData) pointer = mqdc32_repairRawData(s, pointer, dataStart);
 	
 	mqdc32_resetReadout(s);
 
@@ -1042,6 +1037,10 @@ void mqdc32_resetReadout_mcst(struct s_mqdc32 * s)
 void mqdc32_resetTimestamp_mcst(struct s_mqdc32 * s)
 {
 	SET16(s->mcstAddr, MQDC32_CTRA_RESET_A_OR_B, 0x3);
+}
+
+uint32_t * mqdc32_repairRawData(struct s_mqdc32 * s, uint32_t * pointer, uint32_t * dataStart) {
+	return pointer;
 }
 
 bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile)

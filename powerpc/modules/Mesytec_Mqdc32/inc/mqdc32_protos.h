@@ -31,8 +31,6 @@ void mqdc32_initialize(struct s_mqdc32 * s);
 void mqdc32_enableBLT(struct s_mqdc32 * s);
 bool_t mqdc32_useBLT(struct s_mqdc32 * s);
 
-bool_t madc32_repairRawData(struct s_madc32 * s);
-
 bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file);
 bool_t mqdc32_dumpRaw(struct s_mqdc32 * s, char * file);
 void mqdc32_printDb(struct s_mqdc32 * s);
@@ -192,5 +190,5 @@ void mqdc_resetReadout_mcst(struct s_mqdc32 * s);
 
 bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile);
 
-uint32_t * mqdc32_repairRawData(struct s_madc32 * s, uint32_t * pointer, uint32_t * dataStart);
+uint32_t * mqdc32_repairRawData(struct s_mqdc32 * s, uint32_t * pointer, uint32_t * dataStart);
 #endif

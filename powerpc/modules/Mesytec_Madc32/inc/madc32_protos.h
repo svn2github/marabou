@@ -31,8 +31,6 @@ void madc32_initialize(struct s_madc32 * s);
 void madc32_enableBLT(struct s_madc32 * s);
 bool_t madc32_useBLT(struct s_madc32 * s);
 
-bool_t madc32_repairRawData(struct s_madc32 * s);
-
 bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file);
 bool_t madc32_dumpRaw(struct s_madc32 * s, char * file);
 void madc32_printDb(struct s_madc32 * s);

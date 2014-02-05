@@ -7,8 +7,6 @@
 #include <string.h>
 #include <errno.h>
 #include <stdint.h>
-
-#include <allParam.h>
 #include <ces/uiocmd.h>
 #include <ces/bmalib.h>
 

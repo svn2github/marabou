@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <allParam.h>
 #include <ces/uiocmd.h>
 #include <ces/bmalib.h>
 #include <errno.h>
@@ -42,6 +41,9 @@ int evtWc;
 int lastData;
 
 char msg[256];
+
+struct s_madc32 * be;
+
 
 struct s_madc32 * madc32_alloc(char * moduleName, struct s_mapDescr * md, int serial)
 {
@@ -75,6 +77,7 @@ struct s_madc32 * madc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 
 void madc32_initialize(struct s_madc32 * s)
 {
+	be = s;
 	signal(SIGBUS, catchBerr);
 	madc32_disableBusError(s);
 	madc32_resetReadout(s);
@@ -88,10 +91,6 @@ void madc32_initialize(struct s_madc32 * s)
 
 bool_t madc32_useBLT(struct s_madc32 * s) {
 	return s->blockXfer;
-}
-
-bool_t mqdc32_repairRawData(struct s_mqdc32 * s) {
-	return s->repairRawData;
 }
 
 void madc32_soft_reset(struct s_madc32 * s)
@@ -1102,4 +1101,13 @@ bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile)
 	return FALSE;
 }
 
-void catchBerr() {}
+uint32_t * madc32_repairRawData(struct s_madc32 * s, uint32_t * pointer, uint32_t * dataStart) {
+	return pointer;
+}
+
+void catchBerr() {
+	
+	madc32_resetReadout(be);
+	sprintf(msg, "[%scatchBerr] %s: Bus Error!", be->mpref, be->moduleName);
+	f_ut_send_msg(be->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+}
