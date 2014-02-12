@@ -15,6 +15,8 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	static Int_t foundHeaderInstead = 0;
+	
 	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 	this->GetHitBuffer()->Reset();			// clear hit buffer
@@ -36,13 +38,34 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 			return(kTRUE);
 		}
 		if ((header & MADC_M_ID) != MADC_D_HDR) {
-			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
-			cerr	<< setred
-					<< this->ClassName() << "::FillSubevent() [sevtWC="
-					<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10) << " (recNo=" << recNo << ")"
-					<< setblack << endl;
-			return(kTRUE);
+			if (foundHeaderInstead) {						// header found at end of prev buffer
+				header = foundHeaderInstead;
+				dataPtr -= 2;
+				wordsProcessed -= 2;
+			} else {
+				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
+				cerr	<< setred
+						<< this->ClassName() << "::FillSubevent() [sevtWC="
+						<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10) << " (recNo=" << recNo << ")"
+						<< setblack << endl;
+				if (eventsProcessed != 0) return(kTRUE);				// at beginning of buffer?
+				while (SevtWC > 0) {
+					UInt_t t = *dataPtr++;
+					t |= *dataPtr++;
+					SevtWC -= 2;
+					wordsProcessed += 2;
+					if ((t & MADC_M_ID) == MADC_D_EOE) {
+						cerr	<< setmagenta
+								<< this->ClassName() << "::FillSubevent() [sevtWC="
+								<< wordsProcessed << "] Skipping to next event header (recNo=" << recNo << ")"
+								<< setblack << endl;
+						break;
+					}
+				}
+				continue;
+			}
 		}
+		foundHeaderInstead = 0;
 
 		Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
 		Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
@@ -55,27 +78,34 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 
 		UShort_t * nextEvent = dataPtr + 2 * wc;
 
-		Bool_t trailerFound = kTRUE;
 		UShort_t * trailPtr = nextEvent - 2;
 		UInt_t trailer = (*trailPtr++ << 16); 						// inspect trailer word
 		trailer |= *trailPtr++;
 		if ((trailer & MADC_M_ID) == MADC_D_HDR) {					// test if EOE
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
-			cerr	<< setmagenta									// it is a header!
-					<< this->ClassName() << "::FillSubevent(): [Module "
-					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
-					<< wordsProcessed << "] EOE missing, found header instead - 0x" << setbase(16) << trailer << setbase(10)
-					<< setblack << endl;
+			if (verboseMode) {
+				cerr	<< setmagenta									// it is a header!
+						<< this->ClassName() << "::FillSubevent(): [Module "
+						<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+						<< wordsProcessed << "] EOE missing, found header instead - 0x" << setbase(16) << trailer << setbase(10)
+						<< setblack << endl;
+			}
+			foundHeaderInstead = trailer;							// store header for next event
 			trailer = MADC_D_EOE | 0x252525;						// fake trailer word
-			trailerFound = kFALSE;
 		} else if ((trailer & MADC_M_ID) != MADC_D_EOE) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
-			cerr	<< setred
-					<< this->ClassName() << "::FillSubevent(): [Module "
-					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
-					<< wordsProcessed << "] Wrong EOE - 0x" << setbase(16) << trailer << setbase(10)
-					<< setblack << endl;
-			return(kTRUE);
+			if (trailer != 0 || verboseMode) {
+				cerr	<< setred
+						<< this->ClassName() << "::FillSubevent(): [Module "
+						<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+						<< wordsProcessed << "] Wrong EOE - 0x" << setbase(16) << trailer << setbase(10)
+						<< setblack << endl;
+			}
+			if (trailer == 0) {
+				trailer = MADC_D_EOE | 0x525252;						// fake trailer word
+			} else {
+				return(kTRUE);								// we can't decode remaining data
+			}
 		}
 		wc--;
 		UInt_t lowTimeStamp = trailer & MADC_M_TSLOW;	// extract lower bits of time stamp (bits 0-29)
@@ -90,7 +120,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 			highTimeStamp |= *xtsPtr++;
 		}
 
-		if (!trailerFound) highTimeStamp = 0;		// doesn't make sense if trailer (and therefore lower time stamp) is missing
+		if (foundHeaderInstead) highTimeStamp = 0;		// doesn't make sense if trailer (and therefore lower time stamp) is missing
 
 		ULong64_t ts64 = 0;
 		if ((highTimeStamp & MADC_M_XTS) == MADC_D_XTS) {
@@ -162,7 +192,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 		}
 
 		dataPtr = nextEvent;
-		if (!trailerFound) dataPtr -= 2;			// trailer was missing
+		if (foundHeaderInstead) dataPtr -= 2;			// trailer was missing
 
 		SevtWC -= wcs;						// remaining subevent data
 		eventsProcessed++;
