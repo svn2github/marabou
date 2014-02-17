@@ -33,7 +33,7 @@ class  HprGaxis : public TGaxis {
 		HprGaxis(TCanvas * canvas, Double_t xmin, Double_t ymin, Double_t xmax, Double_t ymax,
 					Double_t wmin, Double_t wmax, Int_t ndiv = 510, 
 					Option_t* chopt = "", Double_t gridlength = 0);
-      HprGaxis() { fTimer->Stop(); delete fTimer;};
+      HprGaxis() { if ( fTimer ) {fTimer->Stop(); delete fTimer;}};
 		void ReDoAxis();
 		void HandlePadModified();
 		void SetOffset(Double_t off) { fOffset = off; };           // *MENU*

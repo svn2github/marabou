@@ -3191,7 +3191,8 @@ void FitHist::Draw1Dim()
 		}
 	} else {
 		fSelHist->SetStats(0);
-		//			 cout << "fSelHist->SetStats(0); " << endl;
+		gStyle->SetOptStat(0);
+				//			 cout << "fSelHist->SetStats(0); " << endl;
 	} 
 //	TPaveStats * st1 = (TPaveStats *)fSelHist->GetListOfFunctions()->FindObject("stats");
 // 	cout << "Draw1Dim() st1 " << st1  << endl;
@@ -3389,6 +3390,7 @@ void FitHist::Draw2Dim()
 		fSelHist->SetStats(1);
 	} else {
 		fSelHist->SetStats(0);
+		gStyle->SetOptStat(0);
 	} 
 	if ( fDrawOpt2Dim.Contains("LEGO") && GeneralAttDialog::fLegoSuppressZero == 1 )
 		fDrawOpt2Dim.Prepend("0");
