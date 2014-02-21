@@ -639,6 +639,8 @@ class TMrbConfig : public TNamed {
 
 		Bool_t UpdateMbsSetup();									// update .mbssetup database if online mode
 
+		Bool_t CopyHistoLists(const Char_t * HistoDir = "");		// copy .histlist files to directory where histo files reside
+		
 		Bool_t ExecRootMacro(const Char_t * Macro);
 
   		void Print(Option_t * Option) const { TNamed::Print(Option); };

@@ -2767,9 +2767,9 @@ Bool_t FhMainFrame::GetDefaults(){
    infile = *fDefFile;
    infile.Strip(TString::kBoth);
 
-   fInputFile   = new TString("run$R.root");
-   fOutputFile	= new TString("run$R.root");
-   fHistFile    = new TString("hists$R.root");
+   fInputFile   = new TString();
+   fOutputFile	= new TString();
+   fHistFile    = new TString();
    fParFile     = new TString("none");
 
    fActualInputFile = new TString();
@@ -2952,8 +2952,33 @@ Bool_t FhMainFrame::GetDefaults(){
       ok = kFALSE;
    }
    if (!ok) cout << setred <<  "Couldn't read C_analyze.def" << setblack << endl;
-
-if (!gSystem->AccessPathName(".mbssetup")) {
+   
+	if (fInputFile->IsNull()) {
+		*fInputFile = gEnv->GetValue("M_analyze.InputFilePath", "");
+		if (fInputFile->IsNull()) {
+			*fInputFile = "run$R.root";
+		} else {
+			*fInputFile += "/run$R.root";
+		}
+   }
+   if (fOutputFile->IsNull()) {
+		*fOutputFile = gEnv->GetValue("M_analyze.OutputFilePath", "");
+		if (fOutputFile->IsNull()) {
+			*fOutputFile = "run$R.root";
+		} else {
+			*fOutputFile += "/run$R.root";
+		}
+   }
+   if (fHistFile->IsNull()) {
+		*fHistFile = gEnv->GetValue("M_analyze.HistoFilePath", "");
+		if (fHistFile->IsNull()) {
+			*fHistFile = "hists$R.root";
+		} else {
+			*fHistFile += "/hists$R.root";
+		}
+	}
+ 
+  if (!gSystem->AccessPathName(".mbssetup")) {
       cout << setblue << "Looking up setup data in .mbssetup" << setblack << endl;
 	  if(fSetup == NULL) {
 	    if (!gSystem->AccessPathName(".mbssetup")) {

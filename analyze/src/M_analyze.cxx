@@ -496,7 +496,8 @@ int main(int argc, char **argv) {
 //	reload params
 		if ( param_mode != TMrbIOSpec::kParamNone ) u_analyze->ReloadParams(ioSpec);
 
-		if ( (UInt_t)gMrbTransport->ReadEvents(0) == MBS_ETYPE_ABORT ) {
+		UInt_t rsts = (UInt_t) gMrbTransport->ReadEvents(0);
+		if ( rsts == MBS_ETYPE_ABORT ) {
 			cerr	<< setred
 					<< "M_analyze: Unexpected ABORT returned by ReadEvents() - Click on STOP to terminate"
 					<< setblack << endl;

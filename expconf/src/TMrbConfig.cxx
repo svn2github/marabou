@@ -5435,7 +5435,6 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 	TString userLib = UserLib;
 
 	Bool_t verboseMode = ((GetConfigOptions() & kCfgOptVerbose) != 0);
-	if (IsVerbose()) cout << "@@@ verbose" << endl;
 
 	TRegexp rxlib("^lib");
 	TRegexp rxso("\\.so$");
@@ -7725,6 +7724,70 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 
 	mbsSetup->Save();
 	delete mbsSetup;
+	return(kTRUE);
+}
+
+Bool_t TMrbConfig::CopyHistoLists(const Char_t * HistDir) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::CopyHistoLists
+// Purpose:        Copy .histlist files
+// Arguments:      Char_t * HistDir    -- directory where histogram files reside
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Copies .histlist files to directory where histogram files reside
+//                 If no dir name is given, looks into gEnv (entry M_analyze.HistoDirectory)
+//                 and C_analyze.def (entry HISTFILE)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString dirName = HistDir;
+	if (dirName.IsNull()) {
+		dirName = gEnv->GetValue("M_analyze.HistoFilePath", "");
+		if (!dirName.BeginsWith("/") && !dirName.BeginsWith("./") && !dirName.BeginsWith("../")) {
+			dirName.Prepend("/");
+			dirName.Prepend(gSystem->WorkingDirectory());
+		}
+	}
+	if (dirName.IsNull()) {
+		TEnv * e = new TEnv("C_analyze.def");
+		dirName = e->GetValue("HISTFILE", "");
+	}
+	if (dirName.IsNull()) return kTRUE;
+
+	dirName = gSystem->DirName(dirName.Data());
+	if (dirName.CompareTo(".") == 0) return kTRUE;
+	
+	gSystem->ExpandPathName(dirName);
+
+	void * dirPtr = gSystem->OpenDirectory(dirName.Data());
+	if (dirPtr == NULL) {
+		gMrbLog->Err()	<< "Can't copy histo lists - directory \"" << dirName << "\" doesn't exist" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyHistoLists");
+		return kFALSE;
+	}
+
+	gMrbLog->Out() << "[*.histlist: Copy histo list files to directory \"" << dirName << "\"]" << endl;
+	gMrbLog->Flush("", "", setblue);
+	
+	Char_t * fn;
+	ofstream sh("copyHistLists.sh", ios::out);
+	Int_t nofHistLists = 0;
+	dirPtr = gSystem->OpenDirectory(gSystem->WorkingDirectory());
+	while ((fn = (Char_t *) gSystem->GetDirEntry(dirPtr)) != NULL) {
+		TString hlf = fn;
+		if (hlf.EndsWith(".histlist")) {
+			if (this->IsVerbose()) cout << "copy " << fn << " -> " << dirName << endl;
+			sh << "cp " << fn << " " << dirName << endl;
+			nofHistLists++;
+		}
+	}
+	sh.close();
+	if (nofHistLists > 0) {
+		gSystem->Exec("sh copyHistLists.sh");
+		gMrbLog->Out() << nofHistLists << " histo list(s) copied to " << dirName << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyHistoLists", setblue);
+	}
 	return(kTRUE);
 }
 

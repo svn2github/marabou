@@ -327,7 +327,7 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 					gMrbLog->Flush(this->ClassName(), "ReadEvents");
 					SetError();
 				}
-				if (!ProcessEvent((s_vehe *) fMBSDataIO->evt_data)) {
+				if (!this->ProcessEvent((s_vehe *) fMBSDataIO->evt_data)) {
 					eventType = MBS_ETYPE_ERROR;
 					break;
 				}

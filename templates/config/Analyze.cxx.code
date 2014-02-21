@@ -573,7 +573,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %B%			g$evtNameUC->FillEvent(EventData, BaseAddr);
 %P%			sts = g$evtNameUC->$processEvent(0);
 %E%			pthread_mutex_unlock(&global_data_mutex);
-%E%			return(sts);
+%E%			return(kTRUE);
 %%EndOfCode%%
 %%EVT_DISPATCH_OVER_TRIGGER%%
 
