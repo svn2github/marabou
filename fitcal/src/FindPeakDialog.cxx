@@ -385,10 +385,10 @@ void FindPeakDialog::ExecuteFindPeak()
 		if (!fRemoveBG) opt += "nobackground";
 		if (!fShowMarkers) opt += "goff";
 		nfound = s->Search(fSelHist,fSigma, opt,fThreshold);
-		xpeaks = s->GetPositionX();
+		xpeaks = (Float_t*)s->GetPositionX();
    } else {
       pf = new PeakFinder(fSelHist, fPeakMwidth, fThresholdSigma);
-      xpeaks = pf->GetPositionX();
+      xpeaks = (Float_t*)pf->GetPositionX();
       nfound = pf->GetNpeaks();
    }
    if (nfound > 100) nfound = 100;

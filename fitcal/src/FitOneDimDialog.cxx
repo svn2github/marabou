@@ -674,6 +674,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		static TString fhrcmd("FillHistRandom()");
 		static TString svcmd("SaveFunction()");
 		static TString gfcmd("GetFunction()");
+		static TString gsfcmd("GetSelectedFunction()");
 		static Int_t dummy = 0;
 		TString * text = NULL;
 		const char * history = NULL;
@@ -852,10 +853,13 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			valp[ind++] = &setmcmd;
 		}
 		if (type == 4) {
-			row_lab->Add(new TObjString("CommandButt_Save Func to File"));
+			row_lab->Add(new TObjString("CommandButt_Func to File"));
 			valp[ind++] = &svcmd;
-			row_lab->Add(new TObjString("CommandButt+Get Func from File"));
+			row_lab->Add(new TObjString("CommandButt+Func from File"));
 			valp[ind++] = &gfcmd;
+			row_lab->Add(new TObjString("CommandButt+Get Sel Func"));
+			valp[ind++] = &gsfcmd;
+			
 			row_lab->Add(new TObjString("CommandButt_Fill random"));
 			valp[ind++] = &fhrcmd;
 			row_lab->Add(new TObjString("PlainIntVal+N events"));
@@ -893,8 +897,8 @@ void FitOneDimDialog::ClearFunctionList()
 {
 	Check4Reselect();
 	TList temp;
-	TPaveStats * stats = (TPaveStats*)fSelHist->GetListOfFunctions()->FindObject("stats");
 	gStyle->SetOptFit(0);
+	TPaveStats * stats = (TPaveStats*)fSelHist->GetListOfFunctions()->FindObject("stats");
 	if ( stats )
 		delete stats;
 	TList *lof = fSelHist->GetListOfFunctions();
@@ -2725,7 +2729,7 @@ void FitOneDimDialog::RestoreDefaults()
 	fUseoldpars				= env.GetValue("FitOneDimDialog.fUseoldpars", 0);
 	fConfirmStartValues	= env.GetValue("FitOneDimDialog.fConfirmStartValues", 0);
 	fPrintStartValues		= env.GetValue("FitOneDimDialog.fPrintStartValues", 0);
-	fFuncFromFile			= env.GetValue("FitOneDimDialog.fFuncFromFile", "f1");
+	fFuncFromFile			= env.GetValue("FitOneDimDialog.fFuncFromFile", "workfile.root|TF1|f1");
 }
 //_______________________________________________________________________
 
@@ -2854,6 +2858,7 @@ Note: As default the last entry is selected\n\
 			  << setblack << endl;
 		return;
 	}
+	cout << "fFuncFromFile " << fFuncFromFile<< endl;
 	TList *row_lab = new TList();
 	static TString nvcmd("SetValues()");
 	static void *valp[100];
@@ -2908,7 +2913,43 @@ void FitOneDimDialog::ExecuteGetFunction()
 	if (fCalFunc == NULL) {
 		cout << "No function found / selected" << endl;
 		return;
+	} else {
+		SetStartParameters();
 	}
+}
+//________________________________________________________________________________
+
+void FitOneDimDialog::GetSelectedFunction()
+{
+	if (!fSelHist) {
+		cout << "No histogram" << endl;
+		return;
+	}
+	TIter next(fSelHist->GetListOfFunctions());
+	TObject *obj;
+	TF1* func = NULL;
+	while( obj = next() ) {
+		if (obj->InheritsFrom("TF1") && obj->TestBit(kSelected)){
+			if ( func != NULL) {
+				cout << setred << "More than 1 function selected" << endl;
+			} else {
+				func = (TF1*)obj;
+			}
+		}
+	}
+	if (!func) {
+		cout << "No function found" << endl;
+		return;
+	} else {
+		fCalFunc = func;
+		SetStartParameters();
+	}
+}
+//________________________________________________________________________________
+
+void FitOneDimDialog::SetStartParameters()
+{
+	
 	fCalFunc->Print();
 	TString formula(fCalFunc->GetExpFormula());
 	if ( formula.Length() < 2 ) {

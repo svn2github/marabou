@@ -27,9 +27,9 @@ public:
          return -1;
    }
  #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
-   void SavePrimitive(ostream &, Option_t *);
+   void SavePrimitive(std::ostream &, Option_t *);
  #else
-   void SavePrimitive(ofstream &, Option_t *);
+   void SavePrimitive(std::ofstream &, Option_t *);
  #endif
 ClassDef(THprCurlyLineWithArrow,1)
 };

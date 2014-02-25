@@ -778,7 +778,17 @@ void FitHist::handle_mouse()
 			}
 			cout  << endl << "----------------------------" << endl;
 			TH1 * h = Hpr::FindHistOfTF1(gPad, f->GetName(), 1);
-			if (h) cout << "popped " << f << endl;
+			if (h) {
+				cout << "popped " << f << endl;
+				TIter next(h->GetListOfFunctions());
+				TObject *objf;
+				while (objf = next()) {
+					if (objf->InheritsFrom("TF1")){
+						objf->ResetBit(kSelected);
+					}
+				}
+			}
+			f->SetBit(kSelected);
 			return;
 		}
 	}
@@ -3210,7 +3220,7 @@ void FitHist::Draw1Dim()
 //		if ( fMarkerSize > 0 && fShowContour == 0 ) {
 //			 drawopt += "P";
 //		}
-		if (drawopt.Length() == 0 || fShowContour != 0) drawopt += "HIST";
+//		if (drawopt.Length() == 0 || fShowContour != 0) drawopt += "HIST";
 		if (fShowMarkers != 0) drawopt += "P";
 		gStyle->SetOptTitle(fShowTitle);
 		if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {

@@ -218,15 +218,15 @@ void TCurlyLineWithArrow::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 //___________________________________________________________________________
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
-void TCurlyLineWithArrow::SavePrimitive(ostream &out, Option_t *)
+void TCurlyLineWithArrow::SavePrimitive(std::ostream &out, Option_t *)
 #else
-void TCurlyLineWithArrow::SavePrimitive(ofstream &out, Option_t *)
+void TCurlyLineWithArrow::SavePrimitive(std::ofstream &out, Option_t *)
 #endif
 {
    // Save primitive as a C++ statement(s) on output stream out
 
-   cout << "TCurlyLineWithArrow::SavePrimitive: " << this << endl;
-   out<<"   "<<endl;
+   std::cout << "TCurlyLineWithArrow::SavePrimitive: " << this << std::endl;
+   out<<"   "<<std::endl;
    if (gROOT->ClassSaved(TCurlyLineWithArrow::Class())) {
       out<<"   ";
    } else {
@@ -236,21 +236,21 @@ void TCurlyLineWithArrow::SavePrimitive(ofstream &out, Option_t *)
    out<<"clwa = new TCurlyLineWithArrow("<< fX1  <<","<< fY1 <<","
        << fX2 <<","<< fY2 <<"," << GetWaveLength()  <<","<< GetAmplitude()<<","
        << fWhere<<","<<fDefaultArrowSize;
-          out << ");"<<endl;
+          out << ");"<<std::endl;
 
    SaveLineAttributes(out,"clwa",0,0,0);
 
-   out<<"clwa->Draw();"<<endl;
+   out<<"clwa->Draw();"<<std::endl;
    if(fArrowStart) {
       out<<"clwa->GetArrowStart()->SetArrowSize(" <<
-         fArrowStart->GetArrowSize()<< ");"<<endl;
+         fArrowStart->GetArrowSize()<< ");"<<std::endl;
       out<<"clwa->GetArrowStart()->SetAngle(" <<
-         fArrowStart->GetAngle()<< ");"<<endl;
+         fArrowStart->GetAngle()<< ");"<<std::endl;
    }
    if(fArrowEnd) {
       out<<"clwa->GetArrowEnd()->SetArrowSize(" <<
-         fArrowEnd->GetArrowSize()<< ");"<<endl;
+         fArrowEnd->GetArrowSize()<< ");"<<std::endl;
       out<<"clwa->GetArrowEnd()->SetAngle(" <<
-         fArrowEnd->GetAngle()<< ");"<<endl;
+         fArrowEnd->GetAngle()<< ");"<<std::endl;
    }
 }

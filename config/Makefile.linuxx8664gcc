@@ -15,7 +15,7 @@ NOOPT         =
 endif
 
 # Compiler:
-CXX           = gcc
+CXX           = g++
 CC            = gcc
 CXXFLAGS      = -pipe -Wall -fPIC $(EXTRA_CXXFLAGS)
 CFLAGS        = -pipe -Wall -fPIC $(EXTRA_CFLAGS)
@@ -28,7 +28,7 @@ CINTCFLAGS    = -pipe -Wall -fPIC $(EXTRA_CFLAGS) \
 COMPILER      = gnu
 
 # Linker:
-LD            = gcc
+LD            = g++
 LDFLAGS       = $(OPT) $(EXTRA_LDFLAGS)
 SOFLAGS       = -shared -Wl,-soname,
 SOEXT         = so
@@ -40,7 +40,7 @@ CILIBS        = -lm -ldl -rdynamic
 CRYPTLIBS     = -lcrypt
 
 # Fortran:
-F77           = g77
+F77           = gfortran
 F77FLAGS      =
 F77LIBS       = -lg2c -lnsl
 

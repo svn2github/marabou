@@ -12,7 +12,7 @@ public:
 
    ~FhMarkerList() {};
 //   const char * GetName(){return fName;};
-   void SavePrimitive(ostream & out, Option_t *)
+   void SavePrimitive(std::ostream & out, Option_t *)
       { out << "   TList * FhMarkerList = new TList();" << std::endl;
       }
 ClassDef(FhMarkerList, 0)

@@ -13,6 +13,7 @@
 #include "InsertFunctionDialog.h"
 #include <stdlib.h>
 #include <Riostream.h>
+#include <fstream>
 
 using std::cout;
 using std::cerr;
@@ -77,7 +78,7 @@ may be created.\n\
    const char hist_file[] = {"text_formulas.txt"};
    history = hist_file;
    if (gSystem->AccessPathName(history)) {
-      ofstream hfile(history);
+      std::ofstream hfile(history);
       hfile << "[0]*exp([1]*x)*cos([2]*x)" << endl;
       hfile.close();
    }

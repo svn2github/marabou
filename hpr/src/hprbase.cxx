@@ -428,7 +428,9 @@ TH1 * FindHistOfTF1(TVirtualPad * ca, const char * fname, Int_t push_pop)
 					else
 						lof->Add(0);
 				}
-				return (TH1*)o;
+				ca->Modified();
+				ca->Update();
+				return (TH1*)obj;
 			}
 		}
 	}

@@ -1,13 +1,23 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-<TITLE>How to convert pictures</TITLE>
+<TITLE>Install and run MCA8000 Linux software</TITLE>
 <link type="text/css" rel="stylesheet" href="style.css">
 </HEAD>
 <BODY bgcolor=#FFffcc>
 <h2>Installation and running</h2>
 For reasons of flexibility the software is currently implemented
 using ROOTs ACLiC (Automatic Compiler for Libraries) facility.
+<p></p>
+This software and the needed changes in the TMrbSerialCom class are
+implemented only from Root/Marabou versions 5.34.10 onwards.
+So at the moment (23.10.2013) you should do
+<p></p>
+<code>
+module unload marabou
+module load marabou/5.34.10
+</code>
+<p></p>
 To use it you should copy the following files into an empty directory:
 <p></p>
 <code>
@@ -16,20 +26,14 @@ $MARABOU/macros/mca8000/mca8000.cxx
 $MARABOU/macros/mca8000/rootlogon.C
 </code>
 <p></p>
-These files and the needed changes in the TMrbSerialCom class are
-implemented only from Root/Marabou versions 5.34.10 onwards.
-So at the moment (08.10.2013) you should do:
-<p></p>
-<code>
-module unload marabou
-module load marabou/5.34.10
-</code>
-<p></p>
-Then start <code>HistPresent</code>
-At this moment rootlogon.C will be executed which builds (first time)
+Then start <code>HistPresent.</code>
+At this moment <code>rootlogon.C</code> will be executed which builds (first time)
 and loads the shared library, creates an instance of the MCA8000 class
 and starts a GUI. For more info press the <code>Help</code> button.
 <p></p>
-<code>Otto.Schaile@lmu.de</code>
+If you want to run HistPresent without executing <code>rootlogon.C</code> use option -n<br>
+<code>HistPresent -n</code>
+<p></p>
+<code>23.10.2013 Otto.Schaile@lmu.de</code>
 </BODY>
 </HTML>

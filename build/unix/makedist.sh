@@ -5,36 +5,66 @@
 #
 # Author: Otto Schaile
 
-TARFILE=marabou_$CERN_LEVEL.tgz
+ROOTVERS=`root-config --version | sed -e 's/\//\./'`
+TYPE=`root-config --arch`
+if [ "x`root-config --platform`" = "xmacosx" ]; then
+   TYPE=$TYPE-`sw_vers -productVersion | cut -d . -f1 -f2`
+   TYPE=$TYPE-`uname -p`
+   # /usr/bin/tar on OSX is BSDTAR which is for our purposes GNU tar compatible
+   TAR=/usr/bin/tar
+fi
+if [ "x`root-config --platform`" = "xsolaris" ]; then
+   TYPE=$TYPE-`uname -r`
+   TYPE=$TYPE-`uname -p`
+fi
 
-EXCLUDEBIN=`for i in bin/* ; do echo --exclude $i; done `
-EXCLUDEGG=`for i in */src/G__* ; do echo --exclude $i; done `
-EXCLUDEO=`for i in */src/*.o ; do echo --exclude $i; done `
-EXCLUDED=`for i in */src/*.d ; do echo --exclude $i; done `
-EXCLUDECVS=`for i in *; do find $i -name CVS -exec echo --exclude {} --exclude {}/* \;; done`
+# debug build?
+DEBUG=
+BUILDOPT=`grep ROOTBUILD config/Makefile.config`
+if [ "x$BUILDOPT" != "x" ]; then
+   if echo $BUILDOPT | grep debug > /dev/null 2>& 1 ; then
+      DEBUG=".debug"
+   fi
+else
+   if echo $ROOTBUILD | grep debug > /dev/null 2>& 1 ; then
+      DEBUG=".debug"
+   fi
+fi
 
-TARFILE=`root-config --version`
-TARFILE=marabou-`dirname $TARFILE`.`basename $TARFILE`.tgz
+# MSI?
+if [ "x$1" = "x-msi" ]; then
+   MSI=1
+   shift
+fi
 
-echo "[Making MARaBOU distribution: $TARFILE]"
+# compiler specified?
+COMPILER=$1
+if [ "x${COMPILER}" != "x" ]; then
+   COMPILER="-${COMPILER}"
+fi
+
+TARFILE=marabou_v${ROOTVERS}.${TYPE}${COMPILER}${DEBUG}
+TARFILE=$TARFILE.tgz
+
+# make a symlink in order to prepend version number to all files
+
+rm -f ../$ROOTVERS
+ln -s `basename $PWD` ../$ROOTVERS
+
+#construct dir list
+
+DIRLIST=""
+for i in bin data doc icons include lib macros obj powerpc sounds templates
+do
+	DIRLIST="$DIRLIST ../$ROOTVERS/$i"
+done
+
+echo "Making MARaBOU binary distribution: $TARFILE"
+echo Directories:
+echo $DIRLIST
 
 rm -f $TARFILE
 
-tar --exclude *.so  \
-    $EXCLUDEBIN $EXCLUDEGG $EXCLUDEO $EXCLUDED $EXCLUDECVS \
-	--exclude test \
-    --exclude *gz --exclude *.bck \
-    --exclude G__* --exclude *.o  --exclude *.d --exclude *.tar \
--czf $TARFILE *
-
-TF=`root-config --version`
-TF=marabou-`dirname $TF`.`basename $TF`.tgz
-
-TARFILE=`root-config --version`
-TARFILE=marabou-html-`dirname $TARFILE`.`basename $TARFILE`.tgz
-
-echo "[Making MARaBOU HTML docu: $TARFILE]"
-
-tar -czf $TARFILE htmldoc
+tar -czf $TARFILE --exclude-vcs $DIRLIST
 
 exit 0

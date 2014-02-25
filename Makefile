@@ -141,6 +141,26 @@ RV1           := $(subst f,,$(RV1))
 RV1           := $(subst g,,$(RV1))
 ROOTVERS      := $(subst h,,$(RV1))
 
+##### clang or gcc version #####
+
+ifneq ($(findstring clang,$(CXX)),)
+CLANG_MAJOR  := $(shell $(CXX) -v 2>&1 | awk '{if (NR==1) print $$3}' | cut -d'.' -f1)
+CLANG_MINOR  := $(shell $(CXX) -v 2>&1 | awk '{if (NR==1) print $$3}' | cut -d'.' -f2)
+ifeq ($(CLANG_MAJOR),version)
+   # Apple version of clang has different -v layout
+   CLANG_MAJOR  := $(shell $(CXX) -v 2>&1 | awk '{if (NR==1) print $$4}' | cut -d'.' -f1)
+   CLANG_MINOR  := $(shell $(CXX) -v 2>&1 | awk '{if (NR==1) print $$4}' | cut -d'.' -f2)
+endif
+else
+ifneq ($(findstring gnu,$(COMPILER)),)
+GCC_MAJOR     := $(shell $(CXX) -dumpversion 2>&1 | cut -d'.' -f1)
+GCC_MINOR     := $(shell $(CXX) -dumpversion 2>&1 | cut -d'.' -f2)
+GCC_PATCH     := $(shell $(CXX) -dumpversion 2>&1 | cut -d'.' -f3)
+GCC_VERS      := gcc-$(GCC_MAJOR).$(GCC_MINOR)
+GCC_VERS_FULL := gcc-$(GCC_MAJOR).$(GCC_MINOR).$(GCC_PATCH)
+endif
+endif
+
 ##### utilities #####
 
 MAKEDEP       = build/unix/depend.sh

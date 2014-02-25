@@ -14,6 +14,7 @@ endif
 CXX           = g++
 CC            = gcc
 CXXFLAGS      = -g -pipe -Wall -Wno-switch -fPIC $(EXTRA_CXXFLAGS)
+# CXXFLAGS      = -g -pipe -Wunused-parameter -Wshadow -Wall -Wno-switch -fPIC $(EXTRA_CXXFLAGS)
 CFLAGS        = -pipe -Wall -fPIC $(EXTRA_CFLAGS)
 CINTCXXFLAGS  = -pipe -Wall -fPIC -DG__REGEXP -DG__UNIX -DG__SHAREDLIB \
                 -DG__OSFDLL -DG__ROOT -DG__REDIRECTIO $(EXTRA_CXXFLAGS)

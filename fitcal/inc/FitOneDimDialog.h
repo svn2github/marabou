@@ -98,6 +98,11 @@ private:
    TArrayD fMeanList;
    TArrayD fSigmaList;
    TArrayD fChi2List;
+   
+public:   
+	enum EFitHistBits {
+		 kSelected = BIT(15)
+	};
 
 public:
    FitOneDimDialog(TH1 * hist, Int_t type = 1, Int_t interactive = 1);
@@ -148,6 +153,8 @@ public:
    void SaveFunction();
    void GetFunction();
    void ExecuteGetFunction();
+   void GetSelectedFunction();
+   void SetStartParameters();
 //
    void SetPeakSep( Double_t peaksep) { fPeakSep = peaksep; };
    void SetFitWindow( Double_t fitwindow) { fFitWindow = fitwindow; };

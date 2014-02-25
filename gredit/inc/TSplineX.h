@@ -27,9 +27,9 @@ public:
    virtual ~PolyLineNoEdit() {};
    Int_t DistancetoPrimitive(Int_t, Int_t){return 9999;};
  #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
-   void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
+   void SavePrimitive(std::ostream &, Option_t *){};     // dont write to .C file
  #else
-   void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+   void SavePrimitive(std::ofstream &, Option_t *){};     // dont write to .C file
  #endif
 
 ClassDef(PolyLineNoEdit,0)
@@ -49,9 +49,9 @@ public:
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void Draw(Option_t * opt = "F");
  #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
-   void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
+   void SavePrimitive(std::ostream &, Option_t *){};     // dont write to .C file
  #else
-   void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+   void SavePrimitive(std::ofstream &, Option_t *){};     // dont write to .C file
  #endif
 ClassDef(RailwaySleeper,0)
 };
@@ -103,9 +103,9 @@ public:
 //   virtual void EditControlGraph();    // *MENU*
    virtual void ControlGraphMixer();     // *MENU*
  #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
-   void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
+   void SavePrimitive(std::ostream &, Option_t *){};     // dont write to .C file
  #else
-   void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+   void SavePrimitive(std::ofstream &, Option_t *){};     // dont write to .C file
  #endif
    ClassDef(ControlGraph, 1)
 };
@@ -150,9 +150,9 @@ public:
    void   CorrectForArrows(Double_t rxy, Double_t alen,Double_t aangle, Double_t aind_angle,
                            Bool_t at_start, Bool_t at_end);
  #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
-   void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
+   void SavePrimitive(std::ostream &, Option_t *){};     // dont write to .C file
  #else
-   void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+   void SavePrimitive(std::ofstream &, Option_t *){};     // dont write to .C file
  #endif
    ClassDef(ParallelGraph, 1)
 };
@@ -378,9 +378,9 @@ public:
    void      PrintAddress(){std::cout << "TSplineX *sp = (TSplineX*)" << this << std::endl;} // *MENU*
 
    #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
-   void SavePrimitive(ostream &, Option_t *);
+   void SavePrimitive(std::ostream &, Option_t *);
    #else
-   void SavePrimitive(ofstream &, Option_t *);
+   void SavePrimitive(std::ofstream &, Option_t *);
    #endif
    void CRButtonPressed(Int_t, Int_t){};
 //_____________________________________________________________________________________
