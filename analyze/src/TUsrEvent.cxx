@@ -209,6 +209,7 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t nofHits = HBX->GetNofHits();
+	if (Hidx < 0) Hidx = 0;
 	if (nofHits > 0 && Hidx < nofHits) {
 		TUsrHit * h = HBX->At(Hidx);
 		Int_t evtNo = h->GetEventNumber();
@@ -279,6 +280,7 @@ Int_t TUsrEvent::FillArrayFromHB(TUsrHBX * HBX, ULong64_t & TimeStamp, TArrayI &
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t nofHits = HBX->GetNofHits();				// number of hits in hitbuffer
+	if (Hidx < 0) Hidx = 0;
 	if (nofHits > 0 && Hidx < nofHits) {
 		Data.Reset(InitValue);						// reset data vector
 		TUsrHit * hit = HBX->At(Hidx);				// inspect head of hitlist
