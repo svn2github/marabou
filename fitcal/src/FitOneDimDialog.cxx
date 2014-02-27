@@ -940,10 +940,11 @@ Bool_t FitOneDimDialog::FitPeakList()
 {
 	Int_t confirm = fConfirmStartValues;
 	TList * p = (TList*)fSelHist->GetListOfFunctions()->FindObject("spectrum_peaklist");
-	if (!p) {
-		cout << "No peaklist found" << endl;
+	if (!p || p->GetSize() == 0 ) {
+		cout << "No peaks found" << endl;
 		return kFALSE;
 	}
+	
 	if ( fDialog ) fDialog->DisableCancelButton();
 	Int_t addall_save = fFitOptAddAll;
 	Int_t showcof_save = fShowcof;

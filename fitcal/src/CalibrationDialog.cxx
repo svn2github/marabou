@@ -27,7 +27,7 @@
 #include <iostream>
 #ifdef MARABOUVERS
 #include "HistPresent.h"
-extern HistPresent * gHpr;
+// extern HistPresent * gHpr;
 #endif
 
 using std::cout;
@@ -1320,9 +1320,12 @@ void CalibrationDialog::FillCalibratedHist()
    }
 
 #ifdef MARABOUVERS
-   if (gHpr) {
-      gHpr->ShowHist(fCalHist);
-//   in case a title was set to a stored value
+	HistPresent * hpr = (HistPresent*)gROOT->GetList()->FindObject("mypres");
+//   if (gHpr) {
+//      gHpr->ShowHist(fCalHist);
+	if ( hpr ) {
+		hpr->ShowHist(fCalHist);
+	//   in case a title was set to a stored value
       fCalHist->SetTitle(title_cal);
       gPad->Modified();
    } else {
