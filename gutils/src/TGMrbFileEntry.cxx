@@ -34,13 +34,13 @@ TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 												Int_t BufferSize, Int_t FrameId,
 												Int_t Width, Int_t Height,
 												Int_t EntryWidth,
-												TGFileInfo * FileInfo, EFileDialogMode DialogMode,
+												TGFileInfo * FileInfo, EFileDialogMode /*DialogMode*/,
 												TGMrbLayout * FrameGC,
 												TGMrbLayout * LabelGC,
 												TGMrbLayout * EntryGC,
 												TGMrbLayout * BrowseGC,
 												UInt_t FrameOptions,
-												UInt_t EntryOptions) :
+												UInt_t /*EntryOptions*/) :
 								TGCompositeFrame(Parent, Width, Height, FrameOptions, FrameGC->BG()) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////

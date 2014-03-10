@@ -669,10 +669,9 @@ void TextBox::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 };
 //________________________________________________________________________________
 
-void TextBox::Paint(Option_t * opt)
+void TextBox::Paint(Option_t * /*opt*/)
 {
  //  AlignEntries(0., 0., 0., 0.);
-   if (opt);    // keep compiler quiet
    TPave::Paint(GetDrawOption());
 }
 //________________________________________________________________________________

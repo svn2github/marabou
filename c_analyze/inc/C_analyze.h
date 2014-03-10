@@ -42,8 +42,8 @@ private:
    TGTextButton        *fConfigButton, *fStartStopButton, *fClearButton,
                       *fPauseButton, *fResetButton, *fSaveSetupButton,
                       *fSaveMapButton,
-                      *fParButton , *fMbsSetupButton, *fWhichHistButton;
-   TGLabel            *fLabel, *fOutSize, *fRunTime, *fTotalEvents, *fRate,
+                      *fParButton , *fWhichHistButton;
+   TGLabel            *fLabel, *fOutSize, *fRunTime, *fRate,
                       *fStartTime, *fDeadTime, *fStatus, *fNev, *fTbSockNr;
 
    TGTextEntry        *fTeInputFile,
@@ -53,13 +53,12 @@ private:
    TGTextBuffer       *fTbInputFile,
                       *fTbOutputFile, *fTbHistFile, *fTbRunNr,
                       *fTbComment, *fTbParFile,
-                      *fTbFileList,
-                      *fTbDir,*fTbConvTime;
-   TGLayoutHints      *fLO1, *fLO2, *fLO3, *fLO4, *fLO5, *fLR1;
+                      *fTbDir;
+   TGLayoutHints      *fLO1, *fLO2, *fLO3, *fLO4, *fLO5;
 
-   TGComboBox         *fCbConnect, *fCbMbsVersion;
+   TGComboBox         *fCbConnect;
 
-   TGRadioButton      *fRFake, *fRFile, *fRFileList, *fRNet, *fRActive,*fRAuto, *fRPassive;
+   TGRadioButton      *fRFake, *fRFile, *fRFileList, *fRNet, *fRActive;
 
    TGMenuBar          *fMenuBar;
    TGPopupMenu        *fMenuFile, *fMenuParameters, *fMenuHist, *fMenuEvent, *fMenuHelp,
@@ -74,14 +73,13 @@ private:
 			*fDefFile,
 			*fInputSource,
 			*fRunNr, *fOldRunNr,
-			*fComment, *fPar,
+			*fComment,
 			*fMbsVersion, *fProcType, *fDir,
 			*fConnect, *fCodeName,
 			*fFromTime, *fToTime,
 			*fResetList, *fOurPidFile, *fHelpFile,
 			*fSoundFile, *fSoundPlayer;
 
-   TString *fSaveMap;
    Bool_t  fUseSSH;
    Bool_t  fWriteOutput, fAutoSave, fSelectTime, fSelectNumber, fAutoSetup,
            fShowRate, fAttach, fMbsDebug, fForcedStop;
@@ -112,17 +110,8 @@ private:
    TStopwatch * fStopwatch;
    ULong_t white, red, green, blue,lightblue, yellow, magenta, cyan, antiquewhite1, grey;
 
-   SetWindowAttributes_t wattgreen;
-   SetWindowAttributes_t wattred;
-   SetWindowAttributes_t wattblue;
-   SetWindowAttributes_t wattyellow;
-   SetWindowAttributes_t wattmagenta;
-   SetWindowAttributes_t wattcyan;
    TMbsControl * fMbsControl;
 	TMbsSetup * fSetup;
-
-   GContext_t * fPYellowTextGC;
-
 
 public:
    FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h,

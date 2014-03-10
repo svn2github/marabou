@@ -524,7 +524,7 @@ void HprStack::CloseDown(Int_t)
    fDialog = NULL;
 }
 //_______________________________________________________________________
-void HprStack::CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject */*obj*/)
+void HprStack::CRButtonPressed(Int_t /*widgetId*/, Int_t /*buttonId*/, TObject */*obj*/)
 {
 //   cout << "HprStack::CRButtonPressed " << widgetId << " " << buttonId << endl;
    fWindowXWidth = (Int_t)fCanvas->GetWindowWidth();

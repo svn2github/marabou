@@ -153,7 +153,7 @@ const SMrbNamedX kMbsLofTriggerModes[] =		// list of legal trigger modes
 								{kTriggerModeLocalIntNonStdBase,	"LOCAL-INT-NONSTD",	"Local Interrupt, non-standard BaseAddr"	},
 								{kTriggerModeVsbInterrupt,			"VSB-INTERRUPT",	"VSB Interrupt (not implemented)"			},
 								{kTriggerModePolling,				"POLLING",			"Polling Mode (no interrupt)"				},
-								{0, 								NULL		}
+								{0, 								NULL, NULL		}
 							};
 
 const SMrbNamedXShort kMbsSetupTags[] =			// list of setup tag words

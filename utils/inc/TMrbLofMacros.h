@@ -72,7 +72,7 @@ class TMrbLofMacros: public TMrbLofNamedX {
 		inline const Char_t * GetPath() const { return(fPath); };
 
 		Bool_t AddMacro(const Char_t * MacroName, const Char_t * KeyWords = NULL); 	// add macro
-		Bool_t AskForArgs(const Char_t * MacroName) const {return kTRUE;};		// interactively ask for macro args
+		Bool_t AskForArgs(const Char_t * /*MacroName*/) const {return kTRUE;};		// interactively ask for macro args
 
 		inline TMrbNamedX * FirstMacro() const { return((TMrbNamedX *) First()); };		// loop thru list of macros
 		inline TMrbNamedX * NextMacro(TMrbNamedX * LastL) const { return((TMrbNamedX *) After(LastL)); };

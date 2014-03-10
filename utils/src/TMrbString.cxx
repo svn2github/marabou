@@ -571,7 +571,7 @@ void TMrbString::Expand(const Char_t Escape) {
 	}
 }
 
-void TMrbString::ProcessEscapeSequence(Char_t CharId, TString & Replacement) {
+void TMrbString::ProcessEscapeSequence(Char_t /*CharId*/, TString & Replacement) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::ProcessEscapeSequence
@@ -676,7 +676,7 @@ Bool_t TMrbString::Encode(UInt_t & IntVal, const Char_t * LofSubStrings, const C
 	return(this->Encode(IntVal, &lofSubStrings, Separator, Mode));
 }
 
-Bool_t TMrbString::Decode(UInt_t IntVal, TMrbLofNamedX * LofSubStrings, const Char_t * Separator) {
+Bool_t TMrbString::Decode(UInt_t IntVal, TMrbLofNamedX * LofSubStrings, const Char_t * /*Separator*/) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::Encode

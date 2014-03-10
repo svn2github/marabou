@@ -296,7 +296,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State, Bool_t Emit)
 		} else {
 			TMrbNamedX *namedX;
 			TIterator * bIter = fButtons.MakeIterator();
-			EButtonState invState = (State == kButtonUp) ? kButtonDown : kButtonUp;
+//			EButtonState invState = (State == kButtonUp) ? kButtonDown : kButtonUp;
 			while (namedX = (TMrbNamedX *) bIter->Next()) {
 				TGButton * button = (TGButton *) namedX->GetAssignedObject();
 				if (button->GetState() != kButtonDisabled) {
@@ -369,7 +369,7 @@ TMrbNamedX * TGMrbButtonFrame::GetActiveNx() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fType & kGMrbRadioButton) {
-		UInt_t pattern;
+		UInt_t pattern = 0;
 		TMrbNamedX *namedX;
 		TIterator * bIter = fButtons.MakeIterator();
 		while (namedX = (TMrbNamedX *) bIter->Next()) {

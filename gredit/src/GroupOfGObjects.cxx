@@ -91,7 +91,7 @@ void GroupOfGObjects::SetPlane(Int_t plane)
    }
 };
 //________________________________________________________________
-void GroupOfGObjects::Print()
+void GroupOfGObjects::Print(Option_t */*chopt*/) const
 {
    cout << ClassName() << " --- " << GetName() << " --- " <<  GetName() << endl;
    TIter next(&fMembers);

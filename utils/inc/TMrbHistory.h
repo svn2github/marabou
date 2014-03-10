@@ -1,5 +1,6 @@
 #ifndef __TMrbHistory_h__
 #define __TMrbHistory_h__
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
 
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////

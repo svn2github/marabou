@@ -21,9 +21,8 @@ namespace std {} using namespace std;
 
 //_______________________________________________________________________
 
-Set1DimOptDialog::Set1DimOptDialog(Int_t batch)
+Set1DimOptDialog::Set1DimOptDialog(Int_t /*batch*/)
 {
-	if (batch);
 	cout << "ctor Set1DimOptDialog, non interactive" <<endl;
 	fDialog = NULL;
 }

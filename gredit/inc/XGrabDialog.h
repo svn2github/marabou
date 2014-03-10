@@ -1,5 +1,5 @@
-#ifndef XGrabDIALOG
-#define INSERTTAMPLATEDIALOG
+#ifndef XGRABDIALOG
+#define XGRABDIALOG
 #include "TGMrbValuesAndText.h"
 #include "TRootCanvas.h"
 #include "GrCanvas.h"

@@ -23,9 +23,8 @@ namespace std {} using namespace std;
 
 //_______________________________________________________________________
 
-Set2DimGraphDialog::Set2DimGraphDialog(Int_t batch)
+Set2DimGraphDialog::Set2DimGraphDialog(Int_t /*batch*/)
 {
-	if (batch);
 	cout << "ctor Set2DimGraphDialog, non interactive" <<endl;
 	fDialog = NULL;
 }

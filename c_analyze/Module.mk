@@ -62,7 +62,7 @@ $(CANEXE):     $(CANDO) $(CANO) $(CANLIBS) $(MBSCLIB)
 
 $(MBSCLIB):     $(MBSCDO) $(MBSCO) $(MAINLIBS) $(MBSCLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-		   "$(SOFLAGS)" lib$(MBSC).$(SOEXT) $@ "$(MBSCO) $(MBSCDO)"
+		   "$(SOFLAGS)" lib$(MBSC).$(SOEXT) $@ "$(MBSCO) $(MBSCDO) $(MBSCLIBEXTRA)"
 
 $(MBSCDS):     $(MBSCH) $(MBSCDL)
 		@echo "Generating dictionary $@..."

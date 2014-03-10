@@ -93,7 +93,7 @@ class TGMrbButtonFrame: public TGMrbObject {
 
 		virtual ~TGMrbButtonFrame() {};			// dtor
 
-		TGMrbButtonFrame(const TGMrbButtonFrame & f) {};	// default copy ctor
+		TGMrbButtonFrame(const TGMrbButtonFrame & /*f*/) {};	// default copy ctor
 
 		void SetState(UInt_t Pattern, EButtonState State = kButtonDown, Bool_t Emit = kFALSE);	// set button state
 		UInt_t GetActive(); 												// return button state

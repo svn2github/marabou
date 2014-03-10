@@ -46,9 +46,8 @@ namespace std {} using namespace std;
 //TString Set3DimOptDialog::fDrawOpt3Dim = "COLZ";
 //_______________________________________________________________________
 
-Set3DimOptDialog::Set3DimOptDialog(Int_t batch)
+Set3DimOptDialog::Set3DimOptDialog(Int_t /*batch*/)
 {
-	if (batch);
 	cout << "ctor Set2DimOptDialog, non interactive" <<endl;
 	fDialog = NULL;
 }

@@ -148,7 +148,7 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
       fTePointers[i] = new TGTextEntry(hframe, 
                       fTbPointers[i] = new TGTextBuffer(10), i + 1000);
       fTePointers[i]->Resize(80, fTePointers[i]->GetDefaultHeight());
-      fTbPointers[i]->AddText(0, Form("%ld", val[i])); 
+      fTbPointers[i]->AddText(0, Form("%d", val[i])); 
       fSlPointers[i]->Associate(this);
       fTePointers[i]->Associate(this);
       fSlPointers[i]->SetRange(min[i], max[i]);
@@ -353,7 +353,7 @@ void  TGMrbSliders::Wakeup()
             fSlPointers[row]->SetPosition(common_val);
             fVal[row] = common_val;
             fTbPointers[row]->Clear();
-            fTbPointers[row]->AddText(0, Form("%ld", common_val));
+            fTbPointers[row]->AddText(0, Form("%d", common_val));
       	}
       }
    }     

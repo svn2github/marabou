@@ -310,7 +310,7 @@ TMrbNamedX * TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const C
 	if (!this->Convert(res, strRes, intRes)) return(NULL);
 	TMrbNamedX * nx;
 	if (intRes != (Int_t) 0xaffec0c0) nx = List->FindByIndex(intRes); else nx = List->FindByName(strRes);
-	if (nx == NULL) return(kFALSE);
+	if (nx == NULL) return(NULL);
 	if (intRes != (Int_t) 0xaffec0c0 && !strRes.IsNull()) {
 		strRes.ToLower();
 		TString x = nx->GetName();

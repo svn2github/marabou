@@ -697,7 +697,7 @@ void TMrbWindow2D::Draw(Option_t * Option) {
 	AppendPad(opt);
 }
 
-void TMrbWindow2D::Print(Option_t * Option) {
+void TMrbWindow2D::Print(Option_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbWindow2D::Print

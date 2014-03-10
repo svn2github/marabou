@@ -148,8 +148,8 @@ TGMrbGC::TGMrbGC(const Char_t * Font, Pixel_t Foreground, Pixel_t Background, UI
 	}
 
 	fFontName = fontStr;
-	fForegroundName = Form("#%0x", Foreground);
-	fForegroundName = Form("#%0x", Background);
+	fForegroundName = Form("#%0lx", Foreground);
+	fForegroundName = Form("#%0lx", Background);
 
 	fFont = font;
 	fForeground = Foreground;
@@ -532,7 +532,7 @@ UInt_t  TGMrbProfile::GetOptions(const Char_t * Type) {
 	else			return(((TGMrbGC *) nx->GetAssignedObject())->GetOptions());
 }
 
-void TGMrbProfile::Print(ostream & Out, const Char_t * Type) const {
+void TGMrbProfile::Print(ostream & Out, const Char_t * /*Type*/) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbProfile::Print
@@ -569,11 +569,11 @@ void TGMrbProfile::Print(ostream & Out, const Char_t * Type) const {
 			TString opt;
 			UInt_t optionBits = gc->GetOptions();
 			TIterator * iter = lofOptions.MakeIterator();
-			TMrbNamedX * nx;
+			TMrbNamedX * nx1;
 			TString sep = "";
-			while (nx = (TMrbNamedX *) iter->Next()) {
-				if (optionBits & nx->GetIndex()) {
-					opt += Form("%s%s", sep.Data(), nx->GetName());
+			while (nx1 = (TMrbNamedX *) iter->Next()) {
+				if (optionBits & nx1->GetIndex()) {
+					opt += Form("%s%s", sep.Data(), nx1->GetName());
 					sep = ":";
 				}
 			}

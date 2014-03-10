@@ -112,7 +112,7 @@ void TMrbTail::Start() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fFH == NULL) {
-		TFileHandler * fFH = new TFileHandler(this->GetIndex(), TFileHandler::kRead);
+		fFH = new TFileHandler(this->GetIndex(), TFileHandler::kRead);
 		fFH->Add();
 		if (kMrbTailOutSlot) {
 			fFH->Connect("Notified()", fRecv.GetName(), fRecv.GetAssignedObject(), fRecv.GetTitle());

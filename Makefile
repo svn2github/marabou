@@ -12,11 +12,12 @@ ORDER_ := $(shell test $(MAKE_VERSION_MAJOR) -gt 3 || \
                   test $(MAKE_VERSION_MAJOR) -eq 3 && \
                   test $(MAKE_VERSION_MINOR) -ge 80 && echo '|')
 
+
+include config/Makefile.config
+
 ifeq ($(EXPLICITLINK),yes)
 include config/Makefile.depend
 endif
-
-include config/Makefile.config
 
 ##### include machine dependent macros #####
 
@@ -115,6 +116,7 @@ LPATH         = lib
 # ifneq ($(ARCH),win32)
 
 RPATH        := -L$(LPATH)
+rpath        := -L$(LPATH)
 
 ROOTCFLAGS    := $(shell root-config --cflags)
 ROOTLIBS      := $(shell root-config --libs)

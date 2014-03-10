@@ -1,6 +1,8 @@
 #ifndef __TMrbLofNamedX_h__
 #define __TMrbLofNamedX_h__
 
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           utils/inc/TMrbLofNamedX.h
@@ -28,7 +30,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 class TMrbLofNamedX: public TObjArray {
-
+// the following doesnt work with CINT, wait for ROOT 6 (no more CINT)
+//	using TCollection::Print;
 	public:
 		enum EMrbFindMode		{	kFindExact		=	BIT(0), 	// needs exact matching of key names
 									kFindUnique 	= 	BIT(1), 	// key names may be abbreviated uniquely
@@ -39,6 +42,7 @@ class TMrbLofNamedX: public TObjArray {
 		enum					{	kIllIndexBit	=	BIT(30)	};
 
 	public:
+	
 		TMrbLofNamedX(const Char_t * Name = NULL, Bool_t PatternMode = kFALSE); 	// default ctor
 
 		TMrbLofNamedX(const SMrbNamedX * NamedX, Bool_t PatternMode = kFALSE); 		// explicit ctor
@@ -102,7 +106,7 @@ class TMrbLofNamedX: public TObjArray {
 
 		inline virtual void Sort(Int_t UpTo) { TObjArray::Sort(UpTo); };
 		void Sort(Bool_t SortByName = kTRUE);						// sort entries by name or index
-		inline Bool_t IsSorted() { return(fIsSorted); };
+		inline Bool_t IsSorted() const { return(fIsSorted); };
 		inline Bool_t IsSorted(Bool_t & ByName) { ByName = fIsSortedByName; return(fIsSorted); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };

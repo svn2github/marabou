@@ -1,5 +1,5 @@
 #ifndef THPRPOLYLINE
-#define THPROPLYLINE
+#define THPRPOLYLINE
 #include "HprElement.h"
 #include "TPolyLine.h"
 

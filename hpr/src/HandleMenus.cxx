@@ -1867,7 +1867,6 @@ void HandleMenus::SetLiveSliceY(Int_t state)
 		fDisplayMenu->UnCheckEntry(kFHLiveSliceY);
 }
 
-void HandleMenus::SetLiveSliceY(Int_t state);
 //_______________________________________________________________________________________
 void HandleMenus::Canvas2RootFile()
 {

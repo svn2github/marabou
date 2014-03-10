@@ -47,7 +47,7 @@ typedef struct sMrbNamedX SMrbNamedX;
 
 struct sMrbNamedXShort {
 	Int_t Index;
-	Char_t * ShortName;
+	const Char_t * ShortName;
 };
 
 typedef struct sMrbNamedXShort SMrbNamedXShort;

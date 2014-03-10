@@ -1,5 +1,5 @@
-#ifndef INSERTAxisDIALOG
-#define INSERTTAMPLATEDIALOG
+#ifndef INSERTAXISDIALOG
+#define INSERTAXISDIALOG
 #include "TGMrbValuesAndText.h"
 #include "GrCanvas.h"
 #include "TRootCanvas.h"

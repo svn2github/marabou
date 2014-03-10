@@ -1103,9 +1103,8 @@ void TSplineX::SetRailwaylike(Double_t gage)
 }
 //_____________________________________________________________________________________
 
-void TSplineX::Print (Option_t * opt) const
+void TSplineX::Print (Option_t * /*opt*/) const
 {
-   if (opt) ; // keep compiler quiet
    cout << "TSplineX:" << endl;
    fCPGraph.Print();
 }
@@ -2334,9 +2333,8 @@ void ParallelGraph::CorrectForArrows(Double_t rxy, Double_t alength,Double_t aan
 
 //_____________________________________________________________________________________
 
-void ParallelGraph::Remove(Option_t * opt)
+void ParallelGraph::Remove(Option_t * /*opt*/)
 {
-   if (opt) ; // keep compiler quiet
    if (fMaster) fMaster->SetSlave(NULL);
    delete this;
 }
@@ -2425,12 +2423,9 @@ void ParallelGraph::FillToSlave(Double_t dist)
 }
 //_____________________________________________________________________________________
 
-void ParallelGraph::Paint(Option_t * option)
+void ParallelGraph::Paint(Option_t * /*option*/)
 {
-//   Compute();
    TPolyLine::Paint();
-//   fParent->GetDPolyLines()->Add(this);
-   if (option);
    if (fSlave) {
  //     cout <<  "ParallelGraph::Paint() to fSlave" << endl;
       ParallelGraph * lg = this;

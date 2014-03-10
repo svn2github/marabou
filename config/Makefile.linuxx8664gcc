@@ -15,8 +15,8 @@ NOOPT         =
 endif
 
 # Compiler:
-CXX           = g++
-CC            = gcc
+CXX           = clang++
+CC            = clang
 CXXFLAGS      = -pipe -Wall -fPIC $(EXTRA_CXXFLAGS)
 CFLAGS        = -pipe -Wall -fPIC $(EXTRA_CFLAGS)
 CINTCXXFLAGS  = -pipe -Wall -fPIC $(EXTRA_CXXFLAGS) \
@@ -28,7 +28,7 @@ CINTCFLAGS    = -pipe -Wall -fPIC $(EXTRA_CFLAGS) \
 COMPILER      = gnu
 
 # Linker:
-LD            = g++
+LD            = clang++
 LDFLAGS       = $(OPT) $(EXTRA_LDFLAGS)
 SOFLAGS       = -shared -Wl,-soname,
 SOEXT         = so

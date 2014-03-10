@@ -48,7 +48,7 @@ public:
                             Double_t angle = 0, Int_t align = 11, Int_t mirror = 0, Int_t draw_cut=0, Int_t plane = -1);
    void Transform(Double_t x, Double_t y, Double_t xoff,Double_t yoff,
                     Double_t scale, Double_t* xt, Double_t* yt);
-   void Print();                                                // *MENU*
+   void Print(Option_t *chopt="") const;                                                // *MENU*
    void         ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void Paint(Option_t* opt) {if (fIsVisible) TGraph::Paint(opt);};
    void    SetVisible(Bool_t vis) {fIsVisible = vis;};          // *MENU*

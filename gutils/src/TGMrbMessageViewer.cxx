@@ -178,7 +178,7 @@ Bool_t TGMrbMessageViewer::Notify() {
 	} else return(kFALSE);
 }
 
-void TGMrbMessageViewer::ActionButtonPressed(Int_t FrameId, Int_t Button) {
+void TGMrbMessageViewer::ActionButtonPressed(Int_t /*FrameId*/, Int_t Button) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMessageViewer::ActionButtonPressed

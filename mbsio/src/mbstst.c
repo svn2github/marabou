@@ -1,6 +1,8 @@
 #define C_STYLE_PROTOS
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "byte_order.h"
 #include "mbsio.h"
 #include "mbsio_protos.h"
@@ -8,7 +10,7 @@
 int main(int argc, char *argv[])
 
 {
-	register int i, j;
+	register int i;
 	MBSDataIO *mbs;
 	int nevts;
 	unsigned int etype, stype;

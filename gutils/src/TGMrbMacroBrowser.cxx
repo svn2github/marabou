@@ -588,7 +588,7 @@ void TGMrbMacroBrowserPopup::MenuSelect(Int_t Selected) {
 }
 
 TGMrbMacroBrowserTransient::TGMrbMacroBrowserTransient(const TGWindow * Parent, const TGWindow * Main,
-									const Char_t * Title, TMrbLofMacros * LofMacros, UInt_t Width, UInt_t Height, UInt_t Options)
+									const Char_t * /*Title*/, TMrbLofMacros * LofMacros, UInt_t Width, UInt_t Height, UInt_t Options)
 														: TGTransientFrame(Parent, Main, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -683,7 +683,7 @@ TGMrbMacroList::TGMrbMacroList(const TGWindow * Parent, TMrbLofMacros * LofMacro
 	this->ChangeBackground(FrameGC->BG());
 }
 
-void TGMrbMacroList::SelectMacro(Int_t FrameId, Int_t Selection) {
+void TGMrbMacroList::SelectMacro(Int_t /*FrameId*/, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroList::SelectMacro
@@ -1132,33 +1132,33 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 
 			if (entryType & TGMrbMacroArg::kGMrbMacroEntryUpDown) {
 				if (entryType & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
-					Int_t nofEntryFields = macroArg->fNofEntryFields;
+					Int_t nofEntryFields1 = macroArg->fNofEntryFields;
 					TString llvalue = macroEnv->GetValue(macroArg->GetResource(argResource, "LowerLimit"), "0.0");
 					TString ulvalue = macroEnv->GetValue(macroArg->GetResource(argResource, "UpperLimit"), "1000000.0");
 					TString ivalue = macroEnv->GetValue(macroArg->GetResource(argResource, "Increment"), "1.0");
 					TObjArray * lltok = llvalue.Tokenize(":");
-					Int_t nofTokens = lltok->GetEntries();
-					if (nofTokens != nofEntryFields) {
+					Int_t nofTokens1 = lltok->GetEntries();
+					if (nofTokens1 != nofEntryFields1) {
 						gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetIndex() << "]: Number of lower limits not matching number of entries - "
-										<< nofTokens << " (should be " << nofEntryFields << ")" << endl;
+										<< nofTokens1 << " (should be " << nofEntryFields1 << ")" << endl;
 						gMrbLog->Flush(this->ClassName());
 					}
 					TObjArray * ultok = ulvalue.Tokenize(":");
-					nofTokens = ultok->GetEntries();
-					if (nofTokens != nofEntryFields) {
+					nofTokens1 = ultok->GetEntries();
+					if (nofTokens1 != nofEntryFields1) {
 						gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetIndex() << "]: Number of upper limits not matching number of entries - "
-										<< nofTokens << " (should be " << nofEntryFields << ")" << endl;
+										<< nofTokens1 << " (should be " << nofEntryFields1 << ")" << endl;
 						gMrbLog->Flush(this->ClassName());
 					}
 					TObjArray * itok = ivalue.Tokenize(":");
-					nofTokens = itok->GetEntries();
-					if (nofTokens != nofEntryFields) {
+					nofTokens1 = itok->GetEntries();
+					if (nofTokens1 != nofEntryFields1) {
 						gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetIndex() << "]: Number of increments not matching number of entries - "
-										<< nofTokens << " (should be " << nofEntryFields << ")" << endl;
+										<< nofTokens1 << " (should be " << nofEntryFields1 << ")" << endl;
 						gMrbLog->Flush(this->ClassName());
 					}
 					TString llv, ulv, iv;
-					for (Int_t ef = 0; ef < nofEntryFields; ef++) {
+					for (Int_t ef = 0; ef < nofEntryFields1; ef++) {
 						if (nofTokens >= (ef + 1)) {
 							llv = ((TObjString *) lltok->At(ef))->GetString();
 							ulv = ((TObjString *) ultok->At(ef))->GetString();
@@ -1446,11 +1446,16 @@ void TGMrbMacroFrame::ProcessSignal(Int_t FrameId, Int_t Signal) {
 	if (argNo > 0) {
 		TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
 		TString argName = macroEnv->GetValue(Form("Arg%d.Name", argNo), "???");
-		gROOT->ProcessLine(Form("ProcessSignal((TGMrbMacroFrame *) %#x, %d, \"%s\", %d)", this, argNo, argName.Data(), id));
+		ostringstream  buf;
+		buf << "ProcessSignal((TGMrbMacroFrame *)" << this << ","
+			<<argNo<<"," << argName.Data()<<"," << id<<")"<<endl;
+		TString temp(buf.str());
+		gROOT->ProcessLine(temp);
+//		gROOT->ProcessLine(Form("ProcessSignal((TGMrbMacroFrame *) %#x, %d, \"%s\", %d)", this, argNo, argName.Data(), id));
 	}
 }
 
-void TGMrbMacroFrame::ActionButtonPressed(Int_t FrameId, Int_t Signal) {
+void TGMrbMacroFrame::ActionButtonPressed(Int_t /*FrameId*/, Int_t Signal) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::ActionButtonPressed
@@ -1716,7 +1721,10 @@ Bool_t TGMrbMacroFrame::ExecMacro(Bool_t UserStart) {
 					macroEnv->SetValue(Form("%s.%d", cVal.Data(), nVal), vStr->GetString().Data());
 					nVal++;
 				}
-				argString[0] = Form("(TObjArray *) %#lx", argArr);
+				ostringstream buf1;
+				buf1 << "(TObjArray *)" << argArr << endl;
+				argString[0] = buf1.str();
+//				argString[0] = Form("(TObjArray *) %#lx", argArr);
 			} else {
 				macroEnv->SetValue(cVal, currentValue);
 			}
@@ -1740,8 +1748,12 @@ Bool_t TGMrbMacroFrame::ExecMacro(Bool_t UserStart) {
 			}
 		}
 	}
-
-	if (addGui || guiOnly) cmd += Form("%s(TGMrbMacroFrame *) %#lx", delim.Data(), this);
+	if (addGui || guiOnly) {
+		ostringstream buf2;
+		buf2 << delim.Data() << "(TGMrbMacroFrame *)" << this << endl;
+		cmd += buf2.str();
+	}
+//	if (addGui || guiOnly) cmd += Form("%s(TGMrbMacroFrame *) %#lx", delim.Data(), this);
 
 	cmd += ");";
 
@@ -2998,7 +3010,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	gClient->WaitFor(this);
 }
 
-void TGMrbMacroEdit::ActionButtonPressed(Int_t FrameId, Int_t Button) {
+void TGMrbMacroEdit::ActionButtonPressed(Int_t /*FrameId*/, Int_t Button) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroEdit::ActionButtonPressed
@@ -3076,7 +3088,7 @@ void TGMrbMacroEdit::ActionButtonPressed(Int_t FrameId, Int_t Button) {
 	}
 }
 
-Bool_t TGMrbMacroEdit::SwitchToArg(Int_t FrameId, Int_t EntryNo) {
+Bool_t TGMrbMacroEdit::SwitchToArg(Int_t /*FrameId*/, Int_t /*EntryNo*/) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroEdit::SwitchToArg
@@ -3991,8 +4003,8 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 											Int_t nofEnums = this->ExtractEnums(lofEnums, na);
 											if (nofEnums > 0) {
 												Int_t intBase = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Base"), 10);
-												Int_t n = strtol(argDefault.Data(), NULL, intBase);
-												TMrbNamedX * en = lofEnums.FindByIndex(n);
+												Int_t n1 = strtol(argDefault.Data(), NULL, intBase);
+												TMrbNamedX * en = lofEnums.FindByIndex(n1);
 												if (en) argDefault = en->GetName();
 											}
 										}
@@ -4274,7 +4286,7 @@ Bool_t TGMrbMacroEdit::CopyUserCode(const Char_t * NewFile, const Char_t * OrgFi
 	return(kTRUE);
 }
 
-Bool_t TGMrbMacroEdit::CopyUserCode(ofstream & Out, const Char_t * OutFile, ifstream & In, const Char_t * InFile, const Char_t * Tag, Bool_t CopyFlag) {
+Bool_t TGMrbMacroEdit::CopyUserCode(ofstream & Out, const Char_t * /*OutFile*/, ifstream & In, const Char_t * InFile, const Char_t * Tag, Bool_t CopyFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroEdit::CopyUserCode

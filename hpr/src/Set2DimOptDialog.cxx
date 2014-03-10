@@ -22,9 +22,8 @@ namespace std {} using namespace std;
 //TString Set2DimOptDialog::fDrawOpt2Dim = "COLZ";
 //_______________________________________________________________________
 
-Set2DimOptDialog::Set2DimOptDialog(Int_t batch)
+Set2DimOptDialog::Set2DimOptDialog(Int_t /*batch*/)
 {
-	if (batch);
 	cout << "ctor Set2DimOptDialog, non interactive" <<endl;
 	fDialog = NULL;
 }

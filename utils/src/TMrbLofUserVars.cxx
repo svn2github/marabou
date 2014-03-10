@@ -87,7 +87,7 @@ Bool_t TMrbLofUserVars::Append(TObject * VarObj) {
 	return(kTRUE);
 }
 
-Bool_t TMrbLofUserVars::Initialize(Char_t * Option) {
+Bool_t TMrbLofUserVars::Initialize(const Char_t * Option) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::Initialize
@@ -119,7 +119,7 @@ Bool_t TMrbLofUserVars::Initialize(Char_t * Option) {
 	return(kTRUE);
 }
 
-void TMrbLofUserVars::Draw(const Char_t * Option) {
+void TMrbLofUserVars::Draw(const Char_t * /*Option*/) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::Draw
@@ -489,26 +489,26 @@ Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
 				vtype = kWindowI;
 			} else {
 				one = 0;
-				istringstream s(vline1.Data());
-				s >> flow >> fup >> one;
+				istringstream s1(vline1.Data());
+				s1 >> flow >> fup >> one;
 				if (one == 1) {
 					vtype = kWindowF;
 				} else {
 					one = 0;
-					istringstream s(vline1.Data());
-					s >> ilow >> one;
+					istringstream s2(vline1.Data());
+					s2 >> ilow >> one;
 					if (one == 1) {
 						vtype = kVarI;
 					} else {
 						one = 0;
-						istringstream s(vline1.Data());
-						s >> flow >> one;
+						istringstream s3(vline1.Data());
+						s3 >> flow >> one;
 						if (one == 1) {
 							vtype = kVarF;
 						} else {
 							one = 0;
-							istringstream s(vline2.Data());
-							s >> str >> one;
+							istringstream s4(vline2.Data());
+							s4 >> str >> one;
 							if (one == 1) {
 								boolStr = str;
 								boolStr.ToLower();

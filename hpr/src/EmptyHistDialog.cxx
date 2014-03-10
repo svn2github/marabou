@@ -201,7 +201,7 @@ void EmptyHistDialog::RestoreDefaults()
 }
 //_________________________________________________________________________
 
-void EmptyHistDialog::CloseDown(Int_t wid)
+void EmptyHistDialog::CloseDown(Int_t /*wid*/)
 {
 	//   cout << "EmptyHistDialog::CloseDown() " << endl;
 	//   if (fCanvas) delete fCanvas;

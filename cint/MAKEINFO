@@ -4,10 +4,10 @@
 # on the next line, before MAKEINFO
 # DEFAULT MAKEINFO
 
-CC          = gcc
-CPP         = g++
-CPREP       = gcc -E -C
-CPPPREP     = g++ -E -C
+CC          = clang
+CPP         = clang++
+CPREP       = clang -E -C
+CPPPREP     = clang++ -E -C
 
 # source code postfix
 CSRCPOST    = .c

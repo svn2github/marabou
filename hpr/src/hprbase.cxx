@@ -645,13 +645,13 @@ HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where,
 		y2 = TMath::Power(10, y2);
 	}
 	
-	Int_t nd   ;
-	Size_t ls  ;
-	Color_t lc ;
-	Font_t  lf ;
-	Double_t lo;
-	Double_t tl;
-	if( orig_axis ) {
+	Int_t nd   = 0;
+	Size_t ls  = 1;
+	Color_t lc = 1;
+	Font_t  lf = 62;
+	Double_t lo= 0;
+	Double_t tl= 1;
+	if( orig_axis != NULL ) {
 		// a TAxis
 		nd = orig_axis->GetNdivisions();
 		ls = orig_axis->GetLabelSize();

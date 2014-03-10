@@ -802,7 +802,7 @@ Bool_t TGMrbLabelEntry::WithinRange(Int_t EntryNo) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t intVal;
-	Double_t dblVal;
+	Double_t dblVal = 0.0;
 	TMrbString numStr;
 	TString prefix;
 
@@ -852,7 +852,7 @@ Bool_t TGMrbLabelEntry::CheckRange(Double_t Value, Int_t EntryNo, Bool_t Verbose
 	return(kFALSE);
 }
 
-Bool_t TGMrbLabelEntry::RangeToBeChecked(Int_t EntryNo) const {
+Bool_t TGMrbLabelEntry::RangeToBeChecked(Int_t /*EntryNo*/) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::RangeToBeChecked
@@ -907,7 +907,7 @@ void TGMrbLabelEntry::ActionButtonEnable(Bool_t Flag) {
 	}
 }
 
-void TGMrbLabelEntry::EntryChanged(Int_t FrameId, Int_t EntryNo) {
+void TGMrbLabelEntry::EntryChanged(Int_t /*FrameId*/, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::EntryChanged

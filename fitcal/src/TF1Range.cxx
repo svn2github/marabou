@@ -4,9 +4,8 @@ TF1Range::TF1Range(const char* name, const char* formula, Double_t xmin, Double_
    : TF1(name, formula,xmin, xmax)
 {
 }
-Double_t TF1Range::Eval(Double_t x, Double_t y, Double_t z , Double_t t) const
+Double_t TF1Range::Eval(Double_t x, Double_t /*y*/, Double_t /*z*/ , Double_t /*t*/) const
 {
-   if (y || z || t );
    if ( x < GetXmin() || x > GetXmax() ) {
       return 0;
    } else {

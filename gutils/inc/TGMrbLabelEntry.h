@@ -43,7 +43,7 @@ class TGMrbTextEntry: public TGTextEntry {
 
 	public:
 		TGMrbTextEntry(const TGWindow * Parent, TGTextBuffer * Text, Int_t Id,
-								GContext_t Context, FontStruct_t Font, UInt_t Option, ULong_t Back) :
+								GContext_t /*Context*/, FontStruct_t Font, UInt_t /*Option*/, ULong_t Back) :
 														TGTextEntry(Parent, Text, Id) {
 			this->SetFont(Font);
 			this->SetBackgroundColor(Back);

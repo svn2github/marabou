@@ -602,17 +602,13 @@ TGedAlignPopup::~TGedAlignPopup()
 }
 
 //______________________________________________________________________________
-Bool_t TGedAlignPopup::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
+Bool_t TGedAlignPopup::ProcessMessage(Long_t msg, Long_t parm1, Long_t /*parm2*/)
 {
 //   cout << "TGedAlignPopup::ProcessMessage " << GET_MSG(msg) << endl;
    if (GET_MSG(msg) == kC_COMMAND && GET_SUBMSG(msg) == kCM_BUTTON) {
       SendMessage(fMsgWindow, MK_MSG(kC_ALIGNSEL, kALI_SELCHANGED), 0, parm1);
       EndPopup();
    }
-
-   if (parm2)
-      ;              // no warning
-
    return kTRUE;
 }
 
@@ -628,7 +624,7 @@ TGedAlignSelect::TGedAlignSelect(const TGWindow *p, Style_t alignStyle, Int_t id
 }
 
 //_____________________________________________________________________________
-Bool_t TGedAlignSelect::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
+Bool_t TGedAlignSelect::ProcessMessage(Long_t msg, Long_t /*parm1*/, Long_t parm2)
 {
 //   std::cout << "TGedAlignSelect::ProcessMessage " <<fWidgetId << std::endl;
    if (GET_MSG(msg) == kC_ALIGNSEL && GET_SUBMSG(msg) == kALI_SELCHANGED) {
@@ -636,9 +632,6 @@ Bool_t TGedAlignSelect::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
       SendMessage(fMsgWindow, MK_MSG(kC_ALIGNSEL, kALI_SELCHANGED),
                   fWidgetId, parm2);
    }
-
-   if (parm1)     // no warning
-      ;
    return kTRUE;
 }
 

@@ -60,7 +60,7 @@ obj/%.o:    $(MODDIRS)/%.o
 
 $(MRBALIB):     $(MRBADO) $(MRBAO) $(MAINLIBS) $(MRBALIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-		   "$(SOFLAGS)" lib$(MRBA).$(SOEXT) $@ "$(MRBAO) $(MRBADO)"
+		   "$(SOFLAGS)" lib$(MRBA).$(SOEXT) $@ "$(MRBAO) $(MRBADO) $(MRBANALYSELIBEXTRA)"
 $(MUTEXLIB):     $(MUTEXO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libMutex.$(SOEXT) $@ "$(MUTEXO)"

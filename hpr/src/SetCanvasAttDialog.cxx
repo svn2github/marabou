@@ -16,9 +16,8 @@ namespace std {} using namespace std;
 
 //_______________________________________________________________________
 
-SetCanvasAttDialog::SetCanvasAttDialog(Int_t batch)
+SetCanvasAttDialog::SetCanvasAttDialog(Int_t /*batch*/)
 {
-	if (batch);
 	cout << "ctor SetCanvasAttDialog, non interactive" <<endl;
 	fDialog = NULL;
 }

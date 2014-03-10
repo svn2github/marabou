@@ -7,6 +7,7 @@ namespace std {} using namespace std;
 
 class HprImage : public TNamed, public HprElement
 {
+// using TNamed::Print;
 private:
    TArrayC * fBuffer;
    TImage * fImage; //! dont stream
@@ -24,7 +25,7 @@ public:
    Bool_t IsGood(){return fIsGood;};
    Int_t FileExists();
    void Paint(Option_t * opt = 0);
-   void Print() const;
+   void Print(Option_t *option="") const;
 //   void Draw(Option_t * opt = NULL) const;
    Bool_t IsSortable() const {return kTRUE;}
    Int_t Compare( const TObject *obj) const

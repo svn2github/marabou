@@ -53,7 +53,7 @@ TGMrbFileObjectCombo::TGMrbFileObjectCombo(const TGWindow * Parent,
 												TGMrbLayout * BrowseGC,
 												TGMrbLayout * ComboGC,
 												UInt_t FrameOptions,
-												UInt_t EntryOptions,
+												UInt_t /*EntryOptions*/,
 												UInt_t ComboOptions) :
 								TGCompositeFrame(Parent, Width, Height, FrameOptions, FrameGC->BG()) {
 //__________________________________________________________________[C++ CTOR]
@@ -448,7 +448,7 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 												TGMrbLayout * BrowseGC,
 												TGMrbLayout * ListBoxGC,
 												UInt_t FrameOptions,
-												UInt_t EntryOptions,
+												UInt_t /*EntryOptions*/,
 												UInt_t ListBoxOptions) :
 								TGCompositeFrame(Parent, Width, Height, FrameOptions, FrameGC->BG()) {
 //__________________________________________________________________[C++ CTOR]

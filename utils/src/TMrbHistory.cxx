@@ -47,8 +47,13 @@ TObjString * TMrbHistory::AddEntry(TObject * Obj, const Char_t * Command) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObjString * objStr = new TObjString(Form("((%s *) %#lx)->%s", Obj->ClassName(), Obj, Command));
-	this->Add(new TObjString(Form("((%s *) %#lx)->%s", Obj->ClassName(), Obj, Command)));
+	ostringstream buf;
+	buf << "((" << Obj->ClassName() << " *)"<< Obj << ")->"<< Command;
+	TString st(buf.str());
+	TObjString * objStr = new TObjString(st);
+//	TObjString * objStr = new TObjString(Form("((%s *) %#lx)->%s", Obj->ClassName(), Obj, Command));
+	this->Add(objStr);
+//	this->Add(new TObjString(Form("((%s *) %#lx)->%s", Obj->ClassName(), Obj, Command)));
 	return(objStr);
 }
 

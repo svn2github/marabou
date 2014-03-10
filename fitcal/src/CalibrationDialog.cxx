@@ -452,7 +452,7 @@ The following options are provided:\n\
    new TGMrbValuesAndText ("Choose nominal values", NULL, &ok, -itemwidth,
                       fParentWindow, NULL, NULL, row_lab, valp,
                       NULL, NULL, helptext, this, this->ClassName());
-    if (ok);
+//    if (ok);
 //   nvdialog->SetDontCallCloseDown();
 }
 //________________________________________________________________________
@@ -1318,7 +1318,7 @@ void CalibrationDialog::FillCalibratedHist()
          fCalHist->Fill(bcent_cal);
       }
    }
-
+/*
 #ifdef MARABOUVERS
 	HistPresent * hpr = (HistPresent*)gROOT->GetList()->FindObject("mypres");
 //   if (gHpr) {
@@ -1330,7 +1330,7 @@ void CalibrationDialog::FillCalibratedHist()
       gPad->Modified();
    } else {
 #endif
-
+*/
    if ( fInteractive ) {
       TString title(hname_cal);
       title.Prepend("C_");
@@ -1346,11 +1346,11 @@ void CalibrationDialog::FillCalibratedHist()
       AddMenu(ch);
       ch->Update();
    }
-
+/*
 #ifdef MARABOUVERS
    }
 #endif
-
+*/
    if (bare_function) {
       delete fCalFunc;
       fCalFunc = NULL;

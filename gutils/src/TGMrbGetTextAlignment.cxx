@@ -162,7 +162,7 @@ TGMrbGetTextAlignment::TGMrbGetTextAlignment(Int_t * align, const TGWindow *win,
    gClient->WaitFor(this);
 };
 
-Bool_t TGMrbGetTextAlignment::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
+Bool_t TGMrbGetTextAlignment::ProcessMessage(Long_t msg, Long_t parm1, Long_t /*parm2*/)
 {
    // Handle button and text enter events
 

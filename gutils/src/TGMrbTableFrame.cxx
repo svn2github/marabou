@@ -577,7 +577,7 @@ void TGMrbTableFrame::StoreValues(){
    }
 }
 
-Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t /*Param2*/) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbTableFrame::ProcessMessage
@@ -590,7 +590,6 @@ Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-   if ( Param2) ; // keep compiler quiet
    switch(GET_MSG(MsgId)) {
       case kC_COMMAND:
          switch(GET_SUBMSG(MsgId)) {
@@ -698,7 +697,7 @@ Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 
 TGMrbTableOfInts::TGMrbTableOfInts(const TGWindow * Window, Int_t * RetValue, const Char_t * Title,
 													Int_t ItemWidth, Int_t Ncols, Int_t Nrows,
-													TArrayI & Values, Int_t Base,
+													TArrayI & Values, Int_t /*Base*/,
 													TOrdCollection * ColumnLabels,
 													TOrdCollection * RowLabels,
 													TArrayI * Flags, 
@@ -734,7 +733,6 @@ TGMrbTableOfInts::TGMrbTableOfInts(const TGWindow * Window, Int_t * RetValue, co
 
 	TOrdCollection * entries = new TOrdCollection();		// TGMrbTableFrame needs a collection of strings
 
-   if (Base) ; // keep compiler quiet
 	Int_t idx = 0;
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {
@@ -762,7 +760,7 @@ TGMrbTableOfInts::TGMrbTableOfInts(const TGWindow * Window, Int_t * RetValue, co
 
 TGMrbTableOfDoubles::TGMrbTableOfDoubles(const TGWindow * Window, Int_t * RetValue, const Char_t * Title,
 													Int_t ItemWidth, Int_t Ncols, Int_t Nrows,
-													TArrayD & Values, Int_t Precision,
+													TArrayD & Values, Int_t /*Precision*/,
 													TOrdCollection * ColumnLabels,
 													TOrdCollection * RowLabels,
 													TArrayI * Flags, 
@@ -797,7 +795,6 @@ TGMrbTableOfDoubles::TGMrbTableOfDoubles(const TGWindow * Window, Int_t * RetVal
 	TObjString * os;
 
 	TOrdCollection * entries = new TOrdCollection();	// TGMrbTableFrame needs a collection of strings
-   if (Precision) ; // keep compiler quiet
 	Int_t idx = 0;
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {

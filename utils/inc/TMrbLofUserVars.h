@@ -57,7 +57,7 @@ class TMrbLofUserVars: public TNamed {
 			fLofVars.Remove(VarObj);
 			fLofVars.Compress();
 		};
-		Bool_t Initialize(Char_t * Option = "Default");		// set all vars/windows to initial values
+		Bool_t Initialize(const Char_t * Option = "Default");		// set all vars/windows to initial values
 		Bool_t ReadFromFile(const Char_t * FileName);		// read definitions and settings from file
 
 		virtual void Print(ostream & OutStrm, Option_t * Option = "Default") const;	// output settings to cout

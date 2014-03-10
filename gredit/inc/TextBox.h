@@ -79,7 +79,7 @@ public:
    void AddMember(TObject* obj, Double_t x, Double_t y);
    TextBoxMember *FindMember(TObject *obj);
    void      PrintMembers();                 // *MENU*
-   Bool_t   IsInside(Double_t x, Double_t y) {
+   Int_t   IsInside(Double_t x, Double_t y) const {
       return (x > GetX1()-fSmall && x < GetX2() + fSmall
            && y > GetY1()-fSmall && y < GetY2() + fSmall);
    }

@@ -81,7 +81,7 @@ Int_t HprImage::FileExists()
 }
 //_________________________________________________________________________
 
-void HprImage::Print() const
+void HprImage::Print(Option_t * /*opt*/) const
 {
    cout << "HprImage:: " << GetName() << endl;
 }
@@ -114,9 +114,8 @@ Int_t HprImage::ToFile(const Char_t * fname)
 }
 //_________________________________________________________________________
 
-void HprImage::Paint(Option_t * opt)
+void HprImage::Paint(Option_t * /*opt*/)
 {
-   if (opt);
    if ( GetVisibility() == 0 )
       return;
 //   cout << "HprImage::Paint(): "<< this  << " Pad: " << gPad  << endl;

@@ -1313,9 +1313,11 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 //       cmd += GetName();
 //       cmd += "\"))->handle_mouse()";
 		TString cmd("((FitHist*)");
-		cmd += Form("0x%x", this);
+		ostringstream  buf;
+		buf << this;
+		cmd += buf.str();
 		cmd += ")->handle_mouse()";
-//     cout << "FitHist::DisplayHist cmd: " << cmd << endl;
+		cout << "FitHist::DisplayHist cmd: " << cmd << endl;
 		fCanvas->AddExec("handle_mouse", cmd.Data());
 		fCanvas->GetFrame()->SetBit(TBox::kCannotMove);
 	}
