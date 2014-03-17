@@ -741,8 +741,11 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 		fDrawOptPrev = fDrawOpt3Dim;
 		SaveDefaults();
 //		delete fCanvas;
+		SysInfo_t sysinf;
+		gSystem->GetSysInfo(&sysinf);
+		
 		gSystem->ProcessEvents();
-		if ( fCmdButton ) {
+		if ( fCmdButton && sysinf.fOS == "Linux") {
 //			cout << "CRButtonPressed exe: " << fCmdButton->GetMethod() << endl;
 			gROOT->ProcessLine(fCmdButton->GetMethod());
 			gSystem->ProcessEvents();

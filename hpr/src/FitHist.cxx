@@ -450,7 +450,7 @@ void FitHist::HandlePadModified()
 
 void FitHist::DoSaveLimits()
 {
-	if ( gDebug > 0 ) {
+	if ( gDebug > 1 ) {
 		cout << "FitHist::DoSaveLimits: " << gPad 
 				<< " fCanvas: " << fCanvas 
 				<< " gPad  "  << gPad << " fSelPad->GetLogy() " <<  fSelPad->GetLogy()
@@ -490,13 +490,13 @@ void FitHist::DoSaveLimits()
 		if ( fExpHist == NULL ) {
 			fBinlx = fSelHist->GetXaxis()->GetFirst();
 			fBinux = fSelHist->GetXaxis()->GetLast();
-			if ( gDebug > 0 ) {
+			if ( gDebug > 1 ) {
 				cout << "fBinlx,ux " <<fBinlx << " " <<fBinux << endl;
 			}
 			if (fDimension == 2) {
 				fBinly = fSelHist->GetYaxis()->GetFirst();
 				fBinuy = fSelHist->GetYaxis()->GetLast();
-				if ( gDebug > 0 ) {
+				if ( gDebug > 1 ) {
 					cout << "fBinly,uy " <<fBinly << " " <<fBinuy << endl;
 				}
 			}
@@ -507,7 +507,7 @@ void FitHist::DoSaveLimits()
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-	if (gDebug > 0)
+	if (gDebug > 2)
 		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist
 		<< " RecursiveRemove: " << obj  << endl;
 	//fSelHist->Print();
@@ -571,7 +571,7 @@ void FitHist::SaveDefaults(Bool_t /*recalculate*/)
 		if (fZtitle.Length() > 0)
 			env->SetValue("fZtitle", fZtitle);
 	}
-	if (gDebug > 0)
+	if (gDebug > 1)
 		cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " << fBinux << fLogy << endl;
 	env->SaveLevel(kEnvLocal);
 	delete env;
@@ -1287,7 +1287,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 	fCtitle += ": ";
 	fCtitle += fSelHist->GetTitle();
 	if ( fSelHist->GetDimension() == 2 ) {
-		if (fDrawOpt2Dim.BeginsWith("GL")) {
+		if (fDrawOpt2Dim.BeginsWith("GLLEGO") || fDrawOpt2Dim.BeginsWith("GLSURF")) {
 			gStyle->SetCanvasPreferGL(kTRUE);
 		} else {
 			gStyle->SetCanvasPreferGL(kFALSE);
@@ -1337,7 +1337,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		fCanvas->SetLogx(fLogx);
 //		fCanvas->SetLogy(fLogy);
 		this->SetLogy(fLogy);
-		if (gDebug > 0) {
+		if (gDebug > 1) {
 			cout<< "fCanvas->GetLogy(): " ;
 			if (fCanvas->GetLogy()) 
 				cout << "true";
@@ -3196,7 +3196,7 @@ void FitHist::Draw1Dim()
 		gStyle->SetStatH(env.GetValue("SetHistOptDialog.StatH",0.16));
 		gStyle->SetOptStat(fOptStat);
 		fSelHist->SetStats(1);
-		if ( gDebug > 0 ) {
+		if ( gDebug > 1 ) {
 			cout << "Draw1Dim fOptStat " << fOptStat << " " << endl;
 			cout << "Draw1Dim StatX, Y " << gStyle->GetStatX() << " " << gStyle->GetStatY() << endl;
 			cout << "Draw1Dim StatW, H " << gStyle->GetStatW() << " " << gStyle->GetStatH() << endl;
@@ -3383,9 +3383,9 @@ void FitHist::Draw2Dim()
 		fSelHist->GetListOfFunctions()->Remove(st1);
 	if ( fCanvas->GetListOfPrimitives()->FindObject(fSelHist) )
 		fCanvas->GetListOfPrimitives()->Remove(fSelHist);
-	if (gDebug > 0)
+	if (gDebug > 2)
 		cout << "Draw2Dim:" << " GetLogy " << fCanvas->GetLogy() << endl;
-	if ( gDebug > 0 ) {
+	if ( gDebug > 1 ) {
 		cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim 
 		<< " gStyle->GetHistFillColor() :" <<gStyle->GetFillColor() << endl
 		<< " fHistFillColor2Dim :" <<fHistFillColor2Dim<< endl
@@ -3404,12 +3404,12 @@ void FitHist::Draw2Dim()
 		fSelHist->SetStats(0);
 		gStyle->SetOptStat(0);
 	} 
-	if ( fDrawOpt2Dim.Contains("LEGO") && GeneralAttDialog::fLegoSuppressZero == 1 )
-		fDrawOpt2Dim.Prepend("0");
+	if ( fDrawOpt2Dim.Contains("LEGO") 
+	    && GeneralAttDialog::fLegoSuppressZero == 1 
+	    && !fDrawOpt2Dim.Contains("0") )
+		fDrawOpt2Dim.Append("0");
 
 	fSelHist->Draw(fDrawOpt2Dim);
-	if (gDebug > 0)
-		cout << "Draw2Dim:" << " GetLogy " << fCanvas->GetLogy() << endl;
 	if ( gROOT->GetForceStyle() ) {
 		fCanvas->UseCurrentStyle();
 	}
@@ -3417,7 +3417,7 @@ void FitHist::Draw2Dim()
 	fCanvas->SetLogy(fLogy);
 	SetLogz(fLogz);
 	fCanvas->GetHandleMenus()->SetLog(fLogz);
-	if (gDebug > 0)
+	if (gDebug > 1)
 		cout << "Draw2Dim:fDrawOpt2Dim " << fDrawOpt2Dim << endl;
 	fSelHist->SetOption(fDrawOpt2Dim);
 	fSelHist->SetDrawOption(fDrawOpt2Dim);
@@ -3496,7 +3496,7 @@ void FitHist::Draw2Dim()
 void FitHist::Draw3Dim()
 {
 //   TString drawopt("iso");
-	if ( gDebug > 0 )
+	if ( gDebug > 1 )
 		cout << "fDrawOpt3Dim " << fDrawOpt3Dim << endl;
 	TEnv env(".hprrc");
 	fCanvas->SetPhi(env.GetValue("Set3DimOptDialog.fPhi3Dim",     30));

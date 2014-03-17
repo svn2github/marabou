@@ -10,10 +10,12 @@
 #include "TGraph.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TRegexp.h"
 #include "TStyle.h"
 #include "TSystem.h"
 #include "Set2DimOptDialog.h"
 #include "GeneralAttDialog.h"
+#include "SetColor.h"
 #include "hprbase.h"
 #include <iostream>
 
@@ -200,23 +202,31 @@ For further details contact ROOTs documentation.\n\
 	else                             fHideBackBox = 0;
 	if (fDrawOpt2Dim.Contains("FB")) fHideFrontBox = 1;
 	else                             fHideFrontBox = 0;
-//	if (fDrawOpt2Dim.Contains("GL")) fUseGL = 1;
-//	else                             fUseGL = 0;
+	if (fDrawOpt2Dim.Contains("GL")) fUseGL = 1;
+	else                             fUseGL = 0;
 // extract draw option
+	Int_t nsopt = 0;
+	TString droptsav = fDrawOpt2Dim;
 	for (Int_t i = kNdrawopt-1; i >= 0; i--) {
 		Int_t ind = fDrawOpt2Dim.Index(fDrawOpt2DimArray[i]);
 		if ( ind >= 0 ) {
 			Int_t len = strlen(fDrawOpt2DimArray[i]);
 			fDrawOpt2Dim = fDrawOpt2Dim.Replace(ind, len, "");
 			fOptRadio[i] = 1;
+			nsopt++;
 		} else {
 			fOptRadio[i] = 0;
 		}
 	}
+	if (nsopt == 0)
+		cout << "Warning: No option set " << fDrawOpt2Dim << endl;
+	if (nsopt > 1)
+		cout << "Warning: More than one option set " << fDrawOpt2Dim << endl;
+	
 	fHistNo = 0;
 	gROOT->GetListOfCleanups()->Add(this);
 	fRow_lab = new TList();
-
+	fDrawOpt2Dim = droptsav;
 	Int_t ind = 0;
 	Int_t indopt = 0;
 //   static Int_t dummy;
@@ -312,6 +322,7 @@ For further details contact ROOTs documentation.\n\
 	fRow_lab->Add(new TObjString("CheckButton_Use GL (3D)"));
 	fRow_lab->Add(new TObjString("CheckButton+    No Fbox"));
 	fRow_lab->Add(new TObjString("CheckButton+    No Bbox"));
+	fBidUseGL = ind;
 	fValp[ind++] = &fUseGL;
 	fValp[ind++] = &fHideFrontBox;
 	fValp[ind++] = &fHideBackBox;
@@ -354,6 +365,10 @@ For further details contact ROOTs documentation.\n\
 		new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
 							 NULL, NULL, fRow_lab, fValp,
 							 NULL, NULL, helptext, this, this->ClassName());
+//	if (gDebug > 0) {
+		cout << "Set2DimOptDialog *dia =(Set2DimOptDialog*)"<< this << endl;
+		cout << "fDrawOpt2Dim " << fDrawOpt2Dim << endl;
+//	}
 /*
 	if ( fDrawOpt2Dim.Contains("SCAT") ||   fDrawOpt2Dim.Contains("TEXT")) {
 		fDialog->EnableButton(fBidMarkerColor);
@@ -481,8 +496,10 @@ void Set2DimOptDialog::SetHistAtt(TPad *pad, TH2 * hist)
 	} else {
 		gStyle->SetCanvasPreferGL(kFALSE);
 	}
-	if ( fDrawOpt.Contains("LEGO") && GeneralAttDialog::fLegoSuppressZero == 1 )
-		fDrawOpt.Prepend("0");
+	if ( fDrawOpt.Contains("LEGO") 
+	     && GeneralAttDialog::fLegoSuppressZero == 1 
+	     &&  !fDrawOpt.Contains("0") )
+		fDrawOpt.Append("0");
 	if ( !fDrawOpt.Contains("SAME") )
 		fDrawOpt += fSameOpt;
 	if ( gDebug > 0 ) 
@@ -533,6 +550,14 @@ void Set2DimOptDialog::SetHistAttPerm()
 	if (gDebug > 0)
 		cout << "Set2DimOptDialog:: SetHistAttPerm()" << endl;
 	TEnv env(".hprrc");
+	TRegexp glu("GL");
+	if (fUseGL == 0 && fDrawOpt2Dim.Contains("GL")) {
+		fDrawOpt2Dim(glu) = "";
+		fDrawOpt2Dim(glu) = "";
+	}
+	if (fUseGL == 1 && !fDrawOpt2Dim.Contains("GL")) {
+		fDrawOpt2Dim.Prepend("GL");
+	}
 	env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim);
 	env.SetValue("Set2DimOptDialog.fDrawOpt2Dim", fDrawOpt2Dim);
 	env.SetValue("Set2DimOptDialog.fLiveStat2Dim", fLiveStat2Dim);
@@ -669,7 +694,9 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
 	TCanvas *canvas = (TCanvas *)obj;
 	if ( gDebug > 0 )
-		cout << "CRButtonPressed:" << wid<< ", " <<bid << " canvas "  << canvas << endl;
+		cout << "CRButtonPressed:" << wid<< ", " <<bid 
+		<< " canvas "  << canvas 
+		<< " fDrawOpt2Dim " << fDrawOpt2Dim << endl;
 //	if ( bid == fBidHistNo ) 
 //		return;
 /*
@@ -679,6 +706,24 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 	"SURF1", "SURF2",  "SURF3", "SURF4", "SURF5", "LEGO",
 	"LEGO1", "LEGO2",  "POL",   "CYL",    "SPH",  "PSR"};
 */
+	if ( bid == fBidUseGL ) {
+		if ( fUseGL == 1 && 
+		( !fDrawOpt2Dim.Contains("LEGO") && !fDrawOpt2Dim.Contains("SURF") ) ) {
+			cout << setred << "GL Option only possible with LEGO or SURF"
+			<< setblack << endl;
+			fUseGL = 0;
+			fDialog->SetCheckButton(fBidUseGL, 0);
+			return;
+		}
+		if ( fUseGL == 0 && fCanvas->UseGL() ||
+			fUseGL == 1 && !fCanvas->UseGL()) {
+				SetHistAttPermLocal();
+				cout << setblue 
+				<< "OpenGL mode changed, plaese redisplay histogram manually"
+				<< setblack << endl;
+			}
+//		return;
+	}
 	if ( bid == fBidLiveStat ) {
 		TEnv env(".hprrc");
 		env.SetValue("Set2DimOptDialog.fLiveStat2Dim", fLiveStat2Dim);

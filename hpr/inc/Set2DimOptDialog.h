@@ -51,6 +51,7 @@ private:
 	Int_t   fTwoDimLogY;
 	Int_t   fTwoDimLogZ;
 	Int_t   fUseGL;
+	Int_t   fBidUseGL;
 	Int_t   fContourLevels;
 	Int_t   fHistNo;
 	Int_t   fBidHistNo;

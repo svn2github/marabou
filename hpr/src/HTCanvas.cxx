@@ -134,11 +134,11 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 void HTCanvas::HandlePadModified()
 {
 	if ( TCanvas::fUpdating ) {
-		if ( gDebug > 0 ) 
+		if ( gDebug > 2 ) 
 			cout << "TCanvas::fUpdating" << endl;
 		return;
 	}
-	if ( gDebug > 0 ) 
+	if ( gDebug > 2 ) 
 		cout << "HTCanvas::HandlePadModified() " << this << endl;
 	fTimer.Start(20, kTRUE);
 //	TTimer::SingleShot(10, "HTCanvas", this, "DoSaveLegendStats()");
