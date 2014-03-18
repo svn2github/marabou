@@ -49,20 +49,20 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 						<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10) << " (recNo=" << recNo << ")"
 						<< setblack << endl;
 				if (eventsProcessed != 0) return(kTRUE);				// at beginning of buffer?
-				while (SevtWC > 0) {
-					UInt_t t = *dataPtr++;
-					t |= *dataPtr++;
-					SevtWC -= 2;
-					wordsProcessed += 2;
-					if ((t & MADC_M_ID) == MADC_D_EOE) {
-						cerr	<< setmagenta
-								<< this->ClassName() << "::FillSubevent() [sevtWC="
-								<< wordsProcessed << "] Skipping to next event header (recNo=" << recNo << ")"
-								<< setblack << endl;
-						break;
+				if (SevtWC > 0) {
+					cerr	<< setmagenta
+							<< this->ClassName() << "::FillSubevent() [sevtWC="
+							<< wordsProcessed << "] Skipping to EOE (recNo=" << recNo << ")"
+							<< setblack << endl;
+					while (SevtWC > 0) {
+						Int_t t = (*dataPtr++ << 16);
+						t |= *dataPtr++;
+						SevtWC -= 2;
+						wordsProcessed += 2;
+						if ((t & MADC_M_ID) == MADC_D_EOE) { recNo++; break; }
 					}
+					continue;
 				}
-				continue;
 			}
 		}
 		foundHeaderInstead = 0;
