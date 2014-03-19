@@ -56,6 +56,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 								<< wordsProcessed << "] Skipping to EOE (recNo=" << recNo << ")"
 								<< setblack << endl;
 					}
+					Bool_t eoeFound = kFALSE;
 					while (SevtWC > 0) {
 						Int_t t = (*dataPtr++ << 16);
 						t |= *dataPtr++;
@@ -68,8 +69,15 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 										<< wordsProcessed << "] Found EOE (recNo=" << recNo << ")"
 										<< setblack << endl;
 							}
+							eoeFound = kTRUE;
 							break;
 						}
+					}
+					if (verboseMode && !eoeFound) {
+						cerr	<< setmagenta
+								<< this->ClassName() << "::FillSubevent() [sevtWC="
+								<< wordsProcessed << "] Reached end of record - no EOE (recNo=" << recNo << ")"
+								<< setblack << endl;
 					}
 					continue;
 				}
