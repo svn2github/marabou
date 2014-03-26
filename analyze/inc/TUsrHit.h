@@ -75,10 +75,12 @@ class TUsrHit : public TObject {
 		enum	{	kHitMadc32Res	=	2	};	// adc resolution
 
 // alternative layout used by gassiplex
-		enum	{	kHitGassiPort		=	2	};	// port
-		enum	{	kHitGassiRace		=	3	};	// race
-		enum	{	kHitGassiSector		=	4	};	// sector
-		enum	{	kHitGassiDprRest	=	5	};	// rest
+		enum	{	kHitGassiModule		=	2	};	// module
+		enum	{	kHitGassiChannel	=	3	};	// channel
+		enum	{	kHitGassiPort		=	4	};	// port
+		enum	{	kHitGassiRace		=	5	};	// race
+		enum	{	kHitGassiSector		=	6	};	// sector
+		enum	{	kHitGassiDprRest	=	7	};	// rest
 
 	public:
 		TUsrHit() { this->Reset(); };
