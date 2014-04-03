@@ -79,11 +79,11 @@ guess_architecture() {
 }
 ##############################################################################################
 
-if [ -z $INSTDIR ] ; then
-   echo "WARNING, INSTDIR not defined"
-   echo setting to: `pwd`
-   INSTDIR=`pwd`
-fi
+## if [ -z $\$MARABOU_INSTALL_PATH ] ; then
+##   echo "WARNING, \$MARABOU_INSTALL_PATH not defined"
+##   echo setting to: `pwd`
+##  \$MARABOU_INSTALL_PATH=`pwd`
+## fi
 if test $# -lt 1 ; then
    guess_architecture
 else
@@ -141,18 +141,18 @@ echo "EXTRA_CFLAGS   := -Iinclude         " >> $MAKEOUT
 echo "EXTRA_CXXFLAGS := -Iinclude         " >> $MAKEOUT
 echo "EXTRA_LDFLAGS  :=                   " >> $MAKEOUT
 
-echo "BINDIR         := $INSTDIR/bin"       >> $MAKEOUT
-echo "LIBDIR         := $INSTDIR/lib"       >> $MAKEOUT
-echo "OBJDIR         := $INSTDIR/obj"       >> $MAKEOUT
-echo "INCDIR         := $INSTDIR/include"   >> $MAKEOUT
-echo "ETCDIR         := $INSTDIR/etc"       >> $MAKEOUT
-echo "DATADIR		   := $INSTDIR/data"      >> $MAKEOUT
-echo "MACRODIR  	   := $INSTDIR/macros"    >> $MAKEOUT
-echo "SRCDIR 		   := $INSTDIR/src"       >> $MAKEOUT
-echo "ICONPATH  	   := $INSTDIR/icons"     >> $MAKEOUT
-echo "DOCDIR 		   := $INSTDIR/doc"       >> $MAKEOUT
-echo "TESTDIR		   := $INSTDIR/test"      >> $MAKEOUT
-echo "TUTDIR 		   := $INSTDIR/tutorials" >> $MAKEOUT
+echo "BINDIR         := $\$MARABOU_INSTALL_PATH/bin"       >> $MAKEOUT
+echo "LIBDIR         := $\$MARABOU_INSTALL_PATH/lib"       >> $MAKEOUT
+echo "OBJDIR         := $\$MARABOU_INSTALL_PATH/obj"       >> $MAKEOUT
+echo "INCDIR         := $\$MARABOU_INSTALL_PATH/include"   >> $MAKEOUT
+echo "ETCDIR         := $\$MARABOU_INSTALL_PATH/etc"       >> $MAKEOUT
+echo "DATADIR		   := $\$MARABOU_INSTALL_PATH/data"      >> $MAKEOUT
+echo "MACRODIR  	   := $\$MARABOU_INSTALL_PATH/macros"    >> $MAKEOUT
+echo "SRCDIR 		   := $\$MARABOU_INSTALL_PATH/src"       >> $MAKEOUT
+echo "ICONPATH  	   := $\$MARABOU_INSTALL_PATH/icons"     >> $MAKEOUT
+echo "DOCDIR 		   := $\$MARABOU_INSTALL_PATH/doc"       >> $MAKEOUT
+echo "TESTDIR		   := $\$MARABOU_INSTALL_PATH/test"      >> $MAKEOUT
+echo "TUTDIR 		   := $\$MARABOU_INSTALL_PATH/tutorials" >> $MAKEOUT
 
 echo "HTMLURL        := www.bl.physik.uni-muenchen.de" >> $MAKEOUT
 echo "DISTURL        := www.bl.physik.uni-muenchen.de" >> $MAKEOUT
