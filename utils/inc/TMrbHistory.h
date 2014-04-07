@@ -1,6 +1,11 @@
 #ifndef __TMrbHistory_h__
 #define __TMrbHistory_h__
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
+#ifndef USECLANG
+	#define USECLANG = strcmp(CXX,"clang++")
+#endif
+#if USELANG == 1
+	#pragma clang diagnostic ignored "-Woverloaded-virtual"
+#endif
 
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
