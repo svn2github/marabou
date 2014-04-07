@@ -724,8 +724,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			title.Prepend("Exp: ");
 			helptext = helptext_exp;
 			fFuncName.Prepend(fExpFuncName);
-	//		row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
-			row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*x)"));
+			row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
+//			row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*x)"));
 			valp[ind++] = &dummy;
 			row_lab->Add(new TObjString("DoubleV+CbF_a"));
 			valp[ind++] = &fExpA;
@@ -739,12 +739,12 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			valp[ind++] = &fExpC;
 //			row_lab->Add(new TObjString("CheckButton+Fix"));
 			valp[ind++] = &fExpFixC;
-	//	  row_lab->Add(new TObjString("DoubleValue+d"));
-	//		valp[ind++] = &fExpD;
-	//		row_lab->Add(new TObjString("CheckButton-Fix"));
-	//		valp[ind++] = &fExpFixD;
-			row_lab->Add(new TObjString("CommentOnly+ -----"));
-			valp[ind++] = &dummy;
+			row_lab->Add(new TObjString("DoubleV+CbF+d"));
+			valp[ind++] = &fExpO;
+//			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fExpFixO;
+//			row_lab->Add(new TObjString("CommentOnly+ -----"));
+//			valp[ind++] = &dummy;
 
 		} else if (type == 3) {
 			title.Prepend("Poly: ");
@@ -2174,8 +2174,7 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
 //					 kMBIconExclamation, kMBDismiss, &retval);
 //		return;
 //	}
-//	fFitFunc = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*(x - [3]))",fFrom,fTo);
-	fFitFunc = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*x)",fFrom,fTo);
+	fFitFunc = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*(x - [3]))",fFrom,fTo);
 	fFitFunc->SetParameter(0, fExpA);
 	if (fExpFixA |= 0) fFitFunc->FixParameter(0, fExpA);
 	fFitFunc->SetParName(0, "a (y_off)");
@@ -2185,9 +2184,9 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
 	fFitFunc->SetParameter(2, fExpC);
 	if (fExpFixC |= 0) fFitFunc->FixParameter(2, fExpC);
 	fFitFunc->SetParName(2, "c (slope)");
-//	fFitFunc->SetParameter(3, fExpD);
-//	if (fExpFixD |= 0) fFitFunc->FixParameter(3, fExpD);
-//	fFitFunc->SetParName(3, "d (x_off)");
+	fFitFunc->SetParameter(3, fExpO);
+	if (fExpFixO |= 0) fFitFunc->FixParameter(3, fExpO);
+	fFitFunc->SetParName(3, "d (x_off)");
 	fFitFunc->SetLineWidth(fWidth);
 	fFitFunc->SetLineColor(fColor);
 //	cout << " ????????????????????????????? " << endl;
@@ -2239,7 +2238,7 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
 		fExpA = fFitFunc->GetParameter(0);
 		fExpB = fFitFunc->GetParameter(1);
 		fExpC = fFitFunc->GetParameter(2);
-//		fExpD = fFitFunc->GetParameter(3);
+		fExpO = fFitFunc->GetParameter(3);
 		if (fAutoClearMarks) ClearMarkers();
 		IncrementIndex(&fFuncName);
 		PrintCorrelation();
@@ -2392,7 +2391,7 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
 		}
 		if ( !fFitOptNoDraw )
 			fFitFunc->Draw("same");
-		for (Int_t i = 0; i < fPolN; i++) {
+		for (Int_t i = 0; i <= fPolN; i++) {
 			fPolPar[i] = fFitFunc->GetParameter(i);
 		}
 		IncrementIndex(&fFuncName);
@@ -2696,6 +2695,7 @@ void FitOneDimDialog::RestoreDefaults()
 	fExpA				 = env.GetValue("FitOneDimDialog.fExpA", 0.);
 	fExpB				 = env.GetValue("FitOneDimDialog.fExpB", 1.);
 	fExpC				 = env.GetValue("FitOneDimDialog.fExpC", 1.);
+	fExpO				 = env.GetValue("FitOneDimDialog.fExpO", 0.);
 //	fExpD				 = env.GetValue("FitOneDimDialog.fExpD", 0.);
 	fExpFixA			 = env.GetValue("FitOneDimDialog.fExpFixA", 0);
 	fExpFixB			 = env.GetValue("FitOneDimDialog.fExpFixB", 0);
@@ -2764,11 +2764,11 @@ void FitOneDimDialog::SaveDefaults()
 	env.SetValue("FitOneDimDialog.fExpA",	fExpA	 );
 	env.SetValue("FitOneDimDialog.fExpB",	fExpB	 );
 	env.SetValue("FitOneDimDialog.fExpC",	fExpC	 );
-//	env.SetValue("FitOneDimDialog.fExpD",	fExpD	 );
+	env.SetValue("FitOneDimDialog.fExpO",	fExpO	 );
 	env.SetValue("FitOneDimDialog.fExpFixA",fExpFixA );
 	env.SetValue("FitOneDimDialog.fExpFixB",fExpFixB );
 	env.SetValue("FitOneDimDialog.fExpFixC",fExpFixC );
-//	env.SetValue("FitOneDimDialog.fExpFixD",fExpFixD );
+	env.SetValue("FitOneDimDialog.fExpFixD",fExpFixO );
 	env.SetValue("FitOneDimDialog.fPolN",	fPolN	 );
 	env.SetValue("FitOneDimDialog.fNsegsGraph", fNsegsGraph);
 	TString tagname;

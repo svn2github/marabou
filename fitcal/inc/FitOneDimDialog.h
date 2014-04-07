@@ -42,10 +42,12 @@ private:
    Double_t fExpA;
    Double_t fExpB;
    Double_t fExpC;
+   Double_t fExpO;     // Offset
 //   Double_t fExpD;
    Int_t fExpFixA;
    Int_t fExpFixB;
    Int_t fExpFixC;
+   Int_t fExpFixO;
 //   Int_t fExpFixD;
    Int_t fPolN;
    Double_t fPolPar[6];
