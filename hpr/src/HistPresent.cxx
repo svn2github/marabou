@@ -3204,6 +3204,9 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
          delete fhist->GetCanvas();
 			if (oldhist != hist)
 				delete oldhist;
+         gSystem->ProcessEvents();
+         gSystem->Sleep(500);
+         gSystem->ProcessEvents();
 //			gSystem->Sleep(100);
       }
 //     Cleaning FitHist objects for which Canvas was closed

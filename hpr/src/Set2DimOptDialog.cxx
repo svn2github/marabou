@@ -491,10 +491,10 @@ void Set2DimOptDialog::SetHistAtt(TPad *pad, TH2 * hist)
 	if (fHideBackBox)  fDrawOpt += "BB";
 	if (fUseGL && ( fDrawOpt.Contains("LEGO") ||fDrawOpt.Contains("SURF"))) {
 		fDrawOpt.Prepend("GL");
-		gStyle->SetCanvasPreferGL(kTRUE);
+//		gStyle->SetCanvasPreferGL(kTRUE);
 
 	} else {
-		gStyle->SetCanvasPreferGL(kFALSE);
+//		gStyle->SetCanvasPreferGL(kFALSE);
 	}
 	if ( fDrawOpt.Contains("LEGO") 
 	     && GeneralAttDialog::fLegoSuppressZero == 1 
@@ -722,7 +722,7 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 				<< "OpenGL mode changed, plaese redisplay histogram manually"
 				<< setblack << endl;
 			}
-//		return;
+		return;
 	}
 	if ( bid == fBidLiveStat ) {
 		TEnv env(".hprrc");
