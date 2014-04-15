@@ -63,7 +63,7 @@ grep -v TMbsSetup.DefaultHomeDir: .rootrc | grep -v TMbsSetup.WorkingDir: > .roo
 echo "TMbsSetup.DefaultHomeDir: `pwd`" >> .rootrc~
 echo "TMbsSetup.WorkingDir: `pwd`/ppc" >> .rootrc~
 mv .rootrc~ .rootrc
-rm .mbssetup
+rm -f .mbssetup
 echo
 echo "mknew: performing config step"
 root -b Config.C
