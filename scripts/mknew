@@ -31,6 +31,11 @@ echo "mknew: creating subdirectory ./ppc"
 cp -p -r $1/ppc $2
 echo "mknew: creating subdirectory ./udef"
 cp -p -r $1/udef $2
+if [ -d $1/config ]
+then
+	echo "mknew: creating subdirectory ./config"
+	cp -p -r $1/config $2
+fi
 if [ -f $1/iniMrbPath ]
 then
   echo "mknew: copying ROOTSYS/MARABOU setup: ./iniMrbPath"
