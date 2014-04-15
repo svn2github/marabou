@@ -13,9 +13,13 @@
 	of.close();
 	gSystem->Exec("chmod +x ppc.mk");
 	TString ppc = gEnv->GetValue("TMbsSetup.DefaultHost", "");
+	TString ppc = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "");
 	if (ppc.IsNull()) {
-		cerr << setred << "mkReadout.C: PPC not defined: Please set \"TMbsSetup.DefaultHost\" in .rootrc" << setblack << endl;
-		gSystem->Exit(1);
+		ppc = gEnv->GetValue("TMbsSetup.PPCName", "");
+		if (ppc.IsNull()) {
+			cerr << setred << "mkReadout.C: Name of ppc/eventBuilder missing: Please define \"TMbsSetup.PPCName\" or \"TMbsSetup.EventBuilder.Name\"  in .rootrc" << setblack << endl;
+			gSystem->Exit(1);
+		}
 	}
 	TString cmd = "rsh ";
 	cmd += ppc;
