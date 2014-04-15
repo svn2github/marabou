@@ -1,6 +1,6 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:            expconf/src/TMrbConfig.cxx
+// Name:            expconf/src/TMrbConfig.cxxtag-
 // Purpose:        MARaBOU configuration: base class
 // Description:    Implements class methods to define a MARaBOU configuration
 // Keywords:
@@ -1697,7 +1697,13 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 			if (rdoTmpl.IsError()) continue;
 			if (rdoTmpl.Status() & TMrbTemplate::kNoTag) {
 				if (line.Index("//-") != 0) rdoStrm << line << endl;
-			} else if (this->ExecUserMacro(&rdoStrm, this, readoutTag->GetName())) {
+				continue;
+			}
+			if (verboseMode) {
+				gMrbLog->Out()  << "Expanding tag " << readoutTag->GetName() << "(" << readoutTag->GetIndex() << ")" << endl;
+				gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+			}
+			if (this->ExecUserMacro(&rdoStrm, this, readoutTag->GetName())) {
 				continue;
 			} else {
 				switch (tagIdx = (TMrbConfig::EMrbReadoutTag) readoutTag->GetIndex()) {
@@ -2510,7 +2516,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 			if (anaTmpl.IsError()) continue;
 			if (anaTmpl.Status() & TMrbTemplate::kNoTag) {
 				if (line.Index("//-") != 0) anaStrm << line << endl;
-			} else if (this->ExecUserMacro(&anaStrm, this, analyzeTag->GetName())) {
+				continue;
+			}
+			if (verboseMode) {
+				gMrbLog->Out()  << "Expanding tag " << analyzeTag->GetName() << "(" << analyzeTag->GetIndex() << ")" << endl;
+				gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+			}
+			if (this->ExecUserMacro(&anaStrm, this, analyzeTag->GetName())) {
 				continue;
 			} else {
 				switch (tagIdx = (TMrbConfig::EMrbAnalyzeTag) analyzeTag->GetIndex()) {
@@ -2808,10 +2820,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							Bool_t udc = kFALSE;
 							TIterator * iclIter = fLofUserIncludes.MakeIterator();
 							while (icl = (TMrbNamedX *) iclIter->Next()) {
+								cout << "@@@ " << icl->GetName() << endl;
 								if ((icl->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
 									TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
-									TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
-									while (nx) {
+									TMrbNamedX * nx;
+									TIterator * mIter = lofMethods->MakeIterator();
+									while (nx = (TMrbNamedX *) mIter->Next()) {
+										cout << "@@@ m=" << nx->GetName() << endl;
 										if ((nx->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
 											anaTmpl.InitializeCode();
 											TString method = nx->GetName();
@@ -2827,6 +2842,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								}
 								if (udc) break;
 							}
+							cout << "@@@ done" << endl;
 						}
 						break;
 					case TMrbConfig::kAnaUserReloadParams:
@@ -3856,7 +3872,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							<< "                               >>> "
 							<< setblack
 							<< "if (this->TreeToBeWritten()) fTreeOut->Fill();" << setmagenta << " <<<" << endl
-							<< "                               somewhere in your analysis code" << endl
+							<< "                               somewhere in your analysis code (in method Analyze() or similar)" << endl
 							<< "                               (don't care about if you are writing MED/Cern data)" << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 		}
