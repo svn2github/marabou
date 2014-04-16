@@ -2820,13 +2820,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							Bool_t udc = kFALSE;
 							TIterator * iclIter = fLofUserIncludes.MakeIterator();
 							while (icl = (TMrbNamedX *) iclIter->Next()) {
-								cout << "@@@ " << icl->GetName() << endl;
 								if ((icl->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
 									TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
 									TMrbNamedX * nx;
 									TIterator * mIter = lofMethods->MakeIterator();
 									while (nx = (TMrbNamedX *) mIter->Next()) {
-										cout << "@@@ m=" << nx->GetName() << endl;
 										if ((nx->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
 											anaTmpl.InitializeCode();
 											TString method = nx->GetName();
@@ -2842,7 +2840,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								}
 								if (udc) break;
 							}
-							cout << "@@@ done" << endl;
 						}
 						break;
 					case TMrbConfig::kAnaUserReloadParams:
