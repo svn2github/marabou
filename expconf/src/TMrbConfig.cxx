@@ -7909,6 +7909,8 @@ void TMrbConfig::PrintGlobals(const Char_t * File) {
 	ofstream f;
 	f.open(File, ios::out);
 	if (f.good()) {
+		gMrbLog->Out() << "Writing globals to file " << File << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintGlobals", setblue);
 		this->PrintGlobals(f);
 		f.close();
 	} else {
