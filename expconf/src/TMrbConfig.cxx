@@ -7820,7 +7820,12 @@ void TMrbConfig::MakeGlobal(const Char_t * Name, Int_t IntVal, const Char_t * Co
 
 	Int_t * v = new Int_t;
 	*v = IntVal;
-	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobInt, Name, Comment, (TObject *) v));
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx) {
+		nx->AssignObject((TObject *) v);
+	} else {
+		fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobInt, Name, Comment, (TObject *) v));
+	}
 }
 
 void TMrbConfig::MakeGlobal(const Char_t * Name, Float_t FloatVal, const Char_t * Comment) {
@@ -7838,7 +7843,12 @@ void TMrbConfig::MakeGlobal(const Char_t * Name, Float_t FloatVal, const Char_t 
 
 	Float_t * v = new Float_t;
 	*v = FloatVal;
-	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobFloat, Name, Comment, (TObject *) v));
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx) {
+		nx->AssignObject((TObject *) v);
+	} else {
+		fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobFloat, Name, Comment, (TObject *) v));
+	}
 }
 
 void TMrbConfig::MakeGlobal(const Char_t * Name, Double_t DblVal, const Char_t * Comment) {
@@ -7856,7 +7866,12 @@ void TMrbConfig::MakeGlobal(const Char_t * Name, Double_t DblVal, const Char_t *
 
 	Double_t * v = new Double_t;
 	*v = DblVal;
-	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobDouble, Name, Comment, (TObject *) v));
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx) {
+		nx->AssignObject((TObject *) v);
+	} else {
+		fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobDouble, Name, Comment, (TObject *) v));
+	}
 }
 
 void TMrbConfig::MakeGlobal(const Char_t * Name, Bool_t BoolVal, const Char_t * Comment) {
@@ -7874,7 +7889,12 @@ void TMrbConfig::MakeGlobal(const Char_t * Name, Bool_t BoolVal, const Char_t * 
 
 	Bool_t * v = new Bool_t;
 	*v = BoolVal;
-	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobBool, Name, Comment, (TObject *) v));
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx) {
+		nx->AssignObject((TObject *) v);
+	} else {
+		fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobBool, Name, Comment, (TObject *) v));
+	}
 }
 
 void TMrbConfig::MakeGlobal(const Char_t * Name, const Char_t * Str, const Char_t * Comment) {
@@ -7891,7 +7911,12 @@ void TMrbConfig::MakeGlobal(const Char_t * Name, const Char_t * Str, const Char_
 //////////////////////////////////////////////////////////////////////////////
 
 	TString * v = new TString(Str);
-	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobString, Name, Comment, (TObject *) v));
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx) {
+		nx->AssignObject((TObject *) v);
+	} else {
+		fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobString, Name, Comment, (TObject *) v));
+	}
 }
 
 void TMrbConfig::PrintGlobals(const Char_t * File) {
