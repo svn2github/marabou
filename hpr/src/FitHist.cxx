@@ -1317,7 +1317,8 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		buf << this;
 		cmd += buf.str();
 		cmd += ")->handle_mouse()";
-		cout << "FitHist::DisplayHist cmd: " << cmd << endl;
+		if (gDebug > 0)
+			cout << "FitHist::DisplayHist cmd: " << cmd << endl;
 		fCanvas->AddExec("handle_mouse", cmd.Data());
 		fCanvas->GetFrame()->SetBit(TBox::kCannotMove);
 	}
