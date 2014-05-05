@@ -1940,8 +1940,14 @@ Int_t GEdit::ExtractGObjectsE()
 Int_t GEdit::ExtractGObjects(Bool_t markonly)
 {
    fParent->cd();
-   cout << "fParent " << fParent<< " gPad " << gPad << endl;
+   if ( gDebug > 0)
+		cout << "GEdit::ExtractGObjects fParent " << fParent<< " gPad " << gPad << endl;
    TObject *enclosingCut = gPad->FindObject("HprRaRegion");
+   if ( enclosingCut == NULL ) {
+		WarnBox("Define a region first", fRootCanvas);
+		return -1;
+	}
+	
    TCutG * cut = NULL;
    if ( enclosingCut->IsA() == TCutG::Class() ) {
       cut = (TCutG*)enclosingCut;
@@ -2223,7 +2229,7 @@ tryagain:
          fGObjectGroups->Add(gg);
          ShowGallery();
       } else {
-         gg->Draw();
+         gg->Draw("L");
          fParent->Modified();
          fParent->Update();
       }

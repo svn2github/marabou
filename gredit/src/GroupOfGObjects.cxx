@@ -142,6 +142,23 @@ void GroupOfGObjects::BindReleaseObjects(Bool_t bind)
 };
 //________________________________________________________________
 
+void GroupOfGObjects::ListObjects()
+{
+	Int_t ind = 0;
+   TIter next(&fMembers);
+   TObject * obj;
+   while ( (obj = next()) ) {
+		cout << "" << obj->ClassName()<< " * l" << ind << " = " 
+		<< "(" << obj->ClassName()<< "*)" << obj << "; " << obj->GetName();
+		if (obj->TestBit(kIsBound) )
+			cout << " Is bound";
+		cout 	<< endl; 
+		ind++;
+	}
+}
+
+//________________________________________________________________
+
 void GroupOfGObjects::DeleteObjects()
 {
 //   TObjOptLink *lnk = (TObjOptLink*)fMembers.FirstLink();
@@ -221,7 +238,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
       cut->SetLineWidth(1);
       cut->SetLineStyle(2);
       pad->cd();
-      cut->Draw();
+      cut->Draw("L");
    }
 	fMirror = mirror;
    TObjOptLink *lnk = (TObjOptLink*)fMembers.FirstLink();
@@ -579,13 +596,16 @@ void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut
          Double_t * y = b->GetY();
 //         either first or last point
          for (Int_t i = 0; i < b->GetN(); i++) {
-            if (IsInside(x[i],y[i])) {
+//            if (IsInside(x[i],y[i])) {
+//					cout << "Shift TGraph, i, x[i], y[i] " 
+//					<< i << " " << x[i]<< " " <<y[i]<< endl;
                x[i] += xoff;
                y[i] += yoff;
-            }
+//            }
          }
       } else {
-//         cout << obj->ClassName() << " not yet implemented" << endl;
+			if ( gDebug > 0 )
+            cout << obj->ClassName() << " not yet implemented" << endl;
       }
       if (shiftcut) {
       	Double_t * x = GetX();
