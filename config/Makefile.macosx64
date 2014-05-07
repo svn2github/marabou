@@ -2,6 +2,8 @@
 #
 # Makefile of ROOT for MacOS X, using g++ 64-bit mode
 
+# OS May 7, 2014: Mod for Marabou, always use: -install_name @rpath/
+
 PLATFORM      = macosx
 
 #DWARF2       := $(shell gcc --version | sed -n 's,.*build \([0-9]*\).$$,\1,p' |\
@@ -80,24 +82,24 @@ SOFLAGS       = -dynamiclib -single_module -undefined dynamic_lookup -Wl,-dead_s
                 -install_name @rpath/
 else
 SOFLAGS       = -dynamiclib -single_module -undefined dynamic_lookup -Wl,-dead_strip_dylibs \
-                -install_name $(LIBDIR)/
+                -install_name @rpath/
 endif
 FORCELINK     = no
 NEEDFINK      = no
 else
 ifeq ($(subst $(MACOSX_MINOR),,123),123)
 SOFLAGS       = -dynamiclib -single_module \
-                -undefined dynamic_lookup -install_name $(LIBDIR)/
+                -undefined dynamic_lookup -install_name @rpath/
 FORCELINK     = no
 NEEDFINK      = no
 else
 ifeq ($(MACOSX_MINOR),3)
 SOFLAGS       = -dynamiclib -single_module \
-                -undefined dynamic_lookup -install_name $(LIBDIR)/
+                -undefined dynamic_lookup -install_name @rpath/
 LDFLAGS      += -bind_at_load
 else
 SOFLAGS       = -dynamiclib -single_module \
-                -undefined suppress -install_name $(LIBDIR)/
+                -undefined suppress -install_name @rpath/
 LDFLAGS      += -bind_at_load
 endif
 endif
