@@ -145,15 +145,16 @@ echo "BINDIR         := \$\$MARABOU_INSTALL_PATH/bin"       >> $MAKEOUT
 echo "LIBDIR         := \$\$MARABOU_INSTALL_PATH/lib"       >> $MAKEOUT
 echo "OBJDIR         := \$\$MARABOU_INSTALL_PATH/obj"       >> $MAKEOUT
 echo "INCDIR         := \$\$MARABOU_INSTALL_PATH/include"   >> $MAKEOUT
-echo "ETCDIR         := \$\$MARABOU_INSTALL_PATH/etc"       >> $MAKEOUT
 echo "DATADIR		   := \$\$MARABOU_INSTALL_PATH/data"      >> $MAKEOUT
 echo "MACRODIR  	   := \$\$MARABOU_INSTALL_PATH/macros"    >> $MAKEOUT
 echo "SRCDIR 		   := \$\$MARABOU_INSTALL_PATH/src"       >> $MAKEOUT
 echo "ICONPATH  	   := \$\$MARABOU_INSTALL_PATH/icons"     >> $MAKEOUT
 echo "DOCDIR 		   := \$\$MARABOU_INSTALL_PATH/doc"       >> $MAKEOUT
 echo "TESTDIR		   := \$\$MARABOU_INSTALL_PATH/test"      >> $MAKEOUT
+echo "TEMPLDIR 		:= \$\$MARABOU_INSTALL_PATH/templates" >> $MAKEOUT
 echo "TUTDIR 		   := \$\$MARABOU_INSTALL_PATH/tutorials" >> $MAKEOUT
-
+echo "SOUNDPATH 		:= \$\$MARABOU_INSTALL_PATH/sounds"    >> $MAKEOUT
+echo "DOCHPRDIR 		:= \$\$MARABOU_INSTALL_PATH/doc/hpr"   >> $MAKEOUT
 echo "HTMLURL        := www.bl.physik.uni-muenchen.de" >> $MAKEOUT
 echo "DISTURL        := www.bl.physik.uni-muenchen.de" >> $MAKEOUT
 
