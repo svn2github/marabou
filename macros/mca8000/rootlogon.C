@@ -25,6 +25,12 @@
 		printf("%sLoading library for MCA8000a%s\n", setgreen, setblack);
 		gROOT->ProcessLine(".L mca8000.cxx+");
 		MCA8000 * mca = new MCA8000();
-		mca->StartGui();
+		mca->StartGui();	
+		Int_t nread = mca->OpenDevice();
+		if (nread == 20) {
+			printf("%sMCA connected%s\n", setblue, setblack);
+		} else {
+			printf("%sMCA connect failed%s\n", setred, setblack);
+		}
 	}
 }

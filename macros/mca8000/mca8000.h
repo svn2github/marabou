@@ -40,7 +40,12 @@ private:
 //	TString fHistTitle;      // histogram title
 	TString fHistTitleMenu;  // histogram title, variable used in menu
 	Int_t fUserTitle;        // > 0 indicates if user changed title
-	TStopwatch * fStopwatch; //
+	TStopwatch * fStopwatch; //  measure readout time
+	TStopwatch * fStopwatchRun; //  measure run time
+	TTimer * fTimer;          // to update run time
+	Int_t fRunStatus;
+	TString fRunStatusText;
+	Double_t fRunTime;        // Accumulated approx runtime, measured by wall clock 
 	TGMrbValuesAndText * fDialogCmd;
 	TList * fRowLab;
 	void * fValp[100];
@@ -64,8 +69,8 @@ private:
 	Int_t ReadData(UChar_t * data, Int_t nbytes, Int_t group );
 	Int_t SetAcqTime(UChar_t * data);
 public:	
-	
-	Double_t fRealTime;      // Elepased real time read from MCA
+	enum ERunStatus { kUnknown, kConnected, kRunning, kPausing, kStopped, kError };
+	Double_t fRealTime;      // Elapsed real time read from MCA
 	TString fHistTitle;      // histogram title
 public:	
 	MCA8000(TString serdev = "/dev/ttyS0");
@@ -85,13 +90,14 @@ public:
 	Int_t StartAcq(Int_t acqtime = 0, Int_t threshold = 0); 
 	Int_t StopAcq(); 
 	Int_t PrintStatusRaw(UChar_t * stat = NULL);
-	Int_t PrintStatus();
+	Int_t PrintStatus(Int_t what = 0);
 	Int_t IsRunning();
 	TH1I * BookHistogram(const char * hname = NULL , const char * htitle = NULL);
 	Int_t FillHistogram(); 
 	Int_t SaveHistogram(); 
 	void SetHistTitle(const char * title = NULL);
 	void StartGui();
+	void HandleTimerEvents();
 	void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 	void CloseDown(Int_t id);
 	void SetVerbose(Int_t verbose) {fVerbose = verbose;};

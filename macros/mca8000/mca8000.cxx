@@ -112,7 +112,13 @@ MCA8000::MCA8000(TString device)
 	fHistTitleMenu = fHistTitle;
 	fUserTitle = 0;
 	fVerbose = 0;
-	fStopwatch = new TStopwatch;
+	fStopwatch = new TStopwatch();
+	fStopwatchRun = new TStopwatch();
+	fStopwatchRun->Reset();
+	fRunTime = 0;
+	fTimer = new TTimer();
+	fTimer->Connect("Timeout()", "MCA8000", this, "HandleTimerEvents()");
+	fTimer->Start(1000, kFALSE);   // 1 second continuos
 	fSerComm = new TMrbSerialComm(fSerDev);
 	// initial baudrate of MCA8000 = 4800
 	Int_t baudrate = 4800;
@@ -122,6 +128,7 @@ MCA8000::MCA8000(TString device)
 	fSerComm->SetSpaceParity();
 	fSerComm->ResetRts();
 	fSerComm->ResetDtr();
+	fRunStatus = kUnknown;
 };
 
 //_____________________________________________________________________
@@ -156,13 +163,14 @@ Int_t MCA8000::OpenDevice()
 
 	Int_t nread = PrintStatusRaw(cdat);
 	if ( nread <= 0 ) { 
-		printf("Cannot reach MCA, please check cables and power");
+		printf("Cannot reach MCA, please check cables and power\n");
 	} 
 	if ( nread == 20 ) { 
 		UShort_t SerialNr = cdat[0] *256 + cdat[1];
 //		UShort_t gain_code = cdat[18] & 0x3; // 3 bits of flags
 		printf("SerialNr: %d \n", SerialNr);
 		fStatusOk = 1;
+		fRunStatus = kConnected;
 	} else {
 		printf("Illegal number of status bytes read: %d \n", nread);
 	}
@@ -255,7 +263,11 @@ Int_t MCA8000::SendCommand(UChar_t * cmd)
 //	fSerComm->ReadDataRaw(buf,2);
 	fSerComm->ResetRts();
 	usleep(10000);	
-	return written;
+	if (written == 5 ) {
+		return written;
+	} else {
+		return -1;
+	}
 }
 //____________________________________________________________________
 
@@ -381,8 +393,9 @@ Int_t MCA8000::ReadData(UChar_t * data, Int_t nbytes, Int_t group )
 				stat[12] * TMath::Power(2,16)
 				+ (1. -((Double_t)stat[15])/75.);
 	TDatime da;
-	printf("ReadData at: %d PresetT: %f RealT: %f LiveT: %f\n",
-			da.GetTime(), fPresetTime, fRealTime, fLiveTime);
+	printf("ReadData at: %d:%d:%d PresetT: %f RealT: %f LiveT: %f\n",
+			da.GetHour(), da.GetMinute(), da.GetSecond(), 
+			fPresetTime, fRealTime, fLiveTime);
 	}
 //	PrintStatus();
 	SendDataAndChecksum(group);
@@ -466,7 +479,7 @@ Int_t MCA8000::GetData(UInt_t *data)
 	UInt_t datachksum;
 	datachksum = stat[0] * TMath::Power(2,24) + stat[1] * TMath::Power(2,16)
 					+ stat[2] * TMath::Power(2,8) + stat[3];
-	if (checksum != datachksum) 
+	if (fVerbose > 0  && checksum != datachksum) 
 		printf("GetData: checksum error, sum of bytes: %d checksum: % d\n",
 				checksum, datachksum);
 	if ( fShortRead == 0) {
@@ -491,7 +504,7 @@ Int_t MCA8000::GetData(UInt_t *data)
 		GetStatus(stat, 2, 1);
 		datachksum = stat[0] * TMath::Power(2,24) + stat[1] * TMath::Power(2,16)
 					+ stat[2] * TMath::Power(2,8) + stat[3];
-	if (checksum != datachksum) 
+	if (fVerbose > 0 && checksum != datachksum) 
 		printf("GetData: checksum error, sum of bytes: %d checksum: % d\n",
 				checksum, datachksum);
 	}
@@ -746,10 +759,12 @@ Int_t MCA8000::StartAcq(Int_t acqt, Int_t thresh)
 	if ( acqt != 0 ) {
 		acqtime = acqt;
 	}
-	if ( fClearElTime )
-		DeleteTime();           // Reset accumulated time?
+	
 	if ( fClearSpData ) 
 		DeleteData();
+	if ( fClearElTime ) {
+			DeleteTime();           // Reset accumulated time?
+	}
 	SetPresetTime(acqtime);
 	UChar_t dat[3];
 	dat[0] = fNofBinsCode + (fTimerFlag << 3);
@@ -757,9 +772,21 @@ Int_t MCA8000::StartAcq(Int_t acqt, Int_t thresh)
 	dat[1] = (UChar_t)threshold & 0xff;    // threshold 0-7
 	dat[2] = (UChar_t)(threshold >> 8 )& 0xff;     // threshold  8-15
 	TDatime da;
-	printf("StartAcq: %d AcqTime: %d Threshold: %d Flag: %x\n", 
-	da.GetTime(), acqtime, threshold, dat[0]);
-	return SendControl(dat);
+	printf("StartAcq: %d:%d:%d PresetT: %d Threshold: %d Flag: %x\n", 
+	da.GetHour(), da.GetMinute(), da.GetSecond(), acqtime, threshold, dat[0]);
+	fRunStatus = kRunning;
+	Int_t stat = SendControl(dat);
+	if (stat < 0 ) {
+		fRunStatus = kError;
+	} else {	
+		fRunStatus = kRunning;
+		if ( fClearElTime ) {
+			fStopwatchRun->Start(kTRUE);  // Reset and start
+		} else {
+			fStopwatchRun->Start(kFALSE);
+		}
+	}
+	return stat;
 }
 //____________________________________________________________________
 
@@ -779,7 +806,16 @@ Int_t MCA8000::StopAcq()
 	if (fVerbose > 0) {
 		printf("StopAcq()\n");
 	}
-	return SendControl(dat);
+	fStopwatchRun->Stop();
+	if ( fClearElTime ) {
+		fRunStatus = kStopped;
+	} else {
+		fRunStatus = kPausing;
+	}
+	Int_t nwritten = SendControl(dat);
+	printf("Stop Acq: ");
+	PrintStatus(1);
+	return nwritten;
 }
 //____________________________________________________________________
 
@@ -906,6 +942,7 @@ Int_t MCA8000::FillHistogram()
 			}
 			SetHistTitle();
 			fHist->SetTitle(fHistTitle);
+			fHist->SetEntries((Int_t)sum);
 			printf("Fill hist:  Name: %s Sum of cont: %d Max count: %d\n", 
 			fHist->GetName(), sum, max_count);
 			if (fVerbose > 0) {
@@ -928,23 +965,29 @@ void MCA8000::SetHistTitle(const char * ti)
 {
 	fHistTitle = "MCA, Thr: ";
 	fHistTitle += fThreshold;
-	fHistTitle += " ElapsedT: ";
+	fHistTitle += " Live-T: ";
 	fHistTitle += Form("%6.1f", fRealTime);
 	fHistTitle += " FillT: ";
 	if ( ti ) {
 		fHistTitle += ti;
 	} else {
 		TDatime da;
-		fHistTitle += da.GetTime();
+		fHistTitle += da.GetHour();
+		fHistTitle += ":";
+		fHistTitle += da.GetMinute();
+		fHistTitle += ":";
+		fHistTitle += da.GetSecond();
 	}
 }
 //____________________________________________________________________
 
-Int_t MCA8000::PrintStatus()
+Int_t MCA8000::PrintStatus(Int_t what)
 
 ////////////////////////////////////////////////////////////////////////
 //
 // Print status: Serial number, threshold, times, running state
+// what: 0 all
+//       1 times only
 //
 ////////////////////////////////////////////////////////////////////////
 {
@@ -960,8 +1003,10 @@ Int_t MCA8000::PrintStatus()
 	UShort_t timer_flag = (stat[18] >> 3) & 0x1; // bit 3
 	UShort_t startstop_flag = (stat[18] >> 4) & 0x1; // bit 3
 	UShort_t thresh = stat[16] *256 + stat[17];
-	printf("SerialNr: %d Threshold: %d Use Livetime: %d\n", 
+	if ( what == 0 ) {
+		printf("SerialNr: %d Threshold: %d Use Livetime: %d\n", 
 			SerialNr, thresh, timer_flag);
+	}
 	Double_t ptime = stat[6] + stat[5] * TMath::Power(2,8) + 
 				stat[4] * TMath::Power(2,16);
 	Double_t rtime = stat[10] + stat[9] * TMath::Power(2,8) + 
@@ -971,8 +1016,11 @@ Int_t MCA8000::PrintStatus()
 				stat[12] * TMath::Power(2,16)
 				+ (1. -((Double_t)stat[15])/75.);
 	TDatime da;
-	printf("WallClock: %d PresetT: %f RealT: %f LiveT: %f\n",
-			da.GetTime(), ptime, rtime, ltime);
+	if ( what == 0 ) {
+		printf("WallClock: ");
+	}
+	printf("%d:%d:%d PresetT: %f RealT: %f LiveT: %f\n",
+			da.GetHour(), da.GetMinute(), da.GetSecond(), ptime, rtime, ltime);
 	Double_t time_left = -1;
 	if (ptime > 0 ) {
 		if( timer_flag ) 
@@ -980,18 +1028,20 @@ Int_t MCA8000::PrintStatus()
 		else
 			time_left = ptime - rtime;
 	}
-	if ( startstop_flag == 0 ) {
-		printf("Acquisition stopped");
-		if ( ptime > 0 && time_left > 0)
-			printf(" time left: %f", time_left);
-		printf("\n");
-	} else {
-		if ( timer_flag &&  time_left == 0) {
-			printf("Elapsed livetime reached preset time\n");
-		} else if (time_left == 0) {
-			printf("Elapsed real time reached preset time\n");
-		}  else {
-			printf("Acquisition running, time left: %f\n", time_left);
+	if ( what == 0 ) {
+		if ( startstop_flag == 0 ) {
+			printf("Acquisition stopped");
+			if ( ptime > 0 && time_left > 0)
+				printf(" time left: %f", time_left);
+			printf("\n");
+		} else {
+			if ( timer_flag &&  time_left == 0) {
+				printf("Elapsed livetime reached preset time\n");
+			} else if (time_left == 0) {
+				printf("Elapsed real time reached preset time\n");
+			}  else {
+				printf("Acquisition running, time left: %f\n", time_left);
+			}
 		}
 	}
 	return (Int_t)time_left;
@@ -1074,10 +1124,15 @@ void MCA8000::StartGui()
 	Data acquisition may be stopped and restarted at any time.\n\
 	If preset time or spectra should be cleared on restart can\n\
 	be selected.\n\
+	The runtime[seconds] and the run state is displayed once / second\n\
+	Note however that for performance reasons this runtime is not\n\
+	read from the mca8000 but taken from a wallclock and is therefore\n\
+	only approximate. The real runtime and live time is read from mca8000\n\
+	at Stop Acq, Fill Histogram or Print Status.\n\
 	For more information on the device please consult:\n\
 	http://www.bl.physik.uni-muenchen.de/marabou/htmldoc/mca8000a.html\n\
 	\n\
-	Data should be  stored in a histogram. Number of channels and\n\
+	Data should be stored in a histogram. Number of channels and\n\
 	axis ranges are determined by the selected resolution of the MCA.\n\
 	E.g. resolution 1024 gives  Nbins: 992, low edge: 0, upper 992.\n\
 	The name of the hist is the date/time stamp of the booking time\n\
@@ -1117,19 +1172,26 @@ void MCA8000::StartGui()
 	fValp[ind++] = &fNofBinsString;
 	fRowLab->Add(new TObjString("CheckButton+Only 16 bits"));
 	fValp[ind++] = &fShortRead;
-	fRowLab->Add(new TObjString("PlainIntVal_Acq Time"));
+	fRowLab->Add(new TObjString("PlainIntVal_Preset T"));
 	fBidAcqTime = ind;
 	fValp[ind++] = &fAcqTime;
 	fRowLab->Add(new TObjString("PlainIntVal+Threshld"));
 	fBidThreshold= ind;
 	fValp[ind++] = &fThreshold;
-	fRowLab->Add(new TObjString("CheckButton_ Use livetime for preset time"));
+	fRowLab->Add(new TObjString("CheckButton_ Use livetime for Preset time"));
 	fBidTimerFlag = ind;
 	fValp[ind++] = &fTimerFlag;
 	fRowLab->Add(new TObjString("CheckButton_Clear elapsd time on StartAcq"));
 	fValp[ind++] = &fClearElTime;
 	fRowLab->Add(new TObjString("CheckButton_Clear spectr data on StartAcq"));
 	fValp[ind++] = &fClearSpData;
+	fRowLab->Add(new TObjString("StringValue_State"));
+//	fBidRunStatusText = ind;
+	fValp[ind++] = &fRunStatusText;
+	fRowLab->Add(new TObjString("DoubleValue+RTime"));
+//	fBidRunTime = ind;
+	fValp[ind++] = &fRunTime;
+	
 	fRowLab->Add(new TObjString("StringValue_Hist_tit"));
 	fBidTitle = ind;
 	fValp[ind++] = &fHistTitleMenu;
@@ -1152,14 +1214,40 @@ void MCA8000::StartGui()
 	fRowLab->Add(new TObjString("CommandButt+Print Status"));
 	fValp[ind++] = &printstat;
 	
-		Int_t Ok = 0;
+	Int_t Ok = 0;
 	Int_t itemwidth = 250;
 	fDialogCmd =
 	new TGMrbValuesAndText("MCA8000a Control", NULL, &Ok,itemwidth, NULL,
 								  NULL, NULL, fRowLab, fValp,
 								  NULL, NULL, helptext, this, this->ClassName());
 	fDialogCmd->Move(5,455);
+	cout << endl;
+}
+//____________________________________________________________________
 
+void  MCA8000::HandleTimerEvents()
+{
+//	cout << "HandleTimerEvents(): " << fRunStatus << endl;
+	if ( fRunStatus == kRunning) {
+		fRunTime = fStopwatchRun->RealTime();
+		fStopwatchRun->Start(kFALSE);
+		fRunStatusText="Running";
+	} else {
+		fRunStatusText="Unknown";
+		if ( fRunStatus == kConnected ) {
+			fRunStatusText="Connected";
+		} else if ( fRunStatus == kPausing ) {
+			fRunStatusText="Pausing";
+		} else if ( fRunStatus == kStopped ) {
+			fRunStatusText="Stopped";
+		} else if ( fRunStatus == kError ) {
+			fRunStatusText="Error";
+		}
+	}	
+	if ( fDialogCmd ) {
+		fDialogCmd->ReloadValues();
+		fDialogCmd->DoNeedRedraw();
+	}
 }
 //____________________________________________________________________
 
