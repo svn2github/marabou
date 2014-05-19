@@ -3,6 +3,7 @@
 
 #include "Rtypes.h"
 #include "TSystem.h"
+#include <TGTextEntry.h>
 
 class TMrbSerialComm;
 class TH1I;
@@ -49,6 +50,9 @@ private:
 	TGMrbValuesAndText * fDialogCmd;
 	TList * fRowLab;
 	void * fValp[100];
+	TList * fButtonList;
+	TGTextEntry *fStatusButton;
+	
 	Int_t fClearElTime;
 	Int_t fClearSpData;
 	Int_t fBidNofBins;
@@ -58,6 +62,8 @@ private:
 	Int_t fBidBookHist;
 	Int_t fBidFillHist;
 	Int_t fBidTitle;
+	Int_t fBidRunStatusText;
+	Int_t fBidRunTime;
 	Int_t fVerbose;
 private:	
 	void SetBaudRate(Int_t baudRateDivisor);

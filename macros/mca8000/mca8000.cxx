@@ -8,6 +8,8 @@
 #include "TH1I.h"
 #include "TBenchmark.h"
 #include "TStopwatch.h"
+#include "TGClient.h"
+
 #include "TMrbSerialComm.h"
 #include "TGMrbValuesAndText.h"
 #include "Save2FileDialog.h"
@@ -116,6 +118,9 @@ MCA8000::MCA8000(TString device)
 	fStopwatchRun = new TStopwatch();
 	fStopwatchRun->Reset();
 	fRunTime = 0;
+	fRunStatus = kUnknown;
+	fStatusButton = NULL;
+	fButtonList = NULL;
 	fTimer = new TTimer();
 	fTimer->Connect("Timeout()", "MCA8000", this, "HandleTimerEvents()");
 	fTimer->Start(1000, kFALSE);   // 1 second continuos
@@ -136,6 +141,7 @@ MCA8000::MCA8000(TString device)
 MCA8000::~MCA8000()
 {
 	fSerComm->Close();
+	fTimer->Stop();
 }
 //____________________________________________________________________
 
@@ -149,7 +155,7 @@ Int_t MCA8000::OpenDevice()
 {
 	if (fStatusOk == 1 ) {
 		printf("WARNING: MCA alredy connected\n");
-//		return 20;
+		return 20;
 	}
 	// set baudrate to 115200
 //	Int_t baudrate = 4800;
@@ -751,6 +757,10 @@ Int_t MCA8000::StartAcq(Int_t acqt, Int_t thresh)
 		printf("MCA not correctly connected\n");
 		return -1;
 	}
+	if ( fRunStatus == kRunning) {
+		printf("Already running\n");
+		return 0;
+	}
 	SetNofBins(fNofBins);
 	Int_t threshold = fThreshold;
 	if ( thresh != 0 ) 
@@ -798,6 +808,10 @@ Int_t MCA8000::StopAcq()
 //
 ////////////////////////////////////////////////////////////////////////
 {
+	if (fRunStatus != kRunning ) {
+		printf("Not running\n");
+		return 0;
+	}
 	UChar_t dat[3];
 	dat[0] = fNofBinsCode + (fTimerFlag << 3);
 	// flag bit 4 =  0 stop acq
@@ -1186,10 +1200,10 @@ void MCA8000::StartGui()
 	fRowLab->Add(new TObjString("CheckButton_Clear spectr data on StartAcq"));
 	fValp[ind++] = &fClearSpData;
 	fRowLab->Add(new TObjString("StringValue_State"));
-//	fBidRunStatusText = ind;
+	fBidRunStatusText = ind;
 	fValp[ind++] = &fRunStatusText;
 	fRowLab->Add(new TObjString("DoubleValue+RTime"));
-//	fBidRunTime = ind;
+	fBidRunTime = ind;
 	fValp[ind++] = &fRunTime;
 	
 	fRowLab->Add(new TObjString("StringValue_Hist_tit"));
@@ -1221,21 +1235,35 @@ void MCA8000::StartGui()
 								  NULL, NULL, fRowLab, fValp,
 								  NULL, NULL, helptext, this, this->ClassName());
 	fDialogCmd->Move(5,455);
-	cout << endl;
+// only from v 5.34.18 onwards
+//	fButtonList = fDialogCmd->GetButtonList();
+//	fStatusButton = (TGTextEntry*)fButtonList->At(fBidRunStatusText);
 }
 //____________________________________________________________________
 
 void  MCA8000::HandleTimerEvents()
 {
-//	cout << "HandleTimerEvents(): " << fRunStatus << endl;
+	if (fVerbose > 1)
+		cout << "HandleTimerEvents(): " << fRunStatus << endl;
+   Pixel_t red, blue, green, magenta;
+   gClient->GetColorByName("green", green);
+   gClient->GetColorByName("red", red);
+   gClient->GetColorByName("blue", blue);
+   gClient->GetColorByName("magenta", magenta);
 	if ( fRunStatus == kRunning) {
 		fRunTime = fStopwatchRun->RealTime();
 		fStopwatchRun->Start(kFALSE);
 		fRunStatusText="Running";
+		if (fStatusButton) 
+			fStatusButton->SetBackgroundColor(green);
 	} else {
 		fRunStatusText="Unknown";
+		if (fStatusButton) 
+			fStatusButton->SetBackgroundColor(magenta);
 		if ( fRunStatus == kConnected ) {
 			fRunStatusText="Connected";
+			if (fStatusButton) 
+				fStatusButton->SetBackgroundColor(blue);
 		} else if ( fRunStatus == kPausing ) {
 			fRunStatusText="Pausing";
 		} else if ( fRunStatus == kStopped ) {
@@ -1269,7 +1297,7 @@ void MCA8000::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
 }
 //____________________________________________________________________
 
-void MCA8000::CloseDown(Int_t /*id*/)
+void MCA8000::CloseDown(Int_t id)
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -1277,6 +1305,7 @@ void MCA8000::CloseDown(Int_t /*id*/)
 //
 ////////////////////////////////////////////////////////////////////////
 {
-	
-//	printf("CloseDown id %d\n", id);
+	fTimer->Stop();
+	delete fTimer;
+	printf("CloseDown id %d\n", id);
 }
