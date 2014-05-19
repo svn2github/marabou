@@ -758,6 +758,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    if (myfont) myGC.SetFont(myfont->GetFontHandle());
    fWidgetId = id;
    fButtonId = 0;
+ //  fButtonList = new void [Rowlabels->GetSize()];
    fWindowWidth = win_width;
 //   fWidgets = new TList;
    fFlagButtons = new TList;
@@ -960,6 +961,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             ((TGTextButton*)cbutton)->SetFont("-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
             cbutton->SetBackgroundColor(lblue);
             cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
+            
             fEntries->Add(cbutton);
             hframe->AddFrame(cbutton, loc);
             has_commands = kTRUE;

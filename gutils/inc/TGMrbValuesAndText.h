@@ -76,6 +76,7 @@ private:
    Int_t            *fReturn;    // address to store cancel = -1 / ok =0
    TList            *fLabels;
    void            **fValPointers;
+//   void            **fButtonList;
    TArrayI          *fFlags;
    TList            *fFlagButtons;
    TGListBox        *fListBox;
@@ -143,6 +144,7 @@ public:
 	void DoNeedRedraw()          { gClient->NeedRedraw(this); };
 	void SetCheckButton(Int_t id, Int_t state);
 	void SetComboSelect(Int_t id, Int_t sel);
+	TList * GetButtonList()       { return fEntries; };
 	
 ClassDef(TGMrbValuesAndText,0)		// [GraphUtils] A dialog box
 };
