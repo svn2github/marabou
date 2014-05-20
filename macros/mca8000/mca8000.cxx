@@ -92,6 +92,18 @@ MCA8000::MCA8000(TString device)
 		<< "Will not load MCA8000a library" << setblack<< endl;
 		return;
 	}
+	cmd = "if [ -w ";
+	cmd +=  device.Data();
+	cmd += " ]; then echo ok; else echo no ; fi";
+	fp = gSystem->OpenPipe(cmd, "r");
+   line.Gets(fp);
+   if ( line.Contains("no") ) {
+		cout << setred << "You have no write access to " << device.Data()
+		<< setblack<< endl;
+		return;
+	} else {
+		cout << "Write access ok: " << device.Data() << endl;
+	}
 	fNofBinsCode = 2;       // flag bits 0:2
 	fNofBins = 4096; 
 	fNofBinsString = "";
@@ -168,9 +180,6 @@ Int_t MCA8000::OpenDevice()
 	UChar_t cdat[20];
 
 	Int_t nread = PrintStatusRaw(cdat);
-	if ( nread <= 0 ) { 
-		printf("Cannot reach MCA, please check cables and power\n");
-	} 
 	if ( nread == 20 ) { 
 		UShort_t SerialNr = cdat[0] *256 + cdat[1];
 //		UShort_t gain_code = cdat[18] & 0x3; // 3 bits of flags
@@ -179,6 +188,13 @@ Int_t MCA8000::OpenDevice()
 		fRunStatus = kConnected;
 	} else {
 		printf("Illegal number of status bytes read: %d \n", nread);
+		printf("Cannot reach MCA, please check cables and power\n");
+		printf("You may try to turn Power On and restart HistPresent\n");
+		fStatusOk = -1;
+		fRunStatus = kError;
+	}
+	if ( fDialogCmd ) {
+		fDialogCmd->DisableButton(fBidConnect);
 	}
 	return nread;
 }	
@@ -192,6 +208,7 @@ void MCA8000::PowerOn()
 //
 ////////////////////////////////////////////////////////////////////////
 {
+	cout << "Try to turn Power On" << endl;
 	fSerComm->SetRts();
 	for (Int_t i=0; i <200; i++) {
 		fSerComm->ToggleDtr();
@@ -199,6 +216,11 @@ void MCA8000::PowerOn()
 	}
 	fSerComm->ResetDtr();
 	fSerComm->ResetRts();
+	if (fStatusOk == -1) {
+		printf("%sYou must restart HistPresent before Connect MCA now%s\n", setred, setblack);
+	} else if ( fDialogCmd && fStatusOk == 0) {
+		fDialogCmd->EnableButton(fBidConnect);
+	}
 }
 //____________________________________________________________________
 
@@ -917,6 +939,10 @@ Int_t MCA8000::FillHistogram()
 //
 ////////////////////////////////////////////////////////////////////////
 {
+	if ( fStatusOk != 1) {
+		printf("MCA not correctly connected\n");
+		return -1;
+	}
 	if ( fHist ) {
 		TH1 *hh = (TH1*)gROOT->GetList()->FindObject(fHist);
 		if (hh == NULL) {
@@ -1005,6 +1031,11 @@ Int_t MCA8000::PrintStatus(Int_t what)
 //
 ////////////////////////////////////////////////////////////////////////
 {
+	if ( fStatusOk != 1) {
+		printf("MCA not correctly connected\n");
+		return -1;
+	}
+
 	UChar_t stat[20];		
 	Int_t nread = GetStatus(stat);
 	
@@ -1212,10 +1243,13 @@ void MCA8000::StartGui()
 	fRowLab->Add(new TObjString("CommandButt_Power On"));
 	fValp[ind++] = &poweron;
 	fRowLab->Add(new TObjString("CommandButt+Connect MCA"));
+	fBidConnect = ind;
 	fValp[ind++] = &opendev;
 	fRowLab->Add(new TObjString("CommandButt_Start Acqu"));
+	fBidStartAcq = ind;
 	fValp[ind++] = &startacq;
 	fRowLab->Add(new TObjString("CommandButt+Stop Acqu"));
+	fBidStopAcq = ind;
 	fValp[ind++] = &stopacq;
 	fRowLab->Add(new TObjString("CommandButt_Book Histogram"));
 	fBidBookHist = ind;
@@ -1236,8 +1270,8 @@ void MCA8000::StartGui()
 								  NULL, NULL, helptext, this, this->ClassName());
 	fDialogCmd->Move(5,455);
 // only from v 5.34.18 onwards
-//	fButtonList = fDialogCmd->GetButtonList();
-//	fStatusButton = (TGTextEntry*)fButtonList->At(fBidRunStatusText);
+	fButtonList = fDialogCmd->GetButtonList();
+	fStatusButton = (TGTextEntry*)fButtonList->At(fBidRunStatusText);
 }
 //____________________________________________________________________
 
@@ -1245,11 +1279,16 @@ void  MCA8000::HandleTimerEvents()
 {
 	if (fVerbose > 1)
 		cout << "HandleTimerEvents(): " << fRunStatus << endl;
-   Pixel_t red, blue, green, magenta;
+   Pixel_t red, blue, green, yellow, magenta, cyan, black;
    gClient->GetColorByName("green", green);
    gClient->GetColorByName("red", red);
    gClient->GetColorByName("blue", blue);
-   gClient->GetColorByName("magenta", magenta);
+   gClient->GetColorByName("cyan", cyan);
+	gClient->GetColorByName("yellow", yellow);
+	gClient->GetColorByName("magenta", magenta);
+	gClient->GetColorByName("black", black);
+	if (fStatusButton) 
+		fStatusButton->SetForegroundColor(black);
 	if ( fRunStatus == kRunning) {
 		fRunTime = fStopwatchRun->RealTime();
 		fStopwatchRun->Start(kFALSE);
@@ -1262,14 +1301,22 @@ void  MCA8000::HandleTimerEvents()
 			fStatusButton->SetBackgroundColor(magenta);
 		if ( fRunStatus == kConnected ) {
 			fRunStatusText="Connected";
-			if (fStatusButton) 
+			if (fStatusButton) {
 				fStatusButton->SetBackgroundColor(blue);
+				fStatusButton->SetForegroundColor(yellow);
+			}
 		} else if ( fRunStatus == kPausing ) {
 			fRunStatusText="Pausing";
+			if (fStatusButton) 
+				fStatusButton->SetBackgroundColor(yellow);
 		} else if ( fRunStatus == kStopped ) {
 			fRunStatusText="Stopped";
+			if (fStatusButton) 
+				fStatusButton->SetBackgroundColor(cyan);
 		} else if ( fRunStatus == kError ) {
 			fRunStatusText="Error";
+			if (fStatusButton) 
+				fStatusButton->SetBackgroundColor(red);
 		}
 	}	
 	if ( fDialogCmd ) {

@@ -56,6 +56,9 @@ private:
 	Int_t fClearElTime;
 	Int_t fClearSpData;
 	Int_t fBidNofBins;
+	Int_t fBidConnect;
+	Int_t fBidStartAcq;
+	Int_t fBidStopAcq;
 	Int_t fBidThreshold;
 	Int_t fBidAcqTime;
 	Int_t fBidTimerFlag;
@@ -107,6 +110,7 @@ public:
 	void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 	void CloseDown(Int_t id);
 	void SetVerbose(Int_t verbose) {fVerbose = verbose;};
+	void SetRunState(Int_t state) {fRunStatus = state;};
 
 	ClassDef(MCA8000, 0)
 };
