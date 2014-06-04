@@ -67,9 +67,11 @@ private:
 	Double_t fContMin;
 	Double_t fContMax;
 	Int_t fContLog;
+	Int_t fZscale;
 	Int_t fBidContMin;
 	Int_t fBidContMax;
 	Int_t fBidContLog;
+	Int_t fBidZscale;
 
 public:
 

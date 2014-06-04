@@ -121,7 +121,7 @@ protected:
    Bool_t    fConnectedOnce;
    Int_t     fSocketToConnect;
    TSocket * fComSocket;
-   Bool_t  fSocketIsOpen;
+//   Bool_t  fSocketIsOpen;
    Bool_t  fAnyFromSocket;
    TGWindow * fLastWindow;
 	TButton * fHfromM_aButton;

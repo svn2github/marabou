@@ -3540,7 +3540,10 @@ void FitHist::Draw3Dim()
 	} else {
 		fSelHist->SetStats(0);
 	} 
-	
+	gTranspThresh      = env.GetValue("Set3DimOptDialog.gTranspThresh",      1);
+	gTranspBelow       = env.GetValue("Set3DimOptDialog.gTranspBelow",   0.005);
+	gTranspAbove       = env.GetValue("Set3DimOptDialog.gTranspAbove",     0.9);
+
 	TList * lof = fSelHist->GetListOfFunctions();
 	TObject * trf= lof->FindObject("TransferFunction");
 	if ( fDrawOpt3Dim.Contains("GL") && fApplyTranspCut ) {
