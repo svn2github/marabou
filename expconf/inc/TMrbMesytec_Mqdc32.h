@@ -97,8 +97,8 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 											kMarkingTypeXts 	=	0x3
 										};
 
-		enum EMrbBankOperation			{	kBankOprConnected	=	0,
-											kBankOprIndependent
+		enum EMrbBankOperation			{	kBankOprConnected	=	0x0,
+											kBankOprIndependent	=	0x1
 										};
 
 		enum EMrbAdcResolution			{	kAdcRes4k			=	0
