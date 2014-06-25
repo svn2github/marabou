@@ -21,18 +21,32 @@
    if (line.Length() > 0) {
 		cout << setred << "Serial device already in use: " << line  << endl 
 		<< "Will not load MCA8000a library" << setblack<< endl;
+		return;
+	} 
+	cmd = "if [ -w ";
+	cmd +=  device.Data();
+	cmd += " ]; then echo ok; else echo no ; fi";
+	fp = gSystem->OpenPipe(cmd, "r");
+   line.Gets(fp);
+   if ( line.Contains("no") ) {
+		cout << setred << "You have no write access to " << device.Data()
+		<< setblack<< endl;
+		return;
 	} else {
-		printf("%sLoading library for MCA8000a%s\n", setgreen, setblack);
-		gROOT->ProcessLine(".L mca8000.cxx+");
-		MCA8000 * mca = new MCA8000();
-		mca->StartGui();	
-		
-		Int_t nread = mca->OpenDevice();
-		if (nread == 20) {
-			printf("%sMCA connected%s\n", setblue, setblack);
-		} else {
-			printf("%sMCA connect failed%s\n", setred, setblack);
-		}
-		
+		cout << "Write access ok: " << device.Data() << endl;
 	}
+
+	printf("%sLoading library for MCA8000a%s\n", setgreen, setblack);
+	gROOT->ProcessLine(".L mca8000.cxx+");
+	MCA8000 * mca = new MCA8000();
+	mca->StartGui();	
+	
+	Int_t nread = mca->OpenDevice();
+	if (nread == 20) {
+		printf("%sMCA connected%s\n", setblue, setblack);
+	} else {
+		printf("%sMCA connect failed%s\n", setred, setblack);
+	}
+	
+	
 }
