@@ -504,7 +504,7 @@ Int_t CalibrationDialog::ReadGaugeFile()
    infile.open(fCustomGaugeFile.Data(), ios::in);
 	if (!infile.good()) {
 	cerr	<< "ReadGaugeFile: "
-			<< gSystem->GetError() << " - " << infile
+			<< gSystem->GetError() << " - " << fCustomGaugeFile.Data()
 			<< endl;
 		return 0;
 	}
