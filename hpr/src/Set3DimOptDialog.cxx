@@ -96,6 +96,7 @@ since the other options dont have a real histogram anymore\n\
 //	gTranspThresh = 1;
 //	gTranspAbove = 0.4;
 //	gTranspBelow = 0.005;
+	gDirectory->Append(this);
 	fCmdButton = b;
 //	cout << "fCmdButton " << fCmdButton<< endl;
 	fApplyTranspCut = 0;
@@ -244,9 +245,9 @@ since the other options dont have a real histogram anymore\n\
    fRow_lab->Add(new TObjString("CheckButton-Log"));
  	fBidContLog= ind;
 	fValp[ind++] = &fContLog;
-   fRow_lab->Add(new TObjString("CheckButton-Zscale"));
- 	fBidZscale = ind;
-	fValp[ind++] = &fZscale;
+   fRow_lab->Add(new TObjString("CheckButton-ZScale"));
+ 	fBidShowZScale = ind;
+	fValp[ind++] = &fShowZScale;
 	
 	fRow_lab->Add(new TObjString("CommentOnly_Parameters for OpenGL"));
 	fValp[ind++] = &dummy;
@@ -320,11 +321,12 @@ void Set3DimOptDialog::SetRanges()
 		return;
 	}
 	TString cname = fCanvas->GetName();
-//	cout << "Canvas name: " << cname << endl;
+	cout << "Canvas name: " << cname << endl;
 	if ( !cname.BeginsWith("C_F") ) {
 		cout << "Illegal canvas name " << endl;
 	} else {
 		cname = cname(3,cname.Length()-3);
+		cout << "Canvas name: " << cname << endl;
 		TEnv * env = GetDefaults(cname, kFALSE);
 		if (env) {
 			env->SetValue("fRangeX0", fRangeX0);
@@ -620,13 +622,13 @@ void Set3DimOptDialog::SaveDefaults()
 	env.SetValue("Set3DimOptDialog.gTranspAbove",      gTranspAbove );
 	env.SetValue("Set3DimOptDialog.fPhi3Dim",          fPhi3Dim          );
 	env.SetValue("Set3DimOptDialog.fTheta3Dim",        fTheta3Dim        );
-	env.SetValue("Set3DimOptDialog.fZscale",           fZscale           );
- 	env.SetValue("Set3DimOptDialog.fRangeX0",          fRangeX0);
- 	env.SetValue("Set3DimOptDialog.fRangeX1",          fRangeX1);	
- 	env.SetValue("Set3DimOptDialog.fRangeY0",          fRangeY0);
- 	env.SetValue("Set3DimOptDialog.fRangeY1",          fRangeY1);
- 	env.SetValue("Set3DimOptDialog.fRangeZ0",          fRangeZ0);
- 	env.SetValue("Set3DimOptDialog.fRangeZ1",          fRangeZ1);
+	env.SetValue("Set3DimOptDialog.fShowZScale",           fShowZScale           );
+ 	//env.SetValue("Set3DimOptDialog.fRangeX0",          fRangeX0);
+ 	//env.SetValue("Set3DimOptDialog.fRangeX1",          fRangeX1);	
+ 	//env.SetValue("Set3DimOptDialog.fRangeY0",          fRangeY0);
+ 	//env.SetValue("Set3DimOptDialog.fRangeY1",          fRangeY1);
+ 	//env.SetValue("Set3DimOptDialog.fRangeZ0",          fRangeZ0);
+ 	//env.SetValue("Set3DimOptDialog.fRangeZ1",          fRangeZ1);
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -671,18 +673,19 @@ void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
 	gTranspThresh      = env.GetValue("Set3DimOptDialog.gTranspThresh",      1);
 	gTranspBelow       = env.GetValue("Set3DimOptDialog.gTranspBelow",   0.005);
 	gTranspAbove       = env.GetValue("Set3DimOptDialog.gTranspAbove",     0.9);
+//	gAlphaOfPalette = (Int_t)(gTranspAbove*255.);
 	fPhi3Dim           = env.GetValue("Set3DimOptDialog.fPhi3Dim", 135.);
 	fTheta3Dim         = env.GetValue("Set3DimOptDialog.fTheta3Dim", 30);
-	fContMin           = env.GetValue("Set3DimOptDialog.fContMin", fContMin);
-	fContMax           = env.GetValue("Set3DimOptDialog.fContMax", fContMax);
+	//fContMin           = env.GetValue("Set3DimOptDialog.fContMin", fContMin);
+	//fContMax           = env.GetValue("Set3DimOptDialog.fContMax", fContMax);
 	fContLog           = env.GetValue("Set3DimOptDialog.fContLog", 0);
-	fZscale            = env.GetValue("Set3DimOptDialog.fZscale", 1);
- 	fRangeX0           = env.GetValue("Set3DimOptDialog.fRangeX0", fRangeX0);
- 	fRangeX1           = env.GetValue("Set3DimOptDialog.fRangeX1", fRangeX1);
- 	fRangeY0           = env.GetValue("Set3DimOptDialog.fRangeY0", fRangeY0);
- 	fRangeY1           = env.GetValue("Set3DimOptDialog.fRangeY1", fRangeY1);
- 	fRangeZ0           = env.GetValue("Set3DimOptDialog.fRangeZ0", fRangeZ0);
- 	fRangeZ1           = env.GetValue("Set3DimOptDialog.fRangeZ1", fRangeZ1);
+	fShowZScale        = env.GetValue("Set3DimOptDialog.fShowZScale", 1);
+ 	//fRangeX0           = env.GetValue("Set3DimOptDialog.fRangeX0", fRangeX0);
+ 	//fRangeX1           = env.GetValue("Set3DimOptDialog.fRangeX1", fRangeX1);
+ 	//fRangeY0           = env.GetValue("Set3DimOptDialog.fRangeY0", fRangeY0);
+ 	//fRangeY1           = env.GetValue("Set3DimOptDialog.fRangeY1", fRangeY1);
+ 	//fRangeZ0           = env.GetValue("Set3DimOptDialog.fRangeZ0", fRangeZ0);
+ 	//fRangeZ1           = env.GetValue("Set3DimOptDialog.fRangeZ1", fRangeZ1);
 }
 //______________________________________________________________________
 
@@ -723,8 +726,8 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 		if ( bid == fBidContLog ) {
 			env.SetValue("Set3DimOptDialog.fContLog", fContLog);
 		}
-		if ( bid == fBidZscale ) {
-			env.SetValue("Set3DimOptDialog.fZscale", fZscale);
+		if ( bid == fBidShowZScale ) {
+			env.SetValue("Set3DimOptDialog.fShowZScale", fShowZScale);
 		}
 		SetHistAttNow(canvas);
 		env.SaveLevel(kEnvLocal);
@@ -742,8 +745,12 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 	if ( bid >= fBidRangeX0 && bid <= fBidRangeZ1 )
 		return;
 	
-	if ( bid > fBidPolyM && bid <= fBidTranspAbove )
+//	if ( bid == fBidTranspAbove ) {
+//		gAlphaOfPalette = (Int_t)(gTranspAbove*255.);
+//	}
+	if ( bid > fBidPolyM && bid <= fBidTranspAbove ) {
 		SetHistAttNow(canvas);
+	}
 	// when changeing between GL and non GL option, the histogram
 	// must be redisplayed
 	if (bid == fBidPhi || bid == fBidTheta && ! fDrawOpt3Dim.Contains("OpenGL")) {

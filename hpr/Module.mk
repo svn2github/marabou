@@ -93,7 +93,7 @@ include/%.h:    $(HPRDIRI)/%.h
 $(HPREXE):      $(HPRMAINO) $(OHPRLIBS) $(HPRLIB)
 		@echo "other libs: $(OHPRLIBS)"
 		@echo "$(HPREXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(OHPRLIBS) $(ROOTGLIBS) -lSpectrum -lProof \
+		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(OHPRLIBS) $(ROOTGLIBS) -lRGL -lSpectrum -lProof \
             -o $(HPREXE)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)

@@ -2590,7 +2590,7 @@ void HistPresent::CutsFromASCII(TGWindow * win)
 	infile.open((const char *)fname, ios::in);
 	if (!infile.good()) {
 	cerr	<< "CutsFromASCII: "
-			<< gSystem->GetError() << " - " << infile
+			<< gSystem->GetError() << " - " << fname
 			<< endl;
 		return;
 	}
@@ -3705,7 +3705,7 @@ void HistPresent::SelectdCache()
 	infile.open(fi->fFilename, ios::in);
 	if (!infile.good()) {
 		cerr	<< "SelectdCache: "
-		<< gSystem->GetError() << " - " << infile
+		<< gSystem->GetError() << " - " << fi->fFilename
 		<< endl;
 		return;
 	}
@@ -4394,7 +4394,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		leg->SetName("Legend_SuperImposeGraph");
 		leg->SetFillColor (env.GetValue("HprLegend.fFillColor", 0));
 		leg->SetFillStyle (env.GetValue("HprLegend.fFillStyle", 0));
-		leg->SetLineColor (env.GetValue("HprLegend.fLineColor", 0));
+		leg->SetLineColor (env.GetValue("HprLegend.fLineColor", 1));
 		leg->SetBorderSize(env.GetValue("HprLegend.fBorderSize",1));
 		leg->SetTextColor (env.GetValue("HprLegend.fTextColor", 1));
 		leg->SetTextFont  (env.GetValue("HprLegend.fTextFont", 62));

@@ -107,6 +107,10 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //  Handle input events, like button up/down in current canvas.
 //
 
+	if ( this->UseGL() ) {
+		TCanvas::HandleInput(event, px, py);
+		return;
+	}
    TPad         *pad;
    TObject      *prevSelObj = 0;
    if ( event == kButton2Down ) {

@@ -238,7 +238,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
    infile.open(fGraphFileName.Data(), ios::in);
 	if (!infile.good()) {
 	cerr	<< "Ascii2GraphDialog: "
-			<< gSystem->GetError() << " - " << infile
+			<< gSystem->GetError() << " - " << fGraphFileName.Data()
 			<< endl;
 		return;
 	}

@@ -719,7 +719,7 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 			fUseGL == 1 && !fCanvas->UseGL()) {
 				SetHistAttPermLocal();
 				cout << setblue 
-				<< "OpenGL mode changed, plaese redisplay histogram manually"
+				<< "OpenGL mode changed, please redisplay histogram manually"
 				<< setblack << endl;
 			}
 		return;

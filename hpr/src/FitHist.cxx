@@ -311,6 +311,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fTwoDimLogZ = env.GetValue("Set2DimOptDialog.fTwoDimLogZ", 0);
 	
 	fDrawOpt3Dim   = env.GetValue("Set3DimOptDialog.fDrawOpt3Dim", "");
+	fShowZScale3Dim        = env.GetValue("Set3DimOptDialog.fShowZScale", 1);
+	if ( fShowZScale3Dim != 0 && !fDrawOpt3Dim.Contains("Z",TString::kIgnoreCase) )fDrawOpt3Dim += "Z";
 	fApplyTranspCut    = env.GetValue("Set3DimOptDialog.fApplyTranspCut",    0);
 	f3DimBackgroundColor = env.GetValue("Set3DimOptDialog.f3DimBackgroundColor", 0);
 	fHistFillColor3Dim = env.GetValue("Set3DimOptDialog.fHistFillColor3Dim", 1);
@@ -460,48 +462,46 @@ void FitHist::DoSaveLimits()
 		<<fCanvas->GetFrame()->GetY2()<<endl;
 //		fCanvas->Dump();
 	}
+	if (fSelHist->GetDimension() > 2)
+		return;
 //	gSystem->Sleep(1000);
 //	if (gPad == fCanvas) {
-		if ( fLogy != fSelPad->GetLogy() ){
-			fLogy = fSelPad->GetLogy();
-			if ( fSelHist->GetDimension() == 1 ) {
-				fCanvas->GetHandleMenus()->SetLog(fLogy);
-			}
-//			return;
+	if ( fLogy != fSelPad->GetLogy() ){
+		fLogy = fSelPad->GetLogy();
+		if ( fSelHist->GetDimension() == 1 ) {
+			fCanvas->GetHandleMenus()->SetLog(fLogy);
 		}
-		if ( fLogx != fSelPad->GetLogx() ){
-			fLogx = fSelPad->GetLogx();
-			if ( fSelHist->GetDimension() == 1 ) {
-			}
-//			return;
+	}
+	if ( fLogx != fSelPad->GetLogx() ){
+		fLogx = fSelPad->GetLogx();
+		if ( fSelHist->GetDimension() == 1 ) {
 		}
-		if ( fSelHist->GetDimension() == 2) {
-			if ( fLogz != fSelPad->GetLogz() ){
-				fLogz = fSelPad->GetLogz();
-				fCanvas->GetHandleMenus()->SetLog(fLogz);
-			}
-//			return;
+	}
+	if ( fSelHist->GetDimension() == 2) {
+		if ( fLogz != fSelPad->GetLogz() ){
+			fLogz = fSelPad->GetLogz();
+			fCanvas->GetHandleMenus()->SetLog(fLogz);
 		}
-		fXtitle = fSelHist->GetXaxis()->GetTitle();
-		fYtitle = fSelHist->GetYaxis()->GetTitle();
-		if ( fSelHist->GetDimension() == 3) {
-			fYtitle = fSelHist->GetZaxis()->GetTitle();
+	}
+	fXtitle = fSelHist->GetXaxis()->GetTitle();
+	fYtitle = fSelHist->GetYaxis()->GetTitle();
+	if ( fSelHist->GetDimension() == 3) {
+		fYtitle = fSelHist->GetZaxis()->GetTitle();
+	}
+	if ( fExpHist == NULL ) {
+		fBinlx = fSelHist->GetXaxis()->GetFirst();
+		fBinux = fSelHist->GetXaxis()->GetLast();
+		if ( gDebug > 1 ) {
+			cout << "fBinlx,ux " <<fBinlx << " " <<fBinux << endl;
 		}
-		if ( fExpHist == NULL ) {
-			fBinlx = fSelHist->GetXaxis()->GetFirst();
-			fBinux = fSelHist->GetXaxis()->GetLast();
+		if (fDimension == 2) {
+			fBinly = fSelHist->GetYaxis()->GetFirst();
+			fBinuy = fSelHist->GetYaxis()->GetLast();
 			if ( gDebug > 1 ) {
-				cout << "fBinlx,ux " <<fBinlx << " " <<fBinux << endl;
-			}
-			if (fDimension == 2) {
-				fBinly = fSelHist->GetYaxis()->GetFirst();
-				fBinuy = fSelHist->GetYaxis()->GetLast();
-				if ( gDebug > 1 ) {
-					cout << "fBinly,uy " <<fBinly << " " <<fBinuy << endl;
-				}
+				cout << "fBinly,uy " <<fBinly << " " <<fBinuy << endl;
 			}
 		}
-//	}
+	}
 }
 //________________________________________________________________
 
@@ -581,8 +581,11 @@ void FitHist::SaveDefaults(Bool_t /*recalculate*/)
 
 void FitHist::RestoreDefaultRanges()
 {
+	if (fSelHist->GetDimension() > 2) 
+		return;
 	TEnv * lastset = GetDefaults(fHname);
-	if (!lastset) return;
+	if (!lastset) 
+		return;
 	fFitMacroName = lastset->GetValue("FitMacroName",fFitMacroName.Data());
 	if (gHpr && (GeneralAttDialog::fRememberLastSet || GeneralAttDialog::fRememberZoom)) {
 		fLogx = lastset->GetValue("LogX", fOneDimLogX);
@@ -3497,6 +3500,7 @@ void FitHist::Draw2Dim()
 void FitHist::Draw3Dim()
 {
 //   TString drawopt("iso");
+
 	if ( gDebug > 1 )
 		cout << "fDrawOpt3Dim " << fDrawOpt3Dim << endl;
 	TEnv env(".hprrc");
@@ -3518,6 +3522,35 @@ void FitHist::Draw3Dim()
 	}
 	fSelHist->GetYaxis()->SetTickLength(env.GetValue("SetHistOptDialog.fTickLengthX3Dim",0.01));
 	fSelHist->GetZaxis()->SetTitleOffset(env.GetValue("SetHistOptDialog.fTitleOffsetZ3Dim", 1.5));
+	TAxis * ax = fSelHist->GetXaxis();
+	TAxis * ay = fSelHist->GetYaxis();
+	TAxis * az = fSelHist->GetZaxis();
+	Double_t x0, y0, z0, x1, y1, z1;
+	x0 = ax->GetXmin();
+	y0 = ay->GetXmin();
+	z0 = az->GetXmin();
+	x1 = ax->GetXmax();
+	y1 = ay->GetXmax();
+	z1 = az->GetXmax();
+	TString cname = fCanvas->GetName();
+//	cout << "Canvas name: " << cname << endl;
+	if ( !cname.BeginsWith("C_F") ) {
+		cout << "Illegal canvas name " << endl;
+	} else {
+		cname = cname(3,cname.Length()-3);
+		TEnv * lastset = GetDefaults(cname);
+		if (lastset) {
+			x0 = lastset->GetValue("fRangeX0",x0);
+			y0 = lastset->GetValue("fRangeY0",y0);
+			z0 = lastset->GetValue("fRangeZ0",z0);
+			x1 = lastset->GetValue("fRangeX1",x1);
+			y1 = lastset->GetValue("fRangeY1",y1);
+			z1 = lastset->GetValue("fRangeZ1",z1);
+			ax->SetRangeUser(x0, x1);
+			ay->SetRangeUser(y0, y1);
+			az->SetRangeUser(z0, z1);
+		}
+	}
 	if ( fDrawOpt3Dim.Contains("PolyMHist") ) {
 		Draw3DimPolyMarker();
 		TButton *cb = this->GetCmdButton();

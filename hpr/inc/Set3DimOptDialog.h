@@ -4,6 +4,8 @@
 #include "TRootCanvas.h"
 #include "TGMrbValuesAndText.h"
 #include <iostream>
+
+//extern Int_t gAlphaOfPalette;
 //_____________________________________________________________________________________
 static const Int_t kNopt3 = 4;
 
@@ -67,17 +69,17 @@ private:
 	Double_t fContMin;
 	Double_t fContMax;
 	Int_t fContLog;
-	Int_t fZscale;
+	Int_t fShowZScale;
 	Int_t fBidContMin;
 	Int_t fBidContMax;
 	Int_t fBidContLog;
-	Int_t fBidZscale;
+	Int_t fBidShowZScale;
 
 public:
 
    Set3DimOptDialog(TGWindow * win = NULL, TButton *b = NULL);
 	Set3DimOptDialog(Int_t batch);
-   ~Set3DimOptDialog() {};
+   ~Set3DimOptDialog() {gDirectory->GetList()->Remove(this);};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);
@@ -89,6 +91,8 @@ public:
    void SetAllToDefault();
    void RestoreDefaults(Int_t resetall = 0);
 	void GetValuesFromHist();
+//	void SetAlphaOfPalette(Int_t alpha) { gAlphaOfPalette = alpha; };
+//	Int_t GetAlphaOfPalette() { return gAlphaOfPalette; };
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 

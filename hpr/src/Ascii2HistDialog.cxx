@@ -154,7 +154,7 @@ void Ascii2HistDialog::Read_Input()
    infile.open(fHistFileName.Data(), ios::in);
 	if (!infile.good()) {
 	cerr	<< "Ascii2HistDialog: "
-			<< gSystem->GetError() << " - " << infile
+			<< gSystem->GetError() << " - " << fHistFileName.Data()
 			<< endl;
 		return;
 	}
