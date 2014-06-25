@@ -3,7 +3,9 @@
 #include "TWbox.h"
 #include "TGuiFactory.h"
 #include "TStyle.h"
+#include "TH1.h"
 #include "TAxis.h"
+#include "TDatime.h"
 #include "TLatex.h"
 #include "TMath.h"
 #include "GrCanvas.h"
@@ -689,7 +691,17 @@ void GrCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selecte
    else
       sprintf(atext, "%d,%d", px, py);
    fCanvasImp->SetStatusText(atext,2);
-   fCanvasImp->SetStatusText(selected->GetObjectInfo(px,py),3);
+//   printf("Sel %s\n", selected->GetName());
+   if ( (selected->InheritsFrom("TH1") &&
+		((TH1*)selected)->GetXaxis()->GetTimeDisplay()) ||
+		 (selected->InheritsFrom("TAxis") && ((TAxis*)selected)->GetTimeDisplay()) ) {
+		UInt_t tt=(UInt_t)gPad->AbsPixeltoX(px);
+		TDatime dt(tt);
+//		dt.Print();
+		fCanvasImp->SetStatusText(dt.AsSQLString(),3);
+	} else {
+		fCanvasImp->SetStatusText(selected->GetObjectInfo(px,py),3);
+	}
    gPad = savepad;
 }
 //______________________________________________________________________________
