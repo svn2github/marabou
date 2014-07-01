@@ -46,15 +46,13 @@ Bool_t TMrbCNAF::Ascii2Int(const Char_t * BorCNAF) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Char_t cnaf[64];
 	Char_t number[64];
 
 	TMrbCNAF * thisCnaf = new TMrbCNAF();
 
-	sprintf(cnaf, "%s.", BorCNAF);
-	Char_t * sp1 = cnaf;
-	while (*sp1) *sp1++ = toupper(*sp1);
-	sp1 = cnaf;
+	TString cnaf = Form("%s.", BorCNAF);
+	cnaf.ToUpper();
+	Char_t * sp1 = cnaf.Data();
 	Bool_t ok = kTRUE;
 
 	for (;;) {

@@ -820,7 +820,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	if (s->blockXfer) {
 		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));
 		if (ptrloc == NULL) return(0);
-		bmaError = bma_read(s->md->bltBase + MQDC32_DATA, ptrloc | 0x0, numData, s->md->bltModeId);
+		bmaError = bma_read(s->md->bltBase + MQDC32_DATA, ptrloc, numData, s->md->bltModeId);
 		if (bmaError != 0) {
 			if (bmaError < 0) {
 				sprintf(msg, "[%sreadout] %s: Error %d while reading event data (numData=%d)", s->mpref, s->moduleName, bmaError, numData);
