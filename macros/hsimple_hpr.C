@@ -26,7 +26,7 @@
 // This file is now becoming the current directory.
 
   TFile *hfile = (TFile*)gROOT->FindObject("hsimple_hpr.root"); if (hfile) hfile->Close();
-  TFile *hfile = new TFile("hsimple_hpr.root","RECREATE","Demo ROOT file with histograms");
+  hfile = new TFile("hsimple_hpr.root","RECREATE","Demo ROOT file with histograms");
 
 // Create some histograms, a profile histogram and an ntuple
   TH1F *hpx1   = new TH1F("hpx1","Gaussian distribution, px",100,-4,4);
