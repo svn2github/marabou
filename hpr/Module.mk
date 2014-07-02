@@ -102,9 +102,9 @@ $(HPRLIB):     $(HPRDO) $(HPRO)
 		@echo "make shared lib  $(HPRLIB)----------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libHpr.$(SOEXT) $@ "$(HPRO) $(HPRDO) $(HPRLIBEXTRA)"
-		@(if [ -f $(HPRDIRS)/$(HPRPCM) ] ; then \
-			echo "cp  $(HPRDIRS)/$(HPRPCM)----------------------" ; \
-			cp $(HPRDIRS)/$(HPRPCM) $(LPATH); \
+		@(if [ -f $(HPRPCM) ] ; then \
+			echo "cp  $(HPRPCM)----------------------" ; \
+			cp $(HPRPCM) $(LPATH); \
 		fi)
 		
 

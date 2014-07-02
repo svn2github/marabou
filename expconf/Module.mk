@@ -40,9 +40,9 @@ $(EXPCONFLIB):     $(EXPCONFDO) $(EXPCONFO) $(MAINLIBS) $(EXPCONFLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbConfig.$(SOEXT) $@ "$(EXPCONFO) $(EXPCONFDO)" \
 		   "$(EXPCONFLIBEXTRA)"
-		@(if [ -f $(EXPCONFDIRS)/$(EXPCONFPCM) ] ; then \
-			echo "cp  $(EXPCONFDIRS)/$(EXPCONFPCM)----------------------" ; \
-			cp $(EXPCONFDIRS)/$(EXPCONFPCM) $(LPATH); \
+		@(if [ -f $(EXPCONFPCM) ] ; then \
+			echo "cp  $(EXPCONFPCM)----------------------" ; \
+			cp $(EXPCONFPCM) $(LPATH); \
 		fi)
 
 $(EXPCONFDS):     $(EXPCONFH) $(EXPCONFL)
