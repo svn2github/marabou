@@ -14,6 +14,7 @@ GREDITDIRI     := $(GREDITDIR)/inc
 ##### lib #####
 GREDITL        := $(MODDIRI)/LinkDef.h
 GREDITDS       := $(MODDIRS)/G__GrEditDict.cxx
+GREDITPCM       := $(MODDIRS)/G__GrEditDict_rdict.pcm
 GREDITDO       := $(GREDITDS:.cxx=.o)
 GREDITH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 GREDITS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -55,6 +56,10 @@ $(GREDITLIB):     $(GREDITDO) $(GREDITO) $(MAINLIBS) $(GREDITLIBDEP)
 			@echo "Making libGrEdit $@..."
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 			"$(SOFLAGS)" libGrEdit.$(SOEXT) $@ "$(GREDITDO) $(GREDITO) $(GREDITLIBEXTRA)"
+		@(if [ -f $(GREDITDIRS)/$(GREDITPCM) ] ; then \
+			echo "cp  $(GREDITDIRS)/$(GREDITPCM)----------------------" ; \
+			cp $(GREDITDIRS)/$(GREDITPCM) $(LPATH); \
+		fi)
 
 $(GREDITDS):     $(GREDITH) $(GREDITL)
 		@echo "Generating dictionary: $@...."

@@ -14,6 +14,7 @@ POLARDIRI     := $(POLARDIR)/inc
 ##### lib #####
 POLARL        := $(MODDIRI)/LinkDef.h
 POLARDS       := $(MODDIRS)/G__TPolControlDict.cxx
+POLARPCM       := $(MODDIRS)/G__TPolControlDict_rdict.pcm
 POLARDO       := $(POLARDS:.cxx=.o)
 POLARH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 POLARS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -39,6 +40,10 @@ $(POLARLIB):     $(POLARDO) $(POLARO) $(MAINLIBS) $(POLARLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTPolControl.$(SOEXT) $@ "$(POLARO) $(POLARDO)" \
 		   "$(POLARLIBEXTRA)"
+		@(if [ -f $(POLARDIRS)/$(POLARPCM) ] ; then \
+			echo "cp  $(POLARDIRS)/$(POLARPCM)----------------------" ; \
+			cp $(POLARDIRS)/$(POLARPCM) $(LPATH); \
+		fi)
 
 $(POLARDS):     $(POLARH) $(POLARL)
 		@echo "Generating dictionary $@..."

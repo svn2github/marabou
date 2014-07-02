@@ -17,7 +17,14 @@ endif
 # Compiler:
 CXX           = g++
 CC            = gcc
-CXXFLAGS      = -pipe -Wall -fPIC $(EXTRA_CXXFLAGS)
+CXXVERS = $(shell g++ -dumpversion)
+CXXVGT47 = $(shell echo $(CXXVERS)'>'4.7 | bc -l)
+$(info  CXXVERS = $(CXXVERS) CXXVGT47 = $(CXXVGT47))
+CXXFLAGS      = -pipe -Wall -fPIC 
+ifeq ($(CXXVGT47),1)
+   CXXFLAGS    += -std=c++11
+endif
+CXXFLAGS       += $(EXTRA_CXXFLAGS)
 CFLAGS        = -pipe -Wall -fPIC $(EXTRA_CFLAGS)
 CINTCXXFLAGS  = -pipe -Wall -fPIC $(EXTRA_CXXFLAGS) \
                 -DG__REGEXP -DG__UNIX -DG__SHAREDLIB \

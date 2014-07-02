@@ -13,6 +13,7 @@ MBSSETUPDIRI     := $(MBSSETUPDIR)/inc
 ##### lib #####
 MBSSETUPL        := $(MODDIRI)/LinkDef.h
 MBSSETUPDS       := $(MODDIRS)/G__TMbsSetupDict.cxx
+MBSSETUPPCM       := $(MODDIRS)/G__TMbsSetupDict_rdict.pcm
 MBSSETUPDO       := $(MBSSETUPDS:.cxx=.o)
 MBSSETUPH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 MBSSETUPS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -38,6 +39,10 @@ $(MBSSETUPLIB):     $(MBSSETUPDO) $(MBSSETUPO) $(MAINLIBS) $(MBSSETUPLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMbsSetup.$(SOEXT) $@ "$(MBSSETUPO) $(MBSSETUPDO)" \
 		   "$(MBSSETUPLIBEXTRA)"
+		@(if [ -f $(MBSSETUPDIRS)/$(MBSSETUPPCM) ] ; then \
+			echo "cp  $(MBSSETUPDIRS)/$(MBSSETUPPCM)----------------------" ; \
+			cp $(MBSSETUPDIRS)/$(MBSSETUPPCM) $(LPATH); \
+		fi)
 
 $(MBSSETUPDS):     $(MBSSETUPH) $(MBSSETUPL)
 		@echo "Generating dictionary $@..."

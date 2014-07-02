@@ -15,6 +15,8 @@ ORDER_ := $(shell test $(MAKE_VERSION_MAJOR) -gt 3 || \
 
 include config/Makefile.config
 
+$(info bindir = $(BINDIR))
+
 ifeq ($(EXPLICITLINK),yes)
 include config/Makefile.depend
 endif

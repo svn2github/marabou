@@ -14,6 +14,7 @@ CptmCDIRI     := $(CptmCDIR)/inc
 ##### lib #####
 CptmCL        := $(MODDIRI)/LinkDef.h
 CptmCDS       := $(MODDIRS)/G__CptmControlDict.cxx
+CptmCPCM       := $(MODDIRS)/G__CptmControlDict_rdict.pcm
 CptmCDO       := $(CptmCDS:.cxx=.o)
 CptmCH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 CptmCS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -59,6 +60,10 @@ $(CptmCLIB):     $(CptmCDO) $(CptmCO)
 		@echo "$(CptmCEXE) make shared lib ------------------------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libCptmControl.$(SOEXT) $@ "$(CptmCO) $(CptmCDO)"
+		@(if [ -f $(CptmCDIRS)/$(CptmCPCM) ] ; then \
+			echo "cp  $(CptmCDIRS)/$(CptmCPCM)----------------------" ; \
+			cp $(CptmCDIRS)/$(CptmCPCM) $(LPATH); \
+		fi)
 
 $(CptmCDS):     $(CptmCDH) $(CptmCL)
 		@echo "includes: $(CptmCDH)"

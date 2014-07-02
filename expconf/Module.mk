@@ -14,6 +14,7 @@ EXPCONFDIRI     := $(EXPCONFDIR)/inc
 ##### lib #####
 EXPCONFL        := $(MODDIRI)/LinkDef.h
 EXPCONFDS       := $(MODDIRS)/G__TMrbConfigDict.cxx
+EXPCONFPCM       := $(MODDIRS)/G__TMrbConfigDict_rdict.pcm
 EXPCONFDO       := $(EXPCONFDS:.cxx=.o)
 EXPCONFH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 EXPCONFS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -39,6 +40,10 @@ $(EXPCONFLIB):     $(EXPCONFDO) $(EXPCONFO) $(MAINLIBS) $(EXPCONFLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbConfig.$(SOEXT) $@ "$(EXPCONFO) $(EXPCONFDO)" \
 		   "$(EXPCONFLIBEXTRA)"
+		@(if [ -f $(EXPCONFDIRS)/$(EXPCONFPCM) ] ; then \
+			echo "cp  $(EXPCONFDIRS)/$(EXPCONFPCM)----------------------" ; \
+			cp $(EXPCONFDIRS)/$(EXPCONFPCM) $(LPATH); \
+		fi)
 
 $(EXPCONFDS):     $(EXPCONFH) $(EXPCONFL)
 		@echo "Generating dictionary $@..."

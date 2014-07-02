@@ -14,6 +14,7 @@ UTILSDIRI     := $(UTILSDIR)/inc
 ##### lib #####
 UTILSL        := $(MODDIRI)/LinkDef.h
 UTILSDS       := $(MODDIRS)/G__TMrbUtilsDict.cxx
+UTILSPCM       := $(MODDIRS)/G__TMrbUtilsDict_rdict.pcm
 UTILSDO       := $(UTILSDS:.cxx=.o)
 UTILSH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 UTILSS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -39,6 +40,10 @@ $(UTILSLIB):     $(UTILSDO) $(UTILSO) $(MAINLIBS) $(UTILSLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbUtils.$(SOEXT) $@ "$(UTILSO) $(UTILSDO)" \
 		   "$(UTILSLIBEXTRA)"
+		@(if [ -f $(UTILSDIRS)/$(UTILSPCM) ] ; then \
+			echo "cp  $(UTILSDIRS)/$(UTILSPCM)----------------------" ; \
+			cp $(UTILSDIRS)/$(UTILSPCM) $(LPATH); \
+		fi)
 
 $(UTILSDS):     $(UTILSH) $(UTILSL)
 		@echo "Generating dictionary $@..."

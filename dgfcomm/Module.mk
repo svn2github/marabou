@@ -13,6 +13,7 @@ DGFCOMDIRI     := $(DGFCOMDIR)/inc
 
 DGFCOML        := $(MODDIRI)/LinkDef.h
 DGFCOMDS       := $(MODDIRS)/G__TMrbDGFCommonDict.cxx
+DGFCOMPCM       := $(MODDIRS)/G__TMrbDGFCommonDict_rdict.pcm
 DGFCOMDO       := $(DGFCOMDS:.cxx=.o)
 DGFCOMH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 DGFCOMS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -38,6 +39,10 @@ $(DGFCOMLIB):     $(DGFCOMDO) $(DGFCOMO) $(MAINLIBS) $(DGFCOMDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbDGFCommon.$(SOEXT) $@ "$(DGFCOMO) $(DGFCOMDO)" \
 		   "$(DGFCOMLIBEXTRA)"
+		@(if [ -f $(DGFCOMDIRS)/$(DGFCOMPCM) ] ; then \
+			echo "cp  $(DGFCOMDIRS)/$(DGFCOMPCM)----------------------" ; \
+			cp $(DGFCOMDIRS)/$(DGFCOMPCM) $(LPATH); \
+		fi)
 
 $(DGFCOMDS):     $(DGFCOMH) $(DGFCOML)
 		@echo "Generating dictionary $@..."

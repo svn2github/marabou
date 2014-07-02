@@ -14,6 +14,7 @@ VMECDIRI     := $(VMECDIR)/inc
 ##### lib #####
 VMECL        := $(MODDIRI)/LinkDef.h
 VMECDS       := $(MODDIRS)/G__VMEControlDict.cxx
+VMECPCM       := $(MODDIRS)/G__VMEControlDict_rdict.pcm
 VMECDO       := $(VMECDS:.cxx=.o)
 VMECH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 VMECS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -58,6 +59,10 @@ $(VMECLIB):     $(VMECDO) $(VMECO)
 		@echo "$(VMECEXE) make shared lib ------------------------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libVMEControl.$(SOEXT) $@ "$(VMECO) $(VMECDO)"
+		@(if [ -f $(VMECDIRS)/$(VMECPCM) ] ; then \
+			echo "cp  $(VMECDIRS)/$(VMECPCM)----------------------" ; \
+			cp $(VMECDIRS)/$(VMECPCM) $(LPATH); \
+		fi)
 
 $(VMECDS):     $(VMECDH) $(VMECL)
 		@echo "includes: $(VMECDH)"

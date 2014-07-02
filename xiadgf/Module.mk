@@ -13,6 +13,7 @@ XIADGFDIRI     := $(XIADGFDIR)/inc
 
 XIADGFL        := $(MODDIRI)/LinkDef.h
 XIADGFDS       := $(MODDIRS)/G__TMrbDGFDict.cxx
+XIADGFPCM       := $(MODDIRS)/G__TMrbDGFDict_rdict.pcm
 XIADGFDO       := $(XIADGFDS:.cxx=.o)
 XIADGFH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 XIADGFS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -38,6 +39,10 @@ $(XIADGFLIB):     $(XIADGFDO) $(XIADGFO) $(MAINLIBS) $(XIADGFDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbDGF.$(SOEXT) $@ "$(XIADGFO) $(XIADGFDO)" \
 		   "$(XIADGFLIBEXTRA)"
+		@(if [ -f $(XIADGFDIRS)/$(XIADGFPCM) ] ; then \
+			echo "cp  $(XIADGFDIRS)/$(XIADGFPCM)----------------------" ; \
+			cp $(XIADGFDIRS)/$(XIADGFPCM) $(LPATH); \
+		fi)
 
 $(XIADGFDS):     $(XIADGFH) $(XIADGFL)
 		@echo "Generating dictionary $@..."

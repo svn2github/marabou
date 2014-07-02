@@ -17,6 +17,7 @@ MBSC        := TMbsControl
 ##### lib #####
 MBSCDL       := $(MODDIRI)/LinkDef.h
 MBSCDS      := $(MODDIRS)/G__$(MBSC)Dict.cxx
+MBSCPCM      := $(MODDIRS)/G__$(MBSC)Dict_rdict.pcm
 MBSCDO      := $(MBSCDS:.cxx=.o)
 
 MBSCS       := $(MODDIRS)/$(MBSC).cxx
@@ -63,6 +64,10 @@ $(CANEXE):     $(CANDO) $(CANO) $(CANLIBS) $(MBSCLIB)
 $(MBSCLIB):     $(MBSCDO) $(MBSCO) $(MAINLIBS) $(MBSCLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" lib$(MBSC).$(SOEXT) $@ "$(MBSCO) $(MBSCDO) $(MBSCLIBEXTRA)"
+		@(if [ -f $(CANDIRS)/$(MCSCPCM) ] ; then \
+			echo "cp  $(CANDIRS)/$(MCSCPCM)----------------------" ; \
+			cp $(CANDIRS)/$(MCSCPCM) $(LPATH); \
+		fi)
 
 $(MBSCDS):     $(MBSCH) $(MBSCDL)
 		@echo "Generating dictionary $@..."

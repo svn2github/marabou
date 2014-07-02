@@ -14,6 +14,7 @@ C2LYNXDIRI     := $(C2LYNXDIR)/inc
 ##### lib #####
 C2LYNXL        := $(MODDIRI)/LinkDef.h
 C2LYNXDS       := $(MODDIRS)/G__TMrbC2LynxDict.cxx
+C2LYNXPCM       := $(MODDIRS)/G__TMrbC2LynxDict_rdict.pcm
 C2LYNXDO       := $(C2LYNXDS:.cxx=.o)
 C2LYNXH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 C2LYNXDH       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/TMrb*.h) $(wildcard $(MODDIRI)/TC2L*.h))
@@ -40,6 +41,10 @@ $(C2LYNXLIB):     $(C2LYNXDO) $(C2LYNXO) $(MAINLIBS) $(C2LYNXLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbC2Lynx.$(SOEXT) $@ "$(C2LYNXO) $(C2LYNXDO)" \
 		   "$(C2LYNXLIBEXTRA)"
+		@(if [ -f $(C2LYNXDIRS)/$(C2LYNXPCM) ] ; then \
+			echo "cp  $(C2LYNXDIRS)/$(C2LYNXPCM)----------------------" ; \
+			cp $(C2LYNXDIRS)/$(C2LYNXPCM) $(LPATH); \
+		fi)
 
 $(C2LYNXDS):     $(C2LYNXH) $(C2LYNXL)
 		@echo "Generating dictionary $@..."

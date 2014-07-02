@@ -12,6 +12,7 @@ DGFCDIRI     := $(DGFCDIR)/inc
 ##### lib #####
 DGFCL        := $(MODDIRI)/LinkDef.h
 DGFCDS       := $(MODDIRS)/G__DGFControlDict.cxx
+DGFCPCM       := $(MODDIRS)/G__DGFControlDict_rdict.pcm
 DGFCDO       := $(DGFCDS:.cxx=.o)
 DGFCH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 DGFCS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -50,6 +51,10 @@ $(DGFCEXE):     $(DGFCO) $(DGFCMAINO) $(MRBLIBS)
 $(DGFCLIB):     $(DGFCDO) $(DGFCO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libDGFControl.$(SOEXT) $@ "$(DGFCO) $(DGFCDO)"
+		@(if [ -f $(DGFCDIRS)/$(DGFCPCM) ] ; then \
+			echo "cp  $(DGFCDIRS)/$(DGFCPCM)----------------------" ; \
+			cp $(DGFCDIRS)/$(DGFCPCM) $(LPATH); \
+		fi)
 
 $(DGFCDS):     $(DGFCDH) $(DGFCL)
 		$(ROOTCINT) -f $@ -c -p -Iinclude $(DGFCDH) $(DGFCL)

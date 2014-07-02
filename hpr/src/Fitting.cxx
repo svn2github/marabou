@@ -864,7 +864,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	pol->SetLineWidth(2);
 
 	fithist->Fit(funcname, "R0");
-	if (isnan(pol->GetChisquare()) != 0) {
+	if (std::isnan(pol->GetChisquare()) != 0) {
 		cout << "Something went wrong, FCN=Chisquare is infinite " << endl;
 		return -1;
 	}

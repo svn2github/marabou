@@ -17,6 +17,7 @@ MUTEX      := mutex
 ##### lib #####
 MRBADL      := $(MODDIRI)/LinkDef.h
 MRBADS      := $(MODDIRS)/G__$(MRBA)Dict.cxx
+MRBAPCM      := $(MODDIRS)/G__$(MRBA)Dict_rdict.pcm
 MRBADO      := $(MRBADS:.cxx=.o)
 
 MRBAS       := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -61,6 +62,11 @@ obj/%.o:    $(MODDIRS)/%.o
 $(MRBALIB):     $(MRBADO) $(MRBAO) $(MAINLIBS) $(MRBALIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" lib$(MRBA).$(SOEXT) $@ "$(MRBAO) $(MRBADO) $(MRBANALYSELIBEXTRA)"
+		@(if [ -f $(ANDIRS)/$(MRBAPCM) ] ; then \
+			echo "cp  $(ANDIRS)/$(MRBAPCM)----------------------" ; \
+			cp $(ANDIRS)/$(MRBAPCM) $(LPATH); \
+		fi)
+
 $(MUTEXLIB):     $(MUTEXO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libMutex.$(SOEXT) $@ "$(MUTEXO)"

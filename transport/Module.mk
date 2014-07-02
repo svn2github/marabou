@@ -14,6 +14,7 @@ TRANSPDIRI     := $(TRANSPDIR)/inc
 ##### lib #####
 TRANSPL        := $(MODDIRI)/LinkDef.h
 TRANSPDS       := $(MODDIRS)/G__TMrbTransportDict.cxx
+TRANSPPCM       := $(MODDIRS)/G__TMrbTransportDict_rdict.pcm
 TRANSPDO       := $(TRANSPDS:.cxx=.o)
 TRANSPH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 TRANSPS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -41,6 +42,10 @@ $(TRANSPLIB):     $(TRANSPDO) $(TRANSPO) $(MAINLIBS) $(TRANSPLIBDEP) $(MBSIOOBJS
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbTransport.$(SOEXT) $@ "$(TRANSPO) $(TRANSPDO)" \
 		   "$(MBSIOOBJS) $(TRANSPLIBEXTRA)"
+		@(if [ -f $(TRANSPDIRS)/$(TRANSPPCM) ] ; then \
+			echo "cp  $(TRANSPDIRS)/$(TRANSPPCM)----------------------" ; \
+			cp $(TRANSPDIRS)/$(TRANSPPCM) $(LPATH); \
+		fi)
 
 $(TRANSPDS):     $(TRANSPH) $(TRANSPL)
 		@echo "Generating dictionary $@..."

@@ -13,6 +13,7 @@ HELPBDIRI     := $(HELPBDIR)/inc
 ##### lib #####
 HELPBL        := $(MODDIRI)/LinkDef.h
 HELPBDS       := $(MODDIRS)/G__TMrbHelpBrowserDict.cxx
+HELPBPCM       := $(MODDIRS)/G__TMrbHelpBrowserDict_rdict.pcm
 HELPBDO       := $(HELPBDS:.cxx=.o)
 HELPBH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 HELPBS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -38,6 +39,10 @@ $(HELPBLIB):     $(HELPBDO) $(HELPBO) $(MAINLIBS) $(HELPBLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbHelpBrowser.$(SOEXT) $@ "$(HELPBO) $(HELPBDO)" \
 		   "$(HELPBLIBEXTRA)"
+		@(if [ -f $(HELPBDIRS)/$(HELPBPCM) ] ; then \
+			echo "cp  $(HELPBDIRS)/$(HELPBPCM)----------------------" ; \
+			cp $(HELPBDIRS)/$(HELPBPCM) $(LPATH); \
+		fi)
 
 $(HELPBDS):     $(HELPBH) $(HELPBL)
 		@echo "Generating dictionary $@..."

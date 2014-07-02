@@ -14,6 +14,7 @@ TIDYDIRI     := $(TIDYDIR)/inc
 ##### lib #####
 TIDYL        := $(MODDIRI)/LinkDef.h
 TIDYDS       := $(MODDIRS)/G__TMrbTidyDict.cxx
+TIDYPCM      := $(MODDIRS)/G__TMrbTidyDict_rdict.pcm
 TIDYDO       := $(TIDYDS:.cxx=.o)
 TIDYH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 TIDYS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -39,6 +40,10 @@ $(TIDYLIB):     $(TIDYDO) $(TIDYO) $(MAINLIBS) $(TIDYLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbTidy.$(SOEXT) $@ "$(TIDYO) $(TIDYDO)" \
 		   "$(TIDYLIBEXTRA)"
+		@(if [ -f $(TIDYDIRS)/$(TIDYPCM) ] ; then \
+			echo "cp  $(TIDYDIRS)/$(TIDYPCM)----------------------" ; \
+			cp $(TIDYDIRS)/$(TIDYPCM) $(LPATH); \
+		fi)
 
 $(TIDYDS):     $(TIDYH) $(TIDYL)
 		@echo "Generating dictionary $@..."

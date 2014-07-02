@@ -14,6 +14,7 @@ FITCALDIRI     := $(FITCALDIR)/inc
 ##### lib #####
 FITCALL        := $(MODDIRI)/LinkDef.h
 FITCALDS       := $(MODDIRS)/G__FitCalDict.cxx
+FITCALPCM      := $(MODDIRS)/G__FitCalDict_rdict.pcm
 FITCALDO       := $(FITCALDS:.cxx=.o)
 FITCALH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 FITCALS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -40,6 +41,10 @@ $(FITCALLIB):     $(FITCALDO) $(FITCALO) $(MAINLIBS) $(FITCALLIBDEP)
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libFitCal.$(SOEXT) $@ "$(FITCALDO) $(FITCALO)" \
 		   "$(FITCALLIBEXTRA)"
+		@(if [ -f $(FITCALDIRS)/$(FITCALPCM) ] ; then \
+			echo "cp  $(FITCALDIRS)/$(FITCALPCM)----------------------" ; \
+			cp $(FITCALDIRS)/$(FITCALPCM) $(LPATH); \
+		fi)
 
 $(FITCALDS):     $(FITCALH) $(FITCALL)
 		@echo "Generating dictionary $@..."

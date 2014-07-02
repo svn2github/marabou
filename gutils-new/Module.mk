@@ -14,6 +14,7 @@ NGUTILSDIRI     := $(NGUTILSDIR)/inc
 ##### lib #####
 NGUTILSL        := $(MODDIRI)/LinkDef.h
 NGUTILSDS       := $(MODDIRS)/G__TNGMrbUtilsDict.cxx
+NGUTILSPCM       := $(MODDIRS)/G__TNGMrbUtilsDict_rdict.pcm
 NGUTILSDO       := $(NGUTILSDS:.cxx=.o)
 NGUTILSH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 NGUTILSS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -39,6 +40,10 @@ $(NGUTILSLIB):     $(NGUTILSDO) $(NGUTILSO) $(MAINLIBS) $(NGUTILSLIBDEP)
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTNGMrbUtils.$(SOEXT) $@ "$(NGUTILSDO) $(NGUTILSO)" \
 		   "$(NGUTILSLIBEXTRA)"
+		@(if [ -f $(NGUTILSDIRS)/$(NGUTILSPCM) ] ; then \
+			echo "cp  $(NGUTILSDIRS)/$(NGUTILSPCM)----------------------" ; \
+			cp $(NGUTILSDIRS)/$(NGUTILSPCM) $(LPATH); \
+		fi)
 
 $(NGUTILSDS):     $(NGUTILSH) $(NGUTILSL)
 		@echo "Generating dictionary $@..."

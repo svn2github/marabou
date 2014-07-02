@@ -14,6 +14,7 @@ GUTILSDIRI     := $(GUTILSDIR)/inc
 ##### lib #####
 GUTILSL        := $(MODDIRI)/LinkDef.h
 GUTILSDS       := $(MODDIRS)/G__TGMrbUtilsDict.cxx
+GUTILSPCM       := $(MODDIRS)/G__TGMrbUtilsDict_rdict.pcm
 GUTILSDO       := $(GUTILSDS:.cxx=.o)
 GUTILSH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 GUTILSS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -39,6 +40,10 @@ $(GUTILSLIB):     $(GUTILSDO) $(GUTILSO) $(MAINLIBS) $(GUTILSLIBDEP)
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTGMrbUtils.$(SOEXT) $@ "$(GUTILSDO) $(GUTILSO)" \
 		   "$(GUTILSLIBEXTRA)"
+		@(if [ -f $(GUTILSDIRS)/$(GUTILSPCM) ] ; then \
+			echo "cp  $(GUTILSDIRS)/$(GUTILSPCM)----------------------" ; \
+			cp $(GUTILSDIRS)/$(GUTILSPCM) $(LPATH); \
+		fi)
 
 $(GUTILSDS):     $(GUTILSH) $(GUTILSL)
 		@echo "Generating dictionary $@..."

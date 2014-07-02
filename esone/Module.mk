@@ -14,6 +14,7 @@ ESONEDIRI     := $(ESONEDIR)/inc
 ##### lib #####
 ESONEL        := $(MODDIRI)/LinkDef.h
 ESONEDS       := $(MODDIRS)/G__TMrbEsoneDict.cxx
+ESONEPCM       := $(MODDIRS)/G__TMrbEsoneDict_rdict.pcm
 ESONEDO       := $(ESONEDS:.cxx=.o)
 ESONEH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 ESONEDH       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/TMrb*.h))
@@ -40,6 +41,10 @@ $(ESONELIB):     $(ESONEDO) $(ESONEO) $(MAINLIBS) $(ESONELIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbEsone.$(SOEXT) $@ "$(ESONEO) $(ESONEDO)" \
 		   "$(ESONELIBEXTRA)"
+		@(if [ -f $(ESONEDIRS)/$(ESONEPCM) ] ; then \
+			echo "cp  $(ESONEDIRS)/$(ESONEPCM)----------------------" ; \
+			cp $(ESONEDIRS)/$(ESONEPCM) $(LPATH); \
+		fi)
 
 $(ESONEDS):     $(ESONEH) $(ESONEL)
 		@echo "Generating dictionary $@..."

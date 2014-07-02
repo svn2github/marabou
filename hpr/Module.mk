@@ -14,7 +14,8 @@ HPRDUMMY    := $(MODDIRS)/hpr_dummy.o
 ##### lib #####
 HPRL        := $(MODDIRI)/LinkDef.h
 HPRDS       := $(MODDIRS)/G__HistPresentDict.cxx
-HPRDO      := $(HPRDS:.cxx=.o)
+HPRPCM      := $(MODDIRS)/G__HistPresentDict_rdict.pcm
+HPRDO       := $(HPRDS:.cxx=.o)
 HPRH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 HPRS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 HPROM       := $(HPRS:.cxx=.o)
@@ -101,8 +102,12 @@ $(HPRLIB):     $(HPRDO) $(HPRO)
 		@echo "make shared lib  $(HPRLIB)----------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libHpr.$(SOEXT) $@ "$(HPRO) $(HPRDO) $(HPRLIBEXTRA)"
-		@echo "make shared lib  $(HPRDUMMYLIB)----------------------"
+		@(if [ -f $(HPRDIRS)/$(HPRPCM) ] ; then \
+			echo "cp  $(HPRDIRS)/$(HPRPCM)----------------------" ; \
+			cp $(HPRDIRS)/$(HPRPCM) $(LPATH); \
+		fi)
 		
+
 $(HPRDUMMYLIB):     $(HPRDUMMY)
 		   
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
