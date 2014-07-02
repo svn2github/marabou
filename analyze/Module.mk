@@ -62,9 +62,9 @@ obj/%.o:    $(MODDIRS)/%.o
 $(MRBALIB):     $(MRBADO) $(MRBAO) $(MAINLIBS) $(MRBALIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" lib$(MRBA).$(SOEXT) $@ "$(MRBAO) $(MRBADO) $(MRBANALYSELIBEXTRA)"
-		@(if [ -f $(ANDIRS)/$(MRBAPCM) ] ; then \
-			echo "cp  $(ANDIRS)/$(MRBAPCM)----------------------" ; \
-			cp $(ANDIRS)/$(MRBAPCM) $(LPATH); \
+		@(if [ -f $(MRBAPCM) ] ; then \
+			echo "cp $(MRBAPCM)----------------------" ; \
+			cp $(MRBAPCM) $(LPATH); \
 		fi)
 
 $(MUTEXLIB):     $(MUTEXO)

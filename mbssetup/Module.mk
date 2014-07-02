@@ -39,9 +39,9 @@ $(MBSSETUPLIB):     $(MBSSETUPDO) $(MBSSETUPO) $(MAINLIBS) $(MBSSETUPLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMbsSetup.$(SOEXT) $@ "$(MBSSETUPO) $(MBSSETUPDO)" \
 		   "$(MBSSETUPLIBEXTRA)"
-		@(if [ -f $(MBSSETUPDIRS)/$(MBSSETUPPCM) ] ; then \
-			echo "cp  $(MBSSETUPDIRS)/$(MBSSETUPPCM)----------------------" ; \
-			cp $(MBSSETUPDIRS)/$(MBSSETUPPCM) $(LPATH); \
+		@(if [ -f $(MBSSETUPPCM) ] ; then \
+			echo "cp  $(MBSSETUPPCM)----------------------" ; \
+			cp $(MBSSETUPPCM) $(LPATH); \
 		fi)
 
 $(MBSSETUPDS):     $(MBSSETUPH) $(MBSSETUPL)

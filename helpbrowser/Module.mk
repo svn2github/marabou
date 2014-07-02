@@ -39,9 +39,9 @@ $(HELPBLIB):     $(HELPBDO) $(HELPBO) $(MAINLIBS) $(HELPBLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbHelpBrowser.$(SOEXT) $@ "$(HELPBO) $(HELPBDO)" \
 		   "$(HELPBLIBEXTRA)"
-		@(if [ -f $(HELPBDIRS)/$(HELPBPCM) ] ; then \
-			echo "cp  $(HELPBDIRS)/$(HELPBPCM)----------------------" ; \
-			cp $(HELPBDIRS)/$(HELPBPCM) $(LPATH); \
+		@(if [ -f $(HELPBPCM) ] ; then \
+			echo "cp  $(HELPBPCM)----------------------" ; \
+			cp $(HELPBPCM) $(LPATH); \
 		fi)
 
 $(HELPBDS):     $(HELPBH) $(HELPBL)

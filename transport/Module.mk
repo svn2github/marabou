@@ -42,9 +42,9 @@ $(TRANSPLIB):     $(TRANSPDO) $(TRANSPO) $(MAINLIBS) $(TRANSPLIBDEP) $(MBSIOOBJS
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbTransport.$(SOEXT) $@ "$(TRANSPO) $(TRANSPDO)" \
 		   "$(MBSIOOBJS) $(TRANSPLIBEXTRA)"
-		@(if [ -f $(TRANSPDIRS)/$(TRANSPPCM) ] ; then \
-			echo "cp  $(TRANSPDIRS)/$(TRANSPPCM)----------------------" ; \
-			cp $(TRANSPDIRS)/$(TRANSPPCM) $(LPATH); \
+		@(if [ -f $(TRANSPPCM) ] ; then \
+			echo "cp  $(TRANSPPCM)----------------------" ; \
+			cp $(TRANSPPCM) $(LPATH); \
 		fi)
 
 $(TRANSPDS):     $(TRANSPH) $(TRANSPL)

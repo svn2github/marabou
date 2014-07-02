@@ -40,9 +40,9 @@ $(GUTILSLIB):     $(GUTILSDO) $(GUTILSO) $(MAINLIBS) $(GUTILSLIBDEP)
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTGMrbUtils.$(SOEXT) $@ "$(GUTILSDO) $(GUTILSO)" \
 		   "$(GUTILSLIBEXTRA)"
-		@(if [ -f $(GUTILSDIRS)/$(GUTILSPCM) ] ; then \
-			echo "cp  $(GUTILSDIRS)/$(GUTILSPCM)----------------------" ; \
-			cp $(GUTILSDIRS)/$(GUTILSPCM) $(LPATH); \
+		@(if [ -f $(GUTILSPCM) ] ; then \
+			echo "cp  $(GUTILSPCM)----------------------" ; \
+			cp $(GUTILSPCM) $(LPATH); \
 		fi)
 
 $(GUTILSDS):     $(GUTILSH) $(GUTILSL)

@@ -41,9 +41,9 @@ $(C2LYNXLIB):     $(C2LYNXDO) $(C2LYNXO) $(MAINLIBS) $(C2LYNXLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbC2Lynx.$(SOEXT) $@ "$(C2LYNXO) $(C2LYNXDO)" \
 		   "$(C2LYNXLIBEXTRA)"
-		@(if [ -f $(C2LYNXDIRS)/$(C2LYNXPCM) ] ; then \
-			echo "cp  $(C2LYNXDIRS)/$(C2LYNXPCM)----------------------" ; \
-			cp $(C2LYNXDIRS)/$(C2LYNXPCM) $(LPATH); \
+		@(if [ -f $(C2LYNXPCM) ] ; then \
+			echo "cp  $(C2LYNXPCM)----------------------" ; \
+			cp $(C2LYNXPCM) $(LPATH); \
 		fi)
 
 $(C2LYNXDS):     $(C2LYNXH) $(C2LYNXL)

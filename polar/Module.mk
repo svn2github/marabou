@@ -40,9 +40,9 @@ $(POLARLIB):     $(POLARDO) $(POLARO) $(MAINLIBS) $(POLARLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTPolControl.$(SOEXT) $@ "$(POLARO) $(POLARDO)" \
 		   "$(POLARLIBEXTRA)"
-		@(if [ -f $(POLARDIRS)/$(POLARPCM) ] ; then \
-			echo "cp  $(POLARDIRS)/$(POLARPCM)----------------------" ; \
-			cp $(POLARDIRS)/$(POLARPCM) $(LPATH); \
+		@(if [ -f $(POLARPCM) ] ; then \
+			echo "cp  $(POLARPCM)----------------------" ; \
+			cp $(POLARPCM) $(LPATH); \
 		fi)
 
 $(POLARDS):     $(POLARH) $(POLARL)

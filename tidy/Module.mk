@@ -40,9 +40,9 @@ $(TIDYLIB):     $(TIDYDO) $(TIDYO) $(MAINLIBS) $(TIDYLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbTidy.$(SOEXT) $@ "$(TIDYO) $(TIDYDO)" \
 		   "$(TIDYLIBEXTRA)"
-		@(if [ -f $(TIDYDIRS)/$(TIDYPCM) ] ; then \
-			echo "cp  $(TIDYDIRS)/$(TIDYPCM)----------------------" ; \
-			cp $(TIDYDIRS)/$(TIDYPCM) $(LPATH); \
+		@(if [ -f $(TIDYPCM) ] ; then \
+			echo "cp  $(TIDYPCM)----------------------" ; \
+			cp $(TIDYPCM) $(LPATH); \
 		fi)
 
 $(TIDYDS):     $(TIDYH) $(TIDYL)

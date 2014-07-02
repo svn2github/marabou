@@ -56,9 +56,9 @@ $(GREDITLIB):     $(GREDITDO) $(GREDITO) $(MAINLIBS) $(GREDITLIBDEP)
 			@echo "Making libGrEdit $@..."
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 			"$(SOFLAGS)" libGrEdit.$(SOEXT) $@ "$(GREDITDO) $(GREDITO) $(GREDITLIBEXTRA)"
-		@(if [ -f $(GREDITDIRS)/$(GREDITPCM) ] ; then \
-			echo "cp  $(GREDITDIRS)/$(GREDITPCM)----------------------" ; \
-			cp $(GREDITDIRS)/$(GREDITPCM) $(LPATH); \
+		@(if [ -f $(GREDITPCM) ] ; then \
+			echo "cp  $(GREDITPCM)----------------------" ; \
+			cp $(GREDITPCM) $(LPATH); \
 		fi)
 
 $(GREDITDS):     $(GREDITH) $(GREDITL)

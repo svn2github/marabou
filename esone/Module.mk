@@ -41,9 +41,9 @@ $(ESONELIB):     $(ESONEDO) $(ESONEO) $(MAINLIBS) $(ESONELIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbEsone.$(SOEXT) $@ "$(ESONEO) $(ESONEDO)" \
 		   "$(ESONELIBEXTRA)"
-		@(if [ -f $(ESONEDIRS)/$(ESONEPCM) ] ; then \
-			echo "cp  $(ESONEDIRS)/$(ESONEPCM)----------------------" ; \
-			cp $(ESONEDIRS)/$(ESONEPCM) $(LPATH); \
+		@(if [ -f $(ESONEPCM) ] ; then \
+			echo "cp  $(ESONEPCM)----------------------" ; \
+			cp $(ESONEPCM) $(LPATH); \
 		fi)
 
 $(ESONEDS):     $(ESONEH) $(ESONEL)

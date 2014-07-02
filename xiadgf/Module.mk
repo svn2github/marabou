@@ -39,9 +39,9 @@ $(XIADGFLIB):     $(XIADGFDO) $(XIADGFO) $(MAINLIBS) $(XIADGFDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbDGF.$(SOEXT) $@ "$(XIADGFO) $(XIADGFDO)" \
 		   "$(XIADGFLIBEXTRA)"
-		@(if [ -f $(XIADGFDIRS)/$(XIADGFPCM) ] ; then \
-			echo "cp  $(XIADGFDIRS)/$(XIADGFPCM)----------------------" ; \
-			cp $(XIADGFDIRS)/$(XIADGFPCM) $(LPATH); \
+		@(if [ -f $(XIADGFPCM) ] ; then \
+			echo "cp  $(XIADGFPCM)----------------------" ; \
+			cp $(XIADGFPCM) $(LPATH); \
 		fi)
 
 $(XIADGFDS):     $(XIADGFH) $(XIADGFL)

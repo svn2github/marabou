@@ -39,9 +39,9 @@ $(DGFCOMLIB):     $(DGFCOMDO) $(DGFCOMO) $(MAINLIBS) $(DGFCOMDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbDGFCommon.$(SOEXT) $@ "$(DGFCOMO) $(DGFCOMDO)" \
 		   "$(DGFCOMLIBEXTRA)"
-		@(if [ -f $(DGFCOMDIRS)/$(DGFCOMPCM) ] ; then \
-			echo "cp  $(DGFCOMDIRS)/$(DGFCOMPCM)----------------------" ; \
-			cp $(DGFCOMDIRS)/$(DGFCOMPCM) $(LPATH); \
+		@(if [ -f $(DGFCOMPCM) ] ; then \
+			echo "cp  $(DGFCOMPCM)----------------------" ; \
+			cp $(DGFCOMPCM) $(LPATH); \
 		fi)
 
 $(DGFCOMDS):     $(DGFCOMH) $(DGFCOML)

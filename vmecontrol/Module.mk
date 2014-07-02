@@ -59,9 +59,9 @@ $(VMECLIB):     $(VMECDO) $(VMECO)
 		@echo "$(VMECEXE) make shared lib ------------------------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libVMEControl.$(SOEXT) $@ "$(VMECO) $(VMECDO)"
-		@(if [ -f $(VMECDIRS)/$(VMECPCM) ] ; then \
-			echo "cp  $(VMECDIRS)/$(VMECPCM)----------------------" ; \
-			cp $(VMECDIRS)/$(VMECPCM) $(LPATH); \
+		@(if [ -f $(VMECPCM) ] ; then \
+			echo "cp  $(VMECPCM)----------------------" ; \
+			cp $(VMECPCM) $(LPATH); \
 		fi)
 
 $(VMECDS):     $(VMECDH) $(VMECL)

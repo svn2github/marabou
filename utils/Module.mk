@@ -40,9 +40,9 @@ $(UTILSLIB):     $(UTILSDO) $(UTILSO) $(MAINLIBS) $(UTILSLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbUtils.$(SOEXT) $@ "$(UTILSO) $(UTILSDO)" \
 		   "$(UTILSLIBEXTRA)"
-		@(if [ -f $(UTILSDIRS)/$(UTILSPCM) ] ; then \
-			echo "cp  $(UTILSDIRS)/$(UTILSPCM)----------------------" ; \
-			cp $(UTILSDIRS)/$(UTILSPCM) $(LPATH); \
+		@(if [ -f $(UTILSPCM) ] ; then \
+			echo "cp  $(UTILSPCM)----------------------" ; \
+			cp $(UTILSPCM) $(LPATH); \
 		fi)
 
 $(UTILSDS):     $(UTILSH) $(UTILSL)

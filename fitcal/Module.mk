@@ -41,9 +41,9 @@ $(FITCALLIB):     $(FITCALDO) $(FITCALO) $(MAINLIBS) $(FITCALLIBDEP)
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libFitCal.$(SOEXT) $@ "$(FITCALDO) $(FITCALO)" \
 		   "$(FITCALLIBEXTRA)"
-		@(if [ -f $(FITCALDIRS)/$(FITCALPCM) ] ; then \
-			echo "cp  $(FITCALDIRS)/$(FITCALPCM)----------------------" ; \
-			cp $(FITCALDIRS)/$(FITCALPCM) $(LPATH); \
+		@(if [ -f $(FITCALPCM) ] ; then \
+			echo "cp  $(FITCALPCM)----------------------" ; \
+			cp $(FITCALPCM) $(LPATH); \
 		fi)
 
 $(FITCALDS):     $(FITCALH) $(FITCALL)

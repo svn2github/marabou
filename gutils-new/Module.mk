@@ -40,9 +40,9 @@ $(NGUTILSLIB):     $(NGUTILSDO) $(NGUTILSO) $(MAINLIBS) $(NGUTILSLIBDEP)
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTNGMrbUtils.$(SOEXT) $@ "$(NGUTILSDO) $(NGUTILSO)" \
 		   "$(NGUTILSLIBEXTRA)"
-		@(if [ -f $(NGUTILSDIRS)/$(NGUTILSPCM) ] ; then \
-			echo "cp  $(NGUTILSDIRS)/$(NGUTILSPCM)----------------------" ; \
-			cp $(NGUTILSDIRS)/$(NGUTILSPCM) $(LPATH); \
+		@(if [ -f $(NGUTILSPCM) ] ; then \
+			echo "cp  $(NGUTILSPCM)----------------------" ; \
+			cp $(NGUTILSPCM) $(LPATH); \
 		fi)
 
 $(NGUTILSDS):     $(NGUTILSH) $(NGUTILSL)

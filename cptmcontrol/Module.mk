@@ -60,9 +60,9 @@ $(CptmCLIB):     $(CptmCDO) $(CptmCO)
 		@echo "$(CptmCEXE) make shared lib ------------------------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libCptmControl.$(SOEXT) $@ "$(CptmCO) $(CptmCDO)"
-		@(if [ -f $(CptmCDIRS)/$(CptmCPCM) ] ; then \
-			echo "cp  $(CptmCDIRS)/$(CptmCPCM)----------------------" ; \
-			cp $(CptmCDIRS)/$(CptmCPCM) $(LPATH); \
+		@(if [ -f $(CptmCPCM) ] ; then \
+			echo "cp  $(CptmCPCM)----------------------" ; \
+			cp $(CptmCPCM) $(LPATH); \
 		fi)
 
 $(CptmCDS):     $(CptmCDH) $(CptmCL)

@@ -51,9 +51,9 @@ $(DGFCEXE):     $(DGFCO) $(DGFCMAINO) $(MRBLIBS)
 $(DGFCLIB):     $(DGFCDO) $(DGFCO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libDGFControl.$(SOEXT) $@ "$(DGFCO) $(DGFCDO)"
-		@(if [ -f $(DGFCDIRS)/$(DGFCPCM) ] ; then \
-			echo "cp  $(DGFCDIRS)/$(DGFCPCM)----------------------" ; \
-			cp $(DGFCDIRS)/$(DGFCPCM) $(LPATH); \
+		@(if [ -f $(DGFCPCM) ] ; then \
+			echo "cp  $(DGFCPCM)----------------------" ; \
+			cp $(DGFCPCM) $(LPATH); \
 		fi)
 
 $(DGFCDS):     $(DGFCDH) $(DGFCL)
