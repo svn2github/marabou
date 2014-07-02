@@ -64,9 +64,9 @@ $(CANEXE):     $(CANDO) $(CANO) $(CANLIBS) $(MBSCLIB)
 $(MBSCLIB):     $(MBSCDO) $(MBSCO) $(MAINLIBS) $(MBSCLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" lib$(MBSC).$(SOEXT) $@ "$(MBSCO) $(MBSCDO) $(MBSCLIBEXTRA)"
-		@(if [ -f $(MCSCPCM) ] ; then \
-			echo "cp  $(MCSCPCM)----------------------" ; \
-			cp $(MCSCPCM) $(LPATH); \
+		@(if [ -f $(MBSCPCM) ] ; then \
+			echo "cp  $(MBSCPCM)----------------------" ; \
+			cp $(MBSCPCM) $(LPATH); \
 		fi)
 
 $(MBSCDS):     $(MBSCH) $(MBSCDL)
