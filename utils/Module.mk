@@ -27,6 +27,9 @@ UTILSLIB      := $(LPATH)/libTMrbUtils.$(SOEXT)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(UTILSH))
 ALLLIBS     += $(UTILSLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(UTILSPCM)
+endif
 
 # include all dependency files
 INCLUDEFILES += $(UTILSDEP)

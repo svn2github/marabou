@@ -27,6 +27,11 @@ GUTILSLIB      := $(LPATH)/libTGMrbUtils.$(SOEXT)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GUTILSH))
 ALLLIBS     += $(GUTILSLIB)
+$(info gutils/Module.mk: ROOTVERS = $(ROOTVERS))
+$(info ROOTV6 = $(ROOTV6))
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(GUTILSPCM)
+endif
 
 # include all dependency files
 INCLUDEFILES += $(GUTILSDEP)

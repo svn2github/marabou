@@ -26,6 +26,9 @@ DGFCOMLIB      := $(LPATH)/libTMrbDGFCommon.$(SOEXT)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCOMH))
 ALLLIBS     += $(DGFCOMLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(DGFCOMPCM)
+endif
 
 # include all dependency files
 INCLUDEFILES += $(DGFCOMDEP)

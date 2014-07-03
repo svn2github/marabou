@@ -12,6 +12,7 @@ DGFCDIRI     := $(DGFCDIR)/inc
 ##### lib #####
 DGFCL        := $(MODDIRI)/LinkDef.h
 DGFCDS       := $(MODDIRS)/G__DGFControlDict.cxx
+DGFCPCM       := $(MODDIRS)/G__DGFControlDict_rdict.pcm
 DGFCDO       := $(DGFCDS:.cxx=.o)
 DGFCH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 DGFCS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
@@ -29,6 +30,10 @@ DGFCLIB       := $(LPATH)/libDGFControl.so
 ALLEXECS    += $(DGFCEXE)
 
 ALLLIBS     += $(DGFCLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(DGFCPCM)
+endif
+
 # used in the DGFControl Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCH))
 
@@ -50,6 +55,10 @@ $(DGFCEXE):     $(DGFCO) $(DGFCMAINO) $(MRBLIBS)
 $(DGFCLIB):     $(DGFCDO) $(DGFCO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libDGFControl.$(SOEXT) $@ "$(DGFCO) $(DGFCDO)"
+		@(if [ -f $(DGFCPCM) ] ; then \
+			echo "cp  $(DGFCPCM)----------------------" ; \
+			cp $(DGFCPCM) $(LPATH); \
+		fi)
 
 $(DGFCDS):     $(DGFCDH) $(DGFCL)
 		$(ROOTCINT) -f $@ -c -p -Iinclude $(DGFCDH) $(DGFCL)

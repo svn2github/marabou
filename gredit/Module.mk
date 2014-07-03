@@ -33,6 +33,9 @@ ALLEXECS    += $(CDLEXE)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GREDITH))
 ALLLIBS     += $(GREDITLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(GREDITPCM)
+endif
 
 # include all dependency files
 INCLUDEFILES += $(GREDITDEP)

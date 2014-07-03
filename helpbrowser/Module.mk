@@ -22,6 +22,9 @@ HELPBO        := $(HELPBS:.cxx=.o)
 HELPBDEP      := $(HELPBO:.o=.d) $(HELPBDO:.o=.d)
 
 HELPBLIB      := $(LPATH)/libTMrbHelpBrowser.$(SOEXT)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(HELPBPCM)
+endif
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HELPBH))

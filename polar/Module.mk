@@ -27,6 +27,9 @@ POLARLIB      := $(LPATH)/libTPolControl.$(SOEXT)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(POLARH))
 ALLLIBS     += $(POLARLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(POLARPCM)
+endif
 
 # include all dependency files
 INCLUDEFILES += $(POLARDEP)

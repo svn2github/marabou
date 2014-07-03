@@ -70,6 +70,9 @@ HPRDUMMYLIB := $(LPATH)/libHprDummy.so
 ALLEXECS    += $(HPREXE)
 
 ALLLIBS     += $(HPRLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(HPRPCM)
+endif
 ALLLIBS     += $(HPRDUMMYLIB)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HPRH))

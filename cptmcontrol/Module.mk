@@ -32,6 +32,9 @@ CptmCLIB       := $(LPATH)/libCptmControl.so
 ALLEXECS    += $(CptmCEXE)
 
 ALLLIBS     += $(CptmCLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(CptmCPCM)
+endif
 # used in the CptmControl Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(CptmCH))
 

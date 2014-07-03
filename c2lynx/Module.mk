@@ -28,6 +28,9 @@ C2LYNXLIB      := $(LPATH)/libTMrbC2Lynx.$(SOEXT)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(C2LYNXH))
 ALLLIBS     += $(C2LYNXLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(C2LYNXPCM)
+endif
 
 # include all dependency files
 INCLUDEFILES += $(C2LYNXDEP)

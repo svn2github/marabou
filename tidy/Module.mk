@@ -23,6 +23,9 @@ TIDYO        := $(TIDYS:.cxx=.o)
 TIDYDEP      := $(TIDYO:.o=.d) $(TIDYDO:.o=.d)
 
 TIDYLIB      := $(LPATH)/libTMrbTidy.$(SOEXT)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(TIDYPCM)
+endif
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(TIDYH))

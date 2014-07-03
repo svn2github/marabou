@@ -23,6 +23,9 @@ NGUTILSO        := $(NGUTILSS:.cxx=.o)
 NGUTILSDEP      := $(NGUTILSO:.o=.d) $(NGUTILSDO:.o=.d)
 
 NGUTILSLIB      := $(LPATH)/libTNGMrbUtils.$(SOEXT)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(NGUTILSPCM)
+endif
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(NGUTILSH))

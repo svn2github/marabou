@@ -28,6 +28,9 @@ ESONELIB      := $(LPATH)/libTMrbEsone.$(SOEXT)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(ESONEH))
 ALLLIBS     += $(ESONELIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(ESONEPCM)
+endif
 
 # include all dependency files
 INCLUDEFILES += $(ESONEDEP)

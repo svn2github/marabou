@@ -144,7 +144,7 @@ RV1           := $(subst e,,$(RV1))
 RV1           := $(subst f,,$(RV1))
 RV1           := $(subst g,,$(RV1))
 ROOTVERS      := $(subst h,,$(RV1))
-
+ROOTV6        := $(shell echo $(ROOTVERS)'>='60000 | bc -l)
 ##### clang or gcc version #####
 
 ifneq ($(findstring clang,$(CXX)),)
@@ -195,6 +195,7 @@ MAKEINFO      = cint/MAKEINFO
 
 ALLHDRS      :=
 ALLLIBS      :=
+ALLPCMS      :=
 # HPRLIBS      := lib/libHpr.so lib/libTMrbHelpBrowser.so lib/libTMrbUtils.so lib/libTGMrbUtils.so lib/libGrEdit.so lib/libFitCal.so
 ALLEXECS     :=
 INCLUDEFILES :=
@@ -248,6 +249,7 @@ hprexecs:          compiledata bin/HistPresent
 maraboulibs:       compiledata $(ALLLIBS)
 
 marabouexecs:      maraboulibs $(ALLEXECS)
+	$(info ALLPCMS = $(ALLPCMS))
 
 compiledata:       $(COMPILEDATA) $(MAKEINFO)
 

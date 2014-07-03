@@ -30,6 +30,9 @@ DGFCLIB       := $(LPATH)/libDGFControl.so
 ALLEXECS    += $(DGFCEXE)
 
 ALLLIBS     += $(DGFCLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(DGFCOMPCM)
+endif
 # used in the DGFControl Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCH))
 

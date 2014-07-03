@@ -37,6 +37,9 @@ CANEXE      := bin/$(CAN)
 
 ALLEXECS    += $(CANEXE)
 ALLLIBS     += $(MBSCLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(MBSCPCM)
+endif
 
 # used in the main Makefile
 ALLHDRS     += include/$(MBSC).h include/$(CAN).h include/$(CAN)_Help.h

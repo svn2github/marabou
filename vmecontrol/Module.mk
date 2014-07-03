@@ -32,6 +32,9 @@ VMECLIB       := $(LPATH)/libVMEControl.so
 ALLEXECS    += $(VMECEXE)
 
 ALLLIBS     += $(VMECLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(VMECPCM)
+endif
 # used in the vmeControl Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(VMECH))
 

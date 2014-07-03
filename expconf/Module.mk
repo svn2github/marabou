@@ -27,6 +27,9 @@ EXPCONFLIB      := $(LPATH)/libTMrbConfig.$(SOEXT)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
 ALLLIBS     += $(EXPCONFLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(EXPCONFPCM)
+endif
 
 # include all dependency files
 INCLUDEFILES += $(EXPCONFDEP)

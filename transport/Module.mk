@@ -29,6 +29,9 @@ TRANSPLIB      := $(LPATH)/libTMrbTransport.$(SOEXT)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(TRANSPH))
 ALLLIBS     += $(TRANSPLIB)
+ifeq ($(ROOTV6), 1)
+	ALLPCMS += $(TRANSPPCM)
+endif
 
 # include all dependency files
 INCLUDEFILES += $(TRANSPDEP)
