@@ -334,6 +334,11 @@ install:
 			echo "Installing libraries in $(LIBDIR)"; \
 			$(INSTALLDIR) $(LIBDIR); \
 			$(INSTALLFILES) $(ALLLIBS) $(LIBDIR); \
+			if [ -n "$(ALLPCMS)" ]; then \
+				echo "ALLPCMS |$(ALLPCMS)|" ; \
+				echo "Installing PCMs in $(LIBDIR)"; \
+				$(INSTALLFILES) $(ALLPCMS) $(LIBDIR); \
+			fi; \
 			echo "Installing objs in      $(OBJDIR)"; \
 			$(INSTALLDIR) $(OBJDIR); \
 			$(INSTALL) $(ALLOBJS) $(OBJDIR); \
