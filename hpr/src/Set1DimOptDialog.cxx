@@ -483,6 +483,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 			drawopt += "Y+";
 		if ( fSame[i] )
 			drawopt+= "SAME";
+		if (fShowContour[i] != 0) drawopt += "HIST";
 //		if (drawopt.Length() == 0 || fShowContour[i] != 0) drawopt += "HIST";
 		if ( gDebug > 0 )
 			cout << "Set1DimOptDialog::SetAtt " << drawopt << endl;

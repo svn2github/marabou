@@ -2277,37 +2277,6 @@ void FitHist::OutputStat(Int_t fill_hist)
 		cout <<
 			 "-------------------------------------------------------------"
 			 << endl;
-/*
-		TOrdCollection *row_lab = new TOrdCollection();
-		row_lab->Add(new TObjString("Content"));
-		row_lab->Add(new TObjString("Mean"));
-		row_lab->Add(new TObjString("Sigma"));
-		row_lab->Add(new TObjString("2.35*Sigma"));
-
-		TOrdCollection *col_lab = new TOrdCollection();
-		col_lab->Add(new TObjString((char *) fOrigHist->GetName()));
-		TArrayD par(4);
-//      double par[4];
-		par[0] = sum;
-		par[1] = mean;
-		par[2] = sigma;
-		par[3] = 2.35 * sigma;
-		TString title("Statistics in window: ");
-		title += Form("%f",xlow);
-		title += " to ";
-		title += Form("%f",xup);
-		Int_t ret = 0, ncols = 1, nrows = 4, itemwidth = 240, precission = 5;
-		TGMrbTableOfDoubles(mycanvas, &ret, title.Data(), itemwidth,
-								  ncols, nrows, par, precission, col_lab, row_lab);
-		if (col_lab)
-			col_lab->Delete();
-		if (row_lab)
-			row_lab->Delete();
-		if (col_lab)
-			delete col_lab;
-		if (row_lab)
-			delete row_lab;
-*/
 	} else {
 		GetLimits();
 		double sum = 0;
@@ -3226,6 +3195,7 @@ void FitHist::Draw1Dim()
 //		if ( fMarkerSize > 0 && fShowContour == 0 ) {
 //			 drawopt += "P";
 //		}
+		if (fShowContour != 0) drawopt += "HIST";
 //		if (drawopt.Length() == 0 || fShowContour != 0) drawopt += "HIST";
 		if (fShowMarkers != 0) drawopt += "P";
 		gStyle->SetOptTitle(fShowTitle);
@@ -3288,7 +3258,11 @@ void FitHist::Draw1Dim()
 		TObject *p;
 		TIter next(lof);
 		while ( (p = (TObject *) next()) ) {
-			if (p->InheritsFrom(TMrbWindow::Class())) {
+			if ( p->InheritsFrom(TF1::Class()) &&
+				drawopt.Contains("HIST") ) {
+				((TF1*)p)->Draw("SAME");
+				cout << "Draw manually: " << p->GetName() << endl;
+			} else if (p->InheritsFrom(TMrbWindow::Class())) {
 				TMrbWindow *w = (TMrbWindow *) p;
 				w->SetParent(fSelHist);
 				if (w->GetY1() == 0) {
