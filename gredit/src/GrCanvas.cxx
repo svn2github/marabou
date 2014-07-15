@@ -260,7 +260,8 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       pxB1down = px;
       pyB1down = py;
 
-      if (fSelected->TestBit(kIsBound)) break;
+      if (!fSelected->InheritsFrom("TCanvas") && !fSelected->InheritsFrom("TAxis") &&
+			fSelected->TestBit(kIsBound)) break;
       x = gPad->AbsPixeltoX(px);
       y = gPad->AbsPixeltoY(py);
       if(fUseEditGrid && fSelectedPad == this &&
@@ -323,9 +324,10 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
             }
          }
 //OS start
-			if (fSelected->TestBit(kIsBound)) {
+			if (!fSelected->InheritsFrom("TCanvas") && !fSelected->InheritsFrom("TAxis") &&
+				fSelected->TestBit(kIsBound)) {
 				if (gDebug > 1 )
-				cout << "fSelected->TestBit(kIsBound), break " << endl;
+				cout << "fSelected->TestBit(kIsBound), break "<< fSelected->GetName() << endl;
 				break;
 			}
          if (in_image) {
@@ -427,7 +429,8 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          if (gDebug > 1 )
 				cout << "kButton1Up: this " << this
               << " fSelected " << fSelected->ClassName() << " gPad " << gPad << endl;
-         if (fSelected->TestBit(kIsBound)) break;
+         if (!fSelected->InheritsFrom("TCanvas") && !fSelected->InheritsFrom("TAxis") &&
+				fSelected->TestBit(kIsBound)) break;
          if (in_image) {
 //            cout << "setting: " << fSelected << endl;
             fSelected = pad_of_image;
