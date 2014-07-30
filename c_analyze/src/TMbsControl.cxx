@@ -43,7 +43,7 @@ TMbsControl::TMbsControl (const Char_t * node, const Char_t * procType, Bool_t U
    
    fProcType = procType;
    fUseSSH = UseSSH;
-   fRshSshCmd = fUseSSH ? "ssh " : "rsh ";
+   fRshSshCmd = fUseSSH ? "ssh -x " : "rsh ";
    fDir = dir;
    fUserName = gSystem->Getenv("USER");
    fGuiNode  = gSystem->HostName();
