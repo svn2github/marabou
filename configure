@@ -159,7 +159,7 @@ echo "HTMLURL        := www.bl.physik.uni-muenchen.de" >> $MAKEOUT
 echo "DISTURL        := www.bl.physik.uni-muenchen.de" >> $MAKEOUT
 
 echo "INSTALL		   := cp -dpR            " >> $MAKEOUT
-echo "INSTALLDATA    := cp -dpR            " >> $MAKEOUT
+echo "INSTALLDATA    := rsync -azC         " >> $MAKEOUT
 echo "INSTALLDIR	   := mkdir -p           " >> $MAKEOUT
 
 echo "UPLOADHTML     := ncftpput -m -R -u rg \$(HTMLURL) /marabou html" >> $MAKEOUT
