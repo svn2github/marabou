@@ -942,7 +942,7 @@ void CalibrationDialog::LabelPeaks()
 {
 // remove text and lines of possible previous selection
 	if (! fSelCanvas)
-	return;
+		return;
 	TList temp;
 	Int_t best = 0;
 	fSelCanvas->cd();
@@ -1499,7 +1499,8 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 	TList *lof = fSelHist->GetListOfFunctions();
 //	if ( fVerbose )
 //		cout <<" lof->GetSize()" <<lof->GetSize() << endl;
-	fSelCanvas->cd();
+	if (fInteractive > 0 && fSelCanvas)
+		fSelCanvas->cd();
 	TList *lop = gPad->GetListOfPrimitives();
 	TIter next1(lof);
 	while ( (obj = next1()) ) {
