@@ -70,6 +70,8 @@
 #include "GraphAttDialog.h"
 #include "AddFitMenus.h"
 #include "HprStack.h"
+#include "HprFunc2.h"
+
 #include "HprGaxis.h"
 #include "hprbase.h"
 
@@ -840,6 +842,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 		maxkey = TMath:: Max(GetObjects(lofT, gDirectory, "TTree"),        maxkey);
 		maxkey = TMath:: Max(GetObjects(lofT, gDirectory, "TNtuple"),      maxkey);
 		maxkey = TMath:: Max(GetObjects(lofF, gDirectory, "TF1"),          maxkey);
+		maxkey = TMath:: Max(GetObjects(lofF, gDirectory, "TF2"),          maxkey);
 		maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "TCanvas"),      maxkey);
 		maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "GrCanvas"),      maxkey);
 		maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "HTCanvas"),      maxkey);
@@ -1791,22 +1794,15 @@ void HistPresent::ShowFunction(const char* fname, const char* dir, const char* n
 	}
 //  gROOT->ls();
 	if (func) {
-		if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
-			if (WindowSizeDialog::WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::WindowSizeDialog::fNwindows%2 != 0) WindowSizeDialog::WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
-			else   {WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx; WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;}
+		if (func->InheritsFrom("TF2") ) {
+			new HprFunc2((TF2*)func); 
+		} else {
+			new TCanvas();
+			func->Draw();
 		}
-		WindowSizeDialog::fNwindows++;
-		new TCanvas(name,name, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, 300, 300);
-//      fCanvasList->Add(ccc);
-		func->Draw();
-		cout << "Parameter values of: " << name << endl;
-		for (Int_t i = 0; i < func->GetNpar(); i++) {
-			cout << func->GetParName(i) << ": " << func->GetParameter(i) << endl;
-		}
-		cout << "-----------------------------------------------" << endl;
- //      func->Print();
-
-	} else     WarnBox("Function not found");
+	} else {
+		 WarnBox("Function not found");
+	}
 	if (fRootFile) fRootFile->Close();
 }
 //________________________________________________________________________________________

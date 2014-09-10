@@ -54,6 +54,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
 					$(HPRDIRI)/Rebin2DimDialog.h \
  					$(HPRDIRI)/AddFitMenus.h \
  					$(HPRDIRI)/HprStack.h \
+ 					$(HPRDIRI)/HprFunc2.h \
  					$(HPRDIRI)/HprGaxis.h \
  					$(HPRDIRI)/HprLegend.h \
  					$(HPRDIRI)/TText3D.h \

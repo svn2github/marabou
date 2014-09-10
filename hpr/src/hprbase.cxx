@@ -1348,7 +1348,8 @@ TF1 * FindFunctionInPad(TVirtualPad * pad)
 	TIter next(lop);
 	TF1 *func = NULL;
 	Int_t nfound = 0;
-	while (TObject *obj = next()) {
+	TObject *obj;
+	while ( (obj = next()) ) {
 		if(obj->InheritsFrom("TF1")) {
 			func = (TF1*)obj;
 			nfound ++;

@@ -32,6 +32,7 @@
 #pragma link C++ class Rebin2DimDialog;
 #pragma link C++ class AddFitMenus;
 #pragma link C++ class HprStack;
+#pragma link C++ class HprFunc2;
 #pragma link C++ class HprGaxis;
 #pragma link C++ class HprLegend;
 #pragma link C++ class TText3D;

@@ -2,6 +2,8 @@
 #define SET2DIMOPTHISTDIALOG
 #include "TGWindow.h"
 #include "TRootCanvas.h"
+#include "TF2.h"
+#include "TH2.h"
 #include "TGMrbValuesAndText.h"
 #include <iostream>
 //_____________________________________________________________________________________
@@ -16,7 +18,8 @@ private:
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
 	TH2          *fHist;
-   TString fDrawOpt;
+ 	TF2          *fFunc2;
+	TString fDrawOpt;
    TString fSameOpt;
    Int_t fOptRadio[kNdrawopt];
    const char *fDrawOpt2DimArray[kNdrawopt];
@@ -68,7 +71,7 @@ public:
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);
-   void SetHistAtt(TPad *canvas, TH2* hist);
+   void SetHistAtt(TPad *canvas, TObject *obj);
    void SetHistAttPermLocal();
    void SetHistAttAll(TCanvas *canvas);
    void SetHistAttPerm();
@@ -76,6 +79,7 @@ public:
    void SetAllToDefault();
    void RestoreDefaults(Int_t resetall = 0);
 	void GetValuesFromHist();
+	void GetValuesFromFunc2();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 

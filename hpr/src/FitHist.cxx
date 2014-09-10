@@ -3887,10 +3887,10 @@ void FitHist::ColorMarked()
 }
 //____________________________________________________________________________________
 
-void FitHist::Fit2DimD(Int_t type)
+void FitHist::Fit2DimD(Int_t npeaks)
 {
 	if (fFit2DimD == NULL)
-		fFit2DimD = new Fit2DimDialog((TH2*)fSelHist, type);
+		fFit2DimD = new Fit2DimDialog((TH2*)fSelHist, npeaks);
 }
 //____________________________________________________________________________________
 
