@@ -472,10 +472,19 @@ static const Char_t helptext_gaus[] =
 gaussian shaped peaks optionally with a low or high\n\
 energy tail plus a linear background.\n\
 With option \"Tailf Only\" a tail function without a pure\n\
-gaussian part is used. This is advised if the fitted tail fraction\n\
-becomes large.\n\
+gaussian part is used. This is advised if the fitted\n\
+tail fraction becomes large (>5).\n\
 The linear background may be forced to zero (Force BG = 0)\n\
 or to be constant(Force BG slope = 0)\n\
+\n\
+The constants determining the contents of the fitted function\n\
+are adjusted such that the integral corresponds to the\n\
+sum of the bin content for a given region.\n\
+This means that the constant in a linear background\n\
+is the average height of the bincontent in the region\n\
+divided by the binwidth. This must also be accounted for\n\
+when using a fixed background.\n\
+\n\
 The gauss width may be forced to the same for all peaks\n\
 In case with tail the parameter Ta_fract (tail\n\
 fraction) is the contents of the tail part relative\n\
@@ -499,18 +508,20 @@ This feature can also be used to preserve e.g. the shape\n\
 of a tail function in subsequent fits in different regions\n\
 by fixing Gauss_Width, Tail_Fraction and Tail_Width\n\
 \n\
-A linear background predetermined from 2 regions in\n\
+A linear background determined from 2 regions in\n\
 the spectrum outside the peaks can be incorporated\n\
 in the following way:\n\
 \n\
 Define 4 marks to select the 2 regions. Then use the\n\
-item 'Determine linear background' from the Fit\n\
-popup menu to calculate the parameters const and\n\
-slope of the linear background.In a subsequent fit \n\
+command \"Determine linear background\" from the Fit menu\n\
+to calculate the parameters const and slope of the \n\
+linear background.In a subsequent fit \n\
 the parameters Bg_Const and Bg_Slope will be fixed \n\
 to the above calculated values.  If needed these \n\
 values can still be changed manually. Unfixing them \n\
 will let MINUIT vary their values.\n\
+If the option \"Bg Slope=0\" is selected only 2 marks\n\
+are required, the Bg const is the average in the region.\n\
 \n\
 The quality of the start parameters of a fit determine\n\
 the speed of convergence. Bad start parameters may lead\n\
@@ -1167,7 +1178,10 @@ Bool_t FitOneDimDialog::FitGausExecute()
 	Double_t to_save = fTo;
 	
 	if ( GetMarkers() < 2 ) {
-		cout << setblue<< "Warning: No marks set, using entire range"<< setblack << endl;
+		cout << setblue<< "Warning: No marks set" << endl
+		<< "Using entire range [" << fFrom << ", " << fTo << "]"
+		<< setblack << endl;
+		/*
 		if (fMarkers == NULL) {
 			fMarkers = new  FhMarkerList();
 			fSelHist->GetListOfFunctions()->Add(fMarkers);
@@ -1182,7 +1196,10 @@ Bool_t FitOneDimDialog::FitGausExecute()
 		fMarkers->Add(m);
 		//		return kFALSE;
 		GetMarkers();
-	}
+		*/
+	}	
+	if (fDialog) fDialog->ReloadValues();
+
 	if (fTailOnly)
 		fOnesig = 1;
 	Bool_t range_changed = 
@@ -1336,7 +1353,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 		(*fbflags)[0] = fBackg0;
 		(*fbflags)[1] = fSlope0;
 	}
-	if (fNmarks == 2) {
+	if (fNmarks == 2 || fNmarks == 0) {
 // 2 marks only assume peak in between
 //		bin = GetMaxBin(fSelHist, bin_from, bin_to);
 		if (fGraph == NULL)
@@ -1446,26 +1463,6 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			}
 		}
 	}
-//  set linear background to 0 if requested
-/*
- * 	Int_t offs = 0;
-	if (lTailSide != 0 && !fTailOnly) offs = 2;
-	if ( fBackg0 && !fGaussOnly) {
-		(*par)[0 + offs] = 0;
-		(*fbflags)[0 + offs] = 1;
-	}
-	if ( fSlope0 && !fGaussOnly) {
-		(*par)[1 + offs] = 0;
-		(*fbflags)[1 + offs] = 1;
-	}
-//  use predermined linear background
-	if (fUsedbg) {
-		(*par)[0 + offs] = fLinBgConst / lBinW;
-		(*par)[1 + offs] = fLinBgSlope / lBinW;
-		(*fbflags)[0 + offs] = 1;
-		(*fbflags)[1 + offs] = 1;
-	}
-*/
 	Int_t ret = 0;
 	Bool_t do_fit = kTRUE;
 	if (fConfirmStartValues) {
@@ -1681,12 +1678,10 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			back->Save(fFrom, fTo, 0, 0, 0, 0);
 			back->SetLineColor(kRed);
 			back->SetLineStyle(3);
-			back->Draw("same");
 //			back->Print();
-//			fSelHist->GetListOfFunctions()->Add(back);
-//			back->SetParent(fSelHist);
+//			cout << ">>>back->Eval(fFrom) " << back->Eval(fFrom) << endl;
+			back->Draw("same");
 		}
-//
 		if ( fTailOnly != 0 )
 			goto ALLDONE;
 		Int_t offset = 0;
@@ -1723,9 +1718,6 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			g1->SetLineColor(6);
 			g1->SetLineStyle(4);
 			g1->Draw("same");
-//			fSelHist->GetListOfFunctions()->Add(g1);
-//			g1->SetParent(fSelHist);
-//			g1->Save(fFrom, fTo, 0, 0, 0, 0);
 			if (lTailSide != 0) {
 				fdpar[0] = (*par)[0] * (*par)[0 + offset + mult * j];	// const
 				fdpar[1] = (*par)[1 + offset + mult * j];	// position
@@ -1929,35 +1921,28 @@ Int_t FitOneDimDialog::GetMarkers()
 //	}
 // find number of peaks to fit
 	TAxis * xa = fSelHist->GetXaxis();
-	if ( xa->GetBinLowEdge(xa->GetFirst()) > fFrom )
-		fFrom = xa->GetBinLowEdge(xa->GetFirst());
-	if ( xa->GetBinLowEdge(xa->GetLast()) < fTo )
-		fTo	= xa->GetBinLowEdge(xa->GetLast());
-//	fFrom = xa->GetBinUpEdge(xa->GetFirst());
-//	fTo	= xa->GetBinLowEdge(xa->GetLast());
 	fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
-	if (fMarkers != NULL) {
-		if (fMarkers->GetEntries() <= 0) return fNmarks;
+	if (fMarkers != NULL && fMarkers->GetEntries() > 0) {
 		fMarkers->Sort();
 		fNmarks = fMarkers->GetEntries();
 		if (fNmarks > 0)
 			fFrom = ((FhMarker *) fMarkers->At(0))->GetX();
 		if (fNmarks > 1)
 			fTo	= ((FhMarker *) fMarkers->At(fNmarks - 1))->GetX();
-	}
-	if ( fFrom < xa->GetBinLowEdge(xa->GetFirst()) )
-	  fFrom = xa->GetBinLowEdge(xa->GetFirst());
-	if ( fTo > xa->GetBinLowEdge(xa->GetLast()) )
-	  fTo = xa->GetBinLowEdge(xa->GetLast());
-
-	if (fNmarks == 2) {
-		fNpeaks = 1;
+		if ( fFrom < xa->GetBinLowEdge(xa->GetFirst()) )
+		  fFrom = xa->GetBinLowEdge(xa->GetFirst());
+		if ( fTo > xa->GetBinLowEdge(xa->GetLast()) )
+		  fTo = xa->GetBinLowEdge(xa->GetLast());
 	} else {
+		fFrom = xa->GetBinUpEdge(xa->GetFirst());
+		fTo	= xa->GetBinLowEdge(xa->GetLast());
+		fNpeaks = 1;
+	}
+	if (fNmarks > 2) {
 		fNpeaks = fNmarks - 2;
 	}
-//	lNpeaks = fNpeaks;
-//	cout << setblue << fNmarks << " markers found i.e. "
-//		  << fNpeaks << " peak(s) will be fitted" << setblack << endl;
+	cout << setblue << fNmarks << " markers found i.e. "
+		  << fNpeaks << " peak(s) will be fitted" << setblack << endl;
 	return fNmarks;
 }
 //____________________________________________________________________________________
@@ -2024,7 +2009,7 @@ Int_t  FitOneDimDialog::SetMarkers() {
 
 void FitOneDimDialog::DetLinearBackground()
 {
-	if (GetMarkers() != 4) {
+	if (fSlope0 == 0  && GetMarkers() != 4) {
 		Int_t retval = 0;
 		TGWindow* win = (TGWindow*)fParentWindow;
 		new TGMsgBox(gClient->GetRoot(), win,
@@ -2032,36 +2017,53 @@ void FitOneDimDialog::DetLinearBackground()
 					 kMBIconExclamation, kMBDismiss, &retval);
 		return;
 	}
+	if (fSlope0 != 0  && GetMarkers() != 2) {
+		Int_t retval = 0;
+		TGWindow* win = (TGWindow*)fParentWindow;
+		new TGMsgBox(gClient->GetRoot(), win,
+					 "Warning", "Please set exactly 2 marks" ,
+					 kMBIconExclamation, kMBDismiss, &retval);
+		return;
+	}
+	Double_t sum1 = 0, sum2 = 0,sumx = 0, 
+			meanx1 = 0, meany1 = 0, meanx2 = 0, meany2 = 0;
 	Double_t xlow1 = ((FhMarker *) fMarkers->At(0))->GetX();
 	Double_t xup1  = ((FhMarker *) fMarkers->At(1))->GetX();
-	Double_t xlow2 = ((FhMarker *) fMarkers->At(2))->GetX();
-	Double_t xup2  = ((FhMarker *) fMarkers->At(3))->GetX();
 	Int_t binlow1  = fSelHist->FindBin(xlow1);
 	Int_t binup1	= fSelHist->FindBin(xup1);
-	Int_t binlow2  = fSelHist->FindBin(xlow2);
-	Int_t binup2	= fSelHist->FindBin(xup2);
-
-	Double_t sum1 = 0, sum2 = 0,sumx = 0;
+	Double_t xlow2 = 0;
+	Double_t xup2  = 0;
+	Int_t binlow2  = 0;
+	Int_t binup2	= 0;
 	for (Int_t i = binlow1; i <= binup1; i++) {
 		sum1 += fSelHist->GetBinContent(i);
 		sumx += fSelHist->GetBinContent(i) * fSelHist->GetBinCenter(i);
 	}
-	Double_t meanx1 = sumx / sum1;
-	Double_t meany1 = sum1 / (binup1 - binlow1 + 1);
-	sumx = 0;
-	for (Int_t i = binlow2; i <= binup2; i++) {
-		sum2 += fSelHist->GetBinContent(i);
-		sumx += fSelHist->GetBinContent(i) * fSelHist->GetBinCenter(i);
+	meanx1 = sumx / sum1;
+	meany1 = sum1 / (binup1 - binlow1 + 1);
+	if ( fSlope0 == 0 ) {
+		xlow2 = ((FhMarker *) fMarkers->At(2))->GetX();
+		xup2  = ((FhMarker *) fMarkers->At(3))->GetX();
+		binlow2  = fSelHist->FindBin(xlow2);
+		binup2	= fSelHist->FindBin(xup2);
+		sumx = 0;
+		for (Int_t i = binlow2; i <= binup2; i++) {
+			sum2 += fSelHist->GetBinContent(i);
+			sumx += fSelHist->GetBinContent(i) * fSelHist->GetBinCenter(i);
+		}
+		meanx2 = sumx / sum2;
+		meany2 = sum2 /(binup2 - binlow2 + 1);
 	}
-	Double_t meanx2 = sumx / sum2;
-	Double_t meany2 = sum2 /(binup2 - binlow2 + 1);
+
 //	cout << "meanx1 " << meanx1 << " meany1 " << meany1
 //			<< " meanx2 " << meanx2 << " meany2 " <<  meany2 << endl;
-	fLinBgSlope =  (meany2 - meany1) / (meanx2 - meanx1);
-//	fLinBgSlope /= fSelHist->GetBinWidth(1);
-	fLinBgConst = meany1 - fLinBgSlope * meanx1;
-//	fLinBgConst /= fSelHist->GetBinWidth(1);
-
+	if ( fSlope0 == 0 ) {
+		fLinBgSlope =  (meany2 - meany1) / (meanx2 - meanx1);
+		fLinBgConst = meany1 - fLinBgSlope * meanx1;
+	} else {
+		fLinBgSlope = 0;
+		fLinBgConst = meany1;
+	}
 //	TF1 *lin_bg = new TF1("lin_bg", "pol1", xlow1, xup2);
 //	lin_bg->SetParameters(fLinBgConst, fLinBgSlope);
 //	cHist->cd();
@@ -2069,8 +2071,12 @@ void FitOneDimDialog::DetLinearBackground()
 	cout << "Linear Background: [" << xlow1 << ", " << xup1 << "], ["
 		  << xlow2 << ", " << xup2 << "]" << endl
 		  << "Const = " << fLinBgConst
-		  << " Slope = " << fLinBgSlope << endl;
-//	ClearMarks();
+		  << " Slope = " << fLinBgSlope;
+		  if (fSlope0 != 0 ) {
+				cout << " fixed" << endl;
+			}
+			cout << endl;
+	ClearMarkers();
 	fLinBgSet = kTRUE;
 	return ;
 }

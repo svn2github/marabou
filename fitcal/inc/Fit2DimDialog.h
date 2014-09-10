@@ -10,7 +10,7 @@
 #include "TGMrbValuesAndText.h"
 //_____________________________________________________________________________________
 
-
+static const Int_t MAXP = 5;
 class Fit2DimDialog : public TObject {
 
 private:
@@ -22,6 +22,7 @@ private:
    TCanvas *fSelPad;
    TH2     *fSelHist;
    TH2     *fHistFitResult;
+   TF2     *fSelFunc;
    TF2     *fFitFunc;
    Color_t fColor;
    Width_t fWidth;
@@ -34,19 +35,19 @@ private:
    Double_t fToX;
    Double_t fFromY;
    Double_t fToY;
-
-   Double_t fSigmaX  ;
-   Double_t fSigmaY  ;
-   Double_t fConstant;
-   Double_t fOffX    ;
-   Double_t fOffY    ;
-   Double_t fPhi     ;
-   Int_t fFixSigmaX;
-   Int_t fFixSigmaY;
-   Int_t fFixConstant;
-   Int_t fFixOffX;
-   Int_t fFixOffY;
-   Int_t fFixPhi;
+	Int_t fNpeaks;
+   Double_t fSigmaX[MAXP]  ;
+   Double_t fSigmaY[MAXP]  ;
+   Double_t fConstant[MAXP];
+   Double_t fOffX[MAXP]    ;
+   Double_t fOffY[MAXP]    ;
+   Double_t fPhi[MAXP]     ;
+   Int_t fFixSigmaX[MAXP];
+   Int_t fFixSigmaY[MAXP];
+   Int_t fFixConstant[MAXP];
+   Int_t fFixOffX[MAXP];
+   Int_t fFixOffY[MAXP];
+   Int_t fFixPhi[MAXP];
    Double_t fBgX0;
    Double_t fBgY0;
    Double_t fBgSlopeX;
@@ -71,13 +72,16 @@ private:
    Int_t fFitOptIntegral;    // Use integral of bin
    Int_t fFitOptNoDraw;      // dont draw fit result
    Int_t fFitPrintCovariance;// Print Correlation matrix (normalized covariance)
+   Int_t fShowAsHist;
 
 public:
-   Fit2DimDialog(TH2 * hist, Int_t type = 1, Int_t interactive = 1);
-   void DisplayMenu(Int_t type = 1);
+   Fit2DimDialog(TObject *obj, Int_t npeaks = 0, Int_t interactive = 1);
+   void DisplayMenu();
    virtual ~Fit2DimDialog();
    void RecursiveRemove(TObject * obj);
-//   Double_t Fit2DimGauss(Double_t *x, Double_t *p);
+   //fit function as class member
+   Double_t TwoDimGaus(Double_t *x, Double_t *p);
+   Double_t MultTwoDimGaus(Double_t *x, Double_t *p);
    void GausExecute(Int_t draw_only);
    void FitGausExecute();
    void DrawGausExecute();
@@ -93,7 +97,6 @@ public:
    Int_t GetMarkers();
    void ClearMarkers();
    void ClearFunctionList();
-//   void WriteoutFunction();
    void PrintMarkers();
    Int_t SetMarkers();
    void SetFittingOptions();
@@ -103,8 +106,8 @@ public:
    void CloseDialog();
    void CloseDown(Int_t wid);
    void IncrementIndex(TString * arg);
-//   void SaveFunction();
-//   void GetFunction();
+   void SaveFunction();
+   TF2* GetFitFunction() { return fFitFunc; };
 //   void ExecuteGetFunction();
 //
    void SetUseoldpars( Int_t useoldpars) { fUseoldpars = useoldpars; };
