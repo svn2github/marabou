@@ -1249,7 +1249,11 @@ Bool_t FhMainFrame::CheckParams()
 		return kFALSE;
 	}
 	if (fAttachid > 0) {
-		cout << "CheckParams: new TSocket,fSockNr " << fSockNr << endl;
+		cout << "CheckParams: new TSocket(\"localhost\", " << fSockNr << ")" << endl;
+		if (!gSystem->AccessPathName("localhost")) {
+			cout << setred<< "Cant connect to \"localhost\" (remove file \"localhost\" first!)" << endl;
+			return kFALSE;
+		}
 		fComSocket = new TSocket("localhost", fSockNr);
 // Wait till we get the start message
 		TMessage * mess;
@@ -1824,7 +1828,11 @@ Bool_t FhMainFrame::StartDAQ()
 				  fWasStarted = 1;
 				  if (fSockNr > 0) {
 retrysocket:
-					  cout << "new TSocket(\"localhost\", fSockNr)" << endl;
+					  cout << "new TSocket(\"localhost\", " << fSockNr << ")" << endl;
+					  if (!gSystem->AccessPathName("localhost")) {
+							cout << setred<< "Cant connect to \"localhost\" (remove file \"localhost\" first!)" << endl;
+							return kFALSE;
+					  }
 					  fComSocket = NULL;
 					  fComSocket = new TSocket("localhost", fSockNr);
 				// Wait till we get the start message
