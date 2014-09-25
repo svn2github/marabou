@@ -1580,8 +1580,9 @@ Bool_t FitOneDimDialog::FitGausExecute()
 	//	  add to ListOfFunctions if requested
 			if (!fFitOptNoDraw) {
 				fFitFunc->Draw("same");
-// need to reset bit instored histogram
-				fSelHist->GetListOfFunctions()->Last()->ResetBit(TF1::kNotDraw);
+// need to reset bit stored in histogram
+				if ( fSelHist && fSelHist->GetListOfFunctions()->Last() )
+					fSelHist->GetListOfFunctions()->Last()->ResetBit(TF1::kNotDraw);
 			}
 			if (fFitOptAddAll) {
 				TList *lof = fGraph->GetListOfFunctions();
@@ -1619,11 +1620,13 @@ Bool_t FitOneDimDialog::FitGausExecute()
 		if (fAutoClearMarks) ClearMarkers();
 		// Resize statbox blown up by THistPainter
 		gPad->Update();
-		stbox=(TPaveStats*)fSelHist->GetListOfFunctions()->FindObject("stats");
-		if (stbox) {
-			cout << "Resize statbox: " << statwidth << " " << stbox->GetX2NDC() - stbox->GetX1NDC()<< endl;
-			if ( TMath::Abs(statwidth - (stbox->GetX2NDC() - stbox->GetX1NDC()) ) > 0.001)
-				stbox->SetX1NDC(stbox->GetX2NDC() - statwidth);
+		if ( fSelHist ) {
+			stbox=(TPaveStats*)fSelHist->GetListOfFunctions()->FindObject("stats");
+			if (stbox) {
+				cout << "Resize statbox: " << statwidth << " " << stbox->GetX2NDC() - stbox->GetX1NDC()<< endl;
+				if ( TMath::Abs(statwidth - (stbox->GetX2NDC() - stbox->GetX1NDC()) ) > 0.001)
+					stbox->SetX1NDC(stbox->GetX2NDC() - statwidth);
+			}
 		}
 	} else {
 //	 no fit requested draw
