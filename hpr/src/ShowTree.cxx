@@ -80,7 +80,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    *fLeafCut="";
 //   TButton *button;
    Int_t len, l, not_shown = 0;
-	Bool_t showit;
+//	Bool_t showit;
 	
 //   TLeaf *leafcount;
 //   char *bname;
@@ -126,16 +126,16 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
       } else {
          len = leaf->GetLen();
 //  apply selection if needed
-         if (fLeafSelMask.Length() > 0) {
+         if (fUseLeafSelMask && fLeafSelMask.Length() > 0) {
 				if ( ! Hpr::IsSelected(leaf->GetName(), &fLeafSelMask, fLeafUseRegexp ) )
 					continue;
          }
 
 			if (fCmdLine->GetSize() >= GeneralAttDialog::fMaxListEntries) {
-				showit = kFALSE;
+//				showit = kFALSE;
 				not_shown++;
 			} else {
-				showit = kTRUE;
+//				showit = kTRUE;
 			}
 
          if (len > 1) {
@@ -676,11 +676,13 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    if (must_find_limits) limits_defined = kFALSE;
 
    Bool_t modified = kFALSE;
-      Double_t xmin=0, xmax=0, ymin=0, ymax=0, zmin=0, zmax=0, umin=0, umax=0;
+      Double_t umin=0, umax=0;
    if (must_find_limits) {
       cout << setblue << "Do tree->Draw() to find limits: "<< cmd_orig << setblack << endl;
+      /*
       xmin = tree->GetMinimum((*leaf[0]).Data());
       xmax = tree->GetMaximum((*leaf[0]).Data());
+      
 //      cout << "xmin, xmax " << xmin << " " << xmax << endl;
       if (nent > 1) {
 			ymin = tree->GetMinimum((*leaf[1]).Data());
@@ -692,6 +694,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 			zmax = tree->GetMaximum((*leaf[2]).Data());
 //			cout << "zmin, zmax " << zmin << " " << zmax << endl;
       }
+      */
       if (nent > 3) {
 			umin = tree->GetMinimum((*leaf[3]).Data());
 			umax = tree->GetMaximum((*leaf[3]).Data());

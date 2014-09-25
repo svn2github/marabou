@@ -32,6 +32,7 @@ namespace Hpr
 	TH1 * GetOneHist(TH1 * selhist, TCanvas * canvas = NULL);
 	void ResizeStatBox(TPaveStats * st, Int_t ndim); 
 	Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp);
+	Bool_t IsSelected(const char * name, Int_t from_run, Int_t to_run);
 	void BoundingB3D(TPolyLine3D * pl,  Double_t x0, Double_t y0, Double_t z0, 
 						  Double_t x1, Double_t y1, Double_t z1);
 	TF1 * FindFunctionInPad(TVirtualPad * ca);

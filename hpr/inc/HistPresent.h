@@ -55,10 +55,17 @@ protected:
    TString *fCutVarX;
    TString *fCutVarY;
    TString *fExpression;
+	Int_t   fUseFileSelFromRun;
+	Int_t   fFileSelFromRun;
+	Int_t   fFileSelToRun;
    TString fFileSelMask;
+   Int_t   fUseFileSelMask;
    TString fHistSelMask;
+   Int_t   fUseHistSelMask;
 	TString fLeafSelMask;
+   Int_t   fUseLeafSelMask;
 	TString fCanvasSelMask;
+   Int_t   fUseCanvasSelMask;
 	Int_t fFileUseRegexp;
 	Int_t fHistUseRegexp;
 	Int_t fLeafUseRegexp;

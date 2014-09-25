@@ -62,6 +62,13 @@ void HistPresent::RestoreOptions()
    fMarkColor          = env.GetValue("HistPresent.fMarkColor", 1);
    fHistSelMask        = env.GetValue("HistPresent.fHistSelMask", "");
    fFileSelMask        = env.GetValue("HistPresent.fFileSelMask", "");
+   fUseFileSelMask     = env.GetValue("HistPresent.fUseFileSelMask", 0);
+   fUseHistSelMask     = env.GetValue("HistPresent.fUseHistSelMask", 0);
+   fUseLeafSelMask     = env.GetValue("HistPresent.fUseLeafSelMask", 0);
+   fUseCanvasSelMask   = env.GetValue("HistPresent.fUseCanvasSelMask", 0);
+   fUseFileSelFromRun  = env.GetValue("HistPresent.fUseFileSelFromRun", 0);
+   fFileSelFromRun     = env.GetValue("HistPresent.fFileSelFromRun", -1);
+   fFileSelToRun       = env.GetValue("HistPresent.fFileSelToRun", -1);
 	fLeafSelMask        = env.GetValue("HistPresent.fLeafSelMask", "");
 	fCanvasSelMask      = env.GetValue("HistPresent.fCanvasSelMask", "");
 	fHistUseRegexp      = env.GetValue("HistPresent.fHistUseRegexp", 0);
@@ -147,7 +154,14 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.fHistSelMask",fHistSelMask);
 	env.SetValue("HistPresent.fLeafSelMask",fLeafSelMask);
 	env.SetValue("HistPresent.fFileSelMask",fFileSelMask);
+   env.SetValue("HistPresent.fUseFileSelFromRun", fUseFileSelFromRun);
+   env.SetValue("HistPresent.fFileSelFromRun", fFileSelFromRun);
+   env.SetValue("HistPresent.fFileSelToRun", fFileSelToRun);
 	env.SetValue("HistPresent.fCanvasSelMask",fCanvasSelMask);
+   env.SetValue("HistPresent.fUseFileSelMask",   fUseFileSelMask  );
+   env.SetValue("HistPresent.fUseHistSelMask",   fUseHistSelMask  );
+   env.SetValue("HistPresent.fUseLeafSelMask",   fUseLeafSelMask  );
+   env.SetValue("HistPresent.fUseCanvasSelMask", fUseCanvasSelMask);
 	
 	env.SetValue("HistPresent.fHistUseRegexp",fHistUseRegexp);
 	env.SetValue("HistPresent.fLeafUseRegexp",fLeafUseRegexp);

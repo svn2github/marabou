@@ -363,7 +363,14 @@ HOWTOS contain useful examples.";
 //_______________________________________________________________________________
 
 const char Help_SelectionMask_text[]=
-"Selection mask may be defined in 3 different ways:\n\
+"Selection mask may be defined in the following ways:\n\
+\n\
+If file names contain run numbers they may be\n\
+selected by defining first and last run.\n\
+Run numbers must have at least 3 digits like:\n\
+009, 012 as normally used in Marabou.\n\
+\n\
+The following selections use patterns:\n\
 \n\
 If option 'Use Regexp' is active:\n\
 \n\

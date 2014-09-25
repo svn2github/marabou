@@ -556,27 +556,34 @@ void HistPresent::ShowFiles(const char *how, const char */*bp*/)
 	void* dirp=gSystem->OpenDirectory(gHprWorkDir);
 	Int_t nfiles = 0;
 	const Char_t * na;
-	if ( fFileSelMask.Length() > 0 ) {
-		cout << setblue << "Using file selction mask: \""
+	if ( fUseFileSelFromRun && fFileSelFromRun >= 0 && fFileSelToRun > 0 ) {
+		cout << setblue << "Select files by run number, from: "
+		<< fFileSelFromRun << " to: " << fFileSelToRun << setblack<< endl;
+	}
+	if ( fUseFileSelMask && fFileSelMask.Length() > 0 ) {
+		cout << setblue << "Using file selection mask: \""
 		<< fFileSelMask<< "\""<< setblack<< endl;
 	}
 	while ( (na=gSystem->GetDirEntry(dirp)) ) {
 		fname = na;
 		if (!fname.EndsWith(".root") && !fname.EndsWith(".histlist"))
 			continue;
-		if (fFileSelMask.Length() > 0 
+		if ( fUseFileSelMask && fFileSelMask.Length() > 0 
 			&& !Hpr::IsSelected(fname, &fFileSelMask, fFileUseRegexp) )
 				continue;
-		 Long_t  id, flags, modtime;
-		 Long64_t size;
-		 gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
-		 TString nam=fname;
-		 TString cmd = "gHpr->Show";
-		 if (fname.EndsWith(".histlist")) {
-			 cmd = cmd + "List(\"\",\"" + gHprWorkDir.Data() +"/" + fname + "\")";
-		 } else {
+		if ( fUseFileSelFromRun && fFileSelFromRun >= 0 && fFileSelToRun > 0
+				&& !Hpr::IsSelected(fname, fFileSelFromRun, fFileSelToRun) )
+				continue;
+		Long_t  id, flags, modtime;
+		Long64_t size;
+		gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
+		TString nam=fname;
+		TString cmd = "gHpr->Show";
+		if (fname.EndsWith(".histlist")) {
+			cmd = cmd + "List(\"\",\"" + gHprWorkDir.Data() +"/" + fname + "\")";
+		} else {
 			 cmd = cmd + "Contents(\"" + gHprWorkDir.Data() +"/"+ fname + "\", \"\" )";
-		 }
+		}
 
 		 TString tit;
 		 TString sel;
@@ -964,7 +971,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 	Int_t n_enter = 0;
 	Int_t not_shown = 0;
 	if (nstat > 0) {
-		if ( fHistSelMask.Length() > 0) {
+		if ( fUseHistSelMask && fHistSelMask.Length() > 0) {
 			cout << setblue << "Using selectionmask: " << fHistSelMask 
 			<< setblack << endl;
 		}
@@ -1124,7 +1131,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 			TObjString * objs;
 			while ( (objs = (TObjString*)next())) {
 				title = objs->String();
-				if ( !Hpr::IsSelected( title.Data(), &fCanvasSelMask, fCanvasUseRegexp ) )
+				if ( fUseCanvasSelMask && !Hpr::IsSelected( title.Data(), &fCanvasSelMask, fCanvasUseRegexp ) )
 					continue;
 				cmd = fname;
 				cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
@@ -1641,22 +1648,36 @@ void HistPresent::GetHistSelMask(const char* /*bp*/)
 	void * Valp[20];
 	TList * row_lab = new TList();
 	Int_t ind = 0;
-	row_lab->Add(new TObjString("StringValue_       Files"));
+	row_lab->Add(new TObjString("PlainIntVal_Files by Run, From:"));
+	Valp[ind++] = &fFileSelFromRun;
+	row_lab->Add(new TObjString("PlainIntVal-  To: "));
+	Valp[ind++] = &fFileSelToRun;
+	row_lab->Add(new TObjString("CheckButton-  Enable"));
+	Valp[ind++] = &fUseFileSelFromRun;
+	row_lab->Add(new TObjString("StringValue_      Files"));
 	Valp[ind++] = &fFileSelMask;
 	row_lab->Add(new TObjString("CheckButton-Use Regexp"));
 	Valp[ind++] = &fFileUseRegexp;
-	row_lab->Add(new TObjString("StringValue_  Histograms"));
+	row_lab->Add(new TObjString("CheckButton-Enable"));
+	Valp[ind++] = &fUseFileSelMask;
+	row_lab->Add(new TObjString("StringValue_ Histograms"));
 	Valp[ind++] = &fHistSelMask;
 	row_lab->Add(new TObjString("CheckButton-Use Regexp"));
 	Valp[ind++] = &fHistUseRegexp;
-	row_lab->Add(new TObjString("StringValue_ Branch Leaf"));
+	row_lab->Add(new TObjString("CheckButton-Enable"));
+	Valp[ind++] = &fUseHistSelMask;
+	row_lab->Add(new TObjString("StringValue_Branch Leaf"));
 	Valp[ind++] = &fLeafSelMask;
 	row_lab->Add(new TObjString("CheckButton-Use Regexp"));
 	Valp[ind++] = &fLeafUseRegexp;
-	row_lab->Add(new TObjString("StringValue_    Canvases"));
+	row_lab->Add(new TObjString("CheckButton-Enable"));
+	Valp[ind++] = &fUseLeafSelMask;
+	row_lab->Add(new TObjString("StringValue_   Canvases"));
 	Valp[ind++] = &fCanvasSelMask;
 	row_lab->Add(new TObjString("CheckButton-Use Regexp"));
 	Valp[ind++] = &fCanvasUseRegexp;
+	row_lab->Add(new TObjString("CheckButton-Enable"));
+	Valp[ind++] = &fUseCanvasSelMask;
 	Int_t itemwidth = 420;
 	static Int_t ok = -2;   // wait until closed
 	new TGMrbValuesAndText ("Edit Selection Masks", NULL, &ok, itemwidth,

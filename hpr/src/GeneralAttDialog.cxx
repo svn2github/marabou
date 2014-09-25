@@ -362,14 +362,15 @@ void GeneralAttDialog::RestoreDefaults()
 	fRememberStatBox = env.GetValue("GeneralAttDialog.fRememberStatBox", (Int_t)0);
 	fRememberLegendBox = env.GetValue("GeneralAttDialog.fRememberLegendBox", 1);
 	fUseAttributeMacro = env.GetValue("GeneralAttDialog.fUseAttributeMacro", 0);
-   fMaxListEntries =
-   env.GetValue("GeneralAttDialog.fMaxListEntries", 333);
+	fMaxListEntries = env.GetValue("GeneralAttDialog.fMaxListEntries", 333);
 	if ( fMaxListEntries <= 0 )
 		fMaxListEntries = 333;
-   fSkipFirst =
-   env.GetValue("GeneralAttDialog.fSkipFirst", 0);
+   fSkipFirst = env.GetValue("GeneralAttDialog.fSkipFirst", 0);
 	if ( fSkipFirst <= 0 )
 		fSkipFirst = 0;
+	fMaxFileListEntries = env.GetValue("GeneralAttDialog.fMaxFileListEntries", 333);
+	if ( fMaxFileListEntries <= 0 )
+		fMaxFileListEntries = 333;
    fVertAdjustLimit = env.GetValue("GeneralAttDialog.fVertAdjustLimit", 0);
    fAdjustMinY      = env.GetValue("GeneralAttDialog.fAdjustMinY",      1);
    fContentLowLimit = env.GetValue("GeneralAttDialog.fContentLowLimit", 0);
@@ -380,7 +381,7 @@ void GeneralAttDialog::RestoreDefaults()
 	fPrependFilenameToTitle = env.GetValue("GeneralAttDialog.fPrependFilenameToTitle"   , 0);
 	fPrependFilenameToName = env.GetValue("GeneralAttDialog.fPrependFilenameToName", 1);
 	fAppendTimestampToHistname = env.GetValue("GeneralAttDialog.fAppendTimestampToHistname", 0);
-	
+
 	if (fAdjustMinY == 0 ) {
 		cout << setred
 		<< "Warning: Y scale of 1dim hists is forced to 0 (or smaller)"<< endl

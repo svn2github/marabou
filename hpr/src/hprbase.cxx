@@ -1241,6 +1241,33 @@ void ResizeStatBox(TPaveStats * st, Int_t ndim)
 }
 //__________________________________________________________________
 
+Bool_t IsSelected(const char * name, Int_t from_run, Int_t to_run)
+{
+	// Select file name by run number
+	if (from_run < 0 || from_run > to_run) {
+		cout << "Select files by run numbers, Illegal limits: "
+		<< from_run << " " <<to_run << endl;
+		return kFALSE;
+	}
+	TString fn(name);
+	TRegexp numb("[0-9]+");
+	Int_t len;
+	Int_t st = numb.Index(fn,&len,0);
+	if ( st < 0 ) 
+		return kFALSE;
+	if ( len < 3 ) {
+		cout << "Not enough digits, skipping: " << name << endl;
+		return kFALSE;
+	}
+	TString ns = fn(st,len);
+	Int_t rn = ns.Atoi();
+	if ( rn < from_run || rn > to_run) {
+		return kFALSE;
+	} 
+	return kTRUE;
+}
+//__________________________________________________________________
+
 Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp)
 {
 	enum e_HsOp {kHsOp_None, kHsOp_And, kHsOp_Or, kHsOp_Not};
@@ -1306,6 +1333,7 @@ Bool_t IsSelected(const char * name, TString * mask, Int_t use_regexp)
 	}
 	return kTRUE;
 }
+//_________________________________________________________________________
 	
 void BoundingB3D(TPolyLine3D * pl,  Double_t x0, Double_t y0, Double_t z0, 
 						  Double_t x1, Double_t y1, Double_t z1) 
