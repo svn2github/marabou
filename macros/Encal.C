@@ -1622,7 +1622,7 @@ void UpdateStatusLine() {
 									fCurHisto->GetName(),
 									fNofPeaks);
 		}
-		OutputMessage("UpdateStatusLine", sts.Data(), kFALSE, 3);
+		OutputMessage("UpdateStatusLine", sts.Data(), "o", 3);
 	}
 }
 
