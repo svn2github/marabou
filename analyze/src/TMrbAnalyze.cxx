@@ -3051,7 +3051,7 @@ Int_t TMrbAnalyze::GetHistoIndex(Int_t ModuleIndex, Int_t RelParamIndex) const {
 // Arguments:      Int_t ModuleIndex      -- list index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        Int_t HistoIndex       -- index
-// Exceptions:
+// Exceptions:     returns -1 on error
 // Description:    Returns histo index
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -3064,13 +3064,13 @@ Int_t TMrbAnalyze::GetHistoIndex(Int_t ModuleIndex, Int_t RelParamIndex) const {
 		gMrbLog->Err()	<< "Module index out of range - " << ModuleIndex
 						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetHistoIndex");
-		return(kFALSE);
+		return(-1);
 	}
 	nmx = (TMrbNamedX *) fModuleList[ModuleIndex];
 	if (nmx == NULL) {
 		gMrbLog->Err()	<< "Module index not in use - " << ModuleIndex << endl;
 		gMrbLog->Flush(this->ClassName(), "GetHistoIndex");
-		return(kFALSE);
+		return(-1);
 	}
 	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
 	px = mle->GetIndexOfFirstParam();
