@@ -115,7 +115,7 @@ private:
 	Int_t             *fFileType;
 	TString				fStartDir;
 	Bool_t            fMustRestoreDir;
-//   Int_t             fFinis;
+   Int_t             fCloseFlag;
 public:
    TGMrbValuesAndText(const char *prompt, TString * text,
                              Int_t * ok, Int_t win_width, const TGWindow *win=0,

@@ -787,8 +787,9 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       fCallingCanvas = NULL;
    }
    fCompList = complist;
+   fCloseFlag = *ok;
    Bool_t mustwait = kFALSE;
-	if (*ok == -2)
+	if (*ok <= -2)
       mustwait = kTRUE;
    fReturn = ok;
    *ok = -1;    // if closed by cancel
@@ -826,7 +827,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
    TGCompositeFrame *hframe = NULL , *hframe1 = NULL, *hButtonFrame = NULL;
    if (RowLabels) {
-      TGLabel * label;
+      TGLabel * label = NULL;
       TGTextEntry * tentry;
       TGNumberEntry * tnentry;
       TGButton * cbutton;
@@ -949,7 +950,8 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          }
 
          if (l.BeginsWith("Comment")) {
-            label->ChangeBackground(wheat);
+				if (label)
+					label->ChangeBackground(wheat);
             hframe->AddFrame(hButtonFrame, locx);
          } else if (l.BeginsWith("CommandButt")) {
             TString *sr = (TString*)fValPointers[i];
@@ -1337,21 +1339,29 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    TGLayoutHints * lr = new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsCenterY , 2, 2, 0, 0);
 
    UInt_t  nb = 0, width = 0, height = 0;
-   if (!has_commands) {
-      b = new TGTextButton(hf, "Apply",  1000*kIdOk);
-      b->SetToolTipText("Apply action and close dialog");
-
-   } else {
-      b = new TGTextButton(hf, "Save-Quit",  1000*kIdOk);
-      b->SetToolTipText("Save current parameters and close dialog");
-   }
+   b = NULL;
+   if ( fCloseFlag >= -2 ) {
+	   if (!has_commands) {
+	      b = new TGTextButton(hf, "Apply",  1000*kIdOk);
+	      b->SetToolTipText("Apply action and close dialog");
+	
+	   } else {
+	      b = new TGTextButton(hf, "Save-Quit",  1000*kIdOk);
+	      b->SetToolTipText("Save current parameters and close dialog");
+	   }
+	}
 //		fWidgets->AddFirst(b);
-	b->Associate(this);
-	hf->AddFrame(b, ll);
-	height = b->GetDefaultHeight();
-	width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
-	fCancelButton = new TGTextButton(hf, "Cancel",  1000*kIdCancel);
-   fCancelButton->SetToolTipText("Close dialog, dont save parameters");
+	if ( b ) {
+		b->Associate(this);
+		hf->AddFrame(b, ll);
+		height = b->GetDefaultHeight();
+		width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
+	}
+	if ( fCloseFlag >= -2) 
+		fCancelButton = new TGTextButton(hf, "Cancel",  1000*kIdCancel);
+	else
+		fCancelButton = new TGTextButton(hf, "Close Dialog",  1000*kIdCancel);
+   fCancelButton->SetToolTipText("Close dialog");
 //      if (calling_class != NULL) {
 //         b->Connect("Clicked()", cname, calling_class, "CloseDown(Int_t)");
 //         fCancelButton->Connect("Clicked()", cname, //calling_class,"CloseDown(Int_t)");
@@ -1461,7 +1471,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 //      << GET_SUBMSG(msg) << " parm1 " << parm1 << " parm2 " << parm2 << endl;
 
    if (!fEmitClose) return kTRUE;
-   Int_t idButton, idCmd;
+   Int_t idButton = 0, idCmd = 0;
    if (parm1 >= 1000) {
       idCmd = parm1 / 1000;
       idButton = parm1%1000 ;
