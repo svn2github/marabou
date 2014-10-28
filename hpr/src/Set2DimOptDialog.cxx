@@ -59,7 +59,11 @@ BOX1  : a button is drawn for each cell with surface proportional to\n\
 			 content's absolute value. A sunken button is drawn for negative values\n\
 			 a raised one for positive.\n\
 COL   : a box is drawn for each cell with a color scale varying with contents\n\
-COLZ  : same as COL. In addition the color palette is also drawn\n\
+COLZ  : 	Same as \"COL\". In addition the color palette is also drawn.\n\
+CANDLEX:	Draw a candle plot along X axis.\n\
+CANDLEY:	Draw a candle plot along Y axis.\n\
+VIOLINX:	Draw a violin plot along X axis.\n\
+VIOLINY:	Draw a violin plot along Y axis.\n\
 CONT  : Draw a contour plot (same as CONT0)\n\
 CONT0 : Draw a contour plot using surface colors to distinguish contours\n\
 CONT1 : Draw a contour plot using line styles to distinguish contours\n\
@@ -140,10 +144,15 @@ For further details contact ROOTs documentation.\n\
 ";
 
 	const char *fDrawOpt2[kNdrawopt] =
-	{"SCAT", "BOX",    "BOX1",  "COL",   "ARR",   "TEXT",
-	"CONT0", "CONT1" , "CONT2", "CONT3", "CONT4", "SURF0",
-	"SURF1", "SURF2",  "SURF3", "SURF4", "SURF5", "LEGO",
-	"LEGO1", "LEGO2",  "POL",   "CYL",    "SPH",  "PSR"};
+	{"SCAT", "BOX",   "BOX1",  "COL",   "ARR",   "TEXT",
+	"CONT0", "CONT1", "CONT2", "CONT3", "CONT4", "",
+	"SURF0", "SURF1", "SURF2",  "SURF3", "SURF4", "SURF5",
+	"LEGO",  "LEGO1", "LEGO2",  "LEGO3", "LEGO4", "",
+	"VIOLINX","VIOLINY", "CANDLEX","CANDLEY",
+	"POL",   "CYL",    "SPH",  "PSR"};
+	const Int_t newl[kNdrawopt] ={1,0,0,0,0,0, 1,0,0,0,0,0,
+											1,0,0,0,0,0, 1,0,0,0,0,0, 
+											1,0,0,0, 1,0,0,0};
 	fBidTEXT = 5;
 	
 	TRootCanvas *rc = (TRootCanvas*)win;
@@ -162,7 +171,7 @@ For further details contact ROOTs documentation.\n\
 		} else if (obj->InheritsFrom("TPad")) {
 			fHist = (TH2*)Hpr::FindHistInPad((TVirtualPad*)obj);
 		}
-		cout << obj->ClassName() << " " << fHist << endl;
+//		cout << obj->ClassName() << " " << fHist << endl;
 		if (fHist) {
 			break;
 		}
@@ -203,8 +212,11 @@ For further details contact ROOTs documentation.\n\
 	Int_t nsopt = 0;
 	TString droptsav = fDrawOpt2Dim;
 	for (Int_t i = kNdrawopt-1; i >= 0; i--) {
+		if ( strlen(fDrawOpt2DimArray[i]) <=0 )
+			continue;
 		Int_t ind = fDrawOpt2Dim.Index(fDrawOpt2DimArray[i]);
 		if ( ind >= 0 ) {
+//			cout << " fDrawOpt2DimArray[" << i << "] "<< fDrawOpt2DimArray[i] << endl;
 			Int_t len = strlen(fDrawOpt2DimArray[i]);
 			fDrawOpt2Dim = fDrawOpt2Dim.Replace(ind, len, "");
 			fOptRadio[i] = 1;
@@ -222,9 +234,7 @@ For further details contact ROOTs documentation.\n\
 	gROOT->GetListOfCleanups()->Add(this);
 	fRow_lab = new TList();
 	fDrawOpt2Dim = droptsav;
-	Int_t ind = 0;
-	Int_t indopt = 0;
-//   static Int_t dummy;
+   static Int_t dummy;
 	static TString stycmd("SetHistAttPermLocal()");
 	static TString sadcmd("SetAllToDefault()");
 
@@ -236,18 +246,31 @@ For further details contact ROOTs documentation.\n\
 	fBidBOX1 = 3;
 	fBidARR =  5;
 	
+	Int_t ind = 0;
+	Int_t indopt = 0;
 	for (Int_t i = 0; i < kNdrawopt; i++) {
 //   cout << " indopt  " <<  indopt << endl;
-		 TString text("CheckButton");
-		 if ( i%6 == 0 )text += "_";
-		 else       text += "+";
-		 if (strlen(fDrawOpt2DimArray[indopt]) < 5)
+		Int_t lenopt = strlen(fDrawOpt2DimArray[indopt]) ;
+//		cout << " lenopt  " <<  lenopt 
+//		 << " " <<fDrawOpt2DimArray[indopt] << endl;
+		TString text("CheckButton");
+		if (lenopt < 2)
+			text = "CommentOnly";
+		if ( newl[i] == 1)text += "_";
+		else       text += "+";
+		
+		if (lenopt < 5)
 			 text += " ";
-		 if (strlen(fDrawOpt2DimArray[indopt]) < 4)
+		if (lenopt< 4)
 			 text += " ";
-		 text += fDrawOpt2DimArray[indopt];
-		 fRow_lab->Add(new TObjString(text.Data()));
-		 fValp[ind++] = &fOptRadio[indopt++];
+		if (lenopt > 1) {
+			text += fDrawOpt2DimArray[indopt];
+			fValp[ind++] = &fOptRadio[indopt];
+		} else {
+			fValp[ind++] = &dummy;
+		}
+		fRow_lab->Add(new TObjString(text.Data()));
+		indopt++;
 	}
 	fRow_lab->Add(new TObjString("ColorSelect_FillCol"));
 	fBidFillColor = ind; fValp[ind++] = &fHistFillColor2Dim;
@@ -307,9 +330,10 @@ For further details contact ROOTs documentation.\n\
 		new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
 							 NULL, NULL, fRow_lab, fValp,
 							 NULL, NULL, helptext, this, this->ClassName());
-//	if (gDebug > 0) {
+	if (gDebug > 0) {
 		cout << "Set2DimOptDialog *dia =(Set2DimOptDialog*)"<< this << endl;
 		cout << "fDrawOpt2Dim " << fDrawOpt2Dim << endl;
+	}
 }
 //_______________________________________________________________________
 
@@ -704,14 +728,14 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 
 	// 2-dim options exclude 3-dim
 	if ( bid >= 0 && bid <= 10) {
-		for ( Int_t i = 11; i <= 23; i++ ) {
+		for ( Int_t i = 11; i <= 27; i++ ) {
 			fOptRadio[i] = 0;
 			fDialog->SetCheckButton(i, 0);
 		}
 	}
 	// 3-dim options are mutually exclusive
-	if ( bid >= 11 && bid <= 19) {
-		for ( Int_t i = 0; i <= 19; i++ ) {
+	if ( bid >= 11 && bid <= 27) {
+		for ( Int_t i = 0; i <= 27; i++ ) {
 			fOptRadio[i] = 0;
 			fDialog->SetCheckButton(i, 0);
 		}
@@ -719,8 +743,8 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 		fDialog->SetCheckButton(bid, 1);
 	}
 	// non cartesian options are mutually  exclusive
-	if ( bid >= 20 && bid <= 23) {
-		for ( Int_t i = 20; i <= 23; i++ ) {
+	if ( bid >= 28 && bid <= 31) {
+		for ( Int_t i = 28; i <= 31; i++ ) {
 			if ( gDebug > 0 )
 				cout << "CRButtonPressed: fOptRadio[" << i <<"] = " << fOptRadio[i]<< endl;
 			if ( bid != i ) {

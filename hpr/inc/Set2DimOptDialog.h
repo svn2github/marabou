@@ -8,7 +8,7 @@
 #include <iostream>
 //_____________________________________________________________________________________
 
-const Int_t kNdrawopt = 24;
+const Int_t kNdrawopt = 32;
 
 class Set2DimOptDialog : public TObject {
 

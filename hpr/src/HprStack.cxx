@@ -96,7 +96,7 @@ HprStack::HprStack(TList * hlist, Int_t scaled)
 			fValpW[ind++] = &fColorW[i];
 		}
 		Int_t itemwidth = 420;
-		static Int_t ok = -2;   // wait until closed
+		static Int_t ok = -3;   // wait until closed
 		fDialogW =
 		new TGMrbValuesAndText ("Scale histos", NULL, &ok, itemwidth,
 										NULL, NULL, NULL, fRow_labW, fValpW,

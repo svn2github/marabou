@@ -979,7 +979,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 		TIter nextentry(st->GetListOfEntries());
 		while ( (stent = (TMrbStatEntry*)nextentry()) ) {
 			n_enter++;
-			if ( !Hpr::IsSelected( stent->GetName(), &fHistSelMask, fHistUseRegexp ) )
+			if ( fUseHistSelMask &&  !Hpr::IsSelected( stent->GetName(), &fHistSelMask, fHistUseRegexp ) )
 				continue;
 			TString shn(stent->GetName());
 			if (shn.Contains(" ")) {
@@ -1679,7 +1679,7 @@ void HistPresent::GetHistSelMask(const char* /*bp*/)
 	row_lab->Add(new TObjString("CheckButton-Enable"));
 	Valp[ind++] = &fUseCanvasSelMask;
 	Int_t itemwidth = 420;
-	static Int_t ok = -2;   // wait until closed
+	static Int_t ok = -3;   // wait until closed, no Apply button
 	new TGMrbValuesAndText ("Edit Selection Masks", NULL, &ok, itemwidth,
 									fRootCanvas, NULL, NULL, row_lab, Valp,
 									NULL, NULL, Help_SelectionMask_text);
@@ -4081,23 +4081,28 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 					yan->SetBit(TAxis::kCenterTitle);
 			}
 		}
-		TString drawopt = env.GetValue("GraphAttDialog.fDrawOpt", "PA");
-		if (drawopt.Length() == 0 || drawopt == " ")
-			drawopt = "PA";
-		graph1d->Draw(drawopt);
+		TString drawopt("");
+		if (gROOT->GetForceStyle()) {
+			drawopt = env.GetValue("GraphAttDialog.fDrawOpt", "PA");
+			if (drawopt.Length() == 0 || drawopt == " ")
+				drawopt = "PA";
+		}
 //		cout << "graph1d->Draw " << drawopt<< " " << graph1d->GetName()<< " "
 //		<< graph1d->GetHistogram()->GetName()<< endl;
-		graph1d->SetLineStyle  (env.GetValue("GraphAttDialog.fLineStyle",  1));
-		graph1d->SetLineWidth  (env.GetValue("GraphAttDialog.fLineWidth",  1));
-		graph1d->SetLineColor  (env.GetValue("GraphAttDialog.fLineColor",  1));
-		graph1d->SetMarkerStyle(env.GetValue("GraphAttDialog.fMarkerStyle",7));
-		graph1d->SetMarkerSize (env.GetValue("GraphAttDialog.fMarkerSize", 1));
-		graph1d->SetMarkerColor(env.GetValue("GraphAttDialog.fMarkerColor",1));
-		graph1d->SetFillStyle  (env.GetValue("GraphAttDialog.fFillStyle",  0));
-		if ( drawopt.Contains("F") )
-			graph1d->SetFillColor  (env.GetValue("GraphAttDialog.fFillColor",  1));
-		else
-			graph1d->SetFillColor  (0);
+		graph1d->Draw(drawopt);
+		if (gROOT->GetForceStyle()) {
+			graph1d->SetLineStyle  (env.GetValue("GraphAttDialog.fLineStyle",  1));
+			graph1d->SetLineWidth  (env.GetValue("GraphAttDialog.fLineWidth",  1));
+			graph1d->SetLineColor  (env.GetValue("GraphAttDialog.fLineColor",  1));
+			graph1d->SetMarkerStyle(env.GetValue("GraphAttDialog.fMarkerStyle",7));
+			graph1d->SetMarkerSize (env.GetValue("GraphAttDialog.fMarkerSize", 1));
+			graph1d->SetMarkerColor(env.GetValue("GraphAttDialog.fMarkerColor",1));
+			graph1d->SetFillStyle  (env.GetValue("GraphAttDialog.fFillStyle",  0));
+			if ( drawopt.Contains("F") )
+				graph1d->SetFillColor  (env.GetValue("GraphAttDialog.fFillColor",  1));
+			else
+				graph1d->SetFillColor  (0);
+		}
 		TH1 * hist = graph1d->GetHistogram();
 		if ( hist ) {
 			TString hn = hist->GetName();

@@ -66,7 +66,8 @@ static const Char_t helpText[] =
 	new TGMrbValuesAndText("Write Graph as ASCII", NULL, &ok,itemwidth, mycanvas,
 							 NULL, NULL, &Row_lab, Valp,
 							 NULL, NULL, helpText);
-
+	if ( ok < 0 )
+		return;
 	if (!gSystem->AccessPathName((const char *) fname, kFileExists)) {
 //      cout << fname << " exists" << endl;
 		int buttons = kMBOk | kMBDismiss, retval = 0;
