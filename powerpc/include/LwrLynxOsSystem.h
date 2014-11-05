@@ -9,7 +9,7 @@
 //! 				An interface to the LynxOs Operating System.
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
+//! $Revision: 1.4 $
 //! $Date: 2011-09-28 12:22:02 $
 //////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +21,8 @@
 #include "LwrInetAddress.h"
 #include "LwrSeqCollection.h"
 #include "LwrFileHandler.h"
+
+typedef UInt_t socklen_t;
 
 class TFileHandler;
 class TFdSet;
