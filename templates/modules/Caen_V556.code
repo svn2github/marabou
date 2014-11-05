@@ -55,11 +55,6 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%INIT_BLOCK_XFER%%
-
-%%BeginOfCode%%
-
-%%EndOfCode%%
 %%INIT_CHANNEL%%
 
 %%BeginOfCode%%
@@ -81,18 +76,9 @@
 						$mnemoLC_hdr &= ~$mnemoUC_M_EVT_CNT;												/* mask out event count */
 						$mnemoLC_hdr |= $serial;															/* replace it by module id */
 						RDO_2MEM_16($mnemoLC_hdr);															/* write header */
-						$mnemoLC_wc = (($mnemoLC_hdr >> $mnemoUC_SH_WC) & $mnemoUC_M_WC) + 1;				/* extract word count */
-						for (i = 0; i < $mnemoLC_wc; i++) {
-							$mnemoLC_data = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_OUTPUT));	/* read data */
-#ifdef DEBUG
-							if (($mnemoLC_data & $mnemoUC_B_IS_HDR) != 0) {									/* check if data */
-							  sprintf(msg, "$moduleName: Not a data word - %#x\n", $mnemoLC_data);
-							  f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-							}
-#endif
-							RDO_2MEM_16(($mnemoLC_data >> $mnemoUC_SH_CHN) & $mnemoUC_M_CHN);					/* write channel number */
-							RDO_2MEM_16($mnemoLC_data & $mnemoUC_M_DATA);										/* write data */
-						}
+						$mnemoLC_wc = (($mnemoLC_hdr >> $mnemoUC_SH_WC) & $mnemoUC_M_WC) + 1;					/* extract word count */
+						for (i = 0; i < $mnemoLC_wc; i++) *evt.out16++ = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_OUTPUT));	/* xfer data */
+						if (($mnemoLC_wc & 1) == 0) RDO_2MEM_16(0xffff);	/* align to 32 bit boundaries */
 					}
 %%EndOfCode%%
 %%READ_MODULE%%

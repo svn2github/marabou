@@ -145,10 +145,11 @@ MTDC32.$moduleName.TrigSrcTrig.1:        $trigSrcTrig1
 MTDC32.$moduleName.TrigSrcChan.1:        $trigSrcChan1
 MTDC32.$moduleName.TrigSrcBank.1:        $trigSrcBank1
 
-# first hit (0x605C)            true:  transmit first hit only (default)
-#                               false: transmit all hits in window
-MTDC32.$moduleName.FirstHit.0:          $trigFirstHit0
-MTDC32.$moduleName.FirstHit.1:          $trigFirstHit1
+# first hit (0x605C)            = 1 --> take first hit only
+#								bit[0]  --> bank0
+#								bit[1]  --> bank1
+#                               
+MTDC32.$moduleName.FirstHit:            $trigFirstHit
 %%End(Trigger)%%
 
 %%Begin(InputOutput)%%
