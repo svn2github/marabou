@@ -1,0 +1,240 @@
+%%BeginOfCode%%
+%%Begin(Preamble)%%
+#___________________________________________________[MODULE PARAM DEFINITION]
+#////////////////////////////////////////////////////////////////////////////
+# Name:           Module_Mesytec_Mtdc32.rc.code
+# Purpose:        Param defs for Mesytec MTDC32 TDC
+# Description:
+# Author:         $author
+# Date:           $date
+#////////////////////////////////////////////////////////////////////////////
+
+MTDC32.ModuleName: 						$moduleName
+MTDC32.ModuleSerial: 					$moduleSerial
+
+MTDC32.Firmware: 						$moduleFirmware
+
+MTDC32.VerboseMode:						FALSE
+MTDC32.DumpRegisters:					FALSE
+
+MTDC32.SettingsVersion:					10.2014
+
+%%End(Preamble)%%
+
+%%Begin(AddressRegisters)%%
+
+#-----------------------------------------------------------------------------
+# Address registers
+#-----------------------------------------------------------------------------
+
+# address source (0x6000)       0  -->  board coder (default)
+#                               1  -->  address register
+MTDC32.$moduleName.AddrSource: 			$addrSource
+
+# vme address (0x6002)          overrides board code if address source = 1
+MTDC32.$moduleName.AddrReg: 			$addrReg
+
+# module id (0x6004)            default = 0xFF -> use high byte of board coder
+MTDC32.$moduleName.ModuleId: 			$moduleId
+
+# mcst/cblt (0x6020, 0x6022, 0x6024)
+#          signature   0xNN, bits 31 ... 24
+#          first       TRUE if first module in chain
+#          last        TRUE if last module in chain
+MTDC32.$moduleName.MCSTSignature:		$mcstSignature
+MTDC32.$moduleName.CBLTSignature:		$cbltSignature
+MTDC32.$moduleName.FirstInChain:		$firstInChain
+MTDC32.$moduleName.LastInChain:			$lastInChain
+
+%%End(AddressRegisters)%%
+
+%%Begin(FifoHandling)%%
+
+#-----------------------------------------------------------------------------
+# FIFO handling
+#-----------------------------------------------------------------------------
+
+# data length format (0x6032)   0  -->  8 bit
+#                               1  -->  16 bit
+#                               2  -->  32 bit (default)
+#                               3  -->  64 bit
+MTDC32.$moduleName.DataWidth:			$dataWidth
+
+# multievent (0x6036)           0  -->  no / single event
+#                               1  -->  yes, unlimited xfer
+#                               3  -->  limited amount of data
+#                               5  -->  same as 1, but BERR turned off
+MTDC32.$moduleName.MultiEvent:			$multiEvent
+
+# max xfer data (0x601A)        (if multievent is set to "3", default = 0)
+MTDC32.$moduleName.XferData:			$xferData
+
+# marking type (0x6038)         0x0  -->  event counter (default)
+#                               0x1  -->  time stamp (30 bits)
+#                               0x3  -->  extended time stamp (+16bits)
+MTDC32.$moduleName.MarkingType: 		$markingType
+
+# block transfer        enable/disable, TRUE/FALSE
+MTDC32.$moduleName.BlockXfer:			$blockXfer
+
+%%End(FifoHandling)%%
+
+%%Begin(OperationMode)%%
+
+#-----------------------------------------------------------------------------
+# Operation mode
+#-----------------------------------------------------------------------------
+
+# bank operation (0x6040)       0  -->  banks connected (default)
+#                               1  -->  banks independent
+MTDC32.$moduleName.BankOperation:		$bankOperation
+
+# tdc resolution (0x6042)       9  -->  500 ps
+#                               8  -->  250 ps
+#                               7  -->  125 ps
+#                               6  -->  62.5 ps (1/16 ns)
+#                               5  -->  31.3 ps (1/32 ns)
+#                               4  -->  15.6 ps (1/64 ns)
+#                               3  -->  7.8 ps  (1/128 ns)
+#                               2  -->  3.9 ps  (1/256 ns)
+MTDC32.$moduleName.TdcResolution:		$tdcResolution
+
+# output format (0x6044)        0  -->  standard (time diff, default)
+#                               1  -->  single hit full time stamp
+MTDC32.$moduleName.OutputFormat:		$outputFormat
+
+# repair raw data               true/false
+MTDC32.$moduleName.RepairRawData:		$repairRawData
+%%End(OperationMode)%%
+
+%%Begin(Trigger)%%
+
+#-----------------------------------------------------------------------------
+# Trigger
+#-----------------------------------------------------------------------------
+
+# window of interest (0x6050)   -16k < wdw < +16k (ns)
+#                               < 0 --> window starts BEFORE trigger
+#                               > 0 --> window starts AFTER trigger
+MTDC32.$moduleName.WinStart.0:			$winStart0
+MTDC32.$moduleName.WinStart.1:			$winStart1
+
+# window width (0x6054/0x6056)  (ns) max 16k = 16us
+MTDC32.$moduleName.WinWidth.0:			$winWidth0
+MTDC32.$moduleName.WinWidth.1:			$winWidth1
+
+# trigger source (0x6058/0x605A)
+#     banks connected   --> source0 only
+#     banks independent --> source0 for bank0, source1 for bank1
+#
+#     source may be any combination of ...
+#     (a) trigger               bit[0]  --> trig0
+#                               bit[1]  --> trig1
+#                               default: 1            
+MTDC32.$moduleName.TrigSrcTrig.0:        $trigSrcTrig0
+#     (b) channel               32 .. 63 --> 0 .. 31
+#                               default: 0
+MTDC32.$moduleName.TrigSrcChan.0:        $trigSrcChan0
+#     (c) bank                  bit[0]  --> bank0
+#                               bit[1]  --> bank1
+#                               default: 0
+MTDC32.$moduleName.TrigSrcBank.0:        $trigSrcBank0
+
+# same for bank1 (if independent)
+MTDC32.$moduleName.TrigSrcTrig.1:        $trigSrcTrig1
+MTDC32.$moduleName.TrigSrcChan.1:        $trigSrcChan1
+MTDC32.$moduleName.TrigSrcBank.1:        $trigSrcBank1
+
+# first hit (0x605C)            true:  transmit first hit only (default)
+#                               false: transmit all hits in window
+MTDC32.$moduleName.FirstHit.0:          $trigFirstHit0
+MTDC32.$moduleName.FirstHit.1:          $trigFirstHit1
+%%End(Trigger)%%
+
+%%Begin(InputOutput)%%
+
+#-----------------------------------------------------------------------------
+# Input/output
+#-----------------------------------------------------------------------------
+
+# negative edge (0x6060)        0       --> off
+#                               bit[0]  --> bank0
+#                               bit[1]  --> bank1
+MTDC32.$moduleName.NegEdge:             $negEdge
+
+# ECL terminators (0x6062)      0       -->  off (default)
+#                               bit[0]  -->  trig0
+#                               bit[1]  -->  trig1
+#                               bit[2]  -->  reset input
+MTDC32.$moduleName.EclTerm: 			$eclTerm
+
+# ECL trig1/osc (0x6064)        0  -->  trig1 (default)
+#                               1  -->  oscillator
+MTDC32.$moduleName.EclTrig1Osc:			$eclTrig1Osc
+
+# trigger select (0x6068)       0  -->  from NIM inputs (default)
+#                               1  -->  from ECL inputs
+MTDC32.$moduleName.TrigSelect:			$trigSelect
+
+# NIM trig1/osc (0x606A)        0  -->  trig1 (default)
+#                               1  -->  oscillator
+MTDC32.$moduleName.NimTrig1Osc:			$nimTrig1Osc
+
+# NIM busy (0x606E)             0  -->  busy (default)
+#                               3  -->  cbus out
+#                               4  -->  buffer full
+#                               8  -->  buffer above thresh
+MTDC32.$moduleName.NimBusy: 			$nimBusy
+%%End(InputOutput)%%
+
+%%Begin(PulserThresh)%%
+
+#-----------------------------------------------------------------------------
+# Test pulser / threshold
+#-----------------------------------------------------------------------------
+
+# pulser status (0x6070)        on/true or off/false
+MTDC32.$moduleName.PulserStatus: 		$pulserStatus
+
+# pulser pattern (0x6072)       channel number 0..31 (default chn=0)
+#                               32  --> trig0
+#                               33  --> trig1
+MTDC32.$moduleName.PulserPattern: 		$pulserPattern
+
+# input threshold (0x6078/0x607A)       banks 0 & 1
+MTDC32.$moduleName.InputThresh.0: 		$inputThresh0
+MTDC32.$moduleName.InputThresh.1: 		$inputThresh1
+%%End(PulserThresh)%%
+
+%%Begin(Counters)%%
+
+#-----------------------------------------------------------------------------
+# Counters
+#-----------------------------------------------------------------------------
+
+# timestamp source (0x6096)     0x0    -->  VME (default)
+#                               bit[0] -->  external source
+#                               bit[1] -->  enable reset
+MTDC32.$moduleName.TsSource: 			$tsSource
+
+# divisor (0x6098)
+MTDC32.$moduleName.TsDivisor: 			$tsDivisor
+%%End(Counters)%%
+
+%%Begin(Multiplicity)%%
+
+#-----------------------------------------------------------------------------
+# Multiplicity
+#-----------------------------------------------------------------------------
+
+# high and low limits (0x60B0/0x60B2/0x60B4/0x60B6)
+#                               defaults: high0=32, high1=16, low=0                
+MTDC32.$moduleName.MultHighLimit.0:		$highLimit0
+MTDC32.$moduleName.MultLowLimit.0:		$lowLimit0
+MTDC32.$moduleName.MultHighLimit.1:		$highLimit1
+MTDC32.$moduleName.MultLowLimit.1:		$lowLimit1
+%%End(Multiplicity)%%
+
+%%EndOfCode%%
+%%MODULE_SETTINGS%%
+
