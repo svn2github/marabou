@@ -98,23 +98,6 @@ void mtdc32_soft_reset(struct s_mtdc32 * s)
   SET16(s->md->vmeBase, MTDC32_SOFT_RESET, 0x1);
 }
 
-uint16_t mtdc32_getThreshold(struct s_mtdc32 * s, uint16_t channel)
-{
-	uint16_t thresh = 0;
-	if (channel < MTDC_NOF_CHANNELS) thresh = GET16(s->md->vmeBase, MTDC32_THRESHOLD + sizeof(uint16_t) * channel) & MTDC32_THRESHOLD_MASK;
-	return thresh;
-}
-
-void mtdc32_setThreshold_db(struct s_mtdc32 * s, uint16_t channel)
-{
-	if (channel < MTDC_NOF_CHANNELS) mtdc32_setThreshold(s, channel, s->threshold[channel]);
-}
-
-void mtdc32_setThreshold(struct s_mtdc32 * s, uint16_t channel, uint16_t thresh)
-{
-	if (channel < MTDC_NOF_CHANNELS) SET16(s->md->vmeBase, MTDC32_THRESHOLD + sizeof(uint16_t) * channel, thresh & MTDC32_THRESHOLD_MASK);
-}
-
 void mtdc32_setAddrReg_db(struct s_mtdc32 * s) { mtdc32_setAddrReg(s, s->addrReg); }
 
 void mtdc32_setAddrReg(struct s_mtdc32 * s, uint16_t vmeAddr)
@@ -210,16 +193,16 @@ uint16_t mtdc32_getBankOperation(struct s_mtdc32 * s)
 	return GET16(s->md->vmeBase, MTDC32_BANK_OPERATION) & MTDC32_BANK_OPERATION_MASK;
 }
 
-void mtdc32_setAdcResolution_db(struct s_mtdc32 * s) { mtdc32_setAdcResolution(s, s->adcResolution); }
+void mtdc32_setTdcResolution_db(struct s_mtdc32 * s) { mtdc32_setTdcResolution(s, s->tdcResolution); }
 
-void mtdc32_setAdcResolution(struct s_mtdc32 * s, uint16_t res)
+void mtdc32_setTdcResolution(struct s_mtdc32 * s, uint16_t res)
 {
-	SET16(s->md->vmeBase, MTDC32_ADC_RESOLUTION, res & MTDC32_ADC_RESOLUTION_MASK);
+	SET16(s->md->vmeBase, MTDC32_TDC_RESOLUTION, res & MTDC32_TDC_RESOLUTION_MASK);
 }
 
-uint16_t mtdc32_getAdcResolution(struct s_mtdc32 * s)
+uint16_t mtdc32_getTdcResolution(struct s_mtdc32 * s)
 {
-	return GET16(s->md->vmeBase, MTDC32_ADC_RESOLUTION) & MTDC32_ADC_RESOLUTION_MASK;
+	return GET16(s->md->vmeBase, MTDC32_TDC_RESOLUTION) & MTDC32_TDC_RESOLUTION_MASK;
 }
 
 void mtdc32_setOutputFormat_db(struct s_mtdc32 * s) { mtdc32_setOutputFormat(s, s->outputFormat); }
@@ -234,130 +217,144 @@ uint16_t mtdc32_getOutputFormat(struct s_mtdc32 * s)
 	return GET16(s->md->vmeBase, MTDC32_OUTPUT_FORMAT) & MTDC32_OUTPUT_FORMAT_MASK;
 }
 
-void mtdc32_setAdcOverride_db(struct s_mtdc32 * s) { mtdc32_setAdcOverride(s, s->adcOverride); }
+void mtdc32_setWinStart_db(struct s_mtdc32 * s, uint16_t bnk) { mtdc32_setWinStart(s, bnk, s->winStart[bnk]); }
 
-void mtdc32_setAdcOverride(struct s_mtdc32 * s, uint16_t over)
+void mtdc32_setWinStart(struct s_mtdc32 * s, uint16_t bnk, uint16_t start)
 {
-	SET16(s->md->vmeBase, MTDC32_ADC_OVERRIDE, over & MTDC32_ADC_RESOLUTION_MASK);
-}
-
-uint16_t mtdc32_getAdcOverride(struct s_mtdc32 * s)
-{
-	return GET16(s->md->vmeBase, MTDC32_ADC_OVERRIDE) & MTDC32_ADC_RESOLUTION_MASK;
-}
-
-void mtdc32_setSlidingScaleOff_db(struct s_mtdc32 * s) { mtdc32_setSlidingScaleOff(s, s->slidingScaleOff); }
-
-void mtdc32_setSlidingScaleOff(struct s_mtdc32 * s, bool_t flag)
-{
-	uint16_t f = flag ? 1 : 0;
-	SET16(s->md->vmeBase, MTDC32_SLIDING_SCALE_OFF, f);
-}
-
-bool_t mtdc32_getSlidingScaleOff(struct s_mtdc32 * s)
-{
-	uint16_t f = GET16(s->md->vmeBase, MTDC32_SLIDING_SCALE_OFF) & MTDC32_SLIDING_SCALE_OFF_MASK;
-	return (f != 0) ? TRUE : FALSE;
-}
-
-void mtdc32_setSkipOutOfRange_db(struct s_mtdc32 * s) { mtdc32_setSkipOutOfRange(s, s->skipOutOfRange); }
-
-void mtdc32_setSkipOutOfRange(struct s_mtdc32 * s, bool_t flag)
-{
-	uint16_t f = flag ? 1 : 0;
-	SET16(s->md->vmeBase, MTDC32_SKIP_OUT_OF_RANGE, f);
-}
-
-bool_t mtdc32_getSkipOutOfRange(struct s_mtdc32 * s)
-{
-	uint16_t f = GET16(s->md->vmeBase, MTDC32_SKIP_OUT_OF_RANGE) & MTDC32_SKIP_OUT_OF_RANGE_MASK;
-	return (f != 0) ? TRUE : FALSE;
-}
-
-void mtdc32_setIgnoreThresholds_db(struct s_mtdc32 * s) { mtdc32_setIgnoreThresholds(s, s->ignoreThresh); }
-
-void mtdc32_setIgnoreThresholds(struct s_mtdc32 * s, bool_t flag)
-{
-	uint16_t f = flag ? 1 : 0;
-	SET16(s->md->vmeBase, MTDC32_IGNORE_THRESHOLDS, f);
-}
-
-bool_t mtdc32_getIgnoreThresholds(struct s_mtdc32 * s)
-{
-	uint16_t f = GET16(s->md->vmeBase, MTDC32_IGNORE_THRESHOLDS) & MTDC32_IGNORE_THRESH_MASK;
-	return (f != 0) ? TRUE : FALSE;
-}
-
-void mtdc32_setHoldDelay_db(struct s_mtdc32 * s, uint16_t gg) { mtdc32_setHoldDelay(s, gg, s->ggHoldDelay[gg]); }
-
-void mtdc32_setHoldDelay(struct s_mtdc32 * s, uint16_t gg, uint16_t delay)
-{
-	int offs;
-	switch (gg) {
-		case 0: offs = MTDC32_GG_HOLD_DELAY_0; break;
-		case 1: offs = MTDC32_GG_HOLD_DELAY_1; break;
+	int addr;
+	switch (bnk) {
+		case 0: addr = MTDC32_WIN_START_0; break;
+		case 1: addr = MTDC32_WIN_START_1; break;
 		default: return;
 	}
-	SET16(s->md->vmeBase, offs, delay & MTDC32_GG_HOLD_DELAY_MASK);
+	SET16(s->md->vmeBase, addr, start & MTDC32_WIN_START_MASK);
 }
 
-uint16_t mtdc32_getHoldDelay(struct s_mtdc32 * s, uint16_t gg)
+uint16_t mtdc32_getWinStart(struct s_mtdc32 * s, uint16_t bnk)
 {
-	int offs;
-	switch (gg) {
-		case 0: offs = MTDC32_GG_HOLD_DELAY_0; break;
-		case 1: offs = MTDC32_GG_HOLD_DELAY_1; break;
+	int addr;
+	switch (bnk) {
+		case 0: addr = MTDC32_WIN_START_0; break;
+		case 1: addr = MTDC32_WIN_START_1; break;
 		default: return 0;
 	}
-	return GET16(s->md->vmeBase, offs) & MTDC32_GG_HOLD_DELAY_MASK;
+	return GET16(s->md->vmeBase, addr) & MTDC32_WIN_START_MASK;
 }
 
-void mtdc32_setHoldWidth_db(struct s_mtdc32 * s, uint16_t gg) { mtdc32_setHoldWidth(s, gg, s->ggHoldWidth[gg]); }
+void mtdc32_setWinWidth_db(struct s_mtdc32 * s, uint16_t bnk) { mtdc32_setWinWidth(s, bnk, s->winWidth[bnk]); }
 
-void mtdc32_setHoldWidth(struct s_mtdc32 * s, uint16_t gg, uint16_t width)
+void mtdc32_setWinWidth(struct s_mtdc32 * s, uint16_t bnk, uint16_t width)
 {
-	int offs;
-	switch (gg) {
-		case 0: offs = MTDC32_GG_HOLD_WIDTH_0; break;
-		case 1: offs = MTDC32_GG_HOLD_WIDTH_1; break;
+	int addr;
+	switch (bnk) {
+		case 0: addr = MTDC32_WIN_WIDTH_0; break;
+		case 1: addr = MTDC32_WIN_WIDTH_1; break;
 		default: return;
 	}
-	SET16(s->md->vmeBase, offs, width & MTDC32_GG_HOLD_WIDTH_MASK);
+	SET16(s->md->vmeBase, addr, width & MTDC32_WIN_WIDTH_MASK);
 }
 
-uint16_t mtdc32_getHoldWidth(struct s_mtdc32 * s, uint16_t gg)
+uint16_t mtdc32_getWinWidth(struct s_mtdc32 * s, uint16_t bnk)
 {
-	int offs;
-	switch (gg) {
-		case 0: offs = MTDC32_GG_HOLD_WIDTH_0; break;
-		case 1: offs = MTDC32_GG_HOLD_WIDTH_1; break;
+	int addr;
+	switch (bnk) {
+		case 0: addr = MTDC32_WIN_WIDTH_0; break;
+		case 1: addr = MTDC32_WIN_WIDTH_1; break;
 		default: return 0;
 	}
-	return GET16(s->md->vmeBase, offs) & MTDC32_GG_HOLD_WIDTH_MASK;
+	return GET16(s->md->vmeBase, addr) & MTDC32_WIN_WIDTH_MASK;
 }
 
-void mtdc32_useGG_db(struct s_mtdc32 * s) { mtdc32_useGG(s, s->useGG); }
+void mtdc32_setTrigSource_db(struct s_mtdc32 * s, uint16_t bnk) { mtdc32_setTrigSource(s, bnk, s->trigSrcTrig[bnk], s->trigSrcChan[bnk], s->trigSrcBank[bnk]); }
 
-void mtdc32_useGG(struct s_mtdc32 * s, uint16_t gg)
+void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint16_t chan, uint16_t bnk)
 {
-	SET16(s->md->vmeBase, MTDC32_USE_GATE_GENERATOR, gg & MTDC32_USE_GATE_GENERATOR_MASK);
+	uint16_t trigSource;
+	int addr;
+	trigSource = bnk & (MTDC32_TRIG_SRC_BANK_MASK) << 8;
+	trigSource |= chan & (MTDC32_TRIG_SRC_CHAN_MASK) << 2;
+	trigSrouce |= trig & MTDC32_TRIG_SRC_TRIG_MASK;
+	switch (bnk) {
+		case 0: addr = MTDC32_TRIG_SOURCE_0; break;
+		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
+		default: return;
+	}
+	SET16(s->md->vmeBase, addr, trigSource);
 }
 
-uint16_t mtdc32_getGGUsed(struct s_mtdc32 * s)
+uint16_t mtdc32_getTrigSource(struct s_mtdc32 * s, uint16_t bnk)
 {
-	return GET16(s->md->vmeBase, MTDC32_USE_GATE_GENERATOR) & MTDC32_USE_GATE_GENERATOR_MASK;
+	int addr;
+	switch (bnk) {
+		case 0: addr = MTDC32_TRIG_SOURCE_0; break;
+		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
+		default: return;
+	}
+	trigSource = GET16(s->md->vmeBase, addr);
+	return GET16(s->md->vmeBase, addr) & MTDC32_TRIG_SRC_TRIG_MASK;
 }
 
-void mtdc32_setInputRange_db(struct s_mtdc32 * s) { mtdc32_setInputRange(s, s->inputRange); }
-
-void mtdc32_setInputRange(struct s_mtdc32 * s, uint16_t range)
+uint16_t mtdc32_getTrigSrcTrig(struct s_mtdc32 * s, uint16_t bnk)
 {
-	SET16(s->md->vmeBase, MTDC32_INPUT_RANGE, range & MTDC32_INPUT_RANGE_MASK);
+	int addr;
+	uint16_t trigSource;
+	switch (bnk) {
+		case 0: addr = MTDC32_TRIG_SOURCE_0; break;
+		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
+		default: return;
+	}
+	trigSource = GET16(s->md->vmeBase, addr);
+	return (trigSource & MTDC32_TRIG_SRC_TRIG_MASK);
 }
 
-uint16_t mtdc32_getInputRange(struct s_mtdc32 * s)
+uint16_t mtdc32_getTrigSrcChan(struct s_mtdc32 * s, uint16_t bnk)
 {
-	return GET16(s->md->vmeBase, MTDC32_INPUT_RANGE) & MTDC32_INPUT_RANGE_MASK;
+	int addr;
+	uint16_t trigSource;
+	switch (bnk) {
+		case 0: addr = MTDC32_TRIG_SOURCE_0; break;
+		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
+		default: return;
+	}
+	trigSource = GET16(s->md->vmeBase, addr);
+	return ((trigSource >> 2) & MTDC32_TRIG_SRC_CHAN_MASK);
+}
+
+uint16_t mtdc32_getTrigSrcBank(struct s_mtdc32 * s, uint16_t bnk);
+{
+	int addr;
+	uint16_t trigSource;
+	switch (bnk) {
+		case 0: addr = MTDC32_TRIG_SOURCE_0; break;
+		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
+		default: return;
+	}
+	trigSource = GET16(s->md->vmeBase, addr);
+	return ((trigSource >> 8) & MTDC32_TRIG_SRC_BANK_MASK);
+}
+
+void mtdc32_setFirstHit_db(struct s_mtdc32 * s) { mtdc32_setFirstHit(s, s->firstHit); }
+
+void mtdc32_setFirstHit(struct s_mtdc32 * s, uint16_t fhit)
+{
+	SET16(s->md->vmeBase, MTDC32_FIRST_HIT, fhit & MTDC32_FIRST_HIT_MASK);
+}
+
+uint16_t mtdc32_getFirstHit(struct s_mtdc32 * s)
+{
+	return GET16(s->md->vmeBase, MTDC32_FIRST_HIT) & MTDC32_FIRST_HIT_MASK;
+}
+
+void mtdc32_setNegEdge_db(struct s_mtdc32 * s) { mtdc32_setNegEdge(s, s->negEdge); }
+
+void mtdc32_setNegEdge(struct s_mtdc32 * s, uint16_t edge)
+{
+	SET16(s->md->vmeBase, MTDC32_NEG_EDGE, select & MTDC32_NEG_EDGE_MASK);
+}
+
+uint16_t mtdc32_getNegEdge(struct s_mqdc32 * s)
+{
+	return GET16(s->md->vmeBase, MTDC32_NEG_EDGE) & MTDC32_NEG_EDGE_MASK;
 }
 
 void mtdc32_setEclTerm_db(struct s_mtdc32 * s) { mtdc32_setEclTerm(s, s->eclTerm); }
@@ -372,54 +369,42 @@ uint16_t mtdc32_getEclTerm(struct s_mtdc32 * s)
 	return GET16(s->md->vmeBase, MTDC32_ECL_TERMINATORS) & MTDC32_ECL_TERMINATORS_MASK;
 }
 
-void mtdc32_setEclG1OrOsc_db(struct s_mtdc32 * s) { mtdc32_setEclG1OrOsc(s, s->eclG1OrOsc); }
+void mtdc32_setEclT1Osc_db(struct s_mtdc32 * s) { mtdc32_setEclT1Osc(s, s->eclT1Osc); }
 
-void mtdc32_setEclG1OrOsc(struct s_mtdc32 * s, uint16_t go)
+void mtdc32_setEclT1Osc(struct s_mtdc32 * s, uint16_t go)
 {
-	SET16(s->md->vmeBase, MTDC32_ECL_G1_OR_OSC, go & MTDC32_ECL_G1_OR_OSC_MASK);
+	SET16(s->md->vmeBase, MTDC32_ECL_T1_OSC, go & MTDC32_ECL_T1_OSC_MASK);
 }
 
-uint16_t mtdc32_getEclG1OrOsc(struct s_mtdc32 * s)
+uint16_t mtdc32_getEclT1Osc(struct s_mtdc32 * s)
 {
-	return GET16(s->md->vmeBase, MTDC32_ECL_G1_OR_OSC) & MTDC32_ECL_G1_OR_OSC_MASK;
+	return GET16(s->md->vmeBase, MTDC32_ECL_T1_OSC) & MTDC32_ECL_T1_OSC_MASK;
 }
 
-void mtdc32_setEclFclOrRts_db(struct s_mtdc32 * s) { mtdc32_setEclFclOrRts(s, s->eclFclOrRts); }
+void mtdc32_setTrigSelect_db(struct s_mtdc32 * s) { mtdc32_setTrigSelect(s, s->trigSelect); }
 
-void mtdc32_setEclFclOrRts(struct s_mtdc32 * s, uint16_t fr)
+void mtdc32_setTrigSelect(struct s_mtdc32 * s, uint16_t select)
 {
-	SET16(s->md->vmeBase, MTDC32_ECL_FCL_OR_RES_TS, fr & MTDC32_ECL_FCL_OR_RES_TS_MASK);
+	SET16(s->md->vmeBase, MTDC32_TRIG_SELECT, select & MTDC32_TRIG_SELECT_MASK);
 }
 
-uint16_t mtdc32_getEclFclOrRts(struct s_mtdc32 * s)
+uint16_t mtdc32_getTrigSelect(struct s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MTDC32_ECL_FCL_OR_RES_TS) & MTDC32_ECL_FCL_OR_RES_TS_MASK;
+	return GET16(s->md->vmeBase, MTDC32_TRIG_SELECT) & MTDC32_TRIG_SELECT_MASK;
 }
 
-void mtdc32_setNimG1OrOsc_db(struct s_mtdc32 * s) { mtdc32_setNimG1OrOsc(s, s->nimG1OrOsc); }
+void mtdc32_setNimG1Osc_db(struct s_mtdc32 * s) { mtdc32_setNimG1Osc(s, s->nimG1Osc); }
 
 void mtdc32_setNimG1OrOsc(struct s_mtdc32 * s, uint16_t go)
 {
 	SET16(s->md->vmeBase, MTDC32_NIM_G1_OR_OSC, go & MTDC32_NIM_G1_OR_OSC_MASK);
 }
 
-uint16_t mtdc32_getNimG1OrOsc(struct s_mtdc32 * s)
+uint16_t mtdc32_getNimG1Osc(struct s_mtdc32 * s)
 {
-	return GET16(s->md->vmeBase, MTDC32_NIM_G1_OR_OSC) & MTDC32_NIM_G1_OR_OSC_MASK;
+	return GET16(s->md->vmeBase, MTDC32_NIM_T1_OSC) & MTDC32_NIM_T1_OSC_MASK;
 }
 
-
-void mtdc32_setNimFclOrRts_db(struct s_mtdc32 * s) { mtdc32_setNimFclOrRts(s, s->nimFclOrRts); }
-
-void mtdc32_setNimFclOrRts(struct s_mtdc32 * s, uint16_t fr)
-{
-	SET16(s->md->vmeBase, MTDC32_NIM_FCL_OR_RES_TS, fr & MTDC32_NIM_FCL_OR_RES_TS_MASK);
-}
-
-uint16_t mtdc32_getNimFclOrRts(struct s_mtdc32 * s)
-{
-	return GET16(s->md->vmeBase, MTDC32_NIM_FCL_OR_RES_TS) & MTDC32_NIM_FCL_OR_RES_TS_MASK;
-}
 
 void mtdc32_setNimBusy_db(struct s_mtdc32 * s) { mtdc32_setNimBusy(s, s->nimBusy); }
 
@@ -433,28 +418,52 @@ uint16_t mtdc32_getNimBusy(struct s_mtdc32 * s)
 	return GET16(s->md->vmeBase, MTDC32_NIM_BUSY) & MTDC32_NIM_BUSY_MASK;
 }
 
-void mtdc32_setBufferThresh_db(struct s_mtdc32 * s) { mtdc32_setBufferThresh(s, s->bufferThresh); }
+void mtdc32_setPulserStatus_db(struct s_mtdc32 * s) { mtdc32_setPulserStatus(s, s->pulserStatus); }
 
-void mtdc32_setBufferThresh(struct s_mtdc32 * s, uint16_t bufferThresh)
+void mtdc32_setPulserStatus(struct s_mtdc32 * s, uint16_t mode)
 {
-	SET16(s->md->vmeBase, MTDC32_IRQ_THRESH, bufferThresh);
+	SET16(s->md->vmeBase, MTDC32_PULSER_STATUS, mode & MTDC32_PULSER_STATUS_MASK);
 }
 
-uint16_t mtdc32_getBufferThresh(struct s_mtdc32 * s)
+uint16_t mtdc32_getPulserStatus(struct s_mtdc32 * s)
 {
-	return GET16(s->md->vmeBase, MTDC32_IRQ_THRESH);
+	return GET16(s->md->vmeBase, MTDC32_PULSER_STATUS) & MTDC32_PULSER_STATUS_MASK;
 }
 
-void mtdc32_setTestPulser_db(struct s_mtdc32 * s) { mtdc32_setTestPulser(s, s->testPulserStatus); }
+void mtdc32_setPulserPattern_db(struct s_mtdc32 * s) { mtdc32_setPulserPattern(s, s->pulserPattern); }
 
-void mtdc32_setTestPulser(struct s_mtdc32 * s, uint16_t mode)
+void mtdc32_setPulserPattern(struct s_mtdc32 * s, uint16_t pattern)
 {
-	SET16(s->md->vmeBase, MTDC32_TEST_PULSER_STATUS, mode & MTDC32_TEST_PULSER_STATUS_MASK);
+	SET16(s->md->vmeBase, MTDC32_PULSER_PATTERN, pattern & MTDC32_PULSER_PATTERN_MASK);
 }
 
-uint16_t mtdc32_getTestPulser(struct s_mtdc32 * s)
+uint16_t mtdc32_getPulserPattern(struct s_mtdc32 * s)
 {
-	return GET16(s->md->vmeBase, MTDC32_TEST_PULSER_STATUS) & MTDC32_TEST_PULSER_STATUS_MASK;
+	return GET16(s->md->vmeBase, MTDC32_PULSER_PATTERN) & MTDC32_PULSER_PATTERN_MASK;
+}
+
+void mtdc32_setInputThresh_db(struct s_mtdc32 * s, uint16_t bnk) { mtdc32_setInputThresh(s, bnk, s->inputThresh[bnk]); }
+
+void mtdc32_setInputThresh(struct s_mtdc32 * s, uint16_t bnk, uint16_t thresh)
+{
+	int addr;
+	switch (bnk) {
+		case 0: addr = MTDC32_INPUT_THRESH_0; break;
+		case 1: addr = MTDC32_INPUT_THRESH_1; break;
+		default: return;
+	}
+	SET16(s->md->vmeBase, addr, thresh & MTDC32_INPUT_THRESH_MASK);
+}
+
+uint16_t mtdc32_getWinStart(struct s_mtdc32 * s, uint16_t bnk)
+{
+	int addr;
+	switch (bnk) {
+		case 0: addr = MTDC32_WIN_START_0; break;
+		case 1: addr = MTDC32_WIN_START_1; break;
+		default: return 0;
+	}
+	return GET16(s->md->vmeBase, addr) & MTDC32_WIN_START_MASK;
 }
 
 void mtdc32_setTsSource_db(struct s_mtdc32 * s) { mtdc32_setTsSource(s, s->ctraTsSource); }
@@ -479,6 +488,46 @@ void mtdc32_setTsDivisor(struct s_mtdc32 * s, uint16_t div)
 uint16_t mtdc32_getTsDivisor(struct s_mtdc32 * s)
 {
 	return GET16(s->md->vmeBase, MTDC32_CTRA_TS_DIVISOR) & MTDC32_CTRA_TS_DIVISOR_MASK;
+}
+
+void mtdc32_setMultLimit_db(struct s_madc32 * s, uint16_t bnk) { mtdc32_setMultLimit(s, bnk, s->multLowLimit[bnk], s->multHighLimit[bnk]); }
+
+void mtdc32_setMultLimit(struct s_madc32 * s, uint16_t bnk, uint16_t llim, uint16_t hlim)
+{
+	int al, ah;
+	switch (bnk) {
+		case 0: al = MTDC32_MULT_LOW_LIM_0;
+				ah = MTDC32_MULT_HIGH_LIM_0;
+				break;
+		case 1: al = MTDC32_MULT_LOW_LIM_1;
+				ah = MTDC32_MULT_HIGH_LIM_1;
+				break;
+		default: return;
+	}
+	SET16(s->md->vmeBase, al, llim & MTDC32_MULT_LIMIT_MASK);
+	SET16(s->md->vmeBase, ah, hlim & MTDC32_MULT_LIMIT_MASK);
+}
+
+uint16_t mtdc32_getMultHighLimit(struct s_madc32 * s, uint16_t bnk)
+{
+	int addr;
+	switch (bnk) {
+		case 0: addr = MTDC32_MULT_HIGH_LIM_0; break;
+		case 1: addr = MTDC32_MULT_HIGH_LIM_1; break;
+		default: return;
+	}
+	return GET16(s->md->vmeBase, addr) & MTDC32_MULT_LIMIT_MASK;
+}
+
+uint16_t mtdc32_getMultLowLimit(struct s_madc32 * s, uint16_t bnk)
+{
+	int addr;
+	switch (bnk) {
+		case 0: addr = MTDC32_MULT_LOW_LIM_0; break;
+		case 1: addr = MTDC32_MULT_LOW_LIM_1; break;
+		default: return;
+	}
+	return GET16(s->md->vmeBase, addr) & MTDC32_MULT_LIMIT_MASK;
 }
 
 void mtdc32_moduleInfo(struct s_mtdc32 * s)
@@ -522,10 +571,6 @@ bool_t mtdc32_fillStruct(struct s_mtdc32 * s, char * file)
 
 	s->dumpRegsOnInit = root_env_getval_b("MTDC32.DumpRegisters", FALSE);
 
-	s->updSettings = root_env_getval_b("MTDC32.UpdateSettings", FALSE);
-	s->updInterval = root_env_getval_i("MTDC32.UpdateInterval", 0);
-	s->updCountDown = 0;
-
 	sp = root_env_getval_s("MTDC32.ModuleName", "");
 	if (strcmp(s->moduleName, "mtdc32") != 0 && strcmp(sp, s->moduleName) != 0) {
 		sprintf(msg, "[%sfill_struct] %s: File %s contains wrong module name - %s", s->mpref, s->moduleName, file, sp);
@@ -540,11 +585,6 @@ bool_t mtdc32_fillStruct(struct s_mtdc32 * s, char * file)
 
 	sprintf(res, "MTDC32.%s.RepairRawData", mnUC);
 	s->repairRawData = root_env_getval_b(res, FALSE);
-
-	for (i = 0; i < MTDC_NOF_CHANNELS; i++) {
-		sprintf(res, "MTDC32.%s.Thresh.%d", mnUC, i);
-		s->threshold[i] = root_env_getval_i(res, MTDC32_THRESHOLD_DEFAULT);
-	}
 
 	sprintf(res, "MTDC32.%s.AddrSource", mnUC);
 	s->addrSource = root_env_getval_i(res, MTDC32_ADDR_SOURCE_DEFAULT);
@@ -595,58 +635,63 @@ bool_t mtdc32_fillStruct(struct s_mtdc32 * s, char * file)
 	sprintf(res, "MTDC32.%s.BankOperation", mnUC);
 	s->bankOperation = root_env_getval_i(res, MTDC32_BANK_OPERATION_DEFAULT);
 
-	sprintf(res, "MTDC32.%s.AdcResolution", mnUC);
-	s->adcResolution = root_env_getval_i(res, MTDC32_ADC_RESOLUTION_DEFAULT);
+	sprintf(res, "MTDC32.%s.TdcResolution", mnUC);
+	s->tdcResolution = root_env_getval_i(res, MTDC32_TDC_RESOLUTION_DEFAULT);
 
 	sprintf(res, "MTDC32.%s.OutputFormat", mnUC);
 	s->outputFormat = root_env_getval_i(res, MTDC32_OUTPUT_FORMAT_DEFAULT);
 
-	sprintf(res, "MTDC32.%s.AdcOverride", mnUC);
-	s->adcOverride = root_env_getval_i(res, MTDC32_ADC_OVERWRITE_DEFAULT);
-	if (s->adcOverride == MTDC32_ADC_OVERWRITE_DEFAULT) s->adcOverride = s->adcResolution;
-
-	sprintf(res, "MTDC32.%s.SlidingScaleOff", mnUC);
-	s->slidingScaleOff = root_env_getval_b(res, FALSE);
-
-	sprintf(res, "MTDC32.%s.SkipOutOfRange", mnUC);
-	s->skipOutOfRange = root_env_getval_b(res, FALSE);
-
 	for (i = 0; i <= 1; i++) {
-		sprintf(res, "MTDC32.%s.HoldDelay.%d", mnUC, i);
-		s->ggHoldDelay[i] = root_env_getval_i(res, MTDC32_GG_HOLD_DELAY_DEFAULT);
+		sprintf(res, "MTDC32.%s.WinStart.%d", mnUC, i);
+		s->winStart[i] = root_env_getval_i(res, MTDC32_WIN_START_DEFAULT);
 	}
 
 	for (i = 0; i <= 1; i++) {
-		sprintf(res, "MTDC32.%s.HoldWidth.%d", mnUC, i);
-		s->ggHoldWidth[i] = root_env_getval_i(res, MTDC32_GG_HOLD_WIDTH_DEFAULT);
+		sprintf(res, "MTDC32.%s.WinWidth.%d", mnUC, i);
+		s->winWidth[i] = root_env_getval_i(res, MTDC32_WIN_WIDTH_DEFAULT);
 	}
 
-	sprintf(res, "MTDC32.%s.UseGG", mnUC);
-	s->useGG = root_env_getval_i(res, MTDC32_USE_GATE_GENERATOR_DEFAULT);
+	for (i = 0; i <= 1; i++) {
+		sprintf(res, "MTDC32.%s.TrigSrcTrig.%d", mnUC, i);
+		s->trigSrcTrig[i] = root_env_getval_i(res, 0);
+	}
 
-	sprintf(res, "MTDC32.%s.InputRange", mnUC);
-	s->inputRange = root_env_getval_i(res, MTDC32_INPUT_RANGE_DEFAULT);
+	for (i = 0; i <= 1; i++) {
+		sprintf(res, "MTDC32.%s.TrigSrcChan.%d", mnUC, i);
+		s->trigSrcChan[i] = root_env_getval_i(res, 0);
+	}
+
+	for (i = 0; i <= 1; i++) {
+		sprintf(res, "MTDC32.%s.TrigSrcBank.%d", mnUC, i);
+		s->trigSrcBank[i] = root_env_getval_i(res, 0);
+	}
+
+	sprintf(res, "MTDC32.%s.FirstHit", mnUC);
+	s->firstHit = root_env_getval_i(res, MTDC32_FIRST_HIT_DEFAULT);
+
+	sprintf(res, "MTDC32.%s.NegEdge", mnUC);
+	s->negEdge = root_env_getval_i(res, MTDC32_NEG_EDGE_DEFAULT);
 
 	sprintf(res, "MTDC32.%s.EclTerm", mnUC);
 	s->eclTerm = root_env_getval_i(res, MTDC32_ECL_TERMINATORS_DEFAULT);
 
-	sprintf(res, "MTDC32.%s.EclG1OrOsc", mnUC);
-	s->eclG1OrOsc = root_env_getval_i(res, MTDC32_ECL_G1_OR_OSC_DEFAULT);
+	sprintf(res, "MTDC32.%s.EclT1Osc", mnUC);
+	s->eclT1Osc = root_env_getval_i(res, MTDC32_ECL_T1_OSC_DEFAULT);
 
-	sprintf(res, "MTDC32.%s.EclFclOrRts", mnUC);
-	s->eclFclOrRts = root_env_getval_i(res, MTDC32_NIM_FCL_OR_RES_TS_DEFAULT);
+	sprintf(res, "MQDC32.%s.TrigSelect", mnUC);
+	s->trigSelect = root_env_getval_i(res, MQDC32_TRIG_SELECT_DEFAULT);
 
-	sprintf(res, "MTDC32.%s.NimG1OrOsc", mnUC);
-	s->nimG1OrOsc = root_env_getval_i(res, MTDC32_NIM_G1_OR_OSC_DEFAULT);
-
-	sprintf(res, "MTDC32.%s.NimFclOrRts", mnUC);
-	s->nimFclOrRts = root_env_getval_i(res, MTDC32_NIM_FCL_OR_RES_TS_DEFAULT);
+	sprintf(res, "MTDC32.%s.NimT1Osc", mnUC);
+	s->nimT1Osc = root_env_getval_i(res, MTDC32_NIM_T1_OSC_DEFAULT);
 
 	sprintf(res, "MTDC32.%s.NimBusy", mnUC);
 	s->nimBusy = root_env_getval_i(res, MTDC32_NIM_BUSY_DEFAULT);
 
 	sprintf(res, "MTDC32.%s.PulserStatus", mnUC);
-	s->testPulserStatus = root_env_getval_i(res, MTDC32_TEST_PULSER_STATUS_DEFAULT);
+	s->pulserStatus = root_env_getval_i(res, MTDC32_PULSER_STATUS_DEFAULT);
+
+	sprintf(res, "MTDC32.%s.PulserPattern", mnUC);
+	s->pulserPattern = root_env_getval_i(res, MTDC32_PULSER_PATTERN_DEFAULT);
 
 	sprintf(res, "MTDC32.%s.TsSource", mnUC);
 	s->ctraTsSource = root_env_getval_i(res, MTDC32_CTRA_TS_SOURCE_DEFAULT);
@@ -654,13 +699,23 @@ bool_t mtdc32_fillStruct(struct s_mtdc32 * s, char * file)
 	sprintf(res, "MTDC32.%s.TsDivisor", mnUC);
 	s->ctraTsDivisor = root_env_getval_i(res, MTDC32_CTRA_TS_DIVISOR_DEFAULT);
 
+	sprintf(res, "MTDC32.%s.MultHighLimit.0", mnUC);
+	s->multHighLimit[0] = root_env_getval_i(res, MTDC32_HIGH_LIMIT_DEFAULT_0);
+	sprintf(res, "MTDC32.%s.MultHighLimit.1", mnUC);
+	s->multHighLimit[1] = root_env_getval_i(res, MTDC32_HIGH_LIMIT_DEFAULT_1);
+	
+	for (i = 0; i <= 1; i++) {
+		sprintf(res, "MTDC32.%s.MultLowLimit.%d", mnUC, i);
+		s->multLowLimit[i] = root_env_getval_i(res, MTDC32_LOW_LIMIT_DEFAULT);
+	}
+
 	return TRUE;
 }
 
 void mtdc32_loadFromDb(struct s_mtdc32 * s, uint32_t chnPattern)
 {
 	int ch;
-	int gg;
+	int bnk;
 	uint32_t bit;
 
 	mtdc32_setAddrReg_db(s);
@@ -671,41 +726,34 @@ void mtdc32_loadFromDb(struct s_mtdc32 * s, uint32_t chnPattern)
 	mtdc32_setMarkingType_db(s);
 	mtdc32_setXferData_db(s);
 	mtdc32_setBankOperation_db(s);
-	mtdc32_setAdcResolution_db(s);
+	mtdc32_setTdcResolution_db(s);
 	mtdc32_setOutputFormat_db(s);
-	mtdc32_setAdcOverride_db(s);
-	mtdc32_setSlidingScaleOff_db(s);
-	mtdc32_setSkipOutOfRange_db(s);
-	for (gg = 0; gg <= 1; gg++) {
-		mtdc32_setHoldDelay_db(s, gg);
-		mtdc32_setHoldWidth_db(s, gg);
+	for (bnk = 0; bnk <= 1; bnk++) {
+		mtdc32_setWinStart_db(s, bnk);
+		mtdc32_setWinWidth_db(s, bnk);
 	}
-	mtdc32_useGG_db(s);
-	mtdc32_setInputRange_db(s);
+	for (bnk = 0; bnk <= 1; bnk++) mtdc32_trigSource_db(s, bnk);
+	mtdc32_setFirstHit_db(s);
+	mtdc32_setNegEdge_db(s);
 	mtdc32_setEclTerm_db(s);
-	mtdc32_setEclG1OrOsc_db(s);
-	mtdc32_setEclFclOrRts_db(s);
-	mtdc32_setNimG1OrOsc_db(s);
-	mtdc32_setNimFclOrRts_db(s);
+	mtdc32_setEclT1Osc_db(s);
+	mtdc32_setTrigSelect_db(s);
+	mtdc32_setNimT1Osc_db(s);
 	mtdc32_setNimBusy_db(s);
-	mtdc32_setTestPulser_db(s);
+	mtdc32_setPulserStatus_db(s);
+	mtdc32_setPulserPattern_db(s);
+	for (bnk = 0; bnk <= 1; bnk++) mtdc32_setInputThresh_db(s, bnk);
 	mtdc32_setTsSource_db(s);
 	mtdc32_setTsDivisor_db(s);
-
-	bit = 1;
-	for (ch = 0; ch < MTDC_NOF_CHANNELS; ch++) {
-		if (chnPattern & bit) mtdc32_setThreshold_db(s, ch); else mtdc32_setThreshold(s, ch, MTDC32_D_CHAN_INACTIVE);
-		bit <<= 1;
-	}
+	for (bnk = 0; bnk <= 1; bnk++) mtdc32_setMultLimit_db(s, bnk);
 }
-
 
 bool_t mtdc32_dumpRegisters(struct s_mtdc32 * s, char * file)
 {
 	FILE * f;
 
 	int ch;
-	int gg;
+	int bnk;
 	bool_t mcstOrCblt, flag;;
 
 	if (!s->dumpRegsOnInit) return(TRUE);
@@ -719,9 +767,6 @@ bool_t mtdc32_dumpRegisters(struct s_mtdc32 * s, char * file)
 
 	sprintf(msg, "[%sdumpRegisters] %s: Dumping settings to file %s", s->mpref, s->moduleName, file);
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-
-	fprintf(f, "Thresholds [0x4000]:\n");
-	for (ch = 0; ch < MTDC_NOF_CHANNELS; ch++) fprintf(f, "   %2d: %d\n", ch, mtdc32_getThreshold(s, ch));
 
 	mcstOrCblt = FALSE;
 	if (flag = mtdc32_mcstIsEnabled(s))
@@ -744,26 +789,31 @@ bool_t mtdc32_dumpRegisters(struct s_mtdc32 * s, char * file)
 	fprintf(f, "Max xfer data wc [0x601A] : %d\n", mtdc32_getXferData(s));
 	fprintf(f, "Marking type [0x6038]     : %d\n", mtdc32_getMarkingType(s));
 	fprintf(f, "Bank operation [0x6040]   : %d\n", mtdc32_getBankOperation(s));
-	fprintf(f, "Adc resolution [0x6042]   : %d\n", mtdc32_getAdcResolution(s));
+	fprintf(f, "Tdc resolution [0x6042]   : %d\n", mtdc32_getTdcResolution(s));
 	fprintf(f, "Output format [0x6044]    : %d\n", mtdc32_getOutputFormat(s));
-	fprintf(f, "Adc override [0x6046]     : %d\n", mtdc32_getAdcOverride(s));
-	fprintf(f, "Sliding scale off [0x6048]: %d\n", mtdc32_getSlidingScaleOff(s));
-	fprintf(f, "Skip out of range [0x604A]: %d\n", mtdc32_getSkipOutOfRange(s));
-	for (gg = 0; gg <= 1; gg++) {
-		fprintf(f, "Hold delay %d [0x605%d]     : %d\n", gg, gg*2, mtdc32_getHoldDelay(s, gg));
-		fprintf(f, "Hold width %d [0x605%d]     : %d\n", gg, gg*2 + 4, mtdc32_getHoldWidth(s, gg), gg*2 + 4);
+	for (bnk = 0; bnk <= 1; bnk++) {
+		fprintf(f, "Window start %d [0x605%d]   : %d\n", bnk, bnk*2, mtdc32_getWinStart(s, bnk));
+		fprintf(f, "Window width %d [0x605%d]   : %d\n", bnk, bnk*2 + 4, mtdc32_getWinWidth(s, bnk), bnk*2 + 4);
 	}
-	fprintf(f, "Use GG [0x6058]           : %d\n", mtdc32_getGGUsed(s));
-	fprintf(f, "Input range [0x6060]      : %d\n", mtdc32_getInputRange(s));
+	for (bnk = 0; bnk <= 1; bnk++)
+	fprintf(f, "Trigger source %d         : %x\n", bnk, mtdc32_getTrigSource(s, bnk));
+	fprintf(f, "First hit [0x605C]        : %d\n", mtdc32_getFirstHit(s));
+	fprintf(f, "Negative edge [0x6060]    : %d\n", mtdc32_getNegEdge(s));
 	fprintf(f, "Ecl termination [0x6062]  : %#x\n", mtdc32_getEclTerm(s));
-	fprintf(f, "Ecl gate or osc [0x6064]  : %d\n", mtdc32_getEclG1OrOsc(s));
-	fprintf(f, "Ecl fcl or reset [0x6066] : %d\n", mtdc32_getEclFclOrRts(s));
-	fprintf(f, "Nim gate or osc [0x606A]  : %d\n", mtdc32_getNimG1OrOsc(s));
-	fprintf(f, "Nim fcl or reset [0x606C] : %d\n", mtdc32_getNimFclOrRts(s));
+	fprintf(f, "Ecl trig or osc [0x6064]  : %d\n", mtdc32_getEclT1Osc(s));
+	fprintf(f, "Trigger select [0x6068]   : %d\n", mtdc32_getTrigSelect(s));
+	fprintf(f, "Nim trig or osc [0x606A]  : %d\n", mtdc32_getNimT1Osc(s));
 	fprintf(f, "Nim busy [0x606E]         : %d\n", mtdc32_getNimBusy(s));
-	fprintf(f, "Pulser status [0x6070]    : %d\n", mtdc32_getTestPulser(s));
+	fprintf(f, "Pulser status [0x6070]    : %d\n", mtdc32_getPulserStatus(s));
+	fprintf(f, "Pulser pattern [0x6072]   : %d\n", mtdc32_getPulserPattern(s));
+	fprintf(f, "Input thresh 0 [0x6078]   : %d\n", mtdc32_getInputThresh(s, 0));
+	fprintf(f, "Input thresh 1 [0x607A]   : %d\n", mtdc32_getInputThresh(s, 1));
 	fprintf(f, "Timestamp source [0x6096] : %#x\n", mtdc32_getTsSource(s));
 	fprintf(f, "Timestamp divisor [0x6098]: %d\n", mtdc32_getTsDivisor(s));
+	fprintf(f, "Mult high lim 0 [0x60B0]  : %d\n", mtdc32_getMultHighLimit(s, 0));
+	fprintf(f, "Mult low lim 0 [0x60B2]   : %d\n", mtdc32_getMultLowLimit(s, 0));
+	fprintf(f, "Mult high lim 1 [0x60B4]  : %d\n", mtdc32_getMultHighLimit(s, 1));
+	fprintf(f, "Mult low lim 1 [0x60B6]   : %d\n", mtdc32_getMultLowLimit(s, 1));
 	fclose(f);
 }
 
@@ -784,7 +834,7 @@ bool_t mtdc32_dumpRaw(struct s_mtdc32 * s, char * file)
 	sprintf(msg, "[%sdumpRaw] %s: Dumping raw data to file %s", s->mpref, s->moduleName, file);
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
-	for (i = 0x6000; i < 0x60B0; i += 2) {
+	for (i = 0x6000; i < 0x60B6; i += 2) {
 		fprintf(f, "%#lx %#x\n", i, GET16(s->md->vmeBase, i));
 	}
 	fclose(f);
@@ -793,7 +843,7 @@ bool_t mtdc32_dumpRaw(struct s_mtdc32 * s, char * file)
 void mtdc32_printDb(struct s_mtdc32 * s)
 {
 	int ch;
-	int gg;
+	int bnk;
 
 	printf("Thresholds:\n");
 	for (ch = 0; ch < MTDC_NOF_CHANNELS; ch++) printf("   %2d: %d\n", ch, s->threshold[ch]);
@@ -818,26 +868,28 @@ void mtdc32_printDb(struct s_mtdc32 * s)
 	printf("Max xfer data wc  : %d\n", s->xferData);
 	printf("Marking type      : %d\n", s->markingType);
 	printf("Bank operation    : %d\n", s->bankOperation);
-	printf("Adc resolution    : %d\n", s->adcResolution);
+	printf("Tdc resolution    : %d\n", s->TdcResolution);
 	printf("Output format     : %d\n", s->outputFormat);
-	printf("Adc override      : %d\n", s->adcOverride);
-	printf("Sliding scale off : %d\n", s->slidingScaleOff);
-	printf("Skip out of range : %d\n", s->skipOutOfRange);
-	for (gg = 0; gg <= 1; gg++) {
-		printf("Hold delay %d      : %d\n", gg, s->ggHoldDelay[gg]);
-		printf("Hold width %d      : %d\n", gg, s->ggHoldWidth[gg]);
+	for (bnk = 0; bnk <= 1; bnk++) {
+		printf("Window start %d    : %d\n", bnk, s->winStart[bnk]);
+		printf("Window width %d    : %d\n", bnk, s->winWidth[bnk]);
 	}
-	printf("Use GG            : %d\n", s->useGG);
-	printf("Input range       : %d\n", s->inputRange);
+	printf("First hit         : %d\n", s->firstHit);
+	printf("Negative edge     : %d\n", s->negEdge);
 	printf("Ecl termination   : %#x\n", s->eclTerm);
-	printf("Ecl gate or osc   : %d\n", s->eclG1OrOsc);
-	printf("Ecl fcl or reset  : %d\n", s->eclFclOrRts);
-	printf("Nim gate or osc   : %d\n", s->nimG1OrOsc);
-	printf("Nim fcl or reset  : %d\n", s->nimFclOrRts);
+	printf("Ecl trig or osc   : %d\n", s->eclT1Osc);
+	printf("Trigger select    : %d\n", s->trigSelect);
+	printf("Nim trig or osc   : %d\n", s->nimT1Osc);
 	printf("Nim busy          : %d\n", s->nimBusy);
-	printf("Pulser status     : %d\n", s->testPulserStatus);
+	printf("Pulser status     : %d\n", s->pulserStatus);
+	printf("Pulser pattern    : %d\n", s->pulserPattern;
+	for (bnk = 0; bnk <= 1; bnk++) printf("Input thresh %d   : %d\n", bnk, s->inputThresh[bnk]);
 	printf("Timestamp source  : %#x\n", s->ctraTsSource);
 	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
+	for (bnk = 0; bnk <= 1; bnk++) {
+		printf("Mult low lim %d    : %d\n", bnk, s->multLowLimit[bnk]);
+		printf("Mult high lim %d   : %d\n", bnk, s->multHighLimit[bnk]);
+	}
 }
 
 int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer)

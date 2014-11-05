@@ -39,10 +39,6 @@ void mtdc32_soft_reset(struct s_mtdc32 * s);
 
 void mtdc32_initDefaults(struct s_mtdc32 * s);
 
-void mtdc32_setThreshold(struct s_mtdc32 * s, uint16_t channel,  uint16_t thresh);
-void mtdc32_setThreshold_db(struct s_mtdc32 * s, uint16_t channel);
-uint16_t mtdc32_getThreshold(struct s_mtdc32 * s, uint16_t channel);
-
 void mtdc32_setAddrReg(struct s_mtdc32 * s, uint16_t vmeAddr);
 void mtdc32_setAddrReg_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getAddrReg(struct s_mtdc32 * s);
@@ -73,77 +69,60 @@ void mtdc32_setBankOperation(struct s_mtdc32 * s, uint16_t oper);
 void mtdc32_setBankOperation_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getBankOperation(struct s_mtdc32 * s);
 
-void mtdc32_setAdcResolution(struct s_mtdc32 * s, uint16_t res);
-void mtdc32_setAdcResolution_db(struct s_mtdc32 * s);
-uint16_t mtdc32_getAdcResolution(struct s_mtdc32 * s);
+void mtdc32_setTdcResolution(struct s_mtdc32 * s, uint16_t res);
+void mtdc32_setTdcResolution_db(struct s_mtdc32 * s);
+uint16_t mtdc32_getTdcResolution(struct s_mtdc32 * s);
 
 void mtdc32_setOutputFormat(struct s_mtdc32 * s, uint16_t format);
 void mtdc32_setOutputFormat_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getOutputFormat(struct s_mtdc32 * s);
 
-void mtdc32_setAdcOverride(struct s_mtdc32 * s, uint16_t over);
-void mtdc32_setAdcOverride_db(struct s_mtdc32 * s);
-uint16_t mtdc32_getAdcOverride(struct s_mtdc32 * s);
+void mtdc32_setWinStart(struct s_mtdc32 * s, uint16_t bnk, uint16_t offset);
+void mtdc32_setWinStart_db(struct s_mtdc32 * s, uint16_t bnk);
+uint16_t mtdc32_getWinStart(struct s_mtdc32 * s, uint16_t bnk);
 
-void mtdc32_setSlidingScaleOff(struct s_mtdc32 * s, bool_t flag);
-void mtdc32_setSlidingScaleOff_db(struct s_mtdc32 * s);
-bool_t mtdc32_getSlidingScaleOff(struct s_mtdc32 * s);
+void mtdc32_setWinWidth(struct s_mtdc32 * s, uint16_t bnk, uint16_t width);
+void mtdc32_setWinWidth_db(struct s_mtdc32 * s, uint16_t bnk);
+uint16_t mtdc32_getWinWidth(struct s_mtdc32 * s, uint16_t bnk);
 
-void mtdc32_setSkipOutOfRange(struct s_mtdc32 * s, bool_t flag);
-void mtdc32_setSkipOutOfRange_db(struct s_mtdc32 * s);
-bool_t mtdc32_getSkipOutOfRange(struct s_mtdc32 * s);
+void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint16_t chan, uint16_t bnk);
+void mtdc32_setTrigSource_db(struct s_mtdc32 * s, uint16_t bnk);
+void mtdc32_getTrigSource(struct s_mtdc32 * s, uint16_t bnk);
+uint16_t mtdc32_getTrigSrcTrig(struct s_mtdc32 * s, uint16_t bnk);
+uint16_t mtdc32_getTrigSrcChan(struct s_mtdc32 * s, uint16_t bnk);
+uint16_t mtdc32_getTrigSrcBank(struct s_mtdc32 * s, uint16_t bnk);
 
-void mtdc32_setIgnoreThresholds(struct s_mtdc32 * s, bool_t flag);
-void mtdc32_setIgnoreThresholds_db(struct s_mtdc32 * s);
-bool_t mtdc32_getIgnoreThresholds(struct s_mtdc32 * s);
+void mtdc32_setFirstHit(struct s_mtdc32 * s, uint16_t range);
+void mtdc32_setFirstHit_db(struct s_mtdc32 * s);
+uint16_t mtdc32_getFirstHit(struct s_mtdc32 * s);
 
-void mtdc32_setHoldDelay(struct s_mtdc32 * s, uint16_t gg, uint16_t delay);
-void mtdc32_setHoldDelay_db(struct s_mtdc32 * s, uint16_t gg);
-uint16_t mtdc32_getHoldDelay(struct s_mtdc32 * s, uint16_t gg);
-
-void mtdc32_setHoldWidth(struct s_mtdc32 * s, uint16_t gg, uint16_t width);
-void mtdc32_setHoldWidth_db(struct s_mtdc32 * s, uint16_t gg);
-uint16_t mtdc32_getHoldWidth(struct s_mtdc32 * s, uint16_t gg);
-
-void mtdc32_useGG(struct s_mtdc32 * s, uint16_t gg);
-void mtdc32_useGG_db(struct s_mtdc32 * s);
-uint16_t mtdc32_getGGUsed(struct s_mtdc32 * s);
-
-void mtdc32_setInputRange(struct s_mtdc32 * s, uint16_t range);
-void mtdc32_setInputRange_db(struct s_mtdc32 * s);
-uint16_t mtdc32_getInputRange(struct s_mtdc32 * s);
+void mtdc32_setNegEdge(struct s_mtdc32 * s, uint16_t edge);
+void mtdc32_setNegEdge_db(struct s_mtdc32 * s);
+uint16_t mtdc32_getNegEdge(struct s_mtdc32 * s);
 
 void mtdc32_setEclTerm(struct s_mtdc32 * s, uint16_t term);
 void mtdc32_setEclTerm_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getEclTerm(struct s_mtdc32 * s);
 
-void mtdc32_setEclG1OrOsc(struct s_mtdc32 * s, uint16_t go);
-void mtdc32_setEclG1OrOsc_db(struct s_mtdc32 * s);
-uint16_t mtdc32_getEclG1OrOsc(struct s_mtdc32 * s);
+void mtdc32_setEclT1Osc(struct s_mtdc32 * s, uint16_t go);
+void mtdc32_setEclT1Osc_db(struct s_mtdc32 * s);
+uint16_t mtdc32_getEclT1Osc(struct s_mtdc32 * s);
 
-void mtdc32_setEclFclOrRts(struct s_mtdc32 * s, uint16_t fr);
-void mtdc32_setEclFclOrRts_db(struct s_mtdc32 * s);
-uint16_t mtdc32_getEclFclOrRts(struct s_mtdc32 * s);
-
-void mtdc32_setNimG1OrOsc(struct s_mtdc32 * s, uint16_t go);
-void mtdc32_setNimG1OrOsc_db(struct s_mtdc32 * s);
-uint16_t mtdc32_getNimG1OrOsc(struct s_mtdc32 * s);
-
-void mtdc32_setNimFclOrRts(struct s_mtdc32 * s, uint16_t fr);
-void mtdc32_setNimFclOrRts_db(struct s_mtdc32 * s);
-uint16_t mtdc32_getNimFclOrRts(struct s_mtdc32 * s);
+void mtdc32_setNimT1Osc(struct s_mtdc32 * s, uint16_t go);
+void mtdc32_setNimT1Osc_db(struct s_mtdc32 * s);
+uint16_t mtdc32_getNimT1Osc(struct s_mtdc32 * s);
 
 void mtdc32_setNimBusy(struct s_mtdc32 * s, uint16_t busy);
 void mtdc32_setNimBusy_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getNimBusy(struct s_mtdc32 * s);
 
-void mtdc32_setBufferThresh_db(struct s_mtdc32 * s);
-void mtdc32_setBufferThresh(struct s_mtdc32 * s, uint16_t thresh);
-uint16_t mtdc32_getBufferThresh(struct s_mtdc32 * s);
+void mtdc32_setPulserStatus(struct s_mtdc32 * s, uint16_t mode);
+void mtdc32_setPulserStatus_db(struct s_mtdc32 * s);
+uint16_t mtdc32_getPulserStatus(struct s_mtdc32 * s);
 
-void mtdc32_setTestPulser(struct s_mtdc32 * s, uint16_t mode);
-void mtdc32_setTestPulser_db(struct s_mtdc32 * s);
-uint16_t mtdc32_getTestPulser(struct s_mtdc32 * s);
+void mtdc32_setPulserPattern(struct s_mtdc32 * s, uint16_t pattern);
+void mtdc32_setPulserPattern_db(struct s_mtdc32 * s);
+uint16_t mtdc32_getPulserPattern(struct s_mtdc32 * s);
 
 void mtdc32_setTsSource(struct s_mtdc32 * s, uint16_t source);
 void mtdc32_setTsSource_db(struct s_mtdc32 * s);
@@ -152,6 +131,11 @@ uint16_t mtdc32_getTsSource(struct s_mtdc32 * s);
 void mtdc32_setTsDivisor(struct s_mtdc32 * s, uint16_t div);
 void mtdc32_setTsDivisor_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getTsDivisor(struct s_mtdc32 * s);
+
+void mtdc32_setMultLimit(struct s_madc32 * s, uint16_t bnk, uint16_t llim, uint16_t hlim);
+void mtdc32_setMultLimit_db(struct s_madc32 * s, uint16_t bnk);
+uint16_t mtdc32_getMultHighLimit(struct s_madc32 * s, uint16_t bnk);
+uint16_t mtdc32_getMultLowLimit(struct s_madc32 * s, uint16_t bnk);
 
 int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer);
 bool_t mtdc32_dataReady(struct s_mtdc32 * s);
@@ -197,8 +181,6 @@ void mtdc32_stopAcq_msct(struct s_mtdc32 * s);
 void mtdc32_resetFifo_mcst(struct s_mtdc32 * s);
 void mtdc32_resetTimestamp_mcst(struct s_mtdc32 * s);
 void mtdc_resetReadout_mcst(struct s_mtdc32 * s);
-
-bool_t mtdc32_updateSettings(struct s_mtdc32 * s, char * updFile);
 
 uint32_t * mtdc32_repairRawData(struct s_mtdc32 * s, uint32_t * pointer, uint32_t * dataStart);
 #endif

@@ -40,11 +40,6 @@ struct s_mtdc32 {
 	bool_t verbose;
 	bool_t dumpRegsOnInit;
 
-	bool_t updSettings;
-	int updInterval;
-	int updCountDown;
-
-	uint16_t threshold[MTDC_NOF_CHANNELS];
 	uint16_t addrSource;
 	uint16_t addrReg;
 	uint16_t moduleId;
@@ -57,23 +52,27 @@ struct s_mtdc32 {
 	uint16_t adcResolution;
 	uint16_t outputFormat;
 	uint16_t bufferThresh;
-	uint16_t adcOverride;
-	bool_t slidingScaleOff;
-	bool_t skipOutOfRange;
-	bool_t ignoreThresh;
-	uint16_t ggHoldDelay[2];
-	uint16_t ggHoldWidth[2];
-	uint16_t useGG;
-	uint16_t inputRange;
+	uint16_t winStart[2];
+	uint16_t winWidth[2];
+	uint16_t trigSrcTrig[2];
+	uint16_t trigSrcChan[2];
+	uint16_t trigSrcBank[2];
+	uint16_t firstHit;
+	uint16_t negEdge;
 	uint16_t eclTerm;
-	uint16_t eclG1OrOsc;
-	uint16_t eclFclOrRts;
-	uint16_t nimG1OrOsc;
-	uint16_t nimFclOrRts;
+	uint16_t eclT1Osc;
+	uint16_t eclFclRts;
+	uint16_t trigSelect;
+	uint16_t nimT1Osc;
+	uint16_t nimFclRts;
 	uint16_t nimBusy;
-	uint16_t testPulserStatus;
+	uint16_t pulserStatus;
+	uint16_t pulserPattern;
+	uint16_t inputThresh[2];
 	uint16_t ctraTsSource;
 	uint16_t ctraTsDivisor;
+	uint16_t multHighLimit[2];
+	uint16_t multLowLimit[2];
 
 	int memorySize;
 
