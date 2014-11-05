@@ -345,6 +345,11 @@ void TMrbMesytec_Mtdc32::DefineRegisters() {
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
+	kp = new TMrbNamedX(TMrbMesytec_Mtdc32::kRegFirstHit, "FirstHit");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, 0, 0, 0x3);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
+
 	kp = new TMrbNamedX(TMrbMesytec_Mtdc32::kRegTrigSrcTrig, "TrigSrcTrig");
 	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, 1, 0, 0x3);
 	kp->AssignObject(rp);
@@ -463,7 +468,7 @@ void TMrbMesytec_Mtdc32::DefineRegisters() {
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	
-	kp = new TMrbNamedX(TMrbMesytec_Mtdc32::kRegMultHighLimit, "MultLowLimit");
+	kp = new TMrbNamedX(TMrbMesytec_Mtdc32::kRegMultLowLimit, "MultLowLimit");
 	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, TMrbMesytec_Mtdc32::kMultLowLimit, 0, 0x3F);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
@@ -500,7 +505,7 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 		return(NULL);
 	}
 
-	TMrbResource * mtdcEnv = new TMrbResource("MADC32", fSettingsFile.Data());
+	TMrbResource * mtdcEnv = new TMrbResource("MTDC32", fSettingsFile.Data());
 
 	TString moduleName; mtdcEnv->Get(moduleName, ".ModuleName", "");
 	if (moduleName.CompareTo(this->GetName()) != 0) {
@@ -539,7 +544,7 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetTrigSrcTrig(mtdcEnv->Get(moduleName.Data(), "TrigSrcTrig", "1", 2), 1);
 	this->SetTrigSrcChan(mtdcEnv->Get(moduleName.Data(), "TrigSrcChand", "1", 0), 1);
 	this->SetTrigSrcBank(mtdcEnv->Get(moduleName.Data(), "TrigSrcBank", "1", 0), 1);
-	this->SetFirstHit(mtdcEnv->Get(moduleName.Data(), "FirstHit", kTRUE));
+	this->SetFirstHit(mtdcEnv->Get(moduleName.Data(), "FirstHit", 3));
 	this->SetNegativeEdge(mtdcEnv->Get(moduleName.Data(), "TrigSrcBank", 0));
 	this->SetEclTerm(mtdcEnv->Get(moduleName.Data(), "EclTerm", kEclTermOn));
 	this->SetEclT1Osc(mtdcEnv->Get(moduleName.Data(), "EclT1Osc", kEclT1));
@@ -575,8 +580,8 @@ Bool_t TMrbMesytec_Mtdc32::UpdateSettings() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString settingsVersion;
-	TMrbResource * madcEnv = new TMrbResource("MTDC32", fSettingsFile.Data());
-	madcEnv->Get(settingsVersion, ".SettingsVersion", "");
+	TMrbResource * mtdcEnv = new TMrbResource("MTDC32", fSettingsFile.Data());
+	mtdcEnv->Get(settingsVersion, ".SettingsVersion", "");
 	if (settingsVersion.CompareTo("10.2014") != 0) {
 		gMrbLog->Out() << "Settings file \"" << fSettingsFile << "\" has wrong (old?) version \"" << settingsVersion << "\" (should be 10.2014)" << endl;
 		gMrbLog->Flush(this->ClassName(), "UpdateSettings", setblue);
@@ -694,7 +699,7 @@ Bool_t TMrbMesytec_Mtdc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$trigSrcTrig1", this->GetTrigSrcTrig(1));
 						tmpl.Substitute("$trigSrcChan1", this->GetTrigSrcChan(1));
 						tmpl.Substitute("$trigSrcBank1", this->GetTrigSrcBank(1));
-						tmpl.Substitute("$firstHit", this->FirstHitOn());
+						tmpl.Substitute("$firstHit", this->FirstHit());
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%InputOutput%");
@@ -984,8 +989,8 @@ void TMrbMesytec_Mtdc32::PrintSettings(ostream & Out) {
 	Out << " Data width             : "	<< this->FormatValue(value, TMrbMesytec_Mtdc32::kRegDataWidth) << endl;
 	Out << " Single/multi event     : "	<< this->FormatValue(value, TMrbMesytec_Mtdc32::kRegMultiEvent) << endl;
 	Out << " Marking type           : "	<< this->FormatValue(value, TMrbMesytec_Mtdc32::kRegMarkingType) << endl;
-	Out << " Block tansfer          : "	<< (this->BlockXferEnabled() ? "off" : "on") << endl;
-	Out << " Repair raw data        : "	<< (this->RawDataToBeRepaired() ? "off" : "on") << endl;
+	Out << " Block tansfer          : "	<< (this->BlockXferEnabled() ? "on" : "off") << endl;
+	Out << " Repair raw data        : "	<< (this->RawDataToBeRepaired() ? "on" : "off") << endl;
 	Out << " Bank operation         : "	<< this->FormatValue(value, TMrbMesytec_Mtdc32::kRegBankOperation) << endl;
 	Out << " TDC resolution         : "	<< this->FormatValue(value, TMrbMesytec_Mtdc32::kRegTdcResolution) << endl;
 	Out << " Output format          : "	<< this->FormatValue(value, TMrbMesytec_Mtdc32::kRegOutputFormat) << endl;

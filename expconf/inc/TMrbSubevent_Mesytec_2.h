@@ -56,6 +56,7 @@ class TMrbSubevent_Mesytec_2 : public TMrbSubevent {
 		inline Bool_t CheckModuleID(TMrbModule * Module) const {				// needs modules of type MADC32 or MQDC32
 			if (Module->CheckID(TMrbConfig::kModuleMesytecMadc32)) return(kTRUE);
 			if (Module->CheckID(TMrbConfig::kModuleMesytecMqdc32)) return(kTRUE);
+                        if (Module->CheckID(TMrbConfig::kModuleMesytecMtdc32)) return(kTRUE);
 			return(kFALSE);
 		};
 

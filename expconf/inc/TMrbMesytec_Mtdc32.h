@@ -237,8 +237,8 @@ class TMrbMesytec_Mtdc32 : public TMrbVMEModule {
 		inline Bool_t SetTrigSrcBank(Int_t Bank, Int_t B = 0) { return(this->Set(TMrbMesytec_Mtdc32::kRegTrigSrcBank, Bank, B)); };
 		inline Int_t GetTrigSrcBank(Int_t B = 0) { return(this->Get(TMrbMesytec_Mtdc32::kRegTrigSrcBank, B)); };
 
-		inline void SetFirstHit(Bool_t Flag) { fFirstHit = Flag; };
-		inline Bool_t FirstHitOn() { return fFirstHit; };
+		inline Bool_t SetFirstHit(Int_t Bits) { return(this->Set(TMrbMesytec_Mtdc32::kRegFirstHit, Bits)); };
+		inline Int_t FirstHit() { return(this->Get(TMrbMesytec_Mtdc32::kRegFirstHit)); };
 		
 		inline Bool_t SetNegativeEdge(Int_t Edge) { return(this->Set(TMrbMesytec_Mtdc32::kRegNegEdge, Edge)); };
 		inline Int_t GetNegativeEdge() { return(this->Get(TMrbMesytec_Mtdc32::kRegNegEdge)); };
@@ -328,7 +328,6 @@ class TMrbMesytec_Mtdc32 : public TMrbVMEModule {
 		Bool_t fBlockXfer;
 		Bool_t fRepairRawData;
 		Bool_t fPulserStatus;
-		Bool_t fFirstHit;
 		Int_t fBufferThresh;
 
 		UInt_t fMCSTSignature;
