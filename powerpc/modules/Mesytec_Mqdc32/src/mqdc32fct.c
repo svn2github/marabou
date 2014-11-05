@@ -326,28 +326,28 @@ uint16_t mqdc32_getEclTerm(struct s_mqdc32 * s)
 	return GET16(s->md->vmeBase, MQDC32_ECL_TERMINATORS) & MQDC32_ECL_TERMINATORS_MASK;
 }
 
-void mqdc32_setEclG1OrOsc_db(struct s_mqdc32 * s) { mqdc32_setEclG1OrOsc(s, s->eclG1OrOsc); }
+void mqdc32_setEclG1Osc_db(struct s_mqdc32 * s) { mqdc32_setEclG1Osc(s, s->eclG1Osc); }
 
-void mqdc32_setEclG1OrOsc(struct s_mqdc32 * s, uint16_t go)
+void mqdc32_setEclG1Osc(struct s_mqdc32 * s, uint16_t go)
 {
-	SET16(s->md->vmeBase, MQDC32_ECL_G1_OR_OSC, go & MQDC32_ECL_G1_OR_OSC_MASK);
+	SET16(s->md->vmeBase, MQDC32_ECL_G1_OSC, go & MQDC32_ECL_G1_OSC_MASK);
 }
 
-uint16_t mqdc32_getEclG1OrOsc(struct s_mqdc32 * s)
+uint16_t mqdc32_getEclG1Osc(struct s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_ECL_G1_OR_OSC) & MQDC32_ECL_G1_OR_OSC_MASK;
+	return GET16(s->md->vmeBase, MQDC32_ECL_G1_OSC) & MQDC32_ECL_G1_OSC_MASK;
 }
 
-void mqdc32_setEclFclOrRts_db(struct s_mqdc32 * s) { mqdc32_setEclFclOrRts(s, s->eclFclOrRts); }
+void mqdc32_setEclFclRts_db(struct s_mqdc32 * s) { mqdc32_setEclFclRts(s, s->eclFclRts); }
 
-void mqdc32_setEclFclOrRts(struct s_mqdc32 * s, uint16_t fr)
+void mqdc32_setEclFclRts(struct s_mqdc32 * s, uint16_t fr)
 {
-	SET16(s->md->vmeBase, MQDC32_ECL_FCL_OR_RES_TS, fr & MQDC32_ECL_FCL_OR_RES_TS_MASK);
+	SET16(s->md->vmeBase, MQDC32_ECL_FCL_RTS, fr & MQDC32_ECL_FCL_RTS_MASK);
 }
 
-uint16_t mqdc32_getEclFclOrRts(struct s_mqdc32 * s)
+uint16_t mqdc32_getEclFclRts(struct s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_ECL_FCL_OR_RES_TS) & MQDC32_ECL_FCL_OR_RES_TS_MASK;
+	return GET16(s->md->vmeBase, MQDC32_ECL_FCL_RTS) & MQDC32_ECL_FCL_RTS_MASK;
 }
 
 void mqdc32_setGateSelect_db(struct s_mqdc32 * s) { mqdc32_setGateSelect(s, s->gateSelect); }
@@ -362,29 +362,29 @@ uint16_t mqdc32_getGateSelect(struct s_mqdc32 * s)
 	return GET16(s->md->vmeBase, MQDC32_GATE_SELECT) & MQDC32_GATE_SELECT_MASK;
 }
 
-void mqdc32_setNimG1OrOsc_db(struct s_mqdc32 * s) { mqdc32_setNimG1OrOsc(s, s->nimG1OrOsc); }
+void mqdc32_setNimG1Osc_db(struct s_mqdc32 * s) { mqdc32_setNimG1Osc(s, s->nimG1Osc); }
 
-void mqdc32_setNimG1OrOsc(struct s_mqdc32 * s, uint16_t go)
+void mqdc32_setNimG1Osc(struct s_mqdc32 * s, uint16_t go)
 {
-	SET16(s->md->vmeBase, MQDC32_NIM_G1_OR_OSC, go & MQDC32_NIM_G1_OR_OSC_MASK);
+	SET16(s->md->vmeBase, MQDC32_NIM_G1_OSC, go & MQDC32_NIM_G1_OSC_MASK);
 }
 
-uint16_t mqdc32_getNimG1OrOsc(struct s_mqdc32 * s)
+uint16_t mqdc32_getNimG1Osc(struct s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_NIM_G1_OR_OSC) & MQDC32_NIM_G1_OR_OSC_MASK;
+	return GET16(s->md->vmeBase, MQDC32_NIM_G1_OSC) & MQDC32_NIM_G1_OSC_MASK;
 }
 
 
-void mqdc32_setNimFclOrRts_db(struct s_mqdc32 * s) { mqdc32_setNimFclOrRts(s, s->nimFclOrRts); }
+void mqdc32_setNimFclRts_db(struct s_mqdc32 * s) { mqdc32_setNimFclRts(s, s->nimFclRts); }
 
-void mqdc32_setNimFclOrRts(struct s_mqdc32 * s, uint16_t fr)
+void mqdc32_setNimFclRts(struct s_mqdc32 * s, uint16_t fr)
 {
-	SET16(s->md->vmeBase, MQDC32_NIM_FCL_OR_RES_TS, fr & MQDC32_NIM_FCL_OR_RES_TS_MASK);
+	SET16(s->md->vmeBase, MQDC32_NIM_FCL_RTS, fr & MQDC32_NIM_FCL_RTS_MASK);
 }
 
-uint16_t mqdc32_getNimFclOrRts(struct s_mqdc32 * s)
+uint16_t mqdc32_getNimFclRts(struct s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_NIM_FCL_OR_RES_TS) & MQDC32_NIM_FCL_OR_RES_TS_MASK;
+	return GET16(s->md->vmeBase, MQDC32_NIM_FCL_RTS) & MQDC32_NIM_FCL_RTS_MASK;
 }
 
 void mqdc32_setNimBusy_db(struct s_mqdc32 * s) { mqdc32_setNimBusy(s, s->nimBusy); }
@@ -399,16 +399,16 @@ uint16_t mqdc32_getNimBusy(struct s_mqdc32 * s)
 	return GET16(s->md->vmeBase, MQDC32_NIM_BUSY) & MQDC32_NIM_BUSY_MASK;
 }
 
-void mqdc32_setTestPulser_db(struct s_mqdc32 * s) { mqdc32_setTestPulser(s, s->testPulserStatus); }
+void mqdc32_setPulserStatus_db(struct s_mqdc32 * s) { mqdc32_setPulserStatus(s, s->pulserStatus); }
 
-void mqdc32_setTestPulser(struct s_mqdc32 * s, uint16_t mode)
+void mqdc32_setPulserStatus(struct s_mqdc32 * s, uint16_t mode)
 {
-	SET16(s->md->vmeBase, MQDC32_TEST_PULSER_STATUS, mode & MQDC32_TEST_PULSER_STATUS_MASK);
+	SET16(s->md->vmeBase, MQDC32_PULSER_STATUS, mode & MQDC32_PULSER_STATUS_MASK);
 }
 
-uint16_t mqdc32_getTestPulser(struct s_mqdc32 * s)
+uint16_t mqdc32_getPulserStatus(struct s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_TEST_PULSER_STATUS) & MQDC32_TEST_PULSER_STATUS_MASK;
+	return GET16(s->md->vmeBase, MQDC32_PULSER_STATUS) & MQDC32_PULSER_STATUS_MASK;
 }
 
 void mqdc32_setTsSource_db(struct s_mqdc32 * s) { mqdc32_setTsSource(s, s->ctraTsSource); }
@@ -475,10 +475,6 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 	s->verbose = root_env_getval_b("MQDC32.VerboseMode", FALSE);
 
 	s->dumpRegsOnInit = root_env_getval_b("MQDC32.DumpRegisters", FALSE);
-
-	s->updSettings = root_env_getval_b("MQDC32.UpdateSettings", FALSE);
-	s->updInterval = root_env_getval_i("MQDC32.UpdateInterval", 0);
-	s->updCountDown = 0;
 
 	sp = root_env_getval_s("MQDC32.ModuleName", "");
 	if (strcmp(s->moduleName, "mqdc32") != 0 && strcmp(sp, s->moduleName) != 0) {
@@ -577,26 +573,26 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 	sprintf(res, "MQDC32.%s.EclTerm", mnUC);
 	s->eclTerm = root_env_getval_i(res, MQDC32_ECL_TERMINATORS_DEFAULT);
 
-	sprintf(res, "MQDC32.%s.EclG1OrOsc", mnUC);
-	s->eclG1OrOsc = root_env_getval_i(res, MQDC32_ECL_G1_OR_OSC_DEFAULT);
+	sprintf(res, "MQDC32.%s.EclOsc", mnUC);
+	s->eclG1Osc = root_env_getval_i(res, MQDC32_ECL_G1_OSC_DEFAULT);
 
-	sprintf(res, "MQDC32.%s.EclFclOrRts", mnUC);
-	s->eclFclOrRts = root_env_getval_i(res, MQDC32_NIM_FCL_OR_RES_TS_DEFAULT);
+	sprintf(res, "MQDC32.%s.EclFclRts", mnUC);
+	s->eclFclRts = root_env_getval_i(res, MQDC32_NIM_FCL_RTS_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.GateSelect", mnUC);
-	s->eclFclOrRts = root_env_getval_i(res, MQDC32_GATE_SELECT_DEFAULT);
+	s->gateSelect = root_env_getval_i(res, MQDC32_GATE_SELECT_DEFAULT);
 
-	sprintf(res, "MQDC32.%s.NimG1OrOsc", mnUC);
-	s->nimG1OrOsc = root_env_getval_i(res, MQDC32_NIM_G1_OR_OSC_DEFAULT);
+	sprintf(res, "MQDC32.%s.NimG1Osc", mnUC);
+	s->nimG1Osc = root_env_getval_i(res, MQDC32_NIM_G1_OSC_DEFAULT);
 
-	sprintf(res, "MQDC32.%s.NimFclOrRts", mnUC);
-	s->nimFclOrRts = root_env_getval_i(res, MQDC32_NIM_FCL_OR_RES_TS_DEFAULT);
+	sprintf(res, "MQDC32.%s.NimFclRts", mnUC);
+	s->nimFclRts = root_env_getval_i(res, MQDC32_NIM_FCL_RTS_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.NimBusy", mnUC);
 	s->nimBusy = root_env_getval_i(res, MQDC32_NIM_BUSY_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.PulserStatus", mnUC);
-	s->testPulserStatus = root_env_getval_i(res, MQDC32_TEST_PULSER_STATUS_DEFAULT);
+	s->pulserStatus = root_env_getval_i(res, MQDC32_PULSER_STATUS_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.TsSource", mnUC);
 	s->ctraTsSource = root_env_getval_i(res, MQDC32_CTRA_TS_SOURCE_DEFAULT);
@@ -631,13 +627,13 @@ void mqdc32_loadFromDb(struct s_mqdc32 * s, uint32_t chnPattern)
 	mqdc32_setIgnoreThresholds_db(s);
 	mqdc32_setInputCoupling_db(s);
 	mqdc32_setEclTerm_db(s);
-	mqdc32_setEclG1OrOsc_db(s);
-	mqdc32_setEclFclOrRts_db(s);
+	mqdc32_setEclG1Osc_db(s);
+	mqdc32_setEclFclRts_db(s);
 	mqdc32_setGateSelect_db(s);
-	mqdc32_setNimG1OrOsc_db(s);
-	mqdc32_setNimFclOrRts_db(s);
+	mqdc32_setNimG1Osc_db(s);
+	mqdc32_setNimFclRts_db(s);
 	mqdc32_setNimBusy_db(s);
-	mqdc32_setTestPulser_db(s);
+	mqdc32_setPulserStatus_db(s);
 	mqdc32_setTsSource_db(s);
 	mqdc32_setTsDivisor_db(s);
 
@@ -706,13 +702,13 @@ bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file)
 	}
 	fprintf(f, "Input coupling    : %d\n", mqdc32_getInputCoupling(s));
 	fprintf(f, "Ecl termination   : %#x\n", mqdc32_getEclTerm(s));
-	fprintf(f, "Ecl gate or osc   : %d\n", mqdc32_getEclG1OrOsc(s));
-	fprintf(f, "Ecl fcl or reset  : %d\n", mqdc32_getEclFclOrRts(s));
+	fprintf(f, "Ecl gate or osc   : %d\n", mqdc32_getEclG1Osc(s));
+	fprintf(f, "Ecl fcl or reset  : %d\n", mqdc32_getEclFclRts(s));
 	fprintf(f, "Gate select       : %d\n", mqdc32_getGateSelect(s));
-	fprintf(f, "Nim gate or osc   : %d\n", mqdc32_getNimG1OrOsc(s));
-	fprintf(f, "Nim fcl or reset  : %d\n", mqdc32_getNimFclOrRts(s));
+	fprintf(f, "Nim gate or osc   : %d\n", mqdc32_getNimG1Osc(s));
+	fprintf(f, "Nim fcl or reset  : %d\n", mqdc32_getNimFclRts(s));
 	fprintf(f, "Nim busy          : %d\n", mqdc32_getNimBusy(s));
-	fprintf(f, "Pulser status     : %d\n", mqdc32_getTestPulser(s));
+	fprintf(f, "Pulser status     : %d\n", mqdc32_getPulserStatus(s));
 	fprintf(f, "Timestamp source  : %#x\n", mqdc32_getTsSource(s));
 	fprintf(f, "Timestamp divisor : %d\n", mqdc32_getTsDivisor(s));
 	fclose(f);
@@ -779,13 +775,13 @@ void mqdc32_printDb(struct s_mqdc32 * s)
 	}
 	printf("Input coupling    : %d\n", s->inputCoupling);
 	printf("Ecl termination   : %#x\n", s->eclTerm);
-	printf("Ecl gate or osc   : %d\n", s->eclG1OrOsc);
-	printf("Ecl fcl or reset  : %d\n", s->eclFclOrRts);
+	printf("Ecl gate or osc   : %d\n", s->eclG1Osc);
+	printf("Ecl fcl or reset  : %d\n", s->eclFclRts);
 	printf("Gate select       : %d\n", s->gateSelect);
-	printf("Nim gate or osc   : %d\n", s->nimG1OrOsc);
-	printf("Nim fcl or reset  : %d\n", s->nimFclOrRts);
+	printf("Nim gate or osc   : %d\n", s->nimG1Osc);
+	printf("Nim fcl or reset  : %d\n", s->nimFclRts);
 	printf("Nim busy          : %d\n", s->nimBusy);
-	printf("Pulser status     : %d\n", s->testPulserStatus);
+	printf("Pulser status     : %d\n", s->pulserStatus);
 	printf("Timestamp source  : %#x\n", s->ctraTsSource);
 	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
 }
@@ -1041,19 +1037,6 @@ void mqdc32_resetTimestamp_mcst(struct s_mqdc32 * s)
 
 uint32_t * mqdc32_repairRawData(struct s_mqdc32 * s, uint32_t * pointer, uint32_t * dataStart) {
 	return pointer;
-}
-
-bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile)
-{
-	struct stat sbuf;
-	if (s->updCountDown <= 0) {
-		s->updCountDown = s->updInterval;
-		if (stat(updFile, &sbuf) == 0) {
-			unlink(updFile);
-			return TRUE;
-		}
-	}
-	return FALSE;
 }
 
 void catchBerr() {}

@@ -107,33 +107,33 @@ void mqdc32_setEclTerm(struct s_mqdc32 * s, uint16_t term);
 void mqdc32_setEclTerm_db(struct s_mqdc32 * s);
 uint16_t mqdc32_getEclTerm(struct s_mqdc32 * s);
 
-void mqdc32_setEclG1OrOsc(struct s_mqdc32 * s, uint16_t go);
-void mqdc32_setEclG1OrOsc_db(struct s_mqdc32 * s);
-uint16_t mqdc32_getEclG1OrOsc(struct s_mqdc32 * s);
+void mqdc32_setEclG1Osc(struct s_mqdc32 * s, uint16_t go);
+void mqdc32_setEclG1Osc_db(struct s_mqdc32 * s);
+uint16_t mqdc32_getEclG1Osc(struct s_mqdc32 * s);
 
-void mqdc32_setEclFclOrRts(struct s_mqdc32 * s, uint16_t fr);
-void mqdc32_setEclFclOrRts_db(struct s_mqdc32 * s);
-uint16_t mqdc32_getEclFclOrRts(struct s_mqdc32 * s);
+void mqdc32_setEclFclRts(struct s_mqdc32 * s, uint16_t fr);
+void mqdc32_setEclFclRts_db(struct s_mqdc32 * s);
+uint16_t mqdc32_getEclFclRts(struct s_mqdc32 * s);
 
 void mqdc32_setGateSelect(struct s_mqdc32 * s, uint16_t nimOrEcl);
 void mqdc32_setGateSelect_db(struct s_mqdc32 * s);
 uint16_t mqdc32_getGateSelect(struct s_mqdc32 * s);
 
-void mqdc32_setNimG1OrOsc(struct s_mqdc32 * s, uint16_t go);
-void mqdc32_setNimG1OrOsc_db(struct s_mqdc32 * s);
-uint16_t mqdc32_getNimG1OrOsc(struct s_mqdc32 * s);
+void mqdc32_setNimG1Osc(struct s_mqdc32 * s, uint16_t go);
+void mqdc32_setNimG1Osc_db(struct s_mqdc32 * s);
+uint16_t mqdc32_getNimG1Osc(struct s_mqdc32 * s);
 
-void mqdc32_setNimFclOrRts(struct s_mqdc32 * s, uint16_t fr);
-void mqdc32_setNimFclOrRts_db(struct s_mqdc32 * s);
-uint16_t mqdc32_getNimFclOrRts(struct s_mqdc32 * s);
+void mqdc32_setNimFclRts(struct s_mqdc32 * s, uint16_t fr);
+void mqdc32_setNimFclRts_db(struct s_mqdc32 * s);
+uint16_t mqdc32_getNimFclRts(struct s_mqdc32 * s);
 
 void mqdc32_setNimBusy(struct s_mqdc32 * s, uint16_t busy);
 void mqdc32_setNimBusy_db(struct s_mqdc32 * s);
 uint16_t mqdc32_getNimBusy(struct s_mqdc32 * s);
 
-void mqdc32_setTestPulser(struct s_mqdc32 * s, uint16_t mode);
-void mqdc32_setTestPulser_db(struct s_mqdc32 * s);
-uint16_t mqdc32_getTestPulser(struct s_mqdc32 * s);
+void mqdc32_setPulserStatus(struct s_mqdc32 * s, uint16_t mode);
+void mqdc32_setulserStatus_db(struct s_mqdc32 * s);
+uint16_t mqdc32_getPulserStatus(struct s_mqdc32 * s);
 
 void mqdc32_setTsSource(struct s_mqdc32 * s, uint16_t source);
 void mqdc32_setTsSource_db(struct s_mqdc32 * s);
@@ -142,6 +142,11 @@ uint16_t mqdc32_getTsSource(struct s_mqdc32 * s);
 void mqdc32_setTsDivisor(struct s_mqdc32 * s, uint16_t div);
 void mqdc32_setTsDivisor_db(struct s_mqdc32 * s);
 uint16_t mqdc32_getTsDivisor(struct s_mqdc32 * s);
+
+void mqdc32_setMultLimit(struct s_madc32 * s, uint16_t bnk, uint16_t llim, uint16_t hlim);
+void mqdc32_setMultLimit_db(struct s_madc32 * s, uint16_t bnk);
+uint16_t mqdc32_getMultHighLimit(struct s_madc32 * s, uint16_t bnk);
+uint16_t mqdc32_getMultLowLimit(struct s_madc32 * s, uint16_t bnk);
 
 int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer);
 bool_t mqdc32_dataReady(struct s_mqdc32 * s);
@@ -187,8 +192,6 @@ void mqdc32_stopAcq_msct(struct s_mqdc32 * s);
 void mqdc32_resetFifo_mcst(struct s_mqdc32 * s);
 void mqdc32_resetTimestamp_mcst(struct s_mqdc32 * s);
 void mqdc_resetReadout_mcst(struct s_mqdc32 * s);
-
-bool_t mqdc32_updateSettings(struct s_mqdc32 * s, char * updFile);
 
 uint32_t * mqdc32_repairRawData(struct s_mqdc32 * s, uint32_t * pointer, uint32_t * dataStart);
 #endif

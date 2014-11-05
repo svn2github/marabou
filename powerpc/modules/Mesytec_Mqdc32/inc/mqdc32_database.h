@@ -38,10 +38,6 @@ struct s_mqdc32 {
 	bool_t verbose;
 	bool_t dumpRegsOnInit;
 
-	bool_t updSettings;
-	int updInterval;
-	int updCountDown;
-
 	uint16_t threshold[MQDC_NOF_CHANNELS];
 	uint16_t addrSource;
 	uint16_t addrReg;
@@ -60,15 +56,17 @@ struct s_mqdc32 {
 	bool_t ignoreThresh;
 	uint16_t inputCoupling;
 	uint16_t eclTerm;
-	uint16_t eclG1OrOsc;
-	uint16_t eclFclOrRts;
+	uint16_t eclG1Osc;
+	uint16_t eclFclRts;
 	uint16_t gateSelect;
-	uint16_t nimG1OrOsc;
-	uint16_t nimFclOrRts;
+	uint16_t nimG1Osc;
+	uint16_t nimFclRts;
 	uint16_t nimBusy;
-	uint16_t testPulserStatus;
+	uint16_t pulserStatus;
 	uint16_t ctraTsSource;
 	uint16_t ctraTsDivisor;
+	uint16_t multHighLimit[2];
+	uint16_t multLowLimit[2];
 
 	int memorySize;
 
