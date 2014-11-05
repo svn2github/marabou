@@ -16,8 +16,8 @@ MQDC32.Firmware: 						$moduleFirmware
 
 MQDC32.VerboseMode:						FALSE
 MQDC32.DumpRegisters:					FALSE
-MQDC32.UpdateSettings:					FALSE
-MQDC32.UpdateInterval:					1000
+
+MQDC32.SettingsVersion:					10.2014
 
 %%End(Preamble)%%
 
@@ -27,14 +27,14 @@ MQDC32.UpdateInterval:					1000
 # Address registers
 #-----------------------------------------------------------------------------
 
-# address source        0  -->  board coder (default)
-#                       1  -->  address register
+# address source (0x6000)       0  -->  board coder (default)
+#                               1  -->  address register
 MQDC32.$moduleName.AddrSource: 			$addrSource
 
-# vme address           overrides board code if address source = 1
+# vme address (0x6002)          overrides board code if address source = 1
 MQDC32.$moduleName.AddrReg: 			$addrReg
 
-# module id             default = 0xFF -> use high byte of board coder
+# module id (0x6004)            default = 0xFF -> use high byte of board coder
 MQDC32.$moduleName.ModuleId: 			$moduleId
 
 # mcst/cblt
@@ -54,31 +54,28 @@ MQDC32.$moduleName.LastInChain:			$lastInChain
 # FIFO handling
 #-----------------------------------------------------------------------------
 
-# data length format    0  -->  8 bit
-#                       1  -->  16 bit
-#                       2  -->  32 bit (default)
-#                       3  -->  64 bit
+# data length format (0x6032)   0  -->  8 bit
+#                               1  -->  16 bit
+#                               2  -->  32 bit (default)
+#                               3  -->  64 bit
 MQDC32.$moduleName.DataWidth:			$dataWidth
 
-# multievent            0  -->  no / single event
-#                       1  -->  yes
-#                       3  -->  xfer event by event
-#						5  -->  same as 1, but BERR turned off
+# multievent (0x6036)           0  -->  no / single event
+#                               1  -->  yes
+#                               3  -->  xfer event by event
+#						        5  -->  same as 1, but BERR turned off
 MQDC32.$moduleName.MultiEvent:			$multiEvent
 
-# max xfer data (if multievent is set to "3", default = 0)
+# max xfer data (0x601A, if multievent is set to "3", default = 0)
 MQDC32.$moduleName.XferData:			$xferData
 
-# marking type          0x0  -->  event counter (default)
-#                       0x1  -->  time stamp (30 bits)
-#                       0x3  -->  extended time stamp (+16bits)
+# marking type (0x6038)         0x0  -->  event counter (default)
+#                               0x1  -->  time stamp (30 bits)
+#                               0x3  -->  extended time stamp (+16bits)
 MQDC32.$moduleName.MarkingType: 		$markingType
 
-# block transfer        enable/disable, TRUE/FALSE
+# block transfer                enable/disable, TRUE/FALSE
 MQDC32.$moduleName.BlockXfer:			$blockXfer
-
-# buffer threshold      0 ... 8120
-MADC32.$moduleName.BufferThresh:		$bufferThresh
 %%End(FifoHandling)%%
 
 %%Begin(OperationMode)%%
@@ -87,39 +84,45 @@ MADC32.$moduleName.BufferThresh:		$bufferThresh
 # Operation mode
 #-----------------------------------------------------------------------------
 
-# bank operation        0  -->  banks connected (default)
-#                       1  -->  banks independent
+# bank operation (0x6040)       0  -->  banks connected (default)
+#                               1  -->  banks independent
 MQDC32.$moduleName.BankOperation:		$bankOperation
 
-# adc resolution        0  -->  4k / 100ns (fixed)
+# adc resolution (0x6042)       0  -->  4k / 100ns (fixed)
 MQDC32.$moduleName.AdcResolution:		$adcResolution
 
-# bank offset           0 ... 255, default 128
+# bank offset (0x6044/0x6046)   0 ... 255, default 128
 MQDC32.$moduleName.BankOffset.0:		$offsetBank0
 MQDC32.$moduleName.BankOffset.1:		$offsetBank1
 
-# sliding scale off     true/false
+# sliding scale off (0x6048)    true/false
 MQDC32.$moduleName.SlidingScaleOff: 	$slidingScaleOff
 
-# skip out of range     true/false
+# skip out of range (0x604A)    true/false
 MQDC32.$moduleName.SkipOutOfRange:		$skipOutOfRange
 
-# ignore thresholds     true/false
+# ignore thresholds (0x604C)    true/false
 MQDC32.$moduleName.IgnoreThresh:		$ignoreThresh
 
-# repair raw data       true/false
+# repair raw data               true/false
 MQDC32.$moduleName.RepairRawData:		$repairRawData
 %%End(OperationMode)%%
 
 %%Begin(GateGenerator)%%
 
 #-----------------------------------------------------------------------------
-# Gate limit          0 ... 254
-#                     0    --> 6ns
-#                     255  --> no limit (default)
+# Gate limit (0x6050/0x6052)    0 ... 254
+#                               0    --> 6ns
+#                               255  --> no limit (default)
 #-----------------------------------------------------------------------------
 MQDC32.$moduleName.GateLimit.0:			$gateLimit0
 MQDC32.$moduleName.GateLimit.1:			$gateLimit1
+
+#-----------------------------------------------------------------------------
+# Exp trigger delay (0x6054/0x6056)  0 ... 16384 (ns)
+#-----------------------------------------------------------------------------
+MQDC32.$moduleName.ExpTrigDelay.0:		$expTrigDelay0
+MQDC32.$moduleName.ExpTrigDelay.1:		$expTrigDelay1
 
 %%End(GateGenerator)%%
 
@@ -129,45 +132,42 @@ MQDC32.$moduleName.GateLimit.1:			$gateLimit1
 # Gate generator
 #-----------------------------------------------------------------------------
 
-# input coupling        0  -->  AC
-#                       1  -->  DC
+# input coupling (0x6060)       0  -->  AC
+#                               1  -->  DC
 MQDC32.$moduleName.InputCoupling:		$inputCoupling
 
-# ECL terminators       0       -->  off
-#                       bit[0]  -->  gate0
-#                       bit[1]  -->  gate1
-#                       bit[2]  -->  fast clear
-#                       bit[3]  -->  bank0 individual limits
-#                       bit[4]  -->  bank1 individual limits
-#                       default -->  0x18 (both banks indiv)
+# ECL terminators (0x6062)      0       -->  off
+#                               bit[0]  -->  gate0
+#                               bit[1]  -->  gate1
+#                               bit[2]  -->  fast clear
+#                               bit[3]  -->  bank0 individual limits
+#                               bit[4]  -->  bank1 individual limits
+#                               default -->  0x18 (both banks indiv)
 MQDC32.$moduleName.EclTerm: 			$eclTerm
 
-# ECL gate1/osc         0  -->  gate1 (default)
-#                       1  -->  oscillator
+# ECL gate1/osc (0x6064)        0  -->  gate1 (default)
+#                               1  -->  oscillator
 MQDC32.$moduleName.EclG1OrOsc:			$eclG1OrOsc
 
-# ECL fast clear/reset  0  -->  fast clear (default)
-#                       1  -->  reset timestamp osc
+# ECL fast clear/reset (0x6066) 0  -->  fast clear (default)
+#                               1  -->  reset timestamp osc
 MQDC32.$moduleName.EclFclOrRts:			$eclFclOrRts
 
-# gate select           0  -->  NIM inputs (default)
-#                       1  -->  ECL inputs
+# gate select (0x6068)          0  -->  NIM inputs (default)
+#                               1  -->  ECL inputs
 MQDC32.$moduleName.GateSelect:			$gateSelect
 
-# NIM gate1/osc         0  -->  gate1 (default)
-#                       1  -->  oscillator
+# NIM gate1/osc (0x606A)        0  -->  gate1 (default)
+#                               1  -->  oscillator
 MQDC32.$moduleName.NimG1OrOsc:			$nimG1OrOsc
 
-# NIM fast clear/reset  0  -->  fast clear (default)
-#                       1  -->  reset timestamp osc, hold at value 0
+# NIM fast clear/reset (0x606C) 0  -->  fast clear (default)
+#                               1  -->  reset timestamp osc, hold at value 0
 MQDC32.$moduleName.NimFclOrRts:			$nimFclOrRts
 
-# NIM busy              0  -->  busy (default)
-#                       1  -->  gate0 out
-#                       2  -->  gate1 out
-#                       3  -->  cbus out
-#                       4  -->  buffer full
-#                       8  -->  buffer above thresh
+# NIM busy (0x606E)             0  -->  busy (default)
+#                               4  -->  buffer full
+#                               8  -->  buffer above thresh
 MQDC32.$moduleName.NimBusy: 			$nimBusy
 %%End(InputOutput)%%
 
@@ -177,14 +177,12 @@ MQDC32.$moduleName.NimBusy: 			$nimBusy
 # Test pulser
 #-----------------------------------------------------------------------------
 
-# pulser status         0x0  -->  off (default)
-#                       0x4  -->  amplitude
-#                       0x5  -->  low ampl
-#                       0x6  -->  high ampl
-#                       0x7  -->  ampl 0 .. low .. high .. 0
+# pulser status (0x6070)        0x0  -->  off (default)
+#                               0x4  -->  amplitude 0
+#                               0x5  -->  amplitude 100ns
 MQDC32.$moduleName.PulserStatus: 		$pulserStatus
 
-# pulser dac            0 ... 255, default = 32
+# pulser dac (0x6072)           0 ... 255, default = 32
 MQDC32.$moduleName.PulserDac: 		$pulserDac
 %%End(TestPulser)%%
 
@@ -194,19 +192,32 @@ MQDC32.$moduleName.PulserDac: 		$pulserDac
 # Counters
 #-----------------------------------------------------------------------------
 
-# timestamp source      0x0  -->  VME (default)
-#                       0x1  -->  external source
-#                       0x2  -->  enable reset
-#                       0x3  -->  external source & reset
+# timestamp source (0x6096)     0x0  -->  VME (default)
+#                               0x1  -->  external source
+#                               0x2  -->  enable reset
+#                               0x3  -->  external source & reset
 MQDC32.$moduleName.TsSource: 			$tsSource
 
+# timestamp divisor (0x6098)
 MQDC32.$moduleName.TsDivisor: 			$tsDivisor
 %%End(Counters)%%
+
+%%Begin(Multiplicity)%%
+
+#-----------------------------------------------------------------------------
+# Multiplicity (0x60B0 ... 0x60B6)
+#-----------------------------------------------------------------------------
+
+MQDC32.$moduleName.MultHighLimit.0:			$multHighLimit0
+MQDC32.$moduleName.MultLowLimit.0:			$multLowLimit0
+MQDC32.$moduleName.MultHighLimit.1:			$multHighLimit1
+MQDC32.$moduleName.MultLowLimit.1:			$multLowLimit1
+%%End(Multiplicity)%%
 
 %%Begin(Thresholds)%%
 
 #-----------------------------------------------------------------------------
-# Thresholds (one per channel)
+# Thresholds (0x4000, one per channel)
 #-----------------------------------------------------------------------------
 %%End(Thresholds)%%
 %%Begin(ThreshLoop)%%

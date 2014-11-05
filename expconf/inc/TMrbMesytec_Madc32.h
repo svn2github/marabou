@@ -66,11 +66,11 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 								kRegUseGG,
 								kRegInputRange,
 								kRegEclTerm,
-								kRegEclG1OrOsc,
-								kRegEclFclOrRts,
+								kRegEclG1Osc,
+								kRegEclFclRts,
 								kRegEclBusy,
-								kRegNimG1OrOsc,
-								kRegNimFclOrRts,
+								kRegNimG1Osc,
+								kRegNimFclRts,
 								kRegNimBusy,
 								kRegPulserStatus,
 								kRegTsSource,
@@ -135,19 +135,19 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 											kEclTermOn			=	kEclTermG0 | kEclTermG1 | kEclTermBusy | kEclTermFcl
 										};
 
-		enum EMrbEclG1OrOsc 	 		{	kEclG1				=	0,
+		enum EMrbEclG1Osc 	 			{	kEclG1				=	0,
 											kEclOsc
 										};
 
-		enum EMrbEclFclOrRes			{	kEclFcl 			=	0,
+		enum EMrbEclFclRts				{	kEclFcl 			=	0,
 											kEclRts
 										};
 
-		enum EMrbNimG1OrOsc	 			{	kNimG1				=	0,
+		enum EMrbNimG1Osc	 			{	kNimG1				=	0,
 											kNimOsc
 										};
 
-		enum EMrbNimFclOrRts			{	kNimFcl 			=	0,
+		enum EMrbNimFclRts				{	kNimFcl 			=	0,
 											kNimRts
 										};
 
@@ -159,14 +159,14 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 											kNimOverThresh 	=	8
 										};
 
-		enum EMrbTestPulser		 		{	kPulserOff			=	0,
+		enum EMrbPulserStatus		 	{	kPulserOff			=	0,
 											kPulserAmpl			=	4,
 											kPulserAmplLow		=	5,
 											kPulserAmplHigh		=	6,
 											kPulserAmplToggle	=	7
 										};
 
-		enum EMrbTestPulserDac			{	kPulserDacDefault	=	32		};
+		enum EMrbPulserDac				{	kPulserDacDefault	=	32		};
 
 		enum EMrbTsSource		 		{	kTstampVME			=	0,
 											kTstampExtern		=	BIT(0),
@@ -261,21 +261,21 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline Bool_t SetEclTerm(Char_t * Term) { return(this->Set(TMrbMesytec_Madc32::kRegEclTerm, Term)); };
 		inline Int_t GetEclTerm() { return(this->Get(TMrbMesytec_Madc32::kRegEclTerm)); };
 
-		inline Bool_t SetEclG1OrOsc(Int_t GO) { return(this->Set(TMrbMesytec_Madc32::kRegEclG1OrOsc, GO)); };
-		inline Bool_t SetEclG1OrOsc(Char_t * GO) { return(this->Set(TMrbMesytec_Madc32::kRegEclG1OrOsc, GO)); };
-		inline Int_t GetEclG1OrOsc() { return(this->Get(TMrbMesytec_Madc32::kRegEclG1OrOsc)); };
+		inline Bool_t SetEclG1Osc(Int_t GO) { return(this->Set(TMrbMesytec_Madc32::kRegEclG1Osc, GO)); };
+		inline Bool_t SetEclG1Osc(Char_t * GO) { return(this->Set(TMrbMesytec_Madc32::kRegEclG1Osc, GO)); };
+		inline Int_t GetEclG1Osc() { return(this->Get(TMrbMesytec_Madc32::kRegEclG1Osc)); };
 
-		inline Bool_t SetEclFclOrRts(Int_t FR) { return(this->Set(TMrbMesytec_Madc32::kRegEclFclOrRts, FR)); };
-		inline Bool_t SetEclFclOrRts(Char_t * FR) { return(this->Set(TMrbMesytec_Madc32::kRegEclFclOrRts, FR)); };
-		inline Int_t GetEclFclOrRts() { return(this->Get(TMrbMesytec_Madc32::kRegEclFclOrRts)); };
+		inline Bool_t SetEclFclRts(Int_t FR) { return(this->Set(TMrbMesytec_Madc32::kRegEclFclRts, FR)); };
+		inline Bool_t SetEclFclRts(Char_t * FR) { return(this->Set(TMrbMesytec_Madc32::kRegEclFclRts, FR)); };
+		inline Int_t GetEclFclRts() { return(this->Get(TMrbMesytec_Madc32::kRegEclFclRts)); };
 
-		inline Bool_t SetNimG1OrOsc(Int_t GO) { return(this->Set(TMrbMesytec_Madc32::kRegNimG1OrOsc, GO)); };
-		inline Bool_t SetNimG1OrOsc(Char_t * GO) { return(this->Set(TMrbMesytec_Madc32::kRegNimG1OrOsc, GO)); };
-		inline Int_t GetNimG1OrOsc() { return(this->Get(TMrbMesytec_Madc32::kRegNimG1OrOsc)); };
+		inline Bool_t SetNimG1Osc(Int_t GO) { return(this->Set(TMrbMesytec_Madc32::kRegNimG1Osc, GO)); };
+		inline Bool_t SetNimG1Osc(Char_t * GO) { return(this->Set(TMrbMesytec_Madc32::kRegNimG1Osc, GO)); };
+		inline Int_t GetNimG1Osc() { return(this->Get(TMrbMesytec_Madc32::kRegNimG1Osc)); };
 
-		inline Bool_t SetNimFclOrRts(Int_t FR) { return(this->Set(TMrbMesytec_Madc32::kRegNimFclOrRts, FR)); };
-		inline Bool_t SetNimFclOrRts(Char_t * FR) { return(this->Set(TMrbMesytec_Madc32::kRegNimFclOrRts, FR)); };
-		inline Int_t GetNimFclOrRts() { return(this->Get(TMrbMesytec_Madc32::kRegNimFclOrRts)); };
+		inline Bool_t SetNimFclRts(Int_t FR) { return(this->Set(TMrbMesytec_Madc32::kRegNimFclRts, FR)); };
+		inline Bool_t SetNimFclRts(Char_t * FR) { return(this->Set(TMrbMesytec_Madc32::kRegNimFclRts, FR)); };
+		inline Int_t GetNimFclRts() { return(this->Get(TMrbMesytec_Madc32::kRegNimFclRts)); };
 
 		inline Bool_t SetNimBusy(Int_t Busy) { return(this->Set(TMrbMesytec_Madc32::kRegNimBusy, Busy)); };
 		inline Bool_t SetNimBusy(Char_t * Busy) { return(this->Set(TMrbMesytec_Madc32::kRegNimBusy, Busy)); };
@@ -284,9 +284,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline void SetBufferThresh(Int_t Thresh) { fBufferThresh = Thresh; };
 		inline Int_t GetBufferThresh() { return(fBufferThresh); };
 
-		inline Bool_t SetTestPulser(Int_t Mode) { return(this->Set(TMrbMesytec_Madc32::kRegPulserStatus, Mode)); };
-		inline Bool_t SetTestPulser(Char_t * Mode) { return(this->Set(TMrbMesytec_Madc32::kRegPulserStatus, Mode)); };
-		inline Int_t GetTestPulser() { return(this->Get(TMrbMesytec_Madc32::kRegPulserStatus)); };
+		inline Bool_t SetPulserStatus(Int_t Mode) { return(this->Set(TMrbMesytec_Madc32::kRegPulserStatus, Mode)); };
+		inline Bool_t SetPulserStatus(Char_t * Mode) { return(this->Set(TMrbMesytec_Madc32::kRegPulserStatus, Mode)); };
+		inline Int_t GetPulserStatus() { return(this->Get(TMrbMesytec_Madc32::kRegPulserStatus)); };
 
 		inline Bool_t SetTsSource(Int_t Source) { return(this->Set(TMrbMesytec_Madc32::kRegTsSource, Source)); };
 		inline Bool_t SetTsSource(Char_t * Source) { return(this->Set(TMrbMesytec_Madc32::kRegTsSource, Source)); };
@@ -310,11 +310,6 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline Bool_t IsFirstInChain() { return fFirstInChain; };
 		inline Bool_t IsLastInChain() { return fLastInChain; };
 
-		inline void UpdateSettings(Bool_t Flag = kTRUE) { fUpdateSettings = Flag; };	// update settings
-		inline Bool_t SettingsToBeUpdated() { return(fUpdateSettings); };
-		inline void SetUpdateInterval(Int_t Interval) { fUpdateInterval = Interval; };
-		inline Int_t GetUpdateInterval() { return(fUpdateInterval); };
-
 		void PrintSettings(ostream & OutStrm);
 		inline void PrintSettings() { this->PrintSettings(cout); };
 		const Char_t * FormatValue(TString & Value, Int_t Index, Int_t SubIndex = -1, Int_t Base = 10);
@@ -333,13 +328,12 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 	protected:
 		void DefineRegisters(); 							// define vme registers
+		Bool_t UpdateSettings();							// update settings
 
 	protected:
 		TString fSettingsFile;
 		TEnv * fSettings;
 
-		Bool_t fUpdateSettings;
-		Int_t fUpdateInterval;
 		Bool_t fBlockXfer;
 		Bool_t fRepairRawData;
 		Bool_t fSlidingScaleOff;

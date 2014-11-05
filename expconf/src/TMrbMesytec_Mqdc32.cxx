@@ -63,6 +63,7 @@ const SMrbNamedXShort kMrbMarkingType[] =
 		{
 			{	TMrbMesytec_Mqdc32::kMarkingTypeEvent,		"eventCounter"	},
 			{	TMrbMesytec_Mqdc32::kMarkingTypeTs, 		"timeStamp" 	},
+			{	TMrbMesytec_Mqdc32::kMarkingTypeXts, 		"extTimeStamp" 	},
 			{	0,			 								NULL,			}
 		};
 
@@ -89,6 +90,7 @@ const SMrbNamedXShort kMrbInputCoupling[] =
 const SMrbNamedXShort kMrbEclTerm[] =
 		{
 			{	TMrbMesytec_Mqdc32::kEclTermOff,			"off"			},
+
 			{	TMrbMesytec_Mqdc32::kEclTermG0,				"gate0"			},
 			{	TMrbMesytec_Mqdc32::kEclTermG1,				"gate1"			},
 			{	TMrbMesytec_Mqdc32::kEclTermFcl,			"fclear"		},
@@ -97,14 +99,14 @@ const SMrbNamedXShort kMrbEclTerm[] =
 			{	0,			 								NULL,			}
 		};
 
-const SMrbNamedXShort kMrbEclG1OrOsc[] =
+const SMrbNamedXShort kMrbEclG1Osc[] =
 		{
 			{	TMrbMesytec_Mqdc32::kEclG1,					"gate1" 		},
 			{	TMrbMesytec_Mqdc32::kEclOsc,				"oscillator" 	},
 			{	0,			 								NULL,			}
 		};
 
-const SMrbNamedXShort kMrbEclFclOrRts[] =
+const SMrbNamedXShort kMrbEclFclRts[] =
 		{
 			{	TMrbMesytec_Mqdc32::kEclFcl,				"fclear"		},
 			{	TMrbMesytec_Mqdc32::kEclRts,				"reset ts"		},
@@ -118,14 +120,14 @@ const SMrbNamedXShort kMrbGateSelect[] =
 			{	0,			 								NULL,			}
 		};
 
-		const SMrbNamedXShort kMrbNimG1OrOsc[] =
+		const SMrbNamedXShort kMrbNimG1Osc[] =
 		{
 			{	TMrbMesytec_Mqdc32::kNimG1,					"gate1" 		},
 			{	TMrbMesytec_Mqdc32::kNimOsc,				"oscillator" 	},
 			{	0,			 								NULL,			}
 		};
 
-const SMrbNamedXShort kMrbNimFclOrRts[] =
+const SMrbNamedXShort kMrbNimFclRts[] =
 		{
 			{	TMrbMesytec_Mqdc32::kNimFcl,				"fclear"		},
 			{	TMrbMesytec_Mqdc32::kNimRts,				"reset ts"		},
@@ -146,10 +148,8 @@ const SMrbNamedXShort kMrbNimBusy[] =
 const SMrbNamedXShort kMrbPulserStatus[] =
 		{
 			{	TMrbMesytec_Mqdc32::kPulserOff, 			"off"			},
-			{	TMrbMesytec_Mqdc32::kPulserAmpl, 			"amplitude"		},
-			{	TMrbMesytec_Mqdc32::kPulserAmplLow, 		"lowAmpl"		},
-			{	TMrbMesytec_Mqdc32::kPulserAmplHigh, 		"highAmpl"		},
-			{	TMrbMesytec_Mqdc32::kPulserAmplToggle, 		"toggle"		},
+			{	TMrbMesytec_Mqdc32::kPulserAmpl0, 			"ampl0"			},
+			{	TMrbMesytec_Mqdc32::kPulserAmpl100ns, 		"ampl100ns"		},
 			{	0,			 								NULL,			}
 		};
 
@@ -234,7 +234,8 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 // Results:        --
 // Exceptions:
 // Description:    Defines special registers
-// Keywords:
+// Keywords:						tmpl.Substitute("$pulserStatus", this->PulserOn());
+
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * kp;
@@ -255,7 +256,7 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 	rp->SetPatternMode(kFALSE);
 
 	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegAddrReg, "AddressRegister");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, 0, 0, (2 << 16) - 1);
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, 0, 0, 0xFFFF);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
@@ -291,7 +292,7 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 	rp->SetPatternMode(kFALSE);
 
 	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegXferData, "XferData");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	0,	0,	0x1 << 10);
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	0,	0,	0x7FFF);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
@@ -344,6 +345,11 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
+	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegExpTrigDelay, "ExpTrigDelay");
+	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, TMrbMesytec_Mqdc32::kExpTrigDelOff, 0, 16384);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
+
 	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegInputCoupling, "InputCoupling");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Mqdc32::kInpCplAC,
 													TMrbMesytec_Mqdc32::kInpCplAC,
@@ -370,28 +376,28 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kTRUE);
 
-	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegEclG1OrOsc, "EclG1OrOsc");
+	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegEclG1Osc, "EclG1Osc");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Mqdc32::kEclG1,
 													TMrbMesytec_Mqdc32::kEclG1,
 													TMrbMesytec_Mqdc32::kEclOsc);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
-	bNames->SetName("EclG1OrOsc");
-	bNames->AddNamedX(kMrbEclG1OrOsc);
+	bNames->SetName("EclG1Osc");
+	bNames->AddNamedX(kMrbEclG1Osc);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegEclFclOrRts, "EclFclOrRts");
+	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegEclFclRts, "EclFclRts");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Mqdc32::kEclFcl,
 													TMrbMesytec_Mqdc32::kEclFcl,
 													TMrbMesytec_Mqdc32::kEclRts);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
-	bNames->SetName("EclFclOrRts");
-	bNames->AddNamedX(kMrbEclFclOrRts);
+	bNames->SetName("EclFclRts");
+	bNames->AddNamedX(kMrbEclFclRts);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -409,28 +415,28 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegNimG1OrOsc, "NimG1OrOsc");
+	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegNimG1Osc, "NimG1Osc");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Mqdc32::kNimG1,
 													TMrbMesytec_Mqdc32::kNimG1,
 													TMrbMesytec_Mqdc32::kNimOsc);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
-	bNames->SetName("NimG1OrOsc");
-	bNames->AddNamedX(kMrbNimG1OrOsc);
+	bNames->SetName("NimG1Osc");
+	bNames->AddNamedX(kMrbNimG1Osc);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegNimFclOrRts, "NimFclOrRts");
+	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegNimFclRts, "NimFclRts");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Mqdc32::kNimFcl,
 													TMrbMesytec_Mqdc32::kNimFcl,
 													TMrbMesytec_Mqdc32::kNimRts);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
-	bNames->SetName("NimFclOrRts");
-	bNames->AddNamedX(kMrbNimFclOrRts);
+	bNames->SetName("NimFclRts");
+	bNames->AddNamedX(kMrbNimFclRts);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -451,7 +457,7 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegPulserStatus, "PulserStatus");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Mqdc32::kPulserOff,
 													TMrbMesytec_Mqdc32::kPulserOff,
-													TMrbMesytec_Mqdc32::kPulserAmplToggle);
+													TMrbMesytec_Mqdc32::kPulserAmpl100ns);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -460,6 +466,11 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
+
+	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegPulserDac, "PulserDac");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, 0, 0, 255);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
 
 	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegTsSource, "TsSource");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Mqdc32::kTstampVME,
@@ -475,12 +486,22 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 	rp->SetPatternMode(kFALSE);
 
 	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegTsDivisor, "TsDivisor");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, 1, 1, (2 << 16) - 1);
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, 1, 1, 0xFFFF);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
+
+	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegMultHighLimit, "MultHighLimit");
+	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, TMrbMesytec_Mqdc32::kMultHighLimit0, 0, 0x3F);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
+	
+	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegMultHighLimit, "MultLowLimit");
+	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, TMrbMesytec_Mqdc32::kMultLowLimit, 0, 0x3F);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
 	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegThreshold, "Threshold");
-	rp = new TMrbVMERegister(this, TMrbMesytec_Mqdc32::kNofChannels, kp, 0, 0, 0, 0, 0, (2 << 12) - 1);
+	rp = new TMrbVMERegister(this, TMrbMesytec_Mqdc32::kNofChannels, kp, 0, 0, 0, 0, 0, 0x1FFF);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 }
@@ -515,9 +536,9 @@ TEnv * TMrbMesytec_Mqdc32::UseSettings(const Char_t * SettingsFile) {
 		return(NULL);
 	}
 
-	TMrbResource * madcEnv = new TMrbResource("MQDC32", fSettingsFile.Data());
+	TMrbResource * mqdcEnv = new TMrbResource("MQDC32", fSettingsFile.Data());
 
-	TString moduleName; madcEnv->Get(moduleName, ".ModuleName", "");
+	TString moduleName; mqdcEnv->Get(moduleName, ".ModuleName", "");
 	if (moduleName.CompareTo(this->GetName()) != 0) {
 		gMrbLog->Err() << "Module name different - \"" << moduleName << "\" (should be " << this->GetName() << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
@@ -526,55 +547,88 @@ TEnv * TMrbMesytec_Mqdc32::UseSettings(const Char_t * SettingsFile) {
 	moduleName(0,1).ToUpper();
 	moduleName.Prepend(".");
 
-	this->UpdateSettings(madcEnv->Get(moduleName.Data(), "UpdateSettings", kFALSE));
-	this->SetUpdateInterval(madcEnv->Get(moduleName.Data(), "UpdateInterval", 0));
-
-	this->SetBlockXfer(madcEnv->Get(moduleName.Data(), "BlockXfer", kFALSE));
-	this->RepairRawData(madcEnv->Get(moduleName.Data(), "RepairRawData", kFALSE));
-	this->SetAddressSource(madcEnv->Get(moduleName.Data(), "AddressSource", kAddressBoard));
-	this->SetAddressRegister(madcEnv->Get(moduleName.Data(), "AddressRegister", 0));
-	this->SetMcstSignature(madcEnv->Get(moduleName.Data(), "MCSTSignature", 0x0));
-	this->SetCbltSignature(madcEnv->Get(moduleName.Data(), "CBLTSignature", 0x0));
-	this->SetFirstInChain(madcEnv->Get(moduleName.Data(), "FirstInChain", kTRUE));
-	this->SetLastInChain(madcEnv->Get(moduleName.Data(), "LastInChain", kTRUE));
-	Int_t mid = madcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
+	this->SetBlockXfer(mqdcEnv->Get(moduleName.Data(), "BlockXfer", kFALSE));
+	this->RepairRawData(mqdcEnv->Get(moduleName.Data(), "RepairRawData", kFALSE));
+	this->SetAddressSource(mqdcEnv->Get(moduleName.Data(), "AddressSource", kAddressBoard));
+	this->SetAddressRegister(mqdcEnv->Get(moduleName.Data(), "AddressRegister", 0));
+	this->SetMcstSignature(mqdcEnv->Get(moduleName.Data(), "MCSTSignature", 0x0));
+	this->SetCbltSignature(mqdcEnv->Get(moduleName.Data(), "CBLTSignature", 0x0));
+	this->SetFirstInChain(mqdcEnv->Get(moduleName.Data(), "FirstInChain", kTRUE));
+	this->SetLastInChain(mqdcEnv->Get(moduleName.Data(), "LastInChain", kTRUE));
+	Int_t mid = mqdcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
 	if (mid == 0xFF) mid = this->GetSerial();
 	this->SetModuleId(mid);
-	this->SetDataWidth(madcEnv->Get(moduleName.Data(), "DataWidth", kDataWidth32));
-	this->SetMultiEvent(madcEnv->Get(moduleName.Data(), "MultiEvent", kMultiEvtNo));
-	this->SetXferData(madcEnv->Get(moduleName.Data(), "XferData", 0));
-	this->SetMarkingType(madcEnv->Get(moduleName.Data(), "MarkingType", kMarkingTypeEvent));
-	this->SetBankOperation(madcEnv->Get(moduleName.Data(), "BankOperation", kBankOprConnected));
-	this->SetAdcResolution(madcEnv->Get(moduleName.Data(), "AdcResolution", kAdcRes4k));
-	this->SetBankOffset(madcEnv->Get(moduleName.Data(), "BankOffset", "0", kBankOffsetDefault), 0);
-	this->SetBankOffset(madcEnv->Get(moduleName.Data(), "BankOffset", "1", kBankOffsetDefault), 1);
-	this->SetSlidingScaleOff(madcEnv->Get(moduleName.Data(), "SlidingScaleOff", kTRUE));
-	this->SetSkipOutOfRange(madcEnv->Get(moduleName.Data(), "SkipOutOfRange", kFALSE));
-	this->SetIgnoreThresholds(madcEnv->Get(moduleName.Data(), "IgnoreThresh", kFALSE));
-	this->SetGateLimit(madcEnv->Get(moduleName.Data(), "GateLimit", "0", kGateLimitOff), 0);
-	this->SetGateLimit(madcEnv->Get(moduleName.Data(), "GateLimit", "1", kGateLimitOff), 1);
-	this->SetInputCoupling(madcEnv->Get(moduleName.Data(), "InputCoupling", kInpCplAC));
-	this->SetEclTerm(madcEnv->Get(moduleName.Data(), "EclTerm", kEclTermBanksIndiv));
-	this->SetEclG1OrOsc(madcEnv->Get(moduleName.Data(), "EclG1OrOsc", kEclG1));
-	this->SetEclFclOrRts(madcEnv->Get(moduleName.Data(), "EclFclOrRts", kEclFcl));
-	this->SetGateSelect(madcEnv->Get(moduleName.Data(), "GateSelect", kGateSelNim));
-	this->SetNimG1OrOsc(madcEnv->Get(moduleName.Data(), "NimG1OrOsc", kNimG1));
-	this->SetNimFclOrRts(madcEnv->Get(moduleName.Data(), "NimFclOrRts", kNimFcl));
-	this->SetNimBusy(madcEnv->Get(moduleName.Data(), "NimBusy", kNimBusy));
-	this->SetBufferThresh(madcEnv->Get(moduleName.Data(), "BufferThresh", 0));
-	this->SetTestPulser(madcEnv->Get(moduleName.Data(), "TsSource", kTstampVME));
-	this->SetTsDivisor(madcEnv->Get(moduleName.Data(), "TsDivisor", 1));
+	this->SetDataWidth(mqdcEnv->Get(moduleName.Data(), "DataWidth", kDataWidth32));
+	this->SetMultiEvent(mqdcEnv->Get(moduleName.Data(), "MultiEvent", kMultiEvtNo));
+	this->SetXferData(mqdcEnv->Get(moduleName.Data(), "XferData", 0));
+	this->SetMarkingType(mqdcEnv->Get(moduleName.Data(), "MarkingType", kMarkingTypeEvent));
+	this->SetBankOperation(mqdcEnv->Get(moduleName.Data(), "BankOperation", kBankOprConnected));
+	this->SetAdcResolution(mqdcEnv->Get(moduleName.Data(), "AdcResolution", kAdcRes4k));
+	this->SetBankOffset(mqdcEnv->Get(moduleName.Data(), "BankOffset", "0", kBankOffsetDefault), 0);
+	this->SetBankOffset(mqdcEnv->Get(moduleName.Data(), "BankOffset", "1", kBankOffsetDefault), 1);
+	this->SetSlidingScaleOff(mqdcEnv->Get(moduleName.Data(), "SlidingScaleOff", kTRUE));
+	this->SetSkipOutOfRange(mqdcEnv->Get(moduleName.Data(), "SkipOutOfRange", kFALSE));
+	this->SetIgnoreThresholds(mqdcEnv->Get(moduleName.Data(), "IgnoreThresh", kFALSE));
+	this->SetGateLimit(mqdcEnv->Get(moduleName.Data(), "GateLimit", "0", kGateLimitOff), 0);
+	this->SetGateLimit(mqdcEnv->Get(moduleName.Data(), "GateLimit", "1", kGateLimitOff), 1);
+	this->SetExpTrigDelay(mqdcEnv->Get(moduleName.Data(), "ExpTrigDelay", "0", kExpTrigDelOff), 0);
+	this->SetExpTrigDelay(mqdcEnv->Get(moduleName.Data(), "ExpTrigDelay", "1", kExpTrigDelOff), 1);
+	this->SetInputCoupling(mqdcEnv->Get(moduleName.Data(), "InputCoupling", kInpCplAC));
+	this->SetEclTerm(mqdcEnv->Get(moduleName.Data(), "EclTerm", kEclTermBanksIndiv));
+	this->SetEclG1Osc(mqdcEnv->Get(moduleName.Data(), "EclG1Osc:EclG1OrOsc", kEclG1));
+	this->SetEclFclRts(mqdcEnv->Get(moduleName.Data(), "EclFclRts:EclFclOrRts", kEclFcl));
+	this->SetGateSelect(mqdcEnv->Get(moduleName.Data(), "GateSelect", kGateSelNim));
+	this->SetNimG1Osc(mqdcEnv->Get(moduleName.Data(), "NimG1Osc:NimG1OrOsc", kNimG1));
+	this->SetNimFclRts(mqdcEnv->Get(moduleName.Data(), "NimFclRts:NimFclOrRts", kNimFcl));
+	this->SetNimBusy(mqdcEnv->Get(moduleName.Data(), "NimBusy", kNimBusy));
+	this->SetBufferThresh(mqdcEnv->Get(moduleName.Data(), "BufferThresh", 0));
+	this->SetPulserStatus(mqdcEnv->Get(moduleName.Data(), "PulserStatus", 0));
+	this->SetPulserDac(mqdcEnv->Get(moduleName.Data(), "PulserDac", 0));
+	this->SetTsSource(mqdcEnv->Get(moduleName.Data(), "TsSource", kTstampVME));
+	this->SetTsDivisor(mqdcEnv->Get(moduleName.Data(), "TsDivisor", 1));
+	this->SetMultHighLimit(mqdcEnv->Get(moduleName.Data(), "MultHighLimit", "0", kMultHighLimit0), 0);
+	this->SetMultHighLimit(mqdcEnv->Get(moduleName.Data(), "MultHighLimit", "1", kMultHighLimit1), 0);
+	this->SetMultLowLimit(mqdcEnv->Get(moduleName.Data(), "MultLowLimit", "0", kMultLowLimit), 0);
+	this->SetMultLowLimit(mqdcEnv->Get(moduleName.Data(), "MultLowLimit", "1", kMultLowLimit), 0);
 
 	for (Int_t i = 0; i < TMrbMesytec_Mqdc32::kNofChannels; i++) {
-		this->SetThreshold(madcEnv->Get(moduleName.Data(), "Thresh", Form("%d", i), 0), i);
+		this->SetThreshold(mqdcEnv->Get(moduleName.Data(), "Thresh", Form("%d", i), 0), i);
 	}
 
 	fRange = 1 << 12;		// histo range
 	fXmax = fRange;
 	fBinRange = fRange;
 
-	fSettings = madcEnv->Env();
-	return(madcEnv->Env());
+	fSettings = mqdcEnv->Env();
+	return(mqdcEnv->Env());
+}
+
+Bool_t TMrbMesytec_Mqdc32::UpdateSettings() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Mqdc32::UpdateSettings
+// Purpose:        Update settings file if needed
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Check version of settings file and perform update if needed
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString settingsVersion;
+	TMrbResource * madcEnv = new TMrbResource("MQDC32", fSettingsFile.Data());
+	madcEnv->Get(settingsVersion, ".SettingsVersion", "");
+	if (settingsVersion.CompareTo("10.2014") != 0) {
+		gMrbLog->Out() << "Settings file \"" << fSettingsFile << "\" has wrong (old?) version \"" << settingsVersion << "\" (should be 10.2014)" << endl;
+		gMrbLog->Flush(this->ClassName(), "UpdateSettings", setblue);
+		TString oldFile = fSettingsFile;
+		oldFile += "-old";
+		gSystem->Rename(fSettingsFile, oldFile);
+		this->SaveSettings(fSettingsFile.Data());
+		gMrbLog->Out() << "Settings file \"" << fSettingsFile << "\" converted to version 10.2014, old one renamed to \"" << oldFile << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "UpdateSettings", setblue);
+	}
+	return kTRUE;
 }
 
 Bool_t TMrbMesytec_Mqdc32::SaveSettings(const Char_t * SettingsFile) {
@@ -677,23 +731,26 @@ Bool_t TMrbMesytec_Mqdc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$gateLimit0", this->GetGateLimit(0));
 						tmpl.Substitute("$gateLimit1", this->GetGateLimit(1));
+						tmpl.Substitute("$expTrigDelay0", this->GetExpTrigDelay(0));
+						tmpl.Substitute("$expTrigDelay1", this->GetExpTrigDelay(1));
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%InputOutput%");
 						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$inputCoupling", this->GetInputCoupling());
 						tmpl.Substitute("$eclTerm", this->GetEclTerm());
-						tmpl.Substitute("$eclG1OrOsc", this->GetEclG1OrOsc());
-						tmpl.Substitute("$eclFclOrRts", this->GetEclFclOrRts());
+						tmpl.Substitute("$eclG1Osc", this->GetEclG1Osc());
+						tmpl.Substitute("$eclFclRts", this->GetEclFclRts());
 						tmpl.Substitute("$gateSelect", this->GetGateSelect());
-						tmpl.Substitute("$nimG1OrOsc", this->GetNimG1OrOsc());
-						tmpl.Substitute("$nimFclOrRts", this->GetNimFclOrRts());
+						tmpl.Substitute("$nimG1Osc", this->GetNimG1Osc());
+						tmpl.Substitute("$nimFclRts", this->GetNimFclRts());
 						tmpl.Substitute("$nimBusy", this->GetNimBusy());
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%TestPulser%");
 						tmpl.Substitute("$moduleName", moduleUC.Data());
-						tmpl.Substitute("$pulserStatus", this->GetTestPulser());
+						tmpl.Substitute("$pulserStatus", this->GetPulserStatus());
+						tmpl.Substitute("$pulserDac", this->GetPulserDac());
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%Counters%");
@@ -702,6 +759,14 @@ Bool_t TMrbMesytec_Mqdc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$tsDivisor", this->GetTsDivisor());
 						tmpl.WriteCode(settings);
 
+						tmpl.InitializeCode("%Multiplicity%");
+						tmpl.Substitute("$moduleName", moduleUC.Data());
+						tmpl.Substitute("$multHighLimit0", this->GetMultHighLimit(0));
+						tmpl.Substitute("$multHighLimit1", this->GetMultHighLimit(1));
+						tmpl.Substitute("$multLowLimit0", this->GetMultLowLimit(0));
+						tmpl.Substitute("$multLowLimit1", this->GetMultLowLimit(1));
+						tmpl.WriteCode(settings);
+						
 						tmpl.InitializeCode("%Thresholds%");
 						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.WriteCode(settings);
@@ -962,42 +1027,44 @@ void TMrbMesytec_Mqdc32::PrintSettings(ostream & Out) {
 	Out << "=========================================================================" << endl;
 	Out << " Mesytec MQDC32 settings" << endl;
 	Out << "-------------------------------------------------------------------------" << endl;
-	Out << " Module              : "	<< this->GetName() << endl;
-	Out << " Serial              : "	<< this->GetSerial() << endl;
-	if (this->SettingsToBeUpdated()) {
-		Out << " Update settings     : every " << this->GetUpdateInterval() << " count(s)" << endl;
-	} else {
-		Out << " Update settings     : never" << endl;
-	}
-	Out << " Address source      : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegAddrSource) << endl;
-	Out << "         register    : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegAddrReg, -1, 16) << endl;
-	Out << " Module ID           : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegModuleId) << endl;
-	Out << " Data width          : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegDataWidth) << endl;
-	Out << " Single/multi event  : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegMultiEvent) << endl;
-	Out << " Marking type        : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegMarkingType) << endl;
-	Out << " Block tansfer       : "	<< (this->BlockXferEnabled() ? "off" : "on") << endl;
-	Out << " Repair raw data     : "	<< (this->RawDataToBeRepaired() ? "off" : "on") << endl;
-	Out << " Bank operation      : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegBankOperation) << endl;
-	Out << " ADC resolution      : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegAdcResolution) << endl;
-	Out << " Buffer threshold    : "	<< this->GetBufferThresh() << endl;
-	Out << " Sliding scale       : "	<< (this->SlidingScaleIsOff() ? "off" : "on") << endl;
-	Out << " Skip if out of range: "	<< (this->SkipOutOfRange() ? "yes" : "no") << endl;
-	Out << " Ignore thresholds   : "	<< (this->IgnoreThresholds() ? "yes" : "no") << endl;
-	Out << " Bank offset         : bank 0: " << this->GetBankOffset(0) << endl;
-	Out << "                     : bank 1: " << this->GetBankOffset(1) << endl;
-	Out << " Gate limit          : bank 0: " << this->GetGateLimit(0) << endl;
-	Out << "                     : bank 1: " << this->GetGateLimit(1) << endl;
-	Out << " Input coupling      : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegInputCoupling) << endl;
-	Out << " ECL termination     : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegEclTerm) << endl;
-	Out << "           input     : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegEclG1OrOsc) << endl;
-	Out << "    fcl or reset     : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegEclFclOrRts) << endl;
-	Out << " Gate selection      : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegGateSelect) << endl;
-	Out << " NIM       input     : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegNimG1OrOsc) << endl;
-	Out << "    fcl or reset     : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegNimFclOrRts) << endl;
-	Out << "            busy     : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegNimBusy) << endl;
-	Out << " Pulser              : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegPulserStatus) << endl;
-	Out << " Timestamp source    : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegTsSource) << endl;
-	Out << "          divisor    : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegTsDivisor) << endl;
+	Out << " Module                 : "	<< this->GetName() << endl;
+	Out << " Serial                 : "	<< this->GetSerial() << endl;
+	Out << " Address source         : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegAddrSource) << endl;
+	Out << "         register       : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegAddrReg, -1, 16) << endl;
+	Out << " Module ID              : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegModuleId) << endl;
+	Out << " Data width             : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegDataWidth) << endl;
+	Out << " Single/multi event     : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegMultiEvent) << endl;
+	Out << " Marking type           : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegMarkingType) << endl;
+	Out << " Block tansfer          : "	<< (this->BlockXferEnabled() ? "off"    : "on") << endl;
+	Out << " Repair raw data        : "	<< (this->RawDataToBeRepaired() ? "off"    : "on") << endl;
+	Out << " Bank operation         : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegBankOperation) << endl;
+	Out << " ADC resolution         : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegAdcResolution) << endl;
+	Out << " Buffer threshold       : "	<< this->GetBufferThresh() << endl;
+	Out << " Sliding scale          : "	<< (this->SlidingScaleIsOff() ? "off"    : "on") << endl;
+	Out << " Skip if out of range   : "	<< (this->SkipOutOfRange() ? "yes"    : "no") << endl;
+	Out << " Ignore thresholds      : "	<< (this->IgnoreThresholds() ? "yes"    : "no") << endl;
+	Out << " Bank offset            : bank 0: " << this->GetBankOffset(0) << endl;
+	Out << "                        : bank 1: " << this->GetBankOffset(1) << endl;
+	Out << " Gate limit             : bank 0: " << this->GetGateLimit(0) << endl;
+	Out << "                        : bank 1: " << this->GetGateLimit(1) << endl;
+	Out << " Exp trigger delay      : bank 0: " << this->GetExpTrigDelay(0) << endl;
+	Out << "                        : bank 1: " << this->GetExpTrigDelay(1) << endl;
+	Out << " Input coupling         : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegInputCoupling) << endl;
+	Out << " ECL termination        : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegEclTerm) << endl;
+	Out << "           input        : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegEclG1Osc) << endl;
+	Out << "    fcl or reset        : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegEclFclRts) << endl;
+	Out << " Gate selection         : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegGateSelect) << endl;
+	Out << " NIM       input        : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegNimG1Osc) << endl;
+	Out << "    fcl or reset        : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegNimFclRts) << endl;
+	Out << "            busy        : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegNimBusy) << endl;
+	Out << " Pulser   status        : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegPulserStatus) << endl;
+	Out << "             dac        : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegPulserDac) << endl;
+	Out << " Timestamp source       : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegTsSource) << endl;
+	Out << "          divisor       : "	<< this->FormatValue(value, TMrbMesytec_Mqdc32::kRegTsDivisor) << endl;
+	Out << " Multiplicity limit high: bank 0: " << this->GetMultHighLimit(0) << endl;
+	Out << "                     low: bank 0: " << this->GetMultLowLimit(0) << endl;
+	Out << "              limit high: bank 1: " << this->GetMultHighLimit(1) << endl;
+	Out << "                     low: bank 1: " << this->GetMultLowLimit(1) << endl;
 	TString f = " Threshold memory    : ";
 	for (Int_t ch = 0; ch < 32; ch++) {
 		if ((ch % 8) == 0) {
