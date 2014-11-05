@@ -1,0 +1,179 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           Mesytec_Mtdc32.code
+// Purpose:        Code for Mesytec adc type MADC-32
+// Description:    Contains template code to operate a MADC-32 module
+// Author:         R. Lutter
+// Revision:
+// Date:
+// Keywords:
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+#include "mtdc32.h"
+#include "mtdc32_protos.h"
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+					mtdc32_use_mcst = FALSE;
+					mtdc32_firstModuleInChain = NULL;
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleNameLC at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					s_$moduleNameLC = mtdc32_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
+ 					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
+					mtdc32_moduleInfo(s_$moduleNameLC);						/* read module info */
+					mtdc32_soft_reset(s_$moduleNameLC);	 						/* reset module */
+					mtdc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill database from environment data */
+					mtdc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
+					if (mtdc32_mcstIsEnabled(s_$moduleNameLC)) {
+						mtdc32_use_mcst = TRUE;
+						if (mtdc32_isFirstInChain(s_$moduleNameLC)) mtdc32_firstModuleInChain = s_$moduleNameLC;
+					}
+					if (mtdc32_useBLT(s_$moduleNameLC)) use_block_xfer = TRUE;	/* check if block xfer should be enabled */
+					mtdc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
+					mtdc32_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
+					mtdc32_initialize(s_$moduleNameLC);		 					/* initialize module */
+
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+						if (mtdc32_useBLT(s_$moduleName)) {
+							mapBLT(md_$moduleName, $baseAddr, $size, $addrMod);
+							setBLTMode(md_$moduleName, BMA_M_Vsz32, BMA_M_WzD32, $fifoMode);
+						}
+%%EndOfCode%%
+%%INIT_BLOCK_XFER%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					evt.out32 += mtdc32_readout(s_$moduleName, (uint32_t *) evt.out32);	/* read data */
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+%M%					if (mtdc32_use_mcst && mtdc32_firstModuleInChain) { 	/* start modules in multicast mode */
+%M%						sprintf(msg, "[Starting Mesytec modules via MCST - first module in chain is %s]\n", mtdc32_firstModuleInChain->moduleName);
+%M% 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+%M%						mtdc32_stopAcq_mcst(mtdc32_firstModuleInChain);
+%M%						mtdc32_startAcq_mcst(mtdc32_firstModuleInChain);
+%M%						break;		/* all done! */
+%M%					}
+%M%					mtdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+%M%					mtdc32_startAcq(s_$moduleName);
+%N%					mtdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+%N%					mtdc32_startAcq(s_$moduleName);
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+%M%					if (mtdc32_use_mcst) { 	/* stop modules in multicast mode */
+%M%						mtdc32_stopAcq_mcst(mtdc32_firstModuleInChain);
+%M%						break;		/* all done! */
+%M%					}
+%M%					mtdc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
+%N%					mtdc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+static struct s_mtdc32 * s_$moduleName;
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+static bool_t mtdc32_use_mcst;
+static struct s_mtdc32 * mtdc32_firstModuleInChain;
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+	-I@{.PPCIncludePath:/nfs/marabou/include}
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+	-L@{.PPCLibraryPath:/nfs/marabou/lib}  -lMtdc32
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+
