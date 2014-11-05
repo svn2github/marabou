@@ -267,13 +267,13 @@ uint16_t mtdc32_getWinWidth(struct s_mtdc32 * s, uint16_t bnk)
 
 void mtdc32_setTrigSource_db(struct s_mtdc32 * s, uint16_t bnk) { mtdc32_setTrigSource(s, bnk, s->trigSrcTrig[bnk], s->trigSrcChan[bnk], s->trigSrcBank[bnk]); }
 
-void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint16_t chan, uint16_t bnk)
+void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint16_t chan, uint16_t bank)
 {
 	uint16_t trigSource;
 	int addr;
-	trigSource = bnk & (MTDC32_TRIG_SRC_BANK_MASK) << 8;
+	trigSource = bank & (MTDC32_TRIG_SRC_BANK_MASK) << 8;
 	trigSource |= chan & (MTDC32_TRIG_SRC_CHAN_MASK) << 2;
-	trigSrouce |= trig & MTDC32_TRIG_SRC_TRIG_MASK;
+	trigSource |= trig & MTDC32_TRIG_SRC_TRIG_MASK;
 	switch (bnk) {
 		case 0: addr = MTDC32_TRIG_SOURCE_0; break;
 		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
@@ -285,6 +285,7 @@ void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint
 uint16_t mtdc32_getTrigSource(struct s_mtdc32 * s, uint16_t bnk)
 {
 	int addr;
+	uint16_t trigSource;
 	switch (bnk) {
 		case 0: addr = MTDC32_TRIG_SOURCE_0; break;
 		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
@@ -320,7 +321,7 @@ uint16_t mtdc32_getTrigSrcChan(struct s_mtdc32 * s, uint16_t bnk)
 	return ((trigSource >> 2) & MTDC32_TRIG_SRC_CHAN_MASK);
 }
 
-uint16_t mtdc32_getTrigSrcBank(struct s_mtdc32 * s, uint16_t bnk);
+uint16_t mtdc32_getTrigSrcBank(struct s_mtdc32 * s, uint16_t bnk)
 {
 	int addr;
 	uint16_t trigSource;
@@ -349,10 +350,10 @@ void mtdc32_setNegEdge_db(struct s_mtdc32 * s) { mtdc32_setNegEdge(s, s->negEdge
 
 void mtdc32_setNegEdge(struct s_mtdc32 * s, uint16_t edge)
 {
-	SET16(s->md->vmeBase, MTDC32_NEG_EDGE, select & MTDC32_NEG_EDGE_MASK);
+	SET16(s->md->vmeBase, MTDC32_NEG_EDGE, edge & MTDC32_NEG_EDGE_MASK);
 }
 
-uint16_t mtdc32_getNegEdge(struct s_mqdc32 * s)
+uint16_t mtdc32_getNegEdge(struct s_mtdc32 * s)
 {
 	return GET16(s->md->vmeBase, MTDC32_NEG_EDGE) & MTDC32_NEG_EDGE_MASK;
 }
@@ -361,24 +362,24 @@ void mtdc32_setEclTerm_db(struct s_mtdc32 * s) { mtdc32_setEclTerm(s, s->eclTerm
 
 void mtdc32_setEclTerm(struct s_mtdc32 * s, uint16_t term)
 {
-	SET16(s->md->vmeBase, MTDC32_ECL_TERMINATORS, term & MTDC32_ECL_TERMINATORS_MASK);
+	SET16(s->md->vmeBase, MTDC32_ECL_TERMINATORS, term & MTDC32_ECL_TERM_MASK);
 }
 
 uint16_t mtdc32_getEclTerm(struct s_mtdc32 * s)
 {
-	return GET16(s->md->vmeBase, MTDC32_ECL_TERMINATORS) & MTDC32_ECL_TERMINATORS_MASK;
+	return GET16(s->md->vmeBase, MTDC32_ECL_TERMINATORS) & MTDC32_ECL_TERM_MASK;
 }
 
 void mtdc32_setEclT1Osc_db(struct s_mtdc32 * s) { mtdc32_setEclT1Osc(s, s->eclT1Osc); }
 
 void mtdc32_setEclT1Osc(struct s_mtdc32 * s, uint16_t go)
 {
-	SET16(s->md->vmeBase, MTDC32_ECL_T1_OSC, go & MTDC32_ECL_T1_OSC_MASK);
+	SET16(s->md->vmeBase, MTDC32_ECL_TRIG1_OSC, go & MTDC32_ECL_TRIG1_OSC_MASK);
 }
 
 uint16_t mtdc32_getEclT1Osc(struct s_mtdc32 * s)
 {
-	return GET16(s->md->vmeBase, MTDC32_ECL_T1_OSC) & MTDC32_ECL_T1_OSC_MASK;
+	return GET16(s->md->vmeBase, MTDC32_ECL_TRIG1_OSC) & MTDC32_ECL_TRIG1_OSC_MASK;
 }
 
 void mtdc32_setTrigSelect_db(struct s_mtdc32 * s) { mtdc32_setTrigSelect(s, s->trigSelect); }
@@ -388,21 +389,21 @@ void mtdc32_setTrigSelect(struct s_mtdc32 * s, uint16_t select)
 	SET16(s->md->vmeBase, MTDC32_TRIG_SELECT, select & MTDC32_TRIG_SELECT_MASK);
 }
 
-uint16_t mtdc32_getTrigSelect(struct s_mqdc32 * s)
+uint16_t mtdc32_getTrigSelect(struct s_mtdc32 * s)
 {
 	return GET16(s->md->vmeBase, MTDC32_TRIG_SELECT) & MTDC32_TRIG_SELECT_MASK;
 }
 
-void mtdc32_setNimG1Osc_db(struct s_mtdc32 * s) { mtdc32_setNimG1Osc(s, s->nimG1Osc); }
+void mtdc32_setNimT1Osc_db(struct s_mtdc32 * s) { mtdc32_setNimT1Osc(s, s->nimT1Osc); }
 
-void mtdc32_setNimG1OrOsc(struct s_mtdc32 * s, uint16_t go)
+void mtdc32_setNimT1Osc(struct s_mtdc32 * s, uint16_t go)
 {
-	SET16(s->md->vmeBase, MTDC32_NIM_G1_OR_OSC, go & MTDC32_NIM_G1_OR_OSC_MASK);
+	SET16(s->md->vmeBase, MTDC32_NIM_TRIG1_OSC, go & MTDC32_NIM_TRIG1_OSC_MASK);
 }
 
-uint16_t mtdc32_getNimG1Osc(struct s_mtdc32 * s)
+uint16_t mtdc32_getNimT1Osc(struct s_mtdc32 * s)
 {
-	return GET16(s->md->vmeBase, MTDC32_NIM_T1_OSC) & MTDC32_NIM_T1_OSC_MASK;
+	return GET16(s->md->vmeBase, MTDC32_NIM_TRIG1_OSC) & MTDC32_NIM_TRIG1_OSC_MASK;
 }
 
 
@@ -455,15 +456,15 @@ void mtdc32_setInputThresh(struct s_mtdc32 * s, uint16_t bnk, uint16_t thresh)
 	SET16(s->md->vmeBase, addr, thresh & MTDC32_INPUT_THRESH_MASK);
 }
 
-uint16_t mtdc32_getWinStart(struct s_mtdc32 * s, uint16_t bnk)
+uint16_t mtdc32_getInputThresh(struct s_mtdc32 * s, uint16_t bnk)
 {
 	int addr;
 	switch (bnk) {
-		case 0: addr = MTDC32_WIN_START_0; break;
-		case 1: addr = MTDC32_WIN_START_1; break;
+		case 0: addr = MTDC32_INPUT_THRESH_0; break;
+		case 1: addr = MTDC32_INPUT_THRESH_1; break;
 		default: return 0;
 	}
-	return GET16(s->md->vmeBase, addr) & MTDC32_WIN_START_MASK;
+	return GET16(s->md->vmeBase, addr) & MTDC32_INPUT_THRESH_MASK;
 }
 
 void mtdc32_setTsSource_db(struct s_mtdc32 * s) { mtdc32_setTsSource(s, s->ctraTsSource); }
@@ -490,9 +491,9 @@ uint16_t mtdc32_getTsDivisor(struct s_mtdc32 * s)
 	return GET16(s->md->vmeBase, MTDC32_CTRA_TS_DIVISOR) & MTDC32_CTRA_TS_DIVISOR_MASK;
 }
 
-void mtdc32_setMultLimit_db(struct s_madc32 * s, uint16_t bnk) { mtdc32_setMultLimit(s, bnk, s->multLowLimit[bnk], s->multHighLimit[bnk]); }
+void mtdc32_setMultLimit_db(struct s_mtdc32 * s, uint16_t bnk) { mtdc32_setMultLimit(s, bnk, s->multLowLimit[bnk], s->multHighLimit[bnk]); }
 
-void mtdc32_setMultLimit(struct s_madc32 * s, uint16_t bnk, uint16_t llim, uint16_t hlim)
+void mtdc32_setMultLimit(struct s_mtdc32 * s, uint16_t bnk, uint16_t llim, uint16_t hlim)
 {
 	int al, ah;
 	switch (bnk) {
@@ -508,7 +509,7 @@ void mtdc32_setMultLimit(struct s_madc32 * s, uint16_t bnk, uint16_t llim, uint1
 	SET16(s->md->vmeBase, ah, hlim & MTDC32_MULT_LIMIT_MASK);
 }
 
-uint16_t mtdc32_getMultHighLimit(struct s_madc32 * s, uint16_t bnk)
+uint16_t mtdc32_getMultHighLimit(struct s_mtdc32 * s, uint16_t bnk)
 {
 	int addr;
 	switch (bnk) {
@@ -519,7 +520,7 @@ uint16_t mtdc32_getMultHighLimit(struct s_madc32 * s, uint16_t bnk)
 	return GET16(s->md->vmeBase, addr) & MTDC32_MULT_LIMIT_MASK;
 }
 
-uint16_t mtdc32_getMultLowLimit(struct s_madc32 * s, uint16_t bnk)
+uint16_t mtdc32_getMultLowLimit(struct s_mtdc32 * s, uint16_t bnk)
 {
 	int addr;
 	switch (bnk) {
@@ -673,16 +674,16 @@ bool_t mtdc32_fillStruct(struct s_mtdc32 * s, char * file)
 	s->negEdge = root_env_getval_i(res, MTDC32_NEG_EDGE_DEFAULT);
 
 	sprintf(res, "MTDC32.%s.EclTerm", mnUC);
-	s->eclTerm = root_env_getval_i(res, MTDC32_ECL_TERMINATORS_DEFAULT);
+	s->eclTerm = root_env_getval_i(res, MTDC32_ECL_TERM_DEFAULT);
 
 	sprintf(res, "MTDC32.%s.EclT1Osc", mnUC);
-	s->eclT1Osc = root_env_getval_i(res, MTDC32_ECL_T1_OSC_DEFAULT);
+	s->eclT1Osc = root_env_getval_i(res, MTDC32_ECL_TRIG1_OSC_DEFAULT);
 
-	sprintf(res, "MQDC32.%s.TrigSelect", mnUC);
-	s->trigSelect = root_env_getval_i(res, MQDC32_TRIG_SELECT_DEFAULT);
+	sprintf(res, "MTDC32.%s.TrigSelect", mnUC);
+	s->trigSelect = root_env_getval_i(res, MTDC32_TRIG_SELECT_DEFAULT);
 
 	sprintf(res, "MTDC32.%s.NimT1Osc", mnUC);
-	s->nimT1Osc = root_env_getval_i(res, MTDC32_NIM_T1_OSC_DEFAULT);
+	s->nimT1Osc = root_env_getval_i(res, MTDC32_NIM_TRIG1_OSC_DEFAULT);
 
 	sprintf(res, "MTDC32.%s.NimBusy", mnUC);
 	s->nimBusy = root_env_getval_i(res, MTDC32_NIM_BUSY_DEFAULT);
@@ -732,7 +733,7 @@ void mtdc32_loadFromDb(struct s_mtdc32 * s, uint32_t chnPattern)
 		mtdc32_setWinStart_db(s, bnk);
 		mtdc32_setWinWidth_db(s, bnk);
 	}
-	for (bnk = 0; bnk <= 1; bnk++) mtdc32_trigSource_db(s, bnk);
+	for (bnk = 0; bnk <= 1; bnk++) mtdc32_setTrigSource_db(s, bnk);
 	mtdc32_setFirstHit_db(s);
 	mtdc32_setNegEdge_db(s);
 	mtdc32_setEclTerm_db(s);
@@ -785,7 +786,7 @@ bool_t mtdc32_dumpRegisters(struct s_mtdc32 * s, char * file)
 	fprintf(f, "Module ID [0x6004]        : %d\n", mtdc32_getModuleId(s));
 	fprintf(f, "Data width [0x6032]       : %d\n", mtdc32_getDataWidth(s));
 	fprintf(f, "Multi event [0x6036]      : %d\n", mtdc32_getMultiEvent(s));
-	fprintf(f, "Buffer thresh [0x6018]    : %d\n", mtdc32_getBufferThresh(s));
+/*	fprintf(f, "Buffer thresh [0x6018]    : %d\n", mtdc32_getBufferThresh(s)); */
 	fprintf(f, "Max xfer data wc [0x601A] : %d\n", mtdc32_getXferData(s));
 	fprintf(f, "Marking type [0x6038]     : %d\n", mtdc32_getMarkingType(s));
 	fprintf(f, "Bank operation [0x6040]   : %d\n", mtdc32_getBankOperation(s));
@@ -845,9 +846,6 @@ void mtdc32_printDb(struct s_mtdc32 * s)
 	int ch;
 	int bnk;
 
-	printf("Thresholds:\n");
-	for (ch = 0; ch < MTDC_NOF_CHANNELS; ch++) printf("   %2d: %d\n", ch, s->threshold[ch]);
-
 	printf("Addr reg          : %#x\n", s->addrReg);
 
 	if (s->mcstSignature != 0)
@@ -868,7 +866,7 @@ void mtdc32_printDb(struct s_mtdc32 * s)
 	printf("Max xfer data wc  : %d\n", s->xferData);
 	printf("Marking type      : %d\n", s->markingType);
 	printf("Bank operation    : %d\n", s->bankOperation);
-	printf("Tdc resolution    : %d\n", s->TdcResolution);
+	printf("Tdc resolution    : %d\n", s->tdcResolution);
 	printf("Output format     : %d\n", s->outputFormat);
 	for (bnk = 0; bnk <= 1; bnk++) {
 		printf("Window start %d    : %d\n", bnk, s->winStart[bnk]);
@@ -882,7 +880,7 @@ void mtdc32_printDb(struct s_mtdc32 * s)
 	printf("Nim trig or osc   : %d\n", s->nimT1Osc);
 	printf("Nim busy          : %d\n", s->nimBusy);
 	printf("Pulser status     : %d\n", s->pulserStatus);
-	printf("Pulser pattern    : %d\n", s->pulserPattern;
+	printf("Pulser pattern    : %d\n", s->pulserPattern);
 	for (bnk = 0; bnk <= 1; bnk++) printf("Input thresh %d   : %d\n", bnk, s->inputThresh[bnk]);
 	printf("Timestamp source  : %#x\n", s->ctraTsSource);
 	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
@@ -1149,19 +1147,6 @@ void mtdc32_resetReadout_mcst(struct s_mtdc32 * s)
 void mtdc32_resetTimestamp_mcst(struct s_mtdc32 * s)
 {
 	SET16(s->mcstAddr, MTDC32_CTRA_RESET_A_OR_B, 0x3);
-}
-
-bool_t mtdc32_updateSettings(struct s_mtdc32 * s, char * updFile)
-{
-	struct stat sbuf;
-	if (s->updCountDown <= 0) {
-		s->updCountDown = s->updInterval;
-		if (stat(updFile, &sbuf) == 0) {
-			unlink(updFile);
-			return TRUE;
-		}
-	}
-	return FALSE;
 }
 
 uint32_t * mtdc32_repairRawData(struct s_mtdc32 * s, uint32_t * pointer, uint32_t * dataStart) {

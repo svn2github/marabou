@@ -49,7 +49,7 @@ struct s_mtdc32 {
 	uint16_t multiEvent;
 	uint16_t markingType;
 	uint16_t bankOperation;
-	uint16_t adcResolution;
+	uint16_t tdcResolution;
 	uint16_t outputFormat;
 	uint16_t bufferThresh;
 	uint16_t winStart[2];

@@ -85,9 +85,9 @@ void mtdc32_setWinWidth(struct s_mtdc32 * s, uint16_t bnk, uint16_t width);
 void mtdc32_setWinWidth_db(struct s_mtdc32 * s, uint16_t bnk);
 uint16_t mtdc32_getWinWidth(struct s_mtdc32 * s, uint16_t bnk);
 
-void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint16_t chan, uint16_t bnk);
+void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint16_t chan, uint16_t bank);
 void mtdc32_setTrigSource_db(struct s_mtdc32 * s, uint16_t bnk);
-void mtdc32_getTrigSource(struct s_mtdc32 * s, uint16_t bnk);
+uint16_t mtdc32_getTrigSource(struct s_mtdc32 * s, uint16_t bnk);
 uint16_t mtdc32_getTrigSrcTrig(struct s_mtdc32 * s, uint16_t bnk);
 uint16_t mtdc32_getTrigSrcChan(struct s_mtdc32 * s, uint16_t bnk);
 uint16_t mtdc32_getTrigSrcBank(struct s_mtdc32 * s, uint16_t bnk);
@@ -104,11 +104,15 @@ void mtdc32_setEclTerm(struct s_mtdc32 * s, uint16_t term);
 void mtdc32_setEclTerm_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getEclTerm(struct s_mtdc32 * s);
 
-void mtdc32_setEclT1Osc(struct s_mtdc32 * s, uint16_t go);
+void mtdc32_setEclT1Osc(struct s_mtdc32 * s, uint16_t to);
 void mtdc32_setEclT1Osc_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getEclT1Osc(struct s_mtdc32 * s);
 
-void mtdc32_setNimT1Osc(struct s_mtdc32 * s, uint16_t go);
+void mtdc32_setTrigSelect(struct s_mtdc32 * s, uint16_t select);
+void mtdc32_setTrigSelect_db(struct s_mtdc32 * s);
+uint16_t mtdc32_getTrigSelect(struct s_mtdc32 * s);
+
+void mtdc32_setNimT1Osc(struct s_mtdc32 * s, uint16_t to);
 void mtdc32_setNimT1Osc_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getNimT1Osc(struct s_mtdc32 * s);
 
@@ -124,6 +128,10 @@ void mtdc32_setPulserPattern(struct s_mtdc32 * s, uint16_t pattern);
 void mtdc32_setPulserPattern_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getPulserPattern(struct s_mtdc32 * s);
 
+void mtdc32_setInputThresh_db(struct s_mtdc32 * s, uint16_t bnk);
+void mtdc32_setInputThresh(struct s_mtdc32 * s, uint16_t bnk, uint16_t thresh);
+uint16_t mtdc32_getInputThresh(struct s_mtdc32 * s, uint16_t bnk);
+
 void mtdc32_setTsSource(struct s_mtdc32 * s, uint16_t source);
 void mtdc32_setTsSource_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getTsSource(struct s_mtdc32 * s);
@@ -132,10 +140,10 @@ void mtdc32_setTsDivisor(struct s_mtdc32 * s, uint16_t div);
 void mtdc32_setTsDivisor_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getTsDivisor(struct s_mtdc32 * s);
 
-void mtdc32_setMultLimit(struct s_madc32 * s, uint16_t bnk, uint16_t llim, uint16_t hlim);
-void mtdc32_setMultLimit_db(struct s_madc32 * s, uint16_t bnk);
-uint16_t mtdc32_getMultHighLimit(struct s_madc32 * s, uint16_t bnk);
-uint16_t mtdc32_getMultLowLimit(struct s_madc32 * s, uint16_t bnk);
+void mtdc32_setMultLimit(struct s_mtdc32 * s, uint16_t bnk, uint16_t llim, uint16_t hlim);
+void mtdc32_setMultLimit_db(struct s_mtdc32 * s, uint16_t bnk);
+uint16_t mtdc32_getMultHighLimit(struct s_mtdc32 * s, uint16_t bnk);
+uint16_t mtdc32_getMultLowLimit(struct s_mtdc32 * s, uint16_t bnk);
 
 int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer);
 bool_t mtdc32_dataReady(struct s_mtdc32 * s);
