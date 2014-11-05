@@ -117,33 +117,29 @@ void madc32_setEclTerm(struct s_madc32 * s, uint16_t term);
 void madc32_setEclTerm_db(struct s_madc32 * s);
 uint16_t madc32_getEclTerm(struct s_madc32 * s);
 
-void madc32_setEclG1OrOsc(struct s_madc32 * s, uint16_t go);
-void madc32_setEclG1OrOsc_db(struct s_madc32 * s);
-uint16_t madc32_getEclG1OrOsc(struct s_madc32 * s);
+void madc32_setEclG1Osc(struct s_madc32 * s, uint16_t go);
+void madc32_setEclG1Osc_db(struct s_madc32 * s);
+uint16_t madc32_getEclG1Osc(struct s_madc32 * s);
 
-void madc32_setEclFclOrRts(struct s_madc32 * s, uint16_t fr);
-void madc32_setEclFclOrRts_db(struct s_madc32 * s);
-uint16_t madc32_getEclFclOrRts(struct s_madc32 * s);
+void madc32_setEclFclRts(struct s_madc32 * s, uint16_t fr);
+void madc32_setEclFclRts_db(struct s_madc32 * s);
+uint16_t madc32_getEclFclRts(struct s_madc32 * s);
 
-void madc32_setNimG1OrOsc(struct s_madc32 * s, uint16_t go);
-void madc32_setNimG1OrOsc_db(struct s_madc32 * s);
-uint16_t madc32_getNimG1OrOsc(struct s_madc32 * s);
+void madc32_setNimG1Osc(struct s_madc32 * s, uint16_t go);
+void madc32_setNimG1Osc_db(struct s_madc32 * s);
+uint16_t madc32_getNimG1Osc(struct s_madc32 * s);
 
-void madc32_setNimFclOrRts(struct s_madc32 * s, uint16_t fr);
-void madc32_setNimFclOrRts_db(struct s_madc32 * s);
-uint16_t madc32_getNimFclOrRts(struct s_madc32 * s);
+void madc32_setNimFclRts(struct s_madc32 * s, uint16_t fr);
+void madc32_setNimFclRts_db(struct s_madc32 * s);
+uint16_t madc32_getNimFclRts(struct s_madc32 * s);
 
 void madc32_setNimBusy(struct s_madc32 * s, uint16_t busy);
 void madc32_setNimBusy_db(struct s_madc32 * s);
 uint16_t madc32_getNimBusy(struct s_madc32 * s);
 
-void madc32_setBufferThresh_db(struct s_madc32 * s);
-void madc32_setBufferThresh(struct s_madc32 * s, uint16_t thresh);
-uint16_t madc32_getBufferThresh(struct s_madc32 * s);
-
-void madc32_setTestPulser(struct s_madc32 * s, uint16_t mode);
-void madc32_setTestPulser_db(struct s_madc32 * s);
-uint16_t madc32_getTestPulser(struct s_madc32 * s);
+void madc32_setPulserStatus(struct s_madc32 * s, uint16_t mode);
+void madc32_setPulserStatus_db(struct s_madc32 * s);
+uint16_t madc32_getPulserStatus(struct s_madc32 * s);
 
 void madc32_setTsSource(struct s_madc32 * s, uint16_t source);
 void madc32_setTsSource_db(struct s_madc32 * s);
@@ -197,8 +193,6 @@ void madc32_stopAcq_msct(struct s_madc32 * s);
 void madc32_resetFifo_mcst(struct s_madc32 * s);
 void madc32_resetTimestamp_mcst(struct s_madc32 * s);
 void madc_resetReadout_mcst(struct s_madc32 * s);
-
-bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile);
 
 uint32_t * madc32_repairRawData(struct s_madc32 * s, uint32_t * pointer, uint32_t * dataStart);
 #endif

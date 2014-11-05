@@ -372,53 +372,53 @@ uint16_t madc32_getEclTerm(struct s_madc32 * s)
 	return GET16(s->md->vmeBase, MADC32_ECL_TERMINATORS) & MADC32_ECL_TERMINATORS_MASK;
 }
 
-void madc32_setEclG1OrOsc_db(struct s_madc32 * s) { madc32_setEclG1OrOsc(s, s->eclG1OrOsc); }
+void madc32_setEclG1Osc_db(struct s_madc32 * s) { madc32_setEclG1Osc(s, s->eclG1Osc); }
 
-void madc32_setEclG1OrOsc(struct s_madc32 * s, uint16_t go)
+void madc32_setEclG1Osc(struct s_madc32 * s, uint16_t go)
 {
-	SET16(s->md->vmeBase, MADC32_ECL_G1_OR_OSC, go & MADC32_ECL_G1_OR_OSC_MASK);
+	SET16(s->md->vmeBase, MADC32_ECL_G1_OSC, go & MADC32_ECL_G1_OSC_MASK);
 }
 
-uint16_t madc32_getEclG1OrOsc(struct s_madc32 * s)
+uint16_t madc32_getEclG1Osc(struct s_madc32 * s)
 {
-	return GET16(s->md->vmeBase, MADC32_ECL_G1_OR_OSC) & MADC32_ECL_G1_OR_OSC_MASK;
+	return GET16(s->md->vmeBase, MADC32_ECL_G1_OSC) & MADC32_ECL_G1_OSC_MASK;
 }
 
-void madc32_setEclFclOrRts_db(struct s_madc32 * s) { madc32_setEclFclOrRts(s, s->eclFclOrRts); }
+void madc32_setEclFclRts_db(struct s_madc32 * s) { madc32_setEclFclRts(s, s->eclFclRts); }
 
-void madc32_setEclFclOrRts(struct s_madc32 * s, uint16_t fr)
+void madc32_setEclFclRts(struct s_madc32 * s, uint16_t fr)
 {
-	SET16(s->md->vmeBase, MADC32_ECL_FCL_OR_RES_TS, fr & MADC32_ECL_FCL_OR_RES_TS_MASK);
+	SET16(s->md->vmeBase, MADC32_ECL_FCL_RTS, fr & MADC32_ECL_FCL_RTS_MASK);
 }
 
-uint16_t madc32_getEclFclOrRts(struct s_madc32 * s)
+uint16_t madc32_getEclFclRts(struct s_madc32 * s)
 {
-	return GET16(s->md->vmeBase, MADC32_ECL_FCL_OR_RES_TS) & MADC32_ECL_FCL_OR_RES_TS_MASK;
+	return GET16(s->md->vmeBase, MADC32_ECL_FCL_RTS) & MADC32_ECL_FCL_RTS_MASK;
 }
 
-void madc32_setNimG1OrOsc_db(struct s_madc32 * s) { madc32_setNimG1OrOsc(s, s->nimG1OrOsc); }
+void madc32_setNimG1Osc_db(struct s_madc32 * s) { madc32_setNimG1Osc(s, s->nimG1Osc); }
 
-void madc32_setNimG1OrOsc(struct s_madc32 * s, uint16_t go)
+void madc32_setNimG1Osc(struct s_madc32 * s, uint16_t go)
 {
-	SET16(s->md->vmeBase, MADC32_NIM_G1_OR_OSC, go & MADC32_NIM_G1_OR_OSC_MASK);
+	SET16(s->md->vmeBase, MADC32_NIM_G1_OSC, go & MADC32_NIM_G1_OSC_MASK);
 }
 
-uint16_t madc32_getNimG1OrOsc(struct s_madc32 * s)
+uint16_t madc32_getNimG1Osc(struct s_madc32 * s)
 {
-	return GET16(s->md->vmeBase, MADC32_NIM_G1_OR_OSC) & MADC32_NIM_G1_OR_OSC_MASK;
+	return GET16(s->md->vmeBase, MADC32_NIM_G1_OSC) & MADC32_NIM_G1_OSC_MASK;
 }
 
 
-void madc32_setNimFclOrRts_db(struct s_madc32 * s) { madc32_setNimFclOrRts(s, s->nimFclOrRts); }
+void madc32_setNimFclRts_db(struct s_madc32 * s) { madc32_setNimFclRts(s, s->nimFclRts); }
 
-void madc32_setNimFclOrRts(struct s_madc32 * s, uint16_t fr)
+void madc32_setNimFclRts(struct s_madc32 * s, uint16_t fr)
 {
-	SET16(s->md->vmeBase, MADC32_NIM_FCL_OR_RES_TS, fr & MADC32_NIM_FCL_OR_RES_TS_MASK);
+	SET16(s->md->vmeBase, MADC32_NIM_FCL_RTS, fr & MADC32_NIM_FCL_RTS_MASK);
 }
 
-uint16_t madc32_getNimFclOrRts(struct s_madc32 * s)
+uint16_t madc32_getNimFclRts(struct s_madc32 * s)
 {
-	return GET16(s->md->vmeBase, MADC32_NIM_FCL_OR_RES_TS) & MADC32_NIM_FCL_OR_RES_TS_MASK;
+	return GET16(s->md->vmeBase, MADC32_NIM_FCL_RTS) & MADC32_NIM_FCL_RTS_MASK;
 }
 
 void madc32_setNimBusy_db(struct s_madc32 * s) { madc32_setNimBusy(s, s->nimBusy); }
@@ -433,28 +433,16 @@ uint16_t madc32_getNimBusy(struct s_madc32 * s)
 	return GET16(s->md->vmeBase, MADC32_NIM_BUSY) & MADC32_NIM_BUSY_MASK;
 }
 
-void madc32_setBufferThresh_db(struct s_madc32 * s) { madc32_setBufferThresh(s, s->bufferThresh); }
+void madc32_setPulserStatus_db(struct s_madc32 * s) { madc32_setPulserStatus(s, s->pulserStatus); }
 
-void madc32_setBufferThresh(struct s_madc32 * s, uint16_t bufferThresh)
+void madc32_setPulserStatus(struct s_madc32 * s, uint16_t mode)
 {
-	SET16(s->md->vmeBase, MADC32_IRQ_THRESH, bufferThresh);
+	SET16(s->md->vmeBase, MADC32_PULSER_STATUS, mode & MADC32_PULSER_STATUS_MASK);
 }
 
-uint16_t madc32_getBufferThresh(struct s_madc32 * s)
+uint16_t madc32_getPulserStatus(struct s_madc32 * s)
 {
-	return GET16(s->md->vmeBase, MADC32_IRQ_THRESH);
-}
-
-void madc32_setTestPulser_db(struct s_madc32 * s) { madc32_setTestPulser(s, s->testPulserStatus); }
-
-void madc32_setTestPulser(struct s_madc32 * s, uint16_t mode)
-{
-	SET16(s->md->vmeBase, MADC32_TEST_PULSER_STATUS, mode & MADC32_TEST_PULSER_STATUS_MASK);
-}
-
-uint16_t madc32_getTestPulser(struct s_madc32 * s)
-{
-	return GET16(s->md->vmeBase, MADC32_TEST_PULSER_STATUS) & MADC32_TEST_PULSER_STATUS_MASK;
+	return GET16(s->md->vmeBase, MADC32_PULSER_STATUS) & MADC32_PULSER_STATUS_MASK;
 }
 
 void madc32_setTsSource_db(struct s_madc32 * s) { madc32_setTsSource(s, s->ctraTsSource); }
@@ -521,10 +509,6 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	s->verbose = root_env_getval_b("MADC32.VerboseMode", FALSE);
 
 	s->dumpRegsOnInit = root_env_getval_b("MADC32.DumpRegisters", FALSE);
-
-	s->updSettings = root_env_getval_b("MADC32.UpdateSettings", FALSE);
-	s->updInterval = root_env_getval_i("MADC32.UpdateInterval", 0);
-	s->updCountDown = 0;
 
 	sp = root_env_getval_s("MADC32.ModuleName", "");
 	if (strcmp(s->moduleName, "madc32") != 0 && strcmp(sp, s->moduleName) != 0) {
@@ -630,23 +614,23 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	sprintf(res, "MADC32.%s.EclTerm", mnUC);
 	s->eclTerm = root_env_getval_i(res, MADC32_ECL_TERMINATORS_DEFAULT);
 
-	sprintf(res, "MADC32.%s.EclG1OrOsc", mnUC);
-	s->eclG1OrOsc = root_env_getval_i(res, MADC32_ECL_G1_OR_OSC_DEFAULT);
+	sprintf(res, "MADC32.%s.EclG1Osc", mnUC);
+	s->eclG1Osc = root_env_getval_i(res, MADC32_ECL_G1_OSC_DEFAULT);
 
-	sprintf(res, "MADC32.%s.EclFclOrRts", mnUC);
-	s->eclFclOrRts = root_env_getval_i(res, MADC32_NIM_FCL_OR_RES_TS_DEFAULT);
+	sprintf(res, "MADC32.%s.EclFclRts", mnUC);
+	s->eclFclRts = root_env_getval_i(res, MADC32_NIM_FCL_RTS_DEFAULT);
 
-	sprintf(res, "MADC32.%s.NimG1OrOsc", mnUC);
-	s->nimG1OrOsc = root_env_getval_i(res, MADC32_NIM_G1_OR_OSC_DEFAULT);
+	sprintf(res, "MADC32.%s.NimG1Osc", mnUC);
+	s->nimG1Osc = root_env_getval_i(res, MADC32_NIM_G1_OSC_DEFAULT);
 
-	sprintf(res, "MADC32.%s.NimFclOrRts", mnUC);
-	s->nimFclOrRts = root_env_getval_i(res, MADC32_NIM_FCL_OR_RES_TS_DEFAULT);
+	sprintf(res, "MADC32.%s.NimFclRts", mnUC);
+	s->nimFclRts = root_env_getval_i(res, MADC32_NIM_FCL_RTS_DEFAULT);
 
 	sprintf(res, "MADC32.%s.NimBusy", mnUC);
 	s->nimBusy = root_env_getval_i(res, MADC32_NIM_BUSY_DEFAULT);
 
 	sprintf(res, "MADC32.%s.PulserStatus", mnUC);
-	s->testPulserStatus = root_env_getval_i(res, MADC32_TEST_PULSER_STATUS_DEFAULT);
+	s->pulserStatus = root_env_getval_i(res, MADC32_PULSER_STATUS_DEFAULT);
 
 	sprintf(res, "MADC32.%s.TsSource", mnUC);
 	s->ctraTsSource = root_env_getval_i(res, MADC32_CTRA_TS_SOURCE_DEFAULT);
@@ -683,12 +667,12 @@ void madc32_loadFromDb(struct s_madc32 * s, uint32_t chnPattern)
 	madc32_useGG_db(s);
 	madc32_setInputRange_db(s);
 	madc32_setEclTerm_db(s);
-	madc32_setEclG1OrOsc_db(s);
-	madc32_setEclFclOrRts_db(s);
-	madc32_setNimG1OrOsc_db(s);
-	madc32_setNimFclOrRts_db(s);
+	madc32_setEclG1Osc_db(s);
+	madc32_setEclFclRts_db(s);
+	madc32_setNimG1Osc_db(s);
+	madc32_setNimFclRts_db(s);
 	madc32_setNimBusy_db(s);
-	madc32_setTestPulser_db(s);
+	madc32_setPulserStatus_db(s);
 	madc32_setTsSource_db(s);
 	madc32_setTsDivisor_db(s);
 
@@ -740,7 +724,6 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 	fprintf(f, "Module ID [0x6004]        : %d\n", madc32_getModuleId(s));
 	fprintf(f, "Data width [0x6032]       : %d\n", madc32_getDataWidth(s));
 	fprintf(f, "Multi event [0x6036]      : %d\n", madc32_getMultiEvent(s));
-	fprintf(f, "Buffer thresh [0x6018]    : %d\n", madc32_getBufferThresh(s));
 	fprintf(f, "Max xfer data wc [0x601A] : %d\n", madc32_getXferData(s));
 	fprintf(f, "Marking type [0x6038]     : %d\n", madc32_getMarkingType(s));
 	fprintf(f, "Bank operation [0x6040]   : %d\n", madc32_getBankOperation(s));
@@ -756,12 +739,12 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 	fprintf(f, "Use GG [0x6058]           : %d\n", madc32_getGGUsed(s));
 	fprintf(f, "Input range [0x6060]      : %d\n", madc32_getInputRange(s));
 	fprintf(f, "Ecl termination [0x6062]  : %#x\n", madc32_getEclTerm(s));
-	fprintf(f, "Ecl gate or osc [0x6064]  : %d\n", madc32_getEclG1OrOsc(s));
-	fprintf(f, "Ecl fcl or reset [0x6066] : %d\n", madc32_getEclFclOrRts(s));
-	fprintf(f, "Nim gate or osc [0x606A]  : %d\n", madc32_getNimG1OrOsc(s));
-	fprintf(f, "Nim fcl or reset [0x606C] : %d\n", madc32_getNimFclOrRts(s));
+	fprintf(f, "Ecl gate or osc [0x6064]  : %d\n", madc32_getEclG1Osc(s));
+	fprintf(f, "Ecl fcl or reset [0x6066] : %d\n", madc32_getEclFclRts(s));
+	fprintf(f, "Nim gate or osc [0x606A]  : %d\n", madc32_getNimG1Osc(s));
+	fprintf(f, "Nim fcl or reset [0x606C] : %d\n", madc32_getNimFclRts(s));
 	fprintf(f, "Nim busy [0x606E]         : %d\n", madc32_getNimBusy(s));
-	fprintf(f, "Pulser status [0x6070]    : %d\n", madc32_getTestPulser(s));
+	fprintf(f, "Pulser status [0x6070]    : %d\n", madc32_getPulserStatus(s));
 	fprintf(f, "Timestamp source [0x6096] : %#x\n", madc32_getTsSource(s));
 	fprintf(f, "Timestamp divisor [0x6098]: %d\n", madc32_getTsDivisor(s));
 	fclose(f);
@@ -814,7 +797,6 @@ void madc32_printDb(struct s_madc32 * s)
 	printf("Module ID         : %d\n", s->moduleId);
 	printf("Data width        : %d\n", s->dataWidth);
 	printf("Multi event       : %d\n", s->multiEvent);
-	printf("Buffer thresh     : %d\n", s->bufferThresh);
 	printf("Max xfer data wc  : %d\n", s->xferData);
 	printf("Marking type      : %d\n", s->markingType);
 	printf("Bank operation    : %d\n", s->bankOperation);
@@ -830,12 +812,12 @@ void madc32_printDb(struct s_madc32 * s)
 	printf("Use GG            : %d\n", s->useGG);
 	printf("Input range       : %d\n", s->inputRange);
 	printf("Ecl termination   : %#x\n", s->eclTerm);
-	printf("Ecl gate or osc   : %d\n", s->eclG1OrOsc);
-	printf("Ecl fcl or reset  : %d\n", s->eclFclOrRts);
-	printf("Nim gate or osc   : %d\n", s->nimG1OrOsc);
-	printf("Nim fcl or reset  : %d\n", s->nimFclOrRts);
+	printf("Ecl gate or osc   : %d\n", s->eclG1Osc);
+	printf("Ecl fcl or reset  : %d\n", s->eclFclRts);
+	printf("Nim gate or osc   : %d\n", s->nimG1Osc);
+	printf("Nim fcl or reset  : %d\n", s->nimFclRts);
 	printf("Nim busy          : %d\n", s->nimBusy);
-	printf("Pulser status     : %d\n", s->testPulserStatus);
+	printf("Pulser status     : %d\n", s->pulserStatus);
 	printf("Timestamp source  : %#x\n", s->ctraTsSource);
 	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
 }
@@ -1097,19 +1079,6 @@ void madc32_resetReadout_mcst(struct s_madc32 * s)
 void madc32_resetTimestamp_mcst(struct s_madc32 * s)
 {
 	SET16(s->mcstAddr, MADC32_CTRA_RESET_A_OR_B, 0x3);
-}
-
-bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile)
-{
-	struct stat sbuf;
-	if (s->updCountDown <= 0) {
-		s->updCountDown = s->updInterval;
-		if (stat(updFile, &sbuf) == 0) {
-			unlink(updFile);
-			return TRUE;
-		}
-	}
-	return FALSE;
 }
 
 uint32_t * madc32_repairRawData(struct s_madc32 * s, uint32_t * pointer, uint32_t * dataStart) {
