@@ -3384,11 +3384,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							nofParams = 0;
 							modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								moduleNameLC = module->GetName();
+								moduleNameUC = moduleNameLC;
+								moduleNameUC(0,1).ToUpper();
 								if (module->GetNofChannelsUsed() > 0) {
 									anaTmpl.InitializeCode("%ML%");
-									moduleNameLC = module->GetName();
-									moduleNameUC = moduleNameLC;
-									moduleNameUC(0,1).ToUpper();
 									anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
 									anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
 									anaTmpl.Substitute("$moduleTitle", module->GetTitle());
@@ -3397,6 +3397,12 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.WriteCode(anaStrm);
 								}
 								nofParams += module->GetNofChannelsUsed();
+								anaTmpl.InitializeCode("%ID%");
+								TString moduleType = module->GetMnemonic();
+								moduleType(0,1).ToUpper();
+								anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+								anaTmpl.Substitute("$moduleType", moduleType);
+								anaTmpl.WriteCode(anaStrm);
 							}
 						}
 						break;

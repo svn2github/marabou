@@ -70,6 +70,8 @@ static Bool_t verboseMode;						// verbosity flag;
 static Bool_t forcedDump = kFALSE;				// kTRUE -> dump records
 static Int_t recNo = 0;
 
+TArrayI lofModuleIds;
+
 Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -109,7 +111,9 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%BeginOfCode%%
 %B%// initialize user lists: modules, params & histos
 %B% 	gMrbAnalyze->InitializeLists($nofModules, $nofParams);
+%B%		lofModuleIds.Set($nofModules);
 %ML%	gMrbAnalyze->AddModuleToList("$moduleNameLC", "$moduleTitle", kMrbModule$moduleNameUC, $paramIndex, $nofParams, 0);
+%ID%	lofModuleIds[kMrbModule$moduleNameUC] = kMrbModId$moduleType;
 %%EndOfCode%%
 %%INITIALIZE_LISTS%%
 
