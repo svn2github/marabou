@@ -153,7 +153,7 @@ TMrbMesytec_Mtdc32::TMrbMesytec_Mtdc32(const Char_t * ModuleName, UInt_t BaseAdd
 									TMrbVMEModule(ModuleName, "Mesytec_Mtdc32", BaseAddr,
 										0x09,
 										TMrbMesytec_Mtdc32::kSegSize,
-										1, 32, 1 << 13) {
+										1, 34, 1 << 16) {
 //__________________________________________________________________[C++ CTOR]rts
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbMesytec_Mtdc32
@@ -197,7 +197,7 @@ TMrbMesytec_Mtdc32::TMrbMesytec_Mtdc32(const Char_t * ModuleName, UInt_t BaseAdd
 				fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 				fNofShortsPerChannel = 2;		// 32 bits
 				fNofShortsPerDatum = 1;
-				fNofDataBits = 13;
+				fNofDataBits = 16;
 				fBlockReadout = kTRUE;			// module has block readout
 				fBlockXfer = kFALSE;
 				fRepairRawData = kFALSE;

@@ -4,14 +4,14 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:		   TMrbSubevent_Mesytec::FillSubevent
-// Purpose: 	   Decode MADC32/MQDC32 buffer
+// Purpose: 	   Decode MADC32/MQDC32/MTDC32 buffer
 // Arguments:	   const UShort_t * SevtData   -- pointer to unpacked subevent data
 //  			   Int_t SevtWC 			   -- word count
 //  			   Int_t TimeStamp  		   -- time since last start
 //  											  in units of 100 microsecs
 // Results: 	   kTRUE/kFALSE
 // Exceptions:
-// Description:    Decodes data from a Mesytec MADC32/MQDC32.
+// Description:    Decodes data from a Mesytec MADC32/MQDC32/MTDC32.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
