@@ -699,7 +699,7 @@ Bool_t TMrbMesytec_Mtdc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$trigSrcTrig1", this->GetTrigSrcTrig(1));
 						tmpl.Substitute("$trigSrcChan1", this->GetTrigSrcChan(1));
 						tmpl.Substitute("$trigSrcBank1", this->GetTrigSrcBank(1));
-						tmpl.Substitute("$firstHit", this->FirstHit());
+						tmpl.Substitute("$firstHit", this->GetFirstHit());
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%InputOutput%");
@@ -1005,6 +1005,8 @@ void TMrbMesytec_Mtdc32::PrintSettings(ostream & Out) {
 		Int_t tsb = this->GetTrigSrcBank(b);
 		Out << " Trigger source         : trig=" << tst << ", chan=" << tsc << ", bank=" << tsb << endl;
 	}
+	Int_t fh = this->GetFirstHit();
+	Out << " First hit              : "	<< fh << ", bank0=" << ((fh & 1) ? "1st hit only" : "all hits") << ", bank1=" << ((fh & 2) ? "1st hit only" : "all hits") << endl;
 	Int_t ne = this->GetNegativeEdge();
 	Out << " Negative Edge          : "	<< ne << ", bank0=" << ((ne & 1) ? "on" : "off") << ", bank1=" << ((ne & 2) ? "on" : "off") << endl;
 	Out << " ECL termination        : "	<< this->FormatValue(value, TMrbMesytec_Mtdc32::kRegEclTerm) << endl;
