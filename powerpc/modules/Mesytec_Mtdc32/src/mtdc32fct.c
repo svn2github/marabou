@@ -219,7 +219,7 @@ uint16_t mtdc32_getOutputFormat(struct s_mtdc32 * s)
 
 void mtdc32_setWinStart_db(struct s_mtdc32 * s, uint16_t bnk) { mtdc32_setWinStart(s, bnk, s->winStart[bnk]); }
 
-void mtdc32_setWinStart(struct s_mtdc32 * s, uint16_t bnk, uint16_t start)
+void mtdc32_setWinStart(struct s_mtdc32 * s, uint16_t bnk, int16_t start)
 {
 	int addr;
 	switch (bnk) {
@@ -227,10 +227,11 @@ void mtdc32_setWinStart(struct s_mtdc32 * s, uint16_t bnk, uint16_t start)
 		case 1: addr = MTDC32_WIN_START_1; break;
 		default: return;
 	}
-	SET16(s->md->vmeBase, addr, start & MTDC32_WIN_START_MASK);
+	printf("winstart=%d\n", start);
+	SET16(s->md->vmeBase, addr, (start + 16384));
 }
 
-uint16_t mtdc32_getWinStart(struct s_mtdc32 * s, uint16_t bnk)
+int16_t mtdc32_getWinStart(struct s_mtdc32 * s, uint16_t bnk)
 {
 	int addr;
 	switch (bnk) {
@@ -238,12 +239,12 @@ uint16_t mtdc32_getWinStart(struct s_mtdc32 * s, uint16_t bnk)
 		case 1: addr = MTDC32_WIN_START_1; break;
 		default: return 0;
 	}
-	return GET16(s->md->vmeBase, addr) & MTDC32_WIN_START_MASK;
+	return GET16(s->md->vmeBase, addr) - 16384;
 }
 
 void mtdc32_setWinWidth_db(struct s_mtdc32 * s, uint16_t bnk) { mtdc32_setWinWidth(s, bnk, s->winWidth[bnk]); }
 
-void mtdc32_setWinWidth(struct s_mtdc32 * s, uint16_t bnk, uint16_t width)
+void mtdc32_setWinWidth(struct s_mtdc32 * s, uint16_t bnk, int16_t width)
 {
 	int addr;
 	switch (bnk) {
@@ -251,10 +252,11 @@ void mtdc32_setWinWidth(struct s_mtdc32 * s, uint16_t bnk, uint16_t width)
 		case 1: addr = MTDC32_WIN_WIDTH_1; break;
 		default: return;
 	}
-	SET16(s->md->vmeBase, addr, width & MTDC32_WIN_WIDTH_MASK);
+	printf("width=%d\n", width);
+	SET16(s->md->vmeBase, addr, width);
 }
 
-uint16_t mtdc32_getWinWidth(struct s_mtdc32 * s, uint16_t bnk)
+int16_t mtdc32_getWinWidth(struct s_mtdc32 * s, uint16_t bnk)
 {
 	int addr;
 	switch (bnk) {
@@ -262,7 +264,7 @@ uint16_t mtdc32_getWinWidth(struct s_mtdc32 * s, uint16_t bnk)
 		case 1: addr = MTDC32_WIN_WIDTH_1; break;
 		default: return 0;
 	}
-	return GET16(s->md->vmeBase, addr) & MTDC32_WIN_WIDTH_MASK;
+	return GET16(s->md->vmeBase, addr);
 }
 
 void mtdc32_setTrigSource_db(struct s_mtdc32 * s, uint16_t bnk) { mtdc32_setTrigSource(s, bnk, s->trigSrcTrig[bnk], s->trigSrcChan[bnk], s->trigSrcBank[bnk]); }
@@ -279,6 +281,7 @@ void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint
 		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
 		default: return;
 	}
+	printf("trigSource=%d\n", trigSource);
 	SET16(s->md->vmeBase, addr, trigSource);
 }
 
@@ -794,7 +797,7 @@ bool_t mtdc32_dumpRegisters(struct s_mtdc32 * s, char * file)
 	fprintf(f, "Output format [0x6044]    : %d\n", mtdc32_getOutputFormat(s));
 	for (bnk = 0; bnk <= 1; bnk++) {
 		fprintf(f, "Window start %d [0x605%d]   : %d\n", bnk, bnk*2, mtdc32_getWinStart(s, bnk));
-		fprintf(f, "Window width %d [0x605%d]   : %d\n", bnk, bnk*2 + 4, mtdc32_getWinWidth(s, bnk), bnk*2 + 4);
+		fprintf(f, "Window width %d [0x605%d]   : %d\n", bnk, bnk*2 + 4, mtdc32_getWinWidth(s, bnk));
 	}
 	for (bnk = 0; bnk <= 1; bnk++)
 	fprintf(f, "Trigger source %d         : %x\n", bnk, mtdc32_getTrigSource(s, bnk));

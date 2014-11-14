@@ -77,13 +77,13 @@ void mtdc32_setOutputFormat(struct s_mtdc32 * s, uint16_t format);
 void mtdc32_setOutputFormat_db(struct s_mtdc32 * s);
 uint16_t mtdc32_getOutputFormat(struct s_mtdc32 * s);
 
-void mtdc32_setWinStart(struct s_mtdc32 * s, uint16_t bnk, uint16_t offset);
+void mtdc32_setWinStart(struct s_mtdc32 * s, uint16_t bnk, int16_t offset);
 void mtdc32_setWinStart_db(struct s_mtdc32 * s, uint16_t bnk);
-uint16_t mtdc32_getWinStart(struct s_mtdc32 * s, uint16_t bnk);
+int16_t mtdc32_getWinStart(struct s_mtdc32 * s, uint16_t bnk);
 
-void mtdc32_setWinWidth(struct s_mtdc32 * s, uint16_t bnk, uint16_t width);
+void mtdc32_setWinWidth(struct s_mtdc32 * s, uint16_t bnk, int16_t width);
 void mtdc32_setWinWidth_db(struct s_mtdc32 * s, uint16_t bnk);
-uint16_t mtdc32_getWinWidth(struct s_mtdc32 * s, uint16_t bnk);
+int16_t mtdc32_getWinWidth(struct s_mtdc32 * s, uint16_t bnk);
 
 void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint16_t chan, uint16_t bank);
 void mtdc32_setTrigSource_db(struct s_mtdc32 * s, uint16_t bnk);

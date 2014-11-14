@@ -52,8 +52,8 @@ struct s_mtdc32 {
 	uint16_t tdcResolution;
 	uint16_t outputFormat;
 	uint16_t bufferThresh;
-	uint16_t winStart[2];
-	uint16_t winWidth[2];
+	int16_t winStart[2];
+	int16_t winWidth[2];
 	uint16_t trigSrcTrig[2];
 	uint16_t trigSrcChan[2];
 	uint16_t trigSrcBank[2];
