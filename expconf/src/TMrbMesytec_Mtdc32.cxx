@@ -182,7 +182,7 @@ TMrbMesytec_Mtdc32::TMrbMesytec_Mtdc32(const Char_t * ModuleName, UInt_t BaseAdd
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		} else {
-			SetTitle("Mesytec peak-sensing adc 32 chn 11-13 bit"); 	// store module type
+			SetTitle("Mesytec time digitizer tdc 32+2 chn 16 bit"); 	// store module type
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
