@@ -532,7 +532,7 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetXferData(mtdcEnv->Get(moduleName.Data(), "XferData", 0));
 	this->SetMarkingType(mtdcEnv->Get(moduleName.Data(), "MarkingType", kMarkingTypeEvent));
 	this->SetBankOperation(mtdcEnv->Get(moduleName.Data(), "BankOperation", kBankOprConnected));
-	this->SetTdcResolution(mtdcEnv->Get(moduleName.Data(), "AdcResolution", kTdcRes500));
+	this->SetTdcResolution(mtdcEnv->Get(moduleName.Data(), "TdcResolution", kTdcRes500));
 	this->SetOutputFormat(mtdcEnv->Get(moduleName.Data(), "OutputFormat", kOutFmtTimeDiff));
 	this->SetWinStart(mtdcEnv->Get(moduleName.Data(), "WinStart", "0", kWinStartDefault), 0);
 	this->SetWinStart(mtdcEnv->Get(moduleName.Data(), "WinStart", "1", kWinStartDefault), 1);
@@ -545,7 +545,7 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetTrigSrcChan(mtdcEnv->Get(moduleName.Data(), "TrigSrcChand", "1", 0), 1);
 	this->SetTrigSrcBank(mtdcEnv->Get(moduleName.Data(), "TrigSrcBank", "1", 0), 1);
 	this->SetFirstHit(mtdcEnv->Get(moduleName.Data(), "FirstHit", 3));
-	this->SetNegativeEdge(mtdcEnv->Get(moduleName.Data(), "TrigSrcBank", 0));
+	this->SetNegativeEdge(mtdcEnv->Get(moduleName.Data(), "NegEdge", 3));
 	this->SetEclTerm(mtdcEnv->Get(moduleName.Data(), "EclTerm", kEclTermOn));
 	this->SetEclT1Osc(mtdcEnv->Get(moduleName.Data(), "EclT1Osc", kEclT1));
 	this->SetTrigSelect(mtdcEnv->Get(moduleName.Data(), "TrigSelect", kTrigSelNim));
@@ -559,9 +559,9 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetTsSource(mtdcEnv->Get(moduleName.Data(), "TsSource", kTstampVME));
 	this->SetTsDivisor(mtdcEnv->Get(moduleName.Data(), "TsDivisor", 1));
 	this->SetMultHighLimit(mtdcEnv->Get(moduleName.Data(), "MultHighLimit", "0", kMultHighLimit0), 0);
-	this->SetMultHighLimit(mtdcEnv->Get(moduleName.Data(), "MultHighLimit", "1", kMultHighLimit1), 0);
+	this->SetMultHighLimit(mtdcEnv->Get(moduleName.Data(), "MultHighLimit", "1", kMultHighLimit1), 1);
 	this->SetMultLowLimit(mtdcEnv->Get(moduleName.Data(), "MultLowLimit", "0", kMultLowLimit), 0);
-	this->SetMultLowLimit(mtdcEnv->Get(moduleName.Data(), "MultLowLimit", "1", kMultLowLimit), 0);
+	this->SetMultLowLimit(mtdcEnv->Get(moduleName.Data(), "MultLowLimit", "1", kMultLowLimit), 1);
 
 	fSettings = mtdcEnv->Env();
 	return(mtdcEnv->Env());
