@@ -1,0 +1,12 @@
+%%BeginOfCode%%
+// MADC32 adc resolution
+enum EMrbMadcResolution	{
+								kMrbMadcRes2k			=	0,
+								kMrbMadcRes4k,
+								kMrbMadcRes4kHi,
+								kMrbMadcRes8k,
+								kMrbMadcRes8kHi
+						};
+%%EndOfCode%%
+%%MODULE_SPECIAL_ENUM%%
+
