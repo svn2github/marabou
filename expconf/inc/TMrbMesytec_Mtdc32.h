@@ -177,7 +177,7 @@ class TMrbMesytec_Mtdc32 : public TMrbVMEModule {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbVMEChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
-		virtual inline const Char_t * GetMnemonic() const { return("madc32"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("mtdc32"); }; 	// module mnemonic
 
 		inline void SetBlockXfer(Bool_t Flag = kTRUE) { fBlockXfer = Flag; };
 		inline Bool_t BlockXferEnabled() { return(fBlockXfer); };
