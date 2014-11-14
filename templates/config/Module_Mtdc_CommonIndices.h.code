@@ -1,11 +1,14 @@
 %%BeginOfCode%%
-// MADC32 adc resolution
-enum EMrbMadcResolution	{
-								kMrbMadcRes2k			=	0,
-								kMrbMadcRes4k,
-								kMrbMadcRes4kHi,
-								kMrbMadcRes8k,
-								kMrbMadcRes8kHi
+// MTDC32 tdc resolution
+enum EMrbMtdcResolution	{
+								kMrbMtdcRes500			=	9,
+								kMrbMtdcRes250			=	8,
+								kMrbMtdcRes125			=	7,
+								kMrbMtdcRes62_5			=	6,
+								kMrbMtdcRes31_3			=	5,
+								kMrbMtdcRes15_6			=	4,
+								kMrbMtdcRes7_8			=	3,
+								kMrbMtdcRes3_9			=	2
 						};
 %%EndOfCode%%
 %%MODULE_SPECIAL_ENUM%%

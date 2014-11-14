@@ -1,12 +1,7 @@
 %%BeginOfCode%%
 // MQDC32 adc resolution
 enum EMrbMqdcResolution	{
-								kMrbMadcRes2k			=	0,
-								kMrbMadcRes4k,
-								kMrbMadcRes4kHi,
-								kMrbMadcRes8k,
-								kMrbMadcRes8kHi,
-								kMrbMqdcRes4k			=	0
+								kMrbMadcRes4k			=	0
 						};
 %%EndOfCode%%
 %%MODULE_SPECIAL_ENUM%%
