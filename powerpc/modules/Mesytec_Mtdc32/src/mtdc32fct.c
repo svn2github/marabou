@@ -227,7 +227,6 @@ void mtdc32_setWinStart(struct s_mtdc32 * s, uint16_t bnk, int16_t start)
 		case 1: addr = MTDC32_WIN_START_1; break;
 		default: return;
 	}
-	printf("winstart=%d\n", start);
 	SET16(s->md->vmeBase, addr, (start + 16384));
 }
 
@@ -252,7 +251,6 @@ void mtdc32_setWinWidth(struct s_mtdc32 * s, uint16_t bnk, int16_t width)
 		case 1: addr = MTDC32_WIN_WIDTH_1; break;
 		default: return;
 	}
-	printf("width=%d\n", width);
 	SET16(s->md->vmeBase, addr, width);
 }
 
@@ -281,7 +279,6 @@ void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint
 		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
 		default: return;
 	}
-	printf("trigSource=%d\n", trigSource);
 	SET16(s->md->vmeBase, addr, trigSource);
 }
 
@@ -946,7 +943,10 @@ int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer)
 			
 		pointer += numData;
 	} else {
-		for (i = 0; i < numData; i++) *pointer++ = GET32(s->md->vmeBase, MTDC32_DATA);
+		for (i = 0; i < numData; i++) {
+			data = GET32(s->md->vmeBase, MTDC32_DATA);
+			*pointer++ = data;
+		}
 	}
 
 	if (s->repairRawData) pointer = mtdc32_repairRawData(s, pointer, dataStart);
