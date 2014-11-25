@@ -495,7 +495,7 @@ void TMrbMesytec_Mqdc32::DefineRegisters() {
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	
-	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegMultHighLimit, "MultLowLimit");
+	kp = new TMrbNamedX(TMrbMesytec_Mqdc32::kRegMultLowLimit, "MultLowLimit");
 	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, TMrbMesytec_Mqdc32::kMultLowLimit, 0, 0x3F);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);

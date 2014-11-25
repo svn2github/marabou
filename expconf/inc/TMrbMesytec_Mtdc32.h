@@ -42,10 +42,7 @@ class TMrbMesytec_Mtdc32 : public TMrbVMEModule {
 		enum				{	kSegSize		=	0x10000L	};
 		enum				{	kAddrMod		=	0x09		};
 
-		enum				{	kNofChannels	=	32	};
-
-		enum				{	kGGDefaultDelay	=	20	};
-		enum				{	kGGDefaultWidth	=	50	};
+		enum				{	kNofChannels	=	34	};
 
 		enum EMrbRegisters	{	kRegAddrSource,
 								kRegAddrReg,
