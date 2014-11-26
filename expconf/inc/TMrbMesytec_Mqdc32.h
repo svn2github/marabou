@@ -318,7 +318,7 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 		const Char_t * FormatValue(TString & Value, Int_t Index, Int_t SubIndex = -1, Int_t Base = 10);
 
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
-		inline const Char_t * GetPrivateCodeFile() const { return("Module_Mqdc"); };
+		inline const Char_t * GetPrivateCodeFile() const { return("Module_Mesytec"); };
 
 		inline Bool_t HasBlockXfer() const { return(kTRUE); };				// module is capable of using BLT
 		inline Bool_t UseA32Addressing() const { return(kTRUE); };			// we use a32 regardless of address

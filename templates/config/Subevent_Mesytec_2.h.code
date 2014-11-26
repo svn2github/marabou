@@ -70,5 +70,5 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Mesytec {
 
 //%%SEVT_USER_DATA%%			user-specific data members may be included here
 
-	ClassDef(TUsrSevt%%SEVT_NAME_UC%%, 1)			// [Analyze] Store MADC32 data in hit buffer
+	ClassDef(TUsrSevt%%SEVT_NAME_UC%%, 1)			// [Analyze] Store MADC32/MQDC32/MTDC32 data in hit buffer
 };

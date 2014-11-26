@@ -1,0 +1,35 @@
+%%BeginOfCode%%
+#ifndef __MesytecDefs__
+#define __MesytecDefs__
+// definitions for Mesytec MADC/MQDC/MTDC modules
+
+#define MESY_SH_CHN							16
+#define MESY_SH_SERIAL						16
+#define MESY_SH_RES 						12
+
+#define MESY_M_SIGNATURE					0xC0000000
+#define MESY_D_HDR							0x40000000
+#define MESY_D_DATA							0x00000000
+#define MESY_D_EOE							0xC0000000
+#define MESY_D_BOB							0x80000000
+#define MESY_D_EOB							0xdeadbeef
+
+#define MESY_D_XTS							0x04800000
+
+#define MESY_M_SERIAL						0xFF
+#define MESY_M_RES							0x7
+#define MESY_M_WC							0x7FF
+#define MESY_M_CHN							0x1F
+#define MESY_M_XTS							0xFFFF0000
+#define MESY_M_ID							0xC0000000
+#define MESY_M_ADCDATA	 					0x00001FFF
+#define MESY_M_TSLOW		 				0x3FFFFFFF
+#define MESY_M_TSHIGH		 				0x0000FFFF
+
+#define MESY_M_RES2K			 			0x000007FF
+#define MESY_M_RES4K			 			0x00000FFF
+#define MESY_M_RES8K			 			0x00001FFF
+#endif
+
+%%EndOfCode%%
+%%INCLUDES_AND_DEFS_ANALYZE%%

@@ -37,7 +37,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 					<< setblack << endl;
 			return(kTRUE);
 		}
-		if ((header & MADC_M_ID) != MADC_D_HDR) {
+		if ((header & MESY_M_ID) != MESY_D_HDR) {
 			if (foundHeaderInstead) {						// header found at end of prev buffer
 				header = foundHeaderInstead;
 				dataPtr -= 2;
@@ -61,7 +61,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 						t |= *dataPtr++;
 						SevtWC -= 2;
 						wordsProcessed += 2;
-						if ((t & MADC_M_ID) == MADC_D_EOE) {
+						if ((t & MESY_M_ID) == MESY_D_EOE) {
 							if (verboseMode) {
 								cerr	<< setmagenta
 										<< this->ClassName() << "::FillSubevent() [sevtWC="
@@ -85,14 +85,14 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 		}
 		foundHeaderInstead = 0;
 
-		Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
-		Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
-//		UInt_t dmask = MADC_M_RES2K;
-//		if (res >= kMrbMadcRes4k) dmask = MADC_M_RES4K;
-//		if (res >= kMrbMadcRes8k) dmask = MADC_M_RES8K;
+		Int_t moduleNumber = (header >> MESY_SH_SERIAL) & MESY_M_SERIAL;	// extract module id
+		Int_t res = (header >> MESY_SH_RES) & MESY_M_RES;					// extract adc resolution
+//		UInt_t dmask = MESY_M_RES2K;
+//		if (res >= kMrbMadcRes4k) dmask = MESY_M_RES4K;
+//		if (res >= kMrbMadcRes8k) dmask = MESY_M_RES8K;
 		UInt_t dmask = 0xFFFF;
 		
-		Int_t wc = header & MADC_M_WC;							// extract wc
+		Int_t wc = header & MESY_M_WC;							// extract wc
 		Int_t wcs = (wc + 1) * 2; 								// wc + header
 
 		UShort_t * nextEvent = dataPtr + 2 * wc;
@@ -100,7 +100,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 		UShort_t * trailPtr = nextEvent - 2;
 		UInt_t trailer = (*trailPtr++ << 16); 						// inspect trailer word
 		trailer |= *trailPtr++;
-		if ((trailer & MADC_M_ID) == MADC_D_HDR) {					// test if EOE
+		if ((trailer & MESY_M_ID) == MESY_D_HDR) {					// test if EOE
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE, HDR instead", SevtData, origSevtWC);
 			if (verboseMode) {
 				cerr	<< setmagenta									// it is a header!
@@ -110,8 +110,8 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 						<< setblack << endl;
 			}
 			foundHeaderInstead = trailer;							// store header for next event
-			trailer = MADC_D_EOE | 0x252525;						// fake trailer word
-		} else if ((trailer & MADC_M_ID) != MADC_D_EOE) {
+			trailer = MESY_D_EOE | 0x252525;						// fake trailer word
+		} else if ((trailer & MESY_M_ID) != MESY_D_EOE) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
 			if (verboseMode && trailer != 0) {
 				cerr	<< setred
@@ -121,13 +121,13 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 						<< setblack << endl;
 			}
 			if (trailer == 0) {
-				trailer = MADC_D_EOE | 0x525252;						// fake trailer word
+				trailer = MESY_D_EOE | 0x525252;						// fake trailer word
 			} else {
 				return(kTRUE);								// we can't decode remaining data
 			}
 		}
 		wc--;
-		UInt_t lowTimeStamp = trailer & MADC_M_TSLOW;	// extract lower bits of time stamp (bits 0-29)
+		UInt_t lowTimeStamp = trailer & MESY_M_TSLOW;	// extract lower bits of time stamp (bits 0-29)
 
 		UShort_t * xtsPtr = nextEvent - 4;				// check if fill word (64bit alignment)
 		UInt_t highTimeStamp = (*xtsPtr++ << 16);		// or extended timestamp
@@ -142,8 +142,8 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 		if (foundHeaderInstead) highTimeStamp = 0;		// doesn't make sense if trailer (and therefore lower time stamp) is missing
 
 		ULong64_t ts64 = 0;
-		if ((highTimeStamp & MADC_M_XTS) == MADC_D_XTS) {
-			ts64 = ((Long64_t) (highTimeStamp & MADC_M_TSHIGH)) << 30;
+		if ((highTimeStamp & MESY_M_XTS) == MESY_D_XTS) {
+			ts64 = ((Long64_t) (highTimeStamp & MESY_M_TSHIGH)) << 30;
 			wc--;					// - extended ts
 		}
 		ts64 |= lowTimeStamp;
@@ -170,9 +170,9 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 			Int_t data = (*dataPtr++ << 16);
 			data |= *dataPtr++;
 			wordsProcessed += 2;
-			if ((data & MADC_M_ID) != MADC_D_DATA) {
-				if ((data & MADC_M_XTS) == MADC_D_XTS) continue;
-				if ((data & MADC_M_ID) == MADC_D_EOE) {
+			if ((data & MESY_M_ID) != MESY_D_DATA) {
+				if ((data & MESY_M_XTS) == MESY_D_XTS) continue;
+				if ((data & MESY_M_ID) == MESY_D_EOE) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOE", SevtData, origSevtWC);
 					cerr	<< setred
 							<< this->ClassName() << "::FillSubevent(): [Module "
@@ -192,7 +192,7 @@ Bool_t TMrbSubevent_Mesytec::FillSubevent(const UShort_t * SevtData, Int_t SevtW
 					return(kTRUE);
 				}
 			}
-			Int_t chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
+			Int_t chn = (data >> MESY_SH_CHN) & MESY_M_CHN;
 			mle->IncrChannelHits(chn);			// count this channel
 			evtData[0] = 0;
 			evtData[1] = (UShort_t) (data & dmask);
