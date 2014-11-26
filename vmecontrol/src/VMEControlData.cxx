@@ -95,19 +95,20 @@ VMEControlData::VMEControlData() {
 		fVctrlrc = new TMrbResource("VMEControl:TMrbConfig:TMrbC2Lynx", fRcFile.Data());
 		if (fFrameWidth <= 0) fFrameWidth = fVctrlrc->Get(".FrameWidth", kFrameWidth);
 		if (fFrameHeight <= 0) fFrameHeight = fVctrlrc->Get(".FrameHeight", kFrameHeight);
+		
+		fRootrc->Get(fSettingsPath, ".SettingsPath", ".vmeSettings");
+		gSystem->ExpandPathName(fSettingsPath);
+		this->CheckAccess(fSettingsPath.Data(), kVMEAccessDirectory | kVMEAccessWrite, errMsg, kTRUE);
+
+		fStatus = 0;
+		if (fVctrlrc->Get(".VerboseMode", kFALSE)) fStatus |= kVMEVerboseMode;
+		if (fVctrlrc->Get(".DebugMode", kFALSE)) fStatus |= kVMEDebugMode;
+		if (fVctrlrc->Get(".OfflineMode", kFALSE)) fStatus |= kVMEOfflineMode;
+
+		fLofPanels.Clear();
 	} else {
 		this->MakeZombie();
 	}
-	fRootrc->Get(fSettingsPath, ".SettingsPath", ".vmeSettings");
-	gSystem->ExpandPathName(fSettingsPath);
-	this->CheckAccess(fSettingsPath.Data(), kVMEAccessDirectory | kVMEAccessWrite, errMsg, kTRUE);
-
-	fStatus = 0;
-	if (fVctrlrc->Get(".VerboseMode", kFALSE)) fStatus |= kVMEVerboseMode;
-	if (fVctrlrc->Get(".DebugMode", kFALSE)) fStatus |= kVMEDebugMode;
-	if (fVctrlrc->Get(".OfflineMode", kFALSE)) fStatus |= kVMEOfflineMode;
-
-	fLofPanels.Clear();
 }
 
 Bool_t VMEControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly) {
