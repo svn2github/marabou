@@ -19,7 +19,7 @@
 #define MESY_M_SERIAL						0xFF
 #define MESY_M_RES							0x7
 #define MESY_M_WC							0x7FF
-#define MESY_M_CHN							0x1F
+#define MESY_M_CHN							0x3F
 #define MESY_M_XTS							0xFFFF0000
 #define MESY_M_ID							0xC0000000
 #define MESY_M_ADCDATA	 					0x00001FFF
