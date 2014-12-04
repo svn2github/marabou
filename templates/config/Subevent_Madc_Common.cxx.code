@@ -34,7 +34,7 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 					<< setblack << endl;
 			return(kTRUE);
 		}
-		if ((header & MADC_M_ID) != MADC_D_HDR) {
+		if ((header & MESY_M_ID) != MESY_D_HDR) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
 			cerr	<< setred
 					<< this->ClassName() << "::FillSubevent() [sevtWC="
@@ -43,13 +43,13 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 			return(kTRUE);
 		}
 
-		Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
-		Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
-		UInt_t dmask = MADC_M_RES2K;
-		if (res >= kMrbMadcRes4k) dmask = MADC_M_RES4K;
-		if (res >= kMrbMadcRes8k) dmask = MADC_M_RES8K;
+		Int_t moduleNumber = (header >> MESY_SH_SERIAL) & MESY_M_SERIAL;	// extract module id
+		Int_t res = (header >> MESY_SH_RES) & MESY_M_RES;					// extract adc resolution
+		UInt_t dmask = MESY_M_RES2K;
+		if (res >= kMrbMadcRes4k) dmask = MESY_M_RES4K;
+		if (res >= kMrbMadcRes8k) dmask = MESY_M_RES8K;
 
-		Int_t wc = header & MADC_M_WC;							// extract wc
+		Int_t wc = header & MESY_M_WC;							// extract wc
 		Int_t wcs = (wc + 1) * 2; 								// wc + header
 
 		UShort_t * trailPtr = dataPtr + 2 * (wc - 2);
@@ -62,7 +62,7 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 
 		Bool_t hasTrailer = kTRUE;
 
-		if ((trailer & MADC_M_ID) == MADC_D_HDR) {
+		if ((trailer & MESY_M_ID) == MESY_D_HDR) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "HDR instead of EOE", SevtData, origSevtWC);
 			cerr	<< setmagenta
 					<< this->ClassName() << "::FillSubevent(): [Module "
@@ -72,7 +72,7 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 			hasTrailer = kFALSE;
 			wc--;				// trailer missing
 			wcs -= 2;
-		} else if ((trailer & MADC_M_ID) != MADC_D_EOE) {
+		} else if ((trailer & MESY_M_ID) != MESY_D_EOE) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
 			cerr	<< setred
 					<< this->ClassName() << "::FillSubevent(): [Module "
@@ -86,13 +86,13 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 		Bool_t xts = kFALSE;
 		ULong64_t ts64 = 0;
 
-		if ((highTimeStamp & MADC_M_XTS) == MADC_D_XTS) {
-			ts64 = ((Long64_t) (highTimeStamp & MADC_M_TSHIGH)) << 30;
+		if ((highTimeStamp & MESY_M_XTS) == MESY_D_XTS) {
+			ts64 = ((Long64_t) (highTimeStamp & MESY_M_TSHIGH)) << 30;
 			wc--;							// - extended ts
 			xts = kTRUE;
 		}
 
-		UInt_t lowTimeStamp = hasTrailer ? (trailer & MADC_M_TSLOW) : 0;	// extract lower bits of time stamp (bits 0-29)
+		UInt_t lowTimeStamp = hasTrailer ? (trailer & MESY_M_TSLOW) : 0;	// extract lower bits of time stamp (bits 0-29)
 		ts64 |= lowTimeStamp;
 
 		UShort_t tsArr[3];
@@ -117,9 +117,9 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 		for (; wc; wc--) {
 			Int_t data = (*dataPtr++ << 16);
 			data |= *dataPtr++;
-			if ((data & MADC_M_ID) != MADC_D_DATA) {
-				if ((data & MADC_M_XTS) == MADC_D_XTS) continue;
-				if ((data & MADC_M_ID) == MADC_D_EOE) {
+			if ((data & MESY_M_ID) != MESY_D_DATA) {
+				if ((data & MESY_M_XTS) == MESY_D_XTS) continue;
+				if ((data & MESY_M_ID) == MESY_D_EOE) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOE", SevtData, origSevtWC);
 					cerr	<< setred
 							<< this->ClassName() << "::FillSubevent(): [Module "
@@ -139,7 +139,7 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 					return(kTRUE);
 				}
 			}
-			Int_t chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
+			Int_t chn = (data >> MESY_SH_CHN) & MESY_M_CHN;
 			mle->IncrChannelHits(chn);			// count this channel
 			evtData[0] = 0;
 			evtData[1] = (UShort_t) (data & dmask);

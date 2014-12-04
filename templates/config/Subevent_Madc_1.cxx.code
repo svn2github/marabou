@@ -33,7 +33,7 @@
 %C%
 %C%		while (SevtWC > 0) {									// subevent may contain several CAEN modules
 %C%			UInt_t header = *dataPtr++;
-%C%			if ((header & MADC_M_ID) != MADC_D_HDR) {
+%C%			if ((header & MESY_M_ID) != MESY_D_HDR) {
 %C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
 %C%				cerr	<< setred
 %C%						<< this->ClassName() << "::FillSubevent() [sevtWC="
@@ -42,13 +42,13 @@
 %C%				return(kTRUE);
 %C%			}
 %C%
-%C%			Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
-%C%			Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
+%C%			Int_t moduleNumber = (header >> MESY_SH_SERIAL) & MESY_M_SERIAL;	// extract module id
+%C%			Int_t res = (header >> MESY_SH_RES) & MESY_M_RES;					// extract adc resolution
 %C%			UInt_t dmask = 0x7FF;
 %C%			if (res >= kMrbMadcRes4k) dmask = 0xFFF;
 %C%			if (res >= kMrbMadcRes8k) dmask = 0x1FFF;
 %C%
-%C%			Int_t wc = header & MADC_M_WC;		// extract wc
+%C%			Int_t wc = header & MESY_M_WC;		// extract wc
 %C%			Int_t wcs = wc;
 %C%
 %C%			wc--;								// - trailer word
@@ -77,9 +77,9 @@
 %C%			UShort_t evtData[2];
 %C%			for (; wc; wc--) {
 %C%				Int_t data = *dataPtr++;
-%C%				if ((data & MADC_M_ID) != MADC_D_DATA) {
-%C%					if ((data & MADC_M_XTS) == MADC_D_XTS) continue;	/* skip extended time stamp */
-%C%					if ((data & MADC_M_ID) == MADC_D_EOE) {
+%C%				if ((data & MESY_M_ID) != MESY_D_DATA) {
+%C%					if ((data & MESY_M_XTS) == MESY_D_XTS) continue;	/* skip extended time stamp */
+%C%					if ((data & MESY_M_ID) == MESY_D_EOE) {
 %C%						gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOE", SevtData, origSevtWC);
 %C%						cerr	<< setred
 %C%								<< this->ClassName() << "::FillSubevent(): [Module "
@@ -99,7 +99,7 @@
 %C%						return(kTRUE);
 %C%					}
 %C%				}
-%C%				Int_t chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
+%C%				Int_t chn = (data >> MESY_SH_CHN) & MESY_M_CHN;
 %C%				Int_t * paramAddr = (Int_t *) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
 %C%				if (paramAddr) {
 %C% 				if (!allowMultiHit && mle->GetEventsPerTrigger() > 0) {
@@ -123,7 +123,7 @@
 %C% 			}
 %C% 		}
 %C% 		Int_t trailer = *dataPtr++; 	 	// inspect trailer word
-%C% 		if ((trailer & MADC_M_ID) != MADC_D_EOE) {
+%C% 		if ((trailer & MESY_M_ID) != MESY_D_EOE) {
 %C% 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
 %C% 			cerr	<< setred
 %C% 					<< this->ClassName() << "::FillSubevent(): [Module "
