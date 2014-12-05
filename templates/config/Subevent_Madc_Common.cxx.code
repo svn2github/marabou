@@ -45,9 +45,11 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 
 		Int_t moduleNumber = (header >> MESY_SH_SERIAL) & MESY_M_SERIAL;	// extract module id
 		Int_t res = (header >> MESY_SH_RES) & MESY_M_RES;					// extract adc resolution
-		UInt_t dmask = MESY_M_RES2K;
-		if (res >= kMrbMadcRes4k) dmask = MESY_M_RES4K;
-		if (res >= kMrbMadcRes8k) dmask = MESY_M_RES8K;
+//		UInt_t dmask = MESY_M_RES2K;
+//		if (res >= kMrbMadcRes4k) dmask = MESY_M_RES4K;
+//		if (res >= kMrbMadcRes8k) dmask = MESY_M_RES8K;
+        UInt_t dmask = 0xFFFF;
+
 
 		Int_t wc = header & MESY_M_WC;							// extract wc
 		Int_t wcs = (wc + 1) * 2; 								// wc + header
