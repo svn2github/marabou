@@ -796,8 +796,7 @@ bool_t mtdc32_dumpRegisters(struct s_mtdc32 * s, char * file)
 		fprintf(f, "Window start %d [0x605%d]   : %d\n", bnk, bnk*2, mtdc32_getWinStart(s, bnk));
 		fprintf(f, "Window width %d [0x605%d]   : %d\n", bnk, bnk*2 + 4, mtdc32_getWinWidth(s, bnk));
 	}
-	for (bnk = 0; bnk <= 1; bnk++)
-	fprintf(f, "Trigger source %d         : %x\n", bnk, mtdc32_getTrigSource(s, bnk));
+	for (bnk = 0; bnk <= 1; bnk++) fprintf(f, "Trigger source %d         : %x\n", bnk, mtdc32_getTrigSource(s, bnk));
 	fprintf(f, "First hit [0x605C]        : %d\n", mtdc32_getFirstHit(s));
 	fprintf(f, "Negative edge [0x6060]    : %d\n", mtdc32_getNegEdge(s));
 	fprintf(f, "Ecl termination [0x6062]  : %#x\n", mtdc32_getEclTerm(s));
