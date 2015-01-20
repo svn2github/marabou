@@ -48,7 +48,7 @@ class TGMrbProgressBar: public TGTransientFrame {
 												const Char_t * BarText = NULL,
 												Bool_t WithDetail = kFALSE);
 
-		~TGMrbProgressBar() {};				// default dtor
+		~TGMrbProgressBar() { fHeap.Delete(); };				// default dtor
 
 //		TGMrbProgressBar(const TGMrbProgressBar & f) : TGTransientFrame(f) {};	// default copy ctor
 

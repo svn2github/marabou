@@ -86,7 +86,7 @@ TGMrbProgressBar::TGMrbProgressBar( const TGWindow * Parent,
 	fDetail = NULL;
 	if (WithDetail) {
 		fDetail = new TGLabel(this, new TGString(""));
-		HEAP(fBar);
+		HEAP(fDetail);
 		this->AddFrame(fDetail, frameGC->LH());
 		fDetail->SetTextJustify(kTextCenterX);
 	}

@@ -1446,12 +1446,8 @@ void TGMrbMacroFrame::ProcessSignal(Int_t FrameId, Int_t Signal) {
 	if (argNo > 0) {
 		TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
 		TString argName = macroEnv->GetValue(Form("Arg%d.Name", argNo), "???");
-		ostringstream  buf;
-		buf << "ProcessSignal((TGMrbMacroFrame *)" << this << ","
-			<<argNo<<"," << argName.Data()<<"," << id<<")"<<endl;
-		TString temp(buf.str());
+		TString temp = Form("ProcessSignal((TGMrbMacroFrame *) %lld, %d, \"%s\", %d);", this, argNo, argName.Data(), id);
 		gROOT->ProcessLine(temp);
-//		gROOT->ProcessLine(Form("ProcessSignal((TGMrbMacroFrame *) %#x, %d, \"%s\", %d)", this, argNo, argName.Data(), id));
 	}
 }
 
@@ -1721,10 +1717,7 @@ Bool_t TGMrbMacroFrame::ExecMacro(Bool_t UserStart) {
 					macroEnv->SetValue(Form("%s.%d", cVal.Data(), nVal), vStr->GetString().Data());
 					nVal++;
 				}
-				ostringstream buf1;
-				buf1 << "(TObjArray *)" << argArr << endl;
-				argString[0] = buf1.str();
-//				argString[0] = Form("(TObjArray *) %#lx", argArr);
+				argString[0] = Form("(TObjArray *) %#lld", argArr);
 			} else {
 				macroEnv->SetValue(cVal, currentValue);
 			}
@@ -1748,14 +1741,9 @@ Bool_t TGMrbMacroFrame::ExecMacro(Bool_t UserStart) {
 			}
 		}
 	}
-	if (addGui || guiOnly) {
-		ostringstream buf2;
-		buf2 << delim.Data() << "(TGMrbMacroFrame *)" << this << endl;
-		cmd += buf2.str();
-	}
-//	if (addGui || guiOnly) cmd += Form("%s(TGMrbMacroFrame *) %#lx", delim.Data(), this);
+	if (addGui || guiOnly) cmd += Form("%s(TGMrbMacroFrame *) %lld", delim.Data(), this);
 
-	cmd += ");";
+	cmd += ")";
 
 	TString macroName = macroEnv->GetValue("Name", "macro.C");
 	macroName = macroName(0, macroName.Index(".C"));
@@ -1763,7 +1751,6 @@ Bool_t TGMrbMacroFrame::ExecMacro(Bool_t UserStart) {
 
 	if (!UserStart) {
 		gROOT->ProcessLine(cmd.Data());
-		gSystem->ProcessEvents();
 	}
 	return(kTRUE);
 }
