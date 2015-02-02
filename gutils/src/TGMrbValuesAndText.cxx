@@ -1444,8 +1444,9 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 	Int_t idButton = 0, idCmd = 0;
 	if (parm1 >= 1000) {
 		idCmd = parm1 / 1000;
-
-	}    switch (GET_MSG(msg)) {
+		idButton = parm1%1000 ;
+	}
+	switch (GET_MSG(msg)) {
 		case kC_COMMAND:
 			switch (GET_SUBMSG(msg)) {
 				 case kCM_BUTTON:
@@ -2026,8 +2027,10 @@ void TGMrbValuesAndText::CloseWindowExt()
 
 void TGMrbValuesAndText::CRButtonPressed(Int_t /*i*/, Int_t bid, TObject */*obj*/)
 {
-//   cout << "TGMrbValuesAndText::Emit: CRButtonPressed(" << fWidgetId   <<"," << fButtonId << ")";
-//   cout  << endl << flush;
+	
+   cout << "TGMrbValuesAndText::Emit: CRButtonPressed(" << fWidgetId   <<"," << fButtonId << ")";
+   cout << " bid " << bid ;
+   cout  << endl << flush;
 	Long_t args[3];
 	args[0] = (Long_t)fWidgetId;
 	args[1] = (Long_t)bid;
