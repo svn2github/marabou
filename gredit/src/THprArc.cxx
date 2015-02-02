@@ -36,11 +36,11 @@ void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 //   const Int_t kMinSize = 25;
    const Int_t np = 40;
    static Int_t x[np+2], y[np+2];
-   static Int_t px1,py1,npe,r1,r2,sav1,sav2;
+   static Int_t px1,py1,npe,r1,r2;
    static Int_t pxold, pyold;
    static Int_t sig,impair;
    Int_t i, dpx, dpy;
-   Double_t angle,dx,dy,dphi,fTy,fBy,fLx,fRx;
+   Double_t angle,dx,dy,dphi,fLx,fRx;
    static Bool_t pTop, pL, pR, pBot, pINSIDE;
    static Int_t pTx,pTy,pLx,pLy,pRx,pRy,pBx,pBy;
 
@@ -139,32 +139,8 @@ void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
       break;
 
    case kButton1Motion:
-//		cout << "kButton1Motion:px, py px1,py1: " << px << " " <<py << " " <<  px1 <<" "  << py1 <<  endl;
-/*
-		cout << "kButton1Motion: pRx, py1, pLx, px1: " <<
-		pRx <<" " <<  py1 <<" " <<  pLx << " " << px1 << " " << endl;
-      gVirtualX->DrawLine(pRx+4, py1+4, pRx-4, py1+4);
-      gVirtualX->DrawLine(pRx-4, py1+4, pRx-4, py1-4);
-      gVirtualX->DrawLine(pRx-4, py1-4, pRx+4, py1-4);
-      gVirtualX->DrawLine(pRx+4, py1-4, pRx+4, py1+4);
-      gVirtualX->DrawLine(pLx+4, py1+4, pLx-4, py1+4);
-      gVirtualX->DrawLine(pLx-4, py1+4, pLx-4, py1-4);
-      gVirtualX->DrawLine(pLx-4, py1-4, pLx+4, py1-4);
-      gVirtualX->DrawLine(pLx+4, py1-4, pLx+4, py1+4);
-      gVirtualX->DrawLine(px1+4, pBy+4, px1-4, pBy+4);
-      gVirtualX->DrawLine(px1-4, pBy+4, px1-4, pBy-4);
-      gVirtualX->DrawLine(px1-4, pBy-4, px1+4, pBy-4);
-      gVirtualX->DrawLine(px1+4, pBy-4, px1+4, pBy+4);
-      gVirtualX->DrawLine(px1+4, pTy+4, px1-4, pTy+4);
-      gVirtualX->DrawLine(px1-4, pTy+4, px1-4, pTy-4);
-      gVirtualX->DrawLine(px1-4, pTy-4, px1+4, pTy-4);
-      gVirtualX->DrawLine(px1+4, pTy-4, px1+4, pTy+4);
-*/
       for (i=0;i<npe;i++) gVirtualX->DrawLine(x[i], y[i], x[i+1], y[i+1]);
       if (pTop) {
-         sav1 = py1;
-         sav2 = r1;
-//         py1 += (py - pyold);
          r1 -= (py - pyold);
          if (TMath::Abs(pyold-py)%2==1) impair++;
          if (py-pyold>0) sig=+1;
@@ -175,9 +151,6 @@ void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 //		pRx <<" " <<  py1 <<" " <<  pLx << " " << px1 << " " << endl;
       }
       if (pBot) {
-         sav1 = py1;
-         sav2 = r1;
-//         py1 += (py - pyold);
          r1 += (py - pyold);
          if (TMath::Abs(pyold-py)%2==1) impair++;
          if (py-pyold>0) sig=+1;
@@ -186,8 +159,6 @@ void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
  //        if (py1 < pTy+kMinSize) {py1 = sav1; r1 = sav2; py = pyold;}
       }
       if (pL) {
-         sav1 = px1;
-         sav2 = r1;
 //         px1 += (px - pxold);
          r1 -= (px - pxold);
          if (TMath::Abs(pxold-px)%2==1) impair++;
@@ -197,8 +168,6 @@ void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 //         if (px1 > pRx-kMinSize) {px1 = sav1; r1 = sav2; px = pxold;}
       }
       if (pR) {
-         sav1 = px1;
-         sav2 = r1;
 //         px1 += (px - pxold);
          r1 += (px - pxold);
          if (TMath::Abs(pxold-px)%2==1) impair++;
@@ -245,33 +214,6 @@ void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
       pTy = py1-r1;
       pBy = py1+r1;
 		
-/*
-      pTx = pBx = gPad->XtoAbsPixel(fX1);
-      pRx = gPad->XtoAbsPixel(fX1)+r1;
-      pLx = gPad->XtoAbsPixel(fX1)-r1;
-      pRy = pLy = gPad->XtoAbsPixel(fY1);
-      pTy = gPad->XtoAbsPixel(fY1)-r1;
-      pBy = gPad->XtoAbsPixel(fY1)+r1;
-*/
-/*		
-      gVirtualX->DrawLine(pRx+4, pTy+4, pRx-4, pTy+4);
-      gVirtualX->DrawLine(pRx-4, pTy+4, pRx-4, pTy-4);
-      gVirtualX->DrawLine(pRx-4, pTy-4, pRx+4, pTy-4);
-      gVirtualX->DrawLine(pRx+4, pTy-4, pRx+4, pTy+4);
-      gVirtualX->DrawLine(pLx+4, pTy+4, pLx-4, pTy+4);
-      gVirtualX->DrawLine(pLx-4, pTy+4, pLx-4, pTy-4);
-      gVirtualX->DrawLine(pLx-4, pTy-4, pLx+4, pTy-4);
-      gVirtualX->DrawLine(pLx+4, pTy-4, pLx+4, pTy+4);
-      gVirtualX->DrawLine(px1+4, pBy+4, pRx-4, pBy+4);
-      gVirtualX->DrawLine(pRx-4, pBy+4, pRx-4, pBy-4);
-      gVirtualX->DrawLine(pRx-4, pBy-4, pRx+4, pBy-4);
-      gVirtualX->DrawLine(pRx+4, pBy-4, pRx+4, pBy+4);
-		
-      gVirtualX->DrawLine(pRx+4, pTy+4, pRx-4, pTy+4);
-      gVirtualX->DrawLine(pRx-4, pTy+4, pRx-4, pTy-4);
-      gVirtualX->DrawLine(pRx-4, pTy-4, pRx+4, pTy-4);
-      gVirtualX->DrawLine(pRx+4, pTy-4, pRx+4, pTy+4);
-*/
       pxold = px;
       pyold = py;
       break;
@@ -284,8 +226,6 @@ void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 
       fX1 = gPad->AbsPixeltoX(px1);
       fY1 = gPad->AbsPixeltoY(py1);
-      fBy = gPad->AbsPixeltoY(py1+r2);
-      fTy = gPad->AbsPixeltoY(py1-r2);
       fLx = gPad->AbsPixeltoX(px1+r1);
       fRx = gPad->AbsPixeltoX(px1-r1);
       fR1 = TMath::Abs(fRx-fLx)/2;
