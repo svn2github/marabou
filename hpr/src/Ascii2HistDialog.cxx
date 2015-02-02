@@ -185,7 +185,13 @@ void Ascii2HistDialog::Read_Input()
 		// check for DOS format
 		if ( line.EndsWith("\r") ) {
 			line.Resize(line.Length() - 1);
-		}	
+		}
+		if ( line.BeginsWith("#") || line.BeginsWith("*")
+			|| line.BeginsWith("!")|| line.BeginsWith("C") ){
+			cout << "Comment: " << line << endl;
+			continue;
+		} 
+
 		oa = line.Tokenize(del);
 		Int_t nent = oa->GetEntries();
 		if (nn < 50 && gDebug > 0) {
@@ -194,11 +200,11 @@ void Ascii2HistDialog::Read_Input()
 		}
 		if ( nent < 1 )
 			continue;
-		val = ((TObjString*)oa->At(0))->String();
-		if ( !val.IsFloat() ) {
-			cout << "Comment: " << line << endl;
-			continue;
-		} 
+//		val = ((TObjString*)oa->At(0))->String();
+//		if ( !val.IsFloat() ) {
+//			cout << "Comment: " << line << endl;
+//			continue;
+//		} 
 		if (nval == 1 && nent > 1 )
 			continue;
 		if (nent < nval+fNskip) {
@@ -469,7 +475,7 @@ void Ascii2HistDialog::RestoreDefaults()
    f2DimWithWeight  = env.GetValue("Ascii2HistDialog.f2DimWithWeight",  0);
    f3Dim            = env.GetValue("Ascii2HistDialog.f3Dim", 			   0);
    f3DimWithWeight  = env.GetValue("Ascii2HistDialog.f3DimWithWeight",  0);
-	fNbinsX  		  = env.GetValue("Ascii2HistDialog.fNskip",  	      0);
+	fNskip	  		  = env.GetValue("Ascii2HistDialog.fNskip",  	      0);
 	fError           = env.GetValue("Ascii2HistDialog.fError",  		  0.0);
    fNbinsX  		  = env.GetValue("Ascii2HistDialog.fNbinsX",  	    100);
    fXlow    		  = env.GetValue("Ascii2HistDialog.fXlow", 			   0.);

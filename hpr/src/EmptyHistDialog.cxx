@@ -33,7 +33,7 @@ divided into pads to allow for more than one histogram\n\
 
    static void *valp[50];
    Int_t ind = 0;
-   Bool_t ok = kTRUE;
+ //  Bool_t ok = kTRUE;
    fCommand = "Draw_The_Hist()";
    fCanvas = NULL;
 //   fSave2FileDialog = NULL;
@@ -81,7 +81,7 @@ divided into pads to allow for more than one histogram\n\
    valp[ind++] = &fHistYdiv;
    valp[ind++] = &fCommand;
    Int_t itemwidth = 400;
-   ok = GetStringExt("Hists parameters", NULL, itemwidth, win,
+   GetStringExt("Hists parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());
 };  
@@ -131,13 +131,14 @@ void EmptyHistDialog::Draw_The_Hist()
 		fCanvas->cd(1);
 	}
 	Double_t xmin = 0, xmax = 100;
-	Double_t ymin = 0, ymax = 100;
+//	Double_t ymin = 0;
+	Double_t ymax = 100;
 	if (fXaxisMin != 0 || fXaxisMax != 0) {
 		xmin = fXaxisMin;
 		xmax = fXaxisMax;
 	}
 	if (fYaxisMin != 0 || fYaxisMax != 0) {
-		ymin = fYaxisMin;
+//		ymin = fYaxisMin;
 		ymax = fYaxisMax;
 	}
 //	gStyle->SetOptStat(0);

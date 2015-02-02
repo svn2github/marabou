@@ -66,7 +66,7 @@ Default is to construct a new canvas\n\
    fCommandTail = "Show_Tail_of_File()";
    RestoreDefaults();
    
-   if ( fXaxisMax <= fXaxisMin ) {
+   if ( fXaxisMax <= fXaxisMin || fMinMaxZero != 0) {
 		fXaxisMax = fXaxisMin = 0;
 	}
    fGraphSelPad = 0;    // start with new canvas as default
@@ -82,6 +82,7 @@ Default is to construct a new canvas\n\
 
    row_lab->Add(new TObjString("FileRequest_Inputfile"));
    row_lab->Add(new TObjString("StringValue_GraphName"));
+   row_lab->Add(new TObjString("CheckButton-Use Name as title"));
    row_lab->Add(new TObjString("StringValue_Title X  "));
    row_lab->Add(new TObjString("StringValue+Title Y  "));
    row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
@@ -89,8 +90,8 @@ Default is to construct a new canvas\n\
    row_lab->Add(new TObjString("DoubleValue_Yaxis min"));
    row_lab->Add(new TObjString("DoubleValue+Yaxis max"));
 
-   row_lab->Add(new TObjString("CheckButton_Draw/Overl in sel pad"));
-   row_lab->Add(new TObjString("CheckButton+Show name as title   "));
+   row_lab->Add(new TObjString("CheckButton_Force Xaxis Min/Max=0"));
+   row_lab->Add(new TObjString("CheckButton+Draw/Overl in sel pad"));
    row_lab->Add(new TObjString("PlainIntVal_Xsize canvas"));
    row_lab->Add(new TObjString("PlainIntVal+Ysize canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Div X canvas"));
@@ -126,14 +127,15 @@ Default is to construct a new canvas\n\
    valp[ind++] = &fGraphColSel2;
    valp[ind++] = &fGraphFileName;
    valp[ind++] = &fGraphName;
+   valp[ind++] = &fGraphShowTitle;
    valp[ind++] = &fGraphXtitle;
    valp[ind++] = &fGraphYtitle;
    valp[ind++] = &fXaxisMin;
    valp[ind++] = &fXaxisMax;
    valp[ind++] = &fYaxisMin;
    valp[ind++] = &fYaxisMax;
+   valp[ind++] = &fMinMaxZero;
    valp[ind++] = &fGraphSelPad;
-   valp[ind++] = &fGraphShowTitle;
    valp[ind++] = &fGraphXsize;
    valp[ind++] = &fGraphYsize;
    valp[ind++] = &fGraphXdiv;
@@ -160,6 +162,7 @@ Default is to construct a new canvas\n\
    ok = GetStringExt("Graphs parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());
+	if ( ok ) ;
 };
 //_________________________________________________________________________
 
@@ -218,7 +221,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
          ymin = fYaxisMin;
          ymax = fYaxisMax;
       }
-
+			
       gStyle->SetOptStat(0);
       TH1F * gh = new TH1F(fGraphName, fGraphName, 100, xmin, xmax);
       gh->Draw();
@@ -331,7 +334,9 @@ void Ascii2GraphDialog::Draw_The_Graph()
 
 //   cout << "entries " << n << endl;
    if (n < 1) return;
-
+	if (fMinMaxZero != 0 ) {
+		fXaxisMax = fXaxisMin = 0;
+	}
    Double_t dx_low = TMath::Abs(xval[n-1] - xval[n-2]);
    Double_t dx_up  = TMath::Abs(xval[n-1] - xval[n-2]);
    if (fXaxisMax == 0) {
@@ -394,11 +399,16 @@ void Ascii2GraphDialog::Draw_The_Graph()
 		if (drawopt.Index("(") > 0)
 			drawopt.Resize(drawopt.Index("("));
 		drawopt += "A";
-      if (fGraphPolyMarker) drawopt+= "P";
-		if (fGraphSmoothLine)
-			drawopt+= "C";
-      else if (fGraphSimpleLine)
-			drawopt+= "L";
+		if (fGraphPolyMarker == 0 && fGraphSmoothLine == 0
+			&& fGraphSimpleLine == 0 ) {
+				drawopt+= "L";
+		} else {
+			if (fGraphPolyMarker) drawopt+= "P";
+			if (fGraphSmoothLine)
+				drawopt+= "C";
+			else if (fGraphSimpleLine)
+				drawopt+= "L";
+		}
 //		else if (fGraphBarChart)
 //			drawopt+= "B";
 		if (fGraphFill && TMath::Abs(fGraphLineWidth) < 100) {
@@ -564,6 +574,7 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.GraphYsize"  	 , fGraphYsize      );
    env.SetValue("Ascii2GraphDialog.GraphXtitle" 	 , fGraphXtitle     );
    env.SetValue("Ascii2GraphDialog.GraphYtitle" 	 , fGraphYtitle     );
+   env.SetValue("Ascii2GraphDialog.fMinMaxZero"  	 , fMinMaxZero       );
    env.SetValue("Ascii2GraphDialog.XaxisMin"  		 , fXaxisMin        );
    env.SetValue("Ascii2GraphDialog.YaxisMin"  		 , fYaxisMin        );
    env.SetValue("Ascii2GraphDialog.XaxisMax"  		 , fXaxisMax        );
@@ -601,6 +612,7 @@ void Ascii2GraphDialog::RestoreDefaults()
    fGraphXtitle      = env.GetValue("Ascii2GraphDialog.GraphXtitle"	   , "Xvalues");
    fGraphYtitle      = env.GetValue("Ascii2GraphDialog.GraphYtitle"		, "Yvalues");
    fGraphXdiv        = env.GetValue("Ascii2GraphDialog.GraphXdiv"  		, 1);
+   fMinMaxZero       = env.GetValue("Ascii2GraphDialog.fMinMaxZero"		, 0 );
    fXaxisMin         = env.GetValue("Ascii2GraphDialog.XaxisMin"  		, 0.);
    fYaxisMin         = env.GetValue("Ascii2GraphDialog.YaxisMin"  		, 0.);
    fXaxisMax         = env.GetValue("Ascii2GraphDialog.XaxisMax"  		, 0.);

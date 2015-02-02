@@ -24,6 +24,7 @@ private:
    Double_t fYaxisMin;
    Double_t fXaxisMax;
    Double_t fYaxisMax;
+   Int_t   fMinMaxZero;
    Int_t   fGraphColSelect;
    Int_t   fGraphColSel1;
    Int_t   fGraphColSel2;
