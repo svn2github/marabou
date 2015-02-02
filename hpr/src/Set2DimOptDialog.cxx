@@ -683,11 +683,12 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 //	if ( bid == fBidHistNo ) 
 //		return;
 /*
-	const char *fDrawOpt2[kNdrawopt] =
-	{"SCAT", "BOX",    "BOX1",  "COL",   "ARR",   "TEXT",
-	"CONT0", "CONT1" , "CONT2", "CONT3", "CONT4", "SURF0",
-	"SURF1", "SURF2",  "SURF3", "SURF4", "SURF5", "LEGO",
-	"LEGO1", "LEGO2",  "POL",   "CYL",    "SPH",  "PSR"};
+	{"SCAT", "BOX",   "BOX1",  "COL",   "ARR",   "TEXT",
+	"CONT0", "CONT1", "CONT2", "CONT3", "CONT4", "",
+	"SURF0", "SURF1", "SURF2",  "SURF3", "SURF4", "SURF5",
+	"LEGO",  "LEGO1", "LEGO2",  "LEGO3", "LEGO4", "",
+	"VIOLINX","VIOLINY", "CANDLEX","CANDLEY",
+	"POL",   "CYL",    "SPH",  "PSR"};
 */
 	if ( bid == fBidUseGL ) {
 		if ( fUseGL == 1 && 
@@ -727,15 +728,15 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 	}
 
 	// 2-dim options exclude 3-dim
-	if ( bid >= 0 && bid <= 10) {
-		for ( Int_t i = 11; i <= 27; i++ ) {
+	if ( bid >= 0 && bid <= 11) {
+		for ( Int_t i = 12; i <= 27; i++ ) {
 			fOptRadio[i] = 0;
 			fDialog->SetCheckButton(i, 0);
 		}
 	}
 	// 3-dim options are mutually exclusive
 	if ( bid >= 11 && bid <= 27) {
-		for ( Int_t i = 0; i <= 27; i++ ) {
+		for ( Int_t i = 0; i <= 28; i++ ) {
 			fOptRadio[i] = 0;
 			fDialog->SetCheckButton(i, 0);
 		}
