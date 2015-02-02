@@ -1602,7 +1602,8 @@ Bool_t FitOneDimDialog::FitGausExecute()
 //				stats->SetOptFit(1);
 			fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "");
 			if (!fFitOptNoDraw) {
-				fSelHist->GetListOfFunctions()->Last()->ResetBit(TF1::kNotDraw);
+				if ( fSelHist && fSelHist->GetListOfFunctions()->Last() )
+					fSelHist->GetListOfFunctions()->Last()->ResetBit(TF1::kNotDraw);
 				fFitFunc->Draw("same");
 			}
 	//	  add to ListOfFunctions if requested
