@@ -87,6 +87,8 @@ ARR   : arrow mode. Shows gradient between adjacent cells\n\
 TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 		  TextSize is taken from MarkerSize (ts = 0.03 * ms)\n\
 \n\
+Options are mutually exclusive. Exeption: Options BOX and COL accept TEXT\n\
+\n\
 CYL	: Use Cylindrical coordinates. The X coordinate is mapped on the angle\n\
 		  and the Y coordinate on the cylinder length.\n\
 POL	: Use Polar coordinates. The X coordinate is mapped on the angle and\n\
@@ -727,18 +729,14 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 		return;
 	}
 
-	// 2-dim options exclude 3-dim
-	if ( bid >= 0 && bid <= 11) {
-		for ( Int_t i = 12; i <= 27; i++ ) {
-			fOptRadio[i] = 0;
-			fDialog->SetCheckButton(i, 0);
-		}
-	}
-	// 3-dim options are mutually exclusive
-	if ( bid >= 11 && bid <= 27) {
-		for ( Int_t i = 0; i <= 28; i++ ) {
-			fOptRadio[i] = 0;
-			fDialog->SetCheckButton(i, 0);
+	// draw options are mutually exclusive
+	// exept BOX + TEXT and COL +TEXT
+	if ( bid >= 0 && bid <= 27) {
+		for ( Int_t i = 0; i <= 27; i++ ) {
+			if ( bid != 5 || (i != 1 && i != 3)) {
+				fOptRadio[i] = 0;
+				fDialog->SetCheckButton(i, 0);
+			}
 		}
 		fOptRadio[bid] = 1;
 		fDialog->SetCheckButton(bid, 1);
