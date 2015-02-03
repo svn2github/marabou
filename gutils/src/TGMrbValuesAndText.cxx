@@ -2027,10 +2027,9 @@ void TGMrbValuesAndText::CloseWindowExt()
 
 void TGMrbValuesAndText::CRButtonPressed(Int_t /*i*/, Int_t bid, TObject */*obj*/)
 {
-	
-   cout << "TGMrbValuesAndText::Emit: CRButtonPressed(" << fWidgetId   <<"," << fButtonId << ")";
-   cout << " bid " << bid ;
-   cout  << endl << flush;
+	if (gDebug > 0)
+		cout << "TGMrbValuesAndText::Emit: CRButtonPressed(" << fWidgetId   <<"," << bid<< ")"
+		<< endl << flush;
 	Long_t args[3];
 	args[0] = (Long_t)fWidgetId;
 	args[1] = (Long_t)bid;
