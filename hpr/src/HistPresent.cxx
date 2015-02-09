@@ -1058,174 +1058,170 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 			}
 		}
 	}
-	cout << "Total number of entries: " << n_enter 
-	<< " Selected: " <<  fCmdLine->GetSize() << endl;
-	if ( not_shown > 0 ) 
-		cout << "Another: " << not_shown << " hists are not shown" << endl;
-//   if (fHistSelMask->Length() <=0) {
-//  windows
-		if (lofW1.GetSize() > 0) {
-			TIter next(&lofW1);
-			TObjString * objs;
-			while ( (objs = (TObjString*)next())) {
-				title = objs->String();
-				TString name(title);
-				cmd = fname;
-				cmd = cmd + "\",\"" + name.Data() + "\")";
-				sel = cmd;
-				cmd.Prepend("gHpr->PrintWindow(\"");
-				sel.Prepend("gHpr->LoadWindow(\"");
-				title.Prepend("w1 ");
-				hint =  title;
-				hint+=" 1-dim window";
-				fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-				anything_to_delete++;
-			}
-		}
-		if (lofW2.GetSize() > 0) {
-			TIter next(&lofW2);
-			TObjString * objs;
-			while ( (objs = (TObjString*)next())) {
-				title = objs->String();
-				TString name(title);
-				cmd = fname;
-				cmd = cmd + "\",\"" + name.Data() + "\")";
-				sel = cmd;
-				cmd.Prepend("gHpr->PrintWindow(\"");
-				sel.Prepend("gHpr->LoadWindow(\"");
-				title.Prepend("w2 ");
-				hint =  title;
-				hint+=" 2-dim window";
-				fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-			}
-			title = "2D Cuts to ASCII";
-			hint = "Write " + title;
-			cmd = "gHpr->CutsToASCII(\"";
-			cmd = cmd + fname + "\")";
-			sel = "";
+	if ( fUseHistSelMask ) {
+		cout << "Total number of hists: " << n_enter 
+		<< " Selected: " <<  fCmdLine->GetSize() << endl;
+		if ( not_shown > 0 ) 
+			cout << "Another: " << not_shown << " hists are not shown" << endl;
+	}
+	//  windows
+	if (lofW1.GetSize() > 0) {
+		TIter next(&lofW1);
+		TObjString * objs;
+		while ( (objs = (TObjString*)next())) {
+			title = objs->String();
+			TString name(title);
+			cmd = fname;
+			cmd = cmd + "\",\"" + name.Data() + "\")";
+			sel = cmd;
+			cmd.Prepend("gHpr->PrintWindow(\"");
+			sel.Prepend("gHpr->LoadWindow(\"");
+			title.Prepend("w1 ");
+			hint =  title;
+			hint+=" 1-dim window";
 			fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
 			anything_to_delete++;
 		}
-	//  functions
-		if (lofF.GetSize() > 0) {
-			TIter next(&lofF);
-			TObjString * objs;
-			while ( (objs = (TObjString*)next())) {
-				title = objs->String();
-				cmd = fname;
-				cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
-				sel = cmd;
-				cmd.Prepend("gHpr->ShowFunction(\"");
-				sel.Prepend("gHpr->LoadFunction(\"");
-	//         sel.Resize(0);
-				title.Prepend("f ");
-				hint =  title;
-				hint+=" function";
-				fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-				anything_to_delete++;
-			}
-		}
-	//  canvases
-		if (lofC.GetSize() > 0) {
-			TIter next(&lofC);
-			TObjString * objs;
-			while ( (objs = (TObjString*)next())) {
-				title = objs->String();
-				if ( fUseCanvasSelMask && !Hpr::IsSelected( title.Data(), &fCanvasSelMask, fCanvasUseRegexp ) )
-					continue;
-				cmd = fname;
-				cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
-//            cmd = cmd + "\",\"" + title.Data() + "\")";
-				sel = cmd;
-				cmd.Prepend("gHpr->ShowCanvas(\"");
-				sel.Prepend("gHpr->SelectCanvas(\"");
-//				sel.Resize(0);
-				title.Prepend("c ");
-				hint =  title;
-				hint+=" canvas";
-				if (fCmdLine->GetSize() < GeneralAttDialog::fMaxListEntries) {
-					fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-					anything_to_delete++;
-				} else {
-					if (not_shown <= 0){
-						cout << setred << endl<< 
-						"Too many entries in list this might crash X." << endl;
-						cout << "Please use selection mask to reduce number\n\
-of entries below: " 
-						<<  GeneralAttDialog::fMaxListEntries  << endl;
-						cout << "On your own risk you may increase value beyond: "
-						<< GeneralAttDialog::fMaxListEntries << endl;
-						cout << "WARNING: not all canvases will be shown"
-						<< setblack << endl;
-					}
-					not_shown++;
-					//            cout << "Not shown: " << stent->GetName() << endl;
-				}
-			}
-		}
-		if ( not_shown > 0 )
-			cout << "Another: " << not_shown << " canvases are not shown" << endl;
-		//  user contours
-		if (lofUc.GetSize() > 0) {
-			TIter next(&lofUc);
-			TObjString * objs;
-			while ( (objs = (TObjString*)next())) {
-				title = objs->String();
-				cmd = fname;
-				cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
-				cmd = cmd + "\",\"" + title.Data() + "\")";
-				sel = cmd;
-				cmd.Prepend("gHpr->ShowContour(\"");
-				sel.Prepend("gHpr->SelectContour(\"");
-//            sel.Resize(0);
-				title.Prepend("U_C ");
-				hint =  title;
-				hint+=" contour";
-				fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-				anything_to_delete++;
-			}
-		}
-		if (lofG.GetSize() > 0) {
-			TIter next(&lofG);
-			TObjString * objs;
-			while ( (objs = (TObjString*)next())) {
-				title = objs->String();
-				cmd = fname;
-				cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
-				sel = cmd;
-				cmd.Prepend("gHpr->ShowGraph(\"");
-				sel.Prepend("gHpr->SelectGraph(\"");
-//            sel.Resize(0);
-				title.Prepend("Graph ");
-				hint =  title;
-				hint+=" graph";
-				fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-				anything_to_delete++;
-			}
-		}
-	//  trees
-		if (lofT.GetSize() > 0) {
-			cmd = "gHpr->SetShowTreeOptionsCint()";
-			title = "Tree display options";
-			hint = "Popup Tree display options menu";
-			sel.Resize(0);
+	}
+	if (lofW2.GetSize() > 0) {
+		TIter next(&lofW2);
+		TObjString * objs;
+		while ( (objs = (TObjString*)next())) {
+			title = objs->String();
+			TString name(title);
+			cmd = fname;
+			cmd = cmd + "\",\"" + name.Data() + "\")";
+			sel = cmd;
+			cmd.Prepend("gHpr->PrintWindow(\"");
+			sel.Prepend("gHpr->LoadWindow(\"");
+			title.Prepend("w2 ");
+			hint =  title;
+			hint+=" 2-dim window";
 			fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-			TIter next(&lofT);
-			TObjString * objs;
-			while ( (objs = (TObjString*)next())) {
-				title = objs->String();
-				cmd = fname;
-				cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
-				sel = cmd;
-				cmd.Prepend("gHpr->ShowTree(\"");
-				sel.Resize(0);;
-				hint =  title;
-				title.Prepend("Tree: ");
+		}
+		title = "2D Cuts to ASCII";
+		hint = "Write " + title;
+		cmd = "gHpr->CutsToASCII(\"";
+		cmd = cmd + fname + "\")";
+		sel = "";
+		fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+		anything_to_delete++;
+	}
+//  functions
+	if (lofF.GetSize() > 0) {
+		TIter next(&lofF);
+		TObjString * objs;
+		while ( (objs = (TObjString*)next())) {
+			title = objs->String();
+			cmd = fname;
+			cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
+			sel = cmd;
+			cmd.Prepend("gHpr->ShowFunction(\"");
+			sel.Prepend("gHpr->LoadFunction(\"");
+//         sel.Resize(0);
+			title.Prepend("f ");
+			hint =  title;
+			hint+=" function";
+			fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+			anything_to_delete++;
+		}
+	}
+//  canvases
+	if (lofC.GetSize() > 0) {
+		TIter next(&lofC);
+		TObjString * objs;
+		while ( (objs = (TObjString*)next())) {
+			title = objs->String();
+			if ( fUseCanvasSelMask && !Hpr::IsSelected( title.Data(), &fCanvasSelMask, fCanvasUseRegexp ) )
+				continue;
+			cmd = fname;
+			cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
+			sel = cmd;
+			cmd.Prepend("gHpr->ShowCanvas(\"");
+			sel.Prepend("gHpr->SelectCanvas(\"");
+			title.Prepend("c ");
+			hint =  title;
+			hint+=" canvas";
+			if (fCmdLine->GetSize() < GeneralAttDialog::fMaxListEntries) {
 				fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+				anything_to_delete++;
+			} else {
+				if (not_shown <= 0){
+					cout << setred << endl<< 
+					"Too many entries in list this might crash X." << endl;
+					cout << "Please use selection mask to reduce number\n\
+								of entries below: " 
+					<<  GeneralAttDialog::fMaxListEntries  << endl;
+					cout << "On your own risk you may increase value beyond: "
+					<< GeneralAttDialog::fMaxListEntries << endl;
+					cout << "WARNING: not all canvases will be shown"
+					<< setblack << endl;
+				}
+				not_shown++;
+				//            cout << "Not shown: " << stent->GetName() << endl;
 			}
 		}
-//   }
-//
+	}
+	if ( not_shown > 0 )
+		cout << "Another: " << not_shown << " canvases are not shown" << endl;
+	//  user contours
+	if (lofUc.GetSize() > 0) {
+		TIter next(&lofUc);
+		TObjString * objs;
+		while ( (objs = (TObjString*)next())) {
+			title = objs->String();
+			cmd = fname;
+			cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
+			cmd = cmd + "\",\"" + title.Data() + "\")";
+			sel = cmd;
+			cmd.Prepend("gHpr->ShowContour(\"");
+			sel.Prepend("gHpr->SelectContour(\"");
+			title.Prepend("U_C ");
+			hint =  title;
+			hint+=" contour";
+			fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+			anything_to_delete++;
+		}
+	}
+	if (lofG.GetSize() > 0) {
+		TIter next(&lofG);
+		TObjString * objs;
+		while ( (objs = (TObjString*)next())) {
+			title = objs->String();
+			cmd = fname;
+			cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
+			sel = cmd;
+			cmd.Prepend("gHpr->ShowGraph(\"");
+			sel.Prepend("gHpr->SelectGraph(\"");
+			title.Prepend("Graph ");
+			hint =  title;
+			hint+=" graph";
+			fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+			anything_to_delete++;
+		}
+	}
+//  trees
+	if (lofT.GetSize() > 0) {
+		cmd = "gHpr->SetShowTreeOptionsCint()";
+		title = "Tree display options";
+		hint = "Popup Tree display options menu";
+		sel.Resize(0);
+		fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+		TIter next(&lofT);
+		TObjString * objs;
+		while ( (objs = (TObjString*)next())) {
+			title = objs->String();
+			cmd = fname;
+			cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
+			sel = cmd;
+			cmd.Prepend("gHpr->ShowTree(\"");
+			sel.Resize(0);;
+			hint =  title;
+			title.Prepend("Tree: ");
+			fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+		}
+	}
+	
 	if (anything_to_delete > 0) {
 		if (maxkey > 1) {
 			cmd = "gHpr->PurgeEntries(\"";
@@ -3985,7 +3981,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 		<< " for display use: " << nuse << setblack << endl;
 		opt2d.Strip(TString::kBoth);
 		if (opt2d == "GL" || opt2d.Length() == 0) {
-			opt2d += "TRi2";
+			opt2d += "TRI2";
 			cout << setblue << "HistPresent, resetting Opt2d: " << opt2d << setblack<< endl;
 		}
 		if ( nuse > 0 ) {
@@ -3996,13 +3992,14 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			TString nname(gname);
 			nname += "_rdm";
 			grnew->SetName(nname);
-			Double_t *xx = grnew->GetX();
-			Double_t *yy = grnew->GetY();
-			Double_t *zz = grnew->GetZ();
-			for (Int_t i=0; i < np; i++) {
-				if (TMath::Abs(zz[i]) < 0.00001)
-					cout <<">>> "<< i <<" "<<xx[i]<<" "<<yy[i]<<" " << zz[i]<< endl;
-			}
+			grnew->SetTitle(graph2d->GetTitle());
+//			Double_t *xx = grnew->GetX();
+//			Double_t *yy = grnew->GetY();
+//			Double_t *zz = grnew->GetZ();
+//			for (Int_t i=0; i < np; i++) {
+//				if (TMath::Abs(zz[i]) < 0.00001)
+//					cout <<">>> "<< i <<" "<<xx[i]<<" "<<yy[i]<<" " << zz[i]<< endl;
+//			}
 //			TFile * ft = new TFile("temp.root", "RECREATE");
 //			grnew->Write();
 //			ft->Close();

@@ -680,11 +680,12 @@ Int_t GetObjects(TList & list, TDirectory * rfile, const char * classname)
 	TIter next(rfile->GetListOfKeys());
 //	TList *list = 0;
 	TKey *key;
+	TString cnin(classname);
 	TString cn;
 	while ( (key = (TKey *) next()) ) {
 		cn = key->GetClassName();
 //		cout << "GetObjects: " << cn << endl;
-		if (cn.BeginsWith(classname)) {
+		if (cn == cnin) {
 			TString kn(key->GetName());
 			kn += ";";
 			kn += key->GetCycle();
