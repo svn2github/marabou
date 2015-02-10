@@ -60,7 +60,7 @@
 	cout << setblue << "[mbscomp.C: Compiling readout code for " << ppcName << " using " << ppcMkFile << setblack << endl;
 	gSystem->Exec(Form("chmod +x %s/ppc.mk", ppcPath.Data()));
 	gSystem->Exec(Form("rsh %s %s/ppc.mk", ppcName.Data(), ppcPath.Data()));
-	cout << setblue << "[mbscomp.C: " << ppcMkFile << " done." << setblack << endl;
+	cout << setblue << "[mbscomp.C: " << ppcMkFile << " done]" << setblack << endl;
 
 	gSystem->Exit(0);
 }
