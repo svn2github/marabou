@@ -419,7 +419,8 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 			gSystem->ProcessEvents();
 			module = gDGFControlData->NextModule(module);
 		}
-		pgb->DeleteWindow();
+//		pgb->DeleteWindow();
+		delete pgb;
 	}
 
 	if (nerr > 0) {

@@ -72,13 +72,6 @@ TMrbGassiplex::TMrbGassiplex(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			gMrbLog->Err() << ModuleName << ": Wrong number of channels - " << NofChannels << " not modulo " << kNofChansPerBoard << endl;
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
-		} else {
-			TString ppc = gEnv->GetValue("TMbsSetup.ProcType", "RIO3");
-			if (ppc.CompareTo("RIO3") != 0 && ppc.CompareTo("RIO4") != 0) {
-				gMrbLog->Err() << ModuleName << ": Wrong CPU type - " << ppc << " (should be RIO3 or RIO4)" << endl;
-				gMrbLog->Flush(this->ClassName());
-				this->MakeZombie();
-			}
 		}
 		
 		if (!this->IsZombie()) {
@@ -254,7 +247,11 @@ Bool_t TMrbGassiplex::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "3.1"));
+				Int_t bNo = this->GetMbsBranchNo();
+				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
+				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
+				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
+				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
 				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
 				gSystem->ExpandPathName(codeString);
@@ -266,7 +263,11 @@ Bool_t TMrbGassiplex::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-					fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "3.1"));
+				Int_t bNo = this->GetMbsBranchNo();
+				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
+				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
+				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
+				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
 				fCodeTemplates.ExpandPathName();
 				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
@@ -335,4 +336,27 @@ Bool_t TMrbGassiplex::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 			break;
 	}
 	return(kTRUE);
+}
+
+Bool_t TMrbGassiplex::CheckProcType() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbGassiplex::MakeReadoutCode
+// Purpose:        Check if PPC type is at least RIO3
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks env var TMbsSetup.ProcType[.branch]
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString ppc = "";
+	if (this->IsAssignedToBranch()) ppc = gEnv->GetValue(Form("TMbsSetup.ProcType.%d", this->GetMbsBranchNo()), "");
+	if (ppc.IsNull()) ppc = gEnv->GetValue("TMbsSetup.ProcType", "RIO3");
+	if (ppc.CompareTo("RIO3") != 0 && ppc.CompareTo("RIO4") != 0) {
+		gMrbLog->Err() << this->GetName() << ": Wrong CPU type - " << ppc << " (should be RIO3 or RIO4)" << endl;
+		gMrbLog->Flush(this->ClassName());
+		return kFALSE;
+	}
+	return kTRUE;
 }

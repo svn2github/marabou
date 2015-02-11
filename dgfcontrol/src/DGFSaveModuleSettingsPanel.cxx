@@ -360,7 +360,8 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 			gSystem->ProcessEvents();
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 		}
-		pgb->DeleteWindow();
+//		pgb->DeleteWindow();
+		delete pgb;
 	}
 
 	if (nerr > 0) {

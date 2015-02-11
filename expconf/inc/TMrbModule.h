@@ -124,7 +124,8 @@ class TMrbModule : public TNamed {
 		inline Bool_t SetMbsBranch(TMrbNamedX * MbsBranch) { return(this->SetMbsBranch(MbsBranch->GetIndex(), MbsBranch->GetName())); };
 		inline TMrbNamedX * GetMbsBranch() { return(&fMbsBranch); };
 		inline Int_t GetMbsBranchNo() { return(fMbsBranch.GetIndex()); };
-
+		inline Bool_t IsAssignedToBranch() { return (fMbsBranch.GetIndex() != -1); };
+		
 		inline void SetTimeOffset(Int_t TimeOffset) { fTimeOffset = TimeOffset; };	// time offset
 		inline Int_t GetTimeOffset() const { return(fTimeOffset); };
 
@@ -168,6 +169,7 @@ class TMrbModule : public TNamed {
 		virtual inline Bool_t HasRandomReadout() const { return(kTRUE); };					// modules allow random readout normally
 		virtual inline Bool_t IsRaw() const { return(kFALSE); };								// not raw (user-defined) mode
 		virtual inline Bool_t CheckSubeventType(TMrbSubevent * Subevent) const { return(kTRUE); }; // module may be stored in any subevent
+		virtual inline Bool_t CheckProcType() { return(kTRUE); };						// module may be used with any ppc type
 
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 					// normal code generation
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };

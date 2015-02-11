@@ -1261,7 +1261,8 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 			}
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 		}
-		pgb->DeleteWindow();
+//		pgb->DeleteWindow();
+		delete pgb;
 	}
 	if (!ok) {
 		gMrbLog->Err()	<< "Can't read param memory from DSP (try to re-connect)" << endl;

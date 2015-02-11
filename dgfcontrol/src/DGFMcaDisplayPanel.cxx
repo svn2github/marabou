@@ -557,7 +557,8 @@ Bool_t DGFMcaDisplayPanel::HandleTimer(TTimer * Timer) {
 			Timer->Stop();
 			fRunState = kDGFMcaRunStopped;
 			if (fRefreshTimer) fRefreshTimer->Stop();
-			fProgressBar->DeleteWindow();
+//			fProgressBar->DeleteWindow();
+			delete fProgressBar;
 			fProgressBar = NULL;
 			this->StoreHistos();
 		} else if (fProgressBar) {

@@ -58,6 +58,8 @@ class TMrbGassiplex : public TMrbVMEModule {
 		inline Bool_t HasBlockXfer() const { return(kTRUE); };			// module is capable of using BLT
 		inline Bool_t HasOwnMapping() const { return(kTRUE); };			// module has its own vme mapping
 
+		virtual Bool_t CheckProcType();
+		
 		TEnv * UseSettings(const Char_t * SettingsFile = NULL);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };

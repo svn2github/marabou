@@ -64,7 +64,7 @@ class TGMrbProgressBar: public TGTransientFrame {
 
 		inline TGHProgressBar * Bar() { return fBar; };
 
-		inline void DeleteWindow() { if (fBar) fBar->DeleteWindow(); TGTransientFrame::DeleteWindow(); };
+		inline void DeleteWindow() { TGTransientFrame::DeleteWindow(); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

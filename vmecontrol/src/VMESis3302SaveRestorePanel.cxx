@@ -262,7 +262,8 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 		bit <<= 1;
 		gSystem->ProcessEvents();
 	}
-	pgb->DeleteWindow();
+//	pgb->DeleteWindow();
+	delete pgb;
 
 	if (nerr > 0) {
 		gVMEControlData->MsgBox(this, "RestoreSettings", "Error", "Restoring module settings failed");

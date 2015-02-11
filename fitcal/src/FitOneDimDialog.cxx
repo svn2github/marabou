@@ -1654,10 +1654,8 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			fSigmaList.Set(fNpeaks);
 			fChi2List.Set(fNpeaks);
 		}
-		if (fFitFunc) 
-			AddPeaktoList(fFitFunc);
-		if ( fNpeaksList == 0)
-			 PrintPeakList();
+		if (fFitFunc) AddPeaktoList(fFitFunc);
+		if ( fNpeaksList == 0) PrintPeakList();
 	}
 	if (fShowcof != 0 && fGraph == NULL) {
 		if ( fTailOnly != 0 )
@@ -1751,6 +1749,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 		}
 	}
 	ALLDONE:
+
 	delete fbflags;
 	gPad->Modified(kTRUE);
 	gPad->Update();

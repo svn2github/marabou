@@ -68,6 +68,8 @@ class TMrbSis_3302 : public TMrbVMEModule {
 
 		TEnv * UseSettings(const Char_t * SettingsFile = NULL);
 
+		virtual Bool_t CheckProcType();
+		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:

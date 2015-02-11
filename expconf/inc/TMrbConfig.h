@@ -709,7 +709,10 @@ class TMrbConfig : public TNamed {
 
 		Bool_t SetMbsBranch(TMrbNamedX & MbsBranch, Int_t MbsBranchNo, const Char_t * MbsBranchName = NULL);	// mbs branch
 		Int_t CheckMbsBranchSettings();
-
+		inline Bool_t IsMultiBranch() { return (fLofMbsBranches.GetEntriesFast() > 0); };
+		inline Bool_t IsSingleBranch() { return (fLofMbsBranches.GetEntriesFast() == 0); };
+		inline Int_t GetNofBranches() { return fLofMbsBranches.GetEntriesFast(); };
+		
 		TMrbModuleChannel * FindParam(const Char_t * ParamName) const;							// find a param
 
 		Bool_t HistogramExists(const Char_t * HistoName) const;						// check if histo exists
@@ -907,9 +910,9 @@ class TMrbConfig : public TNamed {
 		Bool_t CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent, Bool_t CreateProto, Bool_t SystemPart);
 		Bool_t CreateXhit(TMrbNamedX * Xhit);
 
-		const Char_t * GetMbsVersion(Bool_t Vformat = kTRUE, Bool_t Verbose = kFALSE);
-		const Char_t * GetLynxVersion(Bool_t Verbose = kFALSE);
-		const Char_t * GetProcType(Bool_t Verbose = kFALSE);
+		const Char_t * GetMbsVersion(TString & MbsVersion, Int_t BranchNo = -1, Bool_t Vformat = kTRUE, Bool_t Verbose = kFALSE);
+		const Char_t * GetLynxVersion(TString & LynxVersion, Int_t BranchNo = -1, Bool_t Verbose = kFALSE);
+		const Char_t * GetProcType(TString & ProcType, Int_t BranchNo = -1, Bool_t Verbose = kFALSE);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -1011,10 +1014,7 @@ class TMrbConfig : public TNamed {
 		Bool_t fConfigChecked;				// kTRUE if consistency check done
 		Bool_t fConfigOk;					// kTRUE config consistent
 
-		TString fMbsVersion;				// MBS version, format N.M
-		TString fMbsVVersion;				// ... format vNN
-		TString fLynxVersion;				// lynxOs version, format N.M
-		TString fProcType;				// processor type: PPC, RIO2, RIO3 or RIO4
+		TString fMbsVVersion;				// MBS version, format vNN
 
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
 };

@@ -617,7 +617,7 @@ void HprStack::SetAttributes()
 				hist->SetFillColor(fFillColor[i]);
 #endif
 				ohist->SetFillStyle(fFillStyle[i]);
-				ohist->SetFillColorAlpha(fFillColor[i], fFillTrans[i]);
+//				ohist->SetFillColorAlpha(fFillColor[i], fFillTrans[i]);
 //       cout  << " fFillColor " << fFillColor[i]  <<  " fFillTrans "<< fFillTrans[i]<< endl;
 			} else {
 				hist->SetFillStyle(0);

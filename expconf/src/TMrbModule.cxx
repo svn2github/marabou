@@ -108,7 +108,7 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 			fTimeOffset = 0;								// time offset
 			if (fModuleID.GetIndex() != TMrbConfig::kModuleSoftModule) fSerial = gMrbConfig->AssignModuleSerial();		// assign a unique module number
 			fHistosToBeAllocated = kTRUE;					// create histograms for each channel
-			fMbsBranch.Set(-1, "none");
+			fMbsBranch.Set(-1, "none");						// single branch
 			fCreateHistoArray = kFALSE;
 		}
 	}

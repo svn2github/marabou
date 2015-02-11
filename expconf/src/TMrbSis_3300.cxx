@@ -812,7 +812,11 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
+				Int_t bNo = this->GetMbsBranchNo();
+				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
+				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
+				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
+				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
 				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
 				gSystem->ExpandPathName(codeString);
@@ -824,7 +828,11 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
+				Int_t bNo = this->GetMbsBranchNo();
+				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
+				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
+				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
+				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
 				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
 				gSystem->ExpandPathName(codeString);

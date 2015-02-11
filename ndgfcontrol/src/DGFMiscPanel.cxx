@@ -341,7 +341,8 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}
-	pgb->DeleteWindow();
+//	pgb->DeleteWindow();
+	delete pgb;
 
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
@@ -395,7 +396,8 @@ Bool_t DGFMiscPanel::SetCoincWait() {
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}
-	pgb->DeleteWindow();
+//	pgb->DeleteWindow();
+	delete pgb;
 
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);

@@ -945,8 +945,11 @@ Bool_t TMrbCaen_V1X90::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
-				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
+				Int_t bNo = this->GetMbsBranchNo();
+				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
+				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
+				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
+				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
 				fCodeTemplates.CopyCode(codeString);
 				gMrbConfig->GetLofRdoIncludes()->Add(new TObjString(codeString.Data()));
 			}
@@ -956,8 +959,13 @@ Bool_t TMrbCaen_V1X90::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
-				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
+				Int_t bNo = this->GetMbsBranchNo();
+				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
+				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
+				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
+				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
+				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
+				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
 				fCodeTemplates.CopyCode(codeString);
 				gMrbConfig->GetLofRdoLibs()->Add(new TObjString(codeString.Data()));
 			}

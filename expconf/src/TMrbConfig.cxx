@@ -585,6 +585,7 @@ extern TSystem * gSystem;
 
 extern TMrbLofUserVars * gMrbLofUserVars; 		// a list of all user vars/windows
 extern TMrbLogger * gMrbLog;					// message logger
+extern TMbsSetup * gMbsSetup;					// MBS setup data
 
 TMrbConfig * gMrbConfig = NULL;
 
@@ -746,9 +747,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofUserClasses.SetPatternMode();
 
 		fMbsVVersion = "";
-		fMbsVersion = "";
-		fLynxVersion = "";
-
+		
 		fNofScalers = 0;
 		fNofMuxs = 0;
 
@@ -970,116 +969,52 @@ TMrbSubevent * TMrbConfig::FindSubevent(TClass * Class, TMrbSubevent * After) co
 	return(NULL);
 }
 
-const Char_t * TMrbConfig::GetMbsVersion(Bool_t Vformat, Bool_t Verbose)  {
+const Char_t * TMrbConfig::GetMbsVersion(TString & MbsVersion, Int_t BranchNo, Bool_t Vformat, Bool_t Verbose)  {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetMbsVersion
 // Purpose:        Return MBS version
-// Arguments:      Bool_t Vformat       -- return old format vNN if kTRUE
+// Arguments:      Int_t BranchNo       -- branch number (-1 -> single branch)
+//                 Bool_t Vformat       -- return old format vNN if kTRUE
 //                 Bool_t Verbose       -- output error message if not ok
 // Results:        Char_t * MbsVersion  -- result
 // Exceptions:
-// Description:    Returns MBS version as vNN or N.M
-//                 Version is read from rootrc environment: TMbsSetup.MbsVersion
+// Description:    Returns MBS version as vNM or N.M
+//                 Version is read from rootrc environment: TMbsSetup.MbsVersion[.B]
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString mbsVersion;
-	if (fMbsVersion.IsNull()) {
-		mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "");
-		if (mbsVersion.IsNull()) {
+	TString mv = MbsVersion;
+	MbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", mv.Data());
+	mv = MbsVersion;
+	if (BranchNo != -1) MbsVersion = gEnv->GetValue(Form("TMbsSetup.MbsVersion.%d", BranchNo), mv.Data());
+	if (MbsVersion.IsNull()) {
+		if (Verbose) {
+			if (BranchNo == -1) gMrbLog->Err() << "MBS version not defined - set TMbsSetup.MbsVersion in .rootrc properly" << endl;
+			else gMrbLog->Err() << Form("MBS version not defined - set TMbsSetup.MbsVersion.%d in .rootrc properly", BranchNo) << endl;
+			gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
+		}
+		return("");
+	}
+	mv = MbsVersion;
+	if (mv(0) == 'v') {
+		fMbsVVersion = MbsVersion;
+		MbsVersion = Form("%c.%c", mv(1), mv(2));
+	} else {
+		TObjArray * v = MbsVersion.Tokenize(".");
+		if (v->GetEntries() != 2) {
 			if (Verbose) {
-				gMrbLog->Err() << "MBS version not defined - set TMbsSetup.MbsVersion in .rootrc properly" << endl;
+				gMrbLog->Err() << "Wrong format of MBS version - " << MbsVersion << endl;
 				gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
 			}
-			return("");
-		}
-		if (mbsVersion(0) == 'v') {
-			fMbsVersion = Form("%c.%c", mbsVersion(1), mbsVersion(2));
-			fMbsVVersion = mbsVersion;
-		} else {
-			TObjArray * v = mbsVersion.Tokenize(".");
-			if (v->GetEntries() != 2) {
-				if (Verbose) {
-					gMrbLog->Err() << "Wrong format of MBS version - " << mbsVersion << endl;
-					gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
-				}
-				delete v;
-				return("");
-			}
-			TString major = ((TObjString *) v->At(0))->String();
-			if (!major.IsDigit()) {
-				if (Verbose) {
-					gMrbLog->Err() << "Wrong format of MBS version - " << mbsVersion << endl;
-					gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
-				}
-				delete v;
-				return("");
-			}
-			TString minor = ((TObjString *) v->At(1))->String();
-			if (!minor.IsDigit()) {
-				if (Verbose) {
-					gMrbLog->Err() << "Wrong format of MBS version - " << mbsVersion << endl;
-					gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
-				}
-				delete v;
-				return("");
-			}
-			fMbsVVersion = Form("v%s%s", major.Data(), minor.Data());
-			fMbsVersion = mbsVersion;
 			delete v;
-		}
-	}
-
-	if (Vformat) {
-		return(fMbsVVersion.Data());
-	} else {
-		return(fMbsVersion.Data());
-	}
-}
-
-const Char_t * TMrbConfig::GetLynxVersion(Bool_t Verbose)  {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbConfig::GetLynxVersion
-// Purpose:        Return LynxOs version
-// Arguments:      Bool_t Verbose        -- output error message if not ok
-// Results:        Char_t * LynxVersion  -- result
-// Exceptions:
-// Description:    Returns LynxOs version as N.M
-//                 Version is read from rootrc environment: TMbsSetup.LynxVersion
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TString lynxVersion;
-	if (fLynxVersion.IsNull()) {
-		lynxVersion = gEnv->GetValue("TMbsSetup.LynxVersion", "");
-		if (lynxVersion.IsNull()) {
-			if (Verbose) {
-				gMrbLog->Err() << "LynxOs version not defined - set TMbsSetup.LynxVersion in .rootrc properly" << endl;
-				gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
-			}
 			return("");
-		}
-
-		TObjArray * v = lynxVersion.Tokenize(".");
-		Int_t nv = v->GetEntries();
-		switch (nv) {
-			case 2:
-			case 3: break;
-			default:
-				if (Verbose) {
-					gMrbLog->Err() << "Wrong format of LynxOs version - " << lynxVersion << endl;
-					gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
-				}
-				delete v;
-				return("");
 		}
 		TString major = ((TObjString *) v->At(0))->String();
 		if (!major.IsDigit()) {
 			if (Verbose) {
-				gMrbLog->Err() << "Wrong format of LynxOs version - " << lynxVersion << endl;
-				gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
+				gMrbLog->Err() << "Wrong format of MBS version - " << MbsVersion << endl;
+				gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
 			}
 			delete v;
 			return("");
@@ -1087,56 +1022,121 @@ const Char_t * TMrbConfig::GetLynxVersion(Bool_t Verbose)  {
 		TString minor = ((TObjString *) v->At(1))->String();
 		if (!minor.IsDigit()) {
 			if (Verbose) {
-				gMrbLog->Err() << "Wrong format of LynxOs version - " << lynxVersion << endl;
-				gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
+				gMrbLog->Err() << "Wrong format of MBS version - " << MbsVersion << endl;
+				gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
 			}
 			delete v;
 			return("");
 		}
-		fLynxVersion = lynxVersion;
+		fMbsVVersion = Form("v%s%s", major.Data(), minor.Data());
 		delete v;
 	}
 
-	return(fLynxVersion.Data());
+	if (Vformat) {
+		return(fMbsVVersion.Data());
+	} else {
+		return(MbsVersion.Data());
+	}
 }
 
-const Char_t * TMrbConfig::GetProcType(Bool_t Verbose) {
+const Char_t * TMrbConfig::GetLynxVersion(TString & LynxVersion, Int_t BranchNo, Bool_t Verbose)  {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetLynxVersion
+// Purpose:        Return LynxOs version
+// Arguments:      Int_t BranchNo       -- branch number (-1 -> single branch)
+//                 Bool_t Verbose        -- output error message if not ok
+// Results:        Char_t * LynxVersion  -- result
+// Exceptions:
+// Description:    Returns LynxOs version as N.M
+//                 Version is read from rootrc environment: TMbsSetup.LynxVersion
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Char_t * lv = (Char_t *) LynxVersion.Data();
+	LynxVersion = gEnv->GetValue("TMbsSetup.LynxVersion", lv);
+	lv = (Char_t *) LynxVersion.Data();
+	if (BranchNo != -1) LynxVersion = gEnv->GetValue(Form("TMbsSetup.LynxVersion.%d", BranchNo), lv);
+	if (LynxVersion.IsNull()) {
+		if (Verbose) {
+			if (BranchNo == -1) gMrbLog->Err() << "LynxOs version not defined - set TMbsSetup.LynxVersion in .rootrc properly" << endl;
+			else gMrbLog->Err() << Form("LynxOs version not defined - set TMbsSetup.LynxVersion.%d in .rootrc properly", BranchNo) << endl;
+			gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
+		}
+		return("");
+	}
+
+	TObjArray * v = LynxVersion.Tokenize(".");
+	Int_t nv = v->GetEntries();
+	switch (nv) {
+		case 2:
+		case 3: break;
+		default:
+			if (Verbose) {
+				gMrbLog->Err() << "Wrong format of LynxOs version - " << LynxVersion << endl;
+				gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
+			}
+			delete v;
+			return("");
+	}
+	TString major = ((TObjString *) v->At(0))->String();
+	if (!major.IsDigit()) {
+		if (Verbose) {
+			gMrbLog->Err() << "Wrong format of LynxOs version - " << LynxVersion << endl;
+			gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
+		}
+		delete v;
+		return("");
+	}
+	TString minor = ((TObjString *) v->At(1))->String();
+	if (!minor.IsDigit()) {
+		if (Verbose) {
+			gMrbLog->Err() << "Wrong format of LynxOs version - " << LynxVersion << endl;
+			gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
+		}
+		delete v;
+		return("");
+	}
+	delete v;
+
+	return(LynxVersion.Data());
+}
+
+const Char_t * TMrbConfig::GetProcType(TString & ProcType, Int_t BranchNo, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetProcType
 // Purpose:        Return processor type
-// Arguments:      Bool_t Verbose        -- output error message if not ok
+// Arguments:      Int_t BranchNo        -- mbs branch number (-1 -> single branch)
+//                 Bool_t Verbose        -- output error message if not ok
 // Results:        Char_t * ProcType     -- result
 // Exceptions:
-// Description:    Returns ppc type: PPC (=RIO2) or RIO3
-//                 Type is read from rootrc environment: TMbsSetup.ProcType
+// Description:    Returns ppc type: PPC (=RIO2), RIO3, or RIO4
+//                 Reads rootrc environment TMbsSetup.ProcType[.B]
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString procType;
-	if (fProcType.IsNull()) {
-		procType = gEnv->GetValue("TMbsSetup.ProcType", "");
-		if (procType.IsNull()) {
+	ProcType = gEnv->GetValue("TMbsSetup.ProcType", "");
+	if (BranchNo != -1) ProcType = gEnv->GetValue(Form("TMbsSetup.ProcType.%d", BranchNo), "");
+	if (ProcType.IsNull()) {
+		if (Verbose) {
+			gMrbLog->Err() << "Processor type not defined - set TMbsSetup.ProcType[.B] in .rootrc properly" << endl;
+			gMrbLog->Flush(this->ClassName(), "GetProcType");
+		}
+		return("");
+	} else {
+		if (	ProcType.CompareTo("PPC") != 0
+		&&		ProcType.CompareTo("RIO2") != 0
+		&&		ProcType.CompareTo("RIO3") != 0
+		&&		ProcType.CompareTo("RIO4") != 0) {
 			if (Verbose) {
-				gMrbLog->Err() << "Processor type not defined - set TMbsSetup.ProcType in .rootrc properly" << endl;
+				gMrbLog->Err() << "Wrong PPC type - " << ProcType << ", set TMbsSetup.ProcType[.B] in .rootrc properly" << endl;
 				gMrbLog->Flush(this->ClassName(), "GetProcType");
 			}
 			return("");
-		} else {
-			if (	procType.CompareTo("PPC") != 0
-			&&		procType.CompareTo("RIO2") != 0
-			&&		procType.CompareTo("RIO3") != 0
-			&&		procType.CompareTo("RIO4") != 0) {
-				if (Verbose) {
-					gMrbLog->Err() << "Wrong processor type - " << procType << ", set TMbsSetup.ProcType in .rootrc properly" << endl;
-					gMrbLog->Flush(this->ClassName(), "GetProcType");
-				}
-				return("");
-			}
-			fProcType = procType;
 		}
 	}
-	return(fProcType.Data());
+	return(ProcType.Data());
 }
 
 Bool_t TMrbConfig::CheckModuleAddress(TMrbModule * Module, Bool_t WrnOnly) const {
@@ -1595,26 +1595,26 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 
 	packNames * pp;
 
-	TString mbsVersion = this->GetMbsVersion(kFALSE, kTRUE);
-	if (mbsVersion.IsNull()) return(kFALSE);
-	TString lynxVersion = this->GetLynxVersion(kTRUE);
-	if (lynxVersion.IsNull()) return(kFALSE);
-	TString procType = this->GetProcType(kTRUE);
-	if (procType.IsNull()) return(kFALSE);
-
 	TString mkFile = "Readout.mk.code";
 
-	Int_t nofMbsBranches = fLofMbsBranches.GetEntriesFast();
-	if (nofMbsBranches == 0) {
+	if (this->IsSingleBranch()) {
 		pp = new packNames(cfile.Data(), "Readout.c.code", ".c", "C code (VME/CAMAC readout) for MBS");
 		filesToCreate.Add(pp);
 
 		pp = new packNames(cfile.Data(), "Readout.h.code", ".h", "C definitions for MBS");
 		filesToCreate.Add(pp);
 
+		TString mbsVersion; this->GetMbsVersion(mbsVersion, -1, kFALSE, kTRUE);
+		if (mbsVersion.IsNull()) return(kFALSE);
+		TString lynxVersion; this->GetLynxVersion(lynxVersion, -1, kTRUE);
+		if (lynxVersion.IsNull()) return(kFALSE);
+		TString procType; this->GetProcType(procType, -1, kTRUE);
+		if (procType.IsNull()) return(kFALSE);
+
 		TString cmt = Form("Makefile (LynxOs %s, MBS %s)", lynxVersion.Data(), mbsVersion.Data());
 		pp = new packNames(cfile.Data(), mkFile.Data(), ".mk", cmt.Data());
 		filesToCreate.Add(pp);
+		
 	} else {
 		TIterator * bIter = fLofMbsBranches.MakeIterator();
 		TMrbNamedX * branch;
@@ -1633,9 +1633,16 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 			pp = new packNames(bfile.Data(), "Readout.h.code", ".h", cmt.Data(), bNo);
 			filesToCreate.Add(pp);
 
+			TString mbsVersion; this->GetMbsVersion(mbsVersion, bNo, kFALSE, kTRUE);
+			if (mbsVersion.IsNull()) return(kFALSE);
+			TString lynxVersion; this->GetLynxVersion(lynxVersion, bNo, kTRUE);
+			if (lynxVersion.IsNull()) return(kFALSE);
+			TString procType; this->GetProcType(procType, bNo, kTRUE);
+			if (procType.IsNull()) return(kFALSE);
+
 			cmt = Form("Makefile (LynxOs %s, MBS %s) (%s)", lynxVersion.Data(), mbsVersion.Data(), bName.Data());
 			pp = new packNames(bfile.Data(), mkFile.Data(), ".mk", cmt.Data(), bNo);
-			filesToCreate.Add(pp);
+			filesToCreate.Add(pp);			
 		}
 	}
 
@@ -1739,7 +1746,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								first = kFALSE;
 							}
 							TString ip = "-I";
-							ip += gEnv->GetValue("TMrbConfig.PPCIncludePath", "/nfs/marabou/include");
+							ip += gEnv->GetValue("TMrbConfig.PPCIncludePath", "$MARABOU/powerpc/include");
 							gSystem->ExpandPathName(ip);
 							if (!iclPath.Contains(ip)) {
 								if (!first) iclPath += " \\\n\t\t\t\t";
@@ -1769,7 +1776,14 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								libString += o->String();
 								first = kFALSE;
 							}
-							TString lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", "/nfs/marabou/lib");
+							TString lp;
+							if (this->IsMultiBranch()) {
+								TString lv; this->GetLynxVersion(lv, pp->GetB());
+								lp = gEnv->GetValue(Form("TMrbConfig.PPCLibraryPath.%d", pp->GetB()), Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+							} else {
+								TString lv; this->GetLynxVersion(lv, -1);
+								lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+							}
 							gSystem->ExpandPathName(lp);
 							if (!libString.Contains(lp)) {
 								if (!first) libString += " \\\n\t\t\t\t";
@@ -7667,18 +7681,18 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	} else {
 		mbsSetup = new TMbsSetup();
 	}
-
+	
 	if (!gSystem->AccessPathName(".mbssetup-localdefs")) {
 		mbsSetup->GetEnv()->ReadFile(".mbssetup-localdefs", kEnvChange);
 		gMrbLog->Out() << "[.mbssetup: Merging local defs from file \".mbssetup-localdefs\"]" << endl;
 		gMrbLog->Flush("", "", setblue);
 	}
 
-	TString mbsVersion = this->GetMbsVersion(kTRUE, kTRUE);
+	TString mbsVersion; this->GetMbsVersion(mbsVersion, -1, kTRUE, kTRUE);
 	if (mbsVersion.IsNull()) return(kFALSE);
-	TString lynxVersion = this->GetLynxVersion(kTRUE);
+	TString lynxVersion; this->GetLynxVersion(lynxVersion, -1, kTRUE);
 	if (lynxVersion.IsNull()) return(kFALSE);
-	TString procType = this->GetProcType(kTRUE);
+	TString procType; this->GetProcType(procType, -1, kTRUE);
 	if (procType.IsNull()) return(kFALSE);
 
 	mbsSetup->Set("MbsVersion", mbsVersion.Data());
@@ -8441,37 +8455,35 @@ Bool_t TMrbConfig::CheckConfig() {
 
 	nofErrors += this->CheckMbsBranchSettings();
 
-	TString mbsVersion = this->GetMbsVersion(kTRUE, kTRUE);
-	if (mbsVersion.IsNull()) return(kFALSE);
-	TString lynxVersion = this->GetLynxVersion(kTRUE);
-	if (lynxVersion.IsNull()) return(kFALSE);
-	TString procType = this->GetProcType(kTRUE);
-	if (procType.IsNull()) return(kFALSE);
-
-	TString lv = "";
-	if (fMbsVersion.CompareTo("2.2") == 0) {
-		lv = "2.5";
-	} else if (fMbsVersion.CompareTo("4.2") == 0) {
-		lv = "3.1";
-	} else if (fMbsVersion.CompareTo("4.3") == 0) {
-		lv = "3.1";
-	} else if (fMbsVersion.CompareTo("4.5") == 0) {
-		lv = "3.1";
-	} else if (fMbsVersion.CompareTo("5.0") == 0) {
-		lv = "4.0";
-	} else if (fMbsVersion.CompareTo("6.2") == 0) {
-		lv = "4.0";
+	if (this->IsSingleBranch()) {
+		TString mbsVersion; this->GetMbsVersion(mbsVersion, -1, kTRUE, kTRUE);
+		if (mbsVersion.IsNull()) nofErrors++;
+		TString lynxVersion; this->GetLynxVersion(lynxVersion, -1, kTRUE);
+		if (lynxVersion.IsNull()) nofErrors++;
+		TString procType; this->GetProcType(procType, -1, kTRUE);
+		if (procType.IsNull()) nofErrors++;
+		if (lynxVersion.CompareTo("2.5") != 0 && lynxVersion.CompareTo("3.1") != 0 && lynxVersion.CompareTo("4.0") != 0) {
+			gMrbLog->Err() << "Wrong Lynx version - " << lynxVersion << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+			nofErrors++;
+		}
 	} else {
-		gMrbLog->Err() << "Wrong MBS version - " << fMbsVersion << "; set TMbsSetup.MbsVersion in .rootrc properly" << endl;
-		gMrbLog->Flush(this->ClassName(), "CheckConfig");
-		nofErrors++;
-	}
-
-	if (fLynxVersion.CompareTo("2.5") != 0 && fLynxVersion.CompareTo("3.1") != 0 && fLynxVersion.CompareTo("4.0") != 0) {
-		gMrbLog->Err() << "Wrong Lynx version - " << fLynxVersion << endl;
-		gMrbLog->Flush(this->ClassName(), "CheckConfig");
-		fLynxVersion = "";
-		nofErrors++;
+		TIterator * branchIter = fLofMbsBranches.MakeIterator();
+		TMrbNamedX * branch;
+		while ((branch = (TMrbNamedX *) branchIter->Next())) {
+			Int_t bNo = branch->GetIndex();
+			TString mbsVersion; this->GetMbsVersion(mbsVersion, bNo, kTRUE, kTRUE);
+			if (mbsVersion.IsNull()) nofErrors++;
+			TString lynxVersion; this->GetLynxVersion(lynxVersion, bNo, kTRUE);
+			if (lynxVersion.IsNull()) nofErrors++;
+			TString procType; this->GetProcType(procType, bNo, kTRUE);
+			if (procType.IsNull()) nofErrors++;
+			if (lynxVersion.CompareTo("2.5") != 0 && lynxVersion.CompareTo("3.1") != 0 && lynxVersion.CompareTo("4.0") != 0) {
+				gMrbLog->Err() << "Wrong Lynx version - " << lynxVersion << endl;
+				gMrbLog->Flush(this->ClassName(), "CheckConfig");
+				nofErrors++;
+			}
+		}
 	}
 
 	if (this->GetNofEvents() == 0) {
@@ -8574,6 +8586,7 @@ Bool_t TMrbConfig::CheckConfig() {
 			}
 		}
 		if (!this->CheckModuleAddress(module, kFALSE)) nofErrors++;
+		if (!module->CheckProcType()) nofErrors++;
 	}
 
 	TString camacContr = gEnv->GetValue("TMbsSetup.CamacController", "");
@@ -8686,7 +8699,7 @@ Int_t TMrbConfig::CheckMbsBranchSettings() {
 	TIterator * sevtIter;
 	TIterator * modIter;
 
-	if (fLofMbsBranches.GetEntriesFast() == 0) return(0);		// no branch settigs at all
+	if (this->IsSingleBranch()) return(0);		// no branch settigs at all
 
 // check branch settings for events
 	evtIter = fLofEvents.MakeIterator();

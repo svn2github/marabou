@@ -276,7 +276,11 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "3.1"));
+				Int_t bNo = this->GetMbsBranchNo();
+				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
+				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
+				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
+				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
 				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
 				gSystem->ExpandPathName(codeString);
@@ -288,7 +292,11 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				TString codeString;
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
-				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "3.1"));
+				Int_t bNo = this->GetMbsBranchNo();
+				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
+				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
+				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
+				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
 				fCodeTemplates.ExpandPathName();
 				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
@@ -357,4 +365,27 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleT
 			break;
 	}
 	return(kTRUE);
+}
+
+Bool_t TMrbSis_3302::CheckProcType() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSis_3302::MakeReadoutCode
+// Purpose:        Check if PPC type is at least RIO3
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks env var TMbsSetup.ProcType[.branch]
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString ppc = "";
+	if (this->IsAssignedToBranch()) ppc = gEnv->GetValue(Form("TMbsSetup.ProcType.%d", this->GetMbsBranchNo()), "");
+	if (ppc.IsNull()) ppc = gEnv->GetValue("TMbsSetup.ProcType", "RIO3");
+	if (ppc.CompareTo("RIO3") != 0 && ppc.CompareTo("RIO4") != 0) {
+		gMrbLog->Err() << this->GetName() << ": Wrong CPU type - " << ppc << " (should be RIO3 or RIO4)" << endl;
+		gMrbLog->Flush(this->ClassName());
+		return kFALSE;
+	}
+	return kTRUE;
 }

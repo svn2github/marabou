@@ -561,8 +561,10 @@ Bool_t DGFTauFitPanel::TauFit() {
 			nofModules++;
 		}
 	}
-	pgb1->DeleteWindow();
-	pgb2->DeleteWindow();
+//	pgb1->DeleteWindow();
+//	pgb2->DeleteWindow();
+	delete pgb1;
+	delete pgb2;
 
 	nofModules = 0;
 	dgfModule = gDGFControlData->FirstModule();

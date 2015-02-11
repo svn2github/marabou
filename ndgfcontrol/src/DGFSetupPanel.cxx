@@ -544,7 +544,8 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 				gSystem->ProcessEvents();
 				dgfModule = gDGFControlData->NextModule(dgfModule);
 			}
-			pgb->DeleteWindow();
+//			pgb->DeleteWindow();
+			delete pgb;
 			gDGFControlData->Dgfrc()->Write();
 		}
 	}
@@ -847,8 +848,8 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}
-	pgb->DeleteWindow();
-
+//	pgb->DeleteWindow();
+	delete pgb;
 	if (nerr > 0) {
 		gMrbLog->Err()	<< "Aborting busy-sync loop failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "AbortDGFs");
@@ -965,7 +966,8 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}
-	pgb->DeleteWindow();
+//	pgb->DeleteWindow();
+	delete pgb;
 	if (nerr > 0) {
 		gMrbLog->Err()	<< "Turning PSA code on/off failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff");
@@ -1123,7 +1125,8 @@ Bool_t DGFSetupPanel::SetSynchWait(Bool_t SyncFlag) {
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}
-	pgb->DeleteWindow();
+//	pgb->DeleteWindow();
+	delete pgb;
 	if (nerr > 0) {
 		gMrbLog->Err()	<< "Turning busy/sync loop on/off failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetSynchWait");
@@ -1211,7 +1214,8 @@ Bool_t DGFSetupPanel::SetInSynch(Bool_t SyncFlag) {
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}
-	pgb->DeleteWindow();
+//	pgb->DeleteWindow();
+	delete pgb;
 	if (nerr > 0) {
 		gMrbLog->Err()	<< "Synchronizing clock failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetInSynch");
