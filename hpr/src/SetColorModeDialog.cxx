@@ -446,7 +446,7 @@ void SetColorModeDialog::SaveDefaults()
    env.SetValue("SetColorModeDialog.fMrbow", fMrbow);
    env.SetValue("SetColorModeDialog.fMbw", fMDeepSea);
    env.SetValue("SetColorModeDialog.fMbwinv", fMBlackBody);
-   env.SetValue("SetColorModeDialog.fMrbow", fMTwoColHue);
+   env.SetValue("SetColorModeDialog.fMTwoColHue", fMTwoColHue);
    env.SetValue("SetColorModeDialog.NofTransLevels", fNofTransLevels);
    env.SetValue("SetColorModeDialog.StartColor", fStartColor);
    env.SetValue("SetColorModeDialog.EndColor", fEndColor);
