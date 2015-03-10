@@ -173,7 +173,7 @@ static struct s_madc32 * madc32_firstModuleInChain;
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L@{.PPCLibraryPath:/nfs/marabou/lib}  -lMadc32
+	-L$ppcLibraryPath  -lMadc32
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

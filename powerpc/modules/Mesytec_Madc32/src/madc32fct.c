@@ -17,7 +17,6 @@
 #include <ces/uiocmd.h>
 #include <ces/bmalib.h>
 #include <errno.h>
-#include <sigcodes.h>
 
 #include "gd_readout.h"
 
@@ -31,8 +30,6 @@
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
-
-void catchBerr();
 
 int numData;
 int rdoWc;
@@ -76,18 +73,7 @@ struct s_madc32 * madc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 }
 
 void madc32_initialize(struct s_madc32 * s)
-{
-	be = s;
-	signal(SIGBUS, catchBerr);
-	madc32_disableBusError(s);
-	madc32_resetReadout(s);
-	sprintf(msg, "[%sinitialize] %s: Block xfer is %s", s->mpref, s->moduleName, s->blockXfer ? "ON" : "OFF");
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	if (s->repairRawData) {
-		sprintf(msg, "[%sinitialize] %s: Raw data will be repaired", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	}
-}
+{ }
 
 bool_t madc32_useBLT(struct s_madc32 * s) {
 	return s->blockXfer;
@@ -1083,11 +1069,4 @@ void madc32_resetTimestamp_mcst(struct s_madc32 * s)
 
 uint32_t * madc32_repairRawData(struct s_madc32 * s, uint32_t * pointer, uint32_t * dataStart) {
 	return pointer;
-}
-
-void catchBerr() {
-	
-	madc32_resetReadout(be);
-	sprintf(msg, "[%scatchBerr] %s: Bus Error!", be->mpref, be->moduleName);
-	f_ut_send_msg(be->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }

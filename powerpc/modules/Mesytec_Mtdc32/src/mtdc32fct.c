@@ -17,7 +17,6 @@
 #include <ces/uiocmd.h>
 #include <ces/bmalib.h>
 #include <errno.h>
-#include <sigcodes.h>
 
 #include "gd_readout.h"
 
@@ -76,18 +75,7 @@ struct s_mtdc32 * mtdc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 }
 
 void mtdc32_initialize(struct s_mtdc32 * s)
-{
-	be = s;
-	signal(SIGBUS, catchBerr);
-	mtdc32_disableBusError(s);
-	mtdc32_resetReadout(s);
-	sprintf(msg, "[%sinitialize] %s: Block xfer is %s", s->mpref, s->moduleName, s->blockXfer ? "ON" : "OFF");
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	if (s->repairRawData) {
-		sprintf(msg, "[%sinitialize] %s: Raw data will be repaired", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	}
-}
+{ }
 
 bool_t mtdc32_useBLT(struct s_mtdc32 * s) {
 	return s->blockXfer;
@@ -1153,11 +1141,4 @@ void mtdc32_resetTimestamp_mcst(struct s_mtdc32 * s)
 
 uint32_t * mtdc32_repairRawData(struct s_mtdc32 * s, uint32_t * pointer, uint32_t * dataStart) {
 	return pointer;
-}
-
-void catchBerr() {
-	
-	mtdc32_resetReadout(be);
-	sprintf(msg, "[%scatchBerr] %s: Bus Error!", be->mpref, be->moduleName);
-	f_ut_send_msg(be->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }

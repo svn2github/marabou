@@ -144,7 +144,7 @@ static struct s_gassiplex * s_$moduleNameLC;
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L@{.PPCLibraryPath:/nfs/marabou/lib}  -lGassiplex -lLvme
+	-L$ppcLibraryPath  -lGassiplex -lLvme
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

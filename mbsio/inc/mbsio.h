@@ -89,9 +89,9 @@
 #define MBS_STYPE_DATA_INT			0x0041000a					/*!< subevent [65,10]: universal data container, integer, 4 bytes */
 #define MBS_STYPE_DATA_FLOAT		0x0042000a					/*!< subevent [66,10]: universal data container, float/double */
 #define MBS_STYPE_HITBUF_1			0x0047000a					/*!< subevent [71,10]: hit buffer */
-#define MBS_STYPE_VME_MADC_1		0x0051000a					/*!< subevent [81,10]: vme, mesytec madc32/mqdc32 */
-#define MBS_STYPE_VME_MADC_2		0x0052000a					/*!< subevent [82,10]: vme, mesytec madc32/mqdc32, data stored in hit buffer */
-#define MBS_STYPE_VME_MADC_3		0x0053000a					/*!< subevent [83,10]: vme, mesytec madc32/mqdc32, data stored in hit buffer */
+#define MBS_STYPE_VME_MADC_1		0x0051000a					/*!< subevent [81,10]: vme, mesytec madc32/mqdc32/mtdc32 */
+#define MBS_STYPE_VME_MADC_2		0x0052000a					/*!< subevent [82,10]: vme, mesytec madc32/mqdc32/mtdc32, data stored in hit buffer */
+#define MBS_STYPE_VME_MADC_3		0x0053000a					/*!< subevent [83,10]: vme, mesytec madc32/mqdc32/mtdc32, data stored in hit buffer */
 #define MBS_STYPE_VME_SIS_3820_1	0x005b000a					/*!< subevent [91,10]: vme, sis 3820 scaler */
 #define MBS_STYPE_VME_SIS_3820_2	0x005c000a					/*!< subevent [92,10]: vme, sis 3820 scaler, data stored in hit buffer */
 #define MBS_STYPE_VME_SIS_3820_3	0x005d000a					/*!< subevent [93,10]: vme, sis 3820 scaler, data stored in hit buffer */

@@ -173,7 +173,7 @@ static struct s_mtdc32 * mtdc32_firstModuleInChain;
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L@{.PPCLibraryPath:/nfs/marabou/lib}  -lMtdc32
+	-L$ppcLibraryPath  -lMtdc32
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

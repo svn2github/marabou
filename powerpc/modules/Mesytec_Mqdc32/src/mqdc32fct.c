@@ -17,7 +17,6 @@
 #include <ces/uiocmd.h>
 #include <ces/bmalib.h>
 #include <errno.h>
-#include <sigcodes.h>
 
 #include "gd_readout.h"
 
@@ -31,8 +30,6 @@
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
-
-void catchBerr();
 
 char msg[256];
 
@@ -67,17 +64,7 @@ struct s_mqdc32 * mqdc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 }
 
 void mqdc32_initialize(struct s_mqdc32 * s)
-{
-	signal(SIGBUS, catchBerr);
-/*	mqdc32_disableBusError(s);	*/
-	mqdc32_resetReadout(s);
-	sprintf(msg, "[%sinitialize] %s: Block xfer is %s", s->mpref, s->moduleName, s->blockXfer ? "ON" : "OFF");
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	if (s->repairRawData) {
-		sprintf(msg, "[%sinitialize] %s: Raw data will be repaired (missing EOEs inserted)", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	}
-}
+{ }
 
 bool_t mqdc32_useBLT(struct s_mqdc32 * s) {
 	return s->blockXfer;
@@ -1039,4 +1026,3 @@ uint32_t * mqdc32_repairRawData(struct s_mqdc32 * s, uint32_t * pointer, uint32_
 	return pointer;
 }
 
-void catchBerr() {}

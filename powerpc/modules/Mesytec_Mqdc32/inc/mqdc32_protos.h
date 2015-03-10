@@ -143,10 +143,10 @@ void mqdc32_setTsDivisor(struct s_mqdc32 * s, uint16_t div);
 void mqdc32_setTsDivisor_db(struct s_mqdc32 * s);
 uint16_t mqdc32_getTsDivisor(struct s_mqdc32 * s);
 
-void mqdc32_setMultLimit(struct s_madc32 * s, uint16_t bnk, uint16_t llim, uint16_t hlim);
-void mqdc32_setMultLimit_db(struct s_madc32 * s, uint16_t bnk);
-uint16_t mqdc32_getMultHighLimit(struct s_madc32 * s, uint16_t bnk);
-uint16_t mqdc32_getMultLowLimit(struct s_madc32 * s, uint16_t bnk);
+void mqdc32_setMultLimit(struct s_mqdc32 * s, uint16_t bnk, uint16_t llim, uint16_t hlim);
+void mqdc32_setMultLimit_db(struct s_mqdc32 * s, uint16_t bnk);
+uint16_t mqdc32_getMultHighLimit(struct s_mqdc32 * s, uint16_t bnk);
+uint16_t mqdc32_getMultLowLimit(struct s_mqdc32 * s, uint16_t bnk);
 
 int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer);
 bool_t mqdc32_dataReady(struct s_mqdc32 * s);

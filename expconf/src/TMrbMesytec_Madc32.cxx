@@ -952,10 +952,14 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 				Int_t bNo = this->GetMbsBranchNo();
-				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
-				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
-				fCodeTemplates.Substitute("$mbsVersion", mbsVersion.Data());
-				fCodeTemplates.Substitute("$lynxVersion", lynxVersion.Data());
+				TString lv = "2.5"; gMrbConfig->GetLynxVersion(lv, bNo);
+				TString lp;
+				if (bNo != -1) {
+					lp = gEnv->GetValue(Form("TMrbConfig.PPCLibraryPath.%d", bNo), Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+				} else {
+					lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+				}
+				fCodeTemplates.Substitute("$ppcLibraryPath", lp.Data());
 				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
 				gSystem->ExpandPathName(codeString);

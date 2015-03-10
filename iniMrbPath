@@ -24,10 +24,11 @@ SYSMODE=n
 # ROOTSYS        where the ROOT system resides, should be set by user
 # MARABOU        where your MARaBOU installation resides, normally CWD
 
-# ROOTSYS=where_rootinstallation_resides
+# ROOTSYS must be set by user
+ROOTSYS=/usr/daq/root_pro
 ROOTSYS=/software/opt/trusty/x86_64/root/5.34.19
 MARABOU=/home/r/Rudolf.Lutter/marabou/trunk/marabou
-MARABOU_INSTALL_PATH=/cant_be_installed
+MARABOU_INSTALL_PATH=/usr/daq/marabou_pro
 
 #____________________________[end editable section]___________________________
 

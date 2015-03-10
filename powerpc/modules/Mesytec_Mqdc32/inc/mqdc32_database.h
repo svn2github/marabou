@@ -29,7 +29,7 @@
 struct s_mqdc32 {
 	char moduleName[100];
 	char prefix[100];			/* "m_read_meb" (default) or any other */
-	char mpref[10]; 			/* "madc32: " or "" */
+	char mpref[10]; 			/* "mqdc32: " or "" */
 
 	struct s_mapDescr * md;			/* mapping descriptor */
 

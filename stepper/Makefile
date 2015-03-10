@@ -1,6 +1,6 @@
 # ------------ Compiler / Linker Options -------------------------------
 
-INCDIR = 
+INCDIR = -I. -I$(MARABOU)/include -I$(ROOTSYS)/include
 CPPFLAGS = 
 
 CXX = g++

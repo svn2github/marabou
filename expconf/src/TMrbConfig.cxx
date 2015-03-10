@@ -1757,6 +1757,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoLibs:
 						{
+							fLofRdoLibs.Clear();
 							TList onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {

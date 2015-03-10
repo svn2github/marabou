@@ -70,7 +70,7 @@ static Bool_t verboseMode;						// verbosity flag;
 static Bool_t forcedDump = kFALSE;				// kTRUE -> dump records
 static Int_t recNo = 0;
 
-TArrayI lofModuleIds;
+static TArrayI lofModuleIds;
 
 Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 //________________________________________________________________[C++ METHOD]
