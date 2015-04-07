@@ -134,7 +134,7 @@ void Rebin2DimDialog::ExecuteRebin()
 					cont += fHist->GetCellContent(ixo, iyo);
 				}
 			}
-			hr->SetCellContent(ix, iy, cont);
+			hr->SetBinContent(ix, iy, cont);
 			nfill++;
 			binys += fRebinY;
 		}

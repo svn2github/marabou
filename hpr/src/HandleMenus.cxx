@@ -253,6 +253,7 @@ enum ERootCanvasCommands {
 	kFHMarksToWindow,
 	kFHDrawWindows,
 	kFHDrawFunctions,
+	kFHSubtractFunction,
 	kFHClearWindows,
 	kFHWindowsToHist,
 	kFHWindowsFromHist,
@@ -779,6 +780,9 @@ again:
 							break;
 						case  kFHDrawFunctions:
 							fFitHist->DrawSelectedFunctions();
+							break;
+						case  kFHSubtractFunction:
+							fFitHist->SubtractFunction();
 							break;
 						case  kFHWindowsToHist:
 							fFitHist->AddWindowsToHist();
@@ -1574,6 +1578,7 @@ void HandleMenus::BuildMenus()
 		fViewMenu->AddEntry("Launch Graphics Editor",  kEditEditor);
 		fViewMenu->AddEntry("Event &Status",           kViewEventStatus);
 		fViewMenu->AddEntry("Draw selected Functions", kFHDrawFunctions);
+		fViewMenu->AddEntry("Subtract Function",       kFHSubtractFunction);
 		fViewMenu->AddSeparator();
 	}
 	fViewMenu->AddEntry("Show Colors",             kViewColors);
@@ -1790,6 +1795,7 @@ void HandleMenus::BuildMenus()
 			fFitMenu->AddEntry("Add Functions to Hist", kFHFuncsToHist);
 			fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
 			fFitMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
+			fFitMenu->AddEntry("Subtract Function",       kFHSubtractFunction);
 			fFitMenu->AddSeparator();
 			fFitMenu->AddEntry("Shift / Scale histogram",     kFHShiftScale);
 			if( nDim == 1 ){

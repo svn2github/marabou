@@ -2626,8 +2626,8 @@ void FitHist::Transpose()
 										xa->GetNbins(), xa->GetXmin(), xa->GetXmax());
 	for (Int_t ix = 0; ix <= xa->GetNbins(); ix++) {
 		for (Int_t iy = 0; iy <= ya->GetNbins(); iy++) {
-			h2_transp->SetCellContent(iy, ix, h2->GetCellContent(ix, iy));
-			h2_transp->SetCellError  (iy, ix, h2->GetCellError  (ix, iy));
+			h2_transp->SetBinContent(iy, ix, h2->GetCellContent(ix, iy));
+			h2_transp->SetBinError  (iy, ix, h2->GetCellError  (ix, iy));
 		}
 	}
 	h2_transp->SetEntries(h2->GetEntries());
@@ -2971,7 +2971,7 @@ void FitHist::ExpandProject(Int_t what)
 					xcent = xa->GetBinCenter(irebin);
 					ycent = ya->GetBinCenter(jrebin);
 
-					fSelHist->SetCellContent(irebin, jrebin, 0);
+					fSelHist->SetBinContent(irebin, jrebin, 0);
 					TH2 *ph2 = (TH2 *) fSelHist;
 					ph2->Fill(xcent, ycent, oldcont);
 				}

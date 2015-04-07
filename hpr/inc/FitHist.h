@@ -348,6 +348,7 @@ public:
 		fTofLabels = 0;
 	}
 	void DrawSelectedFunctions();
+	void SubtractFunction();
 	void FindPeaks();
 	void Calibrate();
 

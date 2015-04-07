@@ -932,9 +932,43 @@ void FitHist::DrawSelectedFunctions()
 		TF1 * func = (TF1*)f->Get(funcname);
 		if (func) {
 			func->Draw("same");
+			if (fSelHist)
+				fSelHist->GetListOfFunctions()->Add(func);
 //			func->Print();
 		}
 		f->Close();
+	}
+	fCanvas->Modified();
+	fCanvas->Update();
+}
+//__________________________________________________________________________________
+
+void FitHist::SubtractFunction()
+{
+	if (!gHpr) return;
+	if (!fSelHist) return;
+	TIter next(fSelHist->GetListOfFunctions());
+	TObject * obj;
+	TF1 * func = NULL;
+	while ( (obj = next()) ) {
+		if (obj->InheritsFrom("TF1") ) {
+			if (func != NULL) {
+				cout << "More than 1 function selected" << endl;
+				return;
+			}
+			func = (TF1*)obj;
+		}
+	}
+	if (!func) {
+		cout << "No function found" << endl;
+		return;
+	}
+	fSelHist->Print();
+	func->Print();
+	for (Int_t i=1; i<fSelHist->GetNbinsX(); i++) {
+		Double_t x = fSelHist->GetBinCenter(i);
+		if ( fSelHist->GetBinContent(i) != 0)
+			fSelHist->SetBinContent(i, fSelHist->GetBinContent(i) - func->Eval(x));
 	}
 	fCanvas->Modified();
 	fCanvas->Update();

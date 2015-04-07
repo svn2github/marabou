@@ -67,6 +67,7 @@ HPRDEP      += $(MODDIRS)/main.d
 HPREXE      := bin/HistPresent
 HPRLIB      := $(LPATH)/libHpr.so
 HPRDUMMYLIB := $(LPATH)/libHprDummy.so
+HPRRMAP     := $(LPATH)/libHpr.rootmap
 
 ALLEXECS    += $(HPREXE)
 
@@ -90,6 +91,8 @@ GREDITLIB     := $(LPATH)/libGrEdit.$(SOEXT)
 
 OHPRLIBS      := $(MRBUTILSLIB) $(MRBGUTILSLIB) $(HELPBRLIB) $(FITCALLIB) $(GREDITLIB)
 
+HPRLIBDEP   := $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libProof.so $(OHPRLIBS)
+
 ##### local rules #####
 
 include/%.h:    $(HPRDIRI)/%.h
@@ -110,7 +113,8 @@ $(HPRLIB):     $(HPRDO) $(HPRO)
 			echo "cp  $(HPRPCM)----------------------" ; \
 			cp $(HPRPCM) $(LPATH); \
 		fi)
-		
+		@$(RLIBMAP) -o $(HPRRMAP) -l $(HPRLIB) -d $(HPRLIBDEP) -c $(HPRL)
+
 
 $(HPRDUMMYLIB):     $(HPRDUMMY)
 		   

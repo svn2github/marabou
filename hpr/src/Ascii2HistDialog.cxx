@@ -346,8 +346,8 @@ void Ascii2HistDialog::Draw_The_Hist()
       if (fError > 0) {
          for (Int_t i = 0; i < fNbinsX; i++) {
             for (Int_t k = 0; k < fNbinsY; k++) {
-               if (hist2->GetCellError(i+1, k+1) != 0)
-                  hist2->SetCellError(i+1, k+1, fError);
+               if (hist2->GetBinError(i+1, k+1) != 0)
+                  hist2->SetBinError(i+1, k+1, fError);
             }
          }
       }

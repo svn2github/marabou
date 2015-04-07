@@ -91,7 +91,8 @@ void FitHist::ClearRegion()
          cout <<binlx << " " <<binux << " "<<binly << " "<<binuy << endl;
          for (Int_t binx = binlx; binx <= binux; binx++) {
             for (Int_t biny = binly; biny <= binuy; biny++) {
-               fSelHist->SetCellContent(binx, biny, 0);
+               fSelHist->SetBinContent(binx, biny, 0);
+               fSelHist->SetBinError(binx, biny, 0);
             }
          }
          Draw2Dim();
@@ -102,6 +103,7 @@ void FitHist::ClearRegion()
          Int_t binu = fSelHist->FindBin(ti->GetX());
          for (Int_t bin = binl; bin <= binu; bin++) {
             fSelHist->SetBinContent(bin, 0);
+            fSelHist->SetBinError(bin, 0);
          }
       }
       gPad->Modified();
