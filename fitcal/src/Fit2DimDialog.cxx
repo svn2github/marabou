@@ -25,7 +25,7 @@
 #include <iostream>
 //#ifdef MARABOUVERS
 #include "HprFunc2.h"
-#include "HistPresent.h"
+// #include "HistPresent.h"
 //#endif
 
 using std::cout;
@@ -512,11 +512,11 @@ void Fit2DimDialog::GausExecute(Int_t draw_only)
 				}
 			}
 		}
-		if ( gHpr && fShowAsHist ) {
-			gHpr ->ShowHist(fHistFitResult);
-		} else {
+//		if ( gHpr && fShowAsHist ) {
+//			gHpr ->ShowHist(fHistFitResult);
+//		} else {
 			new HprFunc2(fFitFunc);
-		}
+//		}
 //      fFitFunc->Draw("colz");
 
 		//     add to ListOfFunctions if requested

@@ -23,6 +23,10 @@ FITCALO        := $(FITCALS:.cxx=.o)
 FITCALDEP      := $(FITCALO:.o=.d) $(FITCALDO:.o=.d)
 
 FITCALLIB      := $(LPATH)/libFitCal.$(SOEXT)
+FITCALRMAP     := $(LPATH)/libFitCal.rootmap
+MRBUTILSLIB   := $(LPATH)/libTMrbUtils.$(SOEXT)
+MRBGUTILSLIB  := $(LPATH)/libTGMrbUtils.$(SOEXT)
+FITCALLIBDEP  := $(ROOTSYS)/lib/libGraf.so  $(MRBGUTILSLIB) $(MRBUTILSLIB)
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(FITCALH))
@@ -48,6 +52,7 @@ $(FITCALLIB):     $(FITCALDO) $(FITCALO) $(MAINLIBS) $(FITCALLIBDEP)
 			echo "cp  $(FITCALPCM)----------------------" ; \
 			cp $(FITCALPCM) $(LPATH); \
 		fi)
+		@$(RLIBMAP) -o $(FITCALRMAP) -l $(FITCALLIB) -d $(FITCALLIBDEP) -c $(FITCALL)
 
 $(FITCALDS):     $(FITCALH) $(FITCALL)
 		@echo "Generating dictionary $@..."

@@ -575,6 +575,18 @@ Function limits may be given by modifying fFrom\n\
 and fTo or by setting 2 marks\n\
 Fitting of any combination of functions is provided\n\
 in the \"Fit User formula\" popup menu;.\n\
+\n\
+To exclude regions of the histogram from the fit the\n\
+following method can be used:\n\
+- Set exactly 2 marks with the middle mouse.\n\
+- Use Cuts/Windows Popup Menu: \"Clear Region\"\n\
+- Clear marks and repeat this for the required regions\n\
+- Execute Fit and store fitted function in a file\n\
+- Redisplay histogram, open file with stored function\n\
+- Select function and use \"Draw selected functions\" \n\
+  from Draw/Fit/Calib  Popup Menu\n\
+- You might use \"Subtract function\" from the View Menu\n\
+  to show residuals to the fitted function.\n\
 ";
 
 static const Char_t helptext_form[] =
@@ -621,7 +633,17 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 	RestoreDefaults();
 //	fSelPad = NULL;
 	SetBit(kMustCleanup);
-	fFuncName = Form("_%d", fFuncNumber);
+	if ( fSelHist ) {
+		fFuncName = fSelHist->GetName();
+		fFuncName += "_";
+		TAxis *xaxis = fSelHist->GetXaxis();
+		fFrom = xaxis->GetXmin();
+		fTo	= xaxis->GetXmax() ;
+	} else {
+		fFrom = 0;
+		fTo	= 100;
+	}
+	fFuncName += fFuncNumber;
 	fFuncNumber++;
 	fNpeaks = 1;
 	fNpeaksList = 0;
@@ -632,14 +654,6 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 	fFitFunc = NULL;
 	fReqNmarks= 0;
 	fDialog = NULL;
-	if ( fSelHist ) {
-		TAxis *xaxis = fSelHist->GetXaxis();
-		fFrom = xaxis->GetXmin();
-		fTo	= xaxis->GetXmax() ;
-	} else {
-		fFrom = 0;
-		fTo	= 100;
-	}
 	gROOT->GetListOfCleanups()->Add(this);
 
 	TIter next(gROOT->GetListOfCanvases());
@@ -1654,8 +1668,10 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			fSigmaList.Set(fNpeaks);
 			fChi2List.Set(fNpeaks);
 		}
-		if (fFitFunc) AddPeaktoList(fFitFunc);
-		if ( fNpeaksList == 0) PrintPeakList();
+		if (fFitFunc) 
+			AddPeaktoList(fFitFunc);
+		if ( fNpeaksList == 0)
+			 PrintPeakList();
 	}
 	if (fShowcof != 0 && fGraph == NULL) {
 		if ( fTailOnly != 0 )
@@ -1749,7 +1765,6 @@ Bool_t FitOneDimDialog::FitGausExecute()
 		}
 	}
 	ALLDONE:
-
 	delete fbflags;
 	gPad->Modified(kTRUE);
 	gPad->Update();
@@ -2729,10 +2744,10 @@ void FitOneDimDialog::RestoreDefaults()
 		tagname += i;
 		fFormFixPar[i] = env.GetValue(tagname, 0);
 	}
-	fGausFuncName			= env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_fun");
-	fExpFuncName			= env.GetValue("FitOneDimDialog.fExpFuncName", "exp_fun");
-	fPolFuncName			= env.GetValue("FitOneDimDialog.fPolFuncName", "pol_fun");
-	fFormFuncName			= env.GetValue("FitOneDimDialog.fFormFuncName", "form_fun");
+	fGausFuncName			= env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_func_");
+	fExpFuncName			= env.GetValue("FitOneDimDialog.fExpFuncName", "exp_func_");
+	fPolFuncName			= env.GetValue("FitOneDimDialog.fPolFuncName", "pol_func_");
+	fFormFuncName			= env.GetValue("FitOneDimDialog.fFormFuncName", "form_func_");
 	fNevents					= env.GetValue("FitOneDimDialog.fNevents", 10000);
 	fPeakSep					= env.GetValue("FitOneDimDialog.fPeakSep", 3);
 	fFitWindow				= env.GetValue("FitOneDimDialog.fFitWindow", 3);
