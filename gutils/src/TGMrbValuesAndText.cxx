@@ -571,7 +571,7 @@ TGedAlignPopup::TGedAlignPopup(const TGWindow *p, const TGWindow *m, Style_t ali
 
 	SetLayoutManager(new TGTileLayout(this, 1));
 	for (int i = 0; Aligns[i].number != 0; i++) {
-		const TGPicture * pict = gClient->GetPicturePool()->GetPicture(Aligns[i].pictname, (Pixmap_t)pixarr[i]);
+		const TGPicture * pict = gClient->GetPicturePool()->GetPicture(Aligns[i].pictname, (char**)pixarr[i]);
 		AddFrame(b = new TGPictureButton(this, pict,
 					Aligns[i].number, TGButton::GetDefaultGC()(), kSunkenFrame),
 					new TGLayoutHints(kLHintsLeft, 14, 14, 14, 14));
@@ -673,7 +673,7 @@ void TGedAlignSelect::SetAlignStyle(Style_t alignStyle)
 	if (md) {
 //   cout << "TGedAlignSelect::SetAlignStyle " << fAlignStyle << " " << md->pictname << endl;
 //      fPicture = gClient->GetPicture(md->filename);
-		fPicture = gClient->GetPicturePool()->GetPicture(md->pictname, (Pixmap_t)pixarr[md->seqnr]);
+		fPicture = gClient->GetPicturePool()->GetPicture(md->pictname, (char**)pixarr[md->seqnr]);
 //      fPicture = gClient->GetPicture(md->filename);
 		SetToolTipText(md->name);
 	}
@@ -856,9 +856,10 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 				cout << "Too many entries: " << i << endl;
 				break;
 			}
-//			cout << "i " << i << " indrows " << indrows << endl;
 			fLabels->Add(RowLabels->At(indrows));
 			l = ((TObjString *)RowLabels->At(indrows))->String();
+//			cout << "i: " << i << " indrows: " << indrows 
+//			<< "text: " << l << endl;
 //       in multi column row save space by avoiding expandx
 			TGLayoutHints * loc = l1;
 			if (l[11] == '-') loc = locy;
