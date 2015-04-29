@@ -1117,7 +1117,7 @@ const Char_t * TMrbConfig::GetProcType(TString & ProcType, Int_t BranchNo, Bool_
 //////////////////////////////////////////////////////////////////////////////
 
 	ProcType = gEnv->GetValue("TMbsSetup.ProcType", "");
-	if (BranchNo != -1) ProcType = gEnv->GetValue(Form("TMbsSetup.ProcType.%d", BranchNo), "");
+	if (BranchNo != -1) ProcType = gEnv->GetValue(Form("TMbsSetup.ProcType.%d", BranchNo), ProcType);
 	if (ProcType.IsNull()) {
 		if (Verbose) {
 			gMrbLog->Err() << "Processor type not defined - set TMbsSetup.ProcType[.B] in .rootrc properly" << endl;
