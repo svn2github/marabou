@@ -1,0 +1,23 @@
+if [ -f ppc/node_list.txt ]
+then
+	while [ 1 ]
+	do
+		N=0
+		M=0
+		for ppc in `cat ppc/node_list.txt`
+		do
+			N=$((N + 1))
+			PING=`ping -c 1 $ppc`
+			if [ "$PING" != "" ]
+			then
+				M=$((M + 1))
+			fi
+		done
+		if [ $M -eq $N ]
+		then
+			exit
+		fi
+	done
+else
+	echo "?ppc-wait-all: Missing file ppc/node_list.txt - nothing to do"
+fi

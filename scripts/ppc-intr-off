@@ -1,0 +1,6 @@
+echo "Turning interrupt for $1 OFF - wait ... "
+ping -c 1 $1 1>/dev/null
+rsh $1 /bin/ces/vmeconfig -c  2>/dev/null
+rsh $1 /bin/ces/vmeconfig 2>/dev/null
+
+

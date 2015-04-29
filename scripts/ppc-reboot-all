@@ -1,0 +1,51 @@
+if [ -f ppc/node_list.txt ]
+then
+	for ppc in `cat ppc/node_list.txt`
+	do
+		xterm -T "Rebooting $ppc" -geometry 80x5 -e $MARABOU/scripts/ppc-reboot $ppc &
+		sleep 1
+	done
+else
+	echo "?ppc-reboot-all: Missing file ppc/node_list.txt - can't reboot PPCs"
+fi
+sleep 5	
+while [ 1 ]
+do
+	N=0
+	M=0
+	for ppc in `cat ppc/node_list.txt`
+	do
+		N=$((N + 1))
+		PING=`ping -c 1 $ppc`
+		if [ "$PING" != "" ]
+		then
+			M=$((M + 1))
+		fi
+	done
+	if [ $M -eq $N ]
+	then
+		break
+	fi
+done
+
+if [ -f ppc/intr_list.txt ]
+then
+	for ppc in `cat ppc/intr_list.txt`
+	do
+		PPC=$ppc
+		ONOFF=${PPC:0:1}
+		PPC=${PPC:1:6}
+		if [ "$ONOFF" == "+" ]
+		then
+			$MARABOU/scripts/ppc-intr-on $PPC &
+			sleep 1
+		fi
+		if [ "$ONOFF" == "-" ]
+		then
+			$MARABOU/scripts/ppc-intr-off $PPC &
+			sleep 1
+		fi			
+	done
+else
+	echo "?ppc-reboot-all: Missing file ppc/intr_list.txt - can't turn interrupt on/off for PPCs"
+fi

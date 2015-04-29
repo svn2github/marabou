@@ -1,0 +1,14 @@
+echo -n "Rebooting $1 - wait ... "
+rsh $1 reboot 2>/dev/null &
+sleep 5
+while [ 1 ]
+do
+  PING=`ping -c 1 $1`
+  if [ "$PING" != "" ]
+  then
+	echo " done"
+	sleep 2
+	exit 0
+  fi
+  sleep 1
+done
