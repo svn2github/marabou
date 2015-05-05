@@ -353,6 +353,8 @@ install:
 			$(INSTALLDATA) data/* $(DATADIR); \
 			echo "Installing macros in   $(MACRODIR)"; \
 			$(INSTALLDIR) $(MACRODIR); \
+			echo "Installing scripts in   $(SCRIPTDIR)"; \
+			$(INSTALLDIR) $(SCRIPTDIR); \
 			$(INSTALLDATA) macros/* $(MACRODIR); \
 			echo "Installing icons in   $(ICONPATH)"; \
 			$(INSTALLDIR) $(ICONPATH); \
