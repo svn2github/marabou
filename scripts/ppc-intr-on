@@ -1,5 +1,5 @@
 echo "Turning interrupt for $1 ON - wait ... "
 echo "il=3:4" > .irqon
-rsh $1 /bin/ces/vmeconfig -a irqon  2>/dev/null
+rsh $1 /bin/ces/vmeconfig -a .irqon  2>/dev/null
 rsh $1 /bin/ces/vmeconfig 2>/dev/null
 rm -f .irqon
