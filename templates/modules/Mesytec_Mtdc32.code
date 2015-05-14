@@ -16,8 +16,8 @@
 %%MODULE_DEFS%%
 
 %%BeginOfCode%%
-					mtdc32_use_mcst = FALSE;
-					mtdc32_firstModuleInChain = NULL;
+					mesytec_use_mcst = FALSE;
+					mesytec_firstModuleInChain = NULL;
 %%EndOfCode%%
 %%INIT_COMMON_CODE%%
 
@@ -32,8 +32,8 @@
 					mtdc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill database from environment data */
 					mtdc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
 					if (mtdc32_mcstIsEnabled(s_$moduleNameLC)) {
-						mtdc32_use_mcst = TRUE;
-						if (mtdc32_isFirstInChain(s_$moduleNameLC)) mtdc32_firstModuleInChain = s_$moduleNameLC;
+						mesytec_use_mcst = TRUE;
+						if (mtdc32_isFirstInChain(s_$moduleNameLC)) mesytec_firstModuleInChain = (void *) s_$moduleNameLC;
 					}
 					if (mtdc32_useBLT(s_$moduleNameLC)) use_block_xfer = TRUE;	/* check if block xfer should be enabled */
 					mtdc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
@@ -102,18 +102,16 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-%M%					if (mtdc32_use_mcst && (mtdc32_firstModuleInChain == s_$moduleName)) { 	/* start modules in multicast mode */
+%M%					if (mesytec_use_mcst && (mesytec_firstModuleInChain == (void *) s_$moduleName)) { 	/* start modules in multicast mode */
 %M%						sprintf(msg, "[Starting Mesytec modules via MCST - first module in chain is %s]\n", s_$moduleName->moduleName);
 %M% 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
 %M%						mtdc32_stopAcq_mcst(s_$moduleName);
 %M%						mtdc32_startAcq_mcst(s_$moduleName);
 %M%					}
-%M%					if (!mtdc32_use_mcst) {
-%M%						mtdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
-%M%						mtdc32_startAcq(s_$moduleName);
-%M%					}
-%N%					mtdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
-%N%					mtdc32_startAcq(s_$moduleName);
+%N%					if (!mesytec_use_mcst) {
+%N%						mtdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+%N%						mtdc32_startAcq(s_$moduleName);
+%N%					}
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -123,15 +121,14 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-%M%					if (mtdc32_use_mcst && (mtdc32_firstModuleInChain == s_$moduleName)) { 	/* stop modules in multicast mode */
+%M%					if (mesytec_use_mcst && (mesytec_firstModuleInChain == (void *) s_$moduleName)) { 	/* stop modules in multicast mode */
 %M%						sprintf(msg, "[Stopping Mesytec modules via MCST - first module in chain is %s]\n", s_$moduleName->moduleName);
 %M% 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
 %M%						mtdc32_stopAcq_mcst(s_$moduleName);
 %M%					}
-%M%					if (!mtdc32_use_mcst) { 	/* stop module $moduleName */
-%M%						mtdc32_stopAcq(s_$moduleName);
-%M%					}
-%N%					mtdc32_stopAcq(s_$moduleName);
+%N%					if (!mesytec_use_mcst) { 	/* stop module $moduleName */
+%N%						mtdc32_stopAcq(s_$moduleName);
+%N%					}
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 
@@ -156,8 +153,8 @@ static struct s_mtdc32 * s_$moduleName;
 %%DEFINE_GLOBALS%%
 
 %%BeginOfCode%%
-static bool_t mtdc32_use_mcst;
-static struct s_mtdc32 * mtdc32_firstModuleInChain;
+static bool_t mesytec_use_mcst;
+static void * mesytec_firstModuleInChain;
 %%EndOfCode%%
 %%DEFINE_GLOBALS_ONCE_ONLY%%
 
