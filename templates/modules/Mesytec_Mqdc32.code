@@ -106,6 +106,10 @@
 %M%								mqdc32_stopAcq_mcst(s_$moduleName);
 %M%								mqdc32_startAcq_mcst(s_$moduleName);
 %M%							}
+%M%							if (!mesytec_use_mcst) {
+%M%								mqdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+%M%								mqdc32_startAcq(s_$moduleName);
+%M%							}
 %N%							if (!mesytec_use_mcst) {
 %N%								mqdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
 %N%								mqdc32_startAcq(s_$moduleName);
@@ -123,6 +127,9 @@
 %M%								sprintf(msg, "[Stopping Mesytec modules via MCST - first module in chain is %s]\n", s_$moduleName->moduleName);
 %M% 								f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
 %M%									mqdc32_stopAcq_mcst(s_$moduleName);
+%M%							}
+%M%							if (!mesytec_use_mcst) {
+%M%								mqdc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
 %M%							}
 %N%							if (!mesytec_use_mcst) {
 %N%								mqdc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
