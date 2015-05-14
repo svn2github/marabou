@@ -160,8 +160,7 @@ static struct s_madc32 * s_$moduleName;
 %%DEFINE_GLOBALS%%
 
 %%BeginOfCode%%
-static bool_t mesytec_use_mcst;
-static void * mesytec_firstModuleInChain;
+
 %%EndOfCode%%
 %%DEFINE_GLOBALS_ONCE_ONLY%%
 
