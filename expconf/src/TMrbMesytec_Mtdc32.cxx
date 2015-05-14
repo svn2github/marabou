@@ -844,7 +844,7 @@ Bool_t TMrbMesytec_Mtdc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 		case TMrbConfig::kModuleStartAcquisitionGroup:
 		case TMrbConfig::kModuleStopAcquisitionGroup:
 			{
-				if (this->IsFirstInChain()) fCodeTemplates.InitializeCode("%M%"); else fCodeTemplates.InitializeCode("%N%");
+				if (this->McstEnabled()) fCodeTemplates.InitializeCode("%M%"); else fCodeTemplates.InitializeCode("%N%");
 				fCodeTemplates.Substitute("$moduleName", this->GetName());
 				fCodeTemplates.Substitute("$nofParams", this->GetNofChannelsUsed());
 				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
