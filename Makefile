@@ -353,9 +353,10 @@ install:
 			$(INSTALLDATA) data/* $(DATADIR); \
 			echo "Installing macros in   $(MACRODIR)"; \
 			$(INSTALLDIR) $(MACRODIR); \
+			$(INSTALLDATA) macros/* $(MACRODIR); \
 			echo "Installing scripts in   $(SCRIPTDIR)"; \
 			$(INSTALLDIR) $(SCRIPTDIR); \
-			$(INSTALLDATA) macros/* $(MACRODIR); \
+			$(INSTALLDATA) scripts/* $(SCRIPTDIR); \
 			echo "Installing icons in   $(ICONPATH)"; \
 			$(INSTALLDIR) $(ICONPATH); \
 			$(INSTALLDATA) icons/* $(ICONPATH); \
@@ -379,6 +380,9 @@ install-others:
 		echo "Installing macros in   $(MACRODIR)"; \
 		$(INSTALLDIR) $(MACRODIR); \
 		$(INSTALLDATA) macros/* $(MACRODIR); \
+		echo "Installing scripts in   $(SCRIPTDIR)"; \
+		$(INSTALLDIR) $(SCRIPTDIR); \
+		$(INSTALLDATA) scripts/* $(SCRIPTDIR); \
 		echo "Installing icons in   $(ICONPATH)"; \
 		$(INSTALLDIR) $(ICONPATH); \
 		$(INSTALLDATA) icons/* $(ICONPATH); \
