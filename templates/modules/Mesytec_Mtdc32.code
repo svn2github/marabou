@@ -112,10 +112,8 @@
 %M%						mtdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
 %M%						mtdc32_startAcq(s_$moduleName);
 %M%					}
-%N%					if (!mesytec_use_mcst) {
-%N%						mtdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
-%N%						mtdc32_startAcq(s_$moduleName);
-%N%					}
+%N%					mtdc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+%N%					mtdc32_startAcq(s_$moduleName);
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -133,9 +131,7 @@
 %M%					if (!mesytec_use_mcst) { 	/* stop module $moduleName */
 %M%						mtdc32_stopAcq(s_$moduleName);
 %M%					}
-%N%					if (!mesytec_use_mcst) { 	/* stop module $moduleName */
-%N%						mtdc32_stopAcq(s_$moduleName);
-%N%					}
+%N%					mtdc32_stopAcq(s_$moduleName);
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 
