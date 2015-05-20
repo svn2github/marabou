@@ -826,12 +826,15 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	int sts;
 
 	dataStart = pointer;
-
+        /*
 	tryIt = 20;
 	while (tryIt-- && !madc32_dataReady(s)) { usleep(1000); }
+        */
 
 	numData = (int) madc32_getFifoLength(s);	
 	nd = (int) madc32_getFifoLength(s);
+	  
+	tryIt = 10;
 	while (tryIt-- && (nd != numData)) {
 		numData = nd;
 		nd = (int) madc32_getFifoLength(s);

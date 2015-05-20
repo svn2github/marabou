@@ -784,7 +784,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 	int bmaError;
 	int bmaCount;
 	int tryIt;
-	int numData;
+	int numData, nd;
 	int chn;
 
 	uint32_t ptrloc;
@@ -797,8 +797,21 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 /*	tryIt = 20;
 	while (tryIt-- && !mqdc32_dataReady(s)) { usleep(1000); } */
 
-	numData = (int) mqdc32_getFifoLength(s);
+	numData = (int) mqdc32_getFifoLength(s);	
+	nd = (int) mqdc32_getFifoLength(s);
+	
+	tryIt = 10;
+	while (tryIt-- && (nd != numData)) {
+		numData = nd;
+		nd = (int) mqdc32_getFifoLength(s);
+	}
 	if (numData == 0) return(0);
+
+	if (tryIt <= 0) {
+		sprintf(msg, "[%sreadout] %s: Error while reading event data (numData=%d != %d)", s->mpref, s->moduleName, numData, nd);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		return 0;
+	}
 
 	if (s->blockXfer) {
 		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));

@@ -896,11 +896,13 @@ int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer)
 
 	dataStart = pointer;
 
-	tryIt = 20;
-	while (tryIt-- && !mtdc32_dataReady(s)) { usleep(1000); }
+/*	tryIt = 20;
+	while (tryIt-- && !mtdc32_dataReady(s)) { usleep(1000); } */
 
 	numData = (int) mtdc32_getFifoLength(s);	
 	nd = (int) mtdc32_getFifoLength(s);
+	
+	tryIt = 10;
 	while (tryIt-- && (nd != numData)) {
 		numData = nd;
 		nd = (int) mtdc32_getFifoLength(s);
