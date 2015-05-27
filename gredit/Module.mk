@@ -23,7 +23,7 @@ GREDITO        := $(GREDITS:.cxx=.o)
 GREDITDEP      := $(GREDITO:.o=.d) $(GREDITDO:.o=.d)
 
 GREDITLIB      := $(LPATH)/libGrEdit.$(SOEXT)
-
+GREDITRMAP     := $(LPATH)/libGrEdit.rootmap
 CDLMAINO    := $(MODDIRS)/main.o
 CDLO        := $(filter-out $(CDLMAINO),$(GREDITO))
 
@@ -44,6 +44,7 @@ MRBUTILSLIB   := $(LPATH)/libTMrbUtils.$(SOEXT)
 MRBGUTILSLIB  := $(LPATH)/libTGMrbUtils.$(SOEXT)
 
 OCDLLIBS      := $(GREDITLIB) $(MRBGUTILSLIB) $(MRBUTILSLIB)
+GREDITLIBDEP   := $(ROOTSYS)/lib/libGraf.so  $(MRBGUTILSLIB) $(MRBUTILSLIB)
 
 ##### local rules #####
 
@@ -63,6 +64,7 @@ $(GREDITLIB):     $(GREDITDO) $(GREDITO) $(MAINLIBS) $(GREDITLIBDEP)
 			echo "cp  $(GREDITPCM)----------------------" ; \
 			cp $(GREDITPCM) $(LPATH); \
 		fi)
+		@$(RLIBMAP) -o $(GREDITRMAP) -l $(GREDITLIB) -d $(GREDITLIBDEP) -c $(GREDITL)
 
 $(GREDITDS):     $(GREDITH) $(GREDITL)
 		@echo "Generating dictionary: $@...."
