@@ -2850,8 +2850,8 @@ void FitHist::ExpandProject(Int_t what)
 		Double_t sum = 0;
 //      Double_t x = 0;
 		TF1 * func = NULL;
-		Double_t apol = 0;
-		Double_t cpol = 0;
+//		Double_t apol = 0;
+//		Double_t cpol = 0;
 		if (what == projectf || what == projectx_func) {
 			TIter next(fSelHist->GetListOfFunctions());
 			while (TObject * obj =(TObject *)next()) {
@@ -2870,8 +2870,8 @@ void FitHist::ExpandProject(Int_t what)
 //				Hpr::WarnBox("Function must be a pol1");
 //				return;
 //			}
-			apol = func->GetParameter(1);
-			cpol = func->GetParameter(0);
+//			apol = func->GetParameter(1);
+//			cpol = func->GetParameter(0);
 	
 		}
 		TAxis *xaxis = fOrigHist->GetXaxis();
