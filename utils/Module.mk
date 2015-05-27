@@ -23,6 +23,8 @@ UTILSO        := $(UTILSS:.cxx=.o)
 UTILSDEP      := $(UTILSO:.o=.d) $(UTILSDO:.o=.d)
 
 UTILSLIB      := $(LPATH)/libTMrbUtils.$(SOEXT)
+UTILSRMAP     := $(LPATH)/libTMrbUtils.rootmap
+UTILSLIBDEP   := $(ROOTSYS)/lib/libGraf.so
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(UTILSH))
@@ -47,6 +49,7 @@ $(UTILSLIB):     $(UTILSDO) $(UTILSO) $(MAINLIBS) $(UTILSLIBDEP)
 			echo "cp  $(UTILSPCM)----------------------" ; \
 			cp $(UTILSPCM) $(LPATH); \
 		fi)
+		@$(RLIBMAP) -o $(UTILSRMAP) -l $(UTILSLIB) -d $(UTILSLIBDEP) -c $(UTILSL)
 
 $(UTILSDS):     $(UTILSH) $(UTILSL)
 		@echo "Generating dictionary $@..."
