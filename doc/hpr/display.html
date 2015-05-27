@@ -13,10 +13,12 @@
 <a href=#Help_on_Mark>Use of Marks</a><br> 
 <a href=#Help_on_Highlight>Highlight marked area</a><br> 
 <a href=#Help_on_Project>Project, Profile</a><br> 
+<a href=#Help_on_ProjectX_WithinFunction> Project on X_Cut WithinFunction</a><br> 
 <a href=#Help_on_ProjectF>ProjectF, Project along function</a><br> 
 <a href=#Help_on_ProjectBoth>Project Both</a><br> 
 <a href=#Help_on_Transpose>Transpose</a><br> 
 <a href=#Help_on_Rotate>Rotate</a><br> 
+<a href=#Help_on_Rotate_by_90>Rotate by 90 degrees</a><br> 
 <a href=#Help_on_Superimpose>Superimpose</a><br> 
 <a href=#Help_on_GetRange>Show in same range</a><br> 
 <a href=#Help_on_ShowStat>Show statistics only</a><br> 
@@ -84,7 +86,13 @@ For calibration using a non linear function consult <a href=calibration.html>thi
 The commands <b>ProjectX</b>, <b>ProjectY</b>, <b>ProfileX</b> produce projections
 resp. profiles on the X or Y axis for a 2-dim histogram. 
 Active cuts will be applied.
- 
+
+<a NAME=Help_on_ProjectX_WithinFunction></a>
+<H3>Project on X with cut around a function</H3
+To use this command a function must be defined or read from
+a file and drawn. The parameter fRoad2 defined by the resource:
+\"Set2DimOptDialog.fRoad2\" default 50 is used to apply the cut
+function value +- fRoad2
 <a NAME=Help_on_ProjectF></a>
 <H3>Project along function</H3>
 
@@ -96,7 +104,7 @@ shifted such that its Y - value equal to the function
 value is moved to zero. So the resulting projection on the
 Y-axis will be centered at zero.
 
-This allows a banana shaped distribution to be straightened
+This allows e.g. a banana shaped distribution to be straightened
 so the banana shows its real thickness in the Y-projection.
 
 <a NAME=Help_on_ProjectBoth></a>
@@ -128,6 +136,10 @@ Alternativly the angle may be directly given in degrees.
 Note: This is normally only useful if X and Y-axis have the 
 same scale. The absolute values of the scales are no longer
 meaningful.
+
+<a NAME=Help_on_Rotate_by_90></a>
+<H3>Rotate a 2-dim histogram</H3>
+Rotate a 2-dim histogram by 90 degree counter-clockwise
 
 <a NAME=Help_on_GetRange></a>
 <H3>Show in same range</H3>
