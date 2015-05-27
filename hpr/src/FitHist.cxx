@@ -93,7 +93,7 @@ extern Double_t gTranspBelow;
 extern Double_t my_transfer_function(const Double_t *x, const Double_t * /*param*/);
 
 enum dowhat { expand, projectx, projecty, statonly, projectf,
-		 projectboth , profilex, profiley};
+		 projectboth , profilex, profiley, projectx_func};
 
 ClassImp(FitHist)
 
@@ -309,6 +309,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fTwoDimLogX = env.GetValue("Set2DimOptDialog.fTwoDimLogX", 0);
 	fTwoDimLogY = env.GetValue("Set2DimOptDialog.fTwoDimLogY", 0);
 	fTwoDimLogZ = env.GetValue("Set2DimOptDialog.fTwoDimLogZ", 0);
+	fRoad2      = env.GetValue("Set2DimOptDialog.fRoad2", 50);
 	
 	fDrawOpt3Dim   = env.GetValue("Set3DimOptDialog.fDrawOpt3Dim", "");
 	fShowZScale3Dim        = env.GetValue("Set3DimOptDialog.fShowZScale", 1);
@@ -2381,12 +2382,19 @@ void FitHist::ProjectBoth()
 
 //____________________________________________________________________________________
 
-// Show projection of histograms
+// Show X projection of histograms
 
 void FitHist::ProjectX()
 {
-//   enum dowhat {expand, projectx, projecty, statonly};
 	ExpandProject(projectx);
+}
+//____________________________________________________________________________________
+
+// Show X projection of histograms within a window in y along functiomn
+
+void FitHist::ProjectX_Func()
+{
+	ExpandProject(projectx_func);
 }
 
 //____________________________________________________________________________________
@@ -2608,26 +2616,38 @@ void FitHist::Rotate(Int_t sense)
 
 // Transpose 2dim histograms
 
-void FitHist::Transpose()
+void FitHist::Transpose(Int_t invert)
 {
+	// exchange x an y axis, if invert = 1, invert result x axis
 	if (!is2dim(fSelHist)) {
 		Hpr::WarnBox("Only 2dim hist can be transposed");
 		return;
 	}
 	TH2F *h2 = (TH2F *)fOrigHist;
 	TString hname(h2->GetName());
-	hname += "_transp";
 	TString htitle(h2->GetTitle());
-	htitle += "_transp";
+	if (invert == 1) {
+		hname += "_rot90";
+		htitle += "_rot90";
+	} else {
+		hname += "_transp";
+		htitle += "_transp";
+	}
 	TAxis *xa = h2->GetXaxis();
 	TAxis *ya = h2->GetYaxis();
+	Int_t nbinsX = xa->GetNbins();
 	TH2F *h2_transp = new TH2F(hname, htitle,
 										ya->GetNbins(), ya->GetXmin(), ya->GetXmax(),
 										xa->GetNbins(), xa->GetXmin(), xa->GetXmax());
-	for (Int_t ix = 0; ix <= xa->GetNbins(); ix++) {
-		for (Int_t iy = 0; iy <= ya->GetNbins(); iy++) {
-			h2_transp->SetBinContent(iy, ix, h2->GetCellContent(ix, iy));
-			h2_transp->SetBinError  (iy, ix, h2->GetCellError  (ix, iy));
+	for (Int_t ix = 1; ix <= nbinsX; ix++) {
+		for (Int_t iy = 1; iy <= ya->GetNbins(); iy++) {
+			if (invert == 1 ) {
+				h2_transp->SetBinContent(iy, nbinsX - ix +1, h2->GetBinContent(ix, iy));
+				h2_transp->SetBinError  (iy, nbinsX - ix +1, h2->GetBinError  (ix, iy));
+			} else {
+				h2_transp->SetBinContent(iy, ix, h2->GetBinContent(ix, iy));
+				h2_transp->SetBinError  (iy, ix, h2->GetBinError  (ix, iy));
+			}
 		}
 	}
 	h2_transp->SetEntries(h2->GetEntries());
@@ -2754,7 +2774,7 @@ void FitHist::ExpandProject(Int_t what)
 {
 //   enum dowhat {expand, projectx, projecty, statonly, profilex, profiley};
 
-//   cout << "enter ExpandProject(Int_t what)" << endl;
+//   cout << "enter ExpandProject(Int_t what)" << what << endl;
 	if (!fSelPad) {
 		cout << "Cant find pad, call Debugger" << endl;
 	}
@@ -2767,7 +2787,7 @@ void FitHist::ExpandProject(Int_t what)
 //   cout << "fBinX_1,2 " << fBinX_1 << " " << fBinX_2 << endl;
 //   cout << "fBinY_1,2 " << fBinY_1 << " " << fBinY_2 << endl;
 //  1-dim case
-	if (!is2dim(fSelHist)) {
+	if (fSelHist->GetDimension() == 1 ) {
 		Double_t x = 0, cont = 0;
 		Double_t sum = 0;
 		Double_t sumx = 0;
@@ -2783,7 +2803,6 @@ void FitHist::ExpandProject(Int_t what)
 		fBinlx = XBinNumber(fOrigHist, fExplx + 0.5 * bw);
 		fBinux = XBinNumber(fOrigHist, fExpux - 0.5 * bw);
 		Int_t NbinX = fBinux - fBinlx + 1;
-//      cout << "binlx,ux " << binlx << " " << binux << endl;
 
 		if (what == expand) {
 			if (fExpHist)
@@ -2833,7 +2852,7 @@ void FitHist::ExpandProject(Int_t what)
 		TF1 * func = NULL;
 		Double_t apol = 0;
 		Double_t cpol = 0;
-		if (what == projectf) {
+		if (what == projectf || what == projectx_func) {
 			TIter next(fSelHist->GetListOfFunctions());
 			while (TObject * obj =(TObject *)next()) {
 				if (is_a_function(obj)) {
@@ -2847,10 +2866,10 @@ void FitHist::ExpandProject(Int_t what)
 				return;
 			}
 			TString tit = func->GetTitle();
-			if (tit != "pol1") {
-				Hpr::WarnBox("Function must be a pol1");
-				return;
-			}
+//			if (tit != "pol1") {
+//				Hpr::WarnBox("Function must be a pol1");
+//				return;
+//			}
 			apol = func->GetParameter(1);
 			cpol = func->GetParameter(0);
 	
@@ -2880,8 +2899,11 @@ void FitHist::ExpandProject(Int_t what)
 //       <<fBinlx << " "  << fBinux<< " "  << fBinly<< " "  << fBinuy<< endl;
 		Int_t nperbinX = 1, nperbinY = 1;
 		TString pname(fOrigHist->GetName());
-		if (what == projectx ||what == projectboth) {
+		if (what == projectx ||what == projectx_func || what == projectboth) {
 			pname += "_ProjX";
+			if ( what == projectx_func ) {
+				pname += "_func";
+			}
 			pname += fSerialPx;
 
 			fProjHistX = new TH1F(pname, fOrigHist->GetTitle(),
@@ -2932,13 +2954,20 @@ void FitHist::ExpandProject(Int_t what)
 		UpdateCut();
 		int nc = Ncuts();
 		for (Int_t i = 0; i <= fOrigHist->GetNbinsX() + 1; i++) {
+			Double_t yf = 0;
+			xcent = xaxis->GetBinCenter(i);
+			if (func && what == projectx_func ) {
+				// calculate function value +- road width/2
+				yf = func->Eval(xcent);
+				fBinly = ya->FindBin(yf - fRoad2);
+				fBinuy = ya->FindBin(yf + fRoad2);
+			}
 			for (Int_t j = 0; j <= fOrigHist->GetNbinsY() + 1; j++) {
-				xcent = xaxis->GetBinCenter(i);
 				ycent = yaxis->GetBinCenter(j);
 				if (nc && !InsideCut((float) xcent, (float) ycent))
 					continue;
 				Stat_t cont = fOrigHist->GetCellContent(i, j);
-				if (what == projectx || what == projectboth) {
+				if (what == projectx || what == projectboth || what == projectx_func) {
 					if (j >= fBinly && j <= fBinuy)
 						fProjHistX->Fill(xcent, cont);
 				}
@@ -2948,8 +2977,8 @@ void FitHist::ExpandProject(Int_t what)
 				}
 				if (what == projectf) {
 					if (i >= fBinlx && i <= fBinux) {
-//						xcent -= func->Eval(xcent);
-						Double_t dist = (apol*xcent -ycent +cpol)/TMath::Sqrt(apol*apol +1);
+						Double_t dist = ycent - func->Eval(xcent);
+//						Double_t dist = (apol*xcent -ycent +cpol)/TMath::Sqrt(apol*apol +1);
 						fProjHistY->Fill(dist, cont);
 					}
 				}
@@ -3097,7 +3126,7 @@ void FitHist::ExpandProject(Int_t what)
 			naxis->Draw();
 			fCanvas->Update();
 			return;
-		} else if (what == projectx) {
+		} else if (what == projectx ||what == projectx_func  ) {
 			gHpr->ShowHist(fProjHistX);
 			return;
 		} else if (what == projecty || what == projectf) {

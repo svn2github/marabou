@@ -50,6 +50,7 @@ private:
 	Axis_t  fRangeLowX, fRangeUpX, fRangeLowY, fRangeUpY;
 	Axis_t  fOrigLowX, fOrigUpX, fOrigLowY, fOrigUpY;
 	Double_t fFrameX1, fFrameX2,fFrameY1,fFrameY2;
+	Double_t fRoad2;
 	Bool_t fSetRange;
 	Bool_t fKeepParameters;
 	Bool_t fCallMinos;
@@ -308,10 +309,11 @@ public:
 	Int_t FitPolyMarks(Int_t);              // fit  polynoms to marks
 	void  Expand();                     // expand
 	void  ProjectX();
+	void  ProjectX_Func();
 	void  ProjectY();
 	void  ProjectBoth();
 	void  ProjectF();                   // project along a function
-	void  Transpose();
+	void  Transpose(Int_t invert);
 	void  Rotate(Int_t sense);
 	void OutputStat(Int_t fill_hist);
 //   void ListFunctions();

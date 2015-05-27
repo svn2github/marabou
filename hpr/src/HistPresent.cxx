@@ -854,6 +854,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 		maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "GrCanvas"),      maxkey);
 		maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "HTCanvas"),      maxkey);
 		maxkey = TMath:: Max(GetObjects(lofG, gDirectory, "TGraph"),       maxkey);
+		maxkey = TMath:: Max(GetObjects(lofG, gDirectory, "TGraphErrors"), maxkey);
 		maxkey = TMath:: Max(GetObjects(lofG, gDirectory, "TGraph2D"),       maxkey);
 		maxkey = TMath:: Max(GetObjects(lofUc, gDirectory, "FhContour"),   maxkey);
 		maxkey = TMath:: Max(GetObjects(lofW1, gDirectory, "TMrbWindowF"), maxkey);

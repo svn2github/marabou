@@ -159,9 +159,11 @@ enum ERootCanvasCommands {
 	kFHRotateClock,
 	kFHRotateCClock,
 	kFHTranspose,
+	kFHTransposeInv,
 	kFHProfileX,
 	kFHProfileY,
 	kFHProjectX,
+	kFHProjectX_func,
 	kFHProjectY,
 	kFHProjectF,
 	kFHLiveSliceX,
@@ -894,7 +896,10 @@ again:
 							fFitHist->Rotate(1);
 							break;
 						case kFHTranspose:
-							fFitHist->Transpose();
+							fFitHist->Transpose(0);
+							break;
+						case kFHTransposeInv:
+							fFitHist->Transpose(1);
 							break;
 						case kFHProfileX:
 							fFitHist->ProfileX();
@@ -904,6 +909,9 @@ again:
 							break;
 						case kFHProjectX:
 							fFitHist->ProjectX();
+							break;
+						case kFHProjectX_func:
+							fFitHist->ProjectX_Func();
 							break;
 						case kFHProjectY:
 
@@ -1620,7 +1628,8 @@ void HandleMenus::BuildMenus()
 				fDisplayMenu->AddEntry("ProjectX",     kFHProjectX   );
 				fDisplayMenu->AddEntry("ProjectY",     kFHProjectY   );
 				fDisplayMenu->AddEntry("ProjectBoth",  kFHProjectB   );
-				fDisplayMenu->AddEntry("ProjectAlongFunction", kFHProjectF);
+				fDisplayMenu->AddEntry("Project_X_WithinFunction", kFHProjectX_func);
+				fDisplayMenu->AddEntry("Project_Y_AlongFunction", kFHProjectF);
 				fDisplayMenu->AddEntry("Live slice X", kFHLiveSliceX);
 				fDisplayMenu->UnCheckEntry(kFHLiveSliceX);
 				fDisplayMenu->AddEntry("Live slice Y", kFHLiveSliceY);
@@ -1629,6 +1638,7 @@ void HandleMenus::BuildMenus()
 				fDisplayMenu->AddEntry("ProfileY",     kFHProfileY   );
 				fDisplayMenu->AddSeparator();
 				fDisplayMenu->AddEntry("Transpose",   kFHTranspose  );
+				fDisplayMenu->AddEntry("Rotate by 90 degree ccw",   kFHTransposeInv  );
 				fDisplayMenu->AddEntry("Rotate Clockwise", kFHRotateClock);
 				fDisplayMenu->AddEntry("Rotate Counter Clockwise", kFHRotateCClock);
 				fDisplayMenu->AddSeparator();
@@ -1761,7 +1771,7 @@ void HandleMenus::BuildMenus()
 			fCascadeMenu2->AddEntry("Pol 8", kFH_CASCADE2_8);
 			fCascadeMenu2->AddEntry("User Formula", kFH_CASCADE2_U);
 		}
-		if ( fFitHist ) {
+//		if ( fFitHist ) {
 		fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
 			if(nDim == 2){
 				TGPopupMenu *g2p = new TGPopupMenu(fRootCanvas->GetParent());
@@ -1778,7 +1788,8 @@ void HandleMenus::BuildMenus()
 				fFitMenu->AddEntry("Execute User FitSlices Y Macro", kFHFitSlicesYUser);
 				fFitMenu->AddSeparator();
 			} else {
-	//			if ( fFitHist )
+//				if ( fFitHist )
+//  also in case of EmptyHistogram
 					fFitMenu->AddEntry("Gaussians (with tail)",   kFHFitGausLBg);
 				fFitMenu->AddEntry("Exponential",     kFHFitExp);
 				fFitMenu->AddEntry("Polynomial",      kFHFitPol);
@@ -1786,7 +1797,7 @@ void HandleMenus::BuildMenus()
 				fFitMenu->AddEntry("Fill Random acc Function",    kFHFillRandom);
 			}
 //	}
-//		if ( fFitHist ) {
+		if ( fFitHist ) {
 			fFitMenu->AddSeparator();
 			fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUser);
 			fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUser);

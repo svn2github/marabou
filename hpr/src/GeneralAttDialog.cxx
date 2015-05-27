@@ -223,13 +223,16 @@ ____________________________________________________________\n\
 	fRow_lab->Add(new TObjString("CheckButton_ Adjust min Y to min cont, (1dim)"));
    fAdjustMinYButton = ind;
 	fValp[ind++] = &fAdjustMinY;
+*/
+   fRow_lab->Add(new TObjString("CommentOnly_   Parameters for 2-dim histograms"));
+   fValp[ind++] = &dummy;
 	fRow_lab->Add(new TObjString("PlainIntVal_            Fit2Dim Content Limit"));
 	fValp[ind++] = &fContentLowLimit;
 	fRow_lab->Add(new TObjString("PlainIntVal_    Fit2Dim Vertical Adjust Limit"));
 	fValp[ind++] = &fVertAdjustLimit;
 	fRow_lab->Add(new TObjString("CheckButton_Dont draw cells with 0 cont(LEGO)"));
 	fValp[ind++] = &fLegoSuppressZero;
-*/
+
    fRow_lab->Add(new TObjString("CommentOnly_       Miscellaneous       "));
    fValp[ind++] = &dummy;
 	fRow_lab->Add(new TObjString("CheckButton_        Suppress warning messages"));
