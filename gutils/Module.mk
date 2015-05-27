@@ -23,6 +23,9 @@ GUTILSO        := $(GUTILSS:.cxx=.o)
 GUTILSDEP      := $(GUTILSO:.o=.d) $(GUTILSDO:.o=.d)
 
 GUTILSLIB      := $(LPATH)/libTGMrbUtils.$(SOEXT)
+GUTILSRMAP     := $(LPATH)/libTGMrbUtils.rootmap
+GUTILSLIBDEP   := $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libGui.so $(ROOTSYS)/lib/libGed.so $(LPATH)/libTMrbUtils.so
+
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GUTILSH))
@@ -49,6 +52,7 @@ $(GUTILSLIB):     $(GUTILSDO) $(GUTILSO) $(MAINLIBS) $(GUTILSLIBDEP)
 			echo "cp  $(GUTILSPCM)----------------------" ; \
 			cp $(GUTILSPCM) $(LPATH); \
 		fi)
+		@$(RLIBMAP) -o $(GUTILSRMAP) -l $(GUTILSLIB) -d $(GUTILSLIBDEP) -c $(GUTILSL)
 
 $(GUTILSDS):     $(GUTILSH) $(GUTILSL)
 		@echo "Generating dictionary $@..."
