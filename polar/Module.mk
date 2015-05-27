@@ -23,6 +23,8 @@ POLARO        := $(POLARS:.cxx=.o)
 POLARDEP      := $(POLARO:.o=.d) $(POLARDO:.o=.d)
 
 POLARLIB      := $(LPATH)/libTPolControl.$(SOEXT)
+POLARRMAP     := $(LPATH)/libTPolControl.rootmap
+POLARLIBDEP   := $(LPATH)/libTMrbUtils.so
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(POLARH))
@@ -47,6 +49,7 @@ $(POLARLIB):     $(POLARDO) $(POLARO) $(MAINLIBS) $(POLARLIBDEP)
 			echo "cp  $(POLARPCM)----------------------" ; \
 			cp $(POLARPCM) $(LPATH); \
 		fi)
+		@$(RLIBMAP) -o $(POLARRMAP) -l $(POLARLIB) -d $(POLARLIBDEP) -c $(POLARL)
 
 $(POLARDS):     $(POLARH) $(POLARL)
 		@echo "Generating dictionary $@..."
