@@ -23,6 +23,8 @@ EXPCONFO        := $(EXPCONFS:.cxx=.o)
 EXPCONFDEP      := $(EXPCONFO:.o=.d) $(EXPCONFDO:.o=.d)
 
 EXPCONFLIB      := $(LPATH)/libTMrbConfig.$(SOEXT)
+EXPCONFRMAP      := $(LPATH)/libTMrbConfig.rootmap
+EXPCONFLIBDEP   := $(LPATH)/libTMrbUtils.so
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
@@ -47,6 +49,7 @@ $(EXPCONFLIB):     $(EXPCONFDO) $(EXPCONFO) $(MAINLIBS) $(EXPCONFLIBDEP)
 			echo "cp  $(EXPCONFPCM)----------------------" ; \
 			cp $(EXPCONFPCM) $(LPATH); \
 		fi)
+		@$(RLIBMAP) -o $(EXPCONFRMAP) -l $(EXPCONFLIB) -d $(EXPCONFLIBDEP) -c $(EXPCONFL)
 
 $(EXPCONFDS):     $(EXPCONFH) $(EXPCONFL)
 		@echo "Generating dictionary $@..."
