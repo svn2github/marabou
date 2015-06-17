@@ -52,7 +52,9 @@ $(GUTILSLIB):     $(GUTILSDO) $(GUTILSO) $(MAINLIBS) $(GUTILSLIBDEP)
 			echo "cp  $(GUTILSPCM)----------------------" ; \
 			cp $(GUTILSPCM) $(LPATH); \
 		fi)
+ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(GUTILSRMAP) -l $(GUTILSLIB) -d $(GUTILSLIBDEP) -c $(GUTILSL)
+endif
 
 $(GUTILSDS):     $(GUTILSH) $(GUTILSL)
 		@echo "Generating dictionary $@..."
