@@ -49,7 +49,9 @@ $(UTILSLIB):     $(UTILSDO) $(UTILSO) $(MAINLIBS) $(UTILSLIBDEP)
 			echo "cp  $(UTILSPCM)----------------------" ; \
 			cp $(UTILSPCM) $(LPATH); \
 		fi)
+ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(UTILSRMAP) -l $(UTILSLIB) -d $(UTILSLIBDEP) -c $(UTILSL)
+endif
 
 $(UTILSDS):     $(UTILSH) $(UTILSL)
 		@echo "Generating dictionary $@..."
