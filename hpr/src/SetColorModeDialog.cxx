@@ -23,6 +23,8 @@ Color_t SetColorModeDialog::fEndColor;
 Int_t   SetColorModeDialog::fStartColorIndex = 1;
 Int_t   SetColorModeDialog::fNofTransLevels = 20;
 Int_t   SetColorModeDialog::fNofGreyLevels = 20;
+Int_t   SetColorModeDialog::fPaletteNumber = 57;
+Int_t   SetColorModeDialog::fByNumber = 0;
 Int_t * SetColorModeDialog::fPalette = NULL;
 Int_t * SetColorModeDialog::fGreyPalette = NULL;
 Int_t * SetColorModeDialog::fGreyPaletteInv = NULL;
@@ -42,6 +44,7 @@ Int_t   SetColorModeDialog::fMbw;
 Int_t   SetColorModeDialog::fMbwinv;
 Int_t   SetColorModeDialog::fMrbow;
 Int_t   SetColorModeDialog::fMDeepSea;
+Int_t   SetColorModeDialog::fMBird;
 Int_t   SetColorModeDialog::fMBlackBody;
 Int_t   SetColorModeDialog::fMTwoColHue;
 //__________________________________________________________________
@@ -55,6 +58,34 @@ static const Char_t helptext[] =
 "This determines which color palette should be used.\n\
 Nice effects may be produced playing with RGB (Red/Green/Blue)\n\
 or HLS (Hue/Lightness/Saturation) transitions\n\
+\n\
+As of Root Vers 6.04.00 the following palettes are predefined:\n\
+With Root Vers 5.34 only 51 - 55 are meaningful.\n\
+\n\
+   kDeepSea=51,          kGreyScale=52,    kDarkBodyRadiator=53,\n\
+   kBlueYellow= 54,      kRainBow=55,      kInvertedDarkBodyRadiator=56,\n\
+   kBird=57,             kCubehelix=58,    kGreenRedViolet=59,\n\
+   kBlueRedYellow=60,    kOcean=61,        kColorPrintableOnGrey=62,\n\
+   kAlpine=63,           kAquamarine=64,   kArmy=65,\n\
+   kAtlantic=66,         kAurora=67,       kAvocado=68,\n\
+   kBeach=69,            kBlackBody=70,    kBlueGreenYellow=71,\n\
+   kBrownCyan=72,        kCMYK=73,         kCandy=74,\n\
+   kCherry=75,           kCoffee=76,       kDarkRainBow=77,\n\
+   kDarkTerrain=78,      kFall=79,         kFruitPunch=80,\n\
+   kFuchsia=81,          kGreyYellow=82,   kGreenBrownTerrain=83,\n\
+   kGreenPink=84,        kIsland=85,       kLake=86,\n\
+   kLightTemperature=87, kLightTerrain=88, kMint=89\n\
+   kNeon=90,             kPastel=91,       kPearl=92,\n\
+   kPigeon=93,           kPlum=94,         kRedBlue=95,\n\
+   kRose=96,             kRust=97,         kSandyTerrain=98,\n\
+   kSienna=99,           kSolar=100,       kSouthWest=101,\n\
+   kStarryNight=102,     kSunset=103,      kTemperatureMap=104,\n\
+   kThermometer=105,     kValentine=106,   kVisibleSpectrum=107,\n\
+   kWaterMelon=108,      kCool=109,        kCopper=110,\n\
+   kGistEarth=111\n\
+   \n\
+For more look at:\n\
+https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
 ";
 
    fRgbSlider = NULL;
@@ -72,21 +103,25 @@ or HLS (Hue/Lightness/Saturation) transitions\n\
    static TString rgbcmd("SetBrightness()");
    fRow_lab = new TList();
 
-   fRow_lab->Add(new TObjString("RadioButton_      Rainbow colors"));
-   fValp[ind++] = &fMrbow;
+   fRow_lab->Add(new TObjString("RadioButton_    Select Palette"));
+   fValp[ind++] = &fByNumber;
+   fRow_lab->Add(new TObjString("PlainIntVal+Palette Number"));
+   fValp[ind++] = &fPaletteNumber;
    fRow_lab->Add(new TObjString("PlainIntVal+Nof Levels"));
    fValp[ind++] = &fNofTransLevels;
-   fRow_lab->Add(new TObjString("RadioButton_Grey level, high=white"));
+   fRow_lab->Add(new TObjString("RadioButton_Grey, high=white"));
    fValp[ind++] = &fMbw;
-   fRow_lab->Add(new TObjString("RadioButton+Grey level, high=black"));
+   fRow_lab->Add(new TObjString("RadioButton+Grey, high=black"));
    fValp[ind++] = &fMbwinv;
+   fRow_lab->Add(new TObjString("RadioButton+     Two Col Hue"));
+   fValp[ind++] = &fMTwoColHue;
 	
-   fRow_lab->Add(new TObjString("RadioButton_Deep Sea"));
-   fValp[ind++] = &fMDeepSea;
+   fRow_lab->Add(new TObjString("RadioButton_   Rainbow colors"));
+   fValp[ind++] = &fMrbow;
+   fRow_lab->Add(new TObjString("RadioButton+                  Bird"));
+   fValp[ind++] = &fMBird;
    fRow_lab->Add(new TObjString("RadioButton+Black Body Rad"));
    fValp[ind++] = &fMBlackBody;
-   fRow_lab->Add(new TObjString("RadioButton+Two Col Hue"));
-   fValp[ind++] = &fMTwoColHue;
 	
    fRow_lab->Add(new TObjString("CommentOnly_User defined Palettes"));
 	fValp[ind++] = &dummy;
@@ -152,12 +187,14 @@ void SetColorModeDialog::SetColorMode()
 	}
    if        ( fMrbow ) {
       gStyle->SetPalette(1, NULL);
-	} else if ( fMDeepSea ) {
-      gStyle->SetPalette(51);
+	} else if ( fMBird ) {
+      gStyle->SetPalette(57);
 	} else if ( fMBlackBody ) {
       gStyle->SetPalette(53);
 	} else if ( fMTwoColHue ) {
       gStyle->SetPalette(54);
+	} else if ( fByNumber ) {
+      gStyle->SetPalette(fPaletteNumber);
 	} else {
       gStyle->SetPalette(fNofColorLevels, fPalette);
 	}
@@ -185,7 +222,7 @@ void SetColorModeDialog::SetBrightness()
    val[2] = (Int_t)(100 * SetColorModeDialog::fEnhenceBlue);
 
    Int_t id  = 1;
-   fRgbSlider = new TGMrbSliders("Set Brightness", 3, min, max, val, lab, NULL,
+   fRgbSlider = new TGMrbSliders("Set RGB", 3, min, max, val, lab, NULL,
    fWindow, id);
    fRgbSlider->Connect("SliderEvent(Int_t, Int_t)",this->ClassName() , this,
                "AdjustBrightness(Int_t, Int_t)");
@@ -439,13 +476,16 @@ void SetColorModeDialog::SetTransLevelsHLS()
 void SetColorModeDialog::SaveDefaults()
 {
    TEnv env(".hprrc");
+   env.SetValue("SetColorModeDialog.fPaletteNumber", fPaletteNumber);
+   env.SetValue("SetColorModeDialog.fByNumber", fByNumber);
    env.SetValue("SetColorModeDialog.fMtransRGB", fMtransRGB);
    env.SetValue("SetColorModeDialog.fMtransHLS", fMtransHLS);
    env.SetValue("SetColorModeDialog.fMbw", fMbw);
    env.SetValue("SetColorModeDialog.fMbwinv", fMbwinv);
    env.SetValue("SetColorModeDialog.fMrbow", fMrbow);
-   env.SetValue("SetColorModeDialog.fMbw", fMDeepSea);
-   env.SetValue("SetColorModeDialog.fMbwinv", fMBlackBody);
+   env.SetValue("SetColorModeDialog.fMDeepSea", fMDeepSea);
+   env.SetValue("SetColorModeDialog.fMBird", fMBird);
+   env.SetValue("SetColorModeDialog.fMBlackBody", fMBlackBody);
    env.SetValue("SetColorModeDialog.fMTwoColHue", fMTwoColHue);
    env.SetValue("SetColorModeDialog.NofTransLevels", fNofTransLevels);
    env.SetValue("SetColorModeDialog.StartColor", fStartColor);
@@ -493,12 +533,15 @@ void SetColorModeDialog::CloseDialog()
 void SetColorModeDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
+   fPaletteNumber   = env.GetValue("SetColorModeDialog.fPaletteNumber", 57);
+   fByNumber   = env.GetValue("SetColorModeDialog.fByNumber", 0);
    fMtransRGB  = env.GetValue("SetColorModeDialog.fMtransRGB", 0);
    fMtransHLS  = env.GetValue("SetColorModeDialog.fMtransHLS", 0);
    fMbw        = env.GetValue("SetColorModeDialog.fMbw", 0);
    fMbwinv     = env.GetValue("SetColorModeDialog.fMbwinv", 0);
    fMrbow      = env.GetValue("SetColorModeDialog.fMrbow", 1);
    fMDeepSea   = env.GetValue("SetColorModeDialog.fMDeepSea", 0);
+   fMBird      = env.GetValue("SetColorModeDialog.fMBird", 0);
    fMBlackBody = env.GetValue("SetColorModeDialog.fMBlackBody", 0);
    fMTwoColHue = env.GetValue("SetColorModeDialog.fMTwoColHue", 0);
    fNofTransLevels   = env.GetValue("SetColorModeDialog.NofTransLevels", 20);

@@ -113,8 +113,9 @@ $(HPRLIB):     $(HPRDO) $(HPRO)
 			echo "cp  $(HPRPCM)----------------------" ; \
 			cp $(HPRPCM) $(LPATH); \
 		fi)
+ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(HPRRMAP) -l $(HPRLIB) -d $(HPRLIBDEP) -c $(HPRL)
-
+endif
 
 $(HPRDUMMYLIB):     $(HPRDUMMY)
 		   

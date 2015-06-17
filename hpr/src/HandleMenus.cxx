@@ -1638,7 +1638,7 @@ void HandleMenus::BuildMenus()
 				fDisplayMenu->AddEntry("ProfileY",     kFHProfileY   );
 				fDisplayMenu->AddSeparator();
 				fDisplayMenu->AddEntry("Transpose",   kFHTranspose  );
-				fDisplayMenu->AddEntry("Rotate by 90 degree ccw",   kFHTransposeInv  );
+				fDisplayMenu->AddEntry("Rotate by 90 deg Clockwise",   kFHTransposeInv);
 				fDisplayMenu->AddEntry("Rotate Clockwise", kFHRotateClock);
 				fDisplayMenu->AddEntry("Rotate Counter Clockwise", kFHRotateCClock);
 				fDisplayMenu->AddSeparator();

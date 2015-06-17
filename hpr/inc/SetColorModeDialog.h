@@ -24,10 +24,12 @@ private:
 	static Int_t fMbw;
 	static Int_t fMbwinv;
 	static Int_t fMrbow;
+	static Int_t fMBird; 
 	static Int_t fMDeepSea; 
 	static Int_t fMBlackBody;
 	static Int_t fMTwoColHue;	
-	
+	static Int_t fByNumber;
+	static Int_t fPaletteNumber;
    static Int_t fStartColorIndex;
    static Color_t fStartColor;
    static Color_t fEndColor;
