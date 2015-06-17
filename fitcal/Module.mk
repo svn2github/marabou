@@ -52,7 +52,9 @@ $(FITCALLIB):     $(FITCALDO) $(FITCALO) $(MAINLIBS) $(FITCALLIBDEP)
 			echo "cp  $(FITCALPCM)----------------------" ; \
 			cp $(FITCALPCM) $(LPATH); \
 		fi)
+ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(FITCALRMAP) -l $(FITCALLIB) -d $(FITCALLIBDEP) -c $(FITCALL)
+endif
 
 $(FITCALDS):     $(FITCALH) $(FITCALL)
 		@echo "Generating dictionary $@..."
