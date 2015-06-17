@@ -49,7 +49,9 @@ $(EXPCONFLIB):     $(EXPCONFDO) $(EXPCONFO) $(MAINLIBS) $(EXPCONFLIBDEP)
 			echo "cp  $(EXPCONFPCM)----------------------" ; \
 			cp $(EXPCONFPCM) $(LPATH); \
 		fi)
+ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(EXPCONFRMAP) -l $(EXPCONFLIB) -d $(EXPCONFLIBDEP) -c $(EXPCONFL)
+endif
 
 $(EXPCONFDS):     $(EXPCONFH) $(EXPCONFL)
 		@echo "Generating dictionary $@..."
