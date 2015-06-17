@@ -2025,6 +2025,11 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 		return(-1);
 	}
 
+	TMrbLofNamedX type;
+	type.AddNamedX(new TMrbNamedX(1, "linear"));
+	type.AddNamedX(new TMrbNamedX(2, "quadratic"));
+	type.AddNamedX(new TMrbNamedX(3, "poly"));
+	
 	TEnv * cal = new TEnv(CalibrationFile);
 	Int_t nofCalibs = 0;
 	TString calType = cal->GetValue("Calib.Type", "linear");
@@ -2032,15 +2037,23 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 	Bool_t isQuadratic;
 	Int_t calDegree;
 	calType.ToLower();
-	if (calType.CompareTo("linear") == 0)  {
+	
+	TMrbNamedX * t = type.FindByName(calType.Data(), TMrbLofNamedX::kFindUnique);
+	if (t == NULL) {
+		gMrbLog->Wrn()	<< "Unsupported calibration type - " << calType << ", no calibration" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
+		return(0);
+	}
+	
+	if (t->GetIndex() == 1) {
 		isLinear = kTRUE;
 		isQuadratic = kFALSE;
 		calDegree = 1;
-	} else if (calType.CompareTo("quadratic") == 0)  {
+	} else if (t->GetIndex() == 2) {
 		isLinear = kFALSE;
 		isQuadratic = kTRUE;
 		calDegree = 2;
-	} else if (calType.CompareTo("poly") == 0)  {
+	} else if (t->GetIndex() == 3) {
 		isLinear = kFALSE;
 		isQuadratic = kFALSE;
 		calDegree = cal->GetValue("Calib.Degree", 0);

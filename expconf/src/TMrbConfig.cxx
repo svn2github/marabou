@@ -23,6 +23,7 @@
 #include "TKey.h"
 #include "TFile.h"
 #include "TEnv.h"
+#include "THashList.h"
 
 #include "TF1.h"
 #include "TF2.h"
@@ -7359,6 +7360,141 @@ TMrbNamedX * TMrbConfig::FindHistoArray(const Char_t * HistoName, TMrbNamedX * A
 		}
 	}
 	return(NULL);
+}
+
+Int_t TMrbConfig::WriteCalibrationFile(Char_t * CalFile, Char_t * Modules, Char_t * CalType, Int_t CalDegree) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModule::WriteCalibrationFile
+// Purpose:        Create or update calibration file
+// Arguments:      Char_t * CalFile   -- file name
+//                 Char_t * CalType   -- linear, quadratic or poly
+//                 Int_t CalDegree    -- polznomial degree
+// Results:        Int_t NofEntries   -- number of calibration entries
+// Exceptions:
+// Description:    Creates or updates calibration file
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TEnv * cal = new TEnv(CalFile);		// open calibration file (may be not existing or empty)
+	Bool_t isEmpty = (cal->GetTable()->GetEntries() == 0);
+	
+	TMrbLofNamedX ctype;				// possible calibration types
+	ctype.AddNamedX(new TMrbNamedX(1, "linear"));
+	ctype.AddNamedX(new TMrbNamedX(2, "quadratic"));
+	ctype.AddNamedX(new TMrbNamedX(3, "poly"));
+	
+	TString calType = CalType;
+	calType.ToLower();
+	
+	TMrbNamedX * ct = ctype.FindByName(calType.Data(), TMrbLofNamedX::kFindUnique);		// check if calibration type ok
+	if (ct == NULL) {
+		gMrbLog->Err()	<< "Unsupported calibration type - " << calType << ", cannot create/update file " << CalFile << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteCalibrationFile");
+		return(0);
+	}
+	
+	Int_t ctx = ct->GetIndex();					// if type = poly a degree has to be given
+	Int_t calDegree = ctx;
+	if (ctx == 3) {
+		if (CalDegree <= 0) {
+			gMrbLog->Err()	<< this->GetName() << ": Polynomial degree missing - no calibration" << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteCalibrationFile");
+			return(0);
+		}
+		calDegree = CalDegree;
+	}
+
+	if (isEmpty) {								// calibration file doesn't exist: write header entries
+		cal->SetValue("Calib.RootFile", "");
+		cal->SetValue("Calib.Source", "");
+		cal->SetValue("Calib.Energies", "");
+		cal->SetValue("Calib.Type", ct->GetName());
+	}
+	
+	TString calTypeFile = cal->GetValue("Calib.Type", "");		// check if cal type in file is ok
+	TMrbNamedX * ctf = ctype.FindByName(calTypeFile.Data(), TMrbLofNamedX::kFindUnique);
+	if (ctf == NULL) {
+		gMrbLog->Err()	<< "Wrong calibration type - " << calTypeFile << " in file " << CalFile << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteCalibrationFile");
+		return(0);
+	}
+	
+	calTypeFile = ctf->GetName();				// check if cal types are same: in file and by call
+	if (calTypeFile.CompareTo(ct->GetName()) != 0) {
+		gMrbLog->Err()	<< this->GetName() << ": Different calibration types - file=\"" << calTypeFile << "\" ... call=\"" << ct->GetName() << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteCalibrationFile");
+		return(0);
+	}
+	
+	Int_t nofCalibs = cal->GetValue("Calib.NofCalibs", 0);	// number of calibration entries
+	Int_t nofCalibsAdded = 0;
+	
+	TString moduleList = Modules;
+	TString moduleName;
+	Int_t from = 0;
+	TObjArray modulesDone;
+	while (moduleList.Tokenize(moduleName, from, " ")) {	// loop thru modules
+		moduleName = moduleName.Strip(TString::kBoth);
+		if (moduleName.Length() <= 0) continue;
+		TMrbModule * module = this->FindModule(moduleName.Data());
+		if (module == NULL) {
+			gMrbLog->Err()	<< "No such module - " << moduleName << " (calibration skipped)" << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteCalibrationFile");
+			continue;
+		}
+		if (modulesDone.FindObject(moduleName) != NULL) {
+			gMrbLog->Err()	<< "Module already in list - " << moduleName << " (no further entries)"<< endl;
+			gMrbLog->Flush(this->ClassName(), "WriteCalibrationFile");
+			continue;
+		}
+	
+		if (module->GetLofChannels()->GetEntriesFast() == 0) {
+			gMrbLog->Err()	<< moduleName << ": No channels defined - no entries added/updated in file " << CalFile << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteCalibrationFile");
+			continue;
+		}
+
+		TObjArray * lofChannels = module->GetLofChannels();	// loop thru module chans
+		TIterator * iter = lofChannels->MakeIterator();
+		TMrbModuleChannel * chn;
+		while ((chn = (TMrbModuleChannel *) iter->Next())) {
+			TString histoName = chn->GetName();
+			histoName(0,1).ToUpper();
+			histoName.Prepend("h");
+			if (cal->Lookup(Form("Calib.%s.Xmin", histoName.Data())) == NULL) {				// don't touch existing entries
+				cal->SetValue(Form("Calib.%s.Xmin", histoName.Data()), module->GetXmin());	// write new entry
+				cal->SetValue(Form("Calib.%s.Xmax", histoName.Data()), module->GetXmax());
+				if (calDegree == 1) {
+					cal->SetValue(Form("Calib.%s.Offset", histoName.Data()), 0.);
+					cal->SetValue(Form("Calib.%s.Gain", histoName.Data()), 1.);
+				} else if (calDegree == 2) {
+					cal->SetValue(Form("Calib.%s.Offset", histoName.Data()), 0.);
+					cal->SetValue(Form("Calib.%s.Gain", histoName.Data()), 0.);
+					cal->SetValue(Form("Calib.%s.Quadratic", histoName.Data()), 1.);
+				} else {
+					for (Int_t d = 0; d < calDegree; d++) {
+						cal->SetValue(Form("Calib.%s.A%d", histoName.Data(), d), 0.);
+					}
+				}
+				nofCalibs++;		// added one entry
+				nofCalibsAdded++;
+			}
+		}
+		modulesDone.Add(module);
+	}
+	cal->SetValue("Calib.NofCalibs", nofCalibs);
+	
+	cal->WriteFile(CalFile);
+										
+	if (nofCalibs == nofCalibsAdded) {
+		gMrbLog->Out()  << "Calibration file created - " << CalFile << " (" << nofCalibs << " entries)" << endl;
+	} else {
+		gMrbLog->Out()  << "Calibration file updated - " << CalFile << " (" << nofCalibs << " entries, " << nofCalibsAdded << " added)" << endl;
+	}
+	gMrbLog->Flush(this->ClassName(), "WriteCalibrationFile", setblue);
+							
+	return(nofCalibs);
 }
 
 TMrbConfig * TMrbConfig::ReadFromFile(const Char_t * RootFile,  Option_t * Options) {

@@ -237,7 +237,7 @@ Bool_t TMrbEvent::HasSubevent(const Char_t * Assignment) {
 	Int_t from = 0;
 	while (assign.Tokenize(sevtName, from, " ")) {
 		sevtName = sevtName.Strip(TString::kBoth);
-		if (sevtName.Length() <= 0) break;
+		if (sevtName.Length() <= 0) continue;
 		TMrbSubevent * sevt;
 		if ((sevt = (TMrbSubevent *) gMrbConfig->FindSubevent(sevtName)) == NULL) {
 			gMrbLog->Err() << "Event " << this->GetName() << ": No such subevent - " << sevtName << endl;

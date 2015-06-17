@@ -755,6 +755,8 @@ class TMrbConfig : public TNamed {
 		inline Int_t GetDeadTimeInterval() const { return(fDeadTimeInterval); };			// get interval
 		inline TMrbModule * GetDeadTimeScaler() const { return(fDeadTimeScaler); };			// get scaler def
 
+		Int_t WriteCalibrationFile(Char_t * CalFile, Char_t * Modules, Char_t * CalType, Int_t Degree = 0);	// write/update calibration file
+
 																					// include user-specific code
 		Bool_t IncludeUserCode(const Char_t * IclPath, const Char_t * UserFile, Bool_t AutoGenFlag = kFALSE);
 		inline Bool_t IncludeUserCode(const Char_t * UserFile, Bool_t AutoGenFlag = kFALSE) {
