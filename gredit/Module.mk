@@ -64,7 +64,9 @@ $(GREDITLIB):     $(GREDITDO) $(GREDITO) $(MAINLIBS) $(GREDITLIBDEP)
 			echo "cp  $(GREDITPCM)----------------------" ; \
 			cp $(GREDITPCM) $(LPATH); \
 		fi)
+ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(GREDITRMAP) -l $(GREDITLIB) -d $(GREDITLIBDEP) -c $(GREDITL)
+endif
 
 $(GREDITDS):     $(GREDITH) $(GREDITL)
 		@echo "Generating dictionary: $@...."
