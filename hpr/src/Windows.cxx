@@ -218,14 +218,10 @@ void  FitHist::WriteOutWindows(){
    if(nval>0){
       if (nval == 1) {
          TMrbWindow* wdw = (TMrbWindow*)fActiveWindows->At(0);
-         new Save2FileDialog(wdw);
+         Save2FileDialog sfd(wdw);
       } else {
-         new Save2FileDialog(fActiveWindows);
+         Save2FileDialog sfd(fActiveWindows);
       }
-//      if(OpenWorkFile(mycanvas)){
-//         fActiveWindows->Write();
-//         CloseWorkFile();
-//      }
    } else {
      WarnBox("No Windows active");
    }
@@ -354,9 +350,9 @@ void  FitHist::WriteOutCut(){
    if(Ncuts() > 0){
       if (Ncuts() == 1) {
          TMrbWindow* wdw = (TMrbWindow*)fActiveCuts->At(0);
-         new Save2FileDialog(wdw, NULL, mycanvas);
+         Save2FileDialog sfd(wdw, NULL, mycanvas);
       } else {
-         new Save2FileDialog(fActiveCuts, NULL, mycanvas);
+         Save2FileDialog sfd(fActiveCuts, NULL, mycanvas);
       }
    } else {
      WarnBox("No cuts active");

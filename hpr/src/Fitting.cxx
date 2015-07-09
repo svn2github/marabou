@@ -46,6 +46,7 @@
 #include "TGMsgBox.h"
 #include "TGWidget.h"
 #include "TGaxis.h"
+#include "TRootHelpDialog.h"
 #include "FHCommands.h"
 
 #include "FitHist.h"
@@ -559,7 +560,7 @@ fit_user_function(const char *hname) \n\
 }\n\
 ";
 
-//____________________________________________________________________________________
+//______________________________________________________________________
 /* *INDENT-ON* */
 const Int_t nFitTemplates = 6;
 const char *FitMacroTemplates[nFitTemplates] = {
@@ -570,8 +571,58 @@ const char *FitMacroTemplates[nFitTemplates] = {
 	&Landau[0],
 	&Pol2Sine[0]
 };
-//____________________________________________________________________________
 
+//______________________________________________________________________
+
+void FitHist::HelpFit2dimMarks()
+{
+	const char * helptext =
+"\"FitPolyMarks\"\n\
+Fit a polynomial to marks set manually by user.\n\
+\n\
+";
+	TRootHelpDialog * hd = new TRootHelpDialog(mycanvas, "FitPolyMarks", 450, 200);
+	hd->SetText(helptext);
+	hd->Popup();
+}
+
+//______________________________________________________________________
+
+void FitHist::HelpFit2dim()
+{
+	const char * helptext =
+"\"FitPolyHist\"\n\
+This isnt a real fit to 2dim data but rather a 1dim fit\n\
+to the profile of the 2dim histogram normally with a\n\
+cut applied to select a subregion of the histogram.\n\
+Within the cut mean and error of the mean value of bins\n\
+along Y for each bin in X are calculated and a polynomial\n\
+is fitted to the resulting distribution.\n\
+To visualize the result the variable \"gDebug = 1\"\n\
+should be set at the ROOt prompt.\n\
+This is essentially the same procedure as described for\n\
+the ROOT class TProfile with some extra user selections:\n\
+\"GeneralAttDialog::fContentLowLimit\"\n\
+Use bin only if sum of contents in slice is above this value.\n\
+\n\
+\"GeneralAttDialog::fVertAdjustLimit\" (Unit bins)\n\
+Force left and right limits of a cut to be vertical.\n\
+i.e. all points of cut closer to xmin or xmax than \n\
+his limit are set to xmin or xmax respectively.\n\
+\n\
+The fitted functions may be saved to a ROOT file for later\n\
+use. The default appended by an auto increasing index may\n\
+modified and are remembered across sessions.\n\
+If other functions than polynomials are needed you should\n\
+use the option \"ProfileX\" from the \"Display\" menu\n\
+to produces a 1dim Profile histogram and use the 1dim fitting\n\
+procedures with this. \"ProfileX\" allows application of cuts.\n\
+";
+	TRootHelpDialog * hd = new TRootHelpDialog(mycanvas, "FitPolyHist", 450, 450);
+	hd->SetText(helptext);
+	hd->Popup();
+}
+//______________________________________________________________________
 Int_t FitHist::FitPolyHist(Int_t degree)
 {
 	return Fit2dim(0, degree);
@@ -675,18 +726,22 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	}
 	double par[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	double fpar[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	const char *funcname;
+	TEnv env(".hprrc");
+	
+//	const char *funcname;
 	TString sfunc = fHname;
 	Int_t ip = sfunc.Index(";");
 	if (ip > 0)sfunc.Resize(ip);
-	fFuncNumb++;
-	sfunc.Prepend(Form("%d_", fFuncNumb));
-	sfunc.Prepend("f");
+	TString funcname = env.GetValue("Fit2dim.FuncName", sfunc);
+	funcname += "_";
+	funcname += fFuncNumb;
+//	func.Prepend(Form("%d_", fFuncNumb));
+//	sfunc.Prepend("f");
 //   Bool_t ok;
 //   sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
 //   if (!ok)
 //      return 0;
-	funcname = (const char *) sfunc;
+//	funcname = (const char *) sfunc;
 	TString temp_hname ("fithist_temp");
 	temp_hname +=fFuncNumb;
 	cout << " <<<<<<<<<<<<<<<<<<<<<" << endl;
@@ -745,7 +800,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 					if (!InsideCut((float) xcent, (float) ycent))
 						continue;
 				}
-				Stat_t cont = fOrigHist->GetCellContent(i, j);
+				Stat_t cont = fOrigHist->GetBinContent(i, j);
 				sum[indx] += cont;
 				sumx[indx] += ycent * cont;
 				sumx2[indx] += ycent * ycent * cont;
@@ -904,7 +959,26 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	fSelPad->Update();
 //  if ( fDialog != NULL )
 //     fDialog->CloseDialog();
-	new Save2FileDialog(pol, NULL, (TRootCanvas*)fCanvas->GetCanvasImp());
+	Save2FileDialog sfd(pol, NULL, (TRootCanvas*)fCanvas->GetCanvasImp());
+	if ( sfd.Canceled() == 0 ) {
+		// find out if  user changed name and seqnumber
+		TString fn(sfd.GetObjName()); 
+		cout << "sfd.GetObjName() " << sfd.GetObjName() << endl;
+		TRegexp re("_[0-9]+$");  // e.g. _123 at end of string
+		Ssiz_t len;
+		Ssiz_t pos = re.Index(fn, &len);
+		if (pos >= 0 ) {
+			TString sval = fn(pos+1, len-1);
+			fFuncNumb = sval.Atoi();
+		}
+		fn(re) = "";
+		cout << "fn " << fn << " funcname " <<funcname  << endl;
+		if ( fn != funcname ) {
+			env.SetValue("Fit2dim.FuncName", fn);
+			env.SaveLevel(kEnvLocal);
+		}
+		fFuncNumb++;
+	}
 	if (what == 0)
 		ClearMarks();
 	if (what == 1)

@@ -23,7 +23,7 @@ namespace std {} using namespace std;
 
 Set1DimOptDialog::Set1DimOptDialog(Int_t /*batch*/)
 {
-	cout << "ctor Set1DimOptDialog, non interactive" <<endl;
+//	cout << "ctor Set1DimOptDialog, non interactive" <<endl;
 	fDialog = NULL;
 }
 //_______________________________________________________________________
@@ -80,7 +80,7 @@ may be selected.\n\
 ";
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
-   cout << "ctor Set1DimOptDialog " << fCanvas->GetName() << endl;
+//   cout << "ctor Set1DimOptDialog " << fCanvas->GetName() << endl;
    TIter next(fCanvas->GetListOfPrimitives());
 	TObject *obj;
 	TH1* hist;

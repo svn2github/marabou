@@ -272,6 +272,7 @@ enum ERootCanvasCommands {
 	kFH_CASCADE1_6,
 	kFH_CASCADE1_7,
 	kFH_CASCADE1_8,
+	kFH_CASCADE1_H,
 	kFH_CASCADE1_U,
 	kFH_CASCADE2_0,
 	kFH_CASCADE2_1,
@@ -282,6 +283,7 @@ enum ERootCanvasCommands {
 	kFH_CASCADE2_6,
 	kFH_CASCADE2_7,
 	kFH_CASCADE2_8,
+	kFH_CASCADE2_H,
 	kFH_CASCADE2_U,
 	kFH_Portrait,
 	kFH_UserEdit,
@@ -991,11 +993,11 @@ again:
 								if ( fHistInPad->GetEntries() < 1 ) {
 									TGraph *gr =  Hpr::FindGraphInPad(fHCanvas);
 									if ( gr ) {
-										new Save2FileDialog(gr, NULL, fRootCanvas);
+										Save2FileDialog sfd(gr, NULL, fRootCanvas);
 										break;
 									}
 								}
-								new Save2FileDialog(fHistInPad, NULL, fRootCanvas);
+								Save2FileDialog sfd(fHistInPad, NULL, fRootCanvas);
 							} else {
 								cout << setblue << "No hist in pad, " << endl
 								<< "In case of 3Dim hist: use Scatter or Box option"
@@ -1225,9 +1227,12 @@ again:
 						case kFH_CASCADE1_8:
 							fFitHist->FitPolyHist(8);
 							break;
-						case kFH_CASCADE1_U:
-							fFitHist->FitPolyHist(-1);
+						case kFH_CASCADE1_H:
+							fFitHist->HelpFit2dim();
 							break;
+//						case kFH_CASCADE1_U:
+//							fFitHist->FitPolyHist(-1);
+//							break;
 
 						case kFH_CASCADE2_0:
 							fFitHist->FitPolyMarks(0);
@@ -1256,9 +1261,13 @@ again:
 						case kFH_CASCADE2_8:
 							fFitHist->FitPolyMarks(8);
 							break;
-						case kFH_CASCADE2_U:
-							fFitHist->FitPolyMarks(-1);
+						case kFH_CASCADE2_H:
+							fFitHist->HelpFit2dimMarks();
 							break;
+//						case kFH_CASCADE2_U:
+//							fFitHist->FitPolyMarks(-1);
+//							break;
+							
 						case kFHShiftScale:
 						{
 							if ( fFitHist && fFitHist->GetSelHist())
@@ -1757,7 +1766,7 @@ void HandleMenus::BuildMenus()
 			fCascadeMenu1->AddEntry("Pol 6", kFH_CASCADE1_6);
 			fCascadeMenu1->AddEntry("Pol 7", kFH_CASCADE1_7);
 			fCascadeMenu1->AddEntry("Pol 8", kFH_CASCADE1_8);
-			fCascadeMenu1->AddEntry("User Formula", kFH_CASCADE1_U);
+			fCascadeMenu1->AddEntry("Help", kFH_CASCADE1_H);
 
 			fCascadeMenu2 = new TGPopupMenu(fRootCanvas->GetParent());
 			fCascadeMenu2->AddEntry("Pol 0", kFH_CASCADE2_0);
@@ -1769,7 +1778,7 @@ void HandleMenus::BuildMenus()
 			fCascadeMenu2->AddEntry("Pol 6", kFH_CASCADE2_6);
 			fCascadeMenu2->AddEntry("Pol 7", kFH_CASCADE2_7);
 			fCascadeMenu2->AddEntry("Pol 8", kFH_CASCADE2_8);
-			fCascadeMenu2->AddEntry("User Formula", kFH_CASCADE2_U);
+			fCascadeMenu2->AddEntry("Help", kFH_CASCADE2_H);
 		}
 //		if ( fFitHist ) {
 		fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
@@ -1919,7 +1928,7 @@ void HandleMenus::Canvas2RootFile()
 		fEditor->ShowToolBar(kFALSE);
 		fEditor->ExecuteAdjustSize(-1);
 	}
-	new Save2FileDialog(fHCanvas, NULL, trc);
+	Save2FileDialog sfd(fHCanvas, NULL, trc);
 	if ( se  && fEditor != NULL) {
 		trc->ShowEditor(kTRUE);
 		fEditor->ExecuteAdjustSize( 1);

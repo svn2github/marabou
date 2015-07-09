@@ -99,7 +99,7 @@ void AddFitMenus::HandleMenu(Int_t id)
 		   break;
 
       case M_Save2File:
-         new Save2FileDialog(fHist);
+         Save2FileDialog sfd(fHist);
          break;
    }
 }

@@ -307,6 +307,8 @@ public:
 	Int_t Fit2dim(Int_t, Int_t);            // fit polynoms
 	Int_t FitPolyHist(Int_t);               // fit polynoms hist
 	Int_t FitPolyMarks(Int_t);              // fit  polynoms to marks
+	void  HelpFit2dim();
+	void  HelpFit2dimMarks();
 	void  Expand();                     // expand
 	void  ProjectX();
 	void  ProjectX_Func();

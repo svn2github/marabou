@@ -40,7 +40,7 @@ void FitHist::SaveUserContours()
 	fSelHist->GetContour(values);
 	*(contour->GetColorArray()) = *colors;
    contour->Print();
-   new Save2FileDialog(contour, NULL, GetMyCanvas());
+   Save2FileDialog sfd(contour, NULL, GetMyCanvas());
 	
 	if ( (!CreateDefaultsDir(mycanvas,kFALSE )) ) return;
 	

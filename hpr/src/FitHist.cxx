@@ -692,6 +692,7 @@ void FitHist::handle_mouse()
 	static Bool_t first_time = kTRUE;
 	static Bool_t skip_after_TCUTG = kFALSE;
 	static Bool_t TCUTG_moved = kFALSE;
+	static TCutG * selected_cut = 0;
 	static TH1 * hist = 0;
 	static Int_t npar = 0;
 	static TLine * lowedge = 0;
@@ -742,10 +743,25 @@ void FitHist::handle_mouse()
 		}
 	}
 	if ( TCUTG_moved && event == kButton1Up ) {
-		if ( gDebug > 0 )
-			cout << " ProjectBoth " << endl;
-		ProjectBoth();
+		if  (fProjectedBoth == 1 ) {
+			if ( gDebug > 0 )
+				cout << " ProjectBoth " << endl;
+			ProjectBoth();
+		} else if ( fDimension == 2 && selected_cut !=NULL) {
+			Double_t sum_in_cut = 0;
+			TAxis *xa = fSelHist->GetXaxis();
+			TAxis *ya = fSelHist->GetYaxis();
+			for (Int_t ix = 1; ix < xa->GetNbins(); ix++) {
+				for (Int_t iy = 1; iy < ya->GetNbins(); iy++) {
+					if(selected_cut->IsInside(xa->GetBinCenter(ix), ya->GetBinCenter(iy))) {
+						sum_in_cut += fSelHist->GetBinContent(ix,iy);
+					}
+				}
+			}
+			cout << "Sum inside cut: " << sum_in_cut << endl;
+		}
 		TCUTG_moved = kFALSE;
+		selected_cut = NULL;
 	}
 	TObject *select = gPad->GetSelected();
 	if (!select) return;
@@ -763,7 +779,8 @@ void FitHist::handle_mouse()
 		}
 	}
 	if (select->InheritsFrom("TPave")) return;
-	if (event == 21 && select->InheritsFrom("TCutG") && fProjectedBoth == 1) {
+	if (event == kButton1Motion && select->InheritsFrom("TCutG")) {
+		selected_cut = (TCutG*)select;
 		TCUTG_moved = kTRUE;
 		if ( gDebug > 0 )
 			cout << select->ClassName() << " event " << event << endl;
@@ -1746,7 +1763,7 @@ void FitHist::WriteFunctions()
 {
 	if (fSelHist) {
 		ClearMarks();
-		new Save2FileDialog(fSelHist->GetListOfFunctions(), NULL, GetMyCanvas());
+		Save2FileDialog sfd(fSelHist->GetListOfFunctions(), NULL, GetMyCanvas());
 	}
 };
 //_______________________________________________________________________________________
@@ -1804,7 +1821,7 @@ void FitHist::WriteOutCanvas()
 				nc->ToggleAutoExec();
 //         nc->Write();
 //         CloseWorkFile();
-			new Save2FileDialog(nc, NULL, GetMyCanvas());
+			Save2FileDialog sfd(nc, NULL, GetMyCanvas());
 			delete nc;
 //      }
 	}
@@ -1814,7 +1831,7 @@ void FitHist::WriteOutCanvas()
 void FitHist::WriteOutHist()
 {
 	if (fSelHist) {
-		new Save2FileDialog(fSelHist, NULL, GetMyCanvas());
+		Save2FileDialog sfd(fSelHist, NULL, GetMyCanvas());
 	}
 };
 

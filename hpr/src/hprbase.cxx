@@ -132,7 +132,7 @@ void WriteOutGraph(TGraph * g, TRootCanvas * mycanvas)
 		if (!ok)
 			return;
 		g->SetName(name.Data());
-		new Save2FileDialog(g);
+		Save2FileDialog sfd(g);
 //     if (OpenWorkFile(mycanvas)) {
 //         g->Write();
 //        CloseWorkFile();

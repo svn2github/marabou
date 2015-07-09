@@ -87,6 +87,34 @@ This is useful when superimposing, stacking or showing histograms\n\
 in one canvas with same titles from files e.g. from different runs\n\
 since the title is used in legends.\n\
 \n\
+____________________________________________________________\n\
+Remember Expand settings (Marks) \n\
+\n\
+Using marks expanded parts of hists may be shown. This\n\
+option allows to remember these settings in later sessions.\n\
+____________________________________________________________\n\
+Remember Zoomings (by left mouse)\n\
+\n\
+Pressing the left mouse button in the scale of a histogram\n\
+and dragging to the required limit allows to zoom\n\
+in the picture. This  option allows to remember these\n\
+settings in later sessions.\n\
+\n\
+____________________________________________________________\n\
+Remember position of StatBox, LegendBox\n\
+\n\
+Position / size of StatBox, LegendBox can be adjusted from the\n\
+menu \"Graphic_defaults\". Using there the command \n\
+\"Save as global default\" make these settings persistent\n\
+across sessions.\n\
+The size will be adjusted according to the number of lines\n\
+in the box, e.g. if only name and number of entries of a\n\
+histogram should be displayed the box is smaller than\n\
+if in addition mean and sigma are to be displayed.\n\
+Movements of the boxes by the mouse are not remembered.\n\
+\n\
+If this option is activated position of the boxes\n\
+are remembered when moved with the mouse\n\
 ___________________________________________________________\n\
 fMaxListEntries: Max Entries in Lists\n\
 \n\
@@ -118,34 +146,6 @@ Show lists only\n\
 If very many histograms are used this option allows\n\
 to display user defined lists of histograms only.\n\
 \n\
-____________________________________________________________\n\
-Remember Expand settings (Marks) \n\
-\n\
-Using marks expanded parts of hists may be shown. This\n\
-option allows to remember these settings in later sessions.\n\
-____________________________________________________________\n\
-Remember Zoomings (by left mouse)\n\
-\n\
-Pressing the left mouse button in the scale of a histogram\n\
-and dragging to the required limit allows to zoom\n\
-in the picture. This  option allows to remember these\n\
-settings in later sessions.\n\
-\n\
-____________________________________________________________\n\
-Remember position of StatBox, LegendBox\n\
-\n\
-Position / size of StatBox, LegendBox can be adjusted from the\n\
-menu \"Graphic_defaults\". Using there the command \n\
-\"Save as global default\" make these settings persistent\n\
-across sessions.\n\
-The size will be adjusted according to the number of lines\n\
-in the box, e.g. if only name and number of entries of a\n\
-histogram should be displayed the box is smaller than\n\
-if in addition mean and sigma are to be displayed.\n\
-Movements of the boxes by the mouse are not remembered.\n\
-\n\
-If this option is activated position of the boxes\n\
-are remembered when moved with the mouse\n\
 ___________________________________________________________\n\
 \n\
 Show PS file after creation\n\
