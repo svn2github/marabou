@@ -483,7 +483,7 @@ void CreateCDlabel::ExecuteStoreProject()
 	gSystem->ProcessEvents();
 	fCanvas->Pop();
 	
-   new Save2FileDialog(fCanvas, NULL, (TRootCanvas*)fCanvas->GetCanvasImp());
+   Save2FileDialog sfd(fCanvas, NULL, (TRootCanvas*)fCanvas->GetCanvasImp());
 //	fCanvas->GetCanvasImp()->ShowEditor();
 	fEditor->ShowToolBar(kTRUE);
 	fCanvas->GetCanvasImp()->ShowEditor();
