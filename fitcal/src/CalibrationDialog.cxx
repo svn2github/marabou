@@ -1246,7 +1246,7 @@ void CalibrationDialog::SaveFunction()
    }
    fCalFunc->SetParent(fCalHist);
    fSelHist->GetListOfFunctions()->Add(fCalFunc);
-   new Save2FileDialog(fCalFunc);
+   Save2FileDialog sfd(fCalFunc);
 }
 //____________________________________________________________________________________
 
@@ -1381,7 +1381,7 @@ void CalibrationDialog::HandleMenu(Int_t id)
    switch (id) {
 
       case M_Save2File:
-         new Save2FileDialog(fCalHist);
+         Save2FileDialog sfd(fCalHist);
          break;
    }
 }

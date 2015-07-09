@@ -3004,7 +3004,7 @@ void FitOneDimDialog::WriteoutFunction()
 		cout << "No function defined" << endl;
 		return;
 	}
-	new Save2FileDialog(fFitFunc, NULL, fParentWindow);
+	Save2FileDialog sfd(fFitFunc, NULL, fParentWindow);
 }
 //____________________________________________________________________________________
 
@@ -3020,7 +3020,7 @@ void FitOneDimDialog::SaveFunction()
 //	}
 //	fCalFunc->SetParent(fCalHist);
 //	fSelHist->GetListOfFunctions()->Add(fCalFunc);
-	new Save2FileDialog(fCalFunc);
+	Save2FileDialog sfd(fCalFunc);
 }
 //____________________________________________________________________________________
 

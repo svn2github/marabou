@@ -809,7 +809,7 @@ void Fit2DimDialog::SaveFunction()
 		cout << "No function defined" << endl;
 		return;
 	}
-	new Save2FileDialog(fFitFunc);
+	Save2FileDialog sfd(fFitFunc);
 }
 //_______________________________________________________________________
 
