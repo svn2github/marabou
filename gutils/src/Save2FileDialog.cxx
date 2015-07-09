@@ -27,6 +27,7 @@ more than one level of subdirs is allowed";
    static void *valp[50];
    Int_t ind = 0;
 //   Bool_t ok = kTRUE;
+	fCanceled = 0;
    fCommand = "ExecuteSave()";
    RestoreDefaults();
    SetBit(kMustCleanup);
@@ -83,8 +84,9 @@ more than one level of subdirs is allowed";
       SaveDefaults();
    } else {
       cout << "Cancelled " <<retval << endl;
+      fCanceled = 1;
    }
-   delete this;
+//   delete this;
 };
 //_________________________________________________________________________
 

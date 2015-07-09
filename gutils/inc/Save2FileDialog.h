@@ -21,6 +21,7 @@ private:
    Int_t   fHistInRange;
    Int_t   fKeepDialog;
    Int_t   fAsList;
+   Int_t   fCanceled;
    TGMrbValuesAndText * fWidget;
 
 public:
@@ -32,7 +33,8 @@ public:
    void CloseDown(Int_t wid = 0);
    void CloseDialog();
    void CRButtonPressed(Int_t, Int_t, TObject *) {};
-
+   const char * GetObjName(){return fObjName.Data();};
+	Int_t Canceled() { return fCanceled; };
 ClassDef(Save2FileDialog,0)
 };
 #endif
