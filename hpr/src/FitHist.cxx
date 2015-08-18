@@ -658,7 +658,7 @@ void FitHist::RestoreDefaultRanges()
 				 //  set new Palette
 	  					fSelHist->GetListOfFunctions()->Add(colors);
 //                  colors->Dump();
-						SetUserPalette(1001, colors);
+						Hpr::SetUserPalette(1001, colors);
 					}
 					if (uc) delete [] uc;
 				}
@@ -3432,7 +3432,7 @@ void FitHist::Draw2Dim()
 	    && GeneralAttDialog::fLegoSuppressZero == 1 
 	    && !fDrawOpt2Dim.Contains("0") )
 		fDrawOpt2Dim.Append("0");
-
+	new SetColorModeDialog(NULL, 1);    //Initialize color palettes
 	fSelHist->Draw(fDrawOpt2Dim);
 	if ( gROOT->GetForceStyle() ) {
 		fCanvas->UseCurrentStyle();
@@ -3480,7 +3480,7 @@ void FitHist::Draw2Dim()
 				 TString name(nai->GetName());
 				 if (name.BeginsWith("Pixel")) {
 					 cout << "SetUserPalette" << endl;
-					 SetUserPalette(1001, nai);
+					 Hpr::SetUserPalette(1001, nai);
 				 }
 			}
 		}

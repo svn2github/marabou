@@ -41,5 +41,7 @@ namespace Hpr
 	Int_t NofLines(TString& str);
 	Int_t MixPointsInGraph2D(TGraph2D * grin, TGraph2D * grout, Int_t npoints = 0);
 	TCanvas * FindCanvas(const Char_t * pat);
+	void SetUserPalette(Int_t startindex, TArrayI * pixels);
+	Int_t GetFreeColorIndex();
 }
 #endif

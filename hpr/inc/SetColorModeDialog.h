@@ -19,6 +19,9 @@ private:
    TGMrbSliders *fRgbSlider;
    TCanvas      *fCanvas;
    TGWindow     *fWindow;
+   static TColor** fTransColorsRGB;
+   static TColor** fTransColorsHLS;
+   static TString fPalName;
 	static Int_t fMtransRGB;
 	static Int_t fMtransHLS;
 	static Int_t fMbw;
@@ -35,9 +38,6 @@ private:
    static Color_t fEndColor;
    static Int_t fNofTransLevels;
    static Int_t fNofGreyLevels;
-   static Int_t fNofColorLevels;
-   static Int_t *fPalette;
-   static Int_t *fGreyPalette;
    static Int_t *fGreyPaletteInv;
    static Int_t *fTransPaletteRGB;
    static Int_t *fTransPaletteHLS;
@@ -50,7 +50,7 @@ private:
    static Float_t fLightness;
    static Float_t fSaturation;
 public:
-   SetColorModeDialog(TGWindow * win = NULL);
+   SetColorModeDialog(TGWindow * win = NULL, Int_t batch = 0);
    ~SetColorModeDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
@@ -68,7 +68,6 @@ public:
    static void SetStartColorIndex( Int_t val) { fStartColorIndex = val; };
    static void SetStartColor( Int_t val) { fStartColor = val; };
    static void SetEndColor( Int_t val) { fEndColor = val; };
-   static void SetNofColorLevels( Int_t val) { fNofColorLevels = val; };
    static void SetNofTransLevels( Int_t val) { fNofTransLevels = val; };
    static void SetNofGreyLevels( Int_t val) { fNofGreyLevels = val; };
    static void SetEnhenceRed( Float_t val) { fEnhenceRed = val; };
@@ -81,7 +80,6 @@ public:
    static Int_t GetStartColorIndex() { return fStartColorIndex; };
    static Int_t GetStartColor() { return fStartColor; };
    static Int_t GetEndColor() { return fEndColor; };
-   static Int_t GetNofColorLevels() { return fNofColorLevels; };
    static Int_t GetNofTransLevels() { return fNofTransLevels; };
    static Int_t GetNofGreyLevels() { return fNofGreyLevels; };
    static Float_t GetEnhenceRed() { return fEnhenceRed; };
@@ -92,7 +90,6 @@ public:
    static Float_t GetLightness() { return fLightness; };
    static Float_t GetSaturation() { return fSaturation; };
 
-   static TColor *GetColorByIndex(Int_t index);
    static void SaveDefaults();
    static void RestoreDefaults();
    void CloseDown(Int_t wid);

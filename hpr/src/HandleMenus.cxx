@@ -43,6 +43,7 @@
 #include "GraphAttDialog.h"
 #include "HprTh3Dialog.h"
 #include "Rebin2DimDialog.h"
+#include "FillFormDialog.h"
 #include "hprbase.h"
 #include "ShiftScale.h"
 
@@ -272,7 +273,6 @@ enum ERootCanvasCommands {
 	kFH_CASCADE1_6,
 	kFH_CASCADE1_7,
 	kFH_CASCADE1_8,
-	kFH_CASCADE1_H,
 	kFH_CASCADE1_U,
 	kFH_CASCADE2_0,
 	kFH_CASCADE2_1,
@@ -283,10 +283,10 @@ enum ERootCanvasCommands {
 	kFH_CASCADE2_6,
 	kFH_CASCADE2_7,
 	kFH_CASCADE2_8,
-	kFH_CASCADE2_H,
 	kFH_CASCADE2_U,
 	kFH_Portrait,
 	kFH_UserEdit,
+	kFH_FillForm,
 	kFH_Landscape,
 	kFH_WritePrim,
 	kFH_DrawHist,
@@ -639,6 +639,9 @@ again:
 						case    kFH_UserEdit:
 							if(fHistPresent)
 								fHistPresent->DinA4Page(2);
+							break;
+						case    kFH_FillForm:
+								new FillFormDialog();
 							break;
 
 						// Handle View menu items...
@@ -1227,12 +1230,9 @@ again:
 						case kFH_CASCADE1_8:
 							fFitHist->FitPolyHist(8);
 							break;
-						case kFH_CASCADE1_H:
-							fFitHist->HelpFit2dim();
+						case kFH_CASCADE1_U:
+							fFitHist->FitPolyHist(-1);
 							break;
-//						case kFH_CASCADE1_U:
-//							fFitHist->FitPolyHist(-1);
-//							break;
 
 						case kFH_CASCADE2_0:
 							fFitHist->FitPolyMarks(0);
@@ -1261,13 +1261,9 @@ again:
 						case kFH_CASCADE2_8:
 							fFitHist->FitPolyMarks(8);
 							break;
-						case kFH_CASCADE2_H:
-							fFitHist->HelpFit2dimMarks();
+						case kFH_CASCADE2_U:
+							fFitHist->FitPolyMarks(-1);
 							break;
-//						case kFH_CASCADE2_U:
-//							fFitHist->FitPolyMarks(-1);
-//							break;
-							
 						case kFHShiftScale:
 						{
 							if ( fFitHist && fFitHist->GetSelHist())
@@ -1536,6 +1532,7 @@ void HandleMenus::BuildMenus()
 		fFileMenu->AddEntry("Open Edit canvas (A4 portrait)",    kFH_Portrait);
 		fFileMenu->AddEntry("Open Edit canvas (A4 landscape)",   kFH_Landscape);
 		fFileMenu->AddEntry("Open Edit canvas (user defined)",   kFH_UserEdit);
+		fFileMenu->AddEntry("Fill in Form",   kFH_FillForm);
 		fFileMenu->AddSeparator();
 		fFileMenu->AddEntry("Terminate program",          kFileQuit);
 	} else {
@@ -1689,11 +1686,11 @@ void HandleMenus::BuildMenus()
 // user contours				
 				if ( nDim == 2 ) {
 					TGPopupMenu  * casc_cont= new TGPopupMenu(fRootCanvas->GetParent());
-					casc_cont->AddEntry("Set User Contours",   kFHUserCont);
+					casc_cont->AddEntry("Modify Contours",   kFHUserCont);
 					casc_cont->AddEntry("Use Selected Contours",   kFHUserContUse);
 					casc_cont->AddEntry("Clear User Contours",   kFHUserContClear);
 					casc_cont->AddEntry("Save User Contours",   kFHUserContSave);
-					fDisplayMenu->AddPopup("User Contours", casc_cont);
+					fDisplayMenu->AddPopup("Handle Contours", casc_cont);
 				}
 				
 				if (fFitHist->GetSelHist()->GetDimension() == 1) {
@@ -1766,7 +1763,7 @@ void HandleMenus::BuildMenus()
 			fCascadeMenu1->AddEntry("Pol 6", kFH_CASCADE1_6);
 			fCascadeMenu1->AddEntry("Pol 7", kFH_CASCADE1_7);
 			fCascadeMenu1->AddEntry("Pol 8", kFH_CASCADE1_8);
-			fCascadeMenu1->AddEntry("Help", kFH_CASCADE1_H);
+			fCascadeMenu1->AddEntry("User Formula", kFH_CASCADE1_U);
 
 			fCascadeMenu2 = new TGPopupMenu(fRootCanvas->GetParent());
 			fCascadeMenu2->AddEntry("Pol 0", kFH_CASCADE2_0);
@@ -1778,7 +1775,7 @@ void HandleMenus::BuildMenus()
 			fCascadeMenu2->AddEntry("Pol 6", kFH_CASCADE2_6);
 			fCascadeMenu2->AddEntry("Pol 7", kFH_CASCADE2_7);
 			fCascadeMenu2->AddEntry("Pol 8", kFH_CASCADE2_8);
-			fCascadeMenu2->AddEntry("Help", kFH_CASCADE2_H);
+			fCascadeMenu2->AddEntry("User Formula", kFH_CASCADE2_U);
 		}
 //		if ( fFitHist ) {
 		fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());

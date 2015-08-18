@@ -87,6 +87,7 @@ TString gHprLocalEnv;
 static const char  *fHlistSuffix=".histlist";
 Int_t nHists;
 extern TH1 * gHpHist;
+Int_t gHprDebug;
 //static Int_t kSemaphore = 0;
 
 //_____________________________________________________________________________________
@@ -226,6 +227,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 	gHpr = this;
 	gHprWorkDir = gSystem->pwd();
 	gHprLocalEnv = gHprWorkDir + "/.hprrc";
+	gHprDebug = 0;
 	fOpfac= 1.;
 	fRebin = 2;
 	fRMethod = 0;

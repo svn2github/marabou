@@ -200,6 +200,6 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.EditPoXRange", fEditPoXRange);
    env.SaveLevel(kEnvLocal);
    GeneralAttDialog::SaveDefaults();
-   cout << "env.SaveLevel(kEnvLocal) " << endl;
+//   cout << "env.SaveLevel(kEnvLocal) " << endl;
 }
 

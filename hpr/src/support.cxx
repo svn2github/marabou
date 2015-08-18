@@ -1074,37 +1074,6 @@ TMrbStatistics *getstat(TSocket * sock)
 	return stat;
 }
 //___________________________________________________________________________
-
-TColor * GetColorByInd(Int_t index) {
-	TIter next(gROOT->GetListOfColors());
-	while (TColor * c = (TColor *)next()) {
-		if (c->GetNumber() == index) {
-			return c;
-		}
-	}
-	return NULL;
-}
-//___________________________________________________________________________
-
-void SetUserPalette(Int_t startindex, TArrayI * pixels)
-{
-	Int_t ncont = pixels->GetSize();
-	if (ncont <= 0) return;
-	TColor * c;
-
-	TArrayI colind(ncont);
-	Float_t r=0, g=0, b=0;
-	for (Int_t i = 0; i < ncont; i++) {
-		colind[i] = i + startindex;
-		c = GetColorByInd(i + startindex);
-		if (c) delete c;
-		c = new TColor(i + startindex, r, g, b);
-		c->Pixel2RGB((*pixels)[i], r, g, b);
-		c->SetRGB(r, g, b);
-		gStyle->SetPalette(ncont, colind.GetArray());
-	}
-}
-//___________________________________________________________________________
 void AdjustMaximum(TH1 * h2, TArrayD * xyvals)
 {
 	Int_t nv = xyvals->GetSize();
@@ -1464,7 +1433,7 @@ void DrawColors()
 		b->SetTextAlign(22);
 		b->SetTextFont(100);
 		b->SetTextSize(0.8);
-		c = GetColorByInd(colindex);
+		c = gROOT->GetColor(colindex);
 		if (c) {
 			if ( c->GetRed() + c->GetBlue() + c->GetGreen() < 1.5 ) b->SetTextColor(0);
 			else						 b->SetTextColor(1);
@@ -1498,7 +1467,7 @@ void DrawColors()
 		phi2 = hue + 1;
 		TColor::HLS2RGB((Float_t)hue, 0.5, 1, red, green, blue);
 
-		col = GetColorByInd(ind);
+		col = gROOT->GetColor(ind);
 		if (col) delete col;
 		col = new TColor(ind, red,green,blue);
 		a = new TArc(x1, y1, radius, phi1, phi2);
@@ -1750,7 +1719,7 @@ Int_t getcol()
 		b->SetTextAlign(22);
 		b->SetTextFont(100);
 		b->SetTextSize(0.8);
-		c = GetColorByInd(colindex);
+		c = gROOT->GetColor(colindex);
 		if (c) {
 		  if ( c->GetRed() + c->GetBlue() + c->GetGreen() < 1.5 ) b->SetTextColor(0);
 			else						 b->SetTextColor(1);

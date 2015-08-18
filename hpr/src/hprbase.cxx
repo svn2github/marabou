@@ -1553,5 +1553,46 @@ TCanvas * FindCanvas(const Char_t * pat)
 	}
 	return NULL;
 };
+//___________________________________________________________________________
+
+void SetUserPalette(Int_t startindex, TArrayI * pixels)
+{
+	Int_t ncont = pixels->GetSize();
+	if (ncont <= 0) return;
+	TColor * c;
+
+	TArrayI colind(ncont);
+	Float_t r=0, g=0, b=0;
+	for (Int_t i = 0; i < ncont; i++) {
+		colind[i] = i + startindex;
+		c = gROOT->GetColor(i + startindex);
+		if (c) delete c;
+		c = new TColor(i + startindex, r, g, b);
+		c->Pixel2RGB((*pixels)[i], r, g, b);
+		c->SetRGB(r, g, b);
+		gStyle->SetPalette(ncont, colind.GetArray());
+	}
+}
+//___________________________________________________________________________
+
+Int_t GetFreeColorIndex()
+{
+   // Search for the highest color index not used in ROOT:
+   // We do not want to overwrite some colors...
+   Int_t highestIndex = 0;
+   TColor * color;
+   TSeqCollection *colorTable = gROOT->GetListOfColors();
+   if ((color = (TColor *) colorTable->Last()) != 0) {
+      if (color->GetNumber() > highestIndex) {
+         highestIndex = color->GetNumber();
+      }
+      while ((color = (TColor *) (colorTable->Before(color))) != 0) {
+         if (color->GetNumber() > highestIndex) {
+            highestIndex = color->GetNumber();
+         }
+      }
+   }
+   return highestIndex + 1;
+}
 
 }   // end namespace Hpr
