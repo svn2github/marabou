@@ -183,7 +183,7 @@ from the keyboard or from a file. In the keyboard case\n\
 text is edited in this widget and placed by clicking \n\
 \"ExecuteTextInsert\" and then at the desired position.\n\
 In the file case serveral lines may be arranged as a compound\n\
-which may shifted together\n\
+which may shifted together.\n\
 \"InsertTextOnArc\" allows placing of the text on circle.\n\
 Radius, Start Angle and Align determine the position\n\
 e.g. Angle: 90 Align: Center will place the text centered\n\
@@ -191,6 +191,10 @@ at top of a circle\n\
 \"Char Sep\" allows extra space between characters \n\
 measured in fractions of the length of an \"a\".\n\
 \n\
+The program remembers the input in a file \"text_hist.txt\"\n\
+located in the current working directory.\n\
+It might be handy to prepare/modify this file by your\n\
+favorite editor.\n\
 Since ROOT Version 5.34.13 pure LaTeX input is supported\n\
 To profit from this use \"\\\" instead of \"#\" and let\n\
 \"Apply latex filter\" off.\n\
@@ -212,6 +216,7 @@ LaTeX itself.\n\
    static TString toacmd("InsertTextOnArc()");
    static TString excmd("InsertTextExecute()");
    static TString showcmd("Show_Head_of_File()");
+   static const char hist_file[] = {"text_hist.txt"};
 
    if (fEditTextFromFile) {
       fRow_lab->Add(new TObjString("FileRequest_File Name with text"));
@@ -268,7 +273,6 @@ LaTeX itself.\n\
    const char * history = 0;
    if (fEditTextFromFile == 0) {
       fEditTextPointer = &text;
-      const char hist_file[] = {"text_hist.txt"};
       history = hist_file;
 //      if (gROOT->GetVersionInt() < 40000) history = NULL;
    }

@@ -26,6 +26,7 @@
 #pragma link C++ class InsertArcDialog;
 #pragma link C++ class InsertTextBoxDialog;
 #pragma link C++ class InsertPadDialog;
+#pragma link C++ class FillFormDialog;
 #pragma link C++ class TextBox;
 #pragma link C++ class TextBoxMember;
 #pragma link C++ class InsertTextDialog;
