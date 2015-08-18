@@ -551,11 +551,12 @@ static alignDescription_t* GetAlignByNumber(int number)
 	return 0;
 }
 
-static const char *filetypes[] = { "All files",     "*",
-									 "ROOTfile",    "*.root",
-									 "Textfile",    "*.[t|d|a][x|a|s][t|t|c][ii]",
-				 "Imagefiles", "*.[p|j|g][n|p|i][g|g|f]", 
-									 0,               0 };
+static const char *filetypes[] = {
+					"All files",     "*",
+					"ROOTfile",   "*.root",
+					"TextFile",   "*.[t|d|a][x|a|s][t|t|c]",
+					"Imagefiles", "*.[p|j|g][n|p|i][g|g|f]", 
+					NULL,				NULL};
 
 //______________________________________________________________________________
 TGedAlignPopup::TGedAlignPopup(const TGWindow *p, const TGWindow *m, Style_t alignStyle)
