@@ -5718,6 +5718,7 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 			if (ok) {
 				gMrbLog->Out() << "Generating prototype file \"" << ptPath << "\" for user event \"" << uevtName << "\" (has to be edited)" << endl;
 				gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+//				fLofUserIncludes.AddNamedX((Int_t) TMrbConfig::kIclOptHeaderFile, ptPath.Data(), ptPath.Data());
 			} else {
 				gMrbLog->Err() << "Can't generate prototype file \"" << userFile << "\" for user event \"" << uevtName << "\"" << endl;
 				gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
@@ -5729,6 +5730,7 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 	} else if (verboseMode) {
 		gMrbLog->Out()  << "Using prototype file " << ptPath << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+//		fLofUserIncludes.AddNamedX((Int_t) TMrbConfig::kIclOptHeaderFile, ptPath.Data(), ptPath.Data());
 	}
 
 	ptPath = fileSpec;

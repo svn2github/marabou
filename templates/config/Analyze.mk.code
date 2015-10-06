@@ -34,9 +34,10 @@ GLIBS		=	-L$(ROOTSYS)/lib -lGraf $(ROOTGLIBS)
 TMRBLIBS	=	-L$(MARABOU)/lib -lTMrbAnalyze -lTMrbTransport -lTMrbUtils -lMutex
 
 # Header files which %%ANALYZE_FILE%%.cxx depends on
-USER_HDRS	=	$(AFILE).h \
-				$(AFILE)Globals.h \
-				%%MAKE_USER_HEADERS%%
+USER_HDRS	=	\
+				%%MAKE_USER_HEADERS%% \
+				$(AFILE).h \
+				$(AFILE)Globals.h
 
 %%MAKE_ULIB_HEADERS%%
 
