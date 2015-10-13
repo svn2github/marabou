@@ -283,7 +283,7 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 			TMrbString value;
 			TRegexp letter("[^0-9]");
 			TObjArray lof;
-			Int_t nitems = tline.Split(lof, " ");
+			Int_t nitems = tline.Split(lof, " ", kTRUE);
 	//      cout << "nitems " << nitems << endl;
 			Int_t pos = 0;
 			value = ((TObjString *)lof[pos++])->String();
@@ -340,22 +340,22 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 	  //    line >> f_used >> f_soft_limit >> f_hard_limit;
 			if(loglev > 0 || f_used >= f_hard_limit){
 				cout << "Files used: "<< f_used << endl
-					  << "hard_limit: " << f_hard_limit << endl;
+					  << "Hard_limit: " << f_hard_limit << endl;
 			}
-			if(f_used >= f_hard_limit){
-				 cout << setred << "Fatal: file limit exceeded" << setblack << endl;
-				return -1;
+			if (f_used > 0) {
+				if(f_used >= f_hard_limit){
+					cout << setred << "Fatal: file limit exceeded" << setblack << endl;
+					return -1;
+				}
+				if(grace > -1 && grace <= 1){
+					cout << setred << "Fatal: no grace left" << grace << setblack << endl;
+					return -1;
+				}
+				if(grace > -1 && grace <= 10){
+					cout << setred << "Warning : grace low" << grace << setblack << endl;
+					return -2;
+				}
 			}
-			if(grace > -1 && grace <= 1){
-				cout << setred << "Fatal: no grace left" << grace << setblack << endl;
-				return -1;
-			}
-
-			if(grace > -1 && grace <= 10){
-				cout << setred << "Warning : grace low" << grace << setblack << endl;
-				error = -2;
-			}
-			return error;
 		}
 		if(wline.BeginsWith(((TObjString*)mountpoints.At(mpind))->GetString())){
 			ok = kTRUE;
