@@ -127,7 +127,7 @@ $(HPRDS):     $(HPRDH) $(HPRL)
 		$(ROOTCINT) -f $@  -c -p -Iinclude $(HPRDH)
 
 $(HPRDO):     $(HPRDS)
-		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<
+		$(CXX) $(NOOPT) $(CXXFLAGS) -DROOTVERSION=$(ROOTVERS) -I. -o $@ -c $<
 
 all-hpr:       $(HPREXE) $(HPRDUMMYLIB)
 

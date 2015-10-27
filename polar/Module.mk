@@ -49,7 +49,9 @@ $(POLARLIB):     $(POLARDO) $(POLARO) $(MAINLIBS) $(POLARLIBDEP)
 			echo "cp  $(POLARPCM)----------------------" ; \
 			cp $(POLARPCM) $(LPATH); \
 		fi)
+ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(POLARRMAP) -l $(POLARLIB) -d $(POLARLIBDEP) -c $(POLARL)
+endif
 
 $(POLARDS):     $(POLARH) $(POLARL)
 		@echo "Generating dictionary $@..."

@@ -179,6 +179,7 @@ MAKEHTML      = root build/unix/makehtml.C
 HTMLCLEANUP   = build/unix/htmlcleanup.sh
 MAKELOGHTML   = build/unix/makeloghtml.sh
 MAKECINTDLLS  = build/unix/makecintdlls.sh
+RLIBMAP       = $(ROOTSYS)/bin/rlibmap
 ifeq ($(ARCH),win32)
 MAKELIB       = build/win/makelib.sh
 MAKEDIST      = build/win/makedist.sh

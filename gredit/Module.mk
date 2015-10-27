@@ -28,7 +28,7 @@ CDLMAINO    := $(MODDIRS)/main.o
 CDLO        := $(filter-out $(CDLMAINO),$(GREDITO))
 
 CDLEXE      := bin/CreateCDlabel
-ALLEXECS    += $(CDLEXE)
+
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GREDITH))
