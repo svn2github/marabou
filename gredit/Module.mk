@@ -14,9 +14,12 @@ GREDITDIRI     := $(GREDITDIR)/inc
 ##### lib #####
 GREDITL        := $(MODDIRI)/LinkDef.h
 GREDITDS       := $(MODDIRS)/G__GrEditDict.cxx
-GREDITPCM       := $(MODDIRS)/G__GrEditDict_rdict.pcm
+GREDITPCM      := $(MODDIRS)/G__GrEditDict_rdict.pcm
 GREDITDO       := $(GREDITDS:.cxx=.o)
-GREDITH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+# all .h files except LinkDef.h: gredit/inc/aaa.h
+GREDITHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+# change to include/aaa.h
+GREDITH        :=  $(patsubst $(MODDIRI)/%.h,include/%.h,$(GREDITHL))
 GREDITS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 GREDITO        := $(GREDITS:.cxx=.o)
 
@@ -70,7 +73,7 @@ endif
 
 $(GREDITDS):     $(GREDITH) $(GREDITL)
 		@echo "Generating dictionary: $@...."
-		$(ROOTCINT) -f $@ -c -p -Iinclude defineMarabou.h $(GREDITH) $(GREDITL)
+		$(ROOTCINT) -f $@ include/defineMarabou.h $(GREDITH) $(GREDITL)
 
 $(GREDITDO):     $(GREDITDS)
 		@echo "Compiling dictionary $@..."
