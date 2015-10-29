@@ -27,39 +27,38 @@ HPRO        := $(filter-out $(HPRDUMMY), $(HPROA))
 
 
 HPRDH			:= $(HPRDIRI)/defineMarabou.h \
- 					$(HPRDIRI)/HprTh3Dialog.h \
-               $(HPRDIRI)/HTCanvas.h \
- 					$(HPRDIRI)/HandleMenus.h \
- 					$(HPRDIRI)/FitHist.h \
- 					$(HPRDIRI)/HistPresent.h \
- 					$(HPRDIRI)/TMrbArrayD.h \
- 					$(HPRDIRI)/TMrbArrayF.h \
-					$(HPRDIRI)/FhContour.h \
-					$(HPRDIRI)/GroupOfHists.h \
- 					$(HPRDIRI)/Ascii2GraphDialog.h \
- 					$(HPRDIRI)/Ascii2HistDialog.h \
- 					$(HPRDIRI)/Ascii2NtupleDialog.h \
- 					$(HPRDIRI)/EmptyHistDialog.h \
- 					$(HPRDIRI)/SetHistOptDialog.h \
- 					$(HPRDIRI)/Set1DimOptDialog.h \
- 					$(HPRDIRI)/Set2DimOptDialog.h \
- 					$(HPRDIRI)/Set2DimGraphDialog.h \
- 					$(HPRDIRI)/Set3DimOptDialog.h \
- 					$(HPRDIRI)/SetColorModeDialog.h \
- 					$(HPRDIRI)/SetCanvasAttDialog.h \
- 					$(HPRDIRI)/WhatToShowDialog.h \
- 					$(HPRDIRI)/GeneralAttDialog.h \
- 					$(HPRDIRI)/GraphAttDialog.h \
-					$(HPRDIRI)/WindowSizeDialog.h \
-					$(HPRDIRI)/Rebin2DimDialog.h \
- 					$(HPRDIRI)/AddFitMenus.h \
- 					$(HPRDIRI)/HprStack.h \
- 					$(HPRDIRI)/HprFunc2.h \
- 					$(HPRDIRI)/HprGaxis.h \
- 					$(HPRDIRI)/HprLegend.h \
- 					$(HPRDIRI)/TText3D.h \
- 					$(HPRDIRI)/ShiftScale.h \
-  					$(HPRDIRI)/LinkDef.h
+ 					include/HprTh3Dialog.h \
+               include/HTCanvas.h \
+ 					include/HandleMenus.h \
+ 					include/FitHist.h \
+ 					include/HistPresent.h \
+ 					include/TMrbArrayD.h \
+ 					include/TMrbArrayF.h \
+					include/FhContour.h \
+					include/GroupOfHists.h \
+ 					include/Ascii2GraphDialog.h \
+ 					include/Ascii2HistDialog.h \
+ 					include/Ascii2NtupleDialog.h \
+ 					include/EmptyHistDialog.h \
+ 					include/SetHistOptDialog.h \
+ 					include/Set1DimOptDialog.h \
+ 					include/Set2DimOptDialog.h \
+ 					include/Set2DimGraphDialog.h \
+ 					include/Set3DimOptDialog.h \
+ 					include/SetColorModeDialog.h \
+ 					include/SetCanvasAttDialog.h \
+ 					include/WhatToShowDialog.h \
+ 					include/GeneralAttDialog.h \
+ 					include/GraphAttDialog.h \
+					include/WindowSizeDialog.h \
+					include/Rebin2DimDialog.h \
+ 					include/AddFitMenus.h \
+ 					include/HprStack.h \
+ 					include/HprFunc2.h \
+ 					include/HprGaxis.h \
+ 					include/HprLegend.h \
+ 					include/TText3D.h \
+ 					include/ShiftScale.h 
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
 HPRDEP      += $(MODDIRS)/main.d
@@ -124,7 +123,7 @@ $(HPRDUMMYLIB):     $(HPRDUMMY)
 
 $(HPRDS):     $(HPRDH) $(HPRL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@  -c -p -Iinclude $(HPRDH)
+		$(ROOTCINT) -f $@  -c -p -Iinclude $(HPRDH) $(HPRL)
 
 $(HPRDO):     $(HPRDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -DROOTVERSION=$(ROOTVERS) -I. -o $@ -c $<
