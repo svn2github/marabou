@@ -26,7 +26,7 @@ HPROA       := $(filter-out $(HPRMAINO),$(HPROM))
 HPRO        := $(filter-out $(HPRDUMMY), $(HPROA))
 
 
-HPRDH			:= $(HPRDIRI)/defineMarabou.h \
+HPRDH			:= include/defineMarabou.h \
  					include/HprTh3Dialog.h \
                include/HTCanvas.h \
  					include/HandleMenus.h \
