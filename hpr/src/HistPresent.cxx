@@ -51,7 +51,7 @@
 #include "HistPresent.h"
 #include "FitHist.h"
 #include "FhContour.h"
-#include "FitHist_Help.h"
+//#include "FitHist_Help.h"
 #include "support.h"
 //#include "TGMrbValuesAndText.h"
 #include "TGMrbInputDialog.h"
@@ -82,12 +82,12 @@
 #include <cstdlib>
 
 HistPresent *gHpr;
+Int_t gHprDebug;
 TString gHprWorkDir;
 TString gHprLocalEnv;
 static const char  *fHlistSuffix=".histlist";
 Int_t nHists;
 extern TH1 * gHpHist;
-Int_t gHprDebug;
 //static Int_t kSemaphore = 0;
 
 //_____________________________________________________________________________________
@@ -225,6 +225,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 //   TDirectory *fDirectory;
 //   TList *fFunctions;
 	gHpr = this;
+	gHprDebug = 0;
 	gHprWorkDir = gSystem->pwd();
 	gHprLocalEnv = gHprWorkDir + "/.hprrc";
 	gHprDebug = 0;
@@ -1644,6 +1645,41 @@ void HistPresent::GetHistSelMask(const char* /*bp*/)
 {
 //	Bool_t yesno = kFALSE;
 //	if (GeneralAttDialog::fUseRegexp) yesno=kTRUE;
+const char Help_SelectionMask_text[]=
+"Selection mask may be defined in the following ways:\n\
+\n\
+If file names contain run numbers they may be\n\
+selected by defining first and last run.\n\
+Run numbers must have at least 3 digits like:\n\
+009, 012 as normally used in Marabou.\n\
+\n\
+The following selections use patterns:\n\
+\n\
+If option 'Use Regexp' is active:\n\
+\n\
+Use regular expression as Selection Mask.\n\
+ \n\
+Examples: ^M:    all  starting with M\n\
+          w$:    all  ending with w\n\
+          [0-9]  all containing a number\n\
+\n\
+If option 'Use Regexp' is n o t active:\n\
+Use wild card expression:\n\
+\n\
+Examples: *mxy*  all containing mxy\n\
+          *mxy*1  all containing mxy and ending with 1\n\
+\n\
+If the expression contains:\n\
+ & (read AND) or | (read OR) or ! (read NOT) the\n\
+two expressions before and after the operator are\n\
+used and the operator is applied.\n\
+\n\
+Examples: xxx & yyy  true if name contains xxx AND yyy\n\
+          xxx | yyy  true if name contains xxx OR yy\n\
+          xxx ! yyy  true if name contains xxx but not yyy\n\
+          !zzz       true if name does not contain zzz\n\
+";
+
 	void * Valp[20];
 	TList * row_lab = new TList();
 	Int_t ind = 0;

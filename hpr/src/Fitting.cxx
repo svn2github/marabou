@@ -51,7 +51,7 @@
 
 #include "FitHist.h"
 #include "FitOneDimDialog.h"
-#include "FitHist_Help.h"
+//#include "FitHist_Help.h"
 #include "CmdListEntry.h"
 #include "HistPresent.h"
 

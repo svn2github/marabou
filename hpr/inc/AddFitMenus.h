@@ -1,5 +1,6 @@
 #ifndef __AddFitMenus__
 #define __AddFitMenus__
+#include "TH1.h"
 #include "TGWindow.h"
 #include "TRootCanvas.h"
 #include "TGMenu.h"

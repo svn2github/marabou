@@ -13,7 +13,7 @@
 #include "GeneralAttDialog.h"
 #include "FitHist.h"
 #include "FhContour.h"
-#include "FitHist_Help.h"
+//#include "FitHist_Help.h"
 #include "support.h"
 #include "TGMrbTableFrame.h"
 #include "TGMrbInputDialog.h"

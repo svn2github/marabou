@@ -1,7 +1,7 @@
 #include "TMath.h"
 #include "FhContour.h"
 #include "FitHist.h"
-#include "FitHist_Help.h"
+//#include "FitHist_Help.h"
 #include "TMrbNamedArray.h"
 #include "HistPresent.h"
 #include "hprbase.h"

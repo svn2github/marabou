@@ -1,6 +1,7 @@
 #ifndef ASCII2GRAPHDIALOG
 #define ASCII2GRAPHDIALOG
 #include "TGraphErrors.h"
+#include "TVirtualPad.h"
 #include "TGraphAsymmErrors.h"
 #include <iostream>
 //_____________________________________________________________________________________
