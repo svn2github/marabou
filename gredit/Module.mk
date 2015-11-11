@@ -76,7 +76,7 @@ endif
 
 $(GREDITDS):     $(GREDITHL) $(GREDITL)
 		@echo "Generating dictionary: $@...."
-		$(ROOTCINT) -f $@ -p -c -I$(MARABOU_SRCDIR)/include defineMarabou.h $(GREDITH) $(GREDITL)
+		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include defineMarabou.h $(GREDITH) $(GREDITL)
 
 $(GREDITDO):     $(GREDITDS)
 		@echo "Compiling dictionary $@..."
