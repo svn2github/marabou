@@ -16,7 +16,8 @@ ORDER_ := $(shell test $(MAKE_VERSION_MAJOR) -gt 3 || \
 include config/Makefile.config
 
 $(info bindir = $(BINDIR))
-
+MARABOU_SRCDIR := $(shell pwd)
+$(info source dir = $(MARABOU_SRCDIR))
 ifeq ($(EXPLICITLINK),yes)
 include config/Makefile.depend
 endif
