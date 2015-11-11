@@ -187,6 +187,7 @@ export MARABOU
 export INSTDIR=
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTSYS/lib:$MARABOU/lib
 export PATH=$PATH:$ROOTSYS/bin:$MARABOU/bin
+export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:$MARABOU/include:.
 
 echo -e -n $BLU >&2
 if [ $SYSMODE = "y" ]
