@@ -18,8 +18,10 @@ GREDITPCM      := $(MODDIRS)/G__GrEditDict_rdict.pcm
 GREDITDO       := $(GREDITDS:.cxx=.o)
 # all .h files except LinkDef.h: gredit/inc/aaa.h
 GREDITHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
-# change to include/aaa.h
-GREDITH        :=  $(patsubst $(MODDIRI)/%.h,include/%.h,$(GREDITHL))
+# $(info GREDITHL: $(GREDITHL))
+# change to aaa.h
+GREDITH        :=  $(patsubst $(MODDIRI)/%.h,%.h,$(GREDITHL))
+# $(info GREDITH: $(GREDITH))
 GREDITS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 GREDITO        := $(GREDITS:.cxx=.o)
 
@@ -34,7 +36,8 @@ CDLEXE      := bin/CreateCDlabel
 
 
 # used in the main Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GREDITH))
+# ALLHDRS needs include/
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GREDITHL))
 ALLLIBS     += $(GREDITLIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(GREDITPCM)
@@ -71,9 +74,9 @@ ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(GREDITRMAP) -l $(GREDITLIB) -d $(GREDITLIBDEP) -c $(GREDITL)
 endif
 
-$(GREDITDS):     $(GREDITH) $(GREDITL)
+$(GREDITDS):     $(GREDITHL) $(GREDITL)
 		@echo "Generating dictionary: $@...."
-		$(ROOTCINT) -f $@ include/defineMarabou.h $(GREDITH) $(GREDITL)
+		$(ROOTCINT) -f $@ -p -c -I$(MARABOU_SRCDIR)/include defineMarabou.h $(GREDITH) $(GREDITL)
 
 $(GREDITDO):     $(GREDITDS)
 		@echo "Compiling dictionary $@..."
