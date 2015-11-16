@@ -16,7 +16,10 @@ GUTILSL        := $(MODDIRI)/LinkDef.h
 GUTILSDS       := $(MODDIRS)/G__TGMrbUtilsDict.cxx
 GUTILSPCM       := $(MODDIRS)/G__TGMrbUtilsDict_rdict.pcm
 GUTILSDO       := $(GUTILSDS:.cxx=.o)
-GUTILSH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+GUTILSHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+## $(info GUTILSHL = $(GUTILSHL))
+GUTILSH        := $(patsubst $(MODDIRI)/%.h,%.h,$(GUTILSHL))
+## $(info GUTILSH = $(GUTILSH))
 GUTILSS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 GUTILSO        := $(GUTILSS:.cxx=.o)
 
@@ -28,7 +31,7 @@ GUTILSLIBDEP   := $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libGui.so $(ROOTSYS)/
 
 
 # used in the main Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GUTILSH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GUTILSHL))
 ALLLIBS     += $(GUTILSLIB)
 $(info gutils/Module.mk: ROOTVERS = $(ROOTVERS))
 $(info ROOTV6 = $(ROOTV6))
@@ -56,9 +59,9 @@ ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(GUTILSRMAP) -l $(GUTILSLIB) -d $(GUTILSLIBDEP) -c $(GUTILSL)
 endif
 
-$(GUTILSDS):     $(GUTILSH) $(GUTILSL)
+$(GUTILSDS):     $(GUTILSHL) $(GUTILSL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -p -Iinclude $(GUTILSH) $(GUTILSL)
+		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include defineMarabou.h $(GUTILSH) $(GUTILSL)
 
 $(GUTILSDO):     $(GUTILSDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

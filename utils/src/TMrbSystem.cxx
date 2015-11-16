@@ -382,10 +382,14 @@ const Char_t * TMrbSystem::GetSymbolicLink(TString & SymLink, const Char_t * Pat
 		TString path = gSystem->ExpandPathName(Path);
 		FILE * p = gSystem->OpenPipe(Form("readlink %s", path.Data()), "r");
 		char sl[1000];
-		fgets(sl, 1000, p);
+		char * result = fgets(sl, 1000, p);
 		fclose(p);
-		SymLink = sl;
-		SymLink(SymLink.Length() - 1) = '\0';		
+		if ( result ) {
+			SymLink = sl;
+			SymLink(SymLink.Length() - 1) = '\0';
+		} else {
+			SymLink= "";
+		}
 	} else {
 		SymLink = "";
 	}
@@ -582,8 +586,11 @@ const Char_t * TMrbSystem::GetDomainName(TString & DomainName) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Char_t dn[100];
-	getdomainname(dn, 100);
-	DomainName = dn;
+	Int_t result = getdomainname(dn, 100);
+	if (result == 0)
+		DomainName = dn;
+	else
+		DomainName = "";
 	return(DomainName.Data());
 }
 

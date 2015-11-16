@@ -73,7 +73,7 @@ $(MUTEXLIB):     $(MUTEXO)
 
 $(MRBADS):     $(MRBAH) $(MRBADL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(MRBAH) $(MRBADL)
+		$(ROOTCINT) -f $@ -c -p -Iinclude $(MRBAH) $(MRBADL)
 
 $(MRBADO):     $(MRBADS)
 		$(CXX) -g $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

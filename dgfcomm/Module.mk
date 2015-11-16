@@ -49,7 +49,7 @@ $(DGFCOMLIB):     $(DGFCOMDO) $(DGFCOMO) $(MAINLIBS) $(DGFCOMDEP)
 
 $(DGFCOMDS):     $(DGFCOMH) $(DGFCOML)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(DGFCOMH) $(DGFCOML)
+		$(ROOTCINT) -f $@ -c -p -Iinclude $(DGFCOMH) $(DGFCOML)
 
 $(DGFCOMDO):     $(DGFCOMDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

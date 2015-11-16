@@ -15,7 +15,7 @@ Values in variable list must ne separated by colons (:)";
 
    static void *valp[50];
    Int_t ind = 0;
-   Bool_t ok = kTRUE;
+//   Bool_t ok = kTRUE;
    fCommand = "Fill_The_Ntuple()";
    fCommandHead = "Show_Head_of_File()";
    RestoreDefaults();
@@ -37,7 +37,7 @@ Values in variable list must ne separated by colons (:)";
    valp[ind++] = &fCommandHead;
    valp[ind++] = &fCommand;
 
-   ok = GetStringExt("Define parameters", NULL, itemwidth, win,
+   GetStringExt("Define parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());
 };

@@ -155,7 +155,7 @@ parse_value (g, cp, valp)
     const char *cp;
     long *valp;
 {
-    const char *var;
+    const char *var = 0;
 
     *valp = 0;
 

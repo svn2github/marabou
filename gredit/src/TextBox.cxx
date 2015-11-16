@@ -201,7 +201,7 @@ void TextBox::AddMember(TObject* obj, Double_t xi, Double_t yi)
    TText  *t = NULL;
    TGraph *g = NULL;
    TSplineX *s = NULL;
-   TPave  *p = NULL;
+//   TPave  *p = NULL;
 	TArrow  *a = NULL;
    Bool_t its_line = kFALSE;
    Short_t align = 0;
@@ -212,8 +212,8 @@ void TextBox::AddMember(TObject* obj, Double_t xi, Double_t yi)
       g =(TGraph*)obj;
       its_line = kTRUE;
 //      cout << "TGraph: ";
-   } else if (obj->InheritsFrom("TPave")) {
-      p =(TPave*)obj;
+//   } else if (obj->InheritsFrom("TPave")) {
+//      p =(TPave*)obj;
 //       cout << "TPave: ";
    } else if (obj->InheritsFrom("TSplineX")){
       s = (TSplineX*)obj;
@@ -355,11 +355,11 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
 		TPave  *p = NULL;
 		TArrow *a = NULL;
 //		TSplineX  *ts = NULL;
-		Double_t ts2 = 0;
+//		Double_t ts2 = 0;
 		obj = mobj->GetObject();
 		if (obj->InheritsFrom("TText")) {
 			t =(TText*)obj;
-			ts2 = fTextMargin * t->GetTextSize() * (gPad->GetY2() - gPad->GetY1());
+//			ts2 = fTextMargin * t->GetTextSize() * (gPad->GetY2() - gPad->GetY1());
 		} else if (obj->InheritsFrom("TSplineX")) {
 			g =(ControlGraph*)((TSplineX*)obj)->GetControlGraph();
 		}
@@ -380,14 +380,14 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
 			cout <<  "TextBox::AlignEntries dX1 ... " << dX1 << " " <<dY1 << " " <<dX2 << " " <<dY2 << " " << align << endl;
       Int_t halign = align / 10;
       Int_t valign = align%10;
-      Bool_t shiftonly = kFALSE;
+//      Bool_t shiftonly = kFALSE;
 		dX = dX1;
 		dY = dY1;
 		//      cout << "TextBox::AlignEntries, ha " << halign << " va " << valign << endl;
       if (   TMath::Abs(dX1 - dX2) < fSmall
           && TMath::Abs(dY1 - dY2) < fSmall) {
          // pure shift
-         shiftonly = kTRUE;
+//         shiftonly = kTRUE;
       } else {
          //size changed
          if      (halign == 1) dX = dX1;

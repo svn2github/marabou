@@ -1275,7 +1275,7 @@ void TSplineX::Paint(Option_t * /*optin*/)
    Double_t dist = TMath::Abs(lg->GetDist());
    Double_t available = 0;
    Double_t phi, ax, ay, xcprev, ycprev, xccur, yccur;
-   Bool_t   box_done = kFALSE;
+//   Bool_t   box_done = kFALSE;
    phi = PhiOfLine( xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
    Endpoint(phi, xc[0], yc[0], -dist, &ax, &ay);
    xp[0] = ax;
@@ -1310,7 +1310,7 @@ void TSplineX::Paint(Option_t * /*optin*/)
          pl->Paint("F");
 
          available -= needed;
-         box_done = kTRUE;
+//         box_done = kTRUE;
          xcprev = xccur;
          ycprev = yccur;
 //       filled box complete, enter gap

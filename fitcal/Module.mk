@@ -16,7 +16,8 @@ FITCALL        := $(MODDIRI)/LinkDef.h
 FITCALDS       := $(MODDIRS)/G__FitCalDict.cxx
 FITCALPCM      := $(MODDIRS)/G__FitCalDict_rdict.pcm
 FITCALDO       := $(FITCALDS:.cxx=.o)
-FITCALH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+FITCALHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+FITCALH        := $(patsubst $(MODDIRI)/%.h,%.h,$(FITCALHL))
 FITCALS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 FITCALO        := $(FITCALS:.cxx=.o)
 
@@ -29,7 +30,8 @@ MRBGUTILSLIB  := $(LPATH)/libTGMrbUtils.$(SOEXT)
 FITCALLIBDEP  := $(ROOTSYS)/lib/libGraf.so  $(MRBGUTILSLIB) $(MRBUTILSLIB)
 
 # used in the main Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(FITCALH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(FITCALHL))
+$(info FITCALH = $(FITCALH))
 ALLLIBS     += $(FITCALLIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(FITCALPCM)
@@ -56,9 +58,9 @@ ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(FITCALRMAP) -l $(FITCALLIB) -d $(FITCALLIBDEP) -c $(FITCALL)
 endif
 
-$(FITCALDS):     $(FITCALH) $(FITCALL)
+$(FITCALDS):     $(FITCALHL) $(FITCALL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -p -Iinclude defineMarabou.h $(FITCALH) $(FITCALL)
+		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include defineMarabou.h $(FITCALH) $(FITCALL)
 
 $(FITCALDO):     $(FITCALDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

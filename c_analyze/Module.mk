@@ -74,7 +74,7 @@ $(MBSCLIB):     $(MBSCDO) $(MBSCO) $(MAINLIBS) $(MBSCLIBDEP)
 
 $(MBSCDS):     $(MBSCH) $(MBSCDL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c $(MBSCH) $(MBSCDL)
+		$(ROOTCINT) -f $@ -c -p $(MBSCH) $(MBSCDL)
 
 $(MBSCDO):     $(MBSCDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

@@ -55,7 +55,7 @@ endif
 
 $(EXPCONFDS):     $(EXPCONFH) $(EXPCONFL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(EXPCONFH) $(EXPCONFL)
+		$(ROOTCINT) -f $@ -c -p -Iinclude $(EXPCONFH) $(EXPCONFL)
 
 $(EXPCONFDO):     $(EXPCONFDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

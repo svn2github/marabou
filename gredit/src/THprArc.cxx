@@ -36,7 +36,7 @@ void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 //   const Int_t kMinSize = 25;
    const Int_t np = 40;
    static Int_t x[np+2], y[np+2];
-   static Int_t px1,py1,npe,r1,r2;
+   static Int_t px1,py1,npe,r1;
    static Int_t pxold, pyold;
    static Int_t sig,impair;
    Int_t i, dpx, dpy;
@@ -79,7 +79,7 @@ void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
       pBy = gPad->YtoAbsPixel(-fR1+fY1);
       pLx = gPad->XtoAbsPixel(-fR1+fX1);
       pRx = gPad->XtoAbsPixel(fR1+fX1);
-      r2 = (pBy-pTy)/2;
+//      r2 = (pBy-pTy)/2;
       r1 = (pRx-pLx)/2;
       gVirtualX->DrawLine(pRx+4, py1+4, pRx-4, py1+4);
       gVirtualX->DrawLine(pRx-4, py1+4, pRx-4, py1-4);

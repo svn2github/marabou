@@ -137,9 +137,9 @@ esac
 MAKEIN=config/Makefile.in
 MAKEOUT=config/Makefile.config
 
-echo "EXTRA_CFLAGS   := -Iinclude         " >> $MAKEOUT
-echo "EXTRA_CXXFLAGS := -Iinclude         " >> $MAKEOUT
-echo "EXTRA_LDFLAGS  :=                   " >> $MAKEOUT
+echo "EXTRA_CFLAGS   := -Iinclude " >> $MAKEOUT
+echo "EXTRA_CXXFLAGS := -Iinclude " >> $MAKEOUT
+echo "EXTRA_LDFLAGS  := " >> $MAKEOUT
 
 echo "BINDIR         := \$\$MARABOU_INSTALL_PATH/bin"       >> $MAKEOUT
 echo "LIBDIR         := \$\$MARABOU_INSTALL_PATH/lib"       >> $MAKEOUT

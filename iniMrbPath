@@ -52,6 +52,17 @@ then
 	return
 fi
 
+# check for OpenGL enabled in ROOT
+
+OPENGL=`grep opengl $ROOTSYS/include/RConfigOptions.h`
+if [ -z "$OPENGL" ]
+then
+	echo -e -n $RED >&2
+	echo "iniHprPath: ROOT is not build with OpenGL needed by HistPresent" >&2
+	echo -e -n $BLK >&2
+	return
+fi
+
 if [ -z "$MARABOU" ]
 then
 	echo -e -n $RED >&2

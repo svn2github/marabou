@@ -16,7 +16,8 @@ POLARL        := $(MODDIRI)/LinkDef.h
 POLARDS       := $(MODDIRS)/G__TPolControlDict.cxx
 POLARPCM       := $(MODDIRS)/G__TPolControlDict_rdict.pcm
 POLARDO       := $(POLARDS:.cxx=.o)
-POLARH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+POLARHL        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+POLARH        := $(patsubst $(MODDIRI)/%.h,%.h,$(POLARHL))
 POLARS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 POLARO        := $(POLARS:.cxx=.o)
 
@@ -27,7 +28,7 @@ POLARRMAP     := $(LPATH)/libTPolControl.rootmap
 POLARLIBDEP   := $(LPATH)/libTMrbUtils.so
 
 # used in the main Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(POLARH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(POLARHL))
 ALLLIBS     += $(POLARLIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(POLARPCM)
@@ -53,9 +54,9 @@ ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(POLARRMAP) -l $(POLARLIB) -d $(POLARLIBDEP) -c $(POLARL)
 endif
 
-$(POLARDS):     $(POLARH) $(POLARL)
+$(POLARDS):     $(POLARHL) $(POLARL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c  -Iinclude $(POLARH) $(POLARL)
+		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include $(POLARH) $(POLARL)
 
 $(POLARDO):     $(POLARDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

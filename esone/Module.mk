@@ -51,7 +51,7 @@ $(ESONELIB):     $(ESONEDO) $(ESONEO) $(MAINLIBS) $(ESONELIBDEP)
 
 $(ESONEDS):     $(ESONEH) $(ESONEL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(ESONEDH) $(ESONEL)
+		$(ROOTCINT) -f $@ -c -p -Iinclude $(ESONEDH) $(ESONEL)
 
 $(ESONEDO):     $(ESONEDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<
