@@ -44,10 +44,10 @@ Int_t   SetColorModeDialog::fMtransHLS;
 Int_t   SetColorModeDialog::fMbw;
 Int_t   SetColorModeDialog::fMbwinv;
 Int_t   SetColorModeDialog::fMrbow;
-Int_t   SetColorModeDialog::fMDeepSea;
-Int_t   SetColorModeDialog::fMBird;
-Int_t   SetColorModeDialog::fMBlackBody;
-Int_t   SetColorModeDialog::fMTwoColHue;
+//Int_t   SetColorModeDialog::fMDeepSea;
+//Int_t   SetColorModeDialog::fMBird;
+//Int_t   SetColorModeDialog::fMBlackBody;
+//Int_t   SetColorModeDialog::fMTwoColHue;
 TColor** SetColorModeDialog::fTransColorsRGB=NULL;
 TColor** SetColorModeDialog::fTransColorsHLS=NULL;
 TString SetColorModeDialog::fPalName = "Bird";
@@ -153,7 +153,12 @@ https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
 	if (fByNumber != 0) selected_bid = ind;
 	fValp[ind++] = &fByNumber;
 	TString tmp("ComboSelect-Palettes");
-	for (Int_t i=0; i < Ncol; i++) {
+#if ROOTVERSION < 60000
+	Int_t ncol_used = 6;
+#else
+	Int_t ncol_used = Ncol;
+#endif	
+	for (Int_t i=0; i < ncol_used; i++) {
 		tmp += ";";
 		tmp += pal_names[i];
 	}
@@ -166,19 +171,19 @@ https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
 	fRow_lab->Add(new TObjString("RadioButton+Grey,high=black"));
 	if (fMbwinv != 0) selected_bid = ind;
 	fValp[ind++] = &fMbwinv;
-	fRow_lab->Add(new TObjString("RadioButton+     Two Col Hue"));
-	if (fMTwoColHue != 0) selected_bid = ind;
-	fValp[ind++] = &fMTwoColHue;
+//	fRow_lab->Add(new TObjString("RadioButton+     Two Col Hue"));
+//	if (fMTwoColHue != 0) selected_bid = ind;
+//	fValp[ind++] = &fMTwoColHue;
 	
-	fRow_lab->Add(new TObjString("RadioButton_Rainbow(classic)"));
+	fRow_lab->Add(new TObjString("RadioButton+Rainbow(classic)"));
 	if (fMrbow != 0) selected_bid = ind;
 	fValp[ind++] = &fMrbow;
-	fRow_lab->Add(new TObjString("RadioButton+                  Bird"));
-	if (fMBird != 0) selected_bid = ind;
-	fValp[ind++] = &fMBird;
-	fRow_lab->Add(new TObjString("RadioButton+Black Body Rad"));
-	if (fMBlackBody != 0) selected_bid = ind;
-	fValp[ind++] = &fMBlackBody;
+//	fRow_lab->Add(new TObjString("RadioButton+                  Bird"));
+//	if (fMBird != 0) selected_bid = ind;
+//	fValp[ind++] = &fMBird;
+//	fRow_lab->Add(new TObjString("RadioButton+Black Body Rad"));
+//	if (fMBlackBody != 0) selected_bid = ind;
+//	fValp[ind++] = &fMBlackBody;
 	
 	fRow_lab->Add(new TObjString("CommentOnly_User defined Palettes"));
 	fValp[ind++] = &dummy;
@@ -217,9 +222,9 @@ void SetColorModeDialog::SetColorMode()
 		if (fByNumber != 0 )cout << "fByNumber ";
 		if (fMbw != 0 )cout << "fMbw ";
 		if (fMbwinv != 0 )cout << "fMbwinv ";
-		if (fMBird != 0 )cout << "fMBird ";
-		if (fMBlackBody != 0 )cout << "fMBlackBody ";
-		if (fMTwoColHue != 0 )cout << "fMTwoColHue ";
+//		if (fMBird != 0 )cout << "fMBird ";
+//		if (fMBlackBody != 0 )cout << "fMBlackBody ";
+//		if (fMTwoColHue != 0 )cout << "fMTwoColHue ";
 		if (fMtransRGB != 0 )cout << "fMtransRGB ";
 		if (fMtransHLS != 0 )cout << "fMtransHLS ";
 		if (fMrbow != 0 )cout << "fMrbow ";
@@ -231,12 +236,12 @@ void SetColorModeDialog::SetColorMode()
 		gStyle->SetPalette(1, NULL);
 	} else if ( fMbw) {
 		gStyle->SetPalette(52);
-	} else if ( fMBird ) {
-		gStyle->SetPalette(57);
-	} else if ( fMBlackBody ) {
-		gStyle->SetPalette(53);
-	} else if ( fMTwoColHue ) {
-		gStyle->SetPalette(54);
+//	} else if ( fMBird ) {
+//		gStyle->SetPalette(57);
+//	} else if ( fMBlackBody ) {
+//		gStyle->SetPalette(53);
+//	} else if ( fMTwoColHue ) {
+//		gStyle->SetPalette(54);
 	} else if ( fByNumber ) {
 		gStyle->SetPalette(fPals[fPalName.Data()]);
 	} else if (fMbwinv) {
@@ -525,10 +530,10 @@ void SetColorModeDialog::SaveDefaults()
 	env.SetValue("SetColorModeDialog.fMbw", fMbw);
 	env.SetValue("SetColorModeDialog.fMbwinv", fMbwinv);
 	env.SetValue("SetColorModeDialog.fMrbow", fMrbow);
-	env.SetValue("SetColorModeDialog.fMDeepSea", fMDeepSea);
-	env.SetValue("SetColorModeDialog.fMBird", fMBird);
-	env.SetValue("SetColorModeDialog.fMBlackBody", fMBlackBody);
-	env.SetValue("SetColorModeDialog.fMTwoColHue", fMTwoColHue);
+//	env.SetValue("SetColorModeDialog.fMDeepSea", fMDeepSea);
+//	env.SetValue("SetColorModeDialog.fMBird", fMBird);
+//	env.SetValue("SetColorModeDialog.fMBlackBody", fMBlackBody);
+//	env.SetValue("SetColorModeDialog.fMTwoColHue", fMTwoColHue);
 	env.SetValue("SetColorModeDialog.NofTransLevels", fNofTransLevels);
 	env.SetValue("SetColorModeDialog.StartColor", fStartColor);
 	env.SetValue("SetColorModeDialog.EndColor", fEndColor);
@@ -584,10 +589,10 @@ void SetColorModeDialog::RestoreDefaults()
 	fMbw        = env.GetValue("SetColorModeDialog.fMbw", 0);
 	fMbwinv     = env.GetValue("SetColorModeDialog.fMbwinv", 0);
 	fMrbow      = env.GetValue("SetColorModeDialog.fMrbow", 1);
-	fMDeepSea   = env.GetValue("SetColorModeDialog.fMDeepSea", 0);
-	fMBird      = env.GetValue("SetColorModeDialog.fMBird", 0);
-	fMBlackBody = env.GetValue("SetColorModeDialog.fMBlackBody", 0);
-	fMTwoColHue = env.GetValue("SetColorModeDialog.fMTwoColHue", 0);
+//	fMDeepSea   = env.GetValue("SetColorModeDialog.fMDeepSea", 0);
+//	fMBird      = env.GetValue("SetColorModeDialog.fMBird", 0);
+//	fMBlackBody = env.GetValue("SetColorModeDialog.fMBlackBody", 0);
+//	fMTwoColHue = env.GetValue("SetColorModeDialog.fMTwoColHue", 0);
 	fNofTransLevels   = env.GetValue("SetColorModeDialog.NofTransLevels", 20);
 	fStartColor       = env.GetValue("SetColorModeDialog.StartColor", 2);
 	fEndColor         = env.GetValue("SetColorModeDialog.EndColor", 3);
