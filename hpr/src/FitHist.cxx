@@ -85,6 +85,7 @@
 #include "hprbase.h"
 
 extern HistPresent *gHpr;
+extern Int_t gHprDebug;
 extern Int_t nHists;
 extern Double_t gTranspThresh;
 extern Double_t gTranspAbove;
@@ -113,7 +114,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	if (gDirectory) {
 		FitHist *hold =
 			 (FitHist *) gDirectory->GetList()->FindObject(GetName());
-		if (gDebug > 0 && hold) {
+		if (gHprDebug > 0 && hold) {
 //         Warning("Build","Replacing existing : %s",GetName());
 			cout << "FitHist ctor: this " <<this << " Delete hold: " << hold << endl;
 			gDirectory->GetList()->Remove(hold);
@@ -129,7 +130,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fHname = hname;
 //   Int_t pp = fHname.Index(".");
 //   if(pp) fHname.Remove(0,pp+1);
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << "FitHist ctor: " << this << " name: " << name << " title: " << name
 		<< " hname: " << fHname.Data()
 		<< endl << flush;
@@ -381,7 +382,7 @@ FitHist::~FitHist()
 	fTimer.Stop();
 	DisconnectFromPadModified();
 //	TQObject::Disconnect((TPad*)fCanvas, "Modified()", this, "HandlePadModified()");
-	if ( gDebug > 0 ) {
+	if ( gHprDebug > 0 ) {
 		cout << " ~FitHist()this : " << this<< " fSelHist " <<fSelHist
 		<< " fCanvas " <<fCanvas << endl;
 //		fSelHist->Print();
@@ -438,7 +439,7 @@ FitHist::~FitHist()
 void FitHist::DisconnectFromPadModified()
 {
 	TQObject::Disconnect((TPad*)fCanvas, "Modified()", this, "HandlePadModified()");
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << " DisconnectFromPadModified this : " << this << " fCanvas " <<fCanvas << endl;
 }
 //_______________________________________________________________________________
@@ -453,7 +454,7 @@ void FitHist::HandlePadModified()
 
 void FitHist::DoSaveLimits()
 {
-	if ( gDebug > 1 ) {
+	if ( gHprDebug > 1 ) {
 		cout << "FitHist::DoSaveLimits: " << gPad 
 				<< " fCanvas: " << fCanvas 
 				<< " gPad  "  << gPad << " fSelPad->GetLogy() " <<  fSelPad->GetLogy()
@@ -492,13 +493,13 @@ void FitHist::DoSaveLimits()
 	if ( fExpHist == NULL ) {
 		fBinlx = fSelHist->GetXaxis()->GetFirst();
 		fBinux = fSelHist->GetXaxis()->GetLast();
-		if ( gDebug > 1 ) {
+		if ( gHprDebug > 1 ) {
 			cout << "fBinlx,ux " <<fBinlx << " " <<fBinux << endl;
 		}
 		if (fDimension == 2) {
 			fBinly = fSelHist->GetYaxis()->GetFirst();
 			fBinuy = fSelHist->GetYaxis()->GetLast();
-			if ( gDebug > 1 ) {
+			if ( gHprDebug > 1 ) {
 				cout << "fBinly,uy " <<fBinly << " " <<fBinuy << endl;
 			}
 		}
@@ -508,7 +509,7 @@ void FitHist::DoSaveLimits()
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-	if (gDebug > 2)
+	if (gHprDebug > 2)
 		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist
 		<< " RecursiveRemove: " << obj  << endl;
 	//fSelHist->Print();
@@ -572,7 +573,7 @@ void FitHist::SaveDefaults(Bool_t /*recalculate*/)
 		if (fZtitle.Length() > 0)
 			env->SetValue("fZtitle", fZtitle);
 	}
-	if (gDebug > 1)
+	if (gHprDebug > 1)
 		cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " << fBinux << fLogy << endl;
 	env->SaveLevel(kEnvLocal);
 	delete env;
@@ -744,7 +745,7 @@ void FitHist::handle_mouse()
 	}
 	if ( TCUTG_moved && event == kButton1Up ) {
 		if  (fProjectedBoth == 1 ) {
-			if ( gDebug > 0 )
+			if ( gHprDebug > 0 )
 				cout << " ProjectBoth " << endl;
 			ProjectBoth();
 		} else if ( fDimension == 2 && selected_cut !=NULL) {
@@ -782,7 +783,7 @@ void FitHist::handle_mouse()
 	if (event == kButton1Motion && select->InheritsFrom("TCutG")) {
 		selected_cut = (TCutG*)select;
 		TCUTG_moved = kTRUE;
-		if ( gDebug > 0 )
+		if ( gHprDebug > 0 )
 			cout << select->ClassName() << " event " << event << endl;
 		return;
 	}
@@ -1338,7 +1339,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		buf << this;
 		cmd += buf.str();
 		cmd += ")->handle_mouse()";
-		if (gDebug > 0)
+		if (gHprDebug > 0)
 			cout << "FitHist::DisplayHist cmd: " << cmd << endl;
 		fCanvas->AddExec("handle_mouse", cmd.Data());
 		fCanvas->GetFrame()->SetBit(TBox::kCannotMove);
@@ -1359,7 +1360,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		fCanvas->SetLogx(fLogx);
 //		fCanvas->SetLogy(fLogy);
 		this->SetLogy(fLogy);
-		if (gDebug > 1) {
+		if (gHprDebug > 1) {
 			cout<< "fCanvas->GetLogy(): " ;
 			if (fCanvas->GetLogy()) 
 				cout << "true";
@@ -1426,7 +1427,7 @@ void FitHist::Entire()
 //   fOrigHist->GetListOfFunctions()->Print();
 
 	if (fExpHist) {
-		if (gDebug > 0)
+		if (gHprDebug > 0)
 			cout << " Entire() fExpHist->Delete()" <<endl;
 		fExpHist->GetListOfFunctions()->Clear("nodelete");
 		TF1 *ff= (TF1*)gROOT->GetListOfFunctions()->FindObject("backf");
@@ -1677,7 +1678,7 @@ void FitHist::AddAxis(Int_t where)
 
 void FitHist::ObjMoved(Int_t /*px*/, Int_t /*py*/, TObject *obj)
 {
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "ObjMoved: " << obj->ClassName() <<endl;
 	if (obj->IsA() == TAxis::Class()) {
 	}
@@ -1688,7 +1689,7 @@ void FitHist::ObjMoved(Int_t /*px*/, Int_t /*py*/, TObject *obj)
 
 void FitHist::HandleLinLogChanged(TObject *obj)
 {
-	if ( gDebug > 0 ) {
+	if ( gHprDebug > 0 ) {
 		cout << "FitHist::HandleLinLogChanged: " << obj 
 				<< " fCanvas: " << fCanvas <<endl;
 	}
@@ -3215,7 +3216,7 @@ void FitHist::Draw1Dim()
 		gStyle->SetStatH(env.GetValue("SetHistOptDialog.StatH",0.16));
 		gStyle->SetOptStat(fOptStat);
 		fSelHist->SetStats(1);
-		if ( gDebug > 1 ) {
+		if ( gHprDebug > 1 ) {
 			cout << "Draw1Dim fOptStat " << fOptStat << " " << endl;
 			cout << "Draw1Dim StatX, Y " << gStyle->GetStatX() << " " << gStyle->GetStatY() << endl;
 			cout << "Draw1Dim StatW, H " << gStyle->GetStatW() << " " << gStyle->GetStatH() << endl;
@@ -3282,7 +3283,7 @@ void FitHist::Draw1Dim()
 		fCanvas->GetFrame()->SetFillStyle(0);
 	 //   Int_t save_optstat = gStyle->GetOptStat();
 	}
-	if ( gDebug > 0 ) {
+	if ( gHprDebug > 0 ) {
 		cout << "Draw1Dim() " << drawopt << " fSelHist->Draw() " 
 		<<fSelHist->GetDrawOption() 
 		<< " logy " ;
@@ -3362,7 +3363,7 @@ void FitHist::Draw1Dim()
 	if (fLogx)
 		fCanvas->SetLogx();
 	fCanvas->Update();
-	if (gDebug > 0) {
+	if (gHprDebug > 0) {
 		cout << "exit Draw1Dim() " <<fSelHist->GetDrawOption()
 		<< " logy " ;
 		if (fCanvas->GetLogy())
@@ -3407,9 +3408,9 @@ void FitHist::Draw2Dim()
 		fSelHist->GetListOfFunctions()->Remove(st1);
 	if ( fCanvas->GetListOfPrimitives()->FindObject(fSelHist) )
 		fCanvas->GetListOfPrimitives()->Remove(fSelHist);
-	if (gDebug > 2)
+	if (gHprDebug > 2)
 		cout << "Draw2Dim:" << " GetLogy " << fCanvas->GetLogy() << endl;
-	if ( gDebug > 1 ) {
+	if ( gHprDebug > 1 ) {
 		cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim 
 		<< " gStyle->GetHistFillColor() :" <<gStyle->GetFillColor() << endl
 		<< " fHistFillColor2Dim :" <<fHistFillColor2Dim<< endl
@@ -3441,7 +3442,7 @@ void FitHist::Draw2Dim()
 	fCanvas->SetLogy(fLogy);
 	SetLogz(fLogz);
 	fCanvas->GetHandleMenus()->SetLog(fLogz);
-	if (gDebug > 1)
+	if (gHprDebug > 1)
 		cout << "Draw2Dim:fDrawOpt2Dim " << fDrawOpt2Dim << endl;
 	fSelHist->SetOption(fDrawOpt2Dim);
 	fSelHist->SetDrawOption(fDrawOpt2Dim);
@@ -3521,7 +3522,7 @@ void FitHist::Draw3Dim()
 {
 //   TString drawopt("iso");
 
-	if ( gDebug > 1 )
+	if ( gHprDebug > 1 )
 		cout << "fDrawOpt3Dim " << fDrawOpt3Dim << endl;
 	TEnv env(".hprrc");
 	fCanvas->SetPhi(env.GetValue("Set3DimOptDialog.fPhi3Dim",     30));
@@ -3669,7 +3670,7 @@ void FitHist::Draw3DimPolyMarker()
 	TPolyMarker3D * pm;
 	Double_t x, y, z;
 	Int_t ncolors = gStyle->GetNumberOfColors();
-	if ( gDebug > 0)
+	if ( gHprDebug > 0)
 		cout << "Draw3DimPolyMarker: hist Min, Max, log, ncolors: "
 		<< fSelHist << " " << min << " " << max << " " << logc<< " " << ncolors << endl;
 	

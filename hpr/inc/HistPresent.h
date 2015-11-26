@@ -278,6 +278,8 @@ ClassDef(HistPresent,0)      // A histogram presenter
 };
 
 R__EXTERN HistPresent *gHpr;
+R__EXTERN Int_t gHprDebug;
+R__EXTERN Int_t gHprClosing;
 R__EXTERN TString gHprWorkDir;
 R__EXTERN TString gHprLocalEnv;
 ;

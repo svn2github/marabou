@@ -83,6 +83,7 @@
 
 HistPresent *gHpr;
 Int_t gHprDebug;
+Int_t gHprClosing;
 TString gHprWorkDir;
 TString gHprLocalEnv;
 static const char  *fHlistSuffix=".histlist";
@@ -228,7 +229,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 	gHprDebug = 0;
 	gHprWorkDir = gSystem->pwd();
 	gHprLocalEnv = gHprWorkDir + "/.hprrc";
-	gHprDebug = 0;
+	gHprClosing = 0;
 	fOpfac= 1.;
 	fRebin = 2;
 	fRMethod = 0;
@@ -346,7 +347,24 @@ void HistPresent::RecursiveRemove(TObject * obj)
 {
 //   gROOT->GetListOfCleanups()->Remove(obj);
 //	cout << "HistPresent::RecursiveRemove for: " << obj ;
-
+	if (obj == cHPr) {
+		if ( gHprDebug > 0) 
+			cout << "HistPresent::RecursiveRemove for myself " << gHpr << endl << flush;
+		gHprClosing = 1;
+		TList toberemoved;
+		TIter next(gROOT->GetList());
+		TObject *o;
+		while ( (o = next()) ) {
+			if ( o->InheritsFrom("FitHist") )
+				toberemoved.Add(o);
+			if ( o->InheritsFrom("HTCanvas") )
+				toberemoved.Add(o);
+		}
+		TIter next1(&toberemoved);
+		while ( (o = next1()) ) {
+			gROOT->GetListOfCleanups()->Remove(o);
+		}
+	}
 	fCanvasClosing = kFALSE;
 //      fCloseWindowsButton->SetMethod("gHpr->CloseAllCanvases();");
 //      cout << "------> HistPresent: all canvases closed" << endl;
@@ -2200,7 +2218,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
 //  Bool_t ok;
 
 	TString fname = obj->String();
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << "GetSelHistAt |" << fname << "|" << endl;
 	Int_t pp = fname.Index(",");
 	if (pp < 0) {
@@ -2242,7 +2260,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
 	}
 //   if (hist) hist->Print();
 	if (hist && (fname == "Memory" || try_memory)) {
-		if (gDebug > 0) 
+		if (gHprDebug > 0) 
 			cout << "GetSelHistAt: " << fname << "|" << hname << "|" << dname << endl;
 		return hist;
 	}
@@ -3235,7 +3253,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 			FHname.Resize(FHname.Index(";"));
 		}
 	}
-	if (gDebug > 0){
+	if (gHprDebug > 0){
 		cout << "enter HistPresent::ShowHist: "<< FHname << endl << flush;
 		cout << "hist->GetName() " <<   hist->GetName()<<  " hname " << hname 
 		<< " origname " << origname << endl;
@@ -3251,7 +3269,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 		TList *tl=gDirectory->GetList();
 		FitHist *fhist = (FitHist*)tl->FindObject(FHname);
 		if (fhist) {
-			if (gDebug > 0)
+			if (gHprDebug > 0)
 				cout << "In ShowHist: Delete canvas: " <<  fhist->GetCanvas()<< endl<< flush;
 //         gDirectory->GetList()->Remove(hold);
 			gROOT->GetListOfCanvases()->Remove(fhist->GetCanvas());
@@ -3309,7 +3327,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 //    cout << "FHname " << FHname << endl;
 //    cout << "hist->GetName() " << hist->GetName() << endl;
 //    cout << "origname " << origname << endl;
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << "HistPresent::ShowHist new FitHist: "<< FHname << endl<< flush;
 	fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname.Data(),
 			 WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, wwidx, wwidy, b);
@@ -3332,7 +3350,7 @@ void HistPresent::CloseAllCanvases()
 	TCanvas * htc;
 	Int_t nc = 0;
 	while ( (htc =(TCanvas *)next()) ) {
-//		if (gDebug > 0 )
+//		if (gHprDebug > 0 )
 //			cout << "CloseAllCanvases: " << htc << " " << htc->GetName()<< endl;
 		TString cn(htc->GetName());
 		if ( cn == "cHPr" || cn == "FileList" || cn.EndsWith("histlist")
@@ -3343,7 +3361,7 @@ void HistPresent::CloseAllCanvases()
 			cout << "rc->ShowEditor(kFALSE);"<< endl;
 			rc->ShowEditor(kFALSE);
 		}
-		if (gDebug > 0 )
+		if (gHprDebug > 0 )
 			cout << "CloseAllCanvases: " << htc << " " << htc->GetName()<< " " << rc<< endl;
 		rc->SendCloseMessage();
 		nc++;
@@ -3383,7 +3401,7 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* /*title*/)
 			cout << " Hist not found at: " << i << endl;
 			continue;
 		} else {
-			if (gDebug > 0)
+			if (gHprDebug > 0)
 				cout << "StackSelectedHists  " << hist->GetName()<< " " << hist << endl;
 			hl.Add(hist);
 		}
@@ -3534,7 +3552,7 @@ void HistPresent::DinA4Page(Int_t form)
 void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* name, const char* /*bp*/)
 {
 //	static Int_t seqnr = 0;
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << "ShowCanvas: " << fname << " " << dir << " " << name << endl;
 	TString sname(name);
 	HTCanvas *c = NULL;
@@ -3867,6 +3885,12 @@ void HistPresent::HandleRemoveAllCuts()
 void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 {
 //   cout << "HandleDeleteCanvas " << htc << endl;
+	if (gHprClosing > 0 ) {
+		if (gHprDebug > 0 ) {
+			 cout << "HandleDeleteCanvas called during CloseDown" << endl;
+		}
+		return;
+	}
 	GetHistList()->Remove(htc);
 	HTCanvas *c;
 	TButton *b;

@@ -7,6 +7,8 @@
 #include "HistPresent.h"
 #include "SetColor.h"
 
+extern Int_t gHprDebug;
+
 ClassImp(HTCanvas)
 
 //____________________________________________________________________________
@@ -50,7 +52,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
          SetBit(GrCanvas::kIsAEditorPage);
       }
    }
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "ctor HTCanvas: " << this << " " << name
         << " Id " << GetRootCanvas()->GetId() << endl;
 //	TTimer::SingleShot(20, "HTCanvas", this, "ConnectToModified()");
@@ -69,7 +71,7 @@ void HTCanvas::ConnectToModified()
 
 HTCanvas::~HTCanvas()
 {
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
 //   TQObject::Disconnect((TPad*)this, "Modified()");
 	fTimer.Stop();
@@ -127,7 +129,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 		if (!pad) return;
 		gPad = pad;   // don't use cd() because we won't draw in pad
 		// we will only use its coordinate system
-		if (gDebug > 0 && (fSelected->InheritsFrom("TH1") || fSelected->InheritsFrom("TGraph")) ) {
+		if (gHprDebug > 0 && (fSelected->InheritsFrom("TH1") || fSelected->InheritsFrom("TGraph")) ) {
 			cout << "Select: " << fSelected->ClassName()<< " " << fSelected->GetName() << endl;
 		}
 	}
@@ -138,11 +140,11 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 void HTCanvas::HandlePadModified()
 {
 	if ( TCanvas::fUpdating ) {
-		if ( gDebug > 2 ) 
+		if ( gHprDebug > 2 ) 
 			cout << "TCanvas::fUpdating" << endl;
 		return;
 	}
-	if ( gDebug > 2 ) 
+	if ( gHprDebug > 2 ) 
 		cout << "HTCanvas::HandlePadModified() " << this << endl;
 	fTimer.Start(20, kTRUE);
 //	TTimer::SingleShot(10, "HTCanvas", this, "DoSaveLegendStats()");
@@ -184,7 +186,7 @@ void HTCanvas::DoSaveLegendStats()
 					res = envn + "X" + sdim;
 					env.SetValue(res, leg->GetX2NDC());
 					res = envn + "Y" + sdim;
-					if (gDebug > 0) 
+					if (gHprDebug > 0) 
 						cout <<"DoSaveLegendStats() " <<  res << " "  << leg->GetY1NDC() << endl;
 					env.SetValue(res, leg->GetY2NDC());
 				}
@@ -213,15 +215,15 @@ void HTCanvas::DoSaveLegendStats()
 		}
 		res = envn + "X1";
 		env.SetValue(res, leg->GetX1NDC());
-		if (gDebug > 0) 
+		if (gHprDebug > 0) 
 			cout << res << " " << leg->GetX1NDC() << endl;
 		res = envn + "X2";
 		env.SetValue(res, leg->GetX2NDC());
-		if (gDebug > 0) 
+		if (gHprDebug > 0) 
 			cout << res << " "  << leg->GetX2NDC() << endl;
 		res = envn + "Y1";
 		env.SetValue(res, leg->GetY1NDC());
-		if (gDebug > 0) 
+		if (gHprDebug > 0) 
 			cout <<"DoSaveLegendStats() " << res << " "  << leg->GetY1NDC() << endl;
 		res = envn + "Y2";
 		env.SetValue(res, leg->GetY2NDC());
@@ -237,7 +239,7 @@ void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
    fGraph       = gr;
 
    fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);
-	if ( gDebug  > 1)
+	if ( gHprDebug  > 1)
 		cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
    fHandleMenus->BuildMenus();
 }

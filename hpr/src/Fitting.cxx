@@ -67,6 +67,7 @@
 #include "Save2FileDialog.h"
 
 extern HistPresent *gHpr;
+extern Int_t gHprDebug;
 
 enum dowhat { expand, projectx, projecty, statonly, projectf,
 		 projectboth };
@@ -598,7 +599,7 @@ cut applied to select a subregion of the histogram.\n\
 Within the cut mean and error of the mean value of bins\n\
 along Y for each bin in X are calculated and a polynomial\n\
 is fitted to the resulting distribution.\n\
-To visualize the result the variable \"gDebug = 1\"\n\
+To visualize the result the variable \"gHprDebug = 1\"\n\
 should be set at the ROOt prompt.\n\
 This is essentially the same procedure as described for\n\
 the ROOT class TProfile with some extra user selections:\n\
@@ -928,7 +929,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	TString FHname(fithist->GetName());
 	FHname.Prepend("Fh_");
 //	FitHist * fith = NULL;
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		new FitHist(FHname,FHname,fithist,fithist->GetName() ,750,800, 800,400);
 	if (fOrigHist != fSelHist)
 		fOrigHist->GetListOfFunctions()->Add(pol);
