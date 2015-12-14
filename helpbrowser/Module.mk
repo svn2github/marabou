@@ -15,7 +15,12 @@ HELPBL        := $(MODDIRI)/LinkDef.h
 HELPBDS       := $(MODDIRS)/G__TMrbHelpBrowserDict.cxx
 HELPBPCM       := $(MODDIRS)/G__TMrbHelpBrowserDict_rdict.pcm
 HELPBDO       := $(HELPBDS:.cxx=.o)
-HELPBH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+# all .h files except LinkDef.h: gredit/inc/aaa.h
+HELPBHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+# $(info GREDITHL: $(GREDITHL))
+# change to aaa.h
+HELPBH        :=  $(patsubst $(MODDIRI)/%.h,%.h,$(HELPBHL))
+ $(info HELPBH: $(HELPBH))
 HELPBS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 HELPBO        := $(HELPBS:.cxx=.o)
 
@@ -27,7 +32,7 @@ ifeq ($(ROOTV6), 1)
 endif
 
 # used in the main Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HELPBH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HELPBHL))
 ALLLIBS     += $(HELPBLIB)
 
 # include all dependency files
@@ -47,10 +52,10 @@ $(HELPBLIB):     $(HELPBDO) $(HELPBO) $(MAINLIBS) $(HELPBLIBDEP)
 			cp $(HELPBPCM) $(LPATH); \
 		fi)
 
-$(HELPBDS):     $(HELPBH) $(HELPBL)
+$(HELPBDS):     $(HELPBHL) $(HELPBL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c $(HELPBH) $(HELPBL)
-
+		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include $(HELPBH) $(HELPBL)
+		
 $(HELPBDO):     $(HELPBDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<
 
