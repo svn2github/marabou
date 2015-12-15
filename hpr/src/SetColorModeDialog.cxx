@@ -90,12 +90,12 @@ With Root Vers 5.34 only 51 - 55 are meaningful.\n\
 	kStarryNight=102,     kSunset=103,      kTemperatureMap=104,\n\
 	kThermometer=105,     kValentine=106,   kVisibleSpectrum=107,\n\
 	kWaterMelon=108,      kCool=109,        kCopper=110,\n\
-	kGistEarth=111\n\
+	kGistEarth=111,       kViridis\n\
 	\n\
 For more look at:\n\
 https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
 ";
-	const Int_t Ncol = 61;
+	const Int_t Ncol = 62;
 //	const Char_t * pal_names[Ncol] = {"DeepSea", "GreyScale","DarkBodyRadiator",
 //BlueYellow", "RainBow", "InvertedDarkBodyRadiator"};
 	const Char_t * pal_names[Ncol] = {
@@ -119,7 +119,7 @@ https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
    "StarryNight",      "Sunset",       "TemperatureMap",
    "Thermometer",      "Valentine",    "VisibleSpectrum",
    "WaterMelon",       "Cool",         "Copper",
-   "GistEarth"
+   "GistEarth",        "kViridis"
 	};
 	if (gHprDebug > 0)
 		cout << "SetColorModeDialog ctor " << batch << endl;
