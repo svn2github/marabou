@@ -5,6 +5,7 @@
 #include "TGMrbValuesAndText.h"
 #include <iostream>
 //_____________________________________________________________________________________
+class TH1;
 
 class Set1DimOptDialog : public TObject , public TQObject{
 

@@ -1174,7 +1174,7 @@ void SetHistOptDialog::SetDefaults(Int_t ndim)
 	if ( gDebug > 0 ) 
 	   cout << "SetHistOptDialog:: SetDefaults" << endl;
    TEnv env(".hprrc");
-	if ( ndim == 3 ) {
+	if ( ndim != 3 ) {
 		gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetX",  0.01), "X");
 		gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",     0.03), "X");
 		gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",    0.01), "X");
