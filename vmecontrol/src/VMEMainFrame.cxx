@@ -96,32 +96,32 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	fMenuView->AddEntry("&Errors", kVMEViewErrors);
 	fMenuView->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
-//	General menu
-	fMenuGeneral = new TGPopupMenu(fClient->GetRoot());
-	HEAP(fMenuGeneral);
+//	Settings menu
+	fMenuSettings = new TGPopupMenu(fClient->GetRoot());
+	HEAP(fMenuSettings);
 
-	fMenuGeneral->AddEntry("&Normal", kVMEGeneralOutputNormal);
-	fMenuGeneral->AddEntry("&Verbose", kVMEGeneralOutputVerbose);
-	fMenuGeneral->AddEntry("&Debug (very verbose)", kVMEGeneralOutputDebug);
+	fMenuSettings->AddEntry("&Normal", kVMESettingsOutputNormal);
+	fMenuSettings->AddEntry("&Verbose", kVMESettingsOutputVerbose);
+	fMenuSettings->AddEntry("&Debug (very verbose)", kVMESettingsOutputDebug);
 
 	if (gVMEControlData->fStatus & VMEControlData::kVMEVerboseMode) {
-		fMenuGeneral->RCheckEntry(kVMEGeneralOutputVerbose, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+		fMenuSettings->RCheckEntry(kVMESettingsOutputVerbose, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
 	} else if (gVMEControlData->fStatus & VMEControlData::kVMEDebugMode) {
-		fMenuGeneral->RCheckEntry(kVMEGeneralOutputDebug, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+		fMenuSettings->RCheckEntry(kVMESettingsOutputDebug, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
 	} else {
-		fMenuGeneral->RCheckEntry(kVMEGeneralOutputNormal, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+		fMenuSettings->RCheckEntry(kVMESettingsOutputNormal, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
 	}
 
-	fMenuGeneral->AddSeparator();
+	fMenuSettings->AddSeparator();
 
-	fMenuGeneral->AddEntry("Offline", kVMEGeneralOffline);
-	fMenuGeneral->AddEntry("Online", kVMEGeneralOnline);
-	fMenuGeneral->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
+	fMenuSettings->AddEntry("Offline", kVMESettingsOffline);
+	fMenuSettings->AddEntry("Online", kVMESettingsOnline);
+	fMenuSettings->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
 	if (gVMEControlData->fStatus & VMEControlData::kVMEOfflineMode) {
-		fMenuGeneral->RCheckEntry(kVMEGeneralOffline, kVMEGeneralOffline, kVMEGeneralOnline);
+		fMenuSettings->RCheckEntry(kVMESettingsOffline, kVMESettingsOffline, kVMESettingsOnline);
 	} else {
-		fMenuGeneral->RCheckEntry(kVMEGeneralOnline, kVMEGeneralOffline, kVMEGeneralOnline);
+		fMenuSettings->RCheckEntry(kVMESettingsOnline, kVMESettingsOffline, kVMESettingsOnline);
 	}
 
 			//	Macros menu
@@ -156,9 +156,9 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	HEAP(menuBarViewLayout);
 	fMenuBar->AddPopup("&View", fMenuView, menuBarViewLayout);
 
-	TGLayoutHints * menuBarGeneralLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft, 2, 2, 2, 3);
-	HEAP(menuBarGeneralLayout);
-	fMenuBar->AddPopup("&General", fMenuGeneral, menuBarGeneralLayout);
+	TGLayoutHints * menuBarSettingsLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft, 2, 2, 2, 3);
+	HEAP(menuBarSettingsLayout);
+	fMenuBar->AddPopup("&Settings", fMenuSettings, menuBarSettingsLayout);
 
 	if (hasMacros) {
 		TGLayoutHints * menuBarMacrosLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft, 2, 2, 2, 3);
@@ -286,34 +286,34 @@ void VMEMainFrame::MenuSelect(Int_t Selection) {
 			this->CloseWindow();
 			break;
 
-		case kVMEGeneralOutputNormal:
+		case kVMESettingsOutputNormal:
 			gVMEControlData->fStatus &= ~(VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode);
-			fMenuGeneral->RCheckEntry(kVMEGeneralOutputNormal, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+			fMenuSettings->RCheckEntry(kVMESettingsOutputNormal, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
 			break;
 
-		case kVMEGeneralOutputVerbose:
+		case kVMESettingsOutputVerbose:
 			gVMEControlData->fStatus &= ~VMEControlData::kVMEDebugMode;
 			gVMEControlData->fStatus |= VMEControlData::kVMEVerboseMode;
-			fMenuGeneral->RCheckEntry(kVMEGeneralOutputVerbose, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+			fMenuSettings->RCheckEntry(kVMESettingsOutputVerbose, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
 			break;
 
-		case kVMEGeneralOutputDebug:
+		case kVMESettingsOutputDebug:
 			gVMEControlData->fStatus |= VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode;
-			fMenuGeneral->RCheckEntry(kVMEGeneralOutputDebug, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+			fMenuSettings->RCheckEntry(kVMESettingsOutputDebug, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
 			break;
 
-		case kVMEGeneralOffline:
+		case kVMESettingsOffline:
 			gMrbLog->Out()	<< "Running in OFFLINE mode" << endl;
 			gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
 			gVMEControlData->fStatus |= VMEControlData::kVMEOfflineMode;
-			fMenuGeneral->RCheckEntry(kVMEGeneralOffline, kVMEGeneralOffline, kVMEGeneralOnline);
+			fMenuSettings->RCheckEntry(kVMESettingsOffline, kVMESettingsOffline, kVMESettingsOnline);
 			break;
 
-		case kVMEGeneralOnline:
+		case kVMESettingsOnline:
 			gMrbLog->Out()	<< "Running in ONLINE mode" << endl;
 			gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
 			gVMEControlData->fStatus &= ~VMEControlData::kVMEOfflineMode;
-			fMenuGeneral->RCheckEntry(kVMEGeneralOnline, kVMEGeneralOffline, kVMEGeneralOnline);
+			fMenuSettings->RCheckEntry(kVMESettingsOnline, kVMESettingsOffline, kVMESettingsOnline);
 			break;
 	}
 }

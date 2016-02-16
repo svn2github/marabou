@@ -139,6 +139,8 @@ class TMrbAnalyze : public TObject {
 		Bool_t ReloadVarsAndWdws(TMrbIOSpec * IOSpec);
 		Bool_t ReloadMultipleFiles(TString & ParamFileString);
 
+		Bool_t Terminate();											// terminate daq							
+
 		Bool_t FinishRun(TMrbIOSpec * IOSpec, Bool_t BeforeSH = kTRUE);	// do some work at end of run
 
 		inline void AddIOSpec(TMrbIOSpec * IOSpec) { fLofIOSpecs.Add(IOSpec); };	// add an i/o spec to list

@@ -12,13 +12,15 @@ MBSIODIRI     := $(MBSIODIR)/inc
 
 MBSIOH        := $(wildcard $(MODDIRI)/*.h)
 MBSIOS        := $(wildcard $(MODDIRS)/*.c)
-MBSIOO        := $(MBSIOS:.c=.o)
+MBSIOO        := $(MBSIODIRS)/byte_order.o $(MBSIODIRS)/mbsio.o
 
 MBSIODEP      := $(MBSIOO:.o=.d)
 
 MBSTSTEXE      := bin/mbstst
 
-ALLEXECS    += $(MBSTSTEXE)
+MBSWRITEXE     := bin/mbswrite
+
+ALLEXECS    += $(MBSTSTEXE) $(MBSWRITEXE)
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(MBSIOH))
@@ -39,14 +41,23 @@ include/%.h:    $(MBSIODIRI)/%.h
 obj/%.o:    $(MODDIRS)/%.o
 		cp $< $@
 
-$(MBSTSTEXE):      $(MBSIOO) $(MODDIRS)/mbstst.o
+$(MBSTSTEXE):      $(MBSIOO) $(MBSIODIRS)/mbstst.o
 		@echo "$(MBSTSTEXE) start linking"
 		@echo "----------------------------------------------------"
 		@echo "$(MBSIOO)"
 		@echo "----------------------------------------------------"
 
-		$(LD) -g $(LDFLAGS) $(MBSIOO) $(MRBLIBS) $(MBSCLIB) $(ROOTGLIBS) \
+		$(LD) -g $(LDFLAGS) $(MBSIODIRS)/mbstst.o $(MBSIOO) $(MRBLIBS) $(MBSCLIB) $(ROOTGLIBS) \
             -o $(MBSTSTEXE)
+
+$(MBSWRITEXE):      $(MBSIOO) $(MBSIODIRS)/mbswrite.o
+					@echo "$(MBSWRITEXE) start linking"
+					@echo "----------------------------------------------------"
+					@echo "$(MBSIOO)"
+					@echo "----------------------------------------------------"
+
+		$(LD) -g $(LDFLAGS) $(MBSIODIRS)/mbswrite.o $(MBSIOO) $(MRBLIBS) $(MBSCLIB) $(ROOTGLIBS) \
+										            -o $(MBSWRITEXE)
 
 
 all-mbsio:       $(MBSIOEXE)

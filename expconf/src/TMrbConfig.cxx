@@ -7599,6 +7599,11 @@ Bool_t TMrbConfig::WriteToFile(const Char_t * ConfigFile,  Option_t * Options) {
 	TObject * obj;
 	Int_t nofObjects;
 
+	gMrbLog->Err() << "Method is obsolete - please remove it from Config.C" << endl;
+	gMrbLog->Flush(this->ClassName(), "WriteToFile");
+	return(kFALSE);
+		
+#if 0
 	TMrbLofNamedX configOptions;
 
 	fConfigOptions = configOptions.CheckPatternShort(this->ClassName(), "WriteToFile", Options, kMrbConfigOptions);
@@ -7645,6 +7650,7 @@ Bool_t TMrbConfig::WriteToFile(const Char_t * ConfigFile,  Option_t * Options) {
 	gMrbLog->Out() << "[" << ConfigFile << ": Configuration written - " << nofObjects << " object(s)]" << endl;
 	gMrbLog->Flush("", "", setblue);
 	return(kTRUE);
+#endif
 }
 
 void TMrbConfig::SetGlobalAddress() {

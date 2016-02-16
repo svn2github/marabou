@@ -51,11 +51,11 @@ class VMEMainFrame : public TGMainFrame {
 
 									kVMEViewErrors, 				// pulldown menu "View"
 
-									kVMEGeneralOutputNormal, 		// pulldown menu "General"
-									kVMEGeneralOutputVerbose,
-									kVMEGeneralOutputDebug,
-									kVMEGeneralOffline,
-									kVMEGeneralOnline,
+									kVMESettingsOutputNormal, 		// pulldown menu "Settings"
+									kVMESettingsOutputVerbose,
+									kVMESettingsOutputDebug,
+									kVMESettingsOffline,
+									kVMESettingsOnline,
 
 									kVMEHelpContents,				// pulldown menu "Help"
 									kVMEHelpAbout,
@@ -81,7 +81,7 @@ class VMEMainFrame : public TGMainFrame {
 		TGMenuBar * fMenuBar;						// main menu bar
 		TGPopupMenu * fMenuFile;					//					pulldown menu: file
 		TGPopupMenu * fMenuView;					//					pulldown menu: view
-		TGPopupMenu * fMenuGeneral;					//					pulldown menu: general
+		TGPopupMenu * fMenuSettings;				//					pulldown menu: Settings
 		TGMrbMacroBrowserPopup * fMenuMacros;		//					pulldown menu: macros
 		TGPopupMenu * fMenuHelp;					//					pulldown menu: help
 

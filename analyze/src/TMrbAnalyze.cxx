@@ -622,7 +622,28 @@ Bool_t TMrbAnalyze::CloseRootTree(TMrbIOSpec * IOSpec) {
 	return(kTRUE);
 }
 
-Bool_t TMrbAnalyze::TestRunStatus() {
+Bool_t TMrbAnalyze::Terminate() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::Terminate
+// Purpose:        Terminate DAQ or Replay
+// Arguments:
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets STOP flag.
+//                 If online daq informs transport manager to stop.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	this->SetRunStatus(TMrbAnalyze::M_STOPPING);
+	if (gMrbTransport) {
+		cerr	<< setred << this->ClassName() << "Sending STOP to transport manager" << setblack << endl;
+		gMrbTransport->SetStopFlag(kTRUE);
+	}
+	return kTRUE;
+}
+
+ Bool_t TMrbAnalyze::TestRunStatus() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::TestRunStatus
