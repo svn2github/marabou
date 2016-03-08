@@ -51,6 +51,7 @@ class TMrbEvent : public TNamed {
 		TMrbEvent(Int_t TrigNumber, const Char_t * EvtName = "", const Char_t * EvtTitle = "");	// explicit ctor
 
 		~TMrbEvent() {	 									// dtor
+//			cout << "***********  dtor ~TMrbEvent() " << GetName() << endl;
 			fLofSubevents.Delete();
  		};
 

@@ -73,7 +73,7 @@ TMrbSubevent_Data_S::TMrbSubevent_Data_S(const Char_t * SevtName, const Char_t *
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
 		fNofWords = NofWords;
-		gDirectory->Append(this);
+		//gDirectory->Append(this);
 	}
 }
 

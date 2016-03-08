@@ -78,7 +78,7 @@ TMrbAdcd_9701::TMrbAdcd_9701(const Char_t * ModuleName, const Char_t * ModulePos
 			if (LoadCodeTemplates(codeFile)) {
 				DefineRegisters();							// define module regs
 				gMrbConfig->AddModule(this);				// append to list of modules
-				gDirectory->Append(this);
+				//gDirectory->Append(this);
 				fBlockReadout = kTRUE;						// block readout only
 			} else {
 				this->MakeZombie();

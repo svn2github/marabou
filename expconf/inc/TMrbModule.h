@@ -55,7 +55,7 @@ class TMrbModule : public TNamed {
 		TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t NofChannels, Int_t Range);
 
 		~TMrbModule() {									// dtor
-			fChannelSpec.Delete();
+//			fChannelSpec.Delete();
 			DeleteRegisters();
 		};
 

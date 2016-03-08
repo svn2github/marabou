@@ -88,7 +88,7 @@ TMrbCaen_V820::TMrbCaen_V820(const Char_t * ModuleName, UInt_t BaseAddr) :
 			if (LoadCodeTemplates(codeFile)) {
 				DefineRegisters();
 				gMrbConfig->AddModule(this);				// append to list of modules
-				gDirectory->Append(this);
+				//gDirectory->Append(this);
 				fBlockReadout = kTRUE;
 			} else {
 				this->MakeZombie();

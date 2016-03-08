@@ -191,7 +191,7 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 		fCreateHistoArray = kFALSE;
 
 		gMrbConfig->AddEvent(this);
-		gDirectory->Append(this);
+//		gDirectory->Append(this);
 	}
 }
 

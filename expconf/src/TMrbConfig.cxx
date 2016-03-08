@@ -753,7 +753,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fNofMuxs = 0;
 
 		gMrbConfig = this; 		// holds addr of current config def
-		gDirectory->Append(this);
+//		gDirectory->Append(this);
 	}
 }
 

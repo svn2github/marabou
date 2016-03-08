@@ -67,7 +67,7 @@ TMrbSubeventRaw::TMrbSubeventRaw(const Char_t * SevtName, const Char_t * SevtTit
 			fLegalDataTypes = dty;
 			fSerialToBeCreated = CreateSerial;
 			if (!CreateSerial) fSerial = (Subtype << 16) | Type;	// no internal serial: replaced by type
-			gDirectory->Append(this);
+			//gDirectory->Append(this);
 		}
 	}
 }

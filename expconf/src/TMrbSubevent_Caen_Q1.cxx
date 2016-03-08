@@ -70,7 +70,7 @@ TMrbSubevent_Caen_Q1::TMrbSubevent_Caen_Q1(const Char_t * SevtName, const Char_t
 		fSevtSubtype = 44;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
-		gDirectory->Append(this);
+		//gDirectory->Append(this);
 	}
 }
 

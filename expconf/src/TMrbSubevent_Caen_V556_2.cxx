@@ -96,7 +96,7 @@ TMrbSubevent_Caen_V556_2::TMrbSubevent_Caen_V556_2(const Char_t * SevtName, cons
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Caen_V556");	// we need this base class
-		gDirectory->Append(this);
+		//gDirectory->Append(this);
 	}
 }
 

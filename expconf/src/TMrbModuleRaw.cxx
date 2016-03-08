@@ -86,7 +86,7 @@ TMrbModuleRaw::TMrbModuleRaw(const Char_t * ModuleName, const Char_t * ModuleID,
 				}
 
 				DefineRegisters();
-				gDirectory->Append(this);
+				//gDirectory->Append(this);
 			}
 		}
 	}

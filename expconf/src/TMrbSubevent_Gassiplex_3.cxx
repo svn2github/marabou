@@ -60,7 +60,7 @@ TMrbSubevent_Gassiplex_3::TMrbSubevent_Gassiplex_3(const Char_t * SevtName, cons
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
 		this->AllocateHistograms(kFALSE);
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Gassiplex");	// we need this base class
-		gDirectory->Append(this);
+		//gDirectory->Append(this);
 	}
 }
 

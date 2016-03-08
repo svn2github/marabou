@@ -82,7 +82,7 @@ TMrbCaen_V260::TMrbCaen_V260(const Char_t * ModuleName, UInt_t BaseAddr) :
 
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gMrbConfig->AddScaler(this);				// and to list of scalers
-				gDirectory->Append(this);
+				//gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

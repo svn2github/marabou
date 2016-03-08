@@ -81,7 +81,7 @@ TMrbMesytec_Mux16::TMrbMesytec_Mux16(const Char_t * MuxName, const Char_t * Modu
 				chn->MarkUsed(NULL);
 			}
 			gMrbConfig->AddMux(this);							// and to list of muxes
-			gDirectory->Append(this);							// make object visible in memory
+			//gDirectory->Append(this);							// make object visible in memory
 		}
 	}
 }

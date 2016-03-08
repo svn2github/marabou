@@ -78,7 +78,7 @@ TMrbMpiHD_IOReg::TMrbMpiHD_IOReg(const Char_t * ModuleName, UInt_t BaseAddr) :
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
 				gMrbConfig->AddModule(this);				// append to list of modules
-				gDirectory->Append(this);
+				//gDirectory->Append(this);
 				fBlockReadout = kTRUE;						// block readout only
 			} else {
 				this->MakeZombie();

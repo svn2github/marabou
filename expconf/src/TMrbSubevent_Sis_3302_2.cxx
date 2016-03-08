@@ -117,7 +117,7 @@ TMrbSubevent_Sis_3302_2::TMrbSubevent_Sis_3302_2(const Char_t * SevtName, const 
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataULong;
 //		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis3302");	// we need this base class
-		gDirectory->Append(this);
+		//gDirectory->Append(this);
 	}
 }
 

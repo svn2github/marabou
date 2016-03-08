@@ -103,7 +103,7 @@ TMrbSubevent_Madc_2::TMrbSubevent_Madc_2(const Char_t * SevtName, const Char_t *
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Madc");	// we need this base class
-		gDirectory->Append(this);
+		//gDirectory->Append(this);
 	}
 }
 

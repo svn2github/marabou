@@ -76,7 +76,7 @@ TMrbSilena_7420::TMrbSilena_7420(const Char_t * ModuleName, const Char_t * Modul
 			if (LoadCodeTemplates(codeFile)) {
 				this->DefineRegisters();					// define module regs
 				gMrbConfig->AddModule(this);				// append to list of modules
-				gDirectory->Append(this);
+				//gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

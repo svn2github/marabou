@@ -589,7 +589,7 @@ class TMrbConfig : public TNamed {
 
 		~TMrbConfig() { 										// dtor
 			fLofEvents.Delete();								// delete objects stored in TMrbLofNamedXs
-			fLofSubevents.Delete();
+//			fLofSubevents.Delete();
 			fLofModules.Delete();
 			fLofScalers.Delete();
 			fLofMuxs.Delete();
