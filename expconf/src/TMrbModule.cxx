@@ -770,7 +770,7 @@ void TMrbModule::DeleteRegisters() {
 	while (kp = (TMrbNamedX *) kiter->Next()) {
 		rp = (TMrbModuleRegister *) kp->GetAssignedObject();
 		rp->Delete();
-		delete rp;
+//		delete rp;
 	}
 	fLofRegisters.Delete();
 }
