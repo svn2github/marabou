@@ -1,4 +1,4 @@
-#!/usr/local/bin/xrcm
+//    #!/usr/local/bin/xrcm
 //________________________________________________________________[ROOT MACRO]
 //////////////////////////////////////////////////////////////////////////////
 // Name:             Config.C
@@ -16,14 +16,15 @@
 	gROOT->Macro("LoadConfigLibs.C");        // load libraries containing class defs and methods
 
 	TMrbConfig::Version();
-	exa = new TMrbConfig("exa", "Example configuration");         // create a C++ object
+	// dont use TMrbConfig * exp, -> clash with exponential in root6
+	TMrbConfig * exa = new TMrbConfig("exa", "Example configuration");         // create a C++ object
                                                                   // to store config data
-	rdo = new TMrbEvent_10_1(1, "readout", "readout of camac data");   // we use trigger 1 for readout
+	TMrbEvent_10_1 * rdo = new TMrbEvent_10_1(1, "readout", "readout of camac data");   // we use trigger 1 for readout
 
-	data = new TMrbSubevent_10_11("data", "camac data");          // define a subevent type [10,11]:
+	TMrbSubevent_10_11 * data = new TMrbSubevent_10_11("data", "camac data");          // define a subevent type [10,11]:
                                                                   // data stored in a zero-padded list
-	adc1 = new TMrbSilena_4418V("adc1", "C1.N3");                 // define camac modules
-	adc2 = new TMrbSilena_4418V("adc2", "C1.N5");                 // (module type & position)
+	TMrbSilena_4418V * adc1 = new TMrbSilena_4418V("adc1", "C1.N3");                 // define camac modules
+	TMrbSilena_4418V * adc2 = new TMrbSilena_4418V("adc2", "C1.N5");                 // (module type & position)
 
 	adc1->SetBinSize(4);                                          // define bin size for histogramms
 	adc2->SetBinSize(4);
