@@ -27,7 +27,7 @@ public:
 	HprFunc2(TF2 * f2);
 	HprFunc2(){};
 	~HprFunc2();
-	void   RecursiveRemove(TObject *obj) {};
+	void   RecursiveRemove(TObject* /* obj */) {};
 	void   BuildMenu();
 	void   HandleMenu(Int_t id);
 	void   SetOptions(){};
