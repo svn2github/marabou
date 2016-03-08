@@ -13,7 +13,7 @@
 	cout << "[Loading MARaBOU's config libs]" << endl;
 	Int_t sts = gSystem->Load("libGed.so");
 	if (sts == -1) gSystem->Exit(1);
-	Int_t sts = gSystem->Load("libTMrbUtils.so");
+	sts = gSystem->Load("libTMrbUtils.so");
 	if (sts == -1) gSystem->Exit(1);
 	TMrbSystem ux;
 	ux.PrintLoadPath(sts, "libTMrbUtils.so");
