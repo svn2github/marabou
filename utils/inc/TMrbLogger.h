@@ -140,7 +140,7 @@ class TMrbLogger: public TNamed {
 		void PrintSinceLastCall(UInt_t Type);
 				
 		inline void Reset() {
-			fLofMessages.Delete();
+//			fLofMessages.Delete();
 			fIndexOfLastPrinted = 0;
 		};
 		

@@ -54,7 +54,7 @@ TMrbVariable::~TMrbVariable() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	gDirectory->GetList()->Remove(this);
+//	gDirectory->GetList()->Remove(this);
 	gMrbLofUserVars->Remove(this);
 }
 
@@ -128,7 +128,7 @@ void TMrbVariable::SetInitialType(UInt_t VarType) {
 
 	this->SetUniqueID(VarType);
 	gMrbLofUserVars->Append(this);
-	if (gDirectory != NULL) gDirectory->Append(this);
+//	if (gDirectory != NULL) gDirectory->Append(this);
 }
 
 TMrbVarI::TMrbVarI(const Char_t * Name, Int_t Value) {

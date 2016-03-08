@@ -51,7 +51,7 @@ TMrbLofUserVars::TMrbLofUserVars(const Char_t * Name) {
 	fNofVars = 0;
 	fLofVars.Delete();
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	if (gROOT != NULL) gROOT->Append(this); 	// must be gROOT not gDirectory !!!
+//	if (gROOT != NULL) gROOT->Append(this); 	// must be gROOT not gDirectory !!!
 };
 
 Bool_t TMrbLofUserVars::Append(TObject * VarObj) {

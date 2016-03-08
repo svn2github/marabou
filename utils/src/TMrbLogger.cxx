@@ -160,7 +160,7 @@ TMrbLogger::TMrbLogger(const Char_t * LogFile, const Char_t * ProgName) {
 	if (fLog) fEnabled |= TMrbLogger::kMrbMsgLog;
 	fLofMessages.Delete();
 	fIndexOfLastPrinted = 0;
-	gROOT->Append(this);
+//	gROOT->Append(this);
 	this->SetProgName(ProgName);
 	if (fLog) this->Open(fLogFile.Data());
 	this->SetName(fProgName.IsNull() ? (fLogFile.IsNull() ? "TMrbLogger" : fLogFile.Data()) : fProgName.Data());

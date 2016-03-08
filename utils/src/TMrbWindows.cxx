@@ -118,7 +118,7 @@ void TMrbWindow::SetInitialType(UInt_t WdwType) {
 
 	this->SetUniqueID(WdwType);
 	gMrbLofUserVars->Append(this);
-	if (gDirectory != NULL) gDirectory->Append(this);
+//	if (gDirectory != NULL) gDirectory->Append(this);
 }
 
 Bool_t TMrbWindow::AddToHist(TObject * Histogram) {
@@ -632,7 +632,7 @@ void TMrbWindow2D::SetInitialType(UInt_t WdwType) {
 
 	this->SetUniqueID(WdwType);
 	gMrbLofUserVars->Append(this);
-	if (gDirectory != NULL) gDirectory->Append(this);
+//	if (gDirectory != NULL) gDirectory->Append(this);
 }
 
 Bool_t TMrbWindow2D::AddToHist(TObject * Histogram) {
