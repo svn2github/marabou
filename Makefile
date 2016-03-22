@@ -2,6 +2,11 @@
 # Copyright (c) 2000 Rudi Lutter and Otto Schaile
 #
 # Author: Otto stolen from ROOT (Fons Rademakers), 15/9/2000
+#
+# 9.2.2015 OS: simplify selection of Modules: 
+#              hpr: HistPresent only
+#              analyze: HistPresent + TMrbAnalyze + Transport + TMrbConfig
+#              all: +
 
 MAKE_VERSION_MAJOR := $(word 1,$(subst ., ,$(MAKE_VERSION)))
 MAKE_VERSION_MINOR := $(shell echo $(word 2,$(subst ., ,$(MAKE_VERSION))) | \
@@ -37,80 +42,21 @@ EXTRA_CXXFLAGS += -g -Wno-switch -Wno-write-strings -Wno-parentheses -Wno-format
 
 # only selected modules need to checked out from CVS if
 # not the complete marabou suite is required.
-
-# for HistPresent only the following modules are needed
-
 MODULES       = build utils gutils helpbrowser fitcal gredit hpr
 
+ifeq ($(findstring $(MAKECMDGOALS),hpr),hpr)
+# for HistPresent only the following modules are needed
+#	MODULES       = build utils gutils helpbrowser fitcal gredit hpr
+
+else ifeq ($(findstring $(MAKECMDGOALS),analyze),analyze)
 # if offline data analysis in the marabou framework is needed
-
-ifeq ($(findstring $(MAKECMDGOALS),hpr),)
-	ifeq ($(shell if [ -d analyze ] ; then echo yes; fi), yes)
-	MODULES      += c_analyze analyze mbssetup mbsio transport
-	endif
-
-	ifeq ($(shell if [ -f .useXML ] ; then echo yes; fi), yes)
-	ifeq ($(shell if [ -d expconf-xml ] ; then echo yes; fi), yes)
-	MODULES      += expconf-xml
-	endif
-	ifeq ($(shell if [ -d xml ] ; then echo yes; fi), yes)
-	MODULES      += xml
-	endif
-	else
-	ifeq ($(shell if [ -d expconf ] ; then echo yes; fi), yes)
-	MODULES      += expconf
-	endif
-	endif
-
-	ifeq ($(shell if [ -d tidy ] ; then echo yes; fi), yes)
-	MODULES      += tidy tidylib
-	endif
-
-	ifeq ($(shell if [ -d gutils-new ] ; then echo yes; fi), yes)
-	MODULES      += gutils-new
-	endif
-
-	ifeq ($(shell if [ -d macrobrowser ] ; then echo yes; fi), yes)
-	MODULES      += macrobrowser
-	endif
-
-	ifeq ($(shell if [ -d dgfcomm ] ; then echo yes; fi), yes)
-	MODULES      += dgfcomm
-	endif
-
-	ifeq ($(shell if [ -d c2lynx ] ; then echo yes; fi), yes)
-	MODULES      += c2lynx
-	endif
-
-	# if online data acquisition is needed in addition
-
-	ifeq ($(shell if [ -d camcli  ] ; then echo yes; fi), yes)
-	MODULES      += camcli esone
-	endif
-
-	# the following modules are for special hardware
-
-	ifeq ($(shell if [ -d vmecontrol ] ; then echo yes; fi), yes)
-	MODULES      += vmecontrol
-	endif
-
-	ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
-	MODULES      += xiadgf dgfcontrol cptmcontrol
-	endif
-
-	ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
-	MODULES      += polar
-	endif
-
-	#ifeq ($(shell if [ -d snake-lib ] ; then echo yes; fi), yes)
-	#MODULES      += snake-lib
-	#endif
-
-	#ifeq ($(shell if [ -d snake-pgm ] ; then echo yes; fi), yes)
-	#MODULES      += snake-pgm
-	#endif
+	MODULES      += c_analyze analyze transport mbsio expconf
+else 
+# otherwise all modules are needed
+	MODULES      += c_analyze analyze mbssetup mbsio transport expconf macrobrowser c2lynx camcli vmecontrol esone polar xiadgf dgfcomm dgfcontrol cptmcontrol tidy tidylib
 endif
 
+$(info MODULES: $(MODULES))
 ##### ROOT libraries #####
 
 LPATH         = lib
@@ -198,7 +144,11 @@ MAKEINFO      = cint/MAKEINFO
 ALLHDRS      :=
 ALLLIBS      :=
 ALLPCMS      :=
-# HPRLIBS      := lib/libHpr.so lib/libTMrbHelpBrowser.so lib/libTMrbUtils.so lib/libTGMrbUtils.so lib/libGrEdit.so lib/libFitCal.so
+ANALIBS		 := lib/libTMrbAnalyze.so lib/libTMrbTransport.so
+HPRLIBS      := lib/libHpr.so lib/libTMrbHelpBrowser.so lib/libTMrbUtils.so lib/libTGMrbUtils.so lib/libGrEdit.so lib/libFitCal.so
+EXPLIB		 := lib/libTMrbConfig.so
+HPREXECS     := bin/HistPresent
+### ALLEXECS added by Modules
 ALLEXECS     :=
 INCLUDEFILES :=
 ALLOBJ       :=
@@ -219,20 +169,19 @@ INSTALLFILES	=	build/unix/installfiles.sh
 
 ##### TARGETS #####
 
-.PHONY:         all fast config  maraboulibs marabouexecs dist distsrc \
+.PHONY:         all fast config  maraboulibs allmarabou dist distsrc \
                 clean distclean compiledata version html \
                 install showbuild \
                 $(patsubst %,all-%,$(MODULES)) \
                 $(patsubst %,clean-%,$(MODULES)) \
                 $(patsubst %,distclean-%,$(MODULES))
 
-all:            marabouexecs
+all:            allmarabou
 
-hpr:            hprexecs
+analyze:			 compiledata $(HPREXECS) $(HPRLIBS) $(ANALIBS) $(EXPLIB)
 
-fast:           marabouexecs
+hpr:            compiledata $(HPREXECS)
 
-HistPresent:    hprexecs
 
 include $(patsubst %,%/Module.mk,$(MODULES))
 
@@ -245,13 +194,11 @@ include $(INCLUDEFILES)
 endif
 include build/dummy.d          # must be last include
 endif
-
 hprexecs:          compiledata bin/HistPresent
 
 maraboulibs:       compiledata $(ALLLIBS)
 
-marabouexecs:      maraboulibs $(ALLEXECS)
-	$(info ALLPCMS = $(ALLPCMS))
+allmarabou:      maraboulibs $(ALLEXECS)
 
 compiledata:       $(COMPILEDATA) $(MAKEINFO)
 
@@ -277,7 +224,7 @@ build/dummy.d: config $(RMKDEP) $(BINDEXP) $(ALLHDRS) $(ALLOBJS)
 	fi)
 
 printdep:
-	@echo "-------------  INCLUDEFILES--------"
+	@echo "-------------  dependency files: INCLUDEFILES--------"
 	@echo $(INCLUDEFILES)
 	@echo "-----------------------------------"
 
@@ -291,16 +238,23 @@ dist:
 	@$(MAKEDIST)
 
 clean::
+	@echo "-------------  clean --------"
 	@rm -f __compiledata __makeinfo *~ core
-	@rm */src/G__*
-	@rm */src/*.d
+	@rm -f */src/*.d
+	@rm -f */src/*.o
+	@rm -f */src/G__*
 
 ifeq ($(CXX),KCC)
 clean::
 	@find . -name "ti_files" -exec rm -rf {} \; >/dev/null 2>&1
 endif
 
-distclean:: clean
+distclean:: clean	
+	@echo "-------------  distclean --------"
+## 	@echo "dependency files:  $(INCLUDEFILES)"
+	@echo "-------------  MAKEINFO -------------  "
+	@echo $(MAKEINFO)
+	@echo "-----------------------------------"
 	@mv -f include/config.h include/config.hh
 	@rm -f include/*.h $(MAKEINFO)
 	@mv -f include/config.hh include/config.h

@@ -17,6 +17,9 @@ EXPCONFDS       := $(MODDIRS)/G__TMrbConfigDict.cxx
 EXPCONFPCM       := $(MODDIRS)/G__TMrbConfigDict_rdict.pcm
 EXPCONFDO       := $(EXPCONFDS:.cxx=.o)
 EXPCONFH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+# $(info info EXPCONFH: $(EXPCONFH))
+EXPCONFHM    = $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
+# $(info info EXPCONFHM = $(EXPCONFHM))
 EXPCONFS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 EXPCONFO        := $(EXPCONFS:.cxx=.o)
 
@@ -27,6 +30,8 @@ EXPCONFRMAP      := $(LPATH)/libTMrbConfig.rootmap
 EXPCONFLIBDEP   := $(LPATH)/libTMrbUtils.so
 
 # used in the main Makefile
+EXPCONFHM    = $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
+$info(info EXPCONFHM = $(EXPCONFHM))
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
 ALLLIBS     += $(EXPCONFLIB)
 ifeq ($(ROOTV6), 1)
@@ -41,7 +46,8 @@ INCLUDEFILES += $(EXPCONFDEP)
 include/%.h:    $(EXPCONFDIRI)/%.h
 		cp $< $@
 
-$(EXPCONFLIB):     $(EXPCONFDO) $(EXPCONFO) $(MAINLIBS) $(EXPCONFLIBDEP)
+$(EXPCONFLIB):     $(EXPCONFHM) $(EXPCONFDO) $(EXPCONFO) $(MAINLIBS) $(EXPCONFLIBDEP)
+		@echo "at make EXPCONFLIB,EXPCONFHM = " $(EXPCONFHM)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbConfig.$(SOEXT) $@ "$(EXPCONFO) $(EXPCONFDO)" \
 		   "$(EXPCONFLIBEXTRA)"

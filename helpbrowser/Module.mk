@@ -20,7 +20,7 @@ HELPBHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 # $(info GREDITHL: $(GREDITHL))
 # change to aaa.h
 HELPBH        :=  $(patsubst $(MODDIRI)/%.h,%.h,$(HELPBHL))
- $(info HELPBH: $(HELPBH))
+# $(info HELPBH: $(HELPBH))
 HELPBS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 HELPBO        := $(HELPBS:.cxx=.o)
 

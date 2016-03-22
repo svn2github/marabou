@@ -31,7 +31,7 @@ FITCALLIBDEP  := $(ROOTSYS)/lib/libGraf.so  $(MRBGUTILSLIB) $(MRBUTILSLIB)
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(FITCALHL))
-$(info FITCALH = $(FITCALH))
+# $(info FITCALH = $(FITCALH))
 ALLLIBS     += $(FITCALLIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(FITCALPCM)
