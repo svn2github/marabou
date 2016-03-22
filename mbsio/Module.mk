@@ -20,7 +20,8 @@ MBSTSTEXE      := bin/mbstst
 
 MBSWRITEXE     := bin/mbswrite
 
-ALLEXECS    += $(MBSTSTEXE) $(MBSWRITEXE)
+ALLEXECS    += $(MBSTSTEXE)
+# ALLEXECS    += $(MBSTSTEXE) $(MBSWRITEXE)
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(MBSIOH))
