@@ -50,7 +50,7 @@ ifeq ($(findstring $(MAKECMDGOALS),hpr),hpr)
 
 else ifeq ($(findstring $(MAKECMDGOALS),analyze),analyze)
 # if offline data analysis in the marabou framework is needed
-	MODULES      += c_analyze analyze transport mbsio expconf
+	MODULES      += c_analyze analyze transport mbssetup mbsio expconf
 else 
 # otherwise all modules are needed
 	MODULES      += c_analyze analyze mbssetup mbsio transport expconf macrobrowser c2lynx camcli vmecontrol esone polar xiadgf dgfcomm dgfcontrol cptmcontrol tidy tidylib
