@@ -84,7 +84,6 @@
 %%BeginOfCode%%
 	$cfgNameLC->MakeReadoutCode("", "Overwrite");		// C readout code for MBS
 	$cfgNameLC->MakeAnalyzeCode();						// C++ class defs & methods for data analysis within ROOT
-	$cfgNameLC->WriteToFile("$cfgFile.root");			// save config objects to root file
 %%EndOfCode%%
 %%MAKE_CODE%%
 

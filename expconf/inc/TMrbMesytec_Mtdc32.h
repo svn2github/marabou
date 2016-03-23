@@ -105,11 +105,11 @@ class TMrbMesytec_Mtdc32 : public TMrbVMEModule {
 		enum EMrbTdcResolution			{	kTdcRes500			=	9,
 											kTdcRes250			=	8,
 											kTdcRes125			=	7,
-											kTdcRes62_5			=	6,
-											kTdcRes31_3			=	5,
-											kTdcRes15_6			=	4,
-											kTdcRes7_8			=	3,
-											kTdcRes3_9			=	2
+											kTdcRes625_16		=	6,
+											kTdcRes313_32		=	5,
+											kTdcRes156_64		=	4,
+											kTdcRes078_128		=	3,
+											kTdcRes039_256		=	2
 										};
 
 		enum EMrbOutputFormat			{	kOutFmtTimeDiff			=	0,
