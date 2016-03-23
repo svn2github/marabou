@@ -216,7 +216,7 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 	wstream.close();
 
 //  check free disc space
-	Int_t error = 0;
+//	Int_t error = 0;
 	Long_t id=0, bsize=0, blocks=0, bfree=0;
 	Double_t tot_size;
 	Double_t free_size;
@@ -239,11 +239,11 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 				return -1;
 			} else if(free_size < warn_hwm){
 				cout << setred << "Warning: disk space low " << setblack << endl;
-				error = -2;
+//				error = -2;
 			}
 	} else {
 		cout << "failed to get Filesysteminfo for: " << fs << endl;
-		error = -5;
+//		error = -5;
 	}
 //  now look in quota file
 	wstream.open(quotafile.Data(), ios::in);
@@ -270,10 +270,10 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 //      cout << wline << endl;
 		if(ok){
 //         cout << wline << endl;
-			Bool_t exceeded = kFALSE;
+//			Bool_t exceeded = kFALSE;
 
 			if(wline.Contains("*")){
-				exceeded = kTRUE;
+//				exceeded = kTRUE;
 				while(wline.Index(ast) >= 0){
 					wline(ast) = " ";
 				}
@@ -333,7 +333,7 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 					return -1;
 				} else if(free_size < warn_hwm){
 					cout << setred << "Warning: disk quota low " << setblack << endl;
-					error = -2;
+//					error = -2;
 				}
 			}
 	//      if(exceeded)line >> dummy;
