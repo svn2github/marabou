@@ -79,11 +79,11 @@ const SMrbNamedXShort kMrbTdcResolution[] =
 			{	TMrbMesytec_Mtdc32::kTdcRes500,				"500ps"		},
 			{	TMrbMesytec_Mtdc32::kTdcRes250,				"250ps"		},
 			{	TMrbMesytec_Mtdc32::kTdcRes125,				"125ps"		},
-			{	TMrbMesytec_Mtdc32::kTdcRes62_5,			"62.5ps"	},
-			{	TMrbMesytec_Mtdc32::kTdcRes31_3,			"31.3ps"	},
-			{	TMrbMesytec_Mtdc32::kTdcRes15_6,			"15.6ps"	},
-			{	TMrbMesytec_Mtdc32::kTdcRes7_8,				"7.8ps"		},
-			{	TMrbMesytec_Mtdc32::kTdcRes3_9,				"3.9ps"		},
+			{	TMrbMesytec_Mtdc32::kTdcRes625_16,			"62.5ps"	},
+			{	TMrbMesytec_Mtdc32::kTdcRes313_32,			"31.3ps"	},
+			{	TMrbMesytec_Mtdc32::kTdcRes156_64,			"15.6ps"	},
+			{	TMrbMesytec_Mtdc32::kTdcRes078_128,			"7.8ps"		},
+			{	TMrbMesytec_Mtdc32::kTdcRes039_256,			"3.9ps"		},
 			{	0,			 								NULL,		}
 		};
 
@@ -311,7 +311,7 @@ void TMrbMesytec_Mtdc32::DefineRegisters() {
 
 	kp = new TMrbNamedX(TMrbMesytec_Mtdc32::kRegTdcResolution, "TdcResolution");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Mtdc32::kTdcRes500,
-													TMrbMesytec_Mtdc32::kTdcRes3_9,
+													TMrbMesytec_Mtdc32::kTdcRes039_256,
 													TMrbMesytec_Mtdc32::kTdcRes500);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
