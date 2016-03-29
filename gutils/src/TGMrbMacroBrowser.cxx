@@ -733,7 +733,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	TMrbNamedX * button;
 
 	Int_t defaultEntryWidth;
-	Int_t intBase;
+	Int_t intBase = 10;
 	TString currentValue;
 	TString defaultValue;
 	TString value;
@@ -3613,7 +3613,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile)
 	TString envName, envVal;
 	TString argSpace, envSpace;
 
-	TGMrbMacroArg::EGMrbMacroEntryType argEntryTypeBits;
+	TGMrbMacroArg::EGMrbMacroEntryType argEntryTypeBits = (TGMrbMacroArg::EGMrbMacroEntryType)0;
 
 	TString templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", "");
 	if (templatePath.Length() == 0) templatePath = ".:$(MARABOU)/templates/macros";
