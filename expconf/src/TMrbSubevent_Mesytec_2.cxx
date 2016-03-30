@@ -127,8 +127,6 @@ Bool_t TMrbSubevent_Mesytec_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::E
 	TMrbModuleChannel * param;
 	TMrbModule * parentModule, * module;
 	Int_t parNo;
-	Int_t nextChannel = 0;
-	Int_t thisChannel;
 	TString sevtName;
 	TString moduleNameUC;
 	TIterator * miter;
@@ -150,12 +148,9 @@ Bool_t TMrbSubevent_Mesytec_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::E
 			param = (TMrbModuleChannel *) fLofParams.First();
 			parNo = 0;
 			while (param) {
-				thisChannel = param->GetAddr();
-
 				if (param->Parent() != parentModule) {
 					parentModule = (TMrbModule *) param->Parent();
 					parentModule->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleSetupReadout, param);
-					nextChannel = thisChannel;
 				}
 
 				((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);

@@ -3051,8 +3051,8 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								if (makeIt == 1) anaStrm << "\t\t\t\tlib" << ulib->GetName() << ".so";
 								found = kTRUE;
 							}
+							if (found) anaStrm << " \\" << endl;
 						}
-						if (found) anaStrm << " \\" << endl;
 						break;
 					case TMrbConfig::kAnaMakeClean:
 						if (this->UserLibsToBeIncluded()) {

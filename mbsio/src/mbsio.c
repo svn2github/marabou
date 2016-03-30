@@ -1176,15 +1176,10 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 unsigned int mbs_next_sheader(MBSDataIO *mbs) {
 
-	s_evhe *eh;
 	s_evhe *sh;
-	unsigned int bo;
 	unsigned int stype;
 
 	if (!_mbs_check_active(mbs)) return(MBS_STYPE_ABORT);
-
-	eh = (s_evhe *) mbs->evt_data;
-	bo = mbs->byte_order;
 
 	if (mbs->sevtpt == NULL) {
 		mbs->sevtpt = mbs->evt_data + (mbs->evttype)->hsize;
@@ -2735,17 +2730,13 @@ void _mbs_output_log(MBSDataIO *mbs) {
 int _mbs_connect_to_server(char * host, unsigned int server_type) {
 
 	int s;
-	int len;
 	struct sockaddr_in sa;
 	struct hostent *hp;
-	struct servent *sp;
 	int port=0;
 
 	s = 0;
-	len = 0;
 
 	hp = NULL;
-	sp = NULL;
 
 	switch (server_type) {
 		case MBS_CTYPE_SYNC:

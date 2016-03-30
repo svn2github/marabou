@@ -121,8 +121,6 @@ Bool_t TMrbSubevent_Caen_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 	TMrbModuleChannel * param;
 	TMrbModule * parentModule, * module;
 	Int_t parNo;
-	Int_t nextChannel = 0;
-	Int_t thisChannel;
 	TString sevtName;
 	TIterator * miter;
 
@@ -143,12 +141,9 @@ Bool_t TMrbSubevent_Caen_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 			param = (TMrbModuleChannel *) fLofParams.First();
 			parNo = 0;
 			while (param) {
-				thisChannel = param->GetAddr();
-
 				if (param->Parent() != parentModule) {
 					parentModule = (TMrbModule *) param->Parent();
 					parentModule->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleSetupReadout, param);
-					nextChannel = thisChannel;
 				}
 
 				((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);

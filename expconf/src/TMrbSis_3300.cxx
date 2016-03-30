@@ -371,13 +371,9 @@ TEnv * TMrbSis_3300::UseSettings(const Char_t * SettingsFile) {
 	this->EnableWrapAround(sisEnv->GetValue(Form("SIS3300.%s.WrapAround", moduleName.Data()), kFALSE));
 	this->EnableTriggerOnBankArmed(sisEnv->GetValue(Form("SIS3300.%s.TriggerOnBankArmed", moduleName.Data()), kFALSE));
 
-	Int_t highestGroupEnabled = -1;
 	for (Int_t i = 0; i < TMrbSis_3300::kNofGroups; i++) {
 		Bool_t grpEnabled = sisEnv->GetValue(Form("SIS3300.%s.Group%d.Readout", moduleName.Data(), i), kFALSE);
-		if (grpEnabled) {
-			highestGroupEnabled = i;
-			this->SetReadGroup(kTRUE, i);
-		}
+		if (grpEnabled) this->SetReadGroup(kTRUE, i);
 	}
 	for (Int_t i = 0; i < TMrbSis_3300::kNofGroups; i++) {
 		this->SetTriggerOn(sisEnv->GetValue(Form("SIS3300.%s.Group%d.TrigOn", moduleName.Data(), i), TMrbSis_3300::kTriggerOnDisabled), i);
