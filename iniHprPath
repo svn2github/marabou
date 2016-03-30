@@ -1,16 +1,16 @@
 #_______________________________________________________________[SHELL SCRIPT]
 #/////////////////////////////////////////////////////////////////////////////
-# Name:            iniHprPath
+# Name:            iniMrbPath
 # Purpose:         Setup paths for MARaBOU
-# Syntax:          . iniHprPath
+# Syntax:          . iniMrbPath
 # Arguments:       --
 # Options:         --
 # Description:     Defines environment variables to be used by MARaBOU
 #                  Checks if software distribution / installation is ok
 #                  Script has to be called "at shell level" (see syntax)
-# Author:          R. Lutter O. Schaile (reduce to HistPresent)
+# Author:          R. Lutter
 # Revision:        
-# Date:            Jul 2005
+# Date:            Nov 17, 2015 (OS)
 # URL:             
 # Keywords:        
 #/////////////////////////////////////////////////////////////////////////////
@@ -21,11 +21,14 @@
 SYSMODE=y
 
 # Set environment vars needed by MARaBOU:
-# ROOTSYS        where the ROOT system resides
-# MARABOU        where your MARaBOU installation resides
+# ROOTSYS        where the ROOT system resides, should be set by user
+# MARABOU        where your MARaBOU installation resides, normally CWD
 
-# export ROOTSYS=/usr/cern/Linux/root_v4.04.02
+# If you change the following settings please dont commit them back in
+
+# ROOTSYS=where_root_installation_resides, 
 MARABOU=`pwd`
+MARABOU_INSTALL_PATH=cant_be_installed
 
 #____________________________[end editable section]___________________________
 
@@ -33,11 +36,12 @@ BLK='\033[39m' # default foreground color
 RED='\033[31m'
 GRN='\033[32m'
 BLU='\033[34m'
+MAG='\033[35m'
 
 if [ -z "$ROOTSYS" ]
 then
 	echo -e -n $RED >&2
-	echo "iniHprPath: ROOTSYS not set -" >&2
+	echo "iniMrbPath: ROOTSYS not set -" >&2
 	echo "            set ROOTSYS to where your ROOT installation resides" >&2
 	echo -e -n $BLK >&2
 	return
@@ -46,7 +50,7 @@ fi
 if [ ! -x $ROOTSYS/bin/root ]
 then
 	echo -e -n $RED >&2
-	echo "iniHprPath: Directory where ROOTSYS=$ROOTSYS is pointing to doesn't contain a valid ROOT installation" >&2
+	echo "iniMrbPath: Directory where ROOTSYS=$ROOTSYS is pointing to doesn't contain a valid ROOT installation" >&2
 	echo -e -n $BLK >&2
 	return
 fi
@@ -62,11 +66,10 @@ then
 	return
 fi
 
-
 if [ -z "$MARABOU" ]
 then
 	echo -e -n $RED >&2
-	echo "iniHprPath: MARABOU not set -" >&2
+	echo "iniMrbPath: MARABOU not set -" >&2
 	if [ $SYSMODE = "y" ]
 	then
 		echo "            set MARABOU to where you want to install it (probably MARABOU=`pwd`)" >&2
@@ -77,7 +80,41 @@ then
 	return
 fi
 
-if [ $SYSMODE = "y" ]
+if [ ! -e "$HOME/.rootrc" ]
+then
+	echo -e -n $MAG >&2
+	echo "iniMrbPath: Creating $HOME/.rootrc" >&2
+	DATE=`date`
+	echo "# Created by iniMrbPath at $DATE" > $HOME/.rootrc
+	echo -e -n $BLK >&2
+fi
+
+DYNPATHSET=`grep DynamicPath $HOME/.rootrc`
+if [ -z "$DYNPATHSET" ]
+then
+	echo -e -n $MAG >&2
+	echo "iniMrbPath: Adding Unix.*.Root.DynamicPath:   to $HOME/.rootrc"
+	echo "Unix.*.Root.DynamicPath:    .:\$ROOTSYS/lib:\$MARABOU/lib" >> $HOME/.rootrc
+	echo -e -n $BLK >&2
+fi
+MACROPATHSET=`grep MacroPath $HOME/.rootrc`
+if [ -z "$MACROPATHSET" ]
+then
+	echo -e -n $MAG >&2
+	echo "iniMrbPath: Adding Unix.*.Root.MacroPath:   to $HOME/.rootrc"
+	echo "Unix.*.Root.MacroPath:    .:\$ROOTSYS/macros:\$ROOTSYS/tutorials:\$MARABOU/macros" >> $HOME/.rootrc
+	echo -e -n $BLK >&2
+fi
+ICONPATHSET=`grep IconPath $HOME/.rootrc`
+if [ -z "$ICONPATHSET" ]
+then
+	echo -e -n $MAG >&2
+	echo "iniMrbPath: Adding Unix.*.Root.IconPath:   to $HOME/.rootrc"
+	echo "Unix.*.Root.IconPath:    .:\$ROOTSYS/icons:\$MARABOU/icons" >> $HOME/.rootrc
+	echo -e -n $BLK >&2
+fi
+	
+if [ $SYSMODE = "y" -o  $SYSMODE = "Y" ]
 then
 	# if empty dirs do not exist, create them
 	test -d bin || mkdir bin
@@ -86,14 +123,15 @@ then
 	test -d include || mkdir include
 	test -d cint || mkdir cint
 
-	DIR1="bin config gutils helpbrowser hpr icons include lib macros obj utils"
+	DIR1="analyze bin build c_analyze cint config expconf gutils helpbrowser hpr icons include lib macrobrowser macros obj templates tools utils"
+	DIR2="camcli esone mbsio mbssetup transport"
 	ERR=n
 	OK=n
 	for d in $DIR1
 	do
 		if [ ! -d $MARABOU/$d ]
 		then
-			echo "iniHprPath: Directory not found - $MARABOU/$d" >&2
+			echo "iniMrbPath: Directory not found - $MARABOU/$d" >&2
 			ERR=y
 		else
 			OK=y
@@ -103,42 +141,46 @@ then
 	then
 		echo -e -n $RED >&2
 		if [ $OK = "n" ]; then X=invalid; else X=incomplete; fi
-		echo "iniHprPath: MARaBOU distribution at $MARABOU seems to be $X" >&2
+		echo "iniMrbPath: MARaBOU distribution at $MARABOU seems to be $X" >&2
 		echo -e -n $BLK >&2
 		return
 	fi
+	ERR=n
+	for d in $DIR2
+	do
+		if [ ! -d $MARABOU/$d ]
+		then
+			echo "iniMrbPath: Directory not found - $MARABOU/$d" >&2
+			ERR=y
+		fi
+	done
 	if [ $ERR = "y" ]
 	then
 		echo -e -n $RED >&2
-		echo "iniHprPath: HistPresent distribution at $MARABOU seems to be incomplete" >&2
+		echo "iniMrbPath: MARaBOU distribution at $MARABOU seems to be incomplete" >&2
 		echo "            Some dirs needed for online data acquisition are missing" >&2
 		echo "            Remove these dirs from your Makefile" >&2
 		echo -e -n $BLK >&2
 	fi
 else
-	BINS="HistPresent"
+	BINS="C_analyze HistPresent MacroBrowser"
 	ERR=n
 	OK=n
 	for p in $BINS
 	do
 		if [ ! -x $MARABOU/bin/$p ]
 		then
-			echo "iniHprPath: Executable \"$p\" not found at $MARABOU/bin" >&2
+			echo "iniMrbPath: Executable \"$p\" not found at $MARABOU/bin" >&2
 			ERR=y
 		else
 			OK=y
 		fi
 	done
-	if [ ! -x /usr/local/bin/xrcm ]
-	then
-		echo "iniHprPath: Executable \"xrcm\" not found at /usr/local/bin" >&2
-		ERR=y
-	fi
 	if [ $ERR = "y" ]
 	then
 		echo -e -n $RED >&2
 		if [ $OK = "n" ]; then X=invalid; else X=incomplete; fi
-		echo "iniHprPath: MARaBOU installation at $MARABOU seems to be $X" >&2
+		echo "iniMrbPath: MARaBOU installation at $MARABOU seems to be $X" >&2
 		if [ $OK = "y" ]
 		then
 			echo "            Some progs are missing" >&2
@@ -148,14 +190,14 @@ else
 		return
 		fi
 	fi
-	LIBS1="Hpr Mutex TGMrbUtils TMrbHelpBrowser TMrbUtils"
+	LIBS1="Hpr Mutex TGMrbUtils TMbsControl TMrbAnalyze TMrbConfig TMrbHelpBrowser TMrbUtils"
 	ERR=n
 	OK=n
 	for l in $LIBS1
 	do
 		if [ ! -f $MARABOU/lib/lib$l.so ]
 		then
-			echo "iniHprPath: Shared library \"lib$l.so\" not found at $MARABOU/lib" >&2
+			echo "iniMrbPath: Shared library \"lib$l.so\" not found at $MARABOU/lib" >&2
 			ERR=y
 		else
 			OK=y
@@ -165,7 +207,7 @@ else
 	then
 		echo -e -n $RED >&2
 		if [ $OK = "n" ]; then X=invalid; else X=incomplete; fi
-		echo "iniHprPath: MARaBOU installation at $MARABOU seems to be $X" >&2
+		echo "iniMrbPath: MARaBOU installation at $MARABOU seems to be $X" >&2
 		if [ $OK = "y" ]
 		then
 			echo "            Some libs are missing" >&2
@@ -181,14 +223,14 @@ else
 	do
 		if [ ! -f $MARABOU/lib/lib$l.so ]
 		then
-			echo "iniHprPath: Shared library \"lib$l.so\" not found at $MARABOU/lib" >&2
+			echo "iniMrbPath: Shared library \"lib$l.so\" not found at $MARABOU/lib" >&2
 			ERR=y
 		fi
 	done
 	if [ $ERR = "y" ]
 	then
 		echo -e -n $RED >&2
-		echo "iniHprPath: MARaBOU installation at $MARABOU seems to be incomplete" >&2
+		echo "iniMrbPath: MARaBOU installation at $MARABOU seems to be incomplete" >&2
 		echo "            Some libs needed for online data acquisition are missing" >&2
 		echo -e -n $BLK >&2
 	fi
@@ -196,17 +238,18 @@ fi
 
 export ROOTSYS
 export MARABOU
+export MARABOU_INSTALL_PATH
 export INSTDIR=
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTSYS/lib:$MARABOU/lib
-export PATH=$PATH:$ROOTSYS/bin:$MARABOU/bin
+export LD_LIBRARY_PATH=$ROOTSYS/lib:$MARABOU/lib:$LD_LIBRARY_PATH:.
+export PATH=$ROOTSYS/bin:$MARABOU/bin:$PATH
 export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:$MARABOU/include:.
 
 echo -e -n $BLU >&2
 if [ $SYSMODE = "y" ]
 then
-	echo "iniHprPath: You are currently using ROOT `$ROOTSYS/bin/root-config --version` ($ROOTSYS)"
-	echo "iniHprPath: HistPreset distribution at $MARABOU is ready to be built"
+	echo "iniMrbPath: You are currently using ROOT `$ROOTSYS/bin/root-config --version` ($ROOTSYS)"
+	echo "iniMrbPath: MARaBOU distribution at $MARABOU is ready to be built"
 else
-	echo "iniHprPath: HistPreset installation at $MARABOU is ready to be used"
+	echo "iniMrbPath: MARaBOU installation at $MARABOU is ready to be used"
 fi
 echo -e -n $BLK >&2

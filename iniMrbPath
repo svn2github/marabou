@@ -10,7 +10,7 @@
 #                  Script has to be called "at shell level" (see syntax)
 # Author:          R. Lutter
 # Revision:        
-# Date:            Nov 17, 2015 (OS)
+# Date:            Mar 29, 2016 (OS) Add check for $HOME/.rootrc
 # URL:             
 # Keywords:        
 #/////////////////////////////////////////////////////////////////////////////
@@ -36,6 +36,7 @@ BLK='\033[39m' # default foreground color
 RED='\033[31m'
 GRN='\033[32m'
 BLU='\033[34m'
+MAG='\033[35m'
 
 if [ -z "$ROOTSYS" ]
 then
@@ -79,6 +80,40 @@ then
 	return
 fi
 
+if [ ! -e "$HOME/.rootrc" ]
+then
+	echo -e -n $MAG >&2
+	echo "iniMrbPath: Creating $HOME/.rootrc" >&2
+	DATE=`date`
+	echo "# Created by iniMrbPath at $DATE" > $HOME/.rootrc
+	echo -e -n $BLK >&2
+fi
+
+DYNPATHSET=`grep DynamicPath $HOME/.rootrc`
+if [ -z "$DYNPATHSET" ]
+then
+	echo -e -n $MAG >&2
+	echo "iniMrbPath: Adding Unix.*.Root.DynamicPath:   to $HOME/.rootrc"
+	echo "Unix.*.Root.DynamicPath:    .:\$ROOTSYS/lib:\$MARABOU/lib" >> $HOME/.rootrc
+	echo -e -n $BLK >&2
+fi
+MACROPATHSET=`grep MacroPath $HOME/.rootrc`
+if [ -z "$MACROPATHSET" ]
+then
+	echo -e -n $MAG >&2
+	echo "iniMrbPath: Adding Unix.*.Root.MacroPath:   to $HOME/.rootrc"
+	echo "Unix.*.Root.MacroPath:    .:\$ROOTSYS/macros:\$ROOTSYS/tutorials:\$MARABOU/macros" >> $HOME/.rootrc
+	echo -e -n $BLK >&2
+fi
+ICONPATHSET=`grep IconPath $HOME/.rootrc`
+if [ -z "$ICONPATHSET" ]
+then
+	echo -e -n $MAG >&2
+	echo "iniMrbPath: Adding Unix.*.Root.IconPath:   to $HOME/.rootrc"
+	echo "Unix.*.Root.IconPath:    .:\$ROOTSYS/icons:\$MARABOU/icons" >> $HOME/.rootrc
+	echo -e -n $BLK >&2
+fi
+	
 if [ $SYSMODE = "y" -o  $SYSMODE = "Y" ]
 then
 	# if empty dirs do not exist, create them
