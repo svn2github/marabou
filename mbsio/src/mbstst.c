@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
 	int nevts;
 	unsigned int etype, stype;
 	unsigned short data[8192];
-	int swc;
 	char mode[20];
 	char show[20];
 	int scd;
@@ -120,7 +119,7 @@ int main(int argc, char *argv[])
 					break;
 				}
 				if (stype != MBS_STYPE_ERROR) {
-					swc = mbs_pass_sevent(mbs, data); // copy data to local array
+					mbs_pass_sevent(mbs, data); // copy data to local array
 				}
 			}
 		}

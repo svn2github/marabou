@@ -58,7 +58,6 @@ DGFEditRunTaskPanel::DGFEditRunTaskPanel(const TGWindow * Window, TGTextEntry * 
 //////////////////////////////////////////////////////////////////////////////
 
 	DGFModule * module;
-	Int_t chn;
 
 	TMrbString title;
 	TMrbString intStr;
@@ -91,7 +90,6 @@ DGFEditRunTaskPanel::DGFEditRunTaskPanel(const TGWindow * Window, TGTextEntry * 
 	fEntry = Entry; 			// entry to be editied
 
 	module = gDGFControlData->GetSelectedModule();
-	chn = gDGFControlData->GetSelectedChannel();
 
 	title = "RUNTASK for  ";
 	title += module->GetName();

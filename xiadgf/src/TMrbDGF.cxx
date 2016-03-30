@@ -2692,7 +2692,6 @@ Bool_t TMrbDGF::SaveParams(TArrayS & TempStorage) {
 
 	Int_t nofParams;
 	Int_t startAddr;
-	Int_t idx;
 	TArrayI cData;
 
 	if (!this->CheckConnect("SaveParams")) return(kFALSE);
@@ -2702,7 +2701,6 @@ Bool_t TMrbDGF::SaveParams(TArrayS & TempStorage) {
 
 	nofParams = TMrbDGFData::kNofDSPInputParams;				 	// size of input section
 	startAddr = TMrbDGFData::kDSPInparStartAddr;
-	idx = 0;
 		
 	this->WriteTSAR(startAddr); 									// where to read from
 	cData.Set(nofParams + 1);										// save params + switchbus
@@ -3993,7 +3991,7 @@ Bool_t TMrbDGF::UpdateSlowFilter(Int_t Channel, Bool_t UpdateDSP) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t slowLength, slowGap, peakSep, pafLength, trigDelay, dec, dec2;
+	Int_t slowLength, slowGap, peakSep, pafLength, trigDelay, dec;
 	Int_t peakSample;
 	Double_t userDelay;
 
@@ -4007,7 +4005,6 @@ Bool_t TMrbDGF::UpdateSlowFilter(Int_t Channel, Bool_t UpdateDSP) {
 	trigDelay = this->GetParValue(Channel, "TRIGGERDELAY");
 
 	dec = this->GetParValue("DECIMATION");
-	dec2 = 1 << dec;
 
 	userDelay = (pafLength - 8 - trigDelay) * 0.025;	// extract user delay
 

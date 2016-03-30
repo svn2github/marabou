@@ -295,13 +295,11 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 	DGFModule * module;
 	TMrbDGF * dgf;
 	TMrbString paramName;
-	Bool_t offlineMode;
 	Int_t nerr;
 	Int_t nofRestored;
 	TString dgfResource;
 	TMrbNamedX * param;
 	Int_t parval = 0;
-	Bool_t verbose;
 	UInt_t modIdx;
 	Int_t cl, modNo;
 
@@ -336,13 +334,10 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 		return(kFALSE);
 	}
 
-	offlineMode = gDGFControlData->IsOffline();
-
 	nerr = 0;
 
 	nofRestored = 0;
 	module = gDGFControlData->FirstModule();
-	verbose = gDGFControlData->IsVerbose();
 	if (module) {
 		TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Restoring module params ...", 400, "blue", NULL, kTRUE);
 		pgb->SetRange(0, gDGFControlData->GetNofModules());

@@ -658,10 +658,6 @@ void DGFTauFitPanel::SetRunning(Bool_t RunFlag) {
 	TMrbNamedX * nx;
 	TGTextButton * btn;
 
-	TMrbDGF * dgf;
-
-	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-
 	nx = fTauFitActions.FindByIndex(kDGFTauFitStartFit);
 	btn = (TGTextButton *) fButtonFrame->GetButton(kDGFTauFitStartFit);
 

@@ -286,15 +286,12 @@ Bool_t VMEServerPanel::Connect() {
 	}
 
 	TString ppc = fSelectHost->GetText();
-	Int_t ppcNo = -1;
 #ifdef PPC_NEW_ADDRESS
 	if (ppc.Contains("gar-ex-ppc")) {
 		TString pn = ppc(10, 2);
-		ppcNo = pn.Atoi();
 #else
 	if (ppc.Contains("ppc-")) {
 		TString pn = ppc(4, 2);
-		ppcNo = pn.Atoi();
 #endif
 	} else {
 		gMrbLog->Err()	<< "Illegal host name - " << ppc << endl;

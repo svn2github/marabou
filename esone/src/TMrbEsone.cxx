@@ -1300,7 +1300,6 @@ void TMrbEsone::PrintStatus(const Char_t * Method) {
 	TMrbNamedX * action;
 	Bool_t xFlag;
 	Bool_t qFlag;
-	UInt_t status;
 	Int_t errorCode;
 	TString errorMsg;
 
@@ -1315,8 +1314,6 @@ void TMrbEsone::PrintStatus(const Char_t * Method) {
 	cout	<< endl << this->ClassName() << "::PrintStatus(): Current CAMAC Status -" << endl
 			<< "-----------------------------------------------------------------------------" << endl
 			<< "    CAMAC action           : " << action->GetName() << endl;
-
-	status = this->GetStatus(xFlag, qFlag, errorCode, errorMsg);
 
 	cout	<< "    X Response             : " << (xFlag ? "yes" : "no") << endl;
 	cout	<< "    Q Response             : " << (qFlag ? "yes" : "no") << endl;

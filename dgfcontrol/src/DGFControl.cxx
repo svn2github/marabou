@@ -45,12 +45,10 @@ TROOT root("GUI", "DGFControl GUI", initfuncs);
 
 int main(Int_t argc, Char_t **argv)
 {
-	Int_t nofModules;
 	TRint theApp("DGFControl", &argc, argv);
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("dgfControl.log");
 
-	nofModules = 0;
 	gDGFControlData = new DGFControlData();
 	if (gDGFControlData->IsZombie() || gDGFControlData->GetNofModules() == 0) {
 		gMrbLog->Err()	<< "No DGF modules found. Sorry - can't proceed." << endl;

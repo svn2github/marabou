@@ -812,9 +812,7 @@ TMrbTidyNode * TMrbTidyNode::ScanTidyTree(TidyNode Node, const Char_t * AttrName
 
 	TMrbTidyDoc * doc = Doc ? Doc : this->GetTidyDoc();
 	TMrbTidyNode * node;
-	Char_t * sp = tidyNodeGetName(Node);
 	for (TidyNode child = tidyGetChild(Node); child; child = tidyGetNext(child)) {
-		sp = tidyNodeGetName(child);
 		TidyAttr attrHandle;
 		for (attrHandle = tidyAttrFirst(child); attrHandle; attrHandle = tidyAttrNext(attrHandle)) {
 			TString aName = tidyAttrName(attrHandle);

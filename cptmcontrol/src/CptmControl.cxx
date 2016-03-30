@@ -46,12 +46,10 @@ TROOT root("GUI", "CptmControl GUI", initfuncs);
 
 int main(Int_t argc, Char_t **argv)
 {
-	Int_t nofModules;
 	TRint theApp("CptmControl", &argc, argv);
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("cptmControl.log");
 
-	nofModules = 0;
 	gEnv->ReadFile(".DGFControl.rc", kEnvLocal);
 	gEnv->ReadFile(".CptmControl.rc", kEnvLocal);
 	gCptmControlData = new CptmControlData();

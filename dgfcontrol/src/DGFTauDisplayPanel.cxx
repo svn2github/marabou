@@ -613,7 +613,7 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 	Int_t nt, nw, bs, tpb;
 	Int_t event0;
 	Int_t fitFrom, fitTo;
-	Double_t fitError, fitA0, fitA1, fitA2, fitChiSquare;
+	Double_t fitError, fitA0, fitA1, fitA2;
 	Bool_t fitFlag;
 	UInt_t chnPattern;
 
@@ -665,7 +665,6 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 	fFitFromEntry->SetRange(0, traceLength);
 
 	fitError = fFitErrorEntry->GetText2Double();
-	fitChiSquare = fFitChiSquareEntry->GetText2Double();
 	fitA0 = fFitA0Entry->GetText2Double();
 	fitA1 = fFitA1Entry->GetText2Double();
 	fitA2 = fFitA2Entry->GetText2Double();
@@ -814,7 +813,6 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbDGF * dgf;
 	Int_t chn;
 	TMrbString intStr, dblStr;
 	Int_t traceNo;
@@ -823,7 +821,6 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 	
 	Int_t bufNo;
 		
-	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
 	chn = gDGFControlData->GetSelectedChannel();
 
 	switch (EntryId) {
@@ -1048,16 +1045,7 @@ Bool_t DGFTauDisplayPanel::SaveTrace(const Char_t * FileName, Int_t ModuleId, In
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbDGF * dgf;
-	Int_t chn;
-
 	TString cmd;
-
-	if (ModuleId == -1) 	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-	else					dgf = gDGFControlData->GetModule(ModuleId)->GetAddr();
-
-	if (ChannelId == -1)	chn = gDGFControlData->GetSelectedChannel();
-	else					chn = gDGFControlData->GetChannel(ChannelId);
 
 	this->TraceFileName();
 	cmd = "cp ";
@@ -1201,11 +1189,7 @@ const Char_t  * DGFTauDisplayPanel::BufferName(Int_t Index, Int_t ModuleId, Int_
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbDGF * dgf;
 	Int_t chn;
-
-	if (ModuleId == -1) 	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-	else					dgf = gDGFControlData->GetModule(ModuleId)->GetAddr();
 
 	if (ChannelId == -1)	chn = gDGFControlData->GetSelectedChannel();
 	else					chn = gDGFControlData->GetChannel(ChannelId);
@@ -1233,12 +1217,6 @@ void DGFTauDisplayPanel::SetRunning(Bool_t RunFlag) {
 	TMrbNamedX * nx;
 	TGTextButton * btn;
 		
-	TMrbDGF * dgf;
-	Int_t chn;
-		
-	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-	chn = gDGFControlData->GetSelectedChannel();
-
 	nx = fTauActions.FindByIndex(kDGFTauButtonAcquire);
 	btn = (TGTextButton *) fButtonFrame->GetButton(kDGFTauButtonAcquire);
 

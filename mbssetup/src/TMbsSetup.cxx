@@ -1874,7 +1874,7 @@ const Char_t * TMbsSetup::EncodeArray(Int_t Data, Int_t Index, Int_t NofEntries,
 		switch (Base) {
 			default:	Base = 10;
 			case 8:
-			case 16: 	s.AppendInteger(Data, 0, Base, kFALSE, kTRUE); break;
+			case 16: 	s.AppendInteger(data, 0, Base, kFALSE, kTRUE); break;
 		}
 	}
 	s += ")";
