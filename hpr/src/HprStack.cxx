@@ -332,7 +332,9 @@ of \"One pad for each\"\n\
 Option \"OpenGL\" activates use of the GL rendering in the canvas.\n\
 This is needed to use variable transparency when superimposing\n\
 histograms together with the \"Fill option\".\n\
-\n\
+This must be activated b e f o r e the canvas is drawn\n\
+i.e. After activating this option the picture must be redrawn\n\
+to become effictive.\n\
 ";
 	fRow_lab = new TList();
 //	static void *fValp[50];
@@ -613,9 +615,12 @@ void HprStack::SetAttributes()
 				hist->SetFillStyle(fFillStyle[i]);
 #if ROOTVERSION >= 53418
 				hist->SetFillColorAlpha(fFillColor[i], fFillTrans[i]);
+				ohist->SetFillColorAlpha(fFillColor[i], fFillTrans[i]);
 #else
 				hist->SetFillColor(fFillColor[i]);
+				ohist->SetFillColor(fFillColor[i]);
 #endif
+				hist->SetFillStyle(fFillStyle[i]);
 				ohist->SetFillStyle(fFillStyle[i]);
 //				ohist->SetFillColorAlpha(fFillColor[i], fFillTrans[i]);
 //       cout  << " fFillColor " << fFillColor[i]  <<  " fFillTrans "<< fFillTrans[i]<< endl;
