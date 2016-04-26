@@ -113,7 +113,7 @@ MTDC32.$moduleName.RepairRawData:		$repairRawData
 # Trigger
 #-----------------------------------------------------------------------------
 
-# window of interest (0x6050)   -16k < wdw < +16k (ns)
+# window of interest (0x6050/0x6052)   -16k < wdw < +16k (ns)
 #                               < 0 --> window starts BEFORE trigger
 #                               > 0 --> window starts AFTER trigger
 MTDC32.$moduleName.WinStart.0:			$winStart0
@@ -123,24 +123,28 @@ MTDC32.$moduleName.WinStart.1:			$winStart1
 MTDC32.$moduleName.WinWidth.0:			$winWidth0
 MTDC32.$moduleName.WinWidth.1:			$winWidth1
 
-# trigger source (0x6058/0x605A)
+# trigger source (bank0, 0x6058)
 #     banks connected   --> source0 only
 #     banks independent --> source0 for bank0, source1 for bank1
 #
-#     source may be any combination of ...
-#     (a) trigger               bit[0]  --> trig0
+#           *--*------*--*
+#           |BB|XCCCCC|TT|
+#           *--*------*--*
+#
+#     (a) trigger               0       --> off
+#                               bit[0]  --> trig0 (default)
 #                               bit[1]  --> trig1
-#                               default: 1            
 MTDC32.$moduleName.TrigSrcTrig.0:        $trigSrcTrig0
-#     (b) channel               32 .. 63 --> 0 .. 31
-#                               default: 0
+#
+#     (b) channel               0        --> off (default)
+#                               X+0 .. X+31 (X=32) --> 0 .. 31
 MTDC32.$moduleName.TrigSrcChan.0:        $trigSrcChan0
 #     (c) bank                  bit[0]  --> bank0
 #                               bit[1]  --> bank1
 #                               default: 0
 MTDC32.$moduleName.TrigSrcBank.0:        $trigSrcBank0
 
-# same for bank1 (if independent)
+# same for bank1 (if independent, 0x605A)
 MTDC32.$moduleName.TrigSrcTrig.1:        $trigSrcTrig1
 MTDC32.$moduleName.TrigSrcChan.1:        $trigSrcChan1
 MTDC32.$moduleName.TrigSrcBank.1:        $trigSrcBank1

@@ -35,9 +35,9 @@ TMRBLIBS	=	-L$(MARABOU)/lib -lTMrbAnalyze -lTMrbTransport -lTMrbUtils -lMutex
 
 # Header files which %%ANALYZE_FILE%%.cxx depends on
 USER_HDRS	=	\
-				%%MAKE_USER_HEADERS%% \
 				$(AFILE).h \
-				$(AFILE)Globals.h
+				$(AFILE)Globals.h \
+				%%MAKE_USER_HEADERS%%
 
 %%MAKE_ULIB_HEADERS%%
 
