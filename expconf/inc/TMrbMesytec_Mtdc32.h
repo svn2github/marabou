@@ -43,6 +43,8 @@ class TMrbMesytec_Mtdc32 : public TMrbVMEModule {
 		enum				{	kAddrMod		=	0x09		};
 
 		enum				{	kNofChannels	=	34	};
+		
+		enum				{	kChanAct		=	0x20	};
 
 		enum EMrbRegisters	{	kRegAddrSource,
 								kRegAddrReg,
@@ -56,9 +58,7 @@ class TMrbMesytec_Mtdc32 : public TMrbVMEModule {
 								kRegOutputFormat,
 								kRegWinStart,
 								kRegWinWidth,
-								kRegTrigSrcTrig,
-								kRegTrigSrcChan,
-								kRegTrigSrcBank,
+								kRegTrigSource,
 								kRegFirstHit,
 								kRegNegEdge,
 								kRegEclTerm,
@@ -225,16 +225,12 @@ class TMrbMesytec_Mtdc32 : public TMrbVMEModule {
 		inline Bool_t SetWinWidth(Int_t Width, Int_t Bank = 0) { return(this->Set(TMrbMesytec_Mtdc32::kRegWinWidth, Width, Bank)); };
 		inline Int_t GetWinWidth(Int_t Bank = 0) { return(this->Get(TMrbMesytec_Mtdc32::kRegWinWidth, Bank)); };
 
-		inline Bool_t SetTrigSrcTrig(Int_t Trig, Int_t B = 0) { return(this->Set(TMrbMesytec_Mtdc32::kRegTrigSrcTrig, Trig, B)); };
-		inline Int_t GetTrigSrcTrig(Int_t B = 0) { return(this->Get(TMrbMesytec_Mtdc32::kRegTrigSrcTrig, B)); };
+		inline Bool_t SetTrigSource(Int_t TrigSource, Int_t B = 0) { return(this->Set(TMrbMesytec_Mtdc32::kRegTrigSource, TrigSource, B)); };
+		Bool_t SetTrigSource(Int_t Trig, Int_t Chan, Int_t Bank, Int_t B = 0);
+		inline Int_t GetTrigSource(Int_t B = 0) { return(this->Get(TMrbMesytec_Mtdc32::kRegTrigSource, B)); };
+		Bool_t GetTrigSource(TArrayI & TrigSource, Int_t B = 0);
 
-		inline Bool_t SetTrigSrcChan(Int_t Chan, Int_t B = 0) { return(this->Set(TMrbMesytec_Mtdc32::kRegTrigSrcChan, Chan, B)); };
-		inline Int_t GetTrigSrcChan(Int_t B = 0) { return(this->Get(TMrbMesytec_Mtdc32::kRegTrigSrcChan, B)); };
-
-		inline Bool_t SetTrigSrcBank(Int_t Bank, Int_t B = 0) { return(this->Set(TMrbMesytec_Mtdc32::kRegTrigSrcBank, Bank, B)); };
-		inline Int_t GetTrigSrcBank(Int_t B = 0) { return(this->Get(TMrbMesytec_Mtdc32::kRegTrigSrcBank, B)); };
-
-		inline Bool_t SetFirstHit(Int_t Bits) { return(this->Set(TMrbMesytec_Mtdc32::kRegFirstHit, Bits)); };
+		inline Bool_t SetFirstHit(Int_t BankBits) { return(this->Set(TMrbMesytec_Mtdc32::kRegFirstHit, BankBits)); };
 		inline Int_t GetFirstHit() { return(this->Get(TMrbMesytec_Mtdc32::kRegFirstHit)); };
 		
 		inline Bool_t SetNegativeEdge(Int_t Edge) { return(this->Set(TMrbMesytec_Mtdc32::kRegNegEdge, Edge)); };

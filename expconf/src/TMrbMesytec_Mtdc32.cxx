@@ -157,7 +157,7 @@ TMrbMesytec_Mtdc32::TMrbMesytec_Mtdc32(const Char_t * ModuleName, UInt_t BaseAdd
 //__________________________________________________________________[C++ CTOR]rts
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbMesytec_Mtdc32
-// Purpose:        Create a digitizing adc of type Mesytec MTDC-32
+// Purpose:        Create a digitizing tdc of type Mesytec MTDC-32
 // Arguments:      Char_t * ModuleName      -- name of camac module
 //                 UInt_t BaseAddr          -- base addr
 // Results:        --
@@ -350,18 +350,8 @@ void TMrbMesytec_Mtdc32::DefineRegisters() {
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
-	kp = new TMrbNamedX(TMrbMesytec_Mtdc32::kRegTrigSrcTrig, "TrigSrcTrig");
-	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, 1, 0, 0x3);
-	kp->AssignObject(rp);
-	fLofRegisters.AddNamedX(kp);
-
-	kp = new TMrbNamedX(TMrbMesytec_Mtdc32::kRegTrigSrcChan, "TrigSrcChan");
-	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, 0, 0, 0x3F);
-	kp->AssignObject(rp);
-	fLofRegisters.AddNamedX(kp);
-
-	kp = new TMrbNamedX(TMrbMesytec_Mtdc32::kRegTrigSrcBank, "TrigSrcBank");
-	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, 0, 0, 0x3);
+	kp = new TMrbNamedX(TMrbMesytec_Mtdc32::kRegTrigSource, "TrigSource");
+	rp = new TMrbVMERegister(this, 2, kp, 0, 0, 0, 1, 0, 0x3FF);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
@@ -538,12 +528,22 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetWinStart(mtdcEnv->Get(moduleName.Data(), "WinStart", "1", kWinStartDefault), 1);
 	this->SetWinWidth(mtdcEnv->Get(moduleName.Data(), "WinWidth", "0", kWinWidthDefault), 0);
 	this->SetWinWidth(mtdcEnv->Get(moduleName.Data(), "WinWidth", "1", kWinWidthDefault), 1);
-	this->SetTrigSrcTrig(mtdcEnv->Get(moduleName.Data(), "TrigSrcTrig", "0", 1), 0);
-	this->SetTrigSrcChan(mtdcEnv->Get(moduleName.Data(), "TrigSrcChand", "0", 0), 0);
-	this->SetTrigSrcBank(mtdcEnv->Get(moduleName.Data(), "TrigSrcBank", "0", 0), 0);
-	this->SetTrigSrcTrig(mtdcEnv->Get(moduleName.Data(), "TrigSrcTrig", "1", 2), 1);
-	this->SetTrigSrcChan(mtdcEnv->Get(moduleName.Data(), "TrigSrcChand", "1", 0), 1);
-	this->SetTrigSrcBank(mtdcEnv->Get(moduleName.Data(), "TrigSrcBank", "1", 0), 1);
+	Char_t * b = "0";
+	for (Int_t bank = 0; bank <= 1; bank++) {
+		Int_t src = mtdcEnv->Get(moduleName.Data(), "TrigSrcTrig", b, 0);
+		if (src != 0) {
+			this->SetTrigSource(src & 0x3, 0, 0, bank);
+		} else {
+			src = mtdcEnv->Get(moduleName.Data(), "TrigSrcChan", b, 0);
+			if (src != 0) {
+				this->SetTrigSource(0, kChanAct | (src & 0x1F), 0, bank);
+			} else {
+				src = mtdcEnv->Get(moduleName.Data(), "TrigSrcBank", b, 0);
+				if (src != 0) this->SetTrigSource(0, 0, src & 0x3, bank);
+			}
+		}
+		b = "1";
+	}
 	this->SetFirstHit(mtdcEnv->Get(moduleName.Data(), "FirstHit", 3));
 	this->SetNegativeEdge(mtdcEnv->Get(moduleName.Data(), "NegEdge", 3));
 	this->SetEclTerm(mtdcEnv->Get(moduleName.Data(), "EclTerm", kEclTermOn));
@@ -693,12 +693,21 @@ Bool_t TMrbMesytec_Mtdc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$winStart1", this->GetWinStart(1));
 						tmpl.Substitute("$winWidth0", this->GetWinWidth(0));
 						tmpl.Substitute("$winWidth1", this->GetWinWidth(1));
-						tmpl.Substitute("$trigSrcTrig0", this->GetTrigSrcTrig(0));
-						tmpl.Substitute("$trigSrcChan0", this->GetTrigSrcChan(0));
-						tmpl.Substitute("$trigSrcBank0", this->GetTrigSrcBank(0));
-						tmpl.Substitute("$trigSrcTrig1", this->GetTrigSrcTrig(1));
-						tmpl.Substitute("$trigSrcChan1", this->GetTrigSrcChan(1));
-						tmpl.Substitute("$trigSrcBank1", this->GetTrigSrcBank(1));
+						TArrayI src(3);
+						Char_t * b = "0";
+						for (Int_t bank = 0; bank <= 1; bank++) {
+							this->GetTrigSource(src, bank);
+							TString s = "$trigSrcTrig";
+							s += b;
+							tmpl.Substitute(s, src[0]);
+							s = "$trigSrcChan";
+							s += b;
+							tmpl.Substitute(s, src[1]);
+							s = "$trigSrcBank";
+							s += b;
+							tmpl.Substitute(s, src[2]);
+							b = "1";
+						}
 						tmpl.Substitute("$firstHit", this->GetFirstHit());
 						tmpl.WriteCode(settings);
 
@@ -1010,10 +1019,9 @@ void TMrbMesytec_Mtdc32::PrintSettings(ostream & Out) {
 		Out << " Window start bank" << b << "     : " << ws << " ns" << endl;
 		Int_t ww = this->GetWinWidth(b);
 		Out << " Window width           : " << ww << " ns" << endl;
-		Int_t tst = this->GetTrigSrcTrig(b);
-		Int_t tsc = this->GetTrigSrcChan(b);
-		Int_t tsb = this->GetTrigSrcBank(b);
-		Out << " Trigger source         : trig=" << tst << ", chan=" << tsc << ", bank=" << tsb << endl;
+		TArrayI src(3);
+		this->GetTrigSource(src, b);
+		Out << " Trigger source         : trig=" << src[0] << ", chan=" << src[1] << ", bank=" << src[2] << endl;
 	}
 	Int_t fh = this->GetFirstHit();
 	Out << " First hit              : "	<< fh << ", bank0=" << ((fh & 1) ? "1st hit only" : "all hits") << ", bank1=" << ((fh & 2) ? "1st hit only" : "all hits") << endl;
@@ -1086,3 +1094,58 @@ const Char_t * TMrbMesytec_Mtdc32::FormatValue(TString & Value, Int_t Index, Int
 	}
 	return(Value.Data());
 }
+	
+Bool_t TMrbMesytec_Mtdc32::SetTrigSource(Int_t Trig, Int_t Chan, Int_t Bank, Int_t Bswitch) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Mtdc32::SetTrigSource
+// Purpose:        Set trigger source
+// Arguments:      Int_t Trig       -- trigger, 0 (default), bit0 = trig0, bit1 = trig1
+//                 Int_t Chan       -- channel, 0 (default), kChanAct+0 ... kChanAct+31
+//                 Int_t Bank       -- bank, 0 (default), bit0 = bank0, bit1 = bank1
+//                 Int_t Bswitch    -- bank switch, 0 or 1
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Writes trigger source.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t src = Trig & 0x3;
+	if (src > 0) {
+		this->SetTrigSource(src, Bswitch);
+	} else {
+		src = Chan;
+		if (Chan & kChanAct) {
+			this->SetTrigSource((src << 2), Bswitch);
+		} else {
+			src = Bank & 0x3;
+			if (src > 0) {
+				this->SetTrigSource((src << 8), Bswitch);
+			} else return kFALSE;
+		}
+	}
+	return kTRUE;
+}
+
+Bool_t TMrbMesytec_Mtdc32::GetTrigSource(TArrayI & TrigSource, Int_t Bswitch) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Mtdc32::GetTrigSource
+// Purpose:        Get trigger source
+// Arguments:      Int_t Bswitch    -- bank switch, 0 or 1
+// Results:        kTRUE/kFALSE
+//                 TArrayI & TrigSource -- [0] -> trigger
+//                                         [1] -> channel
+//                                         [2] -> bank
+// Exceptions:
+// Description:    Reads trigger source.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t src = this->GetTrigSource(Bswitch);
+	TrigSource[0] = src & 0x3;
+	TrigSource[1] = ((src >> 2) & 0x1F) | kChanAct;
+	TrigSource[2] = (src >> 8) & 0x3;
+	return kTRUE;
+}
+

@@ -83,6 +83,7 @@ TMrbSis_3820::TMrbSis_3820(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fFifoDepth = FifoDepth; 		// fifo depth per channel
 				fBlockReadout = kTRUE;			// module has block readout
 				fNonClearingMode = kFALSE;		// clear on copy
+				fClearAfterRead = kFALSE;		// clear after read
 				fDataFormat24 = kFALSE; 		// output 32 bit, no channel ids
 				fExtension48 = kFALSE; 			// ignore 48 bit extension for chns 0 & 16
 				fEnableRefPulser = kFALSE;		// ref pulser disabled
