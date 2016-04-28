@@ -19,13 +19,22 @@ ClassDef(FhMarkerList, 0)
 };
 
 class FhMarker : public TMarker {
-
+private:
+	Double_t fErrX;
+	Double_t fErrY;
 public:
-   FhMarker() {};
-   FhMarker(Float_t x, Float_t y = 0, Int_t type = 0) : TMarker(x, y, type){};
+   FhMarker() { fErrX = fErrY = 0; };
+   FhMarker(Float_t x, Float_t y = 0, Int_t type = 0) : TMarker(x, y, type)
+   {
+		fErrX = fErrY = 0;
+	};
 
    ~FhMarker() {};
-
+	void SetErrX(Double_t err) { fErrX = err; };
+	void SetErrY(Double_t err) { fErrY = err; };
+	Double_t GetErrX() { return fErrX; };
+	Double_t GetErrY() { return fErrY; };
+	
 //   Bool_t IsEqual(const TObject *obj) const; 
 //                 {return GetX() == ((FhMarker*)obj)->GetX();};
 
