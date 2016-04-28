@@ -11,6 +11,7 @@
 <a href=#Example_Window_1D>Example of 1-dim Window</a> 
 <a href=#Help_on_SaveCuts>SaveCuts as ASCII file</a> 
 <a href=dislapt.html/Help_on_Mark>Help_on_Marks</a> 
+<a href=#Help_on_InteractCuts>Interaction with cuts</a> 
 
 <a NAME=Help_on_Cuts></a> 
 <H3>Cuts</H3>
@@ -67,4 +68,14 @@ File popup menu of the HistPresenter main window a command
 is provided to read in the windows. The windows are put
 into memory and can be accessed in the normal way from the
 popup menus provided for 2-dim histograms.
+<a NAME=Help_on_InteractCuts></a> 
+Once a cut has been constructed it can be moved around or 
+modified with the left mouse button. At the time the button
+is released the statistics inside the cut is calculated
+and one line with: Content, MeanX, SigmaX, MeanY and SigmaY
+is printed on the terminal window. When pressing key <b>m</b> 
+inside the canvas a marker with this parameters is generated.
+These markers can later be used to fit a polynomial through
+them. See  <a href=fitting#Help_on_Fit_2dim>Help_on_Fit_2dim</a>
+
 </HTML>
