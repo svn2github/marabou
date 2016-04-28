@@ -702,6 +702,13 @@ void FitHist::handle_mouse()
 	static Int_t nrows = 4;
 	static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi());
 
+	static Double_t sum_in_cut = 0;
+	static Double_t meanx_in_cut = 0;
+	static Double_t sigmax_in_cut = 0;
+	static Double_t meany_in_cut = 0;
+	static Double_t sigmay_in_cut = 0;
+	static Int_t cut_stat_filled = 0;
+
 //	static Int_t InitSetSP = 0;
 	Int_t px, py;
 	
@@ -713,6 +720,29 @@ void FitHist::handle_mouse()
 	if (event ==  kKeyPress) {
 //		cout << "px: "  << (char)gPad->GetEventX() << endl;
 		char ch = (char)gPad->GetEventX();
+		if ( ch == 'M' ||ch == 'm') {
+			if (cut_stat_filled > 0 ) {
+				cut_stat_filled = 0;
+				FhMarker * mm = new FhMarker(meanx_in_cut, meany_in_cut,34);
+				mm->SetErrX(sigmax_in_cut / TMath::Sqrt(sum_in_cut));
+				mm->SetErrY(sigmay_in_cut / TMath::Sqrt(sum_in_cut));
+				fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+				if (fMarkers == NULL) {
+					fMarkers = new  FhMarkerList();
+					fSelHist->GetListOfFunctions()->Add(fMarkers);
+				}
+				fMarkers->Add(mm);
+				mm->SetMarkerColor(2);
+				mm->SetMarkerSize(2);
+				mm->Draw();
+				gPad->Modified();
+				gPad->Update();
+				cout << "cut_stat: Sum " << sum_in_cut <<
+				" MeanX: " << meanx_in_cut << " SigmaX " << sigmax_in_cut <<
+				" MeanY: " << meany_in_cut << " SigmaY " << sigmay_in_cut
+				<< endl;
+			}
+		}
 		if ( ch == 'Q' ||ch == 'q') {
 			TCanvas * canpro = Hpr::FindCanvas("_projection_");
 			if ( canpro ) {
@@ -749,17 +779,37 @@ void FitHist::handle_mouse()
 				cout << " ProjectBoth " << endl;
 			ProjectBoth();
 		} else if ( fDimension == 2 && selected_cut !=NULL) {
-			Double_t sum_in_cut = 0;
+			sum_in_cut = 0;
+			Double_t sumx_in_cut = 0, sumx2_in_cut = 0, sumy_in_cut = 0, sumy2_in_cut = 0;
 			TAxis *xa = fSelHist->GetXaxis();
 			TAxis *ya = fSelHist->GetYaxis();
 			for (Int_t ix = 1; ix < xa->GetNbins(); ix++) {
 				for (Int_t iy = 1; iy < ya->GetNbins(); iy++) {
-					if(selected_cut->IsInside(xa->GetBinCenter(ix), ya->GetBinCenter(iy))) {
-						sum_in_cut += fSelHist->GetBinContent(ix,iy);
+					Double_t bcx = xa->GetBinCenter(ix);
+					Double_t bcy = ya->GetBinCenter(iy);
+					if(selected_cut->IsInside(bcx, bcy )) {
+						Double_t bc = fSelHist->GetBinContent(ix,iy);
+						sum_in_cut += bc;
+						sumx_in_cut  += bc * bcx;
+						sumx2_in_cut += bc * bcx * bcx;
+						sumy_in_cut  += bc * bcy;
+						sumy2_in_cut += bc * bcy * bcy;
 					}
 				}
 			}
-			cout << "Sum inside cut: " << sum_in_cut << endl;
+			if (sum_in_cut > 0.) {
+				meanx_in_cut = sumx_in_cut / sum_in_cut;
+				sigmax_in_cut = TMath::Sqrt(sumx2_in_cut /
+													sum_in_cut - meanx_in_cut * meanx_in_cut);
+				meany_in_cut = sumy_in_cut / sum_in_cut;
+				sigmay_in_cut = TMath::Sqrt(sumy2_in_cut /
+													sum_in_cut - meany_in_cut * meany_in_cut);
+				cut_stat_filled = 1;
+				cout << "Sum in cut: " << sum_in_cut <<
+				" MeanX: " << meanx_in_cut << " SigmaX " << sigmax_in_cut <<
+				" MeanY: " << meany_in_cut << " SigmaY " << sigmay_in_cut
+				<< endl;
+			}
 		}
 		TCUTG_moved = kFALSE;
 		selected_cut = NULL;

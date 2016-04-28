@@ -884,7 +884,12 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 			cout << p->GetX() << " " << p->GetY() << endl;
 //         dont take default marks at corners
 			if (p->GetX() > xmin && p->GetX() < xmax) {
-				fithist->Fill(p->GetX(), p->GetY());
+				Int_t nbinx = fithist->FindBin(p->GetX());
+				
+				fithist->SetBinContent(nbinx, p->GetY());
+				if ( p->GetErrY() > 0) {
+					fithist->SetBinError(nbinx, p->GetErrY());
+				}
 				mean += p->GetY();
 				entries++;
 			}
@@ -924,7 +929,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 		cout << "Something went wrong, FCN=Chisquare is infinite " << endl;
 		return -1;
 	}
-
+	cout << "Chisquare/NDF " << pol->GetChisquare()<<"/"<<  pol->GetNDF()<< endl;
 	fithist->GetFunction(funcname)->ResetBit(TF1::kNotDraw);
 	TString FHname(fithist->GetName());
 	FHname.Prepend("Fh_");
@@ -980,10 +985,11 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 		}
 		fFuncNumb++;
 	}
-	if (what == 0)
-		ClearMarks();
-	if (what == 1)
-		ClearMarks();
+	cout << setblue << "Dont forget to clear marks" << setblack << endl;
+//	if (what == 0)
+//		ClearMarks();
+//	if (what == 1)
+//		ClearMarks();
 	return 1;
 };
 

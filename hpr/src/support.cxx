@@ -79,7 +79,9 @@ TButton *CButton(const char *cmd, const char *title, TObject * cc,
 	float x0, x1, y0, y1;
 	if (GetBPars(cmd, cc, xpos, ypos, dx, dy, &tmp, &x0, &x1, &y0, &y1)) {
 		TButton *b = new TButton((char *) title, tmp.Data(), x0, y0, x1, y1);
+//		cout << "CButton " << x0 << " " << y0 << " " << x1 << " " << y1 << endl;
 		b->SetTextFont(60);
+		b->SetTextAlign(22);
 		b->Draw();
 		return b;
 	} else

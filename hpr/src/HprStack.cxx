@@ -334,7 +334,9 @@ This is needed to use variable transparency when superimposing\n\
 histograms together with the \"Fill option\".\n\
 This must be activated b e f o r e the canvas is drawn\n\
 i.e. After activating this option the picture must be redrawn\n\
-to become effictive.\n\
+to become effective.\n\
+On the file output it is visible with PDF, PNG, Gif, JPEG, SVG ... \n\
+but not PostScript.\n\
 ";
 	fRow_lab = new TList();
 //	static void *fValp[50];
