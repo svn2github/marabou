@@ -267,7 +267,8 @@ Bool_t TMrbGassiplex::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 				TString lv = "2.5"; gMrbConfig->GetLynxVersion(lv, bNo);
 				TString lp;
 				if (bNo != -1) {
-					lp = gEnv->GetValue(Form("TMrbConfig.PPCLibraryPath.%d", bNo), Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+					lp = gEnv->GetValue(Form("TMrbConfig.PPCLibraryPath.%d", bNo), "");
+					if (lp.IsNull()) lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
 				} else {
 					lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
 				}

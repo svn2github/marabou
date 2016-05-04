@@ -259,9 +259,13 @@ void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint
 {
 	uint16_t trigSource;
 	int addr;
-	trigSource = bank & (MTDC32_TRIG_SRC_BANK_MASK) << 8;
-	trigSource |= chan & (MTDC32_TRIG_SRC_CHAN_MASK) << 2;
-	trigSource |= trig & MTDC32_TRIG_SRC_TRIG_MASK;
+	if (trig > 0) {
+		trigSource = trig & MTDC32_TRIG_SRC_TRIG_MASK;
+	} else if (chan > 0) {
+		trigSource = chan & (MTDC32_TRIG_SRC_CHAN_MASK) << 2;
+	} else if (bank > 0) {
+		trigSource = bank & (MTDC32_TRIG_SRC_BANK_MASK) << 8;
+	}
 	switch (bnk) {
 		case 0: addr = MTDC32_TRIG_SOURCE_0; break;
 		case 1: addr = MTDC32_TRIG_SOURCE_1; break;

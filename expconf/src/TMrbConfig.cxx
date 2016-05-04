@@ -1781,7 +1781,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TString lp;
 							if (this->IsMultiBranch()) {
 								TString lv; this->GetLynxVersion(lv, pp->GetB());
-								lp = gEnv->GetValue(Form("TMrbConfig.PPCLibraryPath.%d", pp->GetB()), Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+								lp = gEnv->GetValue(Form("TMrbConfig.PPCLibraryPath.%d", pp->GetB()), "");
+								if (lp.IsNull()) lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
 							} else {
 								TString lv; this->GetLynxVersion(lv, -1);
 								lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
