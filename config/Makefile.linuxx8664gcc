@@ -17,14 +17,25 @@ endif
 # Compiler:
 CXX           = g++
 CC            = gcc
+# -std=c++11 needs clang or gcc version > 4.7
+GCC_MAJOR     := $(shell $(CXX) -dumpversion 2>&1 | cut -d'.' -f1)
+GCC_MINOR     := $(shell $(CXX) -dumpversion 2>&1 | cut -d'.' -f2)
+
+GCC_GT_4_7 := $(shell expr $(GCC_MAJOR) \> 4)
+ifneq ($(GCC_GT_4_7),1)
+	GCC_GT_4_7 := $(shell expr $(GCC_MAJOR) = 4)
+endif
+ifeq ($(GCC_GT_4_7),1)
+	GCC_GT_4_7 := $(shell expr $(GCC_MINOR) \> 6)
+endif
 CXXVERS = $(shell g++ -dumpversion)
-CXXVGT47 = $(shell echo $(CXXVERS)'>'4.7 | bc -l)
-$(info  CXXVERS = $(CXXVERS) CXXVGT47 = $(CXXVGT47))
+$(info  CXXVERS = $(CXXVERS) GCC_GT_4_7 = $(GCC_GT_4_7))
 CXXFLAGS      = -pipe -Wall -fPIC 
-ifeq ($(CXXVGT47),1)
+ifeq ($(GCC_GT_4_7),1)
    CXXFLAGS    += -std=c++11
 endif
 CXXFLAGS       += $(EXTRA_CXXFLAGS)
+$(info  CXXFLAGS = $(CXXFLAGS))
 CFLAGS        = -pipe -Wall -fPIC $(EXTRA_CFLAGS)
 CINTCXXFLAGS  = -pipe -Wall -fPIC $(EXTRA_CXXFLAGS) \
                 -DG__REGEXP -DG__UNIX -DG__SHAREDLIB \
