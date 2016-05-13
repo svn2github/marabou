@@ -27,6 +27,7 @@ namespace std {} using namespace std;
 #include "TNamed.h"
 #include "TList.h"
 
+#include "TMrbConfig.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbTemplate.h"
 
