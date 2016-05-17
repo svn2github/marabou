@@ -31,7 +31,7 @@ EXPCONFLIBDEP   := $(LPATH)/libTMrbUtils.so
 
 # used in the main Makefile
 EXPCONFHM    = $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
-$info(info EXPCONFHM = $(EXPCONFHM))
+# $(info info EXPCONFHM = $(EXPCONFHM))
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
 ALLLIBS     += $(EXPCONFLIB)
 ifeq ($(ROOTV6), 1)
