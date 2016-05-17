@@ -1372,6 +1372,14 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 			gStyle->SetCanvasPreferGL(kFALSE);
 		}
 	}
+	if ( fSelHist->GetDimension() == 1 ) {
+		TEnv ee(".rootrc");
+		if ( ee.GetValue("OpenGL.CanvasPreferGL",0) ) {
+			gStyle->SetCanvasPreferGL(kTRUE);
+		} else {
+			gStyle->SetCanvasPreferGL(kFALSE);
+		}
+	}
 	fCanvas = new HTCanvas(fCname.Data(), fCtitle.Data(),
 								win_topx, win_topy, win_widx, win_widy, gHpr, this);
 	fCanvasIsAlive = kTRUE;

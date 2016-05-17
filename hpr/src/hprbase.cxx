@@ -711,6 +711,8 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	The color of the extra axis equals the color of the hist.\n\
 	With option \"Incr Colors\" Line-, Mark- FillColors are\n\
 	automatically incremented (red->green->blue etc.)\n\
+	In the case the histogram is filled the opacity may be\n\
+	choosen between: 1 = completely opaque and 0 = transprent\n\
 	With \"Skip Dialog\" this widget is only shown once\n\
 	for the first histogram\n\
 		\n\
@@ -792,21 +794,22 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	static Double_t axis_offset;
 	static Double_t label_offset = 0.01;
 	static Color_t  axis_color;
-	static Color_t lLColor   = axis_color; 
-	static Color_t lMColor   = axis_color;
-	static Color_t lFillColor= axis_color; 
-	if ( nhists < 2 ) {
-		axis_color = 2;
-		lLColor   = axis_color;
-		lMColor   = axis_color;
-		lFillColor  = axis_color;
+	
+	static Color_t lLColor; 
+	static Color_t lMColor;
+	static Color_t lFillColor; 
+	lFillColor = env.GetValue("SuperImposeHist.FillColor", 2);
+	axis_color = lFillColor;
+	lLColor   = 1;
+	lMColor   = lFillColor;
+	if (nhists < 2)
 		axis_offset = 0.;
-	}
 	static Style_t lFStyle;
 	static Style_t lLStyle;
 	static Width_t lLWidth;
 	static Style_t lMStyle;
 	static Size_t  lMSize;
+	static Float_t lOpacity;
 	static Double_t lStatBoxDX1;
 	static Double_t lStatBoxDX2;
 	static Double_t lStatBoxDY1;
@@ -817,6 +820,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	lLWidth     = horig->GetLineWidth();
 	lMStyle     = horig->GetMarkerStyle();
 	lMSize      = horig->GetMarkerSize();
+	lOpacity		= env.GetValue("SuperImposeHist.FillOpacity",0.8);
 	TPaveStats *sbo = (TPaveStats*)horig->GetListOfFunctions()->FindObject("stats");
 	if ( sbo ) {
 		lStatBoxDX1 = sbo->GetX1NDC();
@@ -892,8 +896,10 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		valp[ind++] = &lFStyle;
 		// 		row_lab->Add(new TObjString("CommentOnly+-"));
 		// 		valp[ind++] = &dummy;
-		row_lab->Add(new TObjString("StringValue+DrawOpt"));
-		valp[ind++] = &drawopt;
+		row_lab->Add(new TObjString("Float_Value+Opacity;0.;1."));
+		valp[ind++] = &lOpacity;
+//		row_lab->Add(new TObjString("StringValue+DrawOpt"));
+//		valp[ind++] = &drawopt;
 		row_lab->Add(new TObjString("CheckButton_Incr Colors "));
 		valp[ind++] = &lIncrColors;
 		row_lab->Add(new TObjString("CheckButton+Skip Dialog"));
@@ -984,7 +990,11 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 			}
 		}
 		if ( env.GetValue("Set1DimOptDialog.fFill1Dim", 0 ) > 0 ){ 
+#if ROOTVERSION >= 53418
+			hdisp->SetFillColorAlpha(lFillColor, lOpacity);
+#else
 			hdisp->SetFillColor(lFillColor);
+#endif
 			drawopt += "F";
 			axis_color = lFillColor;
 		} else {
@@ -1038,7 +1048,6 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		axis->SetLabelColor(axis_color);
 		axis->SetTickSize   (env.GetValue("SetHistOptDialog.fTickLength", 0.01));
 		axis->SetLabelFont  (env.GetValue("SetHistOptDialog.fLabelFont", 62));
-		axis->SetLabelOffset(label_offset);
 		axis->SetLabelOffset(env.GetValue("SetHistOptDialog.fLabelOffsetY", 0.01));
 		axis->SetLabelSize  (env.GetValue("SetHistOptDialog.fLabelSize", 0.03));
 		axis->SetMaxDigits  (env.GetValue("SetHistOptDialog.fLabelMaxDigits", 4));
@@ -1119,12 +1128,11 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		canvas->Update();
 	}
 	if (lIncrColors > 0) {
-		lLColor++;
-		lMColor++;
-		axis_color++;
-		lFillColor++;
-		axis_offset += 0.05;
+		lFillColor += 1;
+		axis_offset += 0.08;
 	}
+	env.SetValue("SuperImposeHist.FillColor", lFillColor);
+	env.SetValue("SuperImposeHist.FillOpacity",lOpacity);
 	env.SetValue("SuperImposeHist.DrawLegend", lLegend);
 	env.SetValue("SuperImposeHist.AutoIncrColors", lIncrColors);
 	env.SetValue("SuperImposeHist.SkipDialog", lSkipDialog);

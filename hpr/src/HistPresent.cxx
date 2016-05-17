@@ -396,6 +396,7 @@ void HistPresent::ShowMain()
 {
 	nHists=0;
 	Int_t mainheight = (Int_t)(WindowSizeDialog::fMainWidth * 1.6);
+	gStyle->SetCanvasPreferGL(kFALSE);
 	cHPr = new HTCanvas("cHPr", "HistPresent",5,5, WindowSizeDialog::fMainWidth, mainheight, this, 0);
 //   cHPr = new TCanvas("cHPr", "HistPresent",5,5, WindowSizeDialog::fMainWidth, mainheight);
 	cHPr->cd();
