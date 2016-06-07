@@ -218,6 +218,7 @@ MQDC32.$moduleName.MultLowLimit.1:			$multLowLimit1
 
 #-----------------------------------------------------------------------------
 # Thresholds (0x4000, one per channel)
+#                               0 ... 0x1fff (0x1fff -> channel turned off)
 #-----------------------------------------------------------------------------
 %%End(Thresholds)%%
 %%Begin(ThreshLoop)%%

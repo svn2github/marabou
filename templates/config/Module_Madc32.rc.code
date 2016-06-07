@@ -219,6 +219,7 @@ MADC32.$moduleName.TsDivisor: 			$tsDivisor
 
 #-----------------------------------------------------------------------------
 # Thresholds (0x4000, one per channel)
+#                               0 ... 0x1fff (0x1fff -> channel turned off)
 #-----------------------------------------------------------------------------
 %%End(Thresholds)%%
 %%Begin(ThreshLoop)%%
