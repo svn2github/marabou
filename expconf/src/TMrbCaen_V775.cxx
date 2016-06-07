@@ -395,14 +395,19 @@ Bool_t TMrbCaen_V775::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:
-			if (Channel->IsUsed())	fCodeTemplates.InitializeCode("%U%");
-			else				fCodeTemplates.InitializeCode("%N%");
+			Int_t thresh = Channel->Get(TMrbCaen_V775::kRegThresh);
+			if (Channel->IsUsed())	{
+				Char_t * code = (thresh == 0x1ff) ? "%N%" : "%U%";
+				fCodeTemplates.InitializeCode(code);
+			} else {
+				fCodeTemplates.InitializeCode("%N%");
+			}
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$chnName", Channel->GetName());
 			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
-			fCodeTemplates.Substitute("$lowerThresh", Channel->Get(TMrbCaen_V775::kRegThresh));
+			fCodeTemplates.Substitute("$lowerThresh", thresh);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleWriteSubaddr:
