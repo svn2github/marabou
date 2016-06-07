@@ -3393,7 +3393,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							anaTmpl.InitializeCode("%B%");
 							nofParams = 0;
 							TIterator * modIter = fLofModules.MakeIterator();
-							while (module = (TMrbModule *) modIter->Next()) nofParams += module->GetNofChannelsUsed();
+							while (module = (TMrbModule *) modIter->Next()) nofParams += module->GetNofChannels();
 							anaTmpl.Substitute("$nofModules", fNofModules);
 							anaTmpl.Substitute("$nofParams", nofParams);
 							anaTmpl.WriteCode(anaStrm);
@@ -3410,10 +3410,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
 									anaTmpl.Substitute("$moduleTitle", module->GetTitle());
 									anaTmpl.Substitute("$paramIndex", nofParams);
-									anaTmpl.Substitute("$nofParams", module->GetNofChannelsUsed());
+									anaTmpl.Substitute("$nofParams", module->GetNofChannels());
 									anaTmpl.WriteCode(anaStrm);
 								}
-								nofParams += module->GetNofChannelsUsed();
+								nofParams += module->GetNofChannels();
 								anaTmpl.InitializeCode("%ID%");
 								TString moduleType = module->GetMnemonic();
 								moduleType(0,1).ToUpper();
