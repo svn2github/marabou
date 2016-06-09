@@ -2084,11 +2084,12 @@ void FitHist::PrintMarks()
 {
 	fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
 	if (fMarkers != NULL && fMarkers->GetEntries() > 0) {
-		cout << "--- Current fMarkers --------------" << endl;
+		cout << "--- Current Markers --------------" << endl;
 		FhMarker *ti;
 		TIter next(fMarkers);
 		while ( (ti = (FhMarker *) next()) ) {
-			cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
+//			cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
+			ti->Print();
 		}
 	} else {
 		cout << "--- No marks set ---" << endl;

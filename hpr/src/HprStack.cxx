@@ -624,6 +624,8 @@ void HprStack::SetAttributes()
 #endif
 				hist->SetFillStyle(fFillStyle[i]);
 				ohist->SetFillStyle(fFillStyle[i]);
+				if ( !opt.Contains("HIST", TString::kIgnoreCase) )
+					opt += "HIST";
 //				ohist->SetFillColorAlpha(fFillColor[i], fFillTrans[i]);
 //       cout  << " fFillColor " << fFillColor[i]  <<  " fFillTrans "<< fFillTrans[i]<< endl;
 			} else {

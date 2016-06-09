@@ -2363,7 +2363,8 @@ TObject* HistPresent::GetSelGraphAt(Int_t pos)
 	TObjString * obj = (TObjString *)hlist->At(pos);
 
 	TString fname = obj->String();
-	cout << "GetSelGraphAt |" << fname << "|" << endl;
+	if (gHprDebug > 0)
+		cout << "GetSelGraphAt |" << fname << "|" << endl;
 	Int_t pp = fname.Index(" ");
 	if (pp <= 0) {cout << "No file name in: " << obj->String() << endl; return NULL;};
 	fname.Resize(pp);

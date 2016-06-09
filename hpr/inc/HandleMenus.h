@@ -59,6 +59,7 @@ public:
 	TH1 *GetHist() { return fSelHist; };
 	void SetLiveSliceX(Int_t state);
 	void SetLiveSliceY(Int_t state);
+	void UseAttrFileHelp();
    ClassDef(HandleMenus,0)  
 }; 
  

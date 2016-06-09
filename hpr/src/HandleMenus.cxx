@@ -4,7 +4,7 @@
 //#include "TButton.h"
 //#include "TGClient.h"
 //#include "TGuiFactory.h"
-//#include "TRootHelpDialog.h"
+#include "TRootHelpDialog.h"
 #include "TGMenu.h"
 #include "TGWindow.h"
 #include "TStyle.h"
@@ -314,6 +314,9 @@ enum ERootCanvasCommands {
 	kFH_ShowGallery,
 	kOptionPad,
 	kOptionHist,
+	kOptionUseAttrFile,
+	kOptionUseCurrentAttr,
+	kOptionUseAttrFileHelp,
 	kFH_NoAction
 };
 static const char *gOpenTypes[] = { "ROOT files",   "*.root",
@@ -757,6 +760,31 @@ again:
 							{
 							new SetHistOptDialog(fRootCanvas);
 							}
+							break;
+						case kOptionUseAttrFile:
+							if(gROOT->GetForceStyle()) {
+								gROOT->ForceStyle(kFALSE) ;
+								fAttrMenu->CheckEntry(kOptionUseAttrFile);
+								fAttrMenu->UnCheckEntry(kOptionUseCurrentAttr);
+							} else {
+								gROOT->ForceStyle(kTRUE) ;
+								fAttrMenu->UnCheckEntry(kOptionUseAttrFile);
+								fAttrMenu->CheckEntry(kOptionUseCurrentAttr);
+							}
+							break;
+						case kOptionUseCurrentAttr:
+							if(gROOT->GetForceStyle()) {
+								gROOT->ForceStyle(kFALSE) ;
+								fAttrMenu->CheckEntry(kOptionUseCurrentAttr);
+								fAttrMenu->UnCheckEntry(kOptionUseAttrFile);
+							} else {
+								gROOT->ForceStyle(kTRUE) ;
+								fAttrMenu->UnCheckEntry(kOptionUseCurrentAttr);
+								fAttrMenu->CheckEntry(kOptionUseAttrFile);
+							}
+							break;
+						case kOptionUseAttrFileHelp:
+							UseAttrFileHelp();
 							break;
 						case kFHClearMarks:
 							fFitHist->ClearMarks();
@@ -1573,6 +1601,19 @@ void HandleMenus::BuildMenus()
 	fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
 	fAttrMenu->AddEntry("Axis / Title / StatBox Attributes", kOptionHist);
 	fAttrMenu->AddEntry("Canvas, Pad, Frame", kOptionPad);
+	fAttrMenu->AddEntry("Use graphics attributes stored on file", kOptionUseAttrFile);
+	if (gROOT->GetForceStyle()) {
+		fAttrMenu->UnCheckEntry(kOptionUseAttrFile);
+	} else {
+		fAttrMenu->CheckEntry(kOptionUseAttrFile);
+	}
+	fAttrMenu->AddEntry("Use currently selected graphics attributes ", kOptionUseCurrentAttr);
+	if (gROOT->GetForceStyle()) {
+		fAttrMenu->CheckEntry(kOptionUseCurrentAttr);
+	} else {
+		fAttrMenu->UnCheckEntry(kOptionUseCurrentAttr);
+	}
+	fAttrMenu->AddEntry("Help on Attributes stored on file", kOptionUseAttrFileHelp);
 //	fAttrMenu->AddEntry("How to display a graph", kOptionGraph);
 	
 //   fAttrMenuDef = new TGPopupMenu(fRootCanvas->GetParent());
@@ -1855,7 +1896,7 @@ void HandleMenus::BuildMenus()
 	if (fHistPresent) 
 		fRootsMenuBar->AddPopup("&Hpr-Options", fOptionMenu,  fMenuBarItemLayout, pmi);
 //	if ( fHistPresent || graph1d ) 
-		fRootsMenuBar->AddPopup("Graphic_defaults", fAttrMenu,  fMenuBarItemLayout, pmi);
+		fRootsMenuBar->AddPopup("GraphicsAtt", fAttrMenu,  fMenuBarItemLayout, pmi);
 	
 	if (fViewMenu) fRootsMenuBar->AddPopup("&View", fViewMenu,  fMenuBarItemLayout, pmi);
 	if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
@@ -1932,4 +1973,20 @@ void HandleMenus::Canvas2RootFile()
 		fEditor->ShowToolBar(kTRUE);
 	}
 }
-
+//_______________________________________________________________________________________
+void HandleMenus::UseAttrFileHelp()
+{
+	static const Char_t helptext[] =
+"Histograms and graphs can be displayed\n\
+with graphics attributes (colors, markerstyle,\n\
+linestyle etc.) as stored with these objects\n\
+on the ROOT file.\n\
+This corresponds to: \"gROOT->ForceStyle(kFALSE)\"\n\
+Otherwise attributues as currently defined\n\
+by \"Set as global default\" in the above menus\n\
+are used:  \"gROOT->ForceStyle(kTRUE)\"";
+	TRootHelpDialog * hd = new TRootHelpDialog(fRootCanvas,
+		"Help on gROOT->ForceStyle", 350, 150);
+	hd->SetText(helptext);
+	hd->Popup();
+}

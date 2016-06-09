@@ -97,7 +97,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
 */
    cmd = "mypres->SetShowTreeOptionsCint()_"; // dont add address of button
-   nam = "Set Options";
+   nam = "Set Options / Help";
 //   sel = "mypres->ToggleUseHist()";
    fCmdLine->Add(new CmdListEntry(cmd, nam, empty, empty));
 
@@ -199,7 +199,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 	cmd += buf.str();
 //	cmd += Form("0x%x",var_list);
 	cmd += "\")";
-   nam = "Edit formula cut";
+   nam = "Edit selection/weight";
    sel = "mypres->ToggleLeafCut()";
    fCmdLine->AddFirst(new CmdListEntry(cmd, nam, empty, sel));
 
@@ -976,6 +976,22 @@ void HistPresent::SetShowTreeOptions(TGWindow * win)
 // *INDENT-OFF*
 static const char helptext[] =
 "\n\
+\"Fill histogram\" calls the ROOT function:\n\
+\n\
+TTree::Draw(const char* varexp, const char* selection, \n\
+     Option_t* option = \"\", Long64_t nentries = 1000000000, \n\
+     Long64_t firstentry = 0)\n\
+ \n\
+\"varexp\" may be edited explicitly via \"Edit expression\"\n\
+In this case the grey button must be activated i.e. green\n\
+Otherwise the data fields to be drawn are selected from the\n\
+list of leaves\n\
+\n\
+\"selection/weight\" is used to apply weights or cuts\n\
+\n\
+In the \"Edit ..\" fields tab completion for leafnames\n\
+and members of \"TMath::\" (e.g. \"TMath::Sqrt\" is implemented\n\
+\n\
 ____________________________________________________________\n\
 The following options apply when  showing trees\n\
 ____________________________________________________________\n\
