@@ -20,8 +20,8 @@ ClassDef(FhMarkerList, 0)
 
 class FhMarker : public TMarker {
 private:
-	Double_t fErrX;
-	Double_t fErrY;
+	Double_t fErrX;		// Error X, sigmaX/sqrt(N)
+	Double_t fErrY;		// Error Y, sigmaY/sqrt(N)
 public:
    FhMarker() { fErrX = fErrY = 0; };
    FhMarker(Float_t x, Float_t y = 0, Int_t type = 0) : TMarker(x, y, type)
@@ -30,6 +30,7 @@ public:
 	};
 
    ~FhMarker() {};
+	void Print(Option_t *option="") const;
 	void SetErrX(Double_t err) { fErrX = err; };
 	void SetErrY(Double_t err) { fErrY = err; };
 	Double_t GetErrX() { return fErrX; };
@@ -37,10 +38,11 @@ public:
 	
 //   Bool_t IsEqual(const TObject *obj) const; 
 //                 {return GetX() == ((FhMarker*)obj)->GetX();};
-
    Bool_t IsSortable() const {return kTRUE;};
 
    Int_t Compare(const TObject *obj) const;
+   
+   
 /*
 { if (GetX() == ((FhMarker*)obj)->GetX())
                                       return 0;
