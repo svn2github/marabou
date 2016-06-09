@@ -58,6 +58,7 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*tit
 	fTimer = NULL;
 	fDialog = NULL;
 	fNh1Dim = fNh2Dim = 0;
+	fDisplayLowX = fDisplayLowY = fDisplayUpX = fDisplayUpY = 0;
 	fAnyFromSocket = kFALSE;
 	RestoreDefaults();
 	SetColorModeDialog::RestoreDefaults();
@@ -111,7 +112,7 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*tit
 	gROOT->GetListOfCleanups()->Add(this);
 	BuildCanvas();
 	BuildMenu();
-	if (gDebug >0) 
+	if (gHprDebug >0) 
 		cout << "GroupOfHists *goh = (GroupOfHists*)" << this << ";" << endl;
 }
 //________________________________________________________________________
@@ -147,6 +148,13 @@ void GroupOfHists::BuildCanvas()
 	}
 	fCanvas->Divide(fNx, fNy, mx, my);
 //   fCanvas->SetEditable(kTRUE);
+	TEnv hprenv(".hprrc");
+	fDisplayLowX = hprenv.GetValue("GroupOfHists.fDisplayLowX", 0);
+	fDisplayLowY = hprenv.GetValue("GroupOfHists.fDisplayLowY", 0);
+	fDisplayUpX  = hprenv.GetValue("GroupOfHists.fDisplayUpX", 0);
+	fDisplayUpY  = hprenv.GetValue("GroupOfHists.fDisplayUpY", 0);
+	fDisplayLogY  = hprenv.GetValue("GroupOfHists.fDisplayLogY", 0);
+	fDisplayLogX  = hprenv.GetValue("GroupOfHists.fDisplayLogX", 0);
 	TEnv * lastset = 0;
 	TString hname;
 	TString fname;
@@ -200,7 +208,7 @@ void GroupOfHists::BuildCanvas()
 		cout << "hname: " << hname << endl;
 		
 //      hname = hist->GetName();
-		if (gDebug > 0)
+		if (gHprDebug > 0)
 		cout << "Enter GroupOfHists::BuildCanvas: " << fname<< " "  << hname << endl;
 
 //      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
@@ -211,6 +219,7 @@ void GroupOfHists::BuildCanvas()
 				hname.Resize(hname.Index(";"));
 			}
 		}
+		TString hname_temp(hname);
 		if ( fname.Index("Socket") < 0 && fname.Index("Memory") < 0
 			&& GeneralAttDialog::fPrependFilenameToName ) {
 			fname = gSystem->BaseName(fname);
@@ -227,11 +236,11 @@ void GroupOfHists::BuildCanvas()
 //      hname(sem) ="_";
 		hist->SetName(hname);
 //		cout << "Aft chop: " << hname << endl;
-		lastset = GetDefaults(hname);
-		if (gDebug > 0)
+		lastset = GetDefaults(hname_temp);
+		if (gHprDebug > 0)
 			cout << "GetDefaults: "  << hname << " " << lastset << endl;
 		if (lastset) {
-			if (gDebug > 0)
+			if (gHprDebug > 0)
 				lastset->Print();
 			if (lastset->Lookup("fRangeLowX") )
 				hist->GetXaxis()->Set(hist->GetNbinsX(),
@@ -248,7 +257,13 @@ void GroupOfHists::BuildCanvas()
 			if (lastset->Lookup("fYtitle") )
 			  hist->GetYaxis()->SetTitle(lastset->GetValue("fYtitle",""));
 		}
-
+// global settings overwrite individual settings
+		if (fDisplayLowX != 0 || fDisplayUpX != 0){
+			hist->GetXaxis()->Set(hist->GetNbinsX(),fDisplayLowX, fDisplayUpX);
+		}
+		if (fDisplayLogY != 0) {
+			p->SetLogy();
+		}
 		if (hist->GetDimension() == 2) {
 			fNh2Dim++;
 			hist->SetStats(fShowStatBox2Dim);
@@ -286,7 +301,7 @@ void GroupOfHists::BuildCanvas()
 			if (fFill1Dim) {
 				hist->SetFillStyle(fHistFillStyle);
 				hist->SetFillColor(fHistFillColor);
-				if ( gDebug > 0)
+				if ( gHprDebug > 0)
 				cout << "fHistPresent->fHistFillStyle " << fHistFillStyle << endl;
 			} else {
 				hist->SetFillStyle(0);
