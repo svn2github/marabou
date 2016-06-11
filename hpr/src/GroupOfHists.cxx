@@ -872,11 +872,11 @@ void GroupOfHists::RestoreDefaults()
 	fArrangeSideBySide = env.GetValue("GroupOfHists.fArrangeSideBySide", 0);
 	fArrangeAsTiles = env.GetValue("GroupOfHists.fArrangeAsTiles", 1);
 	fFill1Dim      = env.GetValue("Set1DimOptDialog.fFill1Dim", 0);
-	fHistFillColor = env.GetValue("Set1DimOptDialog.fHistFillColor", 2);
-	fHistLineColor1Dim = env.GetValue("Set1DimOptDialog.fLineColor", 1);
+	fHistFillColor = env.GetValue("Set1DimOptDialog.fFillColor", 2);
+	fHistLineColor1Dim = env.GetValue("Set1Dim OptDialog.fLineColor", 1);
 	fHistLineColor2Dim = env.GetValue("Set2DimOptDialog.fHistLineColor2Dim", 1);
-	fHistFillStyle = env.GetValue("Set1DimOptDialog.fHistFillStyle", 0);
-	fHistLineStyle = env.GetValue("Set1DimOptDialog.fHistLineStyle", 1);
+	fHistFillStyle = env.GetValue("Set1DimOptDialog.fFillStyle", 0);
+	fHistLineStyle = env.GetValue("Set1DimOptDialog.fLineStyle", 1);
 	fHistLineWidth1Dim = env.GetValue("Set1DimOptDialog.fLineWidth", 2);
 	fHistLineWidth2Dim = env.GetValue("Set2DimOptDialog.fHistLineWidth2Dim", 1);
 	fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
