@@ -3243,6 +3243,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 
 	static TString FHnameSave;
 	static FitHist *fh=0;
+	static Int_t first_warn = 0;
 	TString origname;
 	if (hname) origname = hname;
 	else       origname = hist->GetName();
@@ -3312,9 +3313,12 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 		FHnameSave = FHname;
 //   }
 //   cout << " fNwindows " << WindowSizeDialog::fNwindows << " " <<WindowSizeDialog::fWinshiftx<< endl;
-	if (WindowSizeDialog::fNwindows > 10) {
-		if (QuestionBox("More than 10 hists on screen!! Remove them?", fLastWindow))
-			 CloseAllCanvases();
+	if (WindowSizeDialog::fNwindows > 10 && first_warn == 0) {
+//		if (QuestionBox("More than 10 hists on screen!! Remove them?", fLastWindow))
+//			 CloseAllCanvases();
+		first_warn = 1;
+		cout << setblue << "More than 10 hists on screen, this may cause trouble"
+			<< setblack << endl;
 	}
 	Int_t wwidx;
 	Int_t wwidy;
