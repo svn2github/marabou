@@ -1634,6 +1634,7 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* /*bp
 			// chop off histlist
 			if (id > 0)
 				sl.Resize(id);
+			ctitle += "_";
 			ctitle += sl;
 		}
 		TCanvas *ccont = CommandPanel(ctitle.Data(), fCmdLine, WindowSizeDialog::fMainWidth + 10, ycanvas, this);
