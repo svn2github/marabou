@@ -1627,6 +1627,15 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* /*bp
 		Int_t ind_dot = ctitle.Index(".");
 		if (ind_dot > 0)
 			ctitle.Resize(ind_dot);
+		// look if widget with this name already exist, if yes append name of list
+		TCanvas *cc = (TCanvas*)gROOT->GetListOfCanvases()->FindObject(ctitle);
+		if (cc != NULL) {
+			Int_t id = sl.Index(".");
+			// chop off histlist
+			if (id > 0)
+				sl.Resize(id);
+			ctitle += sl;
+		}
 		TCanvas *ccont = CommandPanel(ctitle.Data(), fCmdLine, WindowSizeDialog::fMainWidth + 10, ycanvas, this);
 		fHistLists->Add(ccont);
 		ycanvas += 50;
