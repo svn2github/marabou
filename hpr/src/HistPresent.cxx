@@ -1622,7 +1622,12 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* /*bp
 
 //      TString cname = fname;
 //      cname = cname + "_" +lname;
-		TCanvas *ccont = CommandPanel(sl.Data(), fCmdLine, WindowSizeDialog::fMainWidth + 10, ycanvas, this);
+		// Compose title of panel from file name
+		TString ctitle= gSystem->BaseName(fname);
+		Int_t ind_dot = ctitle.Index(".");
+		if (ind_dot > 0)
+			ctitle.Resize(ind_dot);
+		TCanvas *ccont = CommandPanel(ctitle.Data(), fCmdLine, WindowSizeDialog::fMainWidth + 10, ycanvas, this);
 		fHistLists->Add(ccont);
 		ycanvas += 50;
 		if (ycanvas >= 500) ycanvas=5;
