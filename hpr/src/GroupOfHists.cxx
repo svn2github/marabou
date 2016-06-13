@@ -179,7 +179,7 @@ void GroupOfHists::BuildCanvas()
 //		TString temp = ((TObjString *)fHList->At(i))->String();
 		if (temp.Index("Socket") == 0) fAnyFromSocket = kTRUE;
 		fname = temp;
-		cout << "temp: " << temp << endl;
+//		cout << "temp: " << temp << endl;
 		Int_t pp = fname.Index(",");
 		if (pp < 0) {
 			pp = fname.Index(" ");
@@ -189,13 +189,13 @@ void GroupOfHists::BuildCanvas()
 			}
 		}
 		fname.Resize(pp);
-		cout << "fname: " << fname << endl;
+//		cout << "fname: " << fname << endl;
 		hname = temp(pp+1, temp.Length());
 		if (hname.Length() <= 0) {
 			cout << "Cant get hist name from: " << temp << endl;
 			return;
 		}
-		cout << "hname: " << hname << endl;
+//		cout << "hname: " << hname << endl;
 		pp = hname.Index(",");
 		if (pp < 0) {
 			pp = fname.Index(" ");
@@ -205,7 +205,7 @@ void GroupOfHists::BuildCanvas()
 		} else {
 			hname.Resize(pp);
 		}
-		cout << "hname: " << hname << endl;
+//		cout << "hname: " << hname << endl;
 		
 //      hname = hist->GetName();
 		if (gHprDebug > 0)

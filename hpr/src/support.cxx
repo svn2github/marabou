@@ -982,14 +982,14 @@ TEnv *GetDefaults(const char * hname, Bool_t mustexist, Bool_t renew)
 	TString defname("default/Last");
 	TEnv env(".hprrc");			// inspect ROOT's environment
 	defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
-	cout << "Got : " << defname.Data() << endl;
+//	cout << "Got : " << defname.Data() << endl;
 	if (defname.Length() > 0) {
 		defname += "_";
 		defname += hname;
 		Int_t ip = defname.Index(";");
 		if (ip > 0) defname.Resize(ip);
 		defname += ".def";
-		cout << "Look for : " << defname.Data() << endl;
+//		cout << "Look for : " << defname.Data() << endl;
 		if (mustexist && gSystem->AccessPathName(defname.Data()))
 			return 0;
 		if (renew && ! gSystem->AccessPathName(defname.Data())) {

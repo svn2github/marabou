@@ -602,7 +602,12 @@ void HistPresent::ShowFiles(const char *how, const char */*bp*/)
 		TString nam=fname;
 		TString cmd = "gHpr->Show";
 		if (fname.EndsWith(".histlist")) {
-			cmd = cmd + "List(\"\",\"" + gHprWorkDir.Data() +"/" + fname + "\")";
+			//only lists with histname + filenames are shown here
+			if ( contains_filenames(fname) ){
+				cmd = cmd + "List(\"\",\"" + gHprWorkDir.Data() +"/" + fname + "\")";
+			} else {
+				continue;
+			}
 		} else {
 			 cmd = cmd + "Contents(\"" + gHprWorkDir.Data() +"/"+ fname + "\", \"\" )";
 		}
@@ -802,6 +807,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 	while ( (fn=gSystem->GetDirEntry(dirp)) ) {
 		hint = fn;
 		if (hint.Index(rsuf) > 0) {
+			cout << "Histlist: " << fn << " fname " << fname << endl;
 			if (contains_filenames(fn) > 0) continue;
 			if (strstr(fname,".root")) {
 				if (FindHistsInFile(fname, fn) <= 0) {
