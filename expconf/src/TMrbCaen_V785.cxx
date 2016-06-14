@@ -374,20 +374,20 @@ Bool_t TMrbCaen_V785::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:
 			{
-			Int_t thresh = Channel->Get(TMrbCaen_V785::kRegThresh);
-			if (Channel->IsUsed())	{
-				const Char_t * code = (thresh == 0x1ff) ? "%N%" : "%U%";
-				fCodeTemplates.InitializeCode(code);
-			} else {
-				fCodeTemplates.InitializeCode("%N%");
-			}
-			fCodeTemplates.Substitute("$moduleName", this->GetName());
-			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
-			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", Channel->GetName());
-			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
-			fCodeTemplates.Substitute("$lowerThresh", thresh);
-			fCodeTemplates.WriteCode(RdoStrm);
+				Int_t thresh = Channel->Get(TMrbCaen_V785::kRegThresh);
+				if (Channel->IsUsed())	{
+					const Char_t * code = (thresh == 0x1ff) ? "%N%" : "%U%";
+					fCodeTemplates.InitializeCode(code);
+				} else {
+					fCodeTemplates.InitializeCode("%N%");
+				}
+				fCodeTemplates.Substitute("$moduleName", this->GetName());
+				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+				fCodeTemplates.Substitute("$chnName", Channel->GetName());
+				fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+				fCodeTemplates.Substitute("$lowerThresh", thresh);
+				fCodeTemplates.WriteCode(RdoStrm);
 			}
 			break;
 		case TMrbConfig::kModuleWriteSubaddr:
