@@ -318,8 +318,10 @@ void Ascii2HistDialog::Draw_The_Hist()
       } else if (f1DimWithWeight || f1DimWithErrors) {
          for (Int_t i = 0; i < fNvalues; i++) {
             hist1->Fill(fXval[i], fYval[i]);
-				if (f1DimWithErrors)
-					hist1->SetBinError(i+1, fZval[i]);
+				if (f1DimWithErrors) {
+					Int_t ib = hist1->FindBin(fXval[i]);
+					hist1->SetBinError(ib, fZval[i]);
+				}
          }
 		}
 	if (fError > 0) {
