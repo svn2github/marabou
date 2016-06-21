@@ -807,7 +807,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 	while ( (fn=gSystem->GetDirEntry(dirp)) ) {
 		hint = fn;
 		if (hint.Index(rsuf) > 0) {
-			cout << "Histlist: " << fn << " fname " << fname << endl;
+//			cout << "Histlist: " << fn << " fname " << fname << endl;
 			if (contains_filenames(fn) > 0) continue;
 			if (strstr(fname,".root")) {
 				if (FindHistsInFile(fname, fn) <= 0) {

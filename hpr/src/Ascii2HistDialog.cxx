@@ -324,7 +324,8 @@ void Ascii2HistDialog::Draw_The_Hist()
 				}
          }
 		}
-	if (fError > 0) {
+      // case of common error
+		if (fError > 0) {
          for (Int_t i = 0; i < fNbinsX; i++) {
             if (hist1->GetBinError(i+1) != 0)
                hist1->SetBinError(i+1, fError);
@@ -345,6 +346,7 @@ void Ascii2HistDialog::Draw_The_Hist()
             hist2->Fill(fXval[i], fYval[i], fZval[i]);
          }
       }
+      // case of common error
       if (fError > 0) {
          for (Int_t i = 0; i < fNbinsX; i++) {
             for (Int_t k = 0; k < fNbinsY; k++) {
