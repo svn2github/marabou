@@ -25,6 +25,7 @@ namespace std {} using namespace std;
 #include "TSystem.h"
 #include "TObject.h"
 
+#include "TMrbVMEChannel.h"
 #include "TMrbVMEModule.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]

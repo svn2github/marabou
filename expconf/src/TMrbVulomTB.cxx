@@ -22,7 +22,6 @@ namespace std {} using namespace std;
 
 #include "TMrbLogger.h"
 #include "TMrbConfig.h"
-#include "TMrbVMEChannel.h"
 #include "TMrbVMERegister.h"
 #include "TMrbVulomTB.h"
 
