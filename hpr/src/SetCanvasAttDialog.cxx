@@ -166,6 +166,8 @@ void SetCanvasAttDialog::SetPadAtt(TPad *pad)
    pad->SetTicky       (fPadTickY + fPadLabelY);
    pad->GetFrame()->SetFillColor (fFrameFillColor  );
    pad->GetFrame()->SetLineColor (fFrameLineColor  );
+   if (fFrameFillColor == 0)
+		fFrameFillStyle = 0;
    pad->GetFrame()->SetFillStyle (fFrameFillStyle  );
    pad->GetFrame()->SetLineStyle (fFrameLineStyle  );
    pad->GetFrame()->SetLineWidth (fFrameLineWidth  );

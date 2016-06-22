@@ -77,6 +77,9 @@ values (Current bin, bin content, mean, integral.\n\
 Selecting \"Live Gauss\" fits a gaussian to the dragged region.\n\
 A constant: \"Const bg\" or linear background (a+ bx): \"Linear bg\"\n\
 may be selected.\n\
+For this functionality the FillStyle of the underlying frame must be 0\n\
+This is controlled by the \"Canvas, Pad, Frame\" dialog invoked \n\
+from the \"GraphicsAtt\" popup menu\n\
 ";
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();

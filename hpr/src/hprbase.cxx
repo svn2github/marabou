@@ -748,62 +748,77 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	//    cout << "hist->GetName() " << hist->GetName() << endl;
 	TEnv env(".hprrc");
 	static Int_t   lLegend      = env.GetValue("SuperImposeHist.DrawLegend", 1);
-	static Int_t   lIncrColors  = env.GetValue("SuperImposeHist.AutoIncrColors", 0);
+	static Int_t   lIncrColors  = env.GetValue("SuperImposeHist.AutoIncrColors", 1);
 	static Int_t   lSkipDialog  = env.GetValue("SuperImposeHist.SkipDialog", 0);
 	static Int_t   lWarnDiffBin = env.GetValue("SuperImposeHist.WarnDiffBin", 1);
 	
+	Double_t axis_offset;
+	static Double_t label_offset = 0.01;
+	Color_t  axis_color;
+	
+	Color_t lLColor = 2; 
+	Color_t lMColor = 2;
+	Color_t lFillColor = 2; 
+	
+	Color_t maxLColor = 2; 
+	Color_t maxMColor = 2;
+	Color_t maxFillColor = 2; 
+	
 	TRootCanvas * win = (TRootCanvas*)canvas->GetCanvasImp();
 	TIter next(canvas->GetListOfPrimitives());
-	Int_t nhists = 0 ;
+	Int_t nhists = 0;
+	Int_t naxis  = 0;
 	TObject *obj;
 	TH1* horig = NULL;
 	while ( obj  = next() ) {
+		if ( obj->InheritsFrom("TGaxis") ) {
+			naxis ++;
+			continue;
+		}
 		if ( obj->InheritsFrom("TH1") ) {
 			horig = (TH1*)obj;
 			TString oname(obj->GetName());
 			TString hname(hist->GetName());
-			//			if ( obj == selhist ) {
-		//				oname = fHname;
-		//			}
-		//			cout << "oname, hname " << oname << " " << hname << endl;
-		//			if ( oname == hname ) {
-			//				if ( !QuestionBox("Hist already in canvas, really draw again?",win) )
-			//					return;
-			//			}
 			if ( lWarnDiffBin && !Hpr::HistLimitsMatch(horig, hist) ) {
 				if ( !QuestionBox("Hist limits or bins differ, really superimpose?",win) ) {
 					return nhs;
 				} else {
 					hist->GetXaxis()->Set(horig->GetXaxis()->GetNbins(),
-												 horig->GetXaxis()->GetXmin(), horig->GetXaxis()->GetXmax());
-												 if (horig->GetDimension() == 2) {
-													 hist->GetYaxis()->Set(horig->GetYaxis()->GetNbins(),
-																				  horig->GetYaxis()->GetXmin(), horig->GetYaxis()->GetXmax());
-												 }
+						 horig->GetXaxis()->GetXmin(), horig->GetXaxis()->GetXmax());
+					if (horig->GetDimension() == 2) {
+						hist->GetYaxis()->Set(horig->GetYaxis()->GetNbins(),
+						horig->GetYaxis()->GetXmin(), horig->GetYaxis()->GetXmax());
+					}
 				}
 			}
+			if (horig->GetLineColor() > maxLColor)
+					maxLColor = horig->GetLineColor();
+			if (horig->GetMarkerColor() > maxMColor)
+					maxMColor = horig->GetMarkerColor();
+			if (horig->GetFillColor() > maxFillColor)
+					maxFillColor = horig->GetFillColor();
 			nhists++;
 		}
 	}
+	if ( lIncrColors && nhists > 1) {
+		lLColor = maxLColor + 1;
+		lMColor = maxMColor + 1;
+		lFillColor = maxFillColor + 1;
+	}
+	axis_offset = 0.06 * naxis;;
 	if ( !horig ) 
 		horig = selhist;
-	Int_t    do_scale;
-	do_scale = mode;
-	Int_t    auto_scale;
-	auto_scale = mode;
-	static Double_t axis_offset;
-	static Double_t label_offset = 0.01;
-	static Color_t  axis_color;
-	
-	static Color_t lLColor; 
-	static Color_t lMColor;
-	static Color_t lFillColor; 
-	lFillColor = env.GetValue("SuperImposeHist.FillColor", 2);
-	axis_color = lFillColor;
-	lLColor   = 1;
-	lMColor   = lFillColor;
-	if (nhists < 2)
-		axis_offset = 0.;
+	Int_t do_scale = mode;
+	Int_t auto_scale = mode;
+//	lFillColor = env.GetValue("SuperImposeHist.FillColor", 2);
+	cout << "nhists " << nhists << endl;
+//	if (nhists < 2) {
+//		axis_offset = 0.;
+//		lLColor = 2; 
+//		lMColor = 2;
+//		lFillColor = 2; 
+//	}
+	axis_color = lLColor;
 	static Style_t lFStyle;
 	static Style_t lLStyle;
 	static Width_t lLWidth;
@@ -849,7 +864,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	Double_t new_scale = 1;   
 	static TString axis_title;
 	axis_title= hist->GetYaxis()->GetTitle();
-	static Int_t new_axis = kTRUE;
+	Int_t new_axis = do_scale;
 	canvas->cd();
 	TString drawopt = horig->GetDrawOption();
 	if ( gDebug  > 0 )
@@ -976,7 +991,6 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	hdisp->SetLineColor(lLColor);
 	hdisp->SetLineStyle(lLStyle);
 	hdisp->SetFillStyle(lFStyle);
-	hdisp->SetLineColor(lLColor);
 	if ( hist->GetDimension() == 2 ) 
 		hdisp->SetFillColor(lFillColor);
 	hdisp->SetLineWidth(lLWidth);
@@ -1127,10 +1141,14 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		canvas->Modified();
 		canvas->Update();
 	}
+	/*
 	if (lIncrColors > 0) {
 		lFillColor += 1;
+		lLColor += 1;
+		lMColor += 1;
 		axis_offset += 0.08;
 	}
+	*/
 	env.SetValue("SuperImposeHist.FillColor", lFillColor);
 	env.SetValue("SuperImposeHist.FillOpacity",lOpacity);
 	env.SetValue("SuperImposeHist.DrawLegend", lLegend);
