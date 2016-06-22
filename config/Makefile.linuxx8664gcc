@@ -21,7 +21,7 @@ CC            = gcc
 GCC_MAJOR     := $(shell $(CXX) -dumpversion 2>&1 | cut -d'.' -f1)
 GCC_MINOR     := $(shell $(CXX) -dumpversion 2>&1 | cut -d'.' -f2)
 GCC_GT_4_7 := $(shell expr $(GCC_MAJOR) \> 4)
-$(info  test bigger 4 GCC_GT_4_7 = $(GCC_GT_4_7))
+# $(info  test bigger 4 GCC_GT_4_7 = $(GCC_GT_4_7))
 ifneq ($(GCC_GT_4_7),1)
 	GCC_GT_4_7 := $(shell expr $(GCC_MAJOR) = 4)
 	ifeq ($(GCC_GT_4_7),1)

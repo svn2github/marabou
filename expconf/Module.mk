@@ -47,7 +47,6 @@ include/%.h:    $(EXPCONFDIRI)/%.h
 		cp $< $@
 
 $(EXPCONFLIB):     $(EXPCONFHM) $(EXPCONFDO) $(EXPCONFO) $(MAINLIBS) $(EXPCONFLIBDEP)
-		@echo "at make EXPCONFLIB,EXPCONFHM = " $(EXPCONFHM)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbConfig.$(SOEXT) $@ "$(EXPCONFO) $(EXPCONFDO)" \
 		   "$(EXPCONFLIBEXTRA)"

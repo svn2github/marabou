@@ -20,7 +20,7 @@ ORDER_ := $(shell test $(MAKE_VERSION_MAJOR) -gt 3 || \
 
 include config/Makefile.config
 
-$(info bindir = $(BINDIR))
+# $(info bindir = $(BINDIR))
 MARABOU_SRCDIR := $(shell pwd)
 $(info source dir = $(MARABOU_SRCDIR))
 ifeq ($(EXPLICITLINK),yes)
@@ -56,7 +56,7 @@ else
 	MODULES      += c_analyze analyze mbssetup mbsio transport expconf macrobrowser c2lynx camcli vmecontrol esone polar xiadgf dgfcomm dgfcontrol cptmcontrol tidy tidylib
 endif
 
-$(info MODULES: $(MODULES))
+$(info using MODULES: $(MODULES))
 ##### ROOT libraries #####
 
 LPATH         = lib
@@ -78,20 +78,29 @@ ROOTGLIBS      += -lHistPainter
 
 ROOTCINT      :=rootcint
 
+ROOTVERS 	      := $(shell root-config --version)
+ROOT_MAJOR := $(shell echo $(ROOTVERS)| cut -f1 -d'.')
+ifeq ($(ROOT_MAJOR),6)
+	ROOTV6 := 1
+else
+	ROOTV6 := 0
+endif
+
 #ROOTVERS contains / . and sometimes letters, remove them
 
-RV1 	      := $(shell root-config --version)
-RV1           := $(subst /,,$(RV1))
-RV1           := $(subst .,,$(RV1))
-RV1           := $(subst a,,$(RV1))
-RV1           := $(subst b,,$(RV1))
-RV1           := $(subst c,,$(RV1))
-RV1           := $(subst d,,$(RV1))
-RV1           := $(subst e,,$(RV1))
-RV1           := $(subst f,,$(RV1))
-RV1           := $(subst g,,$(RV1))
-ROOTVERS      := $(subst h,,$(RV1))
-ROOTV6        := $(shell echo $(ROOTVERS)'>='60000 | bc -l)
+ROOTVERS  := $(subst /,,$(ROOTVERS))
+ROOTVERS  := $(subst .,,$(ROOTVERS))
+ROOTVERS  := $(subst a,,$(ROOTVERS))
+ROOTVERS  := $(subst b,,$(ROOTVERS))
+ROOTVERS  := $(subst c,,$(ROOTVERS))
+ROOTVERS  := $(subst d,,$(ROOTVERS))
+ROOTVERS  := $(subst e,,$(ROOTVERS))
+ROOTVERS  := $(subst f,,$(ROOTVERS))
+ROOTVERS  := $(subst g,,$(ROOTVERS))
+ROOTVERS  := $(subst h,,$(ROOTVERS))
+
+$(info ROOTVERS = $(ROOTVERS) ROOT_MAJOR = $(ROOT_MAJOR), ROOTV6 = $(ROOTV6))
+## ROOTV6        := $(shell echo $(ROOTVERS)'>='60000 | bc -l)
 ##### clang or gcc version #####
 
 ifneq ($(findstring clang,$(CXX)),)

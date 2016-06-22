@@ -18,7 +18,7 @@ UTILSPCM       := $(MODDIRS)/G__TMrbUtilsDict_rdict.pcm
 UTILSDO       := $(UTILSDS:.cxx=.o)
 UTILSHL        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 UTILSH        :=  $(patsubst $(MODDIRI)/%.h,%.h,$(UTILSHL))
-$(info UTILSH: $(UTILSH))
+# $(info UTILSH: $(UTILSH))
 UTILSS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 UTILSO        := $(UTILSS:.cxx=.o)
 
