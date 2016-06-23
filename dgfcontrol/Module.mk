@@ -40,15 +40,18 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCH))
 INCLUDEFILES += $(DGFCDEP)
 
 ##### extra libs needed #####
-ODGFCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbEsone -lTMrbC2Lynx -lEsoneClient \
-                 -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser -lGrEdit -lFitCal -lProof
+ODGFCLIBS	:= $(LPATH)/libTMrbDGF.$(SOEXT)   $(LPATH)/libTMrbEsone.$(SOEXT)   $(LPATH)/libTMrbC2Lynx.$(SOEXT)   $(LPATH)/libEsoneClient.$(SOEXT) \
+					$(LPATH)/libTMrbUtils.$(SOEXT)   $(LPATH)/libTGMrbUtils.$(SOEXT)   $(LPATH)/libHpr.$(SOEXT)   $(LPATH)/libTMrbHelpBrowser.$(SOEXT) $(LPATH)/libGrEdit.$(SOEXT) \
+					$(LPATH)/libFitCal.$(SOEXT)  
+# ODGFCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbEsone -lTMrbC2Lynx -lEsoneClient \
+#                 -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser -lGrEdit -lFitCal -lProof
 
 ##### local rules #####
 
 include/%.h:    $(DGFCDIRI)/%.h
 		cp $< $@
-$(DGFCEXE):     $(DGFCO) $(DGFCMAINO) $(MRBLIBS)
-		$(LD) -g $(LDFLAGS) $(DGFCMAINO) $(DGFCO) $(DGFCDO) $(ODGFCLIBS) $(ROOTGLIBS) -lSpectrum \
+$(DGFCEXE):    | $(ODGFCLIBS) $(DGFCO) $(DGFCMAINO) 
+		$(LD) -g $(LDFLAGS) $(DGFCMAINO) $(DGFCO) $(DGFCDO) $(ODGFCLIBS) $(ROOTGLIBS) -lProof -lSpectrum \
             -o $(DGFCEXE)
 
 $(DGFCLIB):     $(DGFCDO) $(DGFCO)

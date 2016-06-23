@@ -64,7 +64,7 @@ HPRLIBDEP   := $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libProof.so $(OHPRLIBS)
 include/%.h:    $(HPRDIRI)/%.h
 		cp $< $@
 
-$(HPREXE):      $(HPRMAINO) $(OHPRLIBS) $(HPRLIB)
+$(HPREXE):     | $(OHPRLIBS) $(HPRLIB)  $(HPRMAINO)
 		@echo "other libs: $(OHPRLIBS)"
 		@echo "$(HPREXE) linking exe ----------------------------------"
 		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(OHPRLIBS) $(ROOTGLIBS) -lRGL -lSpectrum -lProof \

@@ -42,14 +42,14 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(VMECH))
 INCLUDEFILES += $(VMECDEP)
 
 ##### extra libs needed #####
-OVMECLIBS      := -L$(LPATH) -lTMrbC2Lynx -lTMrbUtils -lTGMrbUtils
+OVMECLIBS      := $(LPATH)/libTMrbC2Lynx.$(SOEXT) $(LPATH)/libTMrbUtils.$(SOEXT) $(LPATH)/libTGMrbUtils.$(SOEXT) 
 
 ##### local rules #####
 
 include/%.h:    $(VMECDIRI)/%.h
 		cp $< $@
 
-$(VMECEXE):     $(VMECSO)$(VMECO) $(VMECMAINO) $(MRBLIBS)
+$(VMECEXE):     | $(OVMECLIBS) $(VMECSO)$(VMECO) $(VMECMAINO)
 #		@echo "sources: $(VMECS)"
 		@echo "OVMECLIBS: $(OVMECLIBS)"
 		@echo "$(VMECEXE) linking exe ----------------------------------"

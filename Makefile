@@ -267,7 +267,7 @@ distclean:: clean
 	@mv -f include/config.h include/config.hh
 	@rm -f include/*.h $(MAKEINFO)
 	@mv -f include/config.hh include/config.h
-	@rm -f build/dummy.d bin/*.dll lib/*.def lib/*.exp lib/*.lib .def
+	@rm -f build/dummy.d bin/* lib/*.def lib/*.exp lib/*.lib .def
 	@rm -rf htmldoc
 
 version: $(CINTTMP)

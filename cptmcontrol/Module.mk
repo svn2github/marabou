@@ -42,16 +42,17 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(CptmCH))
 INCLUDEFILES += $(CptmCDEP)
 
 ##### extra libs needed #####
-OCptmCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbEsone -lTMrbC2Lynx -lEsoneClient \
-                 -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser -lGrEdit -lFitCal
+OCptmCLIBS      := lib/libTMrbDGF.$(SOEXT) lib/libTMrbEsone.$(SOEXT) lib/libTMrbC2Lynx.$(SOEXT) lib/libEsoneClient.$(SOEXT) \
+                 lib/libTMrbUtils.$(SOEXT) lib/libTGMrbUtils.$(SOEXT) lib/libHpr.$(SOEXT) lib/libTMrbHelpBrowser.$(SOEXT) lib/libGrEdit.$(SOEXT) lib/libFitCal.$(SOEXT)
+# OCptmCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbEsone -lTMrbC2Lynx -lEsoneClient \
+#                 -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser -lGrEdit -lFitCal
 
 ##### local rules #####
 
 include/%.h:    $(CptmCDIRI)/%.h
 		cp $< $@
 
-$(CptmCEXE):     $(CptmCSO)$(CptmCO) $(CptmCMAINO) $(MRBLIBS)
-#		@echo "sources: $(CptmCS)"
+$(CptmCEXE):    |  $(OCptmCLIBS) $(CptmCSO)$(CptmCO) $(CptmCMAINO)
 		@echo "OCptmCLIBS: $(OCptmCLIBS)"
 		@echo "$(CptmCEXE) linking exe ----------------------------------"
 		$(LD) -g $(LDFLAGS) $(CptmCMAINO) $(CptmCO) $(CptmCDO) $(OCptmCLIBS) $(ROOTGLIBS)  -lProof -lSpectrum \
