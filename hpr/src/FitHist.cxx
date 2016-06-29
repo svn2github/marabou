@@ -3305,7 +3305,8 @@ void FitHist::Draw1Dim()
 //		if (drawopt.Length() == 0 || fShowContour != 0) drawopt += "HIST";
 		if (fShowMarkers != 0) drawopt += "P";
 		gStyle->SetOptTitle(fShowTitle);
-		if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
+//		if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
+		if ( fFill1Dim ) {
 			 fSelHist->SetFillStyle(fFillStyle);
 			 fSelHist->SetFillColor(fFillColor);
 		} else
