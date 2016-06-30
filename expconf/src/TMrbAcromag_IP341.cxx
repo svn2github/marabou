@@ -81,7 +81,7 @@ TMrbAcromag_IP341::TMrbAcromag_IP341(const Char_t * ModuleName, UInt_t BaseAddr,
 			if (LoadCodeTemplates(codeFile)) {
 				DefineRegisters();
 				gMrbConfig->AddModule(this);				// append to list of modules
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 				fBlockReadout = kTRUE;						// block readout only
 			} else {
 				this->MakeZombie();

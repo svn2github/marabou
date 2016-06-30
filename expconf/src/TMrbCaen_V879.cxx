@@ -114,7 +114,7 @@ TMrbCaen_V879::TMrbCaen_V879(const Char_t * ModuleName, UInt_t BaseAddr, Bool_t 
 			if (LoadCodeTemplates(codeFile)) {
 				DefineRegisters();
 				gMrbConfig->AddModule(this);				// append to list of modules
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 				fBlockReadout = kTRUE;						// block readout only
 			} else {
 				this->MakeZombie();

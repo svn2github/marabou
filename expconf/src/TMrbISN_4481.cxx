@@ -78,7 +78,7 @@ TMrbISN_4481::TMrbISN_4481(const Char_t * ModuleName, const Char_t * ModulePosit
 			if (LoadCodeTemplates(codeFile)) {
 				DefineRegisters();
 				gMrbConfig->AddModule(this);				// append to list of modules
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

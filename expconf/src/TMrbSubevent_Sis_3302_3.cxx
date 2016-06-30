@@ -116,7 +116,7 @@ TMrbSubevent_Sis_3302_3::TMrbSubevent_Sis_3302_3(const Char_t * SevtName, const 
 		fSevtSubtype = 57;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataULong;
-		//gDirectory->Append(this);
+		gDirectory->Append(this);
 	}
 }
 

@@ -75,7 +75,7 @@ TMrbNE_9041::TMrbNE_9041(const Char_t * ModuleName, const Char_t * ModulePositio
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
 				gMrbConfig->AddModule(this);				// append to list of modules
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

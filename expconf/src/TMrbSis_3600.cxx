@@ -80,7 +80,7 @@ TMrbSis_3600::TMrbSis_3600(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fFifoDepth = FifoDepth; 		// fifo depth per channel
 				fBlockReadout = kTRUE;			// module has block readout
 				gMrbConfig->AddModule(this);				// append to list of modules
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

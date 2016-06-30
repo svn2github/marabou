@@ -91,7 +91,7 @@ TMrbSis_3820::TMrbSis_3820(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fLNEChannel = 0; 				// LNE channel
 				gMrbConfig->AddModule(this);	// append to list of modules
 				gMrbConfig->AddScaler(this);	// and to list of scalers
-//				//gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

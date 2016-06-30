@@ -189,7 +189,7 @@ TMrbCaen_V1X90::TMrbCaen_V1X90(const Char_t * ModuleName, UInt_t BaseAddr) :
 
 
 				gMrbConfig->AddModule(this);	// append to list of modules
-//				gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

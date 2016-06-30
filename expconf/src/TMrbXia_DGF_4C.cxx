@@ -106,7 +106,7 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 					this->DefineRegisters();
 					this->SetBlockReadout();					// block mode only
 					gMrbConfig->AddModule(this);				// append to list of modules
-					//gDirectory->Append(this);
+					gDirectory->Append(this);
 					fMaxEvents = 1;
 					fTraceLength = 40;
 					fRunTask = 0x100;

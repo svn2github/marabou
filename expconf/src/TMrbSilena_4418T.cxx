@@ -95,7 +95,7 @@ TMrbSilena_4418T::TMrbSilena_4418T(const Char_t * ModuleName, const Char_t * Mod
 			if (LoadCodeTemplates(codeFile)) {
 				DefineRegisters();							// define module regs
 				gMrbConfig->AddModule(this);				// append to list of modules
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 				fZeroSuppression = kFALSE;
 			} else {
 				this->MakeZombie();

@@ -83,7 +83,7 @@ TMrbSis_3801::TMrbSis_3801(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fBlockReadout = kTRUE;			// module has block readout
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gMrbConfig->AddScaler(this);				// and to list of scalers
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

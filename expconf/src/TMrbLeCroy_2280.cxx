@@ -74,7 +74,7 @@ TMrbLeCroy_2280::TMrbLeCroy_2280(const Char_t * ModuleName, const Char_t * Modul
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
 				gMrbConfig->AddModule(this);				// append to list of modules
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

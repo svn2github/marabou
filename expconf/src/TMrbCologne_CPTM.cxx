@@ -78,7 +78,7 @@ TMrbCologne_CPTM::TMrbCologne_CPTM(const Char_t * ModuleName, const Char_t * Mod
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
 				gMrbConfig->AddModule(this);				// append to list of modules
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

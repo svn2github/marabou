@@ -82,7 +82,7 @@ TMrbUct_8904::TMrbUct_8904(const Char_t * ScalerName, const Char_t * ScalerPosit
 				gMrbConfig->AddModule(this); 	// insert scaler in lists
 				gMrbConfig->AddScaler(this);
 
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}

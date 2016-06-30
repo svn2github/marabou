@@ -82,7 +82,7 @@ TMrbSubevent_Silena_1::TMrbSubevent_Silena_1(const Char_t * SevtName, const Char
 		fSevtSubtype = 31;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
-		//gDirectory->Append(this);
+		gDirectory->Append(this);
 	}
 }
 

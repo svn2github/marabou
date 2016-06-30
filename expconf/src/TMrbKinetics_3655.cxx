@@ -88,7 +88,7 @@ TMrbKinetics_3655::TMrbKinetics_3655(const Char_t * ModuleName, const Char_t * M
 			if (LoadCodeTemplates(codeFile)) {
 				this->DefineRegisters();
 				gMrbConfig->AddModule(this);				// append to list of modules
-				//gDirectory->Append(this);
+				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
 			}
