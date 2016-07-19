@@ -355,6 +355,7 @@ void mtdc32_setEclTerm_db(struct s_mtdc32 * s) { mtdc32_setEclTerm(s, s->eclTerm
 void mtdc32_setEclTerm(struct s_mtdc32 * s, uint16_t term)
 {
 	SET16(s->md->vmeBase, MTDC32_ECL_TERMINATORS, term & MTDC32_ECL_TERM_MASK);
+	getchar();
 }
 
 uint16_t mtdc32_getEclTerm(struct s_mtdc32 * s)
@@ -686,6 +687,11 @@ bool_t mtdc32_fillStruct(struct s_mtdc32 * s, char * file)
 	sprintf(res, "MTDC32.%s.PulserPattern", mnUC);
 	s->pulserPattern = root_env_getval_i(res, MTDC32_PULSER_PATTERN_DEFAULT);
 
+	for (i = 0; i <= 1; i++) {
+		sprintf(res, "MTDC32.%s.InputThresh.%d", mnUC, i);
+		s->inputThresh[i] = root_env_getval_i(res, MTDC32_INPUT_THRESH_DEFAULT);
+	}
+	
 	sprintf(res, "MTDC32.%s.TsSource", mnUC);
 	s->ctraTsSource = root_env_getval_i(res, MTDC32_CTRA_TS_SOURCE_DEFAULT);
 
@@ -911,7 +917,11 @@ int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer)
 		numData = nd;
 		nd = (int) mtdc32_getFifoLength(s);
 	}
-	if (numData == 0) return(0);
+	if (numData == 0) {
+		sprintf(msg, "[%sreadout] %s: FIFO empty", s->mpref, s->moduleName);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		return(0);
+	}
 
 	if (tryIt <= 0) {
 		sprintf(msg, "[%sreadout] %s: Error while reading event data (numData=%d != %d)", s->mpref, s->moduleName, numData, nd);

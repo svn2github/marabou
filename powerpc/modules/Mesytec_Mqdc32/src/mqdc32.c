@@ -24,13 +24,15 @@
 #include "mqdc32_database.h"
 #include "mqdc32_protos.h"
 
+#include "gd_readout.h"
+
 #include "root_env.h"
 #include "mapping_database.h"
 #include "mapping_protos.h"
 
 #include "Version.h"
 
-static struct s_mqdc32 * s_adc;
+static struct s_mqdc32 * s_qdc;
 
 void f_ut_send_msg(char * prefix, char * msg, int flag);
 
@@ -44,6 +46,7 @@ int main(int argc, char *argv[]) {
 	unsigned long bcval;
 	volatile char * mqdc32;
 	unsigned int mappingMod;
+	int reg, val;
 
 	struct s_mapDescr * md;
 
@@ -54,14 +57,16 @@ int main(int argc, char *argv[]) {
 	if (argc <= 4) {
 		fprintf(stderr, "mqdc32: Basic tests for Mesytec MQDC32 modules\n\n");
 		fprintf(stderr, "Usage: mqdc32 <addr> <addrMod> <mapMod> [<fct> [<args>]]\n\n");
-		fprintf(stderr, "       addr          VME addr, high order bits 17-31\n");
-		fprintf(stderr, "       addrMod       addr modifier, 0x09 (A32) or 0x39 (A24)\n");
-		fprintf(stderr, "       mapMod        mapping mode: (bit pattern) 1 (direct, RIO4 only), 2 (static), 4 (dynamic)\n");
-		fprintf(stderr, "       fct           function to be executed\n");
-		fprintf(stderr, "            v        read firmware version\n");
-		fprintf(stderr, "            r        reset module\n");
-		fprintf(stderr, "            l file   load settings from file <file>\n");
-		fprintf(stderr, "            d [file] dump settings to file <file> (default: stdout)\n\n");
+		fprintf(stderr, "       addr           VME addr, high order bits 17-31\n");
+		fprintf(stderr, "       addrMod        addr modifier, 0x09 (A32) or 0x39 (A24)\n");
+		fprintf(stderr, "       mapMod         mapping mode: (bit pattern) 1 (direct, RIO4 only), 2 (static), 4 (dynamic)\n");
+		fprintf(stderr, "       fct            function to be executed\n");
+		fprintf(stderr, "            v         read firmware version\n");
+		fprintf(stderr, "            r         reset module\n");
+		fprintf(stderr, "            l file    load settings from file <file>\n");
+		fprintf(stderr, "            d file    dump settings to file <file>\n\n");
+		fprintf(stderr, "            s reg val set register at relative addr <reg> with value <val>\n");
+		fprintf(stderr, "            g reg     get register at relative addr <reg>\n\n");
 		exit(1);
 	}
 
@@ -77,34 +82,59 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	s_adc = mqdc32_alloc("mqdc32", md, 0x1);	/* allocate data struct */
-	if (s_adc == NULL) exit(1);
+	s_qdc = mqdc32_alloc("mqdc32", md, 0x1);	/* allocate data struct */
+	if (s_qdc == NULL) exit(1);
 
-	mqdc32_setPrefix(s_adc, "mqdc32");
+	mqdc32_setPrefix(s_qdc, "mqdc32");
 
 	fct = *argv[4];
 
-	file[0] = '\0';
-	if (argc >= 6) strcpy(file, argv[5]);
-
 	switch (fct) {
-		case 'v':	mqdc32_moduleInfo(s_adc);				/* read module info */
+		case 'v':	mqdc32_moduleInfo(s_qdc);				/* read module info */
 					break;
-		case 'l':	if (file[0] == '\0') {
+		case 'l':	file[0] = '\0';
+					if (argc >= 6) strcpy(file, argv[5]);
+					if (file[0] == '\0') {
 						fprintf(stderr, "mqdc32: File name missing\n");
 						exit(1);
 					}
-					mqdc32_fillStruct(s_adc, file);			/* fill struct from environment data */
-					mqdc32_printDb(s_adc);
-					mqdc32_loadFromDb(s_adc, 0xFFFFFFFF); 				/* load module regs from database */
+					mqdc32_fillStruct(s_qdc, file);			/* fill struct from environment data */
+					mqdc32_printDb(s_qdc);
+					mqdc32_loadFromDb(s_qdc, 0xFFFFFFFF); 				/* load module regs from database */
 					break;
-		case 'd':	if (file[0] == '\0') {
+		case 'd':	file[0] = '\0';
+					if (argc >= 6) strcpy(file, argv[5]);
+					if (file[0] == '\0') {
 						fprintf(stderr, "mqdc32: File name missing\n");
 						exit(1);
 					}
-					s_adc->dumpRegsOnInit = TRUE;
-					mqdc32_dumpRegisters(s_adc, file); 		/* dump registers to file */
-					mqdc32_dumpRaw(s_adc, "rawDump.dat");
+					s_qdc->dumpRegsOnInit = TRUE;
+					mqdc32_dumpRegisters(s_qdc, file); 		/* dump registers to file */
+					mqdc32_dumpRaw(s_qdc, "rawDump.dat");
+					break;
+		case 's':	reg = -1;
+					if (argc >= 6) reg = catoi(argv[5]);
+					if (reg == -1) {
+						fprintf(stderr, "mqdc32: Register addr missing\n");
+						exit(1);
+					}
+					val = -1;
+					if (argc >= 7) val = catoi(argv[6]);
+					if (val == -1) {
+						fprintf(stderr, "mqdc32: Register value missing\n");
+						exit(1);
+					}
+					SET16(s_qdc->md->vmeBase, reg, val);
+					printf("madc32: Setting register %x to %x\n", reg, val);
+					break;				
+		case 'g':	reg = -1;
+					if (argc >= 6) reg = catoi(argv[5]);
+					if (reg == -1) {
+						fprintf(stderr, "mqdc32: Register addr missing\n");
+						exit(1);
+					}
+					val = GET16(s_qdc->md->vmeBase, reg);
+					printf("madc32: Register %#x: %#x\n", reg, val);
 					break;
 		default:	fprintf(stderr, "mqdc32: Illegal function - %s\n", argv[2]);
 					exit(1);

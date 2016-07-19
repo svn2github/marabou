@@ -28,6 +28,8 @@
 #include "mapping_database.h"
 #include "mapping_protos.h"
 
+#include "gd_readout.h"
+
 #include "Version.h"
 
 static struct s_madc32 * s_adc;
@@ -44,6 +46,7 @@ int main(int argc, char *argv[]) {
 	unsigned long bcval;
 	volatile char * madc32;
 	unsigned int mappingMod;
+	int reg, val;
 
 	struct s_mapDescr * md;
 
@@ -54,14 +57,16 @@ int main(int argc, char *argv[]) {
 	if (argc <= 4) {
 		fprintf(stderr, "madc32: Basic tests for Mesytec MADC32 modules\n\n");
 		fprintf(stderr, "Usage: madc32 <addr> <addrMod> <mapMod> [<fct> [<args>]]\n\n");
-		fprintf(stderr, "       addr          VME addr, high order bits 17-31\n");
-		fprintf(stderr, "       addrMod       addr modifier, 0x09 (A32) or 0x39 (A24)\n");
-		fprintf(stderr, "       mapMod        mapping mode: (bit pattern) 1 (direct, RIO4 only), 2 (static), 4 (dynamic)\n");
-		fprintf(stderr, "       fct           function to be executed\n");
-		fprintf(stderr, "            v        read firmware version\n");
-		fprintf(stderr, "            r        reset module\n");
-		fprintf(stderr, "            l file   load settings from file <file>\n");
-		fprintf(stderr, "            d [file] dump settings to file <file> (default: stdout)\n\n");
+		fprintf(stderr, "       addr           VME addr, high order bits 17-31\n");
+		fprintf(stderr, "       addrMod        addr modifier, 0x09 (A32) or 0x39 (A24)\n");
+		fprintf(stderr, "       mapMod         mapping mode: (bit pattern) 1 (direct, RIO4 only), 2 (static), 4 (dynamic)\n");
+		fprintf(stderr, "       fct            function to be executed\n");
+		fprintf(stderr, "            v         read firmware version\n");
+		fprintf(stderr, "            r         reset module\n");
+		fprintf(stderr, "            l file    load settings from file <file>\n");
+		fprintf(stderr, "            d file    dump settings to file <file>\n\n");
+		fprintf(stderr, "            s reg val set register at relative addr <reg> with value <val>\n");
+		fprintf(stderr, "            g reg     get register at relative addr <reg>\n\n");
 		exit(1);
 	}
 
@@ -84,13 +89,12 @@ int main(int argc, char *argv[]) {
 
 	fct = *argv[4];
 
-	file[0] = '\0';
-	if (argc >= 6) strcpy(file, argv[5]);
-
 	switch (fct) {
 		case 'v':	madc32_moduleInfo(s_adc);				/* read module info */
 					break;
-		case 'l':	if (file[0] == '\0') {
+		case 'l':	file[0] = '\0';
+					if (argc >= 6) strcpy(file, argv[5]);
+					if (file[0] == '\0') {
 						fprintf(stderr, "madc32: File name missing\n");
 						exit(1);
 					}
@@ -98,13 +102,39 @@ int main(int argc, char *argv[]) {
 					madc32_printDb(s_adc);
 					madc32_loadFromDb(s_adc, 0xFFFFFFFF); 				/* load module regs from database */
 					break;
-		case 'd':	if (file[0] == '\0') {
+		case 'd':	file[0] = '\0';
+					if (argc >= 6) strcpy(file, argv[5]);
+					if (file[0] == '\0') {
 						fprintf(stderr, "madc32: File name missing\n");
 						exit(1);
 					}
 					s_adc->dumpRegsOnInit = TRUE;
 					madc32_dumpRegisters(s_adc, file); 		/* dump registers to file */
 					madc32_dumpRaw(s_adc, "rawDump.dat");
+					break;
+		case 's':	reg = -1;
+					if (argc >= 6) reg = catoi(argv[5]);
+					if (reg == -1) {
+						fprintf(stderr, "madc32: Register addr missing\n");
+						exit(1);
+					}
+					val = -1;
+					if (argc >= 7) val = catoi(argv[6]);
+					if (val == -1) {
+						fprintf(stderr, "madc32: Register value missing\n");
+						exit(1);
+					}
+					SET16(s_adc->md->vmeBase, reg, val);
+					printf("madc32: Setting register %x to %x\n", reg, val);
+					break;				
+		case 'g':	reg = -1;
+					if (argc >= 6) reg = catoi(argv[5]);
+					if (reg == -1) {
+						fprintf(stderr, "madc32: Register addr missing\n");
+						exit(1);
+					}
+					val = GET16(s_adc->md->vmeBase, reg);
+					printf("madc32: Register %#x: %#x\n", reg, val);
 					break;
 		default:	fprintf(stderr, "madc32: Illegal function - %s\n", argv[2]);
 					exit(1);
