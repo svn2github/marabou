@@ -131,17 +131,17 @@ MTDC32.$moduleName.WinWidth.1:			$winWidth1
 #           |BB|XCCCCC|TT|
 #           *--*------*--*
 #
-#     (a) trigger               0       --> off
-#                               bit[0]  --> trig0 (default)
+#     (a) trigger               0       --> off (default)
+#                               bit[0]  --> trig0
 #                               bit[1]  --> trig1
 MTDC32.$moduleName.TrigSrcTrig.0:        $trigSrcTrig0
 #
-#     (b) channel               0        --> off (default)
-#                               X+0 .. X+31 (X=32) --> 0 .. 31
+#     (b) channel               -1       --> off (default, X=, C=0)
+#                               0 .. 31  --> chan C (will set X=1)
 MTDC32.$moduleName.TrigSrcChan.0:        $trigSrcChan0
-#     (c) bank                  bit[0]  --> bank0
+#     (c) bank                  0        --> off (default)
+#                               bit[0]  --> bank0
 #                               bit[1]  --> bank1
-#                               default: 0
 MTDC32.$moduleName.TrigSrcBank.0:        $trigSrcBank0
 
 # same for bank1 (if independent, 0x605A)
