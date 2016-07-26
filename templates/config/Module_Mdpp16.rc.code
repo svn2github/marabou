@@ -1,0 +1,420 @@
+%%BeginOfCode%%
+%%Begin(Preamble)%%
+#___________________________________________________[MODULE PARAM DEFINITION]
+#////////////////////////////////////////////////////////////////////////////
+# Name:           Module_Mesytec_Mdpp16.rc.code
+# Purpose:        Param defs for Mesytec MDPP16 tracing ADC
+# Description:
+# Author:         $author
+# Date:           $date
+#////////////////////////////////////////////////////////////////////////////
+
+MDPP16.ModuleName: 						$moduleName
+MDPP16.ModuleSerial: 					$moduleSerial
+
+MDPP16.Firmware: 						$moduleFirmware
+
+MDPP16.SettingsVersion:					4.2016
+
+MDPP16.VerboseMode:						FALSE
+MDPP16.DumpRegisters:					FALSE
+
+%%End(Preamble)%%
+
+%%Begin(AddressRegisters)%%
+
+#-----------------------------------------------------------------------------
+# Address registers
+#-----------------------------------------------------------------------------
+
+# address source (0x6000)       0  -->  board coder (default)
+#                               1  -->  address register
+MDPP16.$moduleName.AddrSource: 			$addrSource
+
+# vme address (0x6002)          overrides board code if address source = 1
+MDPP16.$moduleName.AddrReg: 			$addrReg
+
+# module id (0x6004)            default = 0xFF -> use high byte of board coder
+MDPP16.$moduleName.ModuleId: 			$moduleId
+
+# mcst/cblt  (0x6020, 0x6022, 0x6024)
+#          signature   0xNN, bits 31 ... 24
+#          first       TRUE if first module in chain
+#          last        TRUE if last module in chain
+MDPP16.$moduleName.MCSTSignature:		$mcstSignature
+MDPP16.$moduleName.CBLTSignature:		$cbltSignature
+MDPP16.$moduleName.FirstInChain:		$firstInChain
+MDPP16.$moduleName.LastInChain:			$lastInChain
+
+%%End(AddressRegisters)%%
+
+%%Begin(FifoHandling)%%
+
+#-----------------------------------------------------------------------------
+# FIFO handling
+#-----------------------------------------------------------------------------
+
+# data length format (0x6032)   0  -->  8 bit
+#                               1  -->  16 bit
+#                               2  -->  32 bit (default)
+#                               3  -->  64 bit
+MDPP16.$moduleName.DataWidth:			$dataWidth
+
+# multievent (0x6036)           0  -->  no / single event
+#                               1  -->  yes
+#                               3  -->  limited amount of data
+#						        5  -->  same as 1, but BERR turned off
+MDPP16.$moduleName.MultiEvent:			$multiEvent
+
+# max xfer data (0x601A, if multievent is set to "3", default = 0)
+MDPP16.$moduleName.XferData:			$xferData
+
+# marking type (0x6038)         0x0  -->  event counter (default)
+#                               0x1  -->  time stamp (30 bits)
+#                               0x3  -->  extended time stamp (+16bits)
+MDPP16.$moduleName.MarkingType: 		$markingType
+
+# block transfer                enable/disable, TRUE/FALSE
+MDPP16.$moduleName.BlockXfer:			$blockXfer
+%%End(FifoHandling)%%
+
+%%Begin(OperationMode)%%
+
+#-----------------------------------------------------------------------------
+# Operation mode
+#-----------------------------------------------------------------------------
+
+# tdc resolution (0x6042)       5  -->  781 ps (25/32 ns) (default)
+#                               4  -->  391 ps (25/64 ns)
+#                               3  -->  195 ps (25/128 ns)
+#                               2  -->   98 ps (25/256 ns)
+#                               1  -->   49 ps (25/512 ns)
+#                               0  -->   24 ps (25/1024 ns)
+MDPP16.$moduleName.TdcResolution:		$tdcResolution
+
+# output format (0x6044)        0  -->  standard (time and amplitude) (default)
+#                               1  -->  amplitude only
+#                               2  -->  time only
+MDPP16.$moduleName.OutputFormat:		$outputFormat
+
+# adc resolution (0x6046)       0  -->  16 bit
+#                               1  -->  15
+#                               2  -->  14
+#                               3  -->  13
+#                               4  -->  12 (default)
+MDPP16.$moduleName.AdcResolution:		$adcResolution
+
+# repair raw data               true/false
+MDPP16.$moduleName.RepairRawData:		$repairRawData
+%%End(OperationMode)%%
+
+%%Begin(Trigger)%%
+
+#-----------------------------------------------------------------------------
+# Trigger
+#-----------------------------------------------------------------------------
+
+# window of interest (0x6050)   in units 25ns/16 = 1.56ns
+#                               -16k < wdw < +16k
+#                               < 0 --> window starts BEFORE trigger
+#                               > 0 --> window starts AFTER trigger
+#                               default: 16k-16 = 25ns
+MDPP16.$moduleName.WinStart:			$winStart
+
+# window width (0x6054)         in units 25ns/16 = 1.56ns
+#                               max 16k = 25.56us
+MDPP16.$moduleName.WinWidth:			$winWidth
+
+# trigger source (0x6058)
+#
+#           *--*------*--*
+#           |0B|X0CCCC|TT|
+#           *--*------*--*
+#
+#     (a) trigger               0       --> off
+#                               bit[0]  --> trig0 (default)
+#                               bit[1]  --> trig1
+MDPP16.$moduleName.TrigSrcTrig:        $trigSrcTrig
+
+#     (b) channel               0        --> off (default)
+#                               X+0 .. X+15 (X=32) --> 0 .. 15
+MDPP16.$moduleName.TrigSrcChan:        $trigSrcChan
+
+#     (c) bank                  bit[0]  --> bank on
+MDPP16.$moduleName.TrigSrcBank:        $trigSrcBank
+
+# first hit (0x605C)            = 1 --> take first hit only
+#                               
+MDPP16.$moduleName.FirstHit:            $trigFirstHit
+
+# trigger source (0x605E)
+#
+#           *--*------*--*
+#           |0B|X0CCCC|00|
+#           *--*------*--*
+#
+#     (b) channel               0        --> off (default)
+#                               X+0 .. X+15 (X=32) --> 0 .. 15
+MDPP16.$moduleName.TrigOutChan:        $trigOutChan
+
+#     (c) bank                  bit[0]  --> bank on
+MDPP16.$moduleName.TrigOutBank:        $trigOutBank
+
+%%End(Trigger)%%
+
+%%Begin(InputOutput)%%
+
+#-----------------------------------------------------------------------------
+# Input/Output
+#-----------------------------------------------------------------------------
+
+# ECL3 (0x6060)                 INPUT (default 0)
+#                               bit[0-3]: 0 --> off
+#                                         1 --> trig0 in
+#                               bit[4-7]: 0 -->  terminated
+#                                         1 --> unterminated
+MDPP16.$moduleName.Ecl3:    			$ecl3
+
+# ECL2 (0x6062)                 INPUT (default 0)
+#                               bit[0-3]: 0 --> off
+#                                         1 --> sync in
+#                                         2 --> trig1 in
+#                               bit[4-7]: 0 -->  terminated
+#                                         1 --> unterminated
+MDPP16.$moduleName.Ecl2:    			$ecl2
+
+# ECL1 (0x6064)                 INPUT (default 0)
+#                               bit[0-3]: 0 --> off
+#                                         1 --> reset in
+#                               bit[4-7]: 0 -->  terminated
+#                                         1 --> unterminated
+MDPP16.$moduleName.Ecl1:    			$ecl1
+
+# ECL0 (0x6066)                 OUTPUT (default 0)
+#                                         0 --> off
+#                                         4 --> busy out
+#                                         8 --> data ready
+MDPP16.$moduleName.Ecl0:    			$ecl0
+
+# NIM4 (0x6068)                 INPUT (default 1)
+#                                         0 --> off
+#                                         1 --> trig0 in
+MDPP16.$moduleName.Nim4:    			$nim4
+
+# NIM3 (0x606A)                 INPUT (default 1)
+#                                         0 --> off
+#                                         1 --> off
+#                                         2 --> sync in
+MDPP16.$moduleName.Nim3:    			$nim3
+
+# NIM2 (0x606C)                 INPUT (default 1)
+#                                         0 --> off
+#                                         1 --> trig1 in
+#                                         2 --> reset in
+MDPP16.$moduleName.Nim2:    			$nim2
+
+# NIM1 (0x606E)                 OUTPUT - always trig out
+
+# NIM0 (0x6074)                 OUTPUT (default 4)
+#                                         0 --> off
+#                                         4 --> busy out
+#                                         8 --> data ready
+MDPP16.$moduleName.Nim0:    			$nim0
+
+%%End(InputOutput)%%
+
+%%Begin(TestPulser)%%
+
+#-----------------------------------------------------------------------------
+# Test pulser
+#-----------------------------------------------------------------------------
+
+# pulser status (0x6070)        0 -->  off (default)
+#                               1 --> on
+MDPP16.$moduleName.PulserStatus: 		$pulserStatus
+
+# pulser aplitude (0x6072)      0 ... 0xFFF (default)
+MDPP16.$moduleName.PulserAmplitude:     $pulserAmplitude
+%%End(TestPulser)%%
+
+%%Begin(Monitor)%%
+
+#-----------------------------------------------------------------------------
+# Monitoring
+#-----------------------------------------------------------------------------
+
+# monitor on/off (0x607A)       0 --> off (default)
+#                               1 --> on
+MDPP16.$moduleName.MonitorOn:   $monitorOn
+
+# channel (0x607C)              channel to be monitored
+MDPP16.$moduleName.MonitorChan: $monitorChan
+
+# wave (0x607E)
+MDPP16.$moduleName.MonitorWave: $monitorWave
+
+%%End(Monitor)%%
+
+%%Begin(Counters)%%
+
+#-----------------------------------------------------------------------------
+# Counters
+#-----------------------------------------------------------------------------
+
+# timestamp source (0x6096)     0x0  -->  VME (default)
+#                               0x1  -->  external source
+#                               0x2  -->  enable reset
+#                               0x3  -->  external source & enable reset
+MDPP16.$moduleName.TsSource: 			$tsSource
+
+# timestamp divisor (0x6098)
+MDPP16.$moduleName.TsDivisor: 			$tsDivisor
+%%End(Counters)%%
+
+%%Begin(Multiplicity)%%
+
+#-----------------------------------------------------------------------------
+# Multiplicity (0x60B0 / 0x60B2)
+#-----------------------------------------------------------------------------
+
+MDPP16.$moduleName.MultHighLimit:			$multHighLimit
+MDPP16.$moduleName.MultLowLimit:			$multLowLimit
+%%End(Multiplicity)%%
+
+%%Begin(ChannelSettings)%%
+
+# MDPP16.....All: N (N >= 0)  -> set ALL channels to N
+# MDPP16.....All: -1          -> use indivual settings
+
+# TF integration differentiation (0x6110)
+#                                 (common for 2 selected channels, in units of 12.5ns)
+#                                 2 (25ns, default) ... 127 (1.6us)
+MDPP16.$moduleName.TFIntDiff.All:           $tfIntDiffAll
+
+MDPP16.$moduleName.TFIntDiff.0:             $tfIntDiff0
+MDPP16.$moduleName.TFIntDiff.2:             $tfIntDiff2
+MDPP16.$moduleName.TFIntDiff.4:             $tfIntDiff4
+MDPP16.$moduleName.TFIntDiff.6:             $tfIntDiff6
+MDPP16.$moduleName.TFIntDiff.8:             $tfIntDiff8
+MDPP16.$moduleName.TFIntDiff.10:            $tfIntDiff10
+MDPP16.$moduleName.TFIntDiff.12:            $tfIntDiff12
+MDPP16.$moduleName.TFIntDiff.14:            $tfIntDiff14
+
+# Pole Zero decay time (0x6112/0x6114)
+#                                 (in units of 12.5ns)
+#                                 64 (0.8us) ... 64k (800us, default)
+MDPP16.$moduleName.PoleZero.All:			$pzAll
+
+MDPP16.$moduleName.PoleZero.0:              $pz0
+MDPP16.$moduleName.PoleZero.1:              $pz1
+MDPP16.$moduleName.PoleZero.2:              $pz2
+MDPP16.$moduleName.PoleZero.3:              $pz3
+MDPP16.$moduleName.PoleZero.4:              $pz4
+MDPP16.$moduleName.PoleZero.5:              $pz5
+MDPP16.$moduleName.PoleZero.6:              $pz6
+MDPP16.$moduleName.PoleZero.7:              $pz7
+MDPP16.$moduleName.PoleZero.8:              $pz8
+MDPP16.$moduleName.PoleZero.9:              $pz9
+MDPP16.$moduleName.PoleZero.10:             $pz10
+MDPP16.$moduleName.PoleZero.11:             $pz11
+MDPP16.$moduleName.PoleZero.12:             $pz12
+MDPP16.$moduleName.PoleZero.13:             $pz13
+MDPP16.$moduleName.PoleZero.14:             $pz14
+MDPP16.$moduleName.PoleZero.15:             $pz15
+
+# Gain (0x611A)
+#                                 (common for 2 selected channels, gain * 100)
+#                                 200 (2, default) ... 25000 (250)
+MDPP16.$moduleName.Gain.All:                $gainAll
+
+MDPP16.$moduleName.Gain.0:                  $gain0
+MDPP16.$moduleName.Gain.2:                  $gain2
+MDPP16.$moduleName.Gain.4:                  $gain4
+MDPP16.$moduleName.Gain.6:                  $gain6
+MDPP16.$moduleName.Gain.8:                  $gain8
+MDPP16.$moduleName.Gain.10:                 $gain10
+MDPP16.$moduleName.Gain.12:                 $gain12
+MDPP16.$moduleName.Gain.14:                 $gain14
+
+# Threshold (0x611C/0x611E)
+#                                0 .. 64k
+MDPP16.$moduleName.Thresh.All:				$thrAll
+
+MDPP16.$moduleName.Thresh.0:                 $thr0
+MDPP16.$moduleName.Thresh.1:                 $thr1
+MDPP16.$moduleName.Thresh.2:                 $thr2
+MDPP16.$moduleName.Thresh.3:                 $thr3
+MDPP16.$moduleName.Thresh.4:                 $thr4
+MDPP16.$moduleName.Thresh.5:                 $thr5
+MDPP16.$moduleName.Thresh.6:                 $thr6
+MDPP16.$moduleName.Thresh.7:                 $thr7
+MDPP16.$moduleName.Thresh.8:                 $thr8
+MDPP16.$moduleName.Thresh.9:                 $thr9
+MDPP16.$moduleName.Thresh.10:                $thr10
+MDPP16.$moduleName.Thresh.11:                $thr11
+MDPP16.$moduleName.Thresh.12:                $thr12
+MDPP16.$moduleName.Thresh.13:                $thr13
+MDPP16.$moduleName.Thresh.14:                $thr14
+MDPP16.$moduleName.Thresh.15:                $thr15
+
+# Shaping time (0x6124)
+#                                 (common for 2 selected channels)
+#                                 8 (100ns) ... 2000 (25us), default 64 (800ns)
+MDPP16.$moduleName.Shaping.All:             $shapeAll
+
+MDPP16.$moduleName.Shaping.0:               $shape0
+MDPP16.$moduleName.Shaping.2:               $shape2
+MDPP16.$moduleName.Shaping.4:               $shape4
+MDPP16.$moduleName.Shaping.6:               $shape6
+MDPP16.$moduleName.Shaping.8:               $shape8
+MDPP16.$moduleName.Shaping.10:              $shape10
+MDPP16.$moduleName.Shaping.12:              $shape12
+MDPP16.$moduleName.Shaping.14:              $shape14
+
+# Baseline Restore (0x6126)
+#                                 (common for 2 selected channels)
+#                                 0 --> off
+#                                 1 --> soft (= 8x shaping)
+#                                 2 --> strict (= 4x shaping)
+MDPP16.$moduleName.BLRes.All:             $blrAll
+
+MDPP16.$moduleName.BLRes.0:               $blr0
+MDPP16.$moduleName.BLRes.2:               $blr2
+MDPP16.$moduleName.BLRes.4:               $blr4
+MDPP16.$moduleName.BLRes.6:               $blr6
+MDPP16.$moduleName.BLRes.8:               $blr8
+MDPP16.$moduleName.BLRes.10:              $blr10
+MDPP16.$moduleName.BLRes.12:              $blr12
+MDPP16.$moduleName.BLRes.14:              $blr14
+
+# Reset (0x6128)
+#                                 (common for 2 selected channels)
+MDPP16.$moduleName.Reset.All:             $resAll
+
+MDPP16.$moduleName.Reset.0:               $res0
+MDPP16.$moduleName.Reset.2:               $res2
+MDPP16.$moduleName.Reset.4:               $res4
+MDPP16.$moduleName.Reset.6:               $res6
+MDPP16.$moduleName.Reset.8:               $res8
+MDPP16.$moduleName.Reset.10:              $res10
+MDPP16.$moduleName.Reset.12:              $res12
+MDPP16.$moduleName.Reset.14:              $res14
+
+# Rise time (0x612A)
+#                                 (common for 2 selected channels)
+MDPP16.$moduleName.Rise.All:              $riseAll
+
+MDPP16.$moduleName.Rise.0:                $rise0
+MDPP16.$moduleName.Rise.2:                $rise2
+MDPP16.$moduleName.Rise.4:                $rise4
+MDPP16.$moduleName.Rise.6:                $rise6
+MDPP16.$moduleName.Rise.8:                $rise8
+MDPP16.$moduleName.Rise.10:               $rise10
+MDPP16.$moduleName.Rise.12:               $rise12
+MDPP16.$moduleName.Rise.14:               $rise14
+
+%%End(ChannelSettings)%%
+
+%%EndOfCode%%
+%%MODULE_SETTINGS%%
+
