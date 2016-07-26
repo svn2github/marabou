@@ -101,6 +101,7 @@
 #pragma link C++ class TMrbMesytec_Madc32;
 #pragma link C++ class TMrbMesytec_Mqdc32;
 #pragma link C++ class TMrbMesytec_Mtdc32;
+#pragma link C++ class TMrbMesytec_Mdpp16;
 #pragma link C++ class TMrbGassiplex;
 #pragma link C++ class TMrbVulomTB;
 #pragma link C++ class TMrbModuleRaw;

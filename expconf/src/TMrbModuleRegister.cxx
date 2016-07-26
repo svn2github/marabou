@@ -80,6 +80,8 @@ TMrbModuleRegister::TMrbModuleRegister(TMrbModule * Module, Int_t NofChannels, T
 			fPatternMode = kTRUE;
 		}
 	}
+	
+	fIsBoolean = kFALSE;
 }
 
 Bool_t TMrbModuleRegister::SetFromResource(Int_t Value) {
@@ -401,7 +403,7 @@ void TMrbModuleRegister::Print(ostream & OutStrm, const Char_t * Prefix) const {
 	accessMode = "";
 	if (this->IsReadOnly()) accessMode = "ReadOnly"; else if (this->IsWriteOnly()) accessMode = "WriteOnly";
 
-	OutStrm << Prefix << "Register name  : "	<< this->GetName() << endl;
+	OutStrm << Prefix << "Register name  : "	<< this->GetName() << " (" << this->GetIndex() << ")"<< endl;
 	OutStrm << Prefix << "Parent module  : "	<< this->Parent()->GetName() << endl;
 	OutStrm << Prefix << "Type           : "	<< (this->Parent()->IsCamac() ? "CAMAC " : "VME ")
 												<< (this->IsCommon() ? "Common " : "per Channel ")
@@ -417,8 +419,12 @@ void TMrbModuleRegister::Print(ostream & OutStrm, const Char_t * Prefix) const {
 	OutStrm << endl;
 
 	if (!this->IsPatternMode()) {
-		OutStrm << Prefix << "Lower limit    : "	<< fLowerLimit << endl;
-		OutStrm << Prefix << "Upper limit    : "	<< fUpperLimit << endl;
+		OutStrm << Prefix << "Lower limit    : "	<< fLowerLimit;
+		if (this->HasBitNames()) fLofBitNames->PrintNames(OutStrm, " = ", fLowerLimit, kFALSE);
+		OutStrm << endl;
+		OutStrm << Prefix << "Upper limit    : "	<< fUpperLimit;
+		if (this->HasBitNames()) fLofBitNames->PrintNames(OutStrm, " = ", fUpperLimit, kFALSE);
+		OutStrm << endl;
 	}
 
 	if (this->IsCommon()) {

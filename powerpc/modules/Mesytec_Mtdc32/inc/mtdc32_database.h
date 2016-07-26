@@ -27,6 +27,7 @@
 
 
 #define MTDC_NOF_CHANNELS	32
+#define MTDC_NOF_BANKS		2
 
 struct s_mtdc32 {
 	char moduleName[100];
@@ -52,11 +53,11 @@ struct s_mtdc32 {
 	uint16_t tdcResolution;
 	uint16_t outputFormat;
 	uint16_t bufferThresh;
-	int16_t winStart[2];
-	int16_t winWidth[2];
-	uint16_t trigSrcTrig[2];
-	uint16_t trigSrcChan[2];
-	uint16_t trigSrcBank[2];
+	int16_t winStart[MTDC_NOF_BANKS];
+	int16_t winWidth[MTDC_NOF_BANKS];
+	uint16_t trigSrcTrig[MTDC_NOF_BANKS];
+	uint16_t trigSrcChan[MTDC_NOF_BANKS];
+	uint16_t trigSrcBank[MTDC_NOF_BANKS];
 	uint16_t firstHit;
 	uint16_t negEdge;
 	uint16_t eclTerm;
@@ -68,11 +69,11 @@ struct s_mtdc32 {
 	uint16_t nimBusy;
 	uint16_t pulserStatus;
 	uint16_t pulserPattern;
-	uint16_t inputThresh[2];
+	uint16_t inputThresh[MTDC_NOF_BANKS];
 	uint16_t ctraTsSource;
 	uint16_t ctraTsDivisor;
-	uint16_t multHighLimit[2];
-	uint16_t multLowLimit[2];
+	uint16_t multHighLimit[MTDC_NOF_BANKS];
+	uint16_t multLowLimit[MTDC_NOF_BANKS];
 
 	int memorySize;
 

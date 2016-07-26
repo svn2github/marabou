@@ -259,6 +259,7 @@ void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint
 {
 	uint16_t trigSource;
 	int addr;
+	trigSource = 0;
 	if (trig > 0) {
 		trigSource = trig & MTDC32_TRIG_SRC_TRIG_MASK;
 	} else if (chan > 0) {
@@ -355,7 +356,6 @@ void mtdc32_setEclTerm_db(struct s_mtdc32 * s) { mtdc32_setEclTerm(s, s->eclTerm
 void mtdc32_setEclTerm(struct s_mtdc32 * s, uint16_t term)
 {
 	SET16(s->md->vmeBase, MTDC32_ECL_TERMINATORS, term & MTDC32_ECL_TERM_MASK);
-	getchar();
 }
 
 uint16_t mtdc32_getEclTerm(struct s_mtdc32 * s)
@@ -551,6 +551,7 @@ bool_t mtdc32_fillStruct(struct s_mtdc32 * s, char * file)
 	char mnUC[256];
 	const char * sp;
 	int i;
+	int val;
 
 	if (root_env_read(file) < 0) {
 		sprintf(msg, "[%sfill_struct] %s: Error reading file %s", s->mpref, s->moduleName, file);
@@ -652,7 +653,8 @@ bool_t mtdc32_fillStruct(struct s_mtdc32 * s, char * file)
 
 	for (i = 0; i <= 1; i++) {
 		sprintf(res, "MTDC32.%s.TrigSrcChan.%d", mnUC, i);
-		s->trigSrcChan[i] = root_env_getval_i(res, 0);
+		val = root_env_getval_i(res, 0);
+		s->trigSrcChan[i] = (val >= 0) ? (MTDC32_TRIG_SRC_CHAN_ACTIVE | (val & MTDC32_TRIG_SRC_CHAN_MASK)) : 0;
 	}
 
 	for (i = 0; i <= 1; i++) {
@@ -869,6 +871,7 @@ void mtdc32_printDb(struct s_mtdc32 * s)
 		printf("Window start %d    : %d\n", bnk, s->winStart[bnk]);
 		printf("Window width %d    : %d\n", bnk, s->winWidth[bnk]);
 	}
+	for (bnk = 0; bnk <= 1; bnk++) printf("Trigger source %d         : %x\n", bnk, mtdc32_getTrigSource(s, bnk));
 	printf("First hit         : %d\n", s->firstHit);
 	printf("Negative edge     : %d\n", s->negEdge);
 	printf("Ecl termination   : %#x\n", s->eclTerm);
@@ -917,11 +920,7 @@ int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer)
 		numData = nd;
 		nd = (int) mtdc32_getFifoLength(s);
 	}
-	if (numData == 0) {
-		sprintf(msg, "[%sreadout] %s: FIFO empty", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-		return(0);
-	}
+	if (numData == 0) return(0);
 
 	if (tryIt <= 0) {
 		sprintf(msg, "[%sreadout] %s: Error while reading event data (numData=%d != %d)", s->mpref, s->moduleName, numData, nd);

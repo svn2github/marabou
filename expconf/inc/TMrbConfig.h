@@ -483,10 +483,11 @@ class TMrbConfig : public TNamed {
 									kModuleAdc			=	BIT(7),
 									kModuleTdc			=	BIT(8),
 									kModuleQdc			=	BIT(9),
-									kModulePatternUnit	=	BIT(10),
-									kModuleScaler		=	BIT(11),
-									kModuleIOReg		=	BIT(12),
-									kModuleControl		=	BIT(13)
+									kModuleDig			=	BIT(10),
+									kModulePatternUnit	=	BIT(11),
+									kModuleScaler		=	BIT(12),
+									kModuleIOReg		=	BIT(13),
+									kModuleControl		=	BIT(14)
 								};
 
 		enum EMrbManufacturers	{	kManufactOther		=	0,
@@ -550,6 +551,7 @@ class TMrbConfig : public TNamed {
 									kModuleMesytecMqdc32	=	kManufactMesytec + 0x27,
 									kModuleGassiplex		=	kManufactTUM + 0x28,
 									kModuleMesytecMtdc32	=	kManufactMesytec + 0x29,
+									kModuleMesytecMdpp16	=	kManufactMesytec + 0x2a,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};

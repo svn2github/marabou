@@ -66,7 +66,7 @@ class TMrbModuleRegister : public TObject {
 		Bool_t SetFromResource(Int_t Value);						// set (common) value from resource database
 
 		inline TMrbModule * Parent() const { return(fParent); };		 	// return addr of parent module
-		inline Int_t GetIndex() { return(fRegDef->GetIndex()); };	// register index
+		inline Int_t GetIndex() const { return(fRegDef->GetIndex()); };	// register index
 		inline const Char_t * GetName() const { return(fRegDef->GetName()); };	// register name
 		inline void Reset() { IsCommon() ? Set(fInitValue) : Set(-1, fInitValue); };	// reset to initial values
 

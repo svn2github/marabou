@@ -44,7 +44,8 @@ class TMrbMesytec_Mtdc32 : public TMrbVMEModule {
 
 		enum				{	kNofChannels	=	34	};
 		
-		enum				{	kChanAct		=	0x20	};
+		enum				{	kChanMask		=	0x1F	};
+		enum				{	kChanAct		=	BIT(7)	};
 
 		enum EMrbRegisters	{	kRegAddrSource,
 								kRegAddrReg,

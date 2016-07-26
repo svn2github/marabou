@@ -521,7 +521,6 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetMultiEvent(mtdcEnv->Get(moduleName.Data(), "MultiEvent", kMultiEvtNo));
 	this->SetXferData(mtdcEnv->Get(moduleName.Data(), "XferData", 0));
 	this->SetMarkingType(mtdcEnv->Get(moduleName.Data(), "MarkingType", kMarkingTypeEvent));
-	this->SetBankOperation(mtdcEnv->Get(moduleName.Data(), "BankOperation", kBankOprConnected));
 	this->SetTdcResolution(mtdcEnv->Get(moduleName.Data(), "TdcResolution", kTdcRes500));
 	this->SetOutputFormat(mtdcEnv->Get(moduleName.Data(), "OutputFormat", kOutFmtTimeDiff));
 	this->SetWinStart(mtdcEnv->Get(moduleName.Data(), "WinStart", "0", kWinStartDefault), 0);
@@ -535,11 +534,11 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 			this->SetTrigSource(src & 0x3, 0, 0, bank);
 		} else {
 			src = mtdcEnv->Get(moduleName.Data(), "TrigSrcChan", b, 0);
-			if (src != 0) {
-				this->SetTrigSource(0, kChanAct | (src & 0x1F), 0, bank);
+			if (src >= 0) {
+				this->SetTrigSource(0, kChanAct | (src & kChanMask), 0, bank);
 			} else {
 				src = mtdcEnv->Get(moduleName.Data(), "TrigSrcBank", b, 0);
-				if (src != 0) this->SetTrigSource(0, 0, src & 0x3, bank);
+				this->SetTrigSource(0, 0, src & 0x3, bank);
 			}
 		}
 		b = "1";
