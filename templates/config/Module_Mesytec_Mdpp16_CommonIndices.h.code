@@ -1,0 +1,19 @@
+%%BeginOfCode%%
+// MTDC32 tdc resolution
+enum EMrbMdppAdcResolution			{	kMrbMdppAdcRes16	=	0,
+										kMrbMdppAdcRes15,
+										kMrbMdppAdcRes14,
+										kMrbMdppAdcRes13,
+										kMrbMdppAdcRes12
+									};
+
+enum EMrbMdppTdcResolution			{	kMrbMdppTdcRes781_32		=	5,
+										kMrbMdppTdcRes391_64		=	4,
+										kMrbMdppTdcRes195_128		=	3,
+										kMrbMdppTdcRes98_256		=	2,
+										kMrbMdppTdcRes49_512		=	1,
+										kMrbMdppTdcRes24_1024		=	0
+									};
+%%EndOfCode%%
+%%MODULE_SPECIAL_ENUM%%
+
