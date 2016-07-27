@@ -230,6 +230,11 @@ TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAdd
 
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
 
+				fMCSTSignature = 0;
+				fCBLTSignature = 0;
+				fFirstInChain = kFALSE;
+				fLastInChain = kFALSE;
+
 				gMrbConfig->AddModule(this);	// append to list of modules
 				gDirectory->Append(this);
 			} else {
@@ -570,10 +575,10 @@ TEnv * TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	this->RepairRawData(madcEnv->Get(moduleName.Data(), "RepairRawData", kFALSE));
 	this->SetAddressSource(madcEnv->Get(moduleName.Data(), "AddressSource", kAddressBoard));
 	this->SetAddressRegister(madcEnv->Get(moduleName.Data(), "AddressRegister", 0));
-	this->SetMcstSignature(madcEnv->Get(moduleName.Data(), "MCSTSignature", 0x0));
-	this->SetCbltSignature(madcEnv->Get(moduleName.Data(), "CBLTSignature", 0x0));
-	this->SetFirstInChain(madcEnv->Get(moduleName.Data(), "FirstInChain", kTRUE));
-	this->SetLastInChain(madcEnv->Get(moduleName.Data(), "LastInChain", kTRUE));
+	this->SetMcstSignature(madcEnv->Get(moduleName.Data(), "MCSTSignature", (Int_t) fMCSTSignature));
+	this->SetCbltSignature(madcEnv->Get(moduleName.Data(), "CBLTSignature", (Int_t) fCBLTSignature));
+	this->SetFirstInChain(madcEnv->Get(moduleName.Data(), "FirstInChain", fFirstInChain));
+	this->SetLastInChain(madcEnv->Get(moduleName.Data(), "LastInChain", fLastInChain));
 	Int_t mid = madcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
 	if (mid == 0xFF) mid = this->GetSerial();
 	this->SetModuleId(mid);
@@ -731,8 +736,8 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$addrSource", this->GetAddressSource());
 						tmpl.Substitute("$addrReg", this->GetAddressRegister());
 						tmpl.Substitute("$moduleId", this->GetModuleId());
-						tmpl.Substitute("$mcstSignature", fMCSTSignature, 16);
-						tmpl.Substitute("$cbltSignature", fCBLTSignature, 16);
+						tmpl.Substitute("$mcstSignature", (Int_t) fMCSTSignature);
+						tmpl.Substitute("$cbltSignature", (Int_t) fCBLTSignature);
 						tmpl.Substitute("$firstInChain", (fFirstInChain ? "TRUE" : "FALSE"));
 						tmpl.Substitute("$lastInChain", (fLastInChain ? "TRUE" : "FALSE"));
 						tmpl.WriteCode(settings);

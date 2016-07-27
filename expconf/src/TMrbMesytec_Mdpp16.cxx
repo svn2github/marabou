@@ -251,6 +251,11 @@ TMrbMesytec_Mdpp16::TMrbMesytec_Mdpp16(const Char_t * ModuleName, UInt_t BaseAdd
 
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
 				
+				fMCSTSignature = 0;
+				fCBLTSignature = 0;
+				fFirstInChain = kFALSE;
+				fLastInChain = kFALSE;
+
 				fAllTFIntDiff = kValueToBeInit;
 				fAllPoleZero = kValueToBeInit;
 				fAllGain = kValueToBeInit;
@@ -732,10 +737,10 @@ TEnv * TMrbMesytec_Mdpp16::UseSettings(const Char_t * SettingsFile) {
 	this->RepairRawData(mdppEnv->Get(moduleName.Data(), "RepairRawData", kFALSE));
 	this->SetAddressSource(mdppEnv->Get(moduleName.Data(), "AddressSource", TMrbMesytec_Mdpp16::kAddressBoard));
 	this->SetAddressRegister(mdppEnv->Get(moduleName.Data(), "AddressRegister", 0));
-	this->SetMcstSignature(mdppEnv->Get(moduleName.Data(), "MCSTSignature", 0x0));
-	this->SetCbltSignature(mdppEnv->Get(moduleName.Data(), "CBLTSignature", 0x0));
-	this->SetFirstInChain(mdppEnv->Get(moduleName.Data(), "FirstInChain", kTRUE));
-	this->SetLastInChain(mdppEnv->Get(moduleName.Data(), "LastInChain", kTRUE));
+	this->SetMcstSignature(mdppEnv->Get(moduleName.Data(), "MCSTSignature", (Int_t) fMCSTSignature));
+	this->SetCbltSignature(mdppEnv->Get(moduleName.Data(), "CBLTSignature", (Int_t) fCBLTSignature));
+	this->SetFirstInChain(mdppEnv->Get(moduleName.Data(), "FirstInChain", fFirstInChain));
+	this->SetLastInChain(mdppEnv->Get(moduleName.Data(), "LastInChain", fLastInChain));
 	Int_t mid = mdppEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
 	if (mid == 0xFF) mid = this->GetSerial();
 	this->SetModuleId(mid);
@@ -977,10 +982,10 @@ Bool_t TMrbMesytec_Mdpp16::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$addrReg", this->GetAddressRegister());
 						tmpl.Substitute("$moduleId", this->GetModuleId());
 						
-						tmpl.Substitute("$MCSTSignature", 0);
-						tmpl.Substitute("$CBLTSignature", 0);
-						tmpl.Substitute("$FirstInChain", 0);
-						tmpl.Substitute("$LastInChain", 0);
+						tmpl.Substitute("$mcstSignature", (Int_t) fMCSTSignature);
+						tmpl.Substitute("$cbltSignature", (Int_t) fCBLTSignature);
+						tmpl.Substitute("$firstInChain", fFirstInChain ? "TRUE" : "FALSE");
+						tmpl.Substitute("$lastInChain", fLastInChain ? "TRUE" : "FALSE");
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%FifoHandling%");

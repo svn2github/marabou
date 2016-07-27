@@ -216,6 +216,11 @@ TMrbMesytec_Mqdc32::TMrbMesytec_Mqdc32(const Char_t * ModuleName, UInt_t BaseAdd
 
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
 
+				fMCSTSignature = 0;
+				fCBLTSignature = 0;
+				fFirstInChain = kFALSE;
+				fLastInChain = kFALSE;
+
 				gMrbConfig->AddModule(this);	// append to list of modules
 				gDirectory->Append(this);
 			} else {
@@ -551,10 +556,10 @@ TEnv * TMrbMesytec_Mqdc32::UseSettings(const Char_t * SettingsFile) {
 	this->RepairRawData(mqdcEnv->Get(moduleName.Data(), "RepairRawData", kFALSE));
 	this->SetAddressSource(mqdcEnv->Get(moduleName.Data(), "AddressSource", kAddressBoard));
 	this->SetAddressRegister(mqdcEnv->Get(moduleName.Data(), "AddressRegister", 0));
-	this->SetMcstSignature(mqdcEnv->Get(moduleName.Data(), "MCSTSignature", 0x0));
-	this->SetCbltSignature(mqdcEnv->Get(moduleName.Data(), "CBLTSignature", 0x0));
-	this->SetFirstInChain(mqdcEnv->Get(moduleName.Data(), "FirstInChain", kTRUE));
-	this->SetLastInChain(mqdcEnv->Get(moduleName.Data(), "LastInChain", kTRUE));
+	this->SetMcstSignature(mqdcEnv->Get(moduleName.Data(), "MCSTSignature", (Int_t) fMCSTSignature));
+	this->SetCbltSignature(mqdcEnv->Get(moduleName.Data(), "CBLTSignature", (Int_t) fCBLTSignature));
+	this->SetFirstInChain(mqdcEnv->Get(moduleName.Data(), "FirstInChain", fFirstInChain));
+	this->SetLastInChain(mqdcEnv->Get(moduleName.Data(), "LastInChain", fLastInChain));
 	Int_t mid = mqdcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
 	if (mid == 0xFF) mid = this->GetSerial();
 	this->SetModuleId(mid);
@@ -704,6 +709,10 @@ Bool_t TMrbMesytec_Mqdc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$addrSource", this->GetAddressSource());
 						tmpl.Substitute("$addrReg", this->GetAddressRegister());
 						tmpl.Substitute("$moduleId", this->GetModuleId());
+						tmpl.Substitute("$mcstSignature", (Int_t) fMCSTSignature);
+						tmpl.Substitute("$cbltSignature", (Int_t) fCBLTSignature);
+						tmpl.Substitute("$firstInChain", fFirstInChain ? "TRUE" : "FALSE");
+						tmpl.Substitute("$lastInChain", fLastInChain ? "TRUE" : "FALSE");
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%FifoHandling%");
