@@ -713,7 +713,7 @@ TEnv * TMrbMesytec_Mdpp16::UseSettings(const Char_t * SettingsFile) {
 	} else {
 		gMrbLog->Err() << "Settings file not found - " << SettingsFile << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		TString sf = Form("%sSettings.default", this->GetName());
+		TString sf = Form("%sSettings.rc.default", this->GetName());
 		gMrbLog->Err()	<< "Creating DEFAULT settings file - " << sf << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
 		gMrbLog->Err()	<< "Please edit this file and then rename it to \"" << SettingsFile << "\"" << endl;
@@ -757,8 +757,8 @@ TEnv * TMrbMesytec_Mdpp16::UseSettings(const Char_t * SettingsFile) {
 	if (src != 0) {
 		this->SetTrigSource(src & 0x3, 0, 0);
 	} else {
-		src = mdppEnv->Get(moduleName.Data(), "TrigSrcChan", 0);
-		if (src != 0) {
+		src = mdppEnv->Get(moduleName.Data(), "TrigSrcChan", -1);
+		if (src >= 0) {
 			this->SetTrigSource(0, kChanAct | (src & 0x1F), 0);
 		} else {
 			src = mdppEnv->Get(moduleName.Data(), "TrigSrcBank", 0);
@@ -766,8 +766,8 @@ TEnv * TMrbMesytec_Mdpp16::UseSettings(const Char_t * SettingsFile) {
 		}
 	}
 
-	src = mdppEnv->Get(moduleName.Data(), "TrigOutChan", 0);
-	if (src != 0) {
+	src = mdppEnv->Get(moduleName.Data(), "TrigOutChan", -1);
+	if (src >= 0) {
 		this->SetTrigOutput(kChanAct | (src & 0x1F), 0);
 	} else {
 		src = mdppEnv->Get(moduleName.Data(), "TrigOutBank", 0);

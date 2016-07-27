@@ -551,7 +551,7 @@ TEnv * TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	} else {
 		gMrbLog->Err() << "Settings file not found - " << SettingsFile << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		TString sf = Form("%sSettings.default", this->GetName());
+		TString sf = Form("%sSettings.rc.default", this->GetName());
 		gMrbLog->Err()	<< "Creating DEFAULT settings file - " << sf << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
 		gMrbLog->Err()	<< "Please edit this file and then rename it to \"" << SettingsFile << "\"" << endl;
