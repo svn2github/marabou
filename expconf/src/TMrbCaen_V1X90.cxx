@@ -528,6 +528,35 @@ TMrbNamedX * TMrbCaen_V1X90::GetFifoSize() {
 	return(s);
 }
 
+Bool_t TMrbCaen_V1X90::IsChannelEnabled(Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCaen_V1X90::IsChannelEnabled
+// Purpose:        Test if a channel is enabled 
+// Arguments:      Int_t Channel    -- channel number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Test if a channel is enabled 
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Channel < 0 || Channel >= TMrbCaen_V1X90::kNofChannels) {
+		gMrbLog->Err() << "Channel out of range - " << Channel << " (should be in [0," << (TMrbCaen_V1X90::kNofChannels - 1) << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "IsChannelEnabled");
+		return(kFALSE);
+	}
+
+	Int_t idx = Channel / 16;
+	Int_t chn = Channel - idx * 16;
+	UInt_t bit = 1 << chn;
+	
+	if ( fChannelPattern[idx] & bit ) {
+		return(kTRUE);
+	} else {
+		return(kFALSE);
+	}
+}
+
 Bool_t TMrbCaen_V1X90::EnableChannel(Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
