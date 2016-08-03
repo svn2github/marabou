@@ -68,7 +68,7 @@ class TPolControl : public TObject {
 								const Char_t * Type = "A", const Char_t * Comment = NULL);
 		TMrbNamedX * Find(const Char_t * Name, const Char_t * Type = "A");
 		TMrbNamedX * Find(Int_t Subdev, Int_t Channel, const Char_t * Type = "A");
-		TMrbNamedX * Find(Int_t AbsChannel, const Char_t * Type = "A");
+//		TMrbNamedX * Find(Int_t AbsChannel, const Char_t * Type = "A"); // not yet implemented
 
 		TH1F * Plot(	const Char_t * HistoName,					// plot, relative addr
 						Int_t Subdev, Int_t X, Int_t Y,
