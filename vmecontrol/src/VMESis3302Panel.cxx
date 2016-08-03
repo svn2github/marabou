@@ -805,6 +805,7 @@ void VMESis3302Panel::UpdateGUI(TC2LSis3302 * Module, Int_t Channel) {
 	
 	if (Channel == kSis3302AllChans) Channel = curChannel;
 	if (Module == NULL) Module = curModule;
+	if (Module == NULL) return;
 
 	Module->SetVerbose(gVMEControlData->IsVerbose());
 	Module->SetOffline(gVMEControlData->IsOffline());

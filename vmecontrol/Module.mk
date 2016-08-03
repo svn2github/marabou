@@ -49,7 +49,7 @@ OVMECLIBS      := $(LPATH)/libTMrbC2Lynx.$(SOEXT) $(LPATH)/libTMrbUtils.$(SOEXT)
 include/%.h:    $(VMECDIRI)/%.h
 		cp $< $@
 
-$(VMECEXE):     | $(OVMECLIBS) $(VMECSO)$(VMECO) $(VMECMAINO)
+$(VMECEXE):     $(OVMECLIBS) $(VMECSO)$(VMECO) $(VMECMAINO)
 #		@echo "sources: $(VMECS)"
 		@echo "OVMECLIBS: $(OVMECLIBS)"
 		@echo "$(VMECEXE) linking exe ----------------------------------"

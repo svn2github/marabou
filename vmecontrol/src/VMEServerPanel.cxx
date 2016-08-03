@@ -161,31 +161,12 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 // VME host
 	TMrbLofNamedX lofHosts;
 	TString hostNames;
-	Int_t selIdx = -1;
-	TString lynxOs = "";
-	TString vmeHost;
-	gVMEControlData->Vctrlrc()->Get(vmeHost, ".HostName", "");
-#ifdef PPC_NEW_ADDRESS
-	if (vmeHost.IsNull()) gVMEControlData->Rootrc()->Get(vmeHost, ".HostName", "gar-ex-ppc01");
-#else
-	if (vmeHost.IsNull()) gVMEControlData->Rootrc()->Get(vmeHost, ".HostName", "ppc-0");
-#endif
-	for (Int_t i = 0; i < kVMENofPPCs; i++) {
-		if (i > 0) hostNames += ":";
-#ifdef PPC_NEW_ADDRESS
-		TString ppc = Form("gar-ex-ppc%02d", i + 1);
-#else
-		TString ppc = Form("ppc-%d", i);
-#endif
-		if (ppc.CompareTo(vmeHost.Data()) == 0) {
-			selIdx = i + 1;
-			lynxOs = (i >= 10) ? "3.1" : "2.5";
-		}
-		hostNames += ppc;
-	}
+	gVMEControlData->Vctrlrc()->Get(hostNames, ".PPCNames", "");
+	if (hostNames.IsNull()) gVMEControlData->Vctrlrc()->Get(hostNames, ".HostName", "");
+	if (hostNames.IsNull()) gVMEControlData->Rootrc()->Get(hostNames, ".HostName", "<undef>");
 	lofHosts.AddNamedX(hostNames.Data());
 	fSelectHost = new TGMrbLabelCombo(fServerFrame, "VME Host",	&lofHosts,
-																kVMEServerHost, selIdx,
+																kVMEServerHost, 1,
 																frameWidth/3, kLEHeight, frameWidth/8,
 																frameGC, labelGC, comboGC, labelGC);
 	fServerFrame->AddFrame(fSelectHost, frameGC->LH());
@@ -286,13 +267,8 @@ Bool_t VMEServerPanel::Connect() {
 	}
 
 	TString ppc = fSelectHost->GetText();
-#ifdef PPC_NEW_ADDRESS
-	if (ppc.Contains("gar-ex-ppc")) {
-		TString pn = ppc(10, 2);
-#else
 	if (ppc.Contains("ppc-")) {
 		TString pn = ppc(4, 2);
-#endif
 	} else {
 		gMrbLog->Err()	<< "Illegal host name - " << ppc << endl;
 		gMrbLog->Flush(this->ClassName(), "Connect");

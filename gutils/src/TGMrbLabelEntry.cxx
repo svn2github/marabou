@@ -99,6 +99,7 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 	fFrameId = FrameId;
 
 	fBase = 10;
+	fWidth = EntryWidth/10;
 	fPrecision = 2;
 	fType = TGMrbLabelEntry::kGMrbEntryTypeChar;
 	fLabel = NULL;
