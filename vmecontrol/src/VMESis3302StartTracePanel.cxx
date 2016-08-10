@@ -1,4 +1,4 @@
-//__________________________________________________[C++ CLASS IMPLEMENTATION]
+//_________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 // ame:            VMESis3302StartTracePanel
 // Purpose:        A GUI to control a SIS 3302 adc
@@ -54,6 +54,8 @@ extern VMEControlData * gVMEControlData;
 extern TMrbLogger * gMrbLog;
 extern TMrbC2Lynx * gMrbC2Lynx;
 
+Bool_t gTraceCollection = kFALSE;
+
 static TC2LSis3302 * curModule = NULL;
 static Int_t curChannel = 0;
 static Int_t traceMode = 0;
@@ -79,8 +81,6 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	TGMrbLayout * comboGC;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-
-	fTraceCollection = kFALSE;
 
 // geometry
 	Int_t frameWidth = this->GetWidth();
@@ -288,7 +288,7 @@ void VMESis3302StartTracePanel::StartGUI() {
 	}
 
 	fSelectModule->Select(curModule->GetIndex());
-	fTraceCollection = kFALSE;
+	gTraceCollection = kFALSE;
 	fTraceFile = NULL;
 	fLofRhistos.Delete();
 	fLofEhistos.Delete();
@@ -308,7 +308,7 @@ void VMESis3302StartTracePanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fTraceCollection) {
+	if (gTraceCollection) {
 		gVMEControlData->MsgBox(this, "ModuleChanged", "Error", "Stop trace collection first");
 		return;
 	}
@@ -332,7 +332,7 @@ void VMESis3302StartTracePanel::PerformAction(Int_t FrameId, Int_t Selection) {
 
 	switch (Selection) {
 		case VMESis3302StartTracePanel::kVMESis3302StartStop:
-			if (fTraceCollection) this->StopTrace(); else this->StartTrace();
+			if (gTraceCollection) this->StopTrace(); else this->StartTrace();
 			break;
 		case VMESis3302StartTracePanel::kVMESis3302DumpTrace:
 			if (fDumpTrace) {
@@ -374,7 +374,7 @@ void VMESis3302StartTracePanel::TraceModeChanged(Int_t FrameId, Int_t Selection)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fTraceCollection) {
+	if (gTraceCollection) {
 		gVMEControlData->MsgBox(this, "TraceModeChanged", "Error", "Stop trace collection first");
 		return;
 	}
@@ -394,7 +394,7 @@ void VMESis3302StartTracePanel::ChannelChanged(Int_t FrameId, Int_t Selection) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fTraceCollection) {
+	if (gTraceCollection) {
 		gVMEControlData->MsgBox(this, "ChannelChanged", "Error", "Stop trace collection first");
 		return;
 	}
@@ -413,7 +413,7 @@ void VMESis3302StartTracePanel::StartTrace() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-    	Int_t chnPatt = fSelectChanPatt->GetActive();
+    Int_t chnPatt = fSelectChanPatt->GetActive();
 	curModule->SetTestBits(traceMode);
 
 	Int_t nofEvents = 1;
@@ -425,7 +425,7 @@ void VMESis3302StartTracePanel::StartTrace() {
 
 	this->InitializeHistos(chnPatt);
 
-	fTraceCollection = kTRUE;
+	gTraceCollection = kTRUE;
 	fStartStopButton->SetText("STOP");
 	fStartStopButton->SetBackgroundColor(gVMEControlData->fColorRed);
 	fStartStopButton->SetForegroundColor(gVMEControlData->fColorWhite);
@@ -436,7 +436,7 @@ void VMESis3302StartTracePanel::StartTrace() {
 	Int_t maxTraces = fMaxTraces->GetText2Int();
 	for (;;) {
 		gSystem->ProcessEvents();
-		if (!fTraceCollection) {
+		if (!gTraceCollection) {
 			curModule->StopTraceCollection();
 			break;
 		}
@@ -479,7 +479,7 @@ void VMESis3302StartTracePanel::StopTrace() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	fTraceCollection = kFALSE;
+	gTraceCollection = kFALSE;
 	fStartStopButton->SetText("Start");
 	fStartStopButton->SetBackgroundColor(gVMEControlData->fColorGreen);
 	fStartStopButton->SetForegroundColor(gVMEControlData->fColorWhite);
@@ -711,7 +711,7 @@ void VMESis3302StartTracePanel::WriteTrace() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fTraceCollection) {
+	if (gTraceCollection) {
 		gVMEControlData->MsgBox(this, "WriteTrace", "Error", "Stop trace collection first");
 		return;
 	} else if (fTraceFile == NULL) {
@@ -749,7 +749,7 @@ void VMESis3302StartTracePanel::KeyPressed(Int_t FrameId, Int_t Key) {
 
 	switch (Key) {
 		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
-			if (fTraceCollection) {
+			if (gTraceCollection) {
 				gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop trace collection first");
 				return;
 			}
@@ -757,7 +757,7 @@ void VMESis3302StartTracePanel::KeyPressed(Int_t FrameId, Int_t Key) {
 			gApplication->Terminate(0);
 			break;
 		case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-			if (fTraceCollection) {
+			if (gTraceCollection) {
 				gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop trace collection first");
 				return;
 			}

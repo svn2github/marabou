@@ -36,6 +36,8 @@ extern TMrbC2Lynx * gMrbC2Lynx;
 extern VMEControlData * gVMEControlData;
 extern TMrbLogger * gMrbLog;
 
+extern Bool_t gTraceCollection;
+
 ClassImp(VMESis3302Panel)
 
 const SMrbNamedXShort kVMEClockSource[] =
@@ -1561,8 +1563,20 @@ void VMESis3302Panel::RawDataLengthChanged(Int_t FrameId, Int_t EntryNo) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t rdl, rdlsav;
+
+	if (gTraceCollection) {
+		gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop trace collection first");
+		return;
+	}
+	
 	curModule->ReadRawDataSampleLength(rdlsav, curChannel);
 
+	if (gTraceCollection) {
+		gVMEControlData->MsgBox(this, "RawDataLengthChanged", "Error", "Stop trace collection first");
+		fRawDataLength->SetText(rdlsav, EntryNo);
+		return;
+	}
+	
 	rdl = fRawDataLength->GetText2Int(EntryNo);
 	if (!fRawDataLength->CheckRange(rdl, EntryNo, kTRUE, kTRUE)) {
 		fRawDataLength->SetText(rdlsav, EntryNo);

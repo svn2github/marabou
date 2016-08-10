@@ -135,7 +135,6 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		TGMrbLofKeyBindings fKeyBindings; 			// key bindings
 
 		Bool_t fDumpTrace;					// kTRUE if traces should be dumped
-		Bool_t fTraceCollection;				// kTRUE if started
 		TFile * fTraceFile;					// root file to store traces
 		Int_t fNofTracesWritten;
 

@@ -233,11 +233,10 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 	uxSys.GetDirName(dirName, loadDir.Data());			// will be identical
 	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
 	if (baseName1.CompareTo(baseName2.Data()) == 0) loadDir = dirName;	// double click: strip off last part
-
+	
 	if (!uxSys.IsDirectory(loadDir.Data())) {
-		errMsg = Form("Not a directory - %s, please go one level up", loadDir.Data());
-		gVMEControlData->MsgBox(this, "RestoreSettings", "Error", errMsg);
-		return(kFALSE);
+		uxSys.GetDirName(dirName, loadDir.Data());
+		loadDir = dirName;
 	}
 
 	Int_t nerr = 0;
