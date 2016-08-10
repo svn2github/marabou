@@ -136,8 +136,9 @@ MDPP16.$moduleName.WinWidth:			$winWidth
 #                               bit[1]  --> trig1
 MDPP16.$moduleName.TrigSrcTrig:        $trigSrcTrig
 
-#     (b) channel               0        --> off (default)
-#                               X+0 .. X+15 (X=32) --> 0 .. 15
+#     (b) channel               -1      --> off (default, X=0, C=0)
+#                               0 .. 31 --> chan CCCC (will set X=1)
+
 MDPP16.$moduleName.TrigSrcChan:        $trigSrcChan
 
 #     (c) bank                  bit[0]  --> bank on
@@ -153,8 +154,8 @@ MDPP16.$moduleName.FirstHit:            $trigFirstHit
 #           |0B|X0CCCC|00|
 #           *--*------*--*
 #
-#     (b) channel               0        --> off (default)
-#                               X+0 .. X+15 (X=32) --> 0 .. 15
+#     (b) channel               -1      --> off (default, X=0, C=0)
+#                               0 .. 31 --> chan CCCC (will set X=1)
 MDPP16.$moduleName.TrigOutChan:        $trigOutChan
 
 #     (c) bank                  bit[0]  --> bank on
