@@ -56,7 +56,7 @@ class TMrbSubevent : public TNamed {
 
 		~TMrbSubevent() {									// dtor
 			fLofParams.Delete();							// remove objects stored in TMrbLofNamdeXs
-			fLofModules.Delete();
+//			fLofModules.Delete();
 		};
 
 		TMrbSubevent(const TMrbSubevent &) : TNamed() {};			// default copy ctor
