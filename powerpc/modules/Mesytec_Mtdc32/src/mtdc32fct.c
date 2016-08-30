@@ -262,7 +262,7 @@ void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint
 	trigSource = 0;
 	if (trig > 0) {
 		trigSource = trig & MTDC32_TRIG_SRC_TRIG_MASK;
-	} else if (chan > 0) {
+	} else if (chan >= 0) {
 		trigSource = chan & (MTDC32_TRIG_SRC_CHAN_MASK) << 2;
 	} else if (bank > 0) {
 		trigSource = bank & (MTDC32_TRIG_SRC_BANK_MASK) << 8;
@@ -278,14 +278,12 @@ void mtdc32_setTrigSource(struct s_mtdc32 * s, uint16_t bnk, uint16_t trig, uint
 uint16_t mtdc32_getTrigSource(struct s_mtdc32 * s, uint16_t bnk)
 {
 	int addr;
-	uint16_t trigSource;
 	switch (bnk) {
 		case 0: addr = MTDC32_TRIG_SOURCE_0; break;
 		case 1: addr = MTDC32_TRIG_SOURCE_1; break;
 		default: return;
 	}
-	trigSource = GET16(s->md->vmeBase, addr);
-	return GET16(s->md->vmeBase, addr) & MTDC32_TRIG_SRC_TRIG_MASK;
+	return GET16(s->md->vmeBase, addr);
 }
 
 uint16_t mtdc32_getTrigSrcTrig(struct s_mtdc32 * s, uint16_t bnk)
@@ -653,8 +651,8 @@ bool_t mtdc32_fillStruct(struct s_mtdc32 * s, char * file)
 
 	for (i = 0; i <= 1; i++) {
 		sprintf(res, "MTDC32.%s.TrigSrcChan.%d", mnUC, i);
-		val = root_env_getval_i(res, 0);
-		s->trigSrcChan[i] = (val >= 0) ? (MTDC32_TRIG_SRC_CHAN_ACTIVE | (val & MTDC32_TRIG_SRC_CHAN_MASK)) : 0;
+		val = root_env_getval_i(res, -1);
+		if (val >= 0) s->trigSrcChan[i] = MTDC32_TRIG_SRC_CHAN_ACTIVE | (val & MTDC32_TRIG_SRC_CHAN_MASK);
 	}
 
 	for (i = 0; i <= 1; i++) {

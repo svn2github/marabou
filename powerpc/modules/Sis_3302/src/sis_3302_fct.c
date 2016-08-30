@@ -74,13 +74,13 @@ struct s_sis_3302 * sis3302_alloc(Char_t * Name, struct s_mapDescr * MD, Int_t S
 
 		if (sis3302_mapAddress(Module, 0) == NULL) {
 			sprintf(msg, "[alloc] Can't map addr 0");
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 			Module = NULL;
 		}
 		sis3302_checkAddressSpace(Module);
 	} else {
 		sprintf(msg, "[alloc] Can't allocate sis_3302 struct");
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 
 	return(Module);
@@ -137,7 +137,7 @@ void sis3302_moduleInfo(struct s_sis_3302 * Module) {
 					Module->md->vmeBase,
 					Module->md->addrModVME,
 					boardId, majorVersion, minorVersion);
-	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 	return(kTRUE);
 }
 
@@ -159,17 +159,17 @@ Bool_t sis3302_fillStruct(struct s_sis_3302 * Module, Char_t * SettingsFile) {
 
 	if (root_env_read(SettingsFile) < 0) {
 		sprintf(msg, "[fillStruct] Error reading file %s", SettingsFile);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
 	sprintf(msg, "[fillStruct] [%s]: Filling database with settings from file %s", Module->moduleName, SettingsFile);
-	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 
 	sp = root_env_getval_s("SIS3302.ModuleName", "");
 	if (strcmp(sp, Module->moduleName) != 0) {
 		sprintf(msg, "[fillStruct] %s: Module names different - %s (file) ... %s (program)", SettingsFile, sp, Module->moduleName);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		strcpy(mname, sp);
 	} else {
 		strcpy(mname, Module->moduleName);
@@ -312,7 +312,7 @@ void sis3302_loadFromDb(struct s_sis_3302 * Module) {
 	Int_t chn;
 
 	sprintf(msg, "[loadFromDb] [%s]: Loading registers from database", Module->moduleName);
-	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 
 	sis3302_writeControlStatus_db(Module);
 	sis3302_setClockSource_db(Module);
@@ -374,12 +374,12 @@ Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, Char_t * DumpFile)
 	dmp = fopen(DumpFile, "w");
 	if (dmp == NULL) {
 		sprintf(msg, "[dumpRegisters] [%s]: Error writing file %s", Module->moduleName, DumpFile);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 
 	sprintf(msg, "[dumpRegisters] [%s]: Dumping settings to file %s", Module->moduleName, DumpFile);
-	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 
 	blt = (Module->blockXfer) ? "on" : "off";
 	fprintf(dmp, "Block xfer                      : %s\n", blt);
@@ -758,7 +758,7 @@ Bool_t sis3302_keyAddr(struct s_sis_3302 * Module, Int_t Key) {
 		case kSis3302KeyMcaMultiscanDisable:				offset = SIS3302_KEY_MCA_MULTISCAN_DISABLE; break;
 		default:
 			sprintf(msg, "[keyAddr] [%s]: Illegal key value - %d", Module->moduleName, Key);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 			return(kFALSE);
 	}
 
@@ -1020,7 +1020,7 @@ Bool_t sis3302_setHeaderBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t Chan
 
 	if (Bits & ~kSis3302HeaderMask) {
 		sprintf(msg, "[setHeaderBits] [%s]: Illegal header data - %#lx (should be in %#lx)", Module->moduleName,  Bits, kSis3302HeaderMask);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -1104,7 +1104,7 @@ Bool_t sis3302_setTriggerMode(struct s_sis_3302 * Module, UInt_t Bits, Int_t Cha
 
 	if (Bits < kSis3302TriggerOff || Bits > kSis3302TriggerBoth) {
 		sprintf(msg, "[setTriggerMode] [%s]: Illegal trigger mode - %#lx (should be in [%d,%d])", Module->moduleName,  Bits, kSis3302TriggerOff, kSis3302TriggerBoth);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -1171,7 +1171,7 @@ Bool_t sis3302_setGateMode(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo
 
 	if (Bits < kSis3302GateOff || Bits > kSis3302GateBoth) {
 		sprintf(msg, "[setGateMode] [%s]: Illegal gate mode - %#lx (should be in [%d,%d])", Module->moduleName,  Bits, kSis3302GateOff, kSis3302GateBoth);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -1237,7 +1237,7 @@ Bool_t sis3302_setNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Bits
 
 	if (Bits < kSis3302TriggerOff || Bits > kSis3302TriggerBoth) {
 		sprintf(msg, "[setNextNeighborTriggerMode] [%s]: Illegal next-neighbor trigger mode - %#lx (should be in [%d,%d])", Module->moduleName,  Bits, kSis3302TriggerOff, kSis3302TriggerBoth);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -1303,7 +1303,7 @@ Bool_t sis3302_setNextNeighborGateMode(struct s_sis_3302 * Module, Int_t Bits, I
 
 	if (Bits < kSis3302GateOff || Bits > kSis3302GateBoth) {
 		sprintf(msg, "[setNextNeighborTriggerMode] [%s]: Illegal next-neighbor gate mode - %#lx (should be in [%d,%d])", Module->moduleName,  Bits, kSis3302GateOff, kSis3302GateBoth);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -1438,7 +1438,7 @@ Bool_t sis3302_writeEndAddrThresh(struct s_sis_3302 * Module, Int_t Thresh, Int_
 
 	if (Thresh > kSis3302EndAddrThreshMax) {
 		sprintf(msg, "[writeEndAddrThresh] [%s]: Threshold out of range - %#lx (max %#lx)", Module->moduleName, Thresh, kSis3302EndAddrThreshMax);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -1751,13 +1751,13 @@ Bool_t sis3302_writeRawDataSampleLength(struct s_sis_3302 * Module, Int_t Sample
 
 	if (Sample < kSis3302RawDataSampleLengthMin || Sample > kSis3302RawDataSampleLengthMax) {
 		sprintf(msg, "[writeRawDataSampleLength] [%s]: Sample length out of range - %d (should be in [0,%d])", Module->moduleName, Sample, kSis3302RawDataSampleLengthMax);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
 	if (Sample % 4) {
 		sprintf(msg, "[writeRawDataSampleLength] [%s]:  Wrong sample alignment -  %d (should be mod 4)", Module->moduleName, Sample);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -1814,13 +1814,13 @@ Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t Index, I
 
 	if (Index < kSis3302RawDataStartIndexMin || Index > kSis3302RawDataStartIndexMax) {
 		sprintf(msg, "[writeRawDataStartIndex] [%s]: Start index out of range - %d (should be in [0,%d])", Module->moduleName, Index, kSis3302RawDataStartIndexMax);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
 	if (Index & 0x1) {
 		sprintf(msg, "[writeRawDataStartIndex] [%s]:  Wrong index alignment -  %d (should be even)", Module->moduleName, Index);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2159,7 +2159,7 @@ Bool_t sis3302_writeTriggerPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, In
 	if (sumG > kSis3302TrigSumGMax || Peak < kSis3302TrigPeakMin || Peak > kSis3302TrigPeakMax || Gap < kSis3302TrigGapMin || Gap > kSis3302TrigGapMax) {
 		sprintf(msg, "[writeTriggerPeakAndGap] [%s]: Trigger peak time / gap time mismatch - %d ... %d (peak should be in [%d,%d]), gap should be in [%d,%d], sumG=p+g <= %d",
 						  Module->moduleName, Peak, Gap, kSis3302TrigPeakMin, kSis3302TrigPeakMax, kSis3302TrigGapMin, kSis3302TrigGapMax, kSis3302TrigSumGMax);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2220,7 +2220,7 @@ Bool_t sis3302_writeTriggerPulseLength(struct s_sis_3302 * Module, Int_t PulseLe
 
 	if (PulseLength < 0 || PulseLength > 0xFF) {
 		sprintf(msg, "[writeTriggerPulseLength] [%s]:  Wrong trigger pulse length - %d (should be in [0,%d])", Module->moduleName, PulseLength, 0xFF);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2273,7 +2273,7 @@ Bool_t sis3302_writeTriggerInternalGate(struct s_sis_3302 * Module, Int_t GateLe
 
 	if (GateLength < 0 || GateLength > 0x3F) {
 		sprintf(msg, "[writeTriggerInternalGate] [%s]:  Wrong  internal trigger gate - %d (should be in [0,%d])", Module->moduleName, GateLength, 0x3F);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2326,7 +2326,7 @@ Bool_t sis3302_writeTriggerInternalDelay(struct s_sis_3302 * Module, Int_t Delay
 
 	if (DelayLength < 0 || DelayLength > 0x3F) {
 		sprintf(msg, "[writeTriggerInternalDelay] [%s]:  Wrong internal trigger delay - %d (should be in [0,%d])", Module->moduleName, DelayLength, 0x3F);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2379,7 +2379,7 @@ Bool_t sis3302_setTriggerDecimation(struct s_sis_3302 * Module, Int_t Decimation
 
 	if (Decimation < 0 || Decimation > 3) {
 		sprintf(msg, "[setTriggerDecimation] [%s]:  Wrong trigger decimation - %d (should be in [0,3])", Module->moduleName, Decimation);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2514,7 +2514,7 @@ Bool_t sis3302_writeTriggerThreshold(struct s_sis_3302 * Module, Int_t Thresh, I
 
 	if (Thresh < 0 || Thresh > 0xFFFF) {
 		sprintf(msg, "[setTriggerDecimation] [%s]:  Wrong trigger threshold - %d (should be in [0,%d])", Module->moduleName, Thresh, 0xFFFF);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2743,12 +2743,12 @@ Bool_t sis3302_writeEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int
 
 	if (Peak < kSis3302EnergyPeakMin || Peak > kSis3302EnergyPeakMax) {
 		sprintf(msg, "[writeEnergyPeakAndGap] [%s]:  Energy peak time mismatch - %d (should be in [%d,%d])", Module->moduleName, Peak, kSis3302EnergyPeakMin, kSis3302EnergyPeakMax);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 	if (Gap < kSis3302EnergyGapMin || Gap > kSis3302EnergyGapMax) {
 		sprintf(msg, "[writeEnergyPeakAndGap] [%s]:  Energy gap mismatch - %d (should be in [%d,%d])", Module->moduleName, Gap, kSis3302EnergyGapMin, kSis3302EnergyPeakMax);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2805,7 +2805,7 @@ Bool_t sis3302_setEnergyDecimation(struct s_sis_3302 * Module, Int_t Decimation,
 
 	if (Decimation < 0 || Decimation > 3) {
 		sprintf(msg, "[setEnergyDecimation] [%s]:  Wrong energy decimation - %d (should be in [0,3])", Module->moduleName, Decimation);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2932,7 +2932,7 @@ Bool_t sis3302_writeEnergyGateLength(struct s_sis_3302 * Module, Int_t GateLengt
 
 	if (GateLength < 0 || GateLength > 0x1FFFF) {
 		sprintf(msg, "[writeEnergyGateLength] [%s]:  Wrong energy gate length - %d (should be in [0,%d])", Module->moduleName, GateLength, 0x1FFFF);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -2986,7 +2986,7 @@ Bool_t sis3302_setTestBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo
 
 	if (Bits < 0 || Bits > 0x3) {
 		sprintf(msg, "[setTestBits] [%s]:  Wrong test bits - %#x (should be in [0, 0x3])", Module->moduleName, Bits);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -3138,7 +3138,7 @@ Bool_t sis3302_writeTauFactor(struct s_sis_3302 * Module, Int_t Tau, Int_t ChanN
 
 	if (Tau < kSis3302EnergyTauMin || Tau > kSis3302EnergyTauMax) {
 		sprintf(msg, "[writeTauFactor] [%s]:  Wrong tau factor - %d (should be in [0, %d]", Module->moduleName, Tau, kSis3302EnergyTauMax);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -3234,7 +3234,7 @@ Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t Chan
 		default:
 			{
 				sprintf(msg, "[readStartIndex] [%s]:  Start index out of range - %d (should be in [0,2])", Module->moduleName, IdxNo);
-				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 				return(0xaffec0c0);
 			}
 	}
@@ -3268,13 +3268,13 @@ Bool_t sis3302_writeStartIndex(struct s_sis_3302 * Module, Int_t IdxVal, Int_t I
 
 	if (IdxVal < 0 || IdxVal > 0x7FF) {
 		sprintf(msg, "[writeStartIndex] [%s]:  Wrong sample index value - %d (should be in [0,2047])", Module->moduleName, IdxVal);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
 	if (IdxNo < 0 || IdxNo > 2) {
 		sprintf(msg, "[writeStartIndex] [%s]:  Start index out of range - %d (should be in [0,2])", Module->moduleName, IdxNo);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
@@ -3421,7 +3421,7 @@ Bool_t sis3302_setClockSource(struct s_sis_3302 * Module, Int_t ClockSource) {
 
 	if (ClockSource < 0 || ClockSource > 7) {
 		sprintf(msg, "[setClockSource] [%s]:  Clock source out of range - %d (should be in [0,7])", Module->moduleName, ClockSource);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 	data = (0x7 << 28);
@@ -3458,7 +3458,7 @@ Bool_t sis3302_setLemoInMode(struct s_sis_3302 * Module, Int_t Bits) {
 	Int_t data;
 	if (Bits < 0 || Bits > 7) {
 		sprintf(msg, "[setLemoInMode] [%s]:  LEMO IN mode out of range - %d (should be in [0,7])", Module->moduleName, Bits);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 	data = (0x7 << 16);
@@ -3495,7 +3495,7 @@ Bool_t sis3302_setLemoOutMode(struct s_sis_3302 * Module, Int_t Bits) {
 	Int_t data;
 	if (Bits < 0 || Bits > 3) {
 		sprintf(msg, "[setLemoOutMode] [%s]:  LEMO OUT mode out of range - %d (should be in [0,3])", Module->moduleName, Bits);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 	data = (0x3 << 20);		/* clear all bits */
@@ -3532,7 +3532,7 @@ Bool_t sis3302_setLemoInEnableMask(struct s_sis_3302 * Module, Int_t Bits) {
 	Int_t data;
 	if (Bits < 0 || Bits > 7) {
 		sprintf(msg, "[setLemoInEnableMask] [%s]:  LEMO IN enable mask out of range - %d (should be in [0,7])", Module->moduleName, Bits);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 	data = (0x7 << 24);
@@ -3667,7 +3667,7 @@ void sis3302_stopAcquisition(struct s_sis_3302 * Module) {
 Bool_t sis3302_checkChannelNo(struct s_sis_3302 * Module, Char_t * Caller, Int_t ChanNo) {
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
 		sprintf(msg, "[%s] [%s]: Channel number out of range - %d (should be in [0,%d])", Caller, Module->moduleName, ChanNo, (kSis3302NofChans - 1));
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 	return(kTRUE);
@@ -3698,19 +3698,19 @@ Bool_t sis3302_checkAddressSpace(struct s_sis_3302 * Module) {
 	}
 	if (reduced) {
 		sprintf(msg, "[%s] Using REDUCED address space (16MB)", Module->moduleName);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		Module->reducedAddressSpace = kTRUE;
 		if (Module->md->segSizeVME > SIS3302_ADDR_SPACE_REDUCED) {
 			sprintf(msg, "[%s]: Allocated VME segment greater than 16MB - %#lx", Module->moduleName, Module->md->segSizeVME);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 	} else {
 		sprintf(msg, "[%s] Using FULL address space (128MB)", Module->moduleName);
-		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		Module->reducedAddressSpace = kFALSE;
 		if (Module->md->segSizeVME < SIS3302_ADDR_SPACE_NORMAL) {
 			sprintf(msg, "[%s]: Allocated VME segment smaller than 128MB - %#lx", Module->moduleName, Module->md->segSizeVME);
-			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 	}
 	return(kTRUE);
@@ -3759,7 +3759,7 @@ Bool_t sis3302_checkBusTrap(struct s_sis_3302 * Module, ULong_t Offset, Char_t *
 	if (!bus_trap_flag) return FALSE;
 
 	sprintf(msg, "[%s]: Bus trap at phys addr %#lx+%lx, log addr %#lx+%lx, called by %s", Module->moduleName, Module->md->physAddrVME, Offset, Module->md->physAddrVME, Offset, Method);
-	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 	return TRUE;
 }
 

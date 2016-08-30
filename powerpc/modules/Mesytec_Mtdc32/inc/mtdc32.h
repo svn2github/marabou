@@ -3,13 +3,11 @@
 
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
-//! \file			madc32.h
+//! \file			mtdc32.h
 //! \brief			Definitions for Mesytec Mtdc32 TDC
 //! \details		Contains definitions to operate a Mesytec Mtdc32
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.15 $
-//! $Date: 2011-04-29 07:19:03 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #define MTDC32_DATA						0x0
