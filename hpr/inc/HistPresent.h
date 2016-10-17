@@ -165,6 +165,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
 
    HistPresent(const Text_t *name = "mypres" , const Text_t *title = "mypres");
    ~HistPresent();
+	void HandleTerminate(Int_t status);
    void RecursiveRemove(TObject *);
    TRootCanvas* GetRootCanvas(){return fRootCanvas;};
 //   void  SetMyCanvas(TRootCanvas *myc){lastcanvas = myc;};
@@ -224,7 +225,6 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void CutsToASCII(const char *, const char* bp =0);
    void PrintWindow(const char* , const char*, const char* bp =0);
    void LoadWindow(const char* , const char*, const char* bp =0);
-//   void ShowMap(const char* , const char*);
    void ShowHist(const char * fname , const char* dir, const char  * hname, const char* bp =0);
    void SelectHist(const char*  fname , const char* dir , const char * hname, const char* bp =0);
 	void SelectCanvas(const char*  fname , const char* dir , const char * hname, const char* bp =0);
@@ -246,7 +246,6 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void HistFromASCII(TGWindow * win = 0);
    void GraphFromASCII(TGWindow * win = 0);
    void NtupleFromASCII(TGWindow * win = 0);
-   void SaveMap(const char*, const char* bp =0);
    void SaveFromSocket(const char*, const char* bp =0);
    TH1*  GetHist(const char*, const char*, const char*);
    FitHist * ShowHist(TH1*, const char* origname=NULL, TButton *b = NULL);
