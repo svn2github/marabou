@@ -16,7 +16,8 @@ ESONEL        := $(MODDIRI)/LinkDef.h
 ESONEDS       := $(MODDIRS)/G__TMrbEsoneDict.cxx
 ESONEPCM       := $(MODDIRS)/G__TMrbEsoneDict_rdict.pcm
 ESONEDO       := $(ESONEDS:.cxx=.o)
-ESONEH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+ESONEHL        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+ESONEH        := $(patsubst $(MODDIRI)/%.h,%.h,$(ESONEHL))
 ESONEDH       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/TMrb*.h))
 ESONES        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 ESONEO        := $(ESONES:.cxx=.o)
@@ -24,14 +25,14 @@ ESONEO        := $(ESONES:.cxx=.o)
 ESONEDEP      := $(ESONEO:.o=.d) $(ESONEDO:.o=.d)
 
 ESONELIB      := $(LPATH)/libTMrbEsone.$(SOEXT)
-
+ESONELIBDEP   := $(LPATH)/libTMrbUtils.$(SOEXT) $(LPATH)/libTMrbC2Lynx.$(SOEXT) $(LPATH)/libEsoneClient.$(SOEXT) 
 # used in the main Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(ESONEH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(ESONEHL))
 ALLLIBS     += $(ESONELIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(ESONEPCM)
 endif
-
+# $(info ESONEH $(ESONEH))
 # include all dependency files
 INCLUDEFILES += $(ESONEDEP)
 
@@ -40,7 +41,7 @@ INCLUDEFILES += $(ESONEDEP)
 include/%.h:    $(ESONEDIRI)/%.h
 		cp $< $@
 
-$(ESONELIB):     $(ESONEDO) $(ESONEO) $(MAINLIBS) $(ESONELIBDEP)
+$(ESONELIB):     $(ESONEDO) $(ESONEO) $(ESONELIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbEsone.$(SOEXT) $@ "$(ESONEO) $(ESONEDO)" \
 		   "$(ESONELIBEXTRA)"
@@ -49,9 +50,13 @@ $(ESONELIB):     $(ESONEDO) $(ESONEO) $(MAINLIBS) $(ESONELIBDEP)
 			cp $(ESONEPCM) $(LPATH); \
 		fi)
 
-$(ESONEDS):     $(ESONEH) $(ESONEL)
-		@echo "Generating dictionary $@..."
+$(ESONEDS):     $(ESONEHL) $(ESONEL)
+		@echo "Generating dictionary $@...for $(ROOT_MAJOR)"
+ifneq ($(ROOTV6), 1)
 		$(ROOTCINT) -f $@ -c -p -Iinclude $(ESONEDH) $(ESONEL)
+else
+		rootcling -f $@ $(call dictModule,ESONE) -I$(MARABOU_SRCDIR)/include $(ESONEH) $(ESONEL)
+endif
 
 $(ESONEDO):     $(ESONEDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

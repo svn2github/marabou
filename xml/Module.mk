@@ -35,7 +35,7 @@ INCLUDEFILES += $(XMLDEP)
 include/%.h:    $(XMLDIRI)/%.h
 		cp $< $@
 
-$(XMLLIB):     $(XMLDO) $(XMLO) $(MAINLIBS) $(XMLLIBDEP)
+$(XMLLIB):     $(XMLDO) $(XMLO)  $(XMLLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbXML.$(SOEXT) $@ "$(XMLO) $(XMLDO)" \
 		   "$(XMLLIBEXTRA)"

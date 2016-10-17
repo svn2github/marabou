@@ -14,25 +14,23 @@ EXPCONFDIRI     := $(EXPCONFDIR)/inc
 ##### lib #####
 EXPCONFL        := $(MODDIRI)/LinkDef.h
 EXPCONFDS       := $(MODDIRS)/G__TMrbConfigDict.cxx
-EXPCONFPCM       := $(MODDIRS)/G__TMrbConfigDict_rdict.pcm
+EXPCONFPCM      := $(MODDIRS)/G__TMrbConfigDict_rdict.pcm
 EXPCONFDO       := $(EXPCONFDS:.cxx=.o)
-EXPCONFH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
-# $(info info EXPCONFH: $(EXPCONFH))
-EXPCONFHM    = $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
-# $(info info EXPCONFHM = $(EXPCONFHM))
+EXPCONFHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+EXPCONFH        := $(patsubst $(MODDIRI)/%.h,%.h,$(EXPCONFHL))
+
 EXPCONFS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 EXPCONFO        := $(EXPCONFS:.cxx=.o)
 
 EXPCONFDEP      := $(EXPCONFO:.o=.d) $(EXPCONFDO:.o=.d)
 
 EXPCONFLIB      := $(LPATH)/libTMrbConfig.$(SOEXT)
-EXPCONFRMAP      := $(LPATH)/libTMrbConfig.rootmap
-EXPCONFLIBDEP   := $(LPATH)/libTMrbUtils.so
+EXPCONFRMAP     := $(LPATH)/libTMrbConfig.rootmap
+EXPCONFLIBDEP   := $(LPATH)/libTMrbUtils.so $(LPATH)/libTMbsSetup.so
 
 # used in the main Makefile
-EXPCONFHM    = $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
-# $(info info EXPCONFHM = $(EXPCONFHM))
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFH))
+# $(info EXPCONFH = $(EXPCONFH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(EXPCONFHL))
 ALLLIBS     += $(EXPCONFLIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(EXPCONFPCM)
@@ -46,7 +44,7 @@ INCLUDEFILES += $(EXPCONFDEP)
 include/%.h:    $(EXPCONFDIRI)/%.h
 		cp $< $@
 
-$(EXPCONFLIB):     $(EXPCONFHM) $(EXPCONFDO) $(EXPCONFO) $(MAINLIBS) $(EXPCONFLIBDEP)
+$(EXPCONFLIB):    $(EXPCONFDO) $(EXPCONFO) $(EXPCONFLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbConfig.$(SOEXT) $@ "$(EXPCONFO) $(EXPCONFDO)" \
 		   "$(EXPCONFLIBEXTRA)"
@@ -56,11 +54,18 @@ $(EXPCONFLIB):     $(EXPCONFHM) $(EXPCONFDO) $(EXPCONFO) $(MAINLIBS) $(EXPCONFLI
 		fi)
 ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(EXPCONFRMAP) -l $(EXPCONFLIB) -d $(EXPCONFLIBDEP) -c $(EXPCONFL)
+else
+##			echo "--- $(ROOTCINT) $(EXPCONFRMAP)----------------------" ;
+##			@$(ROOTCINT) -f $(EXPCONFDS) -rmf $(EXPCONFRMAP) -c $(EXPCONFHL) $(EXPCONFL)
 endif
 
-$(EXPCONFDS):     $(EXPCONFH) $(EXPCONFL)
-		@echo "Generating dictionary $@..."
+$(EXPCONFDS):     $(EXPCONFHL) $(EXPCONFL)
+		@echo "Generating dictionary $@...for ROOT $(ROOT_MAJOR)."
+ifneq ($(ROOTV6), 1)
 		$(ROOTCINT) -f $@ -c -p -Iinclude $(EXPCONFH) $(EXPCONFL)
+else		
+		rootcling -f $@ $(call dictModule,EXPCONF) -I$(MARABOU_SRCDIR)/include $(EXPCONFH) $(EXPCONFL)
+endif
 
 $(EXPCONFDO):     $(EXPCONFDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

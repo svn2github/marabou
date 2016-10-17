@@ -33,7 +33,8 @@ INCLUDEFILES += $(TIDYLIBDEP)
 include/%.h:    $(TIDYLIBDIRI)/%.h
 		cp $< $@
 
-$(TIDYLIBLIB):     $(TIDYLIBDO) $(TIDYLIBO) $(MAINLIBS) $(TIDYLIBLIBDEP)
+$(TIDYLIBLIB):     $(TIDYLIBDO) $(TIDYLIBO)
+		@echo "Generating library  $@...for ROOT $(ROOT_MAJOR)"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTidy.$(SOEXT) $@ "$(TIDYLIBO)" \
 		   "$(TIDYLIBLIBEXTRA)"

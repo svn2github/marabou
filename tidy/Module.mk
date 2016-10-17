@@ -23,6 +23,8 @@ TIDYO        := $(TIDYS:.cxx=.o)
 TIDYDEP      := $(TIDYO:.o=.d) $(TIDYDO:.o=.d)
 
 TIDYLIB      := $(LPATH)/libTMrbTidy.$(SOEXT)
+TIDYLIBLIB   := $(LPATH)/libTidy.$(SOEXT)
+TIDYLIBDEP   := $(LPATH)/libTMrbUtils.$(SOEXT)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(TIDYPCM)
 endif
@@ -39,7 +41,8 @@ INCLUDEFILES += $(TIDYDEP)
 include/%.h:    $(TIDYDIRI)/%.h
 		cp $< $@
 
-$(TIDYLIB):     $(TIDYDO) $(TIDYO) $(MAINLIBS) $(TIDYLIBDEP)
+$(TIDYLIB):     $(TIDYDO) $(TIDYO) $(TIDYLIBLIB) $(TIDYLIBDEP)
+		@echo "Generating library  $@...for ROOT $(ROOT_MAJOR)"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbTidy.$(SOEXT) $@ "$(TIDYO) $(TIDYDO)" \
 		   "$(TIDYLIBEXTRA)"

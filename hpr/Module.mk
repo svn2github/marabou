@@ -18,7 +18,6 @@ HPRPCM      := $(MODDIRS)/G__HistPresentDict_rdict.pcm
 HPRDO       := $(HPRDS:.cxx=.o)
 HPRHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 HPRH        := $(patsubst $(MODDIRI)/%.h,%.h,$(HPRHL))
-## $(info HPRH: $(HPRH))
 HPRS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 HPROM       := $(HPRS:.cxx=.o)
 HPRMAINO    := $(MODDIRS)/main.o
@@ -26,22 +25,25 @@ HPROA       := $(filter-out $(HPRMAINO),$(HPROM))
 # hpr_dummy is used to make a dummy libHprDummy with only the pointer gHpr=0
 # must not be linked in standard libHpr
 HPRO        := $(filter-out $(HPRDUMMY), $(HPROA))
+## $(info HPRDO: $(HPRDO))
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
 HPRDEP      += $(MODDIRS)/main.d
 
 HPREXE      := bin/HistPresent
 HPRLIB      := $(LPATH)/libHpr.so
-HPRDUMMYLIB := $(LPATH)/libHprDummy.so
+## HPRDUMMYLIB := $(LPATH)/libHprDummy.so
 HPRRMAP     := $(LPATH)/libHpr.rootmap
 
 ALLEXECS    += $(HPREXE)
+
+## $(info HPRLIB: $(HPRLIB))
 
 ALLLIBS     += $(HPRLIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(HPRPCM)
 endif
-ALLLIBS     += $(HPRDUMMYLIB)
+## ALLLIBS     += $(HPRDUMMYLIB)
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HPRHL))
 
@@ -57,20 +59,20 @@ GREDITLIB     := $(LPATH)/libGrEdit.$(SOEXT)
 
 OHPRLIBS      := $(MRBUTILSLIB) $(MRBGUTILSLIB) $(HELPBRLIB) $(FITCALLIB) $(GREDITLIB)
 
-HPRLIBDEP   := $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libProof.so $(OHPRLIBS)
+HPRLIBDEP     :=  $(OHPRLIBS) $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libProof.so
 
 ##### local rules #####
 
 include/%.h:    $(HPRDIRI)/%.h
 		cp $< $@
 
-$(HPREXE):     | $(OHPRLIBS) $(HPRLIB)  $(HPRMAINO)
+$(HPREXE):   $(OHPRLIBS) $(HPRLIB) $(HPRMAINO)
 		@echo "other libs: $(OHPRLIBS)"
 		@echo "$(HPREXE) linking exe ----------------------------------"
 		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(OHPRLIBS) $(ROOTGLIBS) -lRGL -lSpectrum -lProof \
             -o $(HPREXE)
 
-$(HPRLIB):     $(HPRDO) $(HPRO)
+$(HPRLIB): $(OHPRLIBS) $(HPRDO) $(HPRO)
 #		@echo "objs: $(HPRO)"
 		@echo "make shared lib  $(HPRLIB)----------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
@@ -90,7 +92,11 @@ $(HPRDUMMYLIB):     $(HPRDUMMY)
 
 $(HPRDS):     $(HPRDH) $(HPRL)
 		@echo "Generating dictionary $@..."
+ifneq ($(ROOTV6), 1)
 		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include defineMarabou.h $(HPRH) $(HPRL)
+else
+		rootcling -f $@ $(call dictModule,HPR) -I$(MARABOU_SRCDIR)/include $(HPRH) $(HPRL)
+endif
 
 $(HPRDO):     $(HPRDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -DROOTVERSION=$(ROOTVERS) -I. -o $@ -c $<

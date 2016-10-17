@@ -12,9 +12,10 @@ DGFCDIRI     := $(DGFCDIR)/inc
 ##### lib #####
 DGFCL        := $(MODDIRI)/LinkDef.h
 DGFCDS       := $(MODDIRS)/G__DGFControlDict.cxx
-DGFCPCM       := $(MODDIRS)/G__DGFControlDict_rdict.pcm
+DGFCPCM      := $(MODDIRS)/G__DGFControlDict_rdict.pcm
 DGFCDO       := $(DGFCDS:.cxx=.o)
-DGFCH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+DGFCHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+DGFCH        :=  $(patsubst $(MODDIRI)/%.h,%.h,$(DGFCHL))
 DGFCS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 DGFCOM       := $(DGFCS:.cxx=.o)
 DGFCMAINO    := $(MODDIRS)/DGFControl.o
@@ -34,7 +35,7 @@ ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(DGFCOMPCM)
 endif
 # used in the DGFControl Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCHL))
 
 # include all dependency files
 INCLUDEFILES += $(DGFCDEP)
@@ -50,20 +51,24 @@ ODGFCLIBS	:= $(LPATH)/libTMrbDGF.$(SOEXT)   $(LPATH)/libTMrbEsone.$(SOEXT)   $(L
 
 include/%.h:    $(DGFCDIRI)/%.h
 		cp $< $@
-$(DGFCEXE):    | $(ODGFCLIBS) $(DGFCO) $(DGFCMAINO) 
+$(DGFCEXE):   $(ODGFCLIBS) $(DGFCO) $(DGFCMAINO) 
 		$(LD) -g $(LDFLAGS) $(DGFCMAINO) $(DGFCO) $(DGFCDO) $(ODGFCLIBS) $(ROOTGLIBS) -lProof -lSpectrum \
             -o $(DGFCEXE)
 
-$(DGFCLIB):     $(DGFCDO) $(DGFCO)
+$(DGFCLIB):     $(DGFCDO) $(DGFCO) $(ODGFCLIBS)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-		   "$(SOFLAGS)" libDGFControl.$(SOEXT) $@ "$(DGFCO) $(DGFCDO)"
+		   "$(SOFLAGS)" libDGFControl.$(SOEXT) $@ "$(DGFCO) $(DGFCDO)" "$(ODGFCLIBS) $(DGFCONTROLLIBEXTRA)"
 		@(if [ -f $(DGFCPCM) ] ; then \
 			echo "cp  $(DGFCPCM)----------------------" ; \
 			cp $(DGFCPCM) $(LPATH); \
 		fi)
 
-$(DGFCDS):     $(DGFCDH) $(DGFCL)
+$(DGFCDS):     $(DGFCDHL) $(DGFCL)
+ifneq ($(ROOTV6), 1)
 		$(ROOTCINT) -f $@ -c -p -Iinclude $(DGFCDH) $(DGFCL)
+else
+		rootcling -f $@ $(call dictModule,DGFC)  -I$(MARABOU_SRCDIR)/include $(DGFCH) $(DGFCL)
+endif
 
 $(DGFCDO):     $(DGFCDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

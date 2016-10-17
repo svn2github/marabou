@@ -13,18 +13,20 @@ DGFCOMDIRI     := $(DGFCOMDIR)/inc
 
 DGFCOML        := $(MODDIRI)/LinkDef.h
 DGFCOMDS       := $(MODDIRS)/G__TMrbDGFCommonDict.cxx
-DGFCOMPCM       := $(MODDIRS)/G__TMrbDGFCommonDict_rdict.pcm
+DGFCOMPCM      := $(MODDIRS)/G__TMrbDGFCommonDict_rdict.pcm
 DGFCOMDO       := $(DGFCOMDS:.cxx=.o)
-DGFCOMH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+DGFCOMHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+DGFCOMH        :=  $(patsubst $(MODDIRI)/%.h,%.h,$(DGFCOMHL))
 DGFCOMS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 DGFCOMO        := $(DGFCOMS:.cxx=.o)
 
 DGFCOMDEP      := $(DGFCOMO:.o=.d) $(DGFCOMDO:.o=.d)
 
 DGFCOMLIB      := $(LPATH)/libTMrbDGFCommon.$(SOEXT)
+DGFCOMLIBDEP   := $(LPATH)/libTMrbUtils.$(SOEXT)
 
 # used in the main Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCOMH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCOMHL))
 ALLLIBS     += $(DGFCOMLIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(DGFCOMPCM)
@@ -38,7 +40,7 @@ INCLUDEFILES += $(DGFCOMDEP)
 include/%.h:    $(DGFCOMDIRI)/%.h
 		cp $< $@
 
-$(DGFCOMLIB):     $(DGFCOMDO) $(DGFCOMO) $(MAINLIBS) $(DGFCOMDEP)
+$(DGFCOMLIB):     $(DGFCOMDO) $(DGFCOMO) $(DGFCOMLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbDGFCommon.$(SOEXT) $@ "$(DGFCOMO) $(DGFCOMDO)" \
 		   "$(DGFCOMLIBEXTRA)"
@@ -47,9 +49,13 @@ $(DGFCOMLIB):     $(DGFCOMDO) $(DGFCOMO) $(MAINLIBS) $(DGFCOMDEP)
 			cp $(DGFCOMPCM) $(LPATH); \
 		fi)
 
-$(DGFCOMDS):     $(DGFCOMH) $(DGFCOML)
+$(DGFCOMDS):     $(DGFCOMHL) $(DGFCOML)
 		@echo "Generating dictionary $@..."
+ifneq ($(ROOTV6), 1)
 		$(ROOTCINT) -f $@ -c -p -Iinclude $(DGFCOMH) $(DGFCOML)
+else
+		rootcling -f $@ $(call dictModule,DGFCOM)  -I$(MARABOU_SRCDIR)/include $(DGFCOMH) $(DGFCOML)
+endif
 
 $(DGFCOMDO):     $(DGFCOMDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

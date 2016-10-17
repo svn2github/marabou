@@ -42,7 +42,7 @@ include/%.h:    $(MBSIODIRI)/%.h
 obj/%.o:    $(MODDIRS)/%.o
 		cp $< $@
 
-$(MBSTSTEXE):     | $(LPATH)/libTMbsSetup.$(SOEXT) $(MBSIODIRS)/mbstst.o
+$(MBSTSTEXE):    $(LPATH)/libTMbsSetup.$(SOEXT) $(MBSIODIRS)/mbstst.o
 		@echo "$(MBSTSTEXE) start linking"
 		@echo "----------------------------------------------------"
 		@echo "$(MBSIOO)"
@@ -51,7 +51,7 @@ $(MBSTSTEXE):     | $(LPATH)/libTMbsSetup.$(SOEXT) $(MBSIODIRS)/mbstst.o
 		$(LD) -g $(LDFLAGS) $(MBSIODIRS)/mbstst.o $(MBSIOO)  $(MBSCLIB) $(ROOTGLIBS) \
             -o $(MBSTSTEXE)
 
-$(MBSWRITEXE):    |  $(LPATH)/libTMbsSetup.$(SOEXT) $(MBSIODIRS)/mbswrite.o
+$(MBSWRITEXE):    $(LPATH)/libTMbsSetup.$(SOEXT) $(MBSIODIRS)/mbswrite.o
 					@echo "$(MBSWRITEXE) start linking"
 					@echo "----------------------------------------------------"
 					@echo "$(MBSIOO)"

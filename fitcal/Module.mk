@@ -23,11 +23,11 @@ FITCALO        := $(FITCALS:.cxx=.o)
 
 FITCALDEP      := $(FITCALO:.o=.d) $(FITCALDO:.o=.d)
 
-FITCALLIB      := $(LPATH)/libFitCal.$(SOEXT)
-FITCALRMAP     := $(LPATH)/libFitCal.rootmap
+FITCALLIB     := $(LPATH)/libFitCal.$(SOEXT)
+FITCALRMAP    := $(LPATH)/libFitCal.rootmap
 MRBUTILSLIB   := $(LPATH)/libTMrbUtils.$(SOEXT)
 MRBGUTILSLIB  := $(LPATH)/libTGMrbUtils.$(SOEXT)
-FITCALLIBDEP  := $(ROOTSYS)/lib/libGraf.so  $(MRBGUTILSLIB) $(MRBUTILSLIB)
+FITCALLIBDEP  :=  $(MRBGUTILSLIB) $(MRBUTILSLIB) $(ROOTSYS)/lib/libGraf.so
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(FITCALHL))
@@ -40,13 +40,15 @@ endif
 # include all dependency files
 INCLUDEFILES += $(FITCALDEP)
 
+# $(info FITCALHL $(FITCALHL))
+# $(info FITCALH $(FITCALH))
 ##### local rules #####
 
 include/%.h:    $(FITCALDIRI)/%.h
 		cp $< $@
 
-$(FITCALLIB):     $(FITCALDO) $(FITCALO) $(MAINLIBS) $(FITCALLIBDEP)
-			@echo "FITCALLIBEXTRA:  $(FITCALLIBEXTRA)"
+$(FITCALLIB):     $(FITCALDO) $(FITCALO) $(FITCALLIBDEP)
+##			@echo "FITCALLIBEXTRA:  $(FITCALLIBEXTRA)"
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libFitCal.$(SOEXT) $@ "$(FITCALDO) $(FITCALO)" \
 		   "$(FITCALLIBEXTRA)"
@@ -59,8 +61,12 @@ ifneq ($(ROOTV6), 1)
 endif
 
 $(FITCALDS):     $(FITCALHL) $(FITCALL)
+ifneq ($(ROOTV6), 1)
 		@echo "Generating dictionary $@..."
 		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include defineMarabou.h $(FITCALH) $(FITCALL)
+else
+		rootcling -f $@ $(call dictModule,FITCAL) -I$(MARABOU_SRCDIR)/include $(FITCALH) $(FITCALL)
+endif
 
 $(FITCALDO):     $(FITCALDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

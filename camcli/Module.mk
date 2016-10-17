@@ -33,7 +33,7 @@ INCLUDEFILES += $(CAMCLIDEP)
 include/%.h:    $(CAMCLIDIRI)/%.h
 		cp $< $@
 
-$(CAMCLILIB):     $(CAMCLIDO) $(CAMCLIO) $(MAINLIBS) $(CAMCLILIBDEP)
+$(CAMCLILIB):     $(CAMCLIDO) $(CAMCLIO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libEsoneClient.$(SOEXT) $@ "$(CAMCLIO)" \
 		   "$(CAMCLILIBEXTRA)"

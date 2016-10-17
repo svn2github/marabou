@@ -5,8 +5,12 @@
 #
 # 9.2.2015 OS: simplify selection of Modules: 
 #              hpr: HistPresent only
-#              analyze: HistPresent + TMrbAnalyze + Transport + TMrbConfig
+#              analyze: HistPresent, C_analyze, TMrbAnalyze, Transport, TMrbConfig
 #              all: +
+# 4.8.2016 OS: Enable EXPLICITLINK for all shared libs except TMrbAnalyze
+#					No more need for .rootmap files when loading shared libsa
+#					Fix dependencies to allow for make -jN
+#					Distinguish dictionaries for ROOT 5 and 6 (rootcint, rootcling)
 
 MAKE_VERSION_MAJOR := $(word 1,$(subst ., ,$(MAKE_VERSION)))
 MAKE_VERSION_MINOR := $(shell echo $(word 2,$(subst ., ,$(MAKE_VERSION))) | \
@@ -16,13 +20,19 @@ MAKE_VERSION_MINOR ?= 0
 ORDER_ := $(shell test $(MAKE_VERSION_MAJOR) -gt 3 || \
                   test $(MAKE_VERSION_MAJOR) -eq 3 && \
                   test $(MAKE_VERSION_MINOR) -ge 80 && echo '|')
-
+ROOTVERS 	      := $(shell root-config --version)
+ROOT_MAJOR := $(shell echo $(ROOTVERS)| cut -f1 -d'.')
+ifeq ($(ROOT_MAJOR),6)
+	ROOTV6 := 1
+else
+	ROOTV6 := 0
+endif
 
 include config/Makefile.config
 
 # $(info bindir = $(BINDIR))
 MARABOU_SRCDIR := $(shell pwd)
-$(info source dir = $(MARABOU_SRCDIR))
+$(info MARABOU_SRCDIR = $(MARABOU_SRCDIR))
 ifeq ($(EXPLICITLINK),yes)
 include config/Makefile.depend
 endif
@@ -53,10 +63,12 @@ else ifeq ($(findstring $(MAKECMDGOALS),analyze),analyze)
 	MODULES      += c_analyze analyze transport mbssetup mbsio expconf
 else 
 # otherwise all modules are needed
-	MODULES      += c_analyze analyze mbssetup mbsio transport expconf macrobrowser c2lynx camcli vmecontrol esone polar xiadgf dgfcomm dgfcontrol cptmcontrol tidy tidylib
+	MODULES      += c_analyze analyze mbssetup mbsio transport expconf macrobrowser c2lynx camcli vmecontrol esone polar xiadgf dgfcomm dgfcontrol tidy tidylib
 endif
 
-$(info using MODULES: $(MODULES))
+$(info Using MODULES: )
+$(info $(MODULES))
+$(info -- )
 ##### ROOT libraries #####
 
 LPATH         = lib
@@ -77,14 +89,6 @@ ROOTGLIBS      += -lGed
 ROOTGLIBS      += -lHistPainter
 
 ROOTCINT      :=rootcint
-
-ROOTVERS 	      := $(shell root-config --version)
-ROOT_MAJOR := $(shell echo $(ROOTVERS)| cut -f1 -d'.')
-ifeq ($(ROOT_MAJOR),6)
-	ROOTV6 := 1
-else
-	ROOTV6 := 0
-endif
 
 #ROOTVERS contains / . and sometimes letters, remove them
 
@@ -153,10 +157,10 @@ MAKEINFO      = cint/MAKEINFO
 ALLHDRS      :=
 ALLLIBS      :=
 ALLPCMS      :=
-ANALIBS		 := lib/libTMrbAnalyze.so lib/libTMrbTransport.so
+ANALIBS		 := lib/libTMbsControl.so lib/libTMrbAnalyze.so lib/libTMrbTransport.so
 HPRLIBS      := lib/libHpr.so lib/libTMrbHelpBrowser.so lib/libTMrbUtils.so lib/libTGMrbUtils.so lib/libGrEdit.so lib/libFitCal.so
 EXPLIB		 := lib/libTMrbConfig.so
-HPREXECS     := bin/HistPresent
+HPREXES     := bin/HistPresent
 ### ALLEXECS added by Modules
 ALLEXECS     :=
 INCLUDEFILES :=
@@ -179,22 +183,41 @@ INSTALLFILES	=	build/unix/installfiles.sh
 ##### TARGETS #####
 
 .PHONY:         all fast config  maraboulibs allmarabou dist distsrc \
-                clean distclean compiledata version html \
+                hprexecs clean distclean compiledata version html \
                 install showbuild \
                 $(patsubst %,all-%,$(MODULES)) \
                 $(patsubst %,clean-%,$(MODULES)) \
                 $(patsubst %,distclean-%,$(MODULES))
-
-all:            allmarabou
-
-analyze:			 compiledata $(HPREXECS) $(HPRLIBS) $(ANALIBS) $(EXPLIB)
-
-hpr:            compiledata $(HPREXECS)
-
-
+                
+# Make sure all is first target                
+all:				allmarabou
+		@echo "make all at $(shell date) " > make_marabou.log
+		@echo "ROOTVERS = $(ROOTVERS)" >> make_marabou.log
+		@echo "MODULES = $(MODULES)"  >>  make_marabou.log
+		@echo "ALLEXECS = $(ALLEXECS)"  >>  make_marabou.log
+		@echo "ALLLIBS = $(ALLLIBS)"  >>  make_marabou.log
+		
 include $(patsubst %,%/Module.mk,$(MODULES))
 
 -include MyRules.mk            # allow local rules
+		
+analyze:		compiledata  $(HPRLIBS) $(ANALIBS) $(EXPLIB) $(ALLEXECS)
+		@echo "make analyze at $(shell date)" > make_marabou.log
+		@echo "ROOTVERS = $(ROOTVERS)"  >>  make_marabou.log
+		@echo "MODULES = $(MODULES)"  >>  make_marabou.log
+		@echo "ALLLIBS = $(ALLLIBS)"  >>  make_marabou.log
+		@echo "ALLEXECS = $(ALLEXECS)"  >>  make_marabou.log
+
+hpr:            hprexecs $(HPRLIBS)
+		@echo "make hpr at $(shell date)" > make_marabou.log
+		@echo "ROOTVERS = $(ROOTVERS)" >> make_marabou.log
+		@echo "MODULES = $(MODULES)" >> make_marabou.log
+		@echo "ALLEXECS = $(ALLEXECS)"  >>  make_marabou.log
+		@echo "ALLLIBS = $(ALLLIBS)"  >>  make_marabou.log
+
+compiledata:    $(COMPILEDATA) $(MAKEINFO)
+
+## $(info INCLUDEFILES $(INCLUDEFILES))
 
 ifeq ($(findstring $(MAKECMDGOALS),clean distclean dist distsrc version \
       importcint install showbuild changelog html),)
@@ -203,13 +226,13 @@ include $(INCLUDEFILES)
 endif
 include build/dummy.d          # must be last include
 endif
-hprexecs:          compiledata bin/HistPresent
+## $(info Makefile ALLLIBS: $(ALLLIBS) ALLEXECS: $(ALLEXECS))
 
-maraboulibs:       compiledata $(ALLLIBS)
+allmarabou:		compiledata $(ALLLIBS) $(ALLEXECS)
 
-allmarabou:      maraboulibs $(ALLEXECS)
+maraboulibs:	compiledata $(ALLLIBS)
 
-compiledata:       $(COMPILEDATA) $(MAKEINFO)
+hprexecs:      compiledata bin/HistPresent
 
 config config/Makefile.:
 	@(if [ ! -f config/Makefile.config ] ; then \
@@ -261,13 +284,13 @@ endif
 distclean:: clean	
 	@echo "-------------  distclean --------"
 ## 	@echo "dependency files:  $(INCLUDEFILES)"
-	@echo "-------------  MAKEINFO -------------  "
-	@echo $(MAKEINFO)
-	@echo "-----------------------------------"
+##	@echo "-------------  MAKEINFO -------------  "
+##	@echo $(MAKEINFO)
+##	@echo "-----------------------------------"
 	@mv -f include/config.h include/config.hh
 	@rm -f include/*.h $(MAKEINFO)
 	@mv -f include/config.hh include/config.h
-	@rm -f build/dummy.d bin/* lib/*.def lib/*.exp lib/*.lib .def
+	@rm -f build/dummy.d bin/* lib/*.def lib/*.exp lib/*.rootmap lib/*.pcm 
 	@rm -rf htmldoc
 
 version: $(CINTTMP)
@@ -304,6 +327,8 @@ install:
 				echo "Installing PCMs in $(LIBDIR)"; \
 				$(INSTALLFILES) $(ALLPCMS) $(LIBDIR); \
 			fi; \
+			echo "Installing rootmaps in  $(LIBDIR)"; \
+			$(INSTALLDATA) lib/*.rootmap  $(LIBDIR); \
 			echo "Installing objs in      $(OBJDIR)"; \
 			$(INSTALLDIR) $(OBJDIR); \
 			$(INSTALL) $(ALLOBJS) $(OBJDIR); \

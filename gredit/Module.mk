@@ -50,7 +50,7 @@ MRBUTILSLIB   := $(LPATH)/libTMrbUtils.$(SOEXT)
 MRBGUTILSLIB  := $(LPATH)/libTGMrbUtils.$(SOEXT)
 
 OCDLLIBS      := $(GREDITLIB) $(MRBGUTILSLIB) $(MRBUTILSLIB)
-GREDITLIBDEP   := $(ROOTSYS)/lib/libGraf.so  $(MRBGUTILSLIB) $(MRBUTILSLIB)
+GREDITLIBDEP  := $(MRBGUTILSLIB) $(MRBUTILSLIB)
 
 ##### local rules #####
 
@@ -62,7 +62,7 @@ $(CDLEXE):      $(CDLMAINO) $(CDLLIB) $(OCDLLIBS)
 		@echo "$(CDLEXE) linking exe ----------------------------------"
 		$(LD) -g -o $(CDLEXE) $(LDFLAGS) $(CDLMAINO) $(OCDLLIBS) $(ROOTGLIBS)
 
-$(GREDITLIB):     $(GREDITDO) $(GREDITO) $(MAINLIBS) $(GREDITLIBDEP)
+$(GREDITLIB):     $(GREDITDO) $(GREDITO) $(GREDITLIBDEP)
 			@echo "Making libGrEdit $@..."
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 			"$(SOFLAGS)" libGrEdit.$(SOEXT) $@ "$(GREDITDO) $(GREDITO) $(GREDITLIBEXTRA)"
@@ -75,8 +75,12 @@ ifneq ($(ROOTV6), 1)
 endif
 
 $(GREDITDS):     $(GREDITHL) $(GREDITL)
+ifneq ($(ROOTV6), 1)
 		@echo "Generating dictionary: $@...."
 		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include defineMarabou.h $(GREDITH) $(GREDITL)
+else
+		rootcling -f $@ $(call dictModule,GREDIT) -I$(MARABOU_SRCDIR)/include $(GREDITH) $(GREDITL)
+endif
 
 $(GREDITDO):     $(GREDITDS)
 		@echo "Compiling dictionary $@..."

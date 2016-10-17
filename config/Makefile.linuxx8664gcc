@@ -48,7 +48,11 @@ COMPILER      = gnu
 # Linker:
 LD            = g++
 LDFLAGS       = $(OPT) $(EXTRA_LDFLAGS)
-SOFLAGS       = -shared -Wl,-soname,
+ifeq ($(EXPLICITLINK),yes)
+	SOFLAGS = -Wl,--no-undefined -shared -Wl,-soname,
+else
+	SOFLAGS = -shared -Wl,-soname,
+endif
 SOEXT         = so
 
 # System libraries:

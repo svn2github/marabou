@@ -27,14 +27,13 @@ GUTILSDEP      := $(GUTILSO:.o=.d) $(GUTILSDO:.o=.d)
 
 GUTILSLIB      := $(LPATH)/libTGMrbUtils.$(SOEXT)
 GUTILSRMAP     := $(LPATH)/libTGMrbUtils.rootmap
-GUTILSLIBDEP   := $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libGui.so $(ROOTSYS)/lib/libGed.so $(LPATH)/libTMrbUtils.so
+GUTILSLIBDEP   :=  $(LPATH)/libTMrbUtils.so $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libGui.so $(ROOTSYS)/lib/libGed.so
 
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GUTILSHL))
 ALLLIBS     += $(GUTILSLIB)
 # $(info gutils/Module.mk: ROOTVERS = $(ROOTVERS))
-$(info ROOTV6 = $(ROOTV6))
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(GUTILSPCM)
 endif
@@ -47,7 +46,7 @@ INCLUDEFILES += $(GUTILSDEP)
 include/%.h:    $(GUTILSDIRI)/%.h
 		cp $< $@
 
-$(GUTILSLIB):     $(GUTILSDO) $(GUTILSO) $(MAINLIBS) $(GUTILSLIBDEP)
+$(GUTILSLIB):     $(GUTILSDO) $(GUTILSO) $(GUTILSLIBDEP)
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTGMrbUtils.$(SOEXT) $@ "$(GUTILSDO) $(GUTILSO)" \
 		   "$(GUTILSLIBEXTRA)"
@@ -56,12 +55,16 @@ $(GUTILSLIB):     $(GUTILSDO) $(GUTILSO) $(MAINLIBS) $(GUTILSLIBDEP)
 			cp $(GUTILSPCM) $(LPATH); \
 		fi)
 ifneq ($(ROOTV6), 1)
-		@$(RLIBMAP) -o $(GUTILSRMAP) -l $(GUTILSLIB) -d $(GUTILSLIBDEP) -c $(GUTILSL)
+			@$(RLIBMAP) -o $(GUTILSRMAP) -l $(GUTILSLIB) -d $(GUTILSLIBDEP) -c $(GUTILSL)
 endif
 
 $(GUTILSDS):     $(GUTILSHL) $(GUTILSL)
-		@echo "Generating dictionary $@..."
+		@echo "Generating dictionary $@... for ROOT $(ROOT_MAJOR)"
+ifneq ($(ROOTV6), 1)
 		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include defineMarabou.h $(GUTILSH) $(GUTILSL)
+else
+		rootcling -f $@ $(call dictModule,GUTILS) -I$(MARABOU_SRCDIR)/include $(GUTILSH) $(GUTILSL)
+endif
 
 $(GUTILSDO):     $(GUTILSDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

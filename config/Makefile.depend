@@ -1,22 +1,87 @@
-UTILSLIBEXTRA    = -L$(ROOTSYS)/lib -lGraf -lHist  -lRIO -lCore -lCint -ldl
-GUTILSLIBEXTRA   = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lGed -lGui -lGraf -lHist -lRIO -lCore -lCint -ldl
-FITCALLIBEXTRA   = -L$(MARABOU)/lib -lTGMrbUtils -L$(ROOTSYS)/lib -lSpectrum -lMathCore -lMathMore -lGed -lGui -lGraf -lHist -lGpad -lRIO -lCore -lCint -ldl
-HELPBLIBEXTRA    = -L$(ROOTSYS)/lib -lASImage -lGraf  -lGpad -lGui -lRIO -lCore -lCint -ldl
-GREDITLIBEXTRA   = -L$(MARABOU)/lib -lTGMrbUtils -L$(ROOTSYS)/lib  -lASImage -lGpad -lGed -lGui -lGraf -lHist -lMathCore -lRIO  -lRint -lCore -lCint -ldl
-HPRLIBEXTRA      = -L$(MARABOU)/lib -lTMrbUtils  -lTGMrbUtils -lGrEdit -lFitCal -lTMrbHelpBrowser -L$(ROOTSYS)/lib  -lASImage  -lHistPainter -lSpectrum -lGed -lGpad  -lGui -lGraf -lGraf3d -lHist -lProof  -lMathCore -lRIO -lTree -lNet -lCore -lCint -ldl
-MBSCLIBEXTRA     = -L$(ROOTSYS)/lib -lRIO -lCore  -lCint -lNet -ldl
-C2LYNXLIBEXTRA   = 
+UTILSLIBEXTRA    = -L$(ROOTSYS)/lib -lGraf -lHist -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	UTILSLIBEXTRA +=  -lCint
+endif
+GUTILSLIBEXTRA   = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lGed -lGui -lGraf -lHist -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	GUTILSLIBEXTRA +=  -lCint
+endif
+FITCALLIBEXTRA   = -L$(MARABOU)/lib -lTGMrbUtils -L$(ROOTSYS)/lib -lSpectrum -lMathCore -lMathMore -lGed -lGui -lGraf -lHist -lGpad -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	FITCALLIBEXTRA +=  -lCint
+endif
+HELPBLIBEXTRA    = -L$(ROOTSYS)/lib -lASImage -lGraf -lGpad -lGui -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	HELPBLIBEXTRA +=  -lCint
+endif
+GREDITLIBEXTRA   = -L$(MARABOU)/lib -lTGMrbUtils -L$(ROOTSYS)/lib  -lASImage -lGpad -lGed -lGui -lGraf -lHist -lMathCore -lRIO  -lRint -lCore
+ifeq ($(ROOT_MAJOR),5)
+	GREDITLIBEXTRA +=  -lCint
+endif
+HPRLIBEXTRA      = -L$(MARABOU)/lib -lTMrbUtils -lTGMrbUtils -lGrEdit -lFitCal -lTMrbHelpBrowser -L$(ROOTSYS)/lib -lASImage -lHistPainter -lSpectrum -lGed -lGpad  -lGui -lGraf -lGraf3d -lHist -lProof  -lMathCore -lRIO -lTree -lNet -lCore
+ifeq ($(ROOT_MAJOR),5)
+	HPRLIBEXTRA +=  -lCint
+endif
+MBSCLIBEXTRA     = -L$(ROOTSYS)/lib -lRIO -lCore -lNet 
+ifeq ($(ROOT_MAJOR),5)
+	MBSCLIBEXTRA +=  -lCint
+endif
+C2LYNXLIBEXTRA   = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lRIO -lCore -lNet 
+ifeq ($(ROOT_MAJOR),5)
+	C2LYNXLIBEXTRA +=  -lCint
+endif
 CAMCLILIBEXTRA   = 
-DGFCOMLIBEXTRA   = 
-ESONELIBEXTRA    = 
-EXPCONFLIBEXTRA  = 
+DGFCOMLIBEXTRA   = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lRIO -lCore -lNet 
+ifeq ($(ROOT_MAJOR),5)
+	DGFCOMLIBEXTRA +=  -lCint
+endif
+DGFCONTROLLIBEXTRA  = -L$(ROOTSYS)/lib -lASImage -lGraf -lHist -lGpad -lGui -lRIO -lCore -lNet 
+ifeq ($(ROOT_MAJOR),5)
+	DGFCONTROLLIBEXTRA += -lCint
+endif
+ESONELIBEXTRA    =  -L$(MARABOU)/lib -lTMrbUtils -lTMrbC2Lynx -lEsoneClient -L$(ROOTSYS)/lib -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	ESONELIBEXTRA +=  -lCint
+endif
+EXPCONFLIBEXTRA  =  -L$(MARABOU)/lib -lTMrbUtils -lTMbsSetup -L$(ROOTSYS)/lib -lGraf -lHist -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	EXPCONFLIBEXTRA +=  -lCint
+endif
 NGUTILSLIBEXTRA  = 
-MRBANALYSELIBEXTRA =-L$(MARABOU)/lib -lTMrbUtils  -L$(ROOTSYS)/lib  -lGraf -lHist -lRIO -lCore -lCint -ldl
-MBSSETUPLIBEXTRA = -L$(ROOTSYS)/lib -lRIO -lCore -lCint -ldl
+MRBANALYSELIBEXTRA =-L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib  -lGraf -lHist -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	MRBANALYSELIBEXTRA +=  -lCint
+endif
+MBSSETUPLIBEXTRA = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	MBSSETUPLIBEXTRA +=  -lCint
+endif
+CptmLIBEXTRA     = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	CptmLIBEXTRA +=  -lCint
+endif
 MBSSIMLIBEXTRA   = 
-POLARLIBEXTRA    = 
-TIDYLIBLIBEXTRA  = 
-TIDYLIBEXTRA     = 
-TRANSPLIBEXTRA   = 
-XIADGFLIBEXTRA   = 
+POLARLIBEXTRA    = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lGraf -lHist -lTree -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+	POLARLIBEXTRA +=  -lCint
+endif
+
+TIDYLIBLIBEXTRA  = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lCore
+ifeq ($(ROOT_MAJOR),5)
+TIDYLIBLIBEXTRA +=  -lCint
+endif
+TIDYLIBEXTRA     = -L$(MARABOU)/lib -lTMrbUtils -lTidy -L$(ROOTSYS)/lib -lCore
+ifeq ($(ROOT_MAJOR),5)
+TIDYLIBEXTRA +=  -lCint
+endif
+TRANSPLIBEXTRA   = -L$(MARABOU)/lib -lTMrbUtils -L$(ROOTSYS)/lib -lCore
+ifeq ($(ROOT_MAJOR),5)
+TRANSPLIBEXTRA +=  -lCint
+endif
+XIADGFLIBEXTRA   = -L$(MARABOU)/lib -lTMrbUtils -lTMrbEsone -L$(ROOTSYS)/lib  -lGraf -lHist -lRIO -lCore
+ifeq ($(ROOT_MAJOR),5)
+XIADGFLIBEXTRA +=  -lCint
+endif
 XMLLIBEXTRA      = 
+XXX              =
+

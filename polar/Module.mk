@@ -42,10 +42,10 @@ INCLUDEFILES += $(POLARDEP)
 include/%.h:    $(POLARDIRI)/%.h
 		cp $< $@
 
-$(POLARLIB):     $(POLARDO) $(POLARO) $(MAINLIBS) $(POLARLIBDEP)
+$(POLARLIB):    $(POLARLIBDEP) $(POLARDO) $(POLARO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTPolControl.$(SOEXT) $@ "$(POLARO) $(POLARDO)" \
-		   "$(POLARLIBEXTRA)"
+		   " $(POLARLIBEXTRA)"
 		@(if [ -f $(POLARPCM) ] ; then \
 			echo "cp  $(POLARPCM)----------------------" ; \
 			cp $(POLARPCM) $(LPATH); \
@@ -55,8 +55,12 @@ ifneq ($(ROOTV6), 1)
 endif
 
 $(POLARDS):     $(POLARHL) $(POLARL)
+ifneq ($(ROOTV6), 1)
 		@echo "Generating dictionary $@..."
 		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include $(POLARH) $(POLARL)
+else
+		rootcling -f $@ $(call dictModule,POLAR) -I$(MARABOU_SRCDIR)/include $(POLARH) $(POLARL)
+endif
 
 $(POLARDO):     $(POLARDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

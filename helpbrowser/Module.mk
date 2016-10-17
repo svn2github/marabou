@@ -43,7 +43,7 @@ INCLUDEFILES += $(HELPBDEP)
 include/%.h:    $(HELPBDIRI)/%.h
 		cp $< $@
 
-$(HELPBLIB):     $(HELPBDO) $(HELPBO) $(MAINLIBS) $(HELPBLIBDEP)
+$(HELPBLIB):     $(HELPBDO) $(HELPBO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbHelpBrowser.$(SOEXT) $@ "$(HELPBO) $(HELPBDO)" \
 		   "$(HELPBLIBEXTRA)"
@@ -54,7 +54,12 @@ $(HELPBLIB):     $(HELPBDO) $(HELPBO) $(MAINLIBS) $(HELPBLIBDEP)
 
 $(HELPBDS):     $(HELPBHL) $(HELPBL)
 		@echo "Generating dictionary $@..."
+ifneq ($(ROOTV6), 1)
 		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include $(HELPBH) $(HELPBL)
+else
+		rootcling -f $@ $(call dictModule,HELPB) -I$(MARABOU_SRCDIR)/include $(HELPBH) $(HELPBL)
+endif
+# 		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include $(HELPBH) $(HELPBL)
 		
 $(HELPBDO):     $(HELPBDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

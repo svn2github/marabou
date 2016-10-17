@@ -34,7 +34,7 @@ INCLUDEFILES += $(MBSSIMDEP)
 include/%.h:    $(MBSSIMDIRI)/%.h
 		cp $< $@
 
-$(MBSSIMLIB):     $(MBSSIMDO) $(MBSSIMO) $(MAINLIBS) $(MBSSIMLIBDEP)
+$(MBSSIMLIB):     $(MBSSIMDO) $(MBSSIMO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libMbsSimRdo.$(SOEXT) $@ "$(MBSSIMO) $(MBSSIMDO)" \
 		   "$(MBSSIMLIBEXTRA)"

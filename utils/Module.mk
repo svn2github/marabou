@@ -18,7 +18,7 @@ UTILSPCM       := $(MODDIRS)/G__TMrbUtilsDict_rdict.pcm
 UTILSDO       := $(UTILSDS:.cxx=.o)
 UTILSHL        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 UTILSH        :=  $(patsubst $(MODDIRI)/%.h,%.h,$(UTILSHL))
-# $(info UTILSH: $(UTILSH))
+## $(info UTILSH: $(UTILSH))
 UTILSS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 UTILSO        := $(UTILSS:.cxx=.o)
 
@@ -27,6 +27,7 @@ UTILSDEP      := $(UTILSO:.o=.d) $(UTILSDO:.o=.d)
 UTILSLIB      := $(LPATH)/libTMrbUtils.$(SOEXT)
 UTILSRMAP     := $(LPATH)/libTMrbUtils.rootmap
 UTILSLIBDEP   := $(ROOTSYS)/lib/libGraf.so
+UTILSLIBDEPM  := $(ROOTSYS)/lib/libGraf.so
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(UTILSHL))
@@ -43,7 +44,7 @@ INCLUDEFILES += $(UTILSDEP)
 include/%.h:    $(UTILSDIRI)/%.h
 		cp $< $@
 
-$(UTILSLIB):     $(UTILSDO) $(UTILSO) $(MAINLIBS) $(UTILSLIBDEP)
+$(UTILSLIB):     $(UTILSDO) $(UTILSO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbUtils.$(SOEXT) $@ "$(UTILSO) $(UTILSDO)" \
 		   "$(UTILSLIBEXTRA)"
@@ -53,11 +54,18 @@ $(UTILSLIB):     $(UTILSDO) $(UTILSO) $(MAINLIBS) $(UTILSLIBDEP)
 		fi)
 ifneq ($(ROOTV6), 1)
 		@$(RLIBMAP) -o $(UTILSRMAP) -l $(UTILSLIB) -d $(UTILSLIBDEP) -c $(UTILSL)
+else
+##			echo "--- $(ROOTCINT) $(UTILSRMAP)----------------------" ;
+##			@$(ROOTCLING) -v -f $(UTILSDS) -rml libTMrbUtils.$(SOEXT) -rmf $(UTILSRMAP) -c $(UTILSHL) $(UTILSL)
 endif
 
 $(UTILSDS):     $(UTILSHL) $(UTILSL)
-		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include $(UTILSH) $(UTILSL)
+		@echo "Generating dictionary $@...for ROOT $(ROOT_MAJOR)"
+ifneq ($(ROOTV6), 1)
+		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include defineMarabou.h $(UTILSH) $(UTILSL)
+else
+		rootcling -f $@ $(call dictModule,UTILS)  -I$(MARABOU_SRCDIR)/include $(UTILSH) $(UTILSL)
+endif
 
 $(UTILSDO):     $(UTILSDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -DROOTVERSION=$(ROOTVERS) -I. -o $@ -c $<

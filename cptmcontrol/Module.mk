@@ -2,6 +2,7 @@
 # Copyright (c) 2000 Rene Brun and Fons Rademakers
 #
 # Author: Otto Schaile, 29/2/2000
+#				13/7/2016 cptmcontrol is no longer used (disabled in main Makefile) 
 
 MODDIR       := cptmcontrol
 MODDIRS      := $(MODDIR)/src
@@ -52,18 +53,19 @@ OCptmCLIBS      := lib/libTMrbDGF.$(SOEXT) lib/libTMrbEsone.$(SOEXT) lib/libTMrb
 include/%.h:    $(CptmCDIRI)/%.h
 		cp $< $@
 
-$(CptmCEXE):    |  $(OCptmCLIBS) $(CptmCSO)$(CptmCO) $(CptmCMAINO)
+$(CptmCEXE):    $(OCptmCLIBS) $(CptmCSO)$(CptmCO) $(CptmCMAINO)
 		@echo "OCptmCLIBS: $(OCptmCLIBS)"
 		@echo "$(CptmCEXE) linking exe ----------------------------------"
 		$(LD) -g $(LDFLAGS) $(CptmCMAINO) $(CptmCO) $(CptmCDO) $(OCptmCLIBS) $(ROOTGLIBS)  -lProof -lSpectrum \
             -o $(CptmCEXE)
 
-$(CptmCLIB):     $(CptmCDO) $(CptmCO)
+$(CptmCLIB):     $(CptmCDO) $(CptmCO) $(OCptmCLIBS)
 		@echo "objs in libCptmControl.so: $(CptmCO)"
 #		@echo "objs: $(CptmCO)"
 		@echo "$(CptmCEXE) make shared lib ------------------------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-		   "$(SOFLAGS)" libCptmControl.$(SOEXT) $@ "$(CptmCO) $(CptmCDO)"
+		   "$(SOFLAGS)" libCptmControl.$(SOEXT) $@ "$(CptmCO) $(CptmCDO)" \
+		   "$(OCptmCLIBS) $(ROOTGLIBS)"
 		@(if [ -f $(CptmCPCM) ] ; then \
 			echo "cp  $(CptmCPCM)----------------------" ; \
 			cp $(CptmCPCM) $(LPATH); \
@@ -72,7 +74,11 @@ $(CptmCLIB):     $(CptmCDO) $(CptmCO)
 $(CptmCDS):     $(CptmCDH) $(CptmCL)
 		@echo "includes: $(CptmCDH)"
 		@echo "Generating dictionary $@..."
+ifneq ($(ROOTV6), 1)
 		$(ROOTCINT) -f $@ -c -p -Iinclude $(CptmCDH) $(CptmCL)
+else
+		rootcling -f $@ $(call dictModule,CptmC) -I$(MARABOU_SRCDIR)/include $(CptmCH) $(CptmCL)
+endif
 
 $(CptmCDO):     $(CptmCDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

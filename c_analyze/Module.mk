@@ -15,15 +15,21 @@ CAN         := C_analyze
 MBSC        := TMbsControl
 
 ##### lib #####
-MBSCDL       := $(MODDIRI)/LinkDef.h
+MBSCL      := $(MODDIRI)/LinkDef.h
 MBSCDS      := $(MODDIRS)/G__$(MBSC)Dict.cxx
-MBSCPCM      := $(MODDIRS)/G__$(MBSC)Dict_rdict.pcm
+MBSCPCM     := $(MODDIRS)/G__$(MBSC)Dict_rdict.pcm
 MBSCDO      := $(MBSCDS:.cxx=.o)
 
 MBSCS       := $(MODDIRS)/$(MBSC).cxx
 MBSCH       := $(MODDIRI)/$(MBSC).h
 MBSCO       := $(MBSCS:.cxx=.o)
 
+# MBSCDO       := $(MBSCDS:.cxx=.o)
+# MBSCHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+# MBSCH        := $(patsubst $(MODDIRI)/%.h,%.h,$(MBSCHL))
+# MBSCS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
+# MBSCO        := $(MBSCS:.cxx=.o)
+ 
 CANH        := $(MODDIRI)/$(CAN).h
 CANS        := $(MODDIRS)/$(CAN).cxx
 CANO        := $(CANS:.cxx=.o)
@@ -40,7 +46,7 @@ ALLLIBS     += $(MBSCLIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(MBSCPCM)
 endif
-
+# $(info MBSCHL $(MBSCHL))
 # used in the main Makefile
 ALLHDRS     += include/$(MBSC).h include/$(CAN).h include/$(CAN)_Help.h
 
@@ -64,7 +70,7 @@ $(CANEXE):     $(CANDO) $(CANO) $(CANLIBS) $(MBSCLIB)
 		$(LD) -g $(LDFLAGS) $(CANO) $(CANLIBS) $(MBSCLIB) $(ROOTGLIBS) \
             -o $(CANEXE)
 
-$(MBSCLIB):     $(MBSCDO) $(MBSCO) $(MAINLIBS) $(MBSCLIBDEP)
+$(MBSCLIB):     $(MBSCDO) $(MBSCO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" lib$(MBSC).$(SOEXT) $@ "$(MBSCO) $(MBSCDO) $(MBSCLIBEXTRA)"
 		@(if [ -f $(MBSCPCM) ] ; then \
@@ -72,9 +78,13 @@ $(MBSCLIB):     $(MBSCDO) $(MBSCO) $(MAINLIBS) $(MBSCLIBDEP)
 			cp $(MBSCPCM) $(LPATH); \
 		fi)
 
-$(MBSCDS):     $(MBSCH) $(MBSCDL)
+$(MBSCDS):     $(MBSCHL) $(MBSCL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -p $(MBSCH) $(MBSCDL)
+ifneq ($(ROOTV6), 1)
+		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include $(MBSCH) $(MBSCL)
+else
+		rootcling -f $@ $(call dictModule,MBSC) $(MBSCH) $(MBSCL)
+endif
 
 $(MBSCDO):     $(MBSCDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

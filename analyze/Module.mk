@@ -15,13 +15,14 @@ MRBA       := TMrbAnalyze
 MUTEX      := mutex
 
 ##### lib #####
-MRBADL      := $(MODDIRI)/LinkDef.h
+MRBAL      := $(MODDIRI)/LinkDef.h
 MRBADS      := $(MODDIRS)/G__$(MRBA)Dict.cxx
 MRBAPCM      := $(MODDIRS)/G__$(MRBA)Dict_rdict.pcm
 MRBADO      := $(MRBADS:.cxx=.o)
 
 MRBAS       := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
-MRBAH       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+MRBAHL      := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+MRBAH       := $(patsubst $(MODDIRI)/%.h,%.h,$(MRBAHL))
 MRBAO       := $(MRBAS:.cxx=.o)
 
 MUTEXS      := $(MODDIRS)/$(MUTEX).cxx
@@ -40,9 +41,9 @@ ANOBJ       := obj/$(AN).o
 ALLEXECS    += $(ANEXE)
 ALLLIBS     += $(MRBALIB)
 ALLLIBS     += $(MUTEXLIB)
-
+MRBALIBDEP  := $(LPATH)/libTMrbUtils.$(SOEXT)
 # used in the main Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(MRBAH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(MRBAHL))
 ALLOBJS     += obj/$(AN).o
 
 # include all dependency files
@@ -58,10 +59,12 @@ include/%.h:    $(ANDIRI)/%.h
 obj/%.o:    $(MODDIRS)/%.o
 		cp $< $@
 
+# libTMrbAnalyze cannot be linked with: -Wl,--no-undefined
+# because of extra user code
 
-$(MRBALIB):     $(MRBADO) $(MRBAO) $(MAINLIBS) $(MRBALIBDEP)
+$(MRBALIB):     $(MRBADO) $(MRBAO) $(MRBALIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-		   "$(SOFLAGS)" lib$(MRBA).$(SOEXT) $@ "$(MRBAO) $(MRBADO) $(MRBANALYSELIBEXTRA)"
+		   "-shared -Wl,-soname," lib$(MRBA).$(SOEXT) $@ "$(MRBAO) $(MRBADO) $(MRBANALYSELIBEXTRA)"
 		@(if [ -f $(MRBAPCM) ] ; then \
 			echo "cp $(MRBAPCM)----------------------" ; \
 			cp $(MRBAPCM) $(LPATH); \
@@ -71,9 +74,14 @@ $(MUTEXLIB):     $(MUTEXO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libMutex.$(SOEXT) $@ "$(MUTEXO)"
 
-$(MRBADS):     $(MRBAH) $(MRBADL)
+$(MRBADS):     $(MRBAHL) $(MRBAL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -p -Iinclude $(MRBAH) $(MRBADL)
+ifneq ($(ROOTV6), 1)
+		$(ROOTCINT) -f $@ -c -p -I$(MARABOU_SRCDIR)/include $(MRBAH) $(MRBAL)
+else
+		rootcling -f $@ $(call dictModule,MRBA) -I$(MARABOU_SRCDIR)/include $(MRBAH) $(MRBAL)
+endif
+#		$(ROOTCINT) -f $@ -c -p -Iinclude $(MRBAH) $(MRBADL)
 
 $(MRBADO):     $(MRBADS)
 		$(CXX) -g $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<
@@ -84,12 +92,12 @@ $(ANDO):     $(ANDS)
 all-analyze:       $(ANOBJ) $(MRBALIB)
 
 clean-analyze:
-		@rm -f $(ANO) $(MRBAO) $(MRBADO) $(MUTEXO) $(MRBADS) $(ANOBJ) $(MRBALIB)
+		@rm -f $(ANO) $(MRBAO) $(MRBADO) $(MUTEXO) $(MRBADS) $(ANOBJ)
 
 clean::         clean-analyze
 
 distclean-analyze: clean-analyze
-		@rm -f $(ANDEP) $(ANDS) $(ANDH) $(ANEXE)
+		@rm -f $(ANDEP) $(ANDS) $(ANDH) $(ANEXE) $(MUTEXLIB) $(MRBALIB)
 
 distclean::     distclean-analyze
 

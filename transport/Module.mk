@@ -16,7 +16,8 @@ TRANSPL        := $(MODDIRI)/LinkDef.h
 TRANSPDS       := $(MODDIRS)/G__TMrbTransportDict.cxx
 TRANSPPCM       := $(MODDIRS)/G__TMrbTransportDict_rdict.pcm
 TRANSPDO       := $(TRANSPDS:.cxx=.o)
-TRANSPH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+TRANSPHL       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
+TRANSPH        :=  $(patsubst $(MODDIRI)/%.h,%.h,$(TRANSPHL))
 TRANSPS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 TRANSPO        := $(TRANSPS:.cxx=.o)
 
@@ -25,14 +26,15 @@ MBSIOOBJS         := obj/mbsio.o obj/byte_order.o
 TRANSPDEP      := $(TRANSPO:.o=.d) $(TRANSPDO:.o=.d)
 
 TRANSPLIB      := $(LPATH)/libTMrbTransport.$(SOEXT)
-
+TRANSPLIBDEP      := $(LPATH)/libTMrbUtils.$(SOEXT)
 # used in the main Makefile
-ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(TRANSPH))
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(TRANSPHL))
 ALLLIBS     += $(TRANSPLIB)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(TRANSPPCM)
 endif
 
+# $(info in TRANSPLIB MBSIOOBJS: $(MBSIOOBJS))
 # include all dependency files
 INCLUDEFILES += $(TRANSPDEP)
 
@@ -41,7 +43,7 @@ INCLUDEFILES += $(TRANSPDEP)
 include/%.h:    $(TRANSPDIRI)/%.h
 		cp $< $@
 
-$(TRANSPLIB):     $(TRANSPDO) $(TRANSPO) $(MAINLIBS) $(TRANSPLIBDEP) $(MBSIOOBJS)
+$(TRANSPLIB):     $(TRANSPDO) $(TRANSPO) $(MBSIOOBJS) $(TRANSPLIBDEP)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libTMrbTransport.$(SOEXT) $@ "$(TRANSPO) $(TRANSPDO)" \
 		   "$(MBSIOOBJS) $(TRANSPLIBEXTRA)"
@@ -50,9 +52,13 @@ $(TRANSPLIB):     $(TRANSPDO) $(TRANSPO) $(MAINLIBS) $(TRANSPLIBDEP) $(MBSIOOBJS
 			cp $(TRANSPPCM) $(LPATH); \
 		fi)
 
-$(TRANSPDS):     $(TRANSPH) $(TRANSPL)
+$(TRANSPDS):     $(TRANSPHL) $(TRANSPL)
 		@echo "Generating dictionary $@..."
+ifneq ($(ROOTV6), 1)
 		$(ROOTCINT) -f $@ -c -Iinclude $(TRANSPH) $(TRANSPL)
+else
+		rootcling -f $@ $(call dictModule,TRANSP)  -I$(MARABOU_SRCDIR)/include $(TRANSPH) $(TRANSPL)
+endif
 
 $(TRANSPDO):     $(TRANSPDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<
