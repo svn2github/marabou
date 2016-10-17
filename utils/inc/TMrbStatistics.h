@@ -14,7 +14,6 @@ namespace std {} using namespace std;
 #include "TList.h"
 #include "TNamed.h"
 #include "TDirectory.h"
-#include "TMapFile.h"
 
 class TMrbStatEntry: public TNamed {
 public:
@@ -95,7 +94,7 @@ public:
    Int_t Update();            // go through list of hists and update values
    Int_t Fill();              // fill stats for hists in memory
    Int_t Fill(TDirectory *);       // fill stats for hists in root file
-   Int_t Fill(TMapFile *);    // fill stats for hists in map file
+//   Int_t Fill(TMapFile *);    // fill stats for hists in map file
    TList * GetListOfEntries(){return fStatEntries;};
    void Print(Option_t * Option) const { TObject::Print(Option); }
    void Print(ostream & ostr = cout) const;
