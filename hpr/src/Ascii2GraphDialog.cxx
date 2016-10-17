@@ -90,7 +90,7 @@ Default is to construct a new canvas\n\
    row_lab->Add(new TObjString("DoubleValue_Yaxis min"));
    row_lab->Add(new TObjString("DoubleValue+Yaxis max"));
 
-   row_lab->Add(new TObjString("CheckButton_Force Xaxis Min/Max=0"));
+   row_lab->Add(new TObjString("CheckButton_Force auto Xmin/Xmax"));
    row_lab->Add(new TObjString("CheckButton+Draw/Overl in sel pad"));
    row_lab->Add(new TObjString("PlainIntVal_Xsize canvas"));
    row_lab->Add(new TObjString("PlainIntVal+Ysize canvas"));
@@ -339,10 +339,8 @@ void Ascii2GraphDialog::Draw_The_Graph()
 	}
    Double_t dx_low = TMath::Abs(xval[n-1] - xval[n-2]);
    Double_t dx_up  = TMath::Abs(xval[n-1] - xval[n-2]);
-   if (fXaxisMax == 0) {
+   if (fXaxisMax == 0 && fXaxisMin == 0) {
 		fXaxisMax = xmax_val + 0.5 * dx_up;
-	}
-   if (fXaxisMin == 0) {
 		fXaxisMin = xmin_val - 0.5 * dx_low;
 	}
    cout << "entries " << n << " fXaxisMin " <<fXaxisMin << " fXaxisMax " <<fXaxisMax <<   endl;

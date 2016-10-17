@@ -74,6 +74,9 @@ HTCanvas::~HTCanvas()
 	if ( gHprDebug > 0 )
 		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
 //   TQObject::Disconnect((TPad*)this, "Modified()");
+	if ( strcmp (GetName(), "FileList") == 0) {
+		if (fHistPresent) fHistPresent->fFileList = NULL;
+	}
 	fTimer.Stop();
    TQObject::Disconnect((TPad*)this, "Modified()", this, "HandlePadModified()");
 	if (fHandleMenus) {

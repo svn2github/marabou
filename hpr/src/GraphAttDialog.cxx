@@ -88,7 +88,8 @@ _________________________________________________________________________\n\
 		}
 		fTitle[i] = gr->GetTitle();
 		fDrawOpt[i]   = gr->GetDrawOption();
-//		cout << "GetDrawOption() " << i << ": " << fDrawOpt[i] << endl;
+		if (gDebug > 0)
+			cout << "GraphAttDialog GetDrawOption() " << i << ": " << fDrawOpt[i] << endl;
 		fFillColor[i] = gr->GetFillColor(); 
 		fFillStyle[i] = gr->GetFillStyle(); 
 		fLineColor[i] = gr->GetLineColor(); 
@@ -102,11 +103,11 @@ _________________________________________________________________________\n\
 		else if (fDrawOpt[i].Contains(">"))
 			fErrorMode[i] = ">";
 		else if (fDrawOpt[i].Contains("||"))
-			fErrorMode[i] = "||";
+			fErrorMode[i] = "||(only end)";
 		else if (fDrawOpt[i].Contains("Z", TString::kIgnoreCase))
-			fErrorMode[i] = "Z";
+			fErrorMode[i] = "Z(no XErr)";
 		else if (fDrawOpt[i].Contains("X", TString::kIgnoreCase))
-			fErrorMode[i] = "X";
+			fErrorMode[i] = "X(no Err)";
 		else if (fDrawOpt[i].Contains("2"))
 			fErrorMode[i] = "2";
 		else if (fDrawOpt[i].Contains("3"))
@@ -114,11 +115,11 @@ _________________________________________________________________________\n\
 		else if (fDrawOpt[i].Contains("4"))
 			fErrorMode[i] = "4";
 		if (     fDrawOpt[i].Contains("C", TString::kIgnoreCase))
-			fLineMode[i] = "C(smooth))";
+			fLineMode[i] = "C(smooth)";
 		else if (fDrawOpt[i].Contains("L", TString::kIgnoreCase))
-			fLineMode[i] = "L(simple))";
+			fLineMode[i] = "L(simple)";
 		else
-			fLineMode[i] = "(noline))";
+			fLineMode[i] = "(noline)";
 		if (     fDrawOpt[i].Contains("P", TString::kIgnoreCase))
 			fShowMarkers[i] = 1;
 		else
@@ -133,7 +134,6 @@ _________________________________________________________________________\n\
 	fShowAxis     = 1;
 	fShowTitle    = 1;
 	fRow_lab = new TList();
-//	cout << "fDrawOpt " << fDrawOpt<< endl;
    Int_t ind = 0;
    static Int_t dummy;
 //   static TString stycmd("SetAsDefault()");
@@ -152,6 +152,8 @@ _________________________________________________________________________\n\
 	fValp[ind++] = &fTitleY;
 	
 	for ( Int_t i =0; i < fNGraphs; i++ ) {
+		if (gDebug > 0)
+			cout << "fLineMode[0] " << fLineMode[0]<< endl;
 		TString comment("CommentOnly_GraphNo ");
 		comment +=i;
 		fRow_lab->Add(new TObjString(comment));
@@ -342,8 +344,8 @@ void GraphAttDialog::RestoreDefaults()
    TEnv env(".hprrc");
 	
 	fShowTitle    = env.GetValue("GraphAttDialog.fShowTitle",   1);
-	fEndErrorSize = env.GetValue("GraphAttDialog.fEndErrorSize", 1);
-	fErrorX       = env.GetValue("GraphAttDialog.fErrorX",       1);
+	fEndErrorSize = env.GetValue("GraphAttDialog.fEndErrorSize", 1.);
+	fErrorX       = env.GetValue("GraphAttDialog.fErrorX",       1.);
 	/*
 	fDrawOpt    = env.GetValue("GraphAttDialog.fDrawOpt", "A*");
    fLineStyle     = env.GetValue("GraphAttDialog.fLineStyle", 1);
@@ -351,7 +353,7 @@ void GraphAttDialog::RestoreDefaults()
    fLineColor     = env.GetValue("GraphAttDialog.fLineColor", 1);
    fMarkerStyle   = env.GetValue("GraphAttDialog.fMarkerStyle", 7);
    fMarkerSize    = env.GetValue("GraphAttDialog.fMarkerSize",  1);
-   fMarkerColor   = env.GetValue("GraphAttDialog.fMarkerColor", 1);
+   fMarkerColor   = env.GetValue("GraphAttDialog.fMarkerColor", 1.);
 	fFillStyle     = env.GetValue("GraphAttDialog.fFillStyle", 0);
 	fFillColor     = env.GetValue("GraphAttDialog.fFillColor", 1);
 	

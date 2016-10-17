@@ -19,7 +19,7 @@ int main(int argc, char **argv)
    if(!gSystem->AccessPathName(attrname, kFileExists))
       gROOT->LoadMacro(attrname);
 //loop:
-   theApp->Run(kTRUE);
-	gSystem->Exit(0);
+   theApp->Run(kFALSE);
+//	gSystem->Exit(0);
 }
 

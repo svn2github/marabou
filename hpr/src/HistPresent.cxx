@@ -5,7 +5,6 @@
 #include "TF1.h"
 #include "TFile.h"
 #include "TMath.h"
-//#include "TMapFile.h"
 #include "TKey.h"
 #include "TCutG.h"
 #include "TH1.h"
@@ -84,12 +83,12 @@
 HistPresent *gHpr;
 Int_t gHprDebug;
 Int_t gHprClosing;
+Int_t gHprTerminated;
 TString gHprWorkDir;
 TString gHprLocalEnv;
 static const char  *fHlistSuffix=".histlist";
 Int_t nHists;
 extern TH1 * gHpHist;
-//static Int_t kSemaphore = 0;
 
 //_____________________________________________________________________________________
 
@@ -227,6 +226,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 //   TList *fFunctions;
 	gHpr = this;
 	gHprDebug = 0;
+	gHprTerminated = 0;
 	gHprWorkDir = gSystem->pwd();
 	gHprLocalEnv = gHprWorkDir + "/.hprrc";
 	gHprClosing = 0;
@@ -332,15 +332,18 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 
 HistPresent::~HistPresent()
 {
-	cout<< "enter HistPresents dtor" <<endl;
+	if (gHprDebug > 0)
+		cout << endl << setblue << "enter HistPresents dtor"<< setblack <<endl;
 	if (fComSocket) {
 		fComSocket->Send("M_client exit");
 	}
+	gHprClosing = 1;
 	SaveOptions();
 //   CloseAllCanvases();
 	gDirectory->GetList()->Remove(this);
 	gROOT->GetListOfCleanups()->Remove(this);
 	if (cHPr )delete cHPr;
+	cHPr = NULL;
 };
 //________________________________________________________________
 void HistPresent::RecursiveRemove(TObject * obj)
@@ -386,9 +389,23 @@ void HistPresent::RecursiveRemove(TObject * obj)
 	if (obj == cHPr) {
 		SaveOptions();
 		cHPr = NULL;
-		cout << "Thats the end of HistPresent" <<endl;
- //     CloseAllCanvases();
-		gApplication->Terminate(0);
+		if (gHprTerminated == 0) {
+			gApplication->Terminate(0);
+			if (gHprDebug > 0)
+			cout << "HistPresent::RecursiveRemove: gApplication->Terminate(0)" <<endl;
+		}
+	}
+}
+//________________________________________________________________
+void HistPresent::HandleTerminate(Int_t status)
+{
+	gHprTerminated = 1;
+	
+	if ( gHprDebug > 0)
+		cout << setblue << "HandleTerminate called, status " << status << setblack << endl;
+	if (cHPr > 0 && gHprClosing == 0) {
+		delete cHPr;
+		cHPr = NULL;
 	}
 }
 //________________________________________________________________
@@ -398,7 +415,9 @@ void HistPresent::ShowMain()
 	Int_t mainheight = (Int_t)(WindowSizeDialog::fMainWidth * 1.6);
 	gStyle->SetCanvasPreferGL(kFALSE);
 	cHPr = new HTCanvas("cHPr", "HistPresent",5,5, WindowSizeDialog::fMainWidth, mainheight, this, 0);
-//   cHPr = new TCanvas("cHPr", "HistPresent",5,5, WindowSizeDialog::fMainWidth, mainheight);
+// this window should be removed if user types .q
+//	gSystem->RemoveOnExit(cHPr);
+	TQObject::Connect(gApplication, "Terminate(Int_t)", "HistPresent", this, "HandleTerminate(Int_t)");
 	cHPr->cd();
 	fRootCanvas = (TRootCanvas*)cHPr->GetCanvasImp();
 
@@ -442,21 +461,21 @@ void HistPresent::ShowMain()
 	TString tit("Show FileList (alphab)");
 	b = CommandButton(cmd,tit,x0,y,x1,y+dy);
 	b->SetToolTipText(
-	"Show files ending .root, .map or .histlist in CWD in alphabetical order",hint_delay);
+	"Show files ending .root, or .histlist in CWD in alphabetical order",hint_delay);
 	y-=dy;
 /*
 	cmd="gHpr->ShowFiles(\"R\")";
 	tit="Show FileList (reverse)";
 	b = CommandButton(cmd,tit,x0,y,x1,y+dy);
 	b->SetToolTipText(
-	"Show files ending .root, .map or .histlist in CWD in reverse alphabetical order",hint_delay);
+	"Show files ending .root, or .histlist in CWD in reverse alphabetical order",hint_delay);
 	y-=dy;
 */
 	cmd="gHpr->ShowFiles(\"D\")";
 	tit="Show FileList (bydate)";
 	b = CommandButton(cmd,tit,x0,y,x1,y+dy);
 	b->SetToolTipText(
-	"Show files ending .root, .map or .histlist in CWD ordered by date",hint_delay);
+	"Show files ending .root or .histlist in CWD ordered by date",hint_delay);
 	y-=dy;
 
 	cmd="gHpr->ShowContents(\"Memory\",\"\")";
@@ -970,28 +989,6 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 		}
 		st=new TMrbStatistics();
 		nstat = st->Fill();
-	} else if (strstr(fname,".map")) {
-		TMapFile * mfile =0;
-		mfile = TMapFile::Create(fname);
-		st = (TMrbStatistics*)mfile->Get("TMrbStatistics");
-		if (!st) {
-			st=new TMrbStatistics(fname);
-			nstat = st->Fill(mfile);
-		} else nstat = st->GetListOfEntries()->GetSize();
-//      lofF = GetFunctions(mfile);
-//      lofT = GetTrees(rfile);
-//      lofW = GetWindows(mfile);
-	  mfile->Close();
-
-
-	  if (nstat > 0) {
-			cmd = "gHpr->SaveMap(\"";
-			cmd = cmd + fname + "\")";
-			hint = "Save as ROOT file ";
-			title = "Save";
-			fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-		}
-
 	} else {
 		 WarnBox("Unknown file");
 		 return;
@@ -1351,7 +1348,6 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
 	TString sname(fname);
 	TMrbStatistics * st = 0;
 	TRegexp rname("\\.root");
-	TRegexp mname("\\.map");
 
 	if (sname == "Socket") {
 		if (!fComSocket) return;
@@ -1382,15 +1378,6 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
 			st->Fill(gDirectory);
 		}
 		if (rfile )rfile->Close();
-	} else if (sname.Index(mname) > 0) {
-		sname(mname) = "";
-		TMapFile * mfile =0;
-		mfile = TMapFile::Create(fname);
-		st = (TMrbStatistics*)mfile->Get("TMrbStatistics");
-		if (!st) {
-			st=new TMrbStatistics(fname);
-			st->Fill(mfile);
-		}
 	} else {
 		 cout << "Unkown suffix in : " << fname << endl;
 		 return;
@@ -1440,9 +1427,6 @@ void HistPresent::ComposeList(const char* /*bp*/)
 	TString listname  =  fname;
 	if      (fname.Contains(".root")) {
 		TRegexp rname("\\.root");
-		listname(rname) = fHlistSuffix;
-	} else if (fname.Contains(".map")) {
-		TRegexp rname("\\.map");
 		listname(rname) = fHlistSuffix;
 	}
 	Int_t lFullPath = 1, lHistOnly = 0;
@@ -1527,7 +1511,6 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* /*bp
 	ifstream wstream;
 	wstream.open(sl.Data(), ios::in);
 	TH1 *hist=0;
-	TMapFile *mfile = 0;
 	TString cmd; TString tit; TString sel;
 	if (strstr(fname, "Socket"))
 		cout << "Warning: Validity of entries in list are not checked" << endl;
@@ -1551,8 +1534,6 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* /*bp
 		}
 
 		cmd = "gHpr->ShowHist(\"";
-//      if (is_a_file(fname))cmd += "ShowHist(\"";
-//      else                cmd += "ShowMap(\"";
 		cmd += fname;
 		TString hname(line);
 		TString dname;
@@ -1582,11 +1563,6 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* /*bp
 			fRootFile = TFile::Open(fname);
 			if (dname.Length() > 0)gDirectory->cd(dname);
 			hist = (TH1*)gDirectory->Get(hname);
-		} else if  (strstr(fname, ".map")) {
-			mfile = TMapFile::Create(fname);
-			hist=0;
-			hist    = (TH1 *) mfile->Get(hname, hist);
-
 		} else if (strstr(fname, "Socket")) {
 //
 		}
@@ -1609,7 +1585,6 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* /*bp
 			if (fRootFile) fRootFile->Close();
 		} else {
 			if (hist) delete hist;
-			if (mfile) mfile->Close();
 		}
 	}
 	if (fCmdLine->GetSize() <= 0) {
@@ -1761,56 +1736,6 @@ Examples: xxx & yyy  true if name contains xxx AND yyy\n\
 	delete row_lab;
 }
 //________________________________________________________________________________________
-
-//void HistPresent::SetHistSelMask()
-//{
-//}
-//________________________________________________________________________________________
-// Save histograms from mapped file
-
-void HistPresent::SaveMap(const char* mapname, const char* /*bp*/)
-{
-	TMapFile *mfile;
-	mfile = TMapFile::Create(mapname);
-	if (!mfile) {
-		cout << "MapFile not found: " << mapname << endl;
-		gDirectory=gROOT;
-		return;
-	}
-	TString fname = mapname;
-	Int_t pp = fname.Index(".");
-	if (pp) fname.Resize(pp);
-	fname+=".root";
-
-	Bool_t ok;
-	const char * foutname=GetString("File Name",(const char *)fname,
-											  &ok, fRootCanvas);
-	if (!ok) return;
-	if (!gSystem->AccessPathName((const char *)foutname, kFileExists)) {
-		TString question=foutname;
-		question += " already exists, overwrite?";
-		if (!QuestionBox(question.Data(), fRootCanvas)) return;
-	}
-	TFile *f = new TFile(foutname,"RECREATE");
-	const char * name;
-	TMapRec *mr = mfile->GetFirst();
-	if (mr) {
-		while (mfile->OrgAddress(mr)) {
-			if (!mr) break;
-			name=mr->GetName();
-			TH1 *hist=0;
-			hist    = (TH1 *) mfile->Get(name, hist);
-			if (hist) hist->Write();
-			cout << "Writing: " << name << endl;
-			mr=mr->GetNext();
-		}
-	}
-	if (f) f->Close();
-	cout << "SaveMap done" << endl;
-	gDirectory=gROOT;
-}
-//________________________________________________________________________________________
-// Save histograms from mapped file
 
 void HistPresent::SaveFromSocket(const char * /*name*/, const char* /*bp*/)
 {
@@ -2324,26 +2249,14 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
 		}
 		return hist;
 	}
-// watch out: is it .map or .root or in memory
+// watch out: is it.root or in memory
 
-	if (fname.Index(".map") >= 0) {
-		TMapFile *mfile;
-		mfile = TMapFile::Create(fname);
-		hist=NULL;
-		hist    = (TH1 *) mfile->Get(hname, hist);
-		mfile->Close();
-	} else {
-//		if (fRootFile) fRootFile->Close();
-//		fRootFile=new TFile((const char *)fname);
-		TFile fi(fname);
-		if (dname.Length() > 0)fi.cd(dname);
-		hist = (TH1*)gDirectory->Get(hname);
-//		if (dname.Length() > 0)fRootFile->cd(dname);
-//		hist = (TH1*)gDirectory->Get(hname);
-		if (hist) hist->SetDirectory(gROOT);
-		else      cout << "Histogram: " << hname << " not found" << endl;
-//		if (fRootFile) {fRootFile->Close(); fRootFile=NULL;};
-	}
+	TFile fi(fname);
+	if (dname.Length() > 0)fi.cd(dname);
+	hist = (TH1*)gDirectory->Get(hname);
+	if (hist) hist->SetDirectory(gROOT);
+		else
+	cout << "Histogram: " << hname << " not found" << endl;
 	gDirectory=gROOT;
 //  gROOT->ls();
 	TString newname(hname.Data());
@@ -2773,18 +2686,9 @@ void HistPresent::PrintWindow(const char* fname, const char* hname, const char* 
 {
 	TObject * obj = NULL;
 	TString sel = fname;
-	if (is_memory(fname)) {
-		
-	} else if (sel.Contains(".map")) {
-		 TMapFile *mfile;
-		 mfile = TMapFile::Create(fname);
-		 obj   = (TObject*) mfile->Get(hname, 0);
-		 mfile->Close();
-	} else {
-		if (fRootFile) fRootFile->Close();
-		fRootFile=new TFile(fname);
-		obj = (TObject*)fRootFile->Get(hname);
-	}
+	if (fRootFile) fRootFile->Close();
+	fRootFile=new TFile(fname);
+	obj = (TObject*)fRootFile->Get(hname);
 	if (obj) {
 		 TNamed* nobj=(TNamed*)obj;
 		 cout << " " << endl;
@@ -2810,12 +2714,6 @@ void HistPresent::LoadFunction(const char* fname, const char* dir, const char* h
 //   if (color != 3) {
 		if (!strncmp("Memory",fname,6)) {
 			cout << " Function was removed??" << endl;
-		} else if (sel.Contains(".map")) {
-			 TMapFile *mfile;
-			 mfile = TMapFile::Create(fname);
-			 fun=NULL;
-			 fun   = (TObject*) mfile->Get(hname, 0);
-			 mfile->Close();
 		} else {
 			if (fRootFile) fRootFile->Close();
 			fRootFile=new TFile(fname);
@@ -2873,12 +2771,6 @@ void HistPresent::LoadWindow(const char* fname, const char* hname, const char* b
 //   if (color != 3) {
 		if (!strncmp("Memory",fname,6)) {
 			cout << " Window was removed??" << endl;
-		} else if (sel.Contains(".map")) {
-			 TMapFile *mfile;
-			 mfile = TMapFile::Create(fname);
-			 wdw=NULL;
-			 wdw   = (TObject*) mfile->Get(hname, 0);
-			 mfile->Close();
 		} else {
 			if (fRootFile) fRootFile->Close();
 			fRootFile=new TFile(fname);
@@ -3074,23 +2966,9 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
 		while (newhname.Index(notascii) >= 0) {
 			newhname(notascii) = "_";
 		}
-		
-//       hist=(TH1*)gROOT->GetList()->FindObject(newhname);
-//       if(hist) {
-//          cout << "GetHist: delete existing: " << newhname << endl;
-//          CleanWindowLists(hist);
-//          delete hist;
-//          hist = NULL;
-//       }
-
 		if (!hist) {
-//         gROOT->ProcessLine("gHpr->WarnBox(\"aaaaaaa\")");
 			fRootFile=new TFile(fname);
 			if (strlen(dir) > 0) fRootFile->cd(dir);
-//	      cout << "GetHist: |" << shname.Data()<< "|"<< dir << "|" << endl;
-//         gROOT->ProcessLine("gHpr->WarnBox(\"aaaaaaa\")");
-//         gROOT->ProcessLine("gHpr->NofEditorPages()");
-//         gSystem->Sleep(1000);
 			Int_t kn = 9999;
 			Int_t is = shname.Index(";");
 			if (is > 0){
@@ -3135,43 +3013,6 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
 		} else {
 			hist->SetUniqueID(0);
 		}
-
-	} else if (strstr(fname,".map")) {
-//     look if this hist is in a list of histograms of possibly automatically
-//     updated hists
-		Bool_t inlist = kFALSE;
-		if (fHistListList->GetSize() > 0) {
-			TIter next(fHistListList);
-			TString temp = fname;
-			temp += " ";
-			temp += hname;
-			while ( TList * oc = (TList *)next()) {
-//            TObjString * os = (TObjString *)oc->FindObject(temp.Data());
-				if (oc->FindObject(temp.Data())) {
-					cout << "Found inlist: " << temp.Data() << endl;
-					inlist = kTRUE;
-					break;
-				}
-			}
-		}
-		if (!inlist) {
-			TH1* temp = (TH1*)gROOT->GetList()->FindObject(shname.Data());
-			if (temp) {
- //           cout << "GetHist(map): Deleting existing: " << hname
- //                << " at: " << temp << endl;
-				CleanWindowLists(temp);
-				temp->Delete();
-			}
-		}
-		TMapFile *mfile;
-		mfile = TMapFile::Create(fname);
-		hist  = (TH1 *) mfile->Get(shname.Data());
-		hist->SetUniqueID(0);
-		if (inlist) {
-			shname.Prepend("mf_");
-			hist->SetName(shname.Data());
-		}
-		mfile->Close();
 	} else {
 		hist=(TH1*)gROOT->GetList()->FindObject(shname.Data());
 	}
@@ -3212,12 +3053,6 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 			mother_canvas->SetEnableButtons(kFALSE);
 		}
 	}
-//   if (kSemaphore != 0) {
-//      cout<< setred << "Cool down please!" << setblack << endl;
-//      gSystem->Sleep(1000);
-//      return;
-//   }
-//   kSemaphore = 1;
 	TH1* hist = GetHist(fname, dir, hname);
 	if ( hist ) {
 		if ( !hist->TestBit(kNotDeleted) ) {
@@ -3252,7 +3087,6 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 		}
 		ShowHist(hist, hname, b);
 	} else     WarnBox("Histogram not found");
-//   kSemaphore = 0;
 	 if (mother_canvas)
 		 mother_canvas->SetEnableButtons(kTRUE);
 }
@@ -3367,7 +3201,8 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 void HistPresent::CloseAllCanvases()
 {
 //     Cleaning all FitHist objects
-//   cout << "Enter CloseAllCanvases()" << endl;
+   if (gHprDebug > 0 )
+		cout << "Enter CloseAllCanvases()" << endl;
 	TQObject::Disconnect("TPad", "Modified()");
 	if (fHelpBrowser) fHelpBrowser->Clear();
 	fCloseWindowsButton->SetMethod(".! echo \"Please be patient\"");
@@ -3946,7 +3781,7 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 			next1 = new TIter(c->GetListOfPrimitives());
 			fname = c->GetTitle();
 			Int_t inddot = fname.Index(".");
-			if (inddot > 0) fname.Resize(inddot); // chop of .root .map etc.
+			if (inddot > 0) fname.Resize(inddot); // chop of .root etc.
 			while ( (obj = (*next1)()) ) {
 				if (obj->InheritsFrom("TButton")) {
 					b = (TButton*)obj;
@@ -4182,7 +4017,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			graph1d->SetLineWidth  (env.GetValue("GraphAttDialog.fLineWidth",  1));
 			graph1d->SetLineColor  (env.GetValue("GraphAttDialog.fLineColor",  1));
 			graph1d->SetMarkerStyle(env.GetValue("GraphAttDialog.fMarkerStyle",7));
-			graph1d->SetMarkerSize (env.GetValue("GraphAttDialog.fMarkerSize", 1));
+			graph1d->SetMarkerSize (env.GetValue("GraphAttDialog.fMarkerSize", 1.));
 			graph1d->SetMarkerColor(env.GetValue("GraphAttDialog.fMarkerColor",1));
 			graph1d->SetFillStyle  (env.GetValue("GraphAttDialog.fFillStyle",  0));
 			if ( drawopt.Contains("F") )

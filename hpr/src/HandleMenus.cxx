@@ -47,6 +47,9 @@
 #include "hprbase.h"
 #include "ShiftScale.h"
 
+extern Int_t gHprDebug;
+extern Int_t gHprClosing;
+
 void EditFitMacroG(TGWindow * win);
 void ExecFitMacroG(TGraph * graph, TGWindow * win);
 void ExecGausFitG(TGraph * graph, Int_t type);
@@ -526,9 +529,15 @@ again:
 					//       gClient->GetPicture("/home/rg/schaileo/myroot/xpm/rquit.xpm"),
 							 icontype, buttons, &retval);
 							if(retval == kMBYes){
+								gHprClosing = 1;
 								if( fHistPresent ) {
-									fHistPresent->CloseAllCanvases();
-									fHistPresent->SaveOptions();
+//									fHistPresent->CloseAllCanvases();
+//									fHistPresent->SaveOptions();
+									if (fHistPresent->cHPr) {
+										cout << endl << setblue << "Deleting main window cHpr " 
+										<< fHistPresent->cHPr << setblack;
+										delete fHistPresent->cHPr;
+									}
 								}
 								gApplication->Terminate(0);
 							}

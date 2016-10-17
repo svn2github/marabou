@@ -35,7 +35,6 @@
 #include "Buttons.h"
 #include "TButton.h"
 #include "TDiamond.h"
-#include "HTCanvas.h"
 #include "TContextMenu.h"
 #include "TString.h"
 #include "TRegexp.h"
@@ -57,6 +56,7 @@
 
 #include "FitHist.h"
 //#include "FitHist_Help.h"
+#include "HTCanvas.h"
 #include "CmdListEntry.h"
 #include "HistPresent.h"
 #include "FhContour.h"
@@ -509,12 +509,22 @@ void FitHist::DoSaveLimits()
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-	if (gHprDebug > 2)
+	if (gHprDebug > 0)
 		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist
-		<< " RecursiveRemove: " << obj  << endl;
+		<< " RecursiveRemove: " << obj << " " <<obj->GetName() << endl;
 	//fSelHist->Print();
-	if (fSelHist && obj != fSelHist)
-		fSelHist->GetListOfFunctions()->Remove(obj);
+	if (fSelHist && obj != fSelHist) {
+		if (gHprDebug > 0) {
+			cout << "fSelHist->GetListOfFunctions()->GetSize() " 
+				<< fSelHist->GetListOfFunctions()->GetSize() << endl;
+//			if (fSelHist->GetListOfFunctions()->GetSize() > 0) 
+//				fSelHist->GetListOfFunctions()->Print();
+		}
+		if (fSelHist->GetListOfFunctions()->GetSize() > 0)
+			fSelHist->GetListOfFunctions()->Remove(obj);
+		else
+			fSelHist = NULL;
+	}
 	fActiveCuts->Remove(obj);
 	fActiveWindows->Remove(obj);
 	fActiveFunctions->Remove(obj);
@@ -565,7 +575,7 @@ void FitHist::SaveDefaults(Bool_t /*recalculate*/)
 			env->SetValue("fRangeUpY",  fRangeUpY);
 		}
 	}
-	if (fSelHist->TestBit(TObject::kNotDeleted)) {
+	if (fSelHist && fSelHist->TestBit(TObject::kNotDeleted)) {
 		if (fXtitle.Length() > 0)
 			env->SetValue("fXtitle", fXtitle);
 		if (fYtitle.Length() > 0)

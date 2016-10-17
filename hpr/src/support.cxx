@@ -14,7 +14,6 @@
 #include "TF1.h"
 #include "TRegexp.h"
 #include "TKey.h"
-#include "TMapFile.h"
 #include "TMath.h"
 #include "TSocket.h"
 #include "TMessage.h"
@@ -652,27 +651,6 @@ Bool_t QuestionBox(const char *message, TGWindow * win)
 		return kTRUE;
 }
 //------------------------------------------------------
-Int_t GetUsedSize(TMapFile * mfile)
-{
-	if (!mfile) {
-		cout << "GetUsedSize: NULL pointer" << endl;
-		return -1;
-	}
-	TMapRec *mr = mfile->GetFirst();
-	if (!mr) {
-		cout << "GetUsedSize: no records" << endl;
-		return -2;
-	}
-	Int_t size = 0;
-	while (mfile->OrgAddress(mr)) {
-		if (!mr)
-			break;
-		size += mr->GetBufSize();
-		mr = mr->GetNext();
-	}
-	return size;
-}
-//------------------------------------------------------
 
 Int_t GetObjects(TList & list, TDirectory * rfile, const char * classname)
 {
@@ -730,7 +708,7 @@ Int_t contains_filenames(const char *lname)
 			break;
 		}
 		line.Resize(pp);
-		if (line.Contains(".root") || line.Contains(".map"))
+		if (line.Contains(".root"))
 			ok = 1;
 		break;
 	}
@@ -996,7 +974,7 @@ TEnv *GetDefaults(const char * hname, Bool_t mustexist, Bool_t renew)
 			TString cmd(defname.Data());
 			cmd.Prepend("rm ");
 			gSystem->Exec(cmd.Data());
-			cout << "Removing: " << cmd.Data() << endl;
+//			cout << "Removing: " << cmd.Data() << endl;
 		}
 //		cout << "GetDefaults: Looked for : " << defname.Data() << endl;
 		lastset = new TEnv(defname.Data());
