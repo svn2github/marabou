@@ -167,40 +167,6 @@ Int_t TMrbStatistics::Fill(TDirectory * file){
 }
 //____________________________________________________________________________
 
-Int_t TMrbStatistics::Fill(TMapFile * mfile){
-//
-//  Look for all histograms in map file and make an entry in statistics list
-//
-   Int_t nhists = 0;
-   TMapRec *mr = mfile->GetFirst();
-   if(!mr){cout << "Nothing in TMapFile" << endl; return -1;}
-   TMrbStatEntry * ent;
-   TH1 *h;
-   while (mfile->OrgAddress(mr)) {
-      if(!mr) break;
-      const char *classname=mr->GetClassName();
-      if(!strncmp(classname,"TH1",3) ||
-         !strncmp(classname,"TH2",3) ||
-         !strncmp(classname,"TH3",3)){       // a histo ?
-         const char *name=mr->GetName();
-         h = (TH1*)mfile->Get(name);
-         ent = new TMrbStatEntry(h, h->GetName(), h->GetTitle());
-         fStatEntries->Add(ent); 
-         if(h->InheritsFrom(TH2::Class())){
-            ent->Set(h->GetEntries(), h->GetSumOfWeights()); 
-         } else {
-            ent->Set(h->GetEntries(), h->GetSumOfWeights(),
-                     h->GetMean(), h->GetRMS()); 
-         }
-         nhists++;
-         delete h;
-      }
-     mr = mr->GetNext();
-    }
-   return nhists;
-}
-//____________________________________________________________________________
-
 void TMrbStatistics::Print(ostream & output) const{
 //
    TString sep("------------------------------------------------------------------");
