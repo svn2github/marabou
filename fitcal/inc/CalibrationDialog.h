@@ -4,15 +4,11 @@
 #include "TGraph.h"
 #include "TList.h"
 #include "TH1.h"
-//#include "TVirtualPad.h"
 #include "TPad.h"
 #include "TRootCanvas.h"
 #include "TString.h"
 #include "TGMrbValuesAndText.h"
-//#include "defineMarabou.h"
-//#ifdef MARABOUVERS
-//#include "HistPresent.h"
-//#endif
+
 //_____________________________________________________________________________________
 
 class CalibrationDialog : public TObject {
