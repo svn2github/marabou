@@ -34,7 +34,6 @@ namespace std {} using namespace std;
 #include "TString.h"
 #include "TStringLong.h"
 #include "TApplication.h"
-#include "TMapFile.h"
 #include "TError.h"
 #include "TEnv.h"
 #include "TRegexp.h"
@@ -55,7 +54,7 @@ namespace std {} using namespace std;
 
 #include <execinfo.h>
 
-// global pthread mutex to protect TMapped data
+// global pthread mutex 
 extern pthread_mutex_t global_data_mutex;
 
 /////////////////////////////////////////////
@@ -66,8 +65,6 @@ extern TMrbTransport * gMrbTransport;
 TMrbIOSpec * ioSpec;
 
 TServerSocket *gServerSocket = 0;
-// if Offline (replay) dont use TMapFile
-extern Bool_t kUseMap;
 Int_t  gComSocket;
 Int_t hsave_intervall;
 static Bool_t verboseMode = kFALSE;
@@ -78,7 +75,7 @@ pthread_t msg_thread, update_thread;
 
 // pthread prototypes
 void * msg_handler(void *);               // pthreaded message handler routine
-void * update_handler(void *);            // pthreaded timed mapped file update routine
+void * update_handler(void *);            // pthreaded timed update routine
 
 Bool_t PutPid(TMrbAnalyze::EMrbRunStatus Status) {
 //________________________________________________________________[C FUNCTION]
@@ -546,12 +543,6 @@ int main(int argc, char **argv) {
 	}
    if ( verboseMode ) cout	<< "M_analyze: update_thread terminated" << endl;
 	u_analyze->CloseRootTree();		// close user's output file(s)
-//	if(kUseMap){
-//		if ( verboseMode ) cout << "M_analyze: Will close Mapfile" << endl;
-//		M_prod->Close();
-
-//		if ( verboseMode ) cout << "M_analyze: Mapfile closed, sleep again 2 sec" << endl;
-//   }
 	if (gComSocket > 0) {
 		if ( verboseMode ) cout	<< "M_analyze: Waiting for msg_thread to terminate"
 						<< endl;
@@ -606,7 +597,7 @@ void * update_handler(void * dummy) {
 //________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           update_handler
-// Purpose:        Pthread to handle update of mmapped file
+// Purpose:        Pthread to handle update of histo files
 // Arguments:
 // Results:
 // Exceptions:
