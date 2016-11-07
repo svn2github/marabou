@@ -861,7 +861,9 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 		TFile * rfile = NULL;
 		rfile = TFile::Open(fname);
 		if ( rfile == NULL ) {
-			cout << "No such file: " << fname << endl;
+			cout << setred << "Cant find keys, something wrong with file: " << fname << endl
+			<< " For more info uncheck \"Suppress warning messages\" from Hpr-Options menu" 
+			<< setblack << endl;
 			return;
 		}
 		if (GeneralAttDialog::fShowListsOnly > 0) {

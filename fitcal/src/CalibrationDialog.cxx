@@ -786,7 +786,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    Int_t namb = 0;
    for (Int_t io = 1; io <= hscan->GetNbinsX(); io++) {
       for (Int_t ig = 1; ig <= hscan->GetNbinsY(); ig++) {
-         Int_t ic = (Int_t)hscan->GetCellContent(io, ig);
+         Int_t ic = (Int_t)hscan->GetBinContent(io, ig);
          if (ic == best) {
             if (fVerbose && namb > 1)
               printf("Ambiguous: at Offset, gain: %10.4f %10.4f found: %2d matches\n",

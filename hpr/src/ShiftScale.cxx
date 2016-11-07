@@ -229,7 +229,7 @@ void ShiftScale::Draw_The_Hist()
 		}
 		for (Int_t i = 1; i <= fHistOrig->GetNbinsX(); i++) {
 			for (Int_t j = 1; j <= fHistOrig->GetNbinsY(); j++) {
-				Int_t c = (Int_t)fHistOrig->GetCellContent(i, j);
+				Int_t c = (Int_t)fHistOrig->GetBinContent(i, j);
 				Double_t x = fHistOrig->GetXaxis()->GetBinLowEdge(i);
 				wx = fHistOrig->GetXaxis()->GetBinWidth(i);
 				Double_t y = fHistOrig->GetYaxis()->GetBinLowEdge(j);

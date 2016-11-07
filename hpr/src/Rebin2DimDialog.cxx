@@ -131,7 +131,7 @@ void Rebin2DimDialog::ExecuteRebin()
 			Float_t cont = 0.;
 			for (Int_t ixo = binx; ixo <= binx+fRebinX-1; ixo++) {
 				for (Int_t iyo = binys; iyo <= binys+fRebinY-1; iyo++) {
-					cont += fHist->GetCellContent(ixo, iyo);
+					cont += fHist->GetBinContent(ixo, iyo);
 				}
 			}
 			hr->SetBinContent(ix, iy, cont);

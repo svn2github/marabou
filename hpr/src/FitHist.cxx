@@ -2378,7 +2378,7 @@ void FitHist::OutputStat(Int_t fill_hist)
 			for (int j = 1; j <= fSelHist->GetNbinsY(); j++) {
 				Axis_t ycent = yaxis->GetBinCenter(j);
 				if (nc <= 0 ||(nc > 0 && InsideCut((float) xcent, (float) ycent))) {
-					Double_t cont = fSelHist->GetCellContent(i, j);
+					Double_t cont = fSelHist->GetBinContent(i, j);
 					sum += cont;
 					if (cont < h_min) h_min = cont;
 					if (cont > h_max) h_max = cont;
@@ -2398,9 +2398,9 @@ void FitHist::OutputStat(Int_t fill_hist)
 				for (int j = 1; j <= fSelHist->GetNbinsY(); j++) {
 					Axis_t ycent = yaxis->GetBinCenter(j);
 					if (nc <= 0 ||(nc > 0 && InsideCut((float) xcent, (float) ycent))) {
-						sum += fSelHist->GetCellContent(i, j);
+						sum += fSelHist->GetBinContent(i, j);
 						if ( fill_hist == 1 ) {
-							h_bincont->Fill(fSelHist->GetCellContent(i, j));
+							h_bincont->Fill(fSelHist->GetBinContent(i, j));
 						}
 					}
 				}
@@ -2477,7 +2477,7 @@ void FitHist::ProjectX()
 }
 //____________________________________________________________________________________
 
-// Show X projection of histograms within a window in y along functiomn
+// Show X projection of histograms within a window in y along function
 
 void FitHist::ProjectX_Func()
 {
@@ -2779,7 +2779,7 @@ void FitHist::ProfileX()
 			if (nc > 0 && !InsideCut(xa->GetBinCenter(ix),
 										ya->GetBinCenter(iy)))
 				continue;
-			yslice[iy-1] = h2->GetCellContent(ix, iy);
+			yslice[iy-1] = h2->GetBinContent(ix, iy);
 		}
 //      cout << yslice.GetMean() << endl;
 		if (yslice.GetSum() != 0) {
@@ -2833,7 +2833,7 @@ void FitHist::ProfileY()
 			if (nc > 0 && !InsideCut(xa->GetBinCenter(ix),
 										ya->GetBinCenter(iy)))
 				continue;
-			xslice[ix-1] = h2->GetCellContent(ix, iy);
+			xslice[ix-1] = h2->GetBinContent(ix, iy);
 		}
 //      cout << xslice.GetMean() << endl;
 		if (xslice.GetSum() != 0) {
@@ -3053,7 +3053,7 @@ void FitHist::ExpandProject(Int_t what)
 				ycent = yaxis->GetBinCenter(j);
 				if (nc && !InsideCut((float) xcent, (float) ycent))
 					continue;
-				Stat_t cont = fOrigHist->GetCellContent(i, j);
+				Stat_t cont = fOrigHist->GetBinContent(i, j);
 				if (what == projectx || what == projectboth || what == projectx_func) {
 					if (j >= fBinly && j <= fBinuy)
 						fProjHistX->Fill(xcent, cont);
@@ -3080,7 +3080,7 @@ void FitHist::ExpandProject(Int_t what)
 						jrebin = 0;
 					if (jrebin > fSelHist->GetNbinsY() + 1)
 						jrebin = fSelHist->GetNbinsY() + 1;
-					Stat_t oldcont = fSelHist->GetCellContent(irebin, jrebin);
+					Stat_t oldcont = fSelHist->GetBinContent(irebin, jrebin);
 //                 cout << i << " " << j << " "<< irebin << " "<< jrebin << endl;
 //                 cout << xcent << " " << ycent << " " << oldcont << " " << cont<< endl;
 					oldcont += cont;

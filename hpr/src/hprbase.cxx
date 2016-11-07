@@ -340,11 +340,11 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 		TAxis * ya = hist->GetYaxis();
 		for (Int_t i = nbx1; i <= nbx2; i++) {
 			for (Int_t k = nby1; k <= nby2; k++) {
-				if (suppress_zeros && hist->GetCellContent(i, k)  == 0) continue;
+				if (suppress_zeros && hist->GetBinContent(i, k)  == 0) continue;
 				*outfile << Form(formX.Data(), xa->GetBinCenter(i)) << " ";
 				*outfile << Form(formX.Data(), ya->GetBinCenter(k)) << " ";
 
-				*outfile << Form(formY.Data(), hist->GetCellContent(i,k));
+				*outfile << Form(formY.Data(), hist->GetBinContent(i,k));
 				if (errors)
 				*outfile << " " << Form(formY.Data(), hist->GetCellError(i,k));
 				*outfile << std::endl;

@@ -637,7 +637,7 @@ Float_t FitHist::DrawCut(){
             Axis_t xcent = xaxis->GetBinCenter(i);
             Axis_t ycent = yaxis->GetBinCenter(j);
             if(cut->IsInside((float)xcent,(float)ycent))
-            ent += fSelHist->GetCellContent(i, j);
+            ent += fSelHist->GetBinContent(i, j);
          }
       }
       cout << cut->GetName() << ": Content:" << ent << endl;
