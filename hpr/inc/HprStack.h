@@ -2,7 +2,7 @@
 #define HPRSTACK
 #include <TVirtualPad.h>
 #include <TGWindow.h>
-#include <HTCanvas.h>
+#include "HTCanvas.h"
 #include <TRootCanvas.h>
 #include <TList.h>
 #include <TGMenu.h>

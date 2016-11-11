@@ -181,6 +181,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fSetLevels = kFALSE;
 	
 	fSelInside = kTRUE;
+	fAutoDisplayS2FD = kFALSE;
 	fDeleteCalFlag = kFALSE;
 
 	fActiveWindows = new TList();
@@ -3245,6 +3246,34 @@ void FitHist::ExpandProject(Int_t what)
 
 //   ClearMarks();
 	fCanvas->Modified();
+}
+//____________________________________________________________________________
+
+void FitHist::ProjectOnAnyAxis()
+{
+	TIter next(fSelHist->GetListOfFunctions());
+	TF1 * func = NULL;
+	while (TObject * obj =(TObject *)next()) {
+		if (is_a_function(obj)) {
+			if (func != NULL)
+				Hpr::WarnBox("More than 1 function defined, take first");
+			else func =(TF1 *)obj;
+		}
+	}
+	if (!func) {
+		Hpr::WarnBox("No function found");
+		return;
+	}
+	TString tit = func->GetTitle();
+	if (tit != "pol1") {
+		Hpr::WarnBox("Function must be a pol1");
+		return;
+	}
+	Double_t apol = func->GetParameter(1);
+	Double_t cpol = func->GetParameter(0);
+	TH1F * hproj = Hpr::projectany((TH2*)fSelHist, (TH1F*)NULL, cpol, apol);
+	if (gHpr) gHpr->ShowHist(hproj);
+	else      hproj->Draw();
 }
 
 //____________________________________________________________________________

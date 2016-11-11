@@ -97,6 +97,7 @@ private:
 	Int_t fLogy;
 	Int_t fLogz;
 	Bool_t fSelInside;
+	Bool_t fAutoDisplayS2FD;
 	Int_t fUserContourLevels;
 	Bool_t fSetLevels;
 	Bool_t fSetColors;
@@ -248,7 +249,8 @@ public:
 	void SetCallMinos(Bool_t cminos) {fCallMinos=cminos;};
 	Bool_t GetCallMinos() {return fCallMinos;};
 	void SetInside(Bool_t inside){fSelInside=inside;};
-
+	void SetAutoDisplayS2FD(Bool_t ads){fAutoDisplayS2FD = ads;};
+	Bool_t GetAutoDisplayS2FD(){return fAutoDisplayS2FD;};
 	void SetLogx(Int_t state);
 	void SetLogy(Int_t state);
 	void SetLogz(Int_t state);
@@ -315,6 +317,7 @@ public:
 	void  ProjectY();
 	void  ProjectBoth();
 	void  ProjectF();                   // project along a function
+	void  ProjectOnAnyAxis();
 	void  Transpose(Int_t invert);
 	void  Rotate(Int_t sense);
 	void OutputStat(Int_t fill_hist);

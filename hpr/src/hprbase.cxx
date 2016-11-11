@@ -1620,5 +1620,180 @@ Int_t GetFreeColorIndex()
    }
    return highestIndex + 1;
 }
+//___________________________________________________________________________
+
+Double_t DtoL(Double_t px, Double_t py, Double_t x1, Double_t y1, Double_t x2, Double_t y2 )
+{
+////////////////////////////////////////////////////////////////////////////////
+/// Compute distance from point px,py to a line.
+/// partially taken from TLine
+///
+/// Algorithm:
+///   A(x1,y1)         P                             B(x2,y2)
+///   -----------------+------------------------------
+///                    |
+///                    |
+///                    |
+///                    |
+///                   M(x,y)
+///
+/// Let us call  a = distance AM     A=a**2
+///              b = distance BM     B=b**2
+///              c = distance AB     C=c**2
+///              d = distance PM     D=d**2
+///              u = distance AP     U=u**2
+///              v = distance BP     V=v**2     c = u + v
+///
+/// D = A - U
+/// D = B - V  = B -(c-u)**2
+///    ==> u = (A -B +C)/2c
+///        d = sqrt(A - u*u)
+///
+////////////////////////////////////////////////////////////////////////////////
+
+   Double_t xl, xt, yl, yt;
+   Double_t x     = px;
+   Double_t y     = py;
+//   if (x1 < x2)
+		{xl = x1; xt = x2;}
+//   else
+//		{xl = x2; xt = x1;}
+//  if (y1 < y2)
+		{yl = y1; yt = y2;}
+ //  else
+//		{yl = y2; yt = y1;}
+//  f(x) = co + sl * x
+	Double_t sl = (yt - yl)/(xt - xl);
+	Double_t co = yt - sl * xt;
+	
+   Double_t xx1   = x  - x1;
+   Double_t xx2   = x  - x2;
+   Double_t x1x2  = x1 - x2;
+   Double_t yy1   = y  - y1;
+   Double_t yy2   = y  - y2;
+   Double_t y1y2  = y1 - y2;
+   Double_t a     = xx1*xx1   + yy1*yy1;
+   Double_t b     = xx2*xx2   + yy2*yy2;
+   Double_t c     = x1x2*x1x2 + y1y2*y1y2;
+   if (c <= 0)  return 9999;
+   Double_t v     =  TMath::Sqrt(c);
+   Double_t u     = (a - b + c)/(2*v);
+   Double_t d     = TMath::Sqrt(TMath::Abs(a - u*u));
+	// check if below or above
+   if ( py < (co + sl*px) ) return  TMath::Sign(d,sl);
+   else                     return -TMath::Sign(d,sl);
+}
+//_______________________________________________________________________________________
+
+TH1F* projectany(TH2* hin , TH1F* hp, Double_t co, Double_t sl)
+{
+// project 2dim hist hin on an axis given by its normal f(x) = co + sl*x
+// if hproj is NULL a default hist is constructed
+//
+	cout << "const  " << co << " slope " << sl << endl;
+	if (TMath::Abs(sl) < 1.e-10) {
+		cout << "Slope of normal == 0, use project X instead" << endl;
+		return NULL;
+	} else if ( TMath::Abs(1./sl) < 1.e-10) {
+		cout << "Slope of normal == inf, use project Y instead" << endl;
+		return NULL;
+	}
+	TAxis* xa = hin->GetXaxis();
+	Int_t nbinsX = xa->GetNbins();
+	TAxis* ya = hin->GetYaxis();
+	Int_t nbinsY = ya->GetNbins();
+//		Double_t sl = (y2 - y1)/(x2 - x1);
+//		Double_t co = y2 - sl * x2;
+//		cout << "const  " << co << " slope " << sl << endl;
+	Double_t x1, y1, x2, y2;
+	x1 = xa->GetXmin();
+	x2 = xa->GetXmax();
+	y1 = co + sl*x1;
+	y2 = co + sl*x2;
+	Double_t xmin = 0, xmax = 0, dist;
+	TH1F * hproj;
+	if (hp == NULL) {
+		Int_t nbinsProj= TMath::Sqrt(2)* ((Double_t)nbinsX) +10;
+//		Int_t nbinsProj= nbinsX + nbinsY;
+		// find min / max in projection
+		for (Int_t ix = 1; ix <= nbinsX; ix++) {
+			for (Int_t iy = 1; iy <= nbinsY; iy++) {
+				Int_t cont = hin->GetBinContent(ix, iy);
+				Double_t xc = xa->GetBinCenter(ix);
+				Double_t yc = ya->GetBinCenter(iy);
+				if ( cont != 0) {
+					dist = DtoL(xc, yc, x1, y1, x2, y2);
+					if (dist < xmin) xmin = dist;
+					if (dist > xmax) xmax = dist;
+				}
+			}
+		}
+		cout << "nbinsProj " << nbinsProj  << " xmin " << xmin<< " xmax " << xmax << endl;
+		cout << " x1 " << x1 << " y1 " << y1 << " x2 " << x2 << " y2 " << y2 << endl;
+		// some margin around
+		xmin = xmin - 2 * (xmax - xmin)/nbinsProj;
+		xmax = xmax + 2 * (xmax - xmin)/nbinsProj;
+		TString title( hin->GetTitle());
+		title.Append("_proj_");
+		// for title use points on frame of histogram
+		Double_t x1d = x1, y1d = y1, x2d = x2, y2d = y2;
+		if (y1 < ya->GetXmin() && sl != 0 ) {
+			y1d = ya->GetXmin();
+			x1d = (y1d - co) / sl;
+		}
+		if (y1 > ya->GetXmax() && sl != 0 ) {
+			y1d = ya->GetXmax();
+			x1d = (y1d - co) / sl;
+		}
+		
+		if (y2 < ya->GetXmin() && sl != 0 ) {
+			y2d = ya->GetXmin();
+			x2d = (y2d - co) / sl;
+		}
+		if (y2 > ya->GetXmax() && sl != 0 ) {
+			y2d = ya->GetXmax();
+			x2d = (y2d - co) / sl;
+		}
+		TString tt(Form("%4.2g_%4.2g_%4.2g_%4.2g", x1d, y1d, x2d, y2d));
+//		cout << "tt |" << tt << "|" <<endl;
+		TRegexp bl(" ");
+		while (tt.Contains(" ")){
+			tt(bl)="";
+		}
+		title.Append(tt);
+		for (Int_t ic = 0; ic < tt.Length(); ic++) {
+			if (tt(ic) == '.') tt(ic)='d';
+			if (tt(ic) == '-') tt(ic)='m';
+			if (tt(ic) == '+') tt(ic)='p';
+		}
+		tt.Prepend("hproj_");
+//
+
+		cout << "tt |" << tt << "|" <<endl;
+		hproj = new TH1F(tt, title, nbinsProj, xmin, xmax);
+	} else {
+		hproj = hp;
+	}
+	// fill result, to minimize binning effect distribute
+	// entries randomly in cell
+	for (Int_t ix = 1; ix <= nbinsX; ix++) {
+		for (Int_t iy = 1; iy <= nbinsY; iy++) {
+			Int_t cont = hin->GetBinContent(ix, iy);
+			if (cont != 0){
+				Double_t xc = xa->GetBinCenter(ix);
+				Double_t yc = ya->GetBinCenter(iy);
+				Double_t xbw = xa->GetBinWidth(ix);
+				Double_t ybw = ya->GetBinWidth(iy);
+				for (Int_t i=0;i<cont; i++) {
+					Double_t x =xc + xbw * (gRandom->Rndm() - 0.5);
+					Double_t y =yc + ybw * (gRandom->Rndm() - 0.5);
+					dist = DtoL(x, y, x1, y1, x2, y2);
+					hproj->Fill(dist);
+				}
+			}
+		}
+	}
+	return hproj;
+}
 
 }   // end namespace Hpr

@@ -43,5 +43,7 @@ namespace Hpr
 	TCanvas * FindCanvas(const Char_t * pat);
 	void SetUserPalette(Int_t startindex, TArrayI * pixels);
 	Int_t GetFreeColorIndex();
+	Double_t DtoL(Double_t px, Double_t py, Double_t x1, Double_t y1, Double_t x2, Double_t y2 );
+	TH1F* projectany(TH2* hin , TH1F* hp, Double_t co, Double_t sl);
 }
 #endif

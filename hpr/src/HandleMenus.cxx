@@ -134,6 +134,7 @@ enum ERootCanvasCommands {
 	kFHSet2Marks,
 	kFHColorMarked,
 	kFHSelectInside,
+	kFHDisplayS2FD,
 	kFHKeepPar,
 	kFHCallMinos,
 
@@ -173,6 +174,7 @@ enum ERootCanvasCommands {
 	kFHLiveSliceX,
 	kFHLiveSliceY,
 	kFHProjectB,
+	kFHProjectOnAnyAxis,
 	kFHStackMax,
 	kFHStackMin,
 	kFHStack,
@@ -816,6 +818,15 @@ again:
 								 fCutsMenu->CheckEntry(kFHSelectInside);
 							}
 							break;
+						case kFHDisplayS2FD:
+							if(fFitHist->GetAutoDisplayS2FD()) {
+								 fFitHist->SetAutoDisplayS2FD(kFALSE);
+								 fFitMenu->UnCheckEntry(kFHDisplayS2FD);
+							} else {
+								 fFitHist->SetAutoDisplayS2FD(kTRUE);
+								 fFitMenu->CheckEntry(kFHDisplayS2FD);
+							}
+							break;
 						case  kFHMarksToWindow:
 							fFitHist->MarksToWindow();
 							break;
@@ -964,6 +975,9 @@ again:
 							break;
 						case kFHProjectB:
 							fFitHist->ProjectBoth();
+							break;
+						case kFHProjectOnAnyAxis:
+							fFitHist->ProjectOnAnyAxis();
 							break;
 						case kFHLiveSliceX:
 							{
@@ -1684,6 +1698,7 @@ void HandleMenus::BuildMenus()
 				fDisplayMenu->AddEntry("ProjectX",     kFHProjectX   );
 				fDisplayMenu->AddEntry("ProjectY",     kFHProjectY   );
 				fDisplayMenu->AddEntry("ProjectBoth",  kFHProjectB   );
+				fDisplayMenu->AddEntry("Project on any Axis",  kFHProjectOnAnyAxis);
 				fDisplayMenu->AddEntry("Project_X_WithinFunction", kFHProjectX_func);
 				fDisplayMenu->AddEntry("Project_Y_AlongFunction", kFHProjectF);
 				fDisplayMenu->AddEntry("Live slice X", kFHLiveSliceX);
@@ -1839,6 +1854,10 @@ void HandleMenus::BuildMenus()
 				fFitMenu->AddPopup("Fit 2 dim Gaussian", g2p);
 				fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
 				fFitMenu->AddPopup("FitPolyMarks", fCascadeMenu2);
+				fFitMenu->AddEntry("Display Save2FileDialog",  kFHDisplayS2FD);
+				if(fFitHist->GetAutoDisplayS2FD()) fFitMenu->CheckEntry(kFHDisplayS2FD);
+				else                            fFitMenu->UnCheckEntry(kFHDisplayS2FD);
+				
 				fFitMenu->AddSeparator();
 				fFitMenu->AddEntry("Edit User Fit Slices Y Macro", kFHEditSlicesYUser);
 				fFitMenu->AddEntry("Execute User FitSlices Y Macro", kFHFitSlicesYUser);
@@ -1872,6 +1891,7 @@ void HandleMenus::BuildMenus()
 			fFitMenu->AddSeparator();
 			fFitMenu->AddEntry("Kolmogorov Test",         kFHKolmogorov);
 			fFitMenu->AddEntry("Fast Fourier Transform",         kFHfft);
+			if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "fitting.html");
 		}
 //      fCascadeMenu1->Associate((TGWindow*)this);
 		if ( fCascadeMenu2 )

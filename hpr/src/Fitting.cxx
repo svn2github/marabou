@@ -965,27 +965,31 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	fSelPad->Update();
 //  if ( fDialog != NULL )
 //     fDialog->CloseDialog();
-	Save2FileDialog sfd(pol, NULL, (TRootCanvas*)fCanvas->GetCanvasImp());
-	if ( sfd.Canceled() == 0 ) {
-		// find out if  user changed name and seqnumber
-		TString fn(sfd.GetObjName()); 
-		cout << "sfd.GetObjName() " << sfd.GetObjName() << endl;
-		TRegexp re("_[0-9]+$");  // e.g. _123 at end of string
-		Ssiz_t len;
-		Ssiz_t pos = re.Index(fn, &len);
-		if (pos >= 0 ) {
-			TString sval = fn(pos+1, len-1);
-			fFuncNumb = sval.Atoi();
+	if (GetAutoDisplayS2FD()) {
+		Save2FileDialog sfd(pol, NULL, (TRootCanvas*)fCanvas->GetCanvasImp());
+		if ( sfd.Canceled() == 0 ) {
+			// find out if  user changed name and seqnumber
+			TString fn(sfd.GetObjName()); 
+			cout << "sfd.GetObjName() " << sfd.GetObjName() << endl;
+			TRegexp re("_[0-9]+$");  // e.g. _123 at end of string
+			Ssiz_t len;
+			Ssiz_t pos = re.Index(fn, &len);
+			if (pos >= 0 ) {
+				TString sval = fn(pos+1, len-1);
+				fFuncNumb = sval.Atoi();
+			}
+			fn(re) = "";
+			cout << "fn " << fn << " funcname " <<funcname  << endl;
+			if ( fn != funcname ) {
+				env.SetValue("Fit2dim.FuncName", fn);
+				env.SaveLevel(kEnvLocal);
+			}
+			fFuncNumb++;
 		}
-		fn(re) = "";
-		cout << "fn " << fn << " funcname " <<funcname  << endl;
-		if ( fn != funcname ) {
-			env.SetValue("Fit2dim.FuncName", fn);
-			env.SaveLevel(kEnvLocal);
-		}
-		fFuncNumb++;
+	} else {
+		cout << setblue << "You may save the function from the popup menu" << setblack << endl;
 	}
-	cout << setblue << "Dont forget to clear marks" << setblack << endl;
+	cout << setblue << "Dont forget to clear marks if no longer needed" << setblack << endl;
 //	if (what == 0)
 //		ClearMarks();
 //	if (what == 1)
