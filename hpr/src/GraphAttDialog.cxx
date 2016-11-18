@@ -12,6 +12,8 @@
 #include "support.h"
 #include <iostream>
 
+extern Int_t gHprDebug;
+
 namespace std {} using namespace std;
 //_______________________________________________________________________
 
@@ -88,7 +90,7 @@ _________________________________________________________________________\n\
 		}
 		fTitle[i] = gr->GetTitle();
 		fDrawOpt[i]   = gr->GetDrawOption();
-		if (gDebug > 0)
+		if (gHprDebug > 0)
 			cout << "GraphAttDialog GetDrawOption() " << i << ": " << fDrawOpt[i] << endl;
 		fFillColor[i] = gr->GetFillColor(); 
 		fFillStyle[i] = gr->GetFillStyle(); 
@@ -152,7 +154,7 @@ _________________________________________________________________________\n\
 	fValp[ind++] = &fTitleY;
 	
 	for ( Int_t i =0; i < fNGraphs; i++ ) {
-		if (gDebug > 0)
+		if (gHprDebug > 0)
 			cout << "fLineMode[0] " << fLineMode[0]<< endl;
 		TString comment("CommentOnly_GraphNo ");
 		comment +=i;
@@ -379,7 +381,7 @@ void GraphAttDialog::RestoreDefaults()
 
 void GraphAttDialog::CloseDown(Int_t wid)
 {
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "CloseDown(" << wid<< ")" <<endl;
 	SetGraphAtt();
    fDialog = NULL;
@@ -391,7 +393,7 @@ void GraphAttDialog::CloseDown(Int_t wid)
 void GraphAttDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
 	TCanvas *canvas = (TCanvas *)obj;
-	if ( gDebug > 0 ) {
+	if ( gHprDebug > 0 ) {
 		cout << ClassName() << " CRButtonPressed(" << wid << ", " << bid;
 		if (obj) cout  << ", " << canvas->GetName() << ")";
 		cout << endl;

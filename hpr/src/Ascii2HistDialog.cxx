@@ -14,6 +14,8 @@
 #include "TSystem.h"
 #include <fstream>
 
+extern Int_t gHprDebug;
+
 extern TString gHprLocalEnv;
 
 //Double_t LocMin(Int_t n, Double_t *x)
@@ -194,7 +196,7 @@ void Ascii2HistDialog::Read_Input()
 
 		oa = line.Tokenize(del);
 		Int_t nent = oa->GetEntries();
-		if (nn < 50 && gDebug > 0) {
+		if (nn < 50 && gHprDebug > 0) {
 			cout << line << " " << nent << endl;
 			nn++;
 		}
@@ -215,7 +217,7 @@ void Ascii2HistDialog::Read_Input()
 // 		if (nn < 50) cout << " val: ";
 		for (Int_t i = fNskip; i < nval+fNskip; i++) {
 			val = ((TObjString*)oa->At(i))->String();
-			if (nn < 50 && gDebug > 0) 
+			if (nn < 50 && gHprDebug > 0) 
 				cout << val << " " ; 
 			if (!val.IsFloat()) {
 				cout << "Illegal double: " << val << " at line: " << fNvalues+1 << endl;
@@ -229,7 +231,7 @@ void Ascii2HistDialog::Read_Input()
 			else if ( i == 3+fNskip ) fWval.AddAt(val.Atof(), fNvalues);
 		}
 		fNvalues++;
-		if (nn < 50 && gDebug > 0) 
+		if (nn < 50 && gHprDebug > 0) 
 			cout << endl;
 		if (fNvalues >= fXval.GetSize() - 1){
 			fXval.Set(fNvalues+100);
@@ -398,7 +400,7 @@ void Ascii2HistDialog::Show_Head_of_File()
 
 void Ascii2HistDialog::SaveDefaults()
 {
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "Ascii2HistDialog::SaveDefaults() " << endl;
    TEnv env(gHprLocalEnv);
    env.SetValue("Ascii2HistDialog.fHistFileName",   fHistFileName);

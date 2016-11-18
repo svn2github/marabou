@@ -225,7 +225,8 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 //   TDirectory *fDirectory;
 //   TList *fFunctions;
 	gHpr = this;
-	gHprDebug = 0;
+	TEnv envhpr(".hprrc");
+	gHprDebug = envhpr.GetValue("HistPresent.Debuglevel", 0);
 	gHprTerminated = 0;
 	gHprWorkDir = gSystem->pwd();
 	gHprLocalEnv = gHprWorkDir + "/.hprrc";

@@ -25,6 +25,8 @@
 #include "Set3DimOptDialog.h"
 #include <iostream>
 
+extern Int_t gHprDebug;
+
 Double_t gTranspThresh = 1;
 Double_t gTranspAbove = 0.4;
 Double_t gTranspBelow = 0.005;
@@ -358,7 +360,7 @@ void Set3DimOptDialog::SetRanges()
 
 void Set3DimOptDialog::SetHistAttNow(TCanvas *canvas)
 {
-	if (gDebug > 0) 
+	if (gHprDebug > 0) 
 		cout << "SetHistAttNow fDrawOpt3Dim " << fDrawOpt3Dim << endl;
 	
 //	if (!fDrawOpt3Dim.Contains("GL")){
@@ -605,7 +607,7 @@ void Set3DimOptDialog::SetHistAttPerm()
 
 void Set3DimOptDialog::SaveDefaults()
 {
-	if (gDebug > 0) 
+	if (gHprDebug > 0) 
 		cout << "Set3DimOptDialog::SaveDefaults()  "<< endl;
    TEnv env(".hprrc");
    env.SetValue("Set3DimOptDialog.fDrawOpt3Dim",      fDrawOpt3Dim);
@@ -651,7 +653,7 @@ void Set3DimOptDialog::GetValuesFromHist()
 
 void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
 {
-	if (gDebug > 0) 
+	if (gHprDebug > 0) 
 		cout << "Set3DimOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
 	TString envname;
 	if (resetall == 0 ) {
@@ -706,7 +708,7 @@ void Set3DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 			fDrawOpt3Dim = fDrawOpt3DimArray[i];
 		}
 	}
-	if (gDebug > 0) {
+	if (gHprDebug > 0) {
 		cout << "CRButtonPressed fDrawOpt3Dim " << fDrawOpt3Dim << endl;
 		if (obj) cout  << ", " << canvas->GetName() << ")";
 		cout << endl;

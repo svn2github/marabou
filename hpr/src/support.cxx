@@ -43,6 +43,7 @@
 #include <fstream>
 #include <sstream>
 
+extern Int_t gHprDebug;
 TSocket * gSocket = 0;
 //-----------------------------------------------------------------------
 //  a command button
@@ -1079,7 +1080,7 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
 	
 	while ( (sel = (TObjString*)next()) ) {
 		name = sel->GetString();
-		if (gDebug > 0)
+		if (gHprDebug > 0)
 		cout << "DeleteOnFile " << endl << "fname: " << fname << endl<< "entry: " << name << endl;
 		if (name.BeginsWith(fname)) {
 			Ssiz_t pos = 0,slen;

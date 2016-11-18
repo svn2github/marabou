@@ -19,6 +19,7 @@
 #include "SetColor.h"
 #include <iostream>
 
+extern Int_t gHprDebug;
 namespace std {} using namespace std;
 
 //_______________________________________________________________________
@@ -127,14 +128,14 @@ only max number of points of the graph.\n\
 //		cout << "No Histogram in Canvas" << endl;
 //		return;
 	} else {
-		if ( gDebug > 0 )
+		if ( gHprDebug > 0 )
 			cout << "Set2DimGraphDialog: " << endl
 			<< "TCanvas* canvas = (TCanvas*)" << fCanvas
 			<< "; TH2* hist = (TH2*)" << fHist 
 			<< "; Set2DimGraphDialog * d2 = (Set2DimGraphDialog*)" << this << endl;
 	}
 	RestoreDefaults();
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << "Set2DimGraphDialog: fDrawOpt2Dim " << fDrawOpt2Dim << endl;
 //   Int_t selected = -1;
 	for (Int_t i = 0; i < kNGraph2Dopt; i++) {
@@ -280,7 +281,7 @@ void Set2DimGraphDialog::SetAttAll(TCanvas *canvas)
 				gr->SetMarkerStyle(fMarkerStyle2Dim);  
 				gr->SetMarkerSize (fMarkerSize2Dim);
 			} 
-			if ( gDebug > 0 ) 
+			if ( gHprDebug > 0 ) 
 				cout << "SetAttAll: " << fDrawOpt2Dim<< endl;
 		}
 	}
@@ -311,7 +312,7 @@ void Set2DimGraphDialog::SetPadAtt(TPad *pad)
 
 void Set2DimGraphDialog::SetAttPerm()
 {
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << "Set2DimGraphDialog:: SetHistAttPerm()" << endl;
 	TEnv env(".hprrc");
 	TRegexp sa("SAME");
@@ -369,7 +370,7 @@ void Set2DimGraphDialog::GetValuesFrom()
 	fDrawOpt2Dim.ToUpper();
 	if ( fDrawOpt2Dim.Contains("SAME") )
 		fSameOpt = "SAME";
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "fDrawOpt2Dim::GetValuesFrom() " << fDrawOpt2Dim << endl;
 	fTwoDimLogX        = fCanvas->GetLogx();
 	fTwoDimLogY        = fCanvas->GetLogy();
@@ -382,7 +383,7 @@ void Set2DimGraphDialog::GetValuesFrom()
 
 void Set2DimGraphDialog::RestoreDefaults(Int_t resetall)
 {
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "Set2DimGraphDialog:: RestoreDefaults(resetall) " << resetall<< endl;
 	TString envname;
 	if (resetall == 0 ) {
@@ -421,13 +422,13 @@ void Set2DimGraphDialog::CloseDown(Int_t wid)
 void Set2DimGraphDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
 	TCanvas *canvas = (TCanvas *)obj;
-	if ( gDebug > 0 ) {
+	if ( gHprDebug > 0 ) {
 		cout << "CRButtonPressed:" << wid<< ", " <<bid << " canvas "  << canvas << endl;
 	}
 	if ( bid == fBidGL ) {
 		TString opt = fGraph2D->GetDrawOption();
 		opt.ToUpper();
-		if ( gDebug > 0 )
+		if ( gHprDebug > 0 )
 			cout << "CRButtonPressed: " << opt << " fUseGL: " << fUseGL<< endl;
 		Int_t indgl = opt.Index("GL");
 		if ( indgl >= 0 && fUseGL == 0 ) {

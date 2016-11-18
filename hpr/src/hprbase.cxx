@@ -27,6 +27,8 @@
 #include "HistPresent.h"
 #include "SetColor.h"
 
+extern Int_t gHprDebug;
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -364,7 +366,7 @@ If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 		TAxis * xa = h3->GetXaxis();
 		TAxis * ya = h3->GetYaxis();
 		TAxis * za = h3->GetZaxis();
-		if (gDebug > 0)
+		if (gHprDebug > 0)
 			h3->Dump();
 		for (Int_t i = nbx1; i <= nbx2; i++) {
 			for (Int_t k = nby1; k <= nby2; k++) {
@@ -665,7 +667,7 @@ HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where,
 		lc = col;
 	}	
 	
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 	 cout   << "DoAddAxis: x1"
 			  << x1 << " y1 " << y1 << " x2 " << x2 << " y2 " << y2 << " ledge " 
 			  << ledge << " uedge " << uedge << " ratio " << ratio << " offset " << offset
@@ -867,7 +869,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	Int_t new_axis = do_scale;
 	canvas->cd();
 	TString drawopt = horig->GetDrawOption();
-	if ( gDebug  > 0 )
+	if ( gHprDebug  > 0 )
 		cout << "horig->GetDrawOption() " << hist << " drawopt  " << drawopt<< endl;
 	if ( lSkipDialog == 0 || nhists < 2 ) {
 		// Error modes 
@@ -1026,7 +1028,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	}
 	if ( !drawopt.Contains("SAME") )
 		drawopt += "SAME";
-	if (gDebug > 0) 
+	if (gHprDebug > 0) 
 		cout << "DrawCopy(drawopt) " << drawopt << endl;
 	TH1 * hdrawn = hdisp->DrawCopy(drawopt.Data());
 	nhs++;
@@ -1262,7 +1264,7 @@ void ResizeStatBox(TPaveStats * st, Int_t ndim)
 	resname = envname + "H" + sdim;
 	Float_t statH  = env.GetValue(resname, 0.16);
 	st->SetY1NDC(statY - statH);
-	if (gDebug > 0) {
+	if (gHprDebug > 0) {
 		cout << " ResizeStatBox statY"  << resname << " " << statY << endl;
 	}	
 }

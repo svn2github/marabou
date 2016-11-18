@@ -17,6 +17,8 @@
 #include "hprbase.h"
 #include <iostream>
 
+extern Int_t gHprDebug;
+
 namespace std {} using namespace std;
 
 //_______________________________________________________________________
@@ -147,7 +149,7 @@ from the \"GraphicsAtt\" popup menu\n\
 			fTitleX = hist->GetXaxis()->GetTitle();
 			fTitleY = hist->GetYaxis()->GetTitle();
 		}
-		if ( gDebug  > 0 )
+		if ( gHprDebug  > 0 )
 			cout << "GetDrawOption: [" << i << "] " << hist->GetDrawOption() << endl;
 		opt           = hist->GetDrawOption();
 		opt.ToUpper();
@@ -438,7 +440,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 		if (fErrorMode[i] == "E1" && fMarkerSize[i] == 0) {
 			hist->SetMarkerSize(0.01);
 		} 
-		if ( gDebug > 0 ) 
+		if ( gHprDebug > 0 ) 
 			cout << "fErrorMode[i] " << fErrorMode[i]<< endl;
 //		TRegexp dm("P");
 		TString drawopt;
@@ -488,7 +490,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 			drawopt+= "SAME";
 		if (fShowContour[i] != 0) drawopt += "HIST";
 //		if (drawopt.Length() == 0 || fShowContour[i] != 0) drawopt += "HIST";
-		if ( gDebug > 0 )
+		if ( gHprDebug > 0 )
 			cout << "Set1DimOptDialog::SetAtt " << drawopt << endl;
 		hist->SetDrawOption(drawopt);
 		hist->SetOption(drawopt);
@@ -510,7 +512,7 @@ void Set1DimOptDialog::LinLogChanged(TObject* o)
 {
 	Long_t args[1];
 	args[0] = (Long_t)o;
-	if (gDebug > 1 )
+	if (gHprDebug > 1 )
 		cout << "Set1DimOptDialog::Emit(LinLogChanged(TObject*)" << endl;
 	
 	Emit("LinLogChanged(TObject*)", args );

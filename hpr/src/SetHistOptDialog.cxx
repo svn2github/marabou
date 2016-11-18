@@ -19,6 +19,8 @@
 #include "SetHistOptDialog.h"
 #include <iostream>
 
+extern Int_t gHprDebug;
+
 namespace std {} using namespace std;
 
 ClassImp(SetHistOptDialog)
@@ -136,7 +138,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
 	
    RestoreDefaults();
 	GetValuesFromHist();
-	if ( gDebug > 0 ) 
+	if ( gHprDebug > 0 ) 
 		cout << "SetHistOptDialog * hd = (SetHistOptDialog *)" << this<< ";" << endl;
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
@@ -420,7 +422,7 @@ Bool_t SetHistOptDialog::SetPointers()
 		if (fHist->GetDimension() > 1)
 			fAxisZ = fHist->GetZaxis();
 		fObjTitle = fHist->GetTitle();
-		if ( fParent != NULL && gDebug > 0)
+		if ( fParent != NULL && gHprDebug > 0)
 			cout << "parent->ClassName() " << fParent->ClassName()<< endl;
 		if ( fDialog )
 			fDialog->SetWindowName(fObjTitle.Data());
@@ -436,7 +438,7 @@ Bool_t SetHistOptDialog::SetPointers()
 			fLegendBox = (TLegend*)obj;
 		}
 	}
-	if ( gDebug > 0 ) 
+	if ( gHprDebug > 0 ) 
 		cout << "SetHistOptDialog, current selected: " << fHist->GetName()<<
 	" Title: " << fHist->GetTitle() << endl;
 	return kTRUE;
@@ -447,7 +449,7 @@ void SetHistOptDialog::RecursiveRemove(TObject * obj)
 {
    if (obj && (obj == fStatBox || obj == fHist 
 		|| obj  == fTitleBox || obj == fLegendBox) ) {
-		if (gDebug > 0) {
+		if (gHprDebug > 0) {
 			cout << "SetHistOptDialog: RecursiveRemove:obj "  << obj;
 			if (obj)
 				cout << " " << obj->ClassName();
@@ -483,7 +485,7 @@ void SetHistOptDialog::SetHistAttNow(Int_t bid)
 
 void SetHistOptDialog::SetHistAtt(Int_t bid)
 {
-   if (gDebug > 0)
+   if (gHprDebug > 0)
 		cout << "SetHistOptDialog::SetHistAtt "<< bid << endl;
 	Bool_t mod_statbox =
 	gStyle->GetOptStat() && fStatCmd1 > 0 && fStatCmd2 > 0
@@ -626,7 +628,7 @@ void SetHistOptDialog::SetTitleBoxAttr(TStyle *sty)
 void SetHistOptDialog::SetLegendBoxAttr(TStyle *sty)
 {
 	TEnv env(".hprrc");
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << "SetHistOptDialog::SetLegendBoxAttr"  << fLegendBox<< endl;
 	if ( fLegendBox) {
 		sty->SetLegendBorderSize(fStatBorderSize);
@@ -655,7 +657,7 @@ void SetHistOptDialog::SetLegendBoxAttr(TStyle *sty)
 void SetHistOptDialog::SetStatBoxAttr(TStyle *sty)
 {
 	TEnv env(".hprrc");
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << "SetHistOptDialog::SetStatBoxAttr" << fStatBox << endl;
 	if (fStatBox) {
 		Float_t statX, statY, statW, statH;
@@ -870,7 +872,7 @@ void SetHistOptDialog::SetHistAttPerm(TStyle * style)
 
 void SetHistOptDialog::SaveDefaults()
 {
-   if ( gDebug > 0 ) 
+   if ( gHprDebug > 0 ) 
    	cout << "SetHistOptDialog:: SaveDefaults()" << endl;
 	TString envname;
 	TString resname;
@@ -938,7 +940,7 @@ void SetHistOptDialog::SaveDefaults()
 		Int_t nlines = fStatBox->GetListOfLines()->GetSize();
 		if (nlines <= 0) 
 			nlines = 1;
-		if ( gDebug > 0 )
+		if ( gHprDebug > 0 )
 			cout << "SetHistOptDialog::SaveDefaults(): sh, nlines " << " " << sh << " " << nlines << endl;
 		sh = 4. * sh / nlines;
 		if (fHist->GetDimension() == 2) {
@@ -999,7 +1001,7 @@ void SetHistOptDialog::SetAllToDefault()
 
 void SetHistOptDialog::RestoreDefaults(Int_t resetall)
 {
-	if ( gDebug > 0) 
+	if ( gHprDebug > 0) 
 		cout << "SetHistOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
 	TString envname;
 	if (resetall == 0 ) {
@@ -1171,7 +1173,7 @@ void SetHistOptDialog::GetValuesFromHist()
 
 void SetHistOptDialog::SetDefaults(Int_t ndim)
 {
-	if ( gDebug > 0 ) 
+	if ( gHprDebug > 0 ) 
 	   cout << "SetHistOptDialog:: SetDefaults" << endl;
    TEnv env(".hprrc");
 	if ( ndim != 3 ) {
@@ -1236,7 +1238,8 @@ void SetHistOptDialog::SetDefaults(Int_t ndim)
    gStyle->SetTitleBorderSize(env.GetValue("SetHistOptDialog.TitleBorderSize"   ,1));
    gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.TitleFont",        62), "t");
    gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fHistTitleSize",  0.03),"h");
-   gStyle->SetTitleStyle     (env.GetValue("SetHistOptDialog.TitleStyle",     1001));
+	gStyle->SetTitleFontSize  (env.GetValue("SetHistOptDialog.fHistTitleSize",  0.03));
+	gStyle->SetTitleStyle     (env.GetValue("SetHistOptDialog.TitleStyle",     1001));
    gStyle->SetTitleX         (env.GetValue("SetHistOptDialog.TitleX",          0.5));
    gStyle->SetTitleY         (env.GetValue("SetHistOptDialog.TitleY",         .995));
    gStyle->SetTitleW         (env.GetValue("SetHistOptDialog.TitleW",           0.));
@@ -1271,7 +1274,7 @@ void SetHistOptDialog::CloseDown(Int_t wid)
 void SetHistOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
 {
 //   TCanvas *canvas = (TCanvas *)obj;
-	if (gDebug > 0 ) {
+	if (gHprDebug > 0 ) {
 		cout << "CRButtonPressed, bid: " << bid;
 //   if (obj) cout  << ", " << canvas->GetName() << ")";
 		cout << endl;

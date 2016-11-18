@@ -31,6 +31,7 @@
 #include <fstream>
 #include <sstream>
 //#include <cstdlib>
+extern Int_t gHprDebug;
 
 //________________________________________________________________________________________
 
@@ -62,7 +63,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
   if (fRootFile) fRootFile->Close();
 //  fRootFile=new TFile(fname);
 	fRootFile=TFile::Open(fname);
-	if ( fRootFile && gDebug > 1 )
+	if ( fRootFile && gHprDebug > 1 )
 		fRootFile->ls();
 	if (strlen(dir) > 0) fRootFile->cd(dir);
 	TTree *tree = (TTree*)gDirectory->Get(tname);

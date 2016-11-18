@@ -19,6 +19,8 @@
 #include "hprbase.h"
 #include <iostream>
 
+extern Int_t gHprDebug;
+
 namespace std {} using namespace std;
 
 //TString Set2DimOptDialog::fDrawOpt2Dim = "COLZ";
@@ -185,7 +187,7 @@ For further details contact ROOTs documentation.\n\
 		cout << "No Histogram in Canvas" << endl;
 //		return;
 	} else {
-		if ( gDebug > 0 )
+		if ( gHprDebug > 0 )
 			cout << "Set2DimOptDialog: " << endl
 			<< "TCanvas* canvas = (TCanvas*)" << fCanvas
 			<< "; TH2* hist = (TH2*)" << fHist 
@@ -332,7 +334,7 @@ For further details contact ROOTs documentation.\n\
 		new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
 							 NULL, NULL, fRow_lab, fValp,
 							 NULL, NULL, helptext, this, this->ClassName());
-	if (gDebug > 0) {
+	if (gHprDebug > 0) {
 		cout << "Set2DimOptDialog *dia =(Set2DimOptDialog*)"<< this << endl;
 		cout << "fDrawOpt2Dim " << fDrawOpt2Dim << endl;
 	}
@@ -389,7 +391,7 @@ void Set2DimOptDialog::SetHistAttAll(TCanvas *canvas)
 		} else if (obj->InheritsFrom("TGraph2D")) {
 			canvas->cd();
 			((TGraph2D*)obj)->SetDrawOption(fDrawOpt2Dim);
-			if ( gDebug > 0 ) 
+			if ( gHprDebug > 0 ) 
 				cout << "SetHistAttAll: " << fDrawOpt2Dim<< endl;
 //			if ( ((TGraph2D*)obj)->GetHistogram() ) {
 //				((TGraph2D*)obj)->GetHistogram()->SetDrawOption(fDrawOpt);
@@ -453,7 +455,7 @@ void Set2DimOptDialog::SetHistAtt(TPad *pad, TObject *obj)
 		fDrawOpt.Append("0");
 	if ( !fDrawOpt.Contains("SAME") )
 		fDrawOpt += fSameOpt;
-	if ( gDebug > 0 ) 
+	if ( gHprDebug > 0 ) 
 			cout << "SetHistAtt: " << fDrawOpt << endl;
 	if ( hist ) {
 		hist->SetDrawOption(fDrawOpt);
@@ -519,7 +521,7 @@ void Set2DimOptDialog::SetHistAttPermLocal()
 
 void Set2DimOptDialog::SetHistAttPerm()
 {
-	if (gDebug > 0)
+	if (gHprDebug > 0)
 		cout << "Set2DimOptDialog:: SetHistAttPerm()" << endl;
 	TEnv env(".hprrc");
 	TRegexp glu("GL");
@@ -593,7 +595,7 @@ void Set2DimOptDialog::GetValuesFromHist()
 	fDrawOpt2Dim = fHist->GetDrawOption();
 	if ( fDrawOpt2Dim.Contains("SAME") )
 		fSameOpt = "SAME";
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "fDrawOpt2Dim::GetValuesFromHist() " << fDrawOpt2Dim << endl;
 	fTwoDimLogX        = fCanvas->GetLogx();
 	fTwoDimLogY        = fCanvas->GetLogy();
@@ -616,7 +618,7 @@ void Set2DimOptDialog::GetValuesFromFunc2()
 	fDrawOpt2Dim = fFunc2->GetDrawOption();
 	if ( fDrawOpt2Dim.Contains("SAME") )
 		fSameOpt = "SAME";
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "fDrawOpt2Dim::GetValuesFromHist() " << fDrawOpt2Dim << endl;
 	fTwoDimLogX        = fCanvas->GetLogx();
 	fTwoDimLogY        = fCanvas->GetLogy();
@@ -634,7 +636,7 @@ void Set2DimOptDialog::GetValuesFromFunc2()
 
 void Set2DimOptDialog::RestoreDefaults(Int_t resetall)
 {
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "Set2DimOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
 	TString envname;
 	if (resetall == 0 ) {
@@ -678,7 +680,7 @@ void Set2DimOptDialog::CloseDown(Int_t wid)
 void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
 	TCanvas *canvas = (TCanvas *)obj;
-	if ( gDebug > 0 )
+	if ( gHprDebug > 0 )
 		cout << "CRButtonPressed:" << wid<< ", " <<bid 
 		<< " canvas "  << canvas 
 		<< " fDrawOpt2Dim " << fDrawOpt2Dim << endl;
@@ -744,13 +746,13 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 	// non cartesian options are mutually  exclusive
 	if ( bid >= 28 && bid <= 31) {
 		for ( Int_t i = 28; i <= 31; i++ ) {
-			if ( gDebug > 0 )
+			if ( gHprDebug > 0 )
 				cout << "CRButtonPressed: fOptRadio[" << i <<"] = " << fOptRadio[i]<< endl;
 			if ( bid != i ) {
 				if ( fOptRadio[bid] != 0 ) {
 					fOptRadio[i] = 0;
 					fDialog->SetCheckButton(i, 0);
-					if ( gDebug > 0 )
+					if ( gHprDebug > 0 )
 						cout << "CRButtonPressed: uncheck " << i << endl;
 				}
 			}

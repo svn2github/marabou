@@ -7,6 +7,9 @@
 #include "TMath.h"
 #include "TList.h"
 #include <iostream>
+
+extern Int_t gHprDebug;
+
 ClassImp(HprGaxis)
 
 
@@ -31,7 +34,7 @@ HprGaxis::HprGaxis(TCanvas * canvas, Double_t xmin, Double_t ymin, Double_t xmax
 	fTimer = new TTimer();
 	fTimer->Connect("Timeout()", "HprGaxis", this, "ReDoAxis()");
 	fSkipNextNotify = 0;
-	if ( gDebug > 0 ) {
+	if ( gHprDebug > 0 ) {
 		cout << "HprGaxis::ctor this, fCanvas: "<< this << " " << fCanvas << endl;
 	}
 };
@@ -41,14 +44,14 @@ void HprGaxis::ReDoAxis()
 {	
 //	TIter next(canvas->GetListOfPrimitives());
 //	TObject *obj;
-	if ( gDebug > 0 ) {
+	if ( gHprDebug > 0 ) {
 		cout << "HprGaxis::ReDoAxis() fCanvas: "<< fCanvas << endl;
 	}
 	// anything changed??
 	if ( (fFrameX1 == fCanvas->GetFrame()->GetX1() && fFrameX2 == fCanvas->GetFrame()->GetX2()
 		&& fFrameY1 == fCanvas->GetFrame()->GetY1() && fFrameY2 == fCanvas->GetFrame()->GetY2())
 		&& fCanvas->GetLogy() == fLogy &&  fCanvas->GetLogx() == fLogx ) {
-		if ( gDebug > 0 ) {
+		if ( gHprDebug > 0 ) {
 			cout << "HprGaxis::ReDoAxis(), nothing to do"<< endl;
 		}
 		return;
@@ -108,7 +111,7 @@ void HprGaxis::ReDoAxis()
 	a->SetY2(y2);
 	a->SetWmin(ledge);
 	a->SetWmax(uedge);
-	if ( gDebug > 0 ) {
+	if ( gHprDebug > 0 ) {
 		cout << "ReDoAxis: " <<  a->GetWhere();
 		if (log_axis ) 
 			cout << " log_axis ";
@@ -131,7 +134,7 @@ void HprGaxis::ReDoAxis()
 void HprGaxis::HandlePadModified()
 {
 	if (gPad == fCanvas) {
-		if ( gDebug > 0 ) {
+		if ( gHprDebug > 0 ) {
 			cout << "HprGaxis::HandlePadModified this: " << this << " Start Oneshot "
 			" fSkipNextNotify = " << fSkipNextNotify << endl;
 		}
