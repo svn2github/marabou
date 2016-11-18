@@ -868,9 +868,13 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	axis_title= hist->GetYaxis()->GetTitle();
 	Int_t new_axis = do_scale;
 	canvas->cd();
-	TString drawopt = horig->GetDrawOption();
+	TString drawopt = horig->GetOption();
+	if (drawopt.Length() == 0 && horig->GetSumw2N()>0) {
+			cout << "Force drawopt = E " << endl;
+			drawopt   = "E";
+		}
 	if ( gHprDebug  > 0 )
-		cout << "horig->GetDrawOption() " << hist << " drawopt  " << drawopt<< endl;
+		cout << "horig->GetOption() " << hist << " drawopt  " << drawopt<< endl;
 	if ( lSkipDialog == 0 || nhists < 2 ) {
 		// Error modes 
 		static void *valp[50];                    
@@ -1089,7 +1093,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		if ( fLegend == NULL ) {
 			fLegend = new HprLegend(x1, y1, x2, y2, "", "brNDC");
 			fLegend->SetName("Legend_SuperImposeHist");
-			dopt = selhist->GetDrawOption();
+			dopt = selhist->GetOption();
 			if (selhist->GetDimension() == 2 ) {
 				if ( dopt.Contains("SCAT", TString::kIgnoreCase) ) opt = "P";
 				if ( dopt.Contains("BOX", TString::kIgnoreCase) && 
@@ -1111,7 +1115,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 			fLegend->Draw();
 		}
 		opt = "";
-		dopt = hdrawn->GetDrawOption();
+		dopt = hdrawn->GetOption();
 		if (selhist->GetDimension() == 2 ) {
 			if ( dopt.Contains("SCAT", TString::kIgnoreCase) ) opt = "P";
 			if ( dopt.Contains("BOX", TString::kIgnoreCase) && 
@@ -1135,7 +1139,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	gHpr->ClearSelect();
 	if ( hdrawn ) {
 		TRegexp sa("SAME");
-		TString dro(hdrawn->GetDrawOption());
+		TString dro(hdrawn->GetOption());
 		dro(sa)="";
 		//		hdrawn->SetDrawOption(dro);
 		//		THistPainter *hp = (THistPainter*)hdrawn->GetPainter();
