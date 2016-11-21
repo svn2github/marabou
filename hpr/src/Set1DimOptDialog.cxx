@@ -154,11 +154,11 @@ from the \"GraphicsAtt\" popup menu\n\
 		}
 		opt.ToUpper();
 		TRegexp SAME("SAME");
-		fSame[i] = 0;
-		if (opt.Index(SAME) >=0 ) {
-			fSame[i] = 1;
-			opt(SAME) = "";
-		}
+//		fSame[i] = 0;
+//		if (opt.Index(SAME) >=0 ) {
+//			fSame[i] = 1;
+//			opt(SAME) = "";
+//		}
 		// text, pie, bar
 		fText = 0;
 		fTextAngle = 0;
@@ -440,9 +440,14 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 		if (fErrorMode[i] == "E1" && fMarkerSize[i] == 0) {
 			hist->SetMarkerSize(0.01);
 		}
-		if ( gHprDebug > 0 )
-			cout << "fErrorMode[i] " << fErrorMode[i]<< endl;
+		TString oldopt(hist->GetDrawOption());
+		if ( gHprDebug > 0 ) {
+			cout << "oldoption " << oldopt << " fErrorMode[i] " << fErrorMode[i]<< endl;
+		}
 		TString drawopt;
+		if (oldopt.Contains("SAME", TString::kIgnoreCase)) {
+			drawopt = "SAME";
+		}
 		if (fErrorMode[i] != "none") {
 			drawopt += fErrorMode[i];
 		}
@@ -479,8 +484,8 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 			drawopt += "X+";
 		if (gPad->GetTicky() < 2 && fLabelsRightY)
 			drawopt += "Y+";
-		if ( fSame[i] )
-			drawopt+= "SAME";
+//		if ( fSame[i] )
+//			drawopt+= "SAME";
 		if (fShowContour[i] != 0) drawopt += "HIST";
 //		if (drawopt.Length() == 0 || fShowContour[i] != 0) drawopt += "HIST";
 		if ( gHprDebug > 0 )

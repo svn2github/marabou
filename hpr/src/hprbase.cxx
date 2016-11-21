@@ -868,13 +868,17 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	axis_title= hist->GetYaxis()->GetTitle();
 	Int_t new_axis = do_scale;
 	canvas->cd();
-	TString drawopt = horig->GetOption();
+	TString drawopt = horig->GetDrawOption();
 	if (drawopt.Length() == 0 && horig->GetSumw2N()>0) {
 			cout << "Force drawopt = E " << endl;
 			drawopt   = "E";
 		}
-	if ( gHprDebug  > 0 )
-		cout << "horig->GetOption() " << hist << " drawopt  " << drawopt<< endl;
+	if ( gHprDebug  > 0 ) {
+		cout << "horig->GetDrawOption() " << drawopt<< endl;
+		horig->Print();
+		cout << "hist->GetDrawOption() " << hist->GetDrawOption() << endl;
+		hist->Print();
+	}
 	if ( lSkipDialog == 0 || nhists < 2 ) {
 		// Error modes 
 		static void *valp[50];                    
@@ -943,7 +947,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	}
 	// change name of original histogram to protect against autodelete
 	TString origname(horig->GetName());
-	if ( !origname.EndsWith("_has_supimp") ) {
+	if ( !origname.Contains("supimp") ) {
 		horig->Clone();
 		origname += "_has_supimp";
 		horig->SetName(origname);

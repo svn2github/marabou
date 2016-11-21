@@ -85,6 +85,7 @@
 #include "hprbase.h"
 
 extern HistPresent *gHpr;
+extern Int_t gHprClosing;
 extern Int_t gHprDebug;
 extern Int_t nHists;
 extern Double_t gTranspThresh;
@@ -514,6 +515,11 @@ void FitHist::RecursiveRemove(TObject * obj)
 		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist
 		<< " RecursiveRemove: " << obj << " " <<obj->GetName() << endl;
 	//fSelHist->Print();
+	if (gHprClosing != 0) {
+		if (gHprDebug > 0)
+			cout << "FitHist::RecursiveRemove: gHprClosing " << gHprClosing << endl;
+		return;
+	}
 	if (fSelHist && obj != fSelHist) {
 		if (gHprDebug > 0) {
 			cout << "fSelHist->GetListOfFunctions()->GetSize() " 
