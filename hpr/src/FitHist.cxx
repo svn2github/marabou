@@ -523,8 +523,8 @@ void FitHist::RecursiveRemove(TObject * obj)
 		}
 		if (fSelHist->GetListOfFunctions()->GetSize() > 0)
 			fSelHist->GetListOfFunctions()->Remove(obj);
-		else
-			fSelHist = NULL;
+//		else
+//			fSelHist = NULL;
 	}
 	fActiveCuts->Remove(obj);
 	fActiveWindows->Remove(obj);
