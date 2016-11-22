@@ -112,7 +112,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //  Handle input events, like button up/down in current canvas.
 //
 
-	if (gHprDebug > 1) {
+	if (gHprDebug > 3) {
 		cout << "Event: " << event << endl;
 	}
 	if ( this->UseGL() ) {

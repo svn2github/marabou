@@ -1689,6 +1689,66 @@ for expanded Histogram");
 };
 //_______________________________________________________________________________________
 
+void FitHist::SetRangeAxis()
+{
+	if (fExpHist) {
+		Hpr::WarnBox("SetRangeAxis not implemented \
+for expanded Histogram");
+		return;
+	}
+	
+	Int_t n = fSelHist->GetDimension();
+	if (n > 2) {
+				Hpr::WarnBox("SetRangeAxis not implemented \
+for 3d Histogram");
+		return;
+	}
+	TArrayD xyvals(4);
+	//   Double_t *xyvals = new Double_t[2*n];
+//  TString title("Set new axis limits");
+	TOrdCollection *row_lab = new TOrdCollection();
+	row_lab->Add(new TObjString("xlow, xup"));
+	row_lab->Add(new TObjString("ylow, yup"));
+	xyvals[0] = fSelHist->GetXaxis()->GetXmin();
+	xyvals[2] = fSelHist->GetXaxis()->GetXmax();
+	if (n == 1) {
+		xyvals[1] = fSelHist->GetMinimum();
+		xyvals[3] = fSelHist->GetMaximum();
+	} else {
+		xyvals[1] = fSelHist->GetYaxis()->GetXmin();
+		xyvals[3] = fSelHist->GetYaxis()->GetXmax();
+	}		
+// show values to caller and let edit
+	Int_t ret = 0, ncols = 2, itemwidth = 120, precission = 5;
+	TGMrbTableOfDoubles(mycanvas, &ret, "Set new axis limits for display", itemwidth,
+							  ncols, 2, xyvals, precission, NULL, row_lab);
+//   cout << ret << endl;
+	if (ret >= 0) {
+		fRangeLowX = xyvals[0];
+		fRangeUpX = xyvals[2];
+		fRangeLowY = xyvals[1];
+		fRangeUpY = xyvals[3];
+		TIter next(fCanvas->GetListOfPrimitives());
+		TObject *obj;
+		while ( obj = next() ) {
+			if (obj->InheritsFrom("TH1") ){
+				TH1* h = ((TH1*)obj);
+				h->GetXaxis()->SetRangeUser(fRangeLowX, fRangeUpX);
+				h->GetYaxis()->SetRangeUser(fRangeLowY, fRangeUpY);
+			}
+		}
+		fSetRange = kTRUE;
+		fCanvas->Modified(kTRUE);
+		fCanvas->Update();
+	}
+//   if (xyvals) delete [] xyvals;
+	if (row_lab) {
+		row_lab->Delete();
+		delete row_lab;
+	}
+};
+//_______________________________________________________________________________________
+
 void FitHist::RestoreAxis()
 {
 	if (fExpHist) {

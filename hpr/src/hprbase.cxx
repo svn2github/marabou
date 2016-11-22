@@ -720,7 +720,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		\n\
 		";
 //	HprLegend * fLegend = (HprLegend*)canvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
-	HprLegend * fLegend = (HprLegend*)FindLegendInPad(canvas);
+//	HprLegend * fLegend = (HprLegend*)FindLegendInPad(canvas);
 	TH1 *hist;
 	Int_t nhs = 0;
 	//   TPaveLabel *tname;
@@ -1092,11 +1092,14 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		Double_t x2 = env.GetValue("SuperImposeHist.fLegendX2", 0.3);
 		Double_t y1 = env.GetValue("SuperImposeHist.fLegendY1", 0.8);
 		Double_t y2 = env.GetValue("SuperImposeHist.fLegendY2", 0.95);
-		TString opt;
-		TString dopt;
-		if ( fLegend == NULL ) {
-			fLegend = new HprLegend(x1, y1, x2, y2, "", "brNDC");
-			fLegend->SetName("Legend_SuperImposeHist");
+//		TString opt;
+//		TString dopt;
+//		if ( fLegend == NULL ) {
+			TLegend * leg = gPad->BuildLegend(x1, y1, x2, y2);
+			leg->SetName("Legend_SuperImposeHist");
+//			fLegend = new HprLegend(x1, y1, x2, y2, "", "brNDC");
+//			fLegend->SetName("Legend_SuperImposeHist");
+			/*
 			dopt = selhist->GetOption();
 			if (selhist->GetDimension() == 2 ) {
 				if ( dopt.Contains("SCAT", TString::kIgnoreCase) ) opt = "P";
@@ -1117,7 +1120,9 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 			fLegend->AddEntry(selhist, "", opt);
 			//			cout << "fLegend->AddEntry: " << opt << endl;
 			fLegend->Draw();
-		}
+			*/
+//		}
+		/*
 		opt = "";
 		dopt = hdrawn->GetOption();
 		if (selhist->GetDimension() == 2 ) {
@@ -1138,6 +1143,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		}
 		//		cout << "fLegend->AddEntry: " << opt << endl;
 		fLegend->AddEntry(hdrawn, "", opt);
+		*/
 	}
 	canvas->Update();
 	gHpr->ClearSelect();

@@ -253,6 +253,7 @@ enum ERootCanvasCommands {
 	kFHCalibrateNew,
 	kFHDeleteCal,
 	kFHShowPeaks,
+	kFHSetRangeAxis,
 	kFHRedefineAxis,
 	kFHRestoreAxis,
 	kFHAddAxisX,
@@ -1330,6 +1331,9 @@ again:
 						case kFHRedefineAxis:
 							fFitHist->RedefineAxis();
 							break;
+						case kFHSetRangeAxis:
+							fFitHist->SetRangeAxis();
+							break;
 						case kFHRestoreAxis:
 							fFitHist->RestoreAxis();
 							break;
@@ -1742,6 +1746,7 @@ void HandleMenus::BuildMenus()
 					casc_axis->AddEntry("Set Display Range Z", kFHZaxisRange);
 				if ( nDim == 1)	
 					casc_axis->AddEntry("Magnify",     kFHMagnify    );
+				casc_axis->AddEntry("SetRangeUser",     kFHSetRangeAxis);
 				casc_axis->AddEntry("Redefine Axis",     kFHRedefineAxis);
 				casc_axis->AddEntry("Restore orig Axis",     kFHRestoreAxis);
 				casc_axis->AddEntry("Add new X axis",     kFHAddAxisX);

@@ -231,6 +231,7 @@ public:
 	void EditFitSliceYMacro();                  //
 	void SetTemplateMacro(const char * name){fTemplateMacro = name;};
 	void SetFitSliceYMacroName(const char *name){fFitSliceYMacroName = name;};                  //
+	void SetRangeAxis();                  //
 	void RedefineAxis();                  //
 	void RestoreAxis();                  //
 	void AddAxis(Int_t where);           //

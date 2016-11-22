@@ -11,6 +11,8 @@
 #include "support.h"
 #include <iostream>
 
+extern Int_t gHprDebug;
+
 namespace std {} using namespace std;
 
 //TString WhatToShowDialog::fDrawOpt2Dim = "COLZ";
@@ -37,6 +39,9 @@ especially which values to display in the statistics box\n\
    if ( fHist == NULL ) {
       cout << "WARNING: No hist found in pad" << endl;
 		return;
+	}
+	if (gHprDebug > 0) {
+		cout << "ctor WhatToShowDialog: " << this << " fHist: " << fHist << endl;
 	}
 	gROOT->GetListOfCleanups()->Add(this);
 	fRow_lab = new TList();
