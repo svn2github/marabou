@@ -1659,6 +1659,7 @@ void HandleMenus::BuildMenus()
 	if ( ! its_start_window ) {
 		fViewMenu->AddEntry("Launch Graphics Editor",  kEditEditor);
 		fViewMenu->AddEntry("Event &Status",           kViewEventStatus);
+		fViewMenu->AddEntry("SetRangeUser (DisplayRange)",   			  kFHSetRangeAxis);
 		fViewMenu->AddEntry("Draw selected Functions", kFHDrawFunctions);
 		fViewMenu->AddEntry("Subtract Function",       kFHSubtractFunction);
 		fViewMenu->AddSeparator();

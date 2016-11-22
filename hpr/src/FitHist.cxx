@@ -552,7 +552,7 @@ void FitHist::SaveDefaults(Bool_t /*recalculate*/)
 	Bool_t checkonly = kFALSE;
 	if ( (!CreateDefaultsDir(mycanvas, checkonly)) ) return;
 
-	TEnv * env = GetDefaults(fHname, kFALSE, kTRUE); // fresh values
+	TEnv * env = GetDefaults(fHname, kFALSE, kFALSE); // fresh values
 	if (!env) return;
 	
 	env->SetValue("FitMacroName", fFitMacroName);
@@ -617,6 +617,12 @@ void FitHist::RestoreDefaultRanges()
 			fSelHist->GetXaxis()->Set(fSelHist->GetNbinsX(), fRangeLowX, fRangeUpX);
 			fSetRange = kTRUE;
 //         cout << "fRangeLowX " << fRangeLowX << endl;
+		}
+		cout << "lastset->Lookup " << fHname << endl;
+		if (fSelHist->GetDimension() == 1 && lastset->Lookup("fRangeLowY")) {
+			cout << "lastset->Lookup " << endl;
+			fSelHist->SetMinimum((Double_t)lastset->GetValue("fRangeLowY",(Double_t)fSelHist->GetMinimum()));
+			fSelHist->SetMaximum((Double_t)lastset->GetValue("fRangeUpY", (Double_t)fSelHist->GetMaximum()));
 		}
 		fBinlx = fSelHist->GetXaxis()->GetFirst();
 		fBinux = fSelHist->GetXaxis()->GetLast();
@@ -1718,16 +1724,34 @@ for 3d Histogram");
 		xyvals[1] = fSelHist->GetYaxis()->GetXmin();
 		xyvals[3] = fSelHist->GetYaxis()->GetXmax();
 	}		
+	fRangeLowX = xyvals[0];
+	fRangeUpX  = xyvals[2];
+	fRangeLowY = xyvals[1];
+	fRangeUpY  = xyvals[3];
+	Bool_t modX = kFALSE;
+	Bool_t modY = kFALSE;
 // show values to caller and let edit
 	Int_t ret = 0, ncols = 2, itemwidth = 120, precission = 5;
 	TGMrbTableOfDoubles(mycanvas, &ret, "Set new axis limits for display", itemwidth,
 							  ncols, 2, xyvals, precission, NULL, row_lab);
 //   cout << ret << endl;
 	if (ret >= 0) {
-		fRangeLowX = xyvals[0];
-		fRangeUpX = xyvals[2];
-		fRangeLowY = xyvals[1];
-		fRangeUpY = xyvals[3];
+		if(fRangeLowX != xyvals[0]) {
+			fRangeLowX = xyvals[0];
+			modX =kTRUE;
+		}
+		if(fRangeUpX  != xyvals[2]) {
+			fRangeUpX  = xyvals[2];
+			modX =kTRUE;
+		}
+		if(fRangeLowY != xyvals[1]) {
+			fRangeLowY = xyvals[1];
+			modY =kTRUE;
+		}
+		if(fRangeUpY  != xyvals[3]) {
+			fRangeUpY  = xyvals[3];
+			modY =kTRUE;
+		}
 		TIter next(fCanvas->GetListOfPrimitives());
 		TObject *obj;
 		while ( obj = next() ) {
@@ -1745,6 +1769,19 @@ for 3d Histogram");
 	if (row_lab) {
 		row_lab->Delete();
 		delete row_lab;
+	}
+	if (modX || modY ) {
+		TEnv * env = GetDefaults(fHname, kFALSE, kFALSE); // fresh values
+		if (!env) return;
+		if (modX) {
+			env->SetValue("fRangeLowX", fRangeLowX);
+			env->SetValue("fRangeUpX",  fRangeUpX);
+		}
+		if (modY) {
+			env->SetValue("fRangeLowY", fRangeLowY);
+			env->SetValue("fRangeUpY",  fRangeUpY);
+		}
+		env->SaveLevel(kEnvLocal);
 	}
 };
 //_______________________________________________________________________________________
