@@ -3840,11 +3840,14 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 	TGraph     * graph1d = NULL;
 	TGraph2D   * graph2d = NULL;
 	TObject    * obj;
+	if (gHprDebug > 0 ) {
+		cout << "ShowGraph:fname " << fname <<" dir " << dir << endl;
+	}
 	if (strstr(fname,".root")) {
 		if (fRootFile) fRootFile->Close();
 		fRootFile = new TFile(fname);
 		if (strlen(dir) > 0) fRootFile->cd(dir);
-		obj = fRootFile->Get(name);
+		obj = gDirectory->Get(name);
 		//      fRootFile->Close();
 	} else {
 		obj = gROOT->GetList()->FindObject(name);

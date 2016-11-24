@@ -618,9 +618,9 @@ void FitHist::RestoreDefaultRanges()
 			fSetRange = kTRUE;
 //         cout << "fRangeLowX " << fRangeLowX << endl;
 		}
-		cout << "lastset->Lookup " << fHname << endl;
+//		cout << "lastset->Lookup " << fHname << endl;
 		if (fSelHist->GetDimension() == 1 && lastset->Lookup("fRangeLowY")) {
-			cout << "lastset->Lookup " << endl;
+//			cout << "lastset->Lookup " << endl;
 			fSelHist->SetMinimum((Double_t)lastset->GetValue("fRangeLowY",(Double_t)fSelHist->GetMinimum()));
 			fSelHist->SetMaximum((Double_t)lastset->GetValue("fRangeUpY", (Double_t)fSelHist->GetMaximum()));
 		}
@@ -1475,10 +1475,10 @@ void FitHist::Magnify()
 		return;
 	} else {
 		Float_t fac = (Float_t) newx / (Float_t) wx;
-		TAxis *xaxis = fSelHist->GetXaxis();
+//		TAxis *xaxis = fSelHist->GetXaxis();
 		TAxis *yaxis = fSelHist->GetYaxis();
 
-		xaxis->SetNdivisions(2080);
+//		xaxis->SetNdivisions(2080);
 		yaxis->SetTickLength(0.03 / fac);
 		fCanvas->SetLeftMargin(0.1 / fac);
 		fCanvas->SetRightMargin(0.1 / fac);

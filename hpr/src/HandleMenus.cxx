@@ -1659,7 +1659,7 @@ void HandleMenus::BuildMenus()
 	if ( ! its_start_window ) {
 		fViewMenu->AddEntry("Launch Graphics Editor",  kEditEditor);
 		fViewMenu->AddEntry("Event &Status",           kViewEventStatus);
-		fViewMenu->AddEntry("SetRangeUser (DisplayRange)",   			  kFHSetRangeAxis);
+		fViewMenu->AddEntry("SetRangeUser, Min/Max 1 dim",kFHSetRangeAxis);
 		fViewMenu->AddEntry("Draw selected Functions", kFHDrawFunctions);
 		fViewMenu->AddEntry("Subtract Function",       kFHSubtractFunction);
 		fViewMenu->AddSeparator();
@@ -1745,9 +1745,9 @@ void HandleMenus::BuildMenus()
 					casc_axis->AddEntry("Set Display Range Y", kFHYaxisRange);
 				if ( nDim > 2)
 					casc_axis->AddEntry("Set Display Range Z", kFHZaxisRange);
+				casc_axis->AddEntry("Set Min/Max 1 dim",     kFHSetRangeAxis);
 				if ( nDim == 1)	
 					casc_axis->AddEntry("Magnify",     kFHMagnify    );
-				casc_axis->AddEntry("SetRangeUser",     kFHSetRangeAxis);
 				casc_axis->AddEntry("Redefine Axis",     kFHRedefineAxis);
 				casc_axis->AddEntry("Restore orig Axis",     kFHRestoreAxis);
 				casc_axis->AddEntry("Add new X axis",     kFHAddAxisX);
