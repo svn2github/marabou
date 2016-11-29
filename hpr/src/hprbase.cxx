@@ -813,7 +813,8 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	Int_t do_scale = mode;
 	Int_t auto_scale = mode;
 //	lFillColor = env.GetValue("SuperImposeHist.FillColor", 2);
-	cout << "nhists " << nhists << endl;
+	if (gHprDebug > 0)
+		cout << "nhists " << nhists << endl;
 //	if (nhists < 2) {
 //		axis_offset = 0.;
 //		lLColor = 2; 
@@ -870,9 +871,10 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	canvas->cd();
 	TString drawopt = horig->GetDrawOption();
 	if (drawopt.Length() == 0 && horig->GetSumw2N()>0) {
+		if (gHprDebug > 0)
 			cout << "Force drawopt = E " << endl;
-			drawopt   = "E";
-		}
+		drawopt = "E";
+	}
 	if ( gHprDebug  > 0 ) {
 		cout << "horig->GetDrawOption() " << drawopt<< endl;
 		horig->Print();
@@ -951,6 +953,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		horig->Clone();
 		origname += "_has_supimp";
 		horig->SetName(origname);
+		if (gHprDebug > 0)
 		cout << "Make a clone and rename histogram to: " << origname << endl;
 	}
 	//	TGaxis *naxis = 0;
@@ -1042,12 +1045,14 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	nhs++;
 	TPaveStats *sb = (TPaveStats*)hdrawn->GetListOfFunctions()->FindObject("stats");
 	if ( sb ) {
-		cout << "SetStatBox: "  
-		<< " lStatBoxDX1 " << lStatBoxDX1<< 
-		" lStatBoxDX2 " << lStatBoxDX2<< 
-		" lStatBoxDY1 " << lStatBoxDY1<< 
-		" lStatBoxDY2 " << lStatBoxDY2<< 
-		endl;
+		if (gHprDebug > 0) {
+			cout << "SetStatBox: "  
+			<< " lStatBoxDX1 " << lStatBoxDX1<< 
+			" lStatBoxDX2 " << lStatBoxDX2<< 
+			" lStatBoxDY1 " << lStatBoxDY1<< 
+			" lStatBoxDY2 " << lStatBoxDY2<< 
+			endl;
+		}
 		sb->SetX1NDC(lStatBoxDX1);
 		sb->SetX2NDC(lStatBoxDX2);
 		sb->SetY1NDC(lStatBoxDY1 - nhists*(lStatBoxDY2 - lStatBoxDY1) );
@@ -1092,14 +1097,35 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		Double_t x2 = env.GetValue("SuperImposeHist.fLegendX2", 0.3);
 		Double_t y1 = env.GetValue("SuperImposeHist.fLegendY1", 0.8);
 		Double_t y2 = env.GetValue("SuperImposeHist.fLegendY2", 0.95);
-//		TString opt;
-//		TString dopt;
-//		if ( fLegend == NULL ) {
-			TLegend * leg = gPad->BuildLegend(x1, y1, x2, y2);
-			leg->SetName("Legend_SuperImposeHist");
-//			fLegend = new HprLegend(x1, y1, x2, y2, "", "brNDC");
-//			fLegend->SetName("Legend_SuperImposeHist");
-			/*
+		// make new legend and remove possible extra TGaxis
+		TIter no(gPad->GetListOfPrimitives());
+		TObject *ob;
+		while (( ob = no() )){
+			if (ob->InheritsFrom("TLegend")) {
+				gPad->GetListOfPrimitives()->Remove(ob);
+				delete ob;
+				break;
+			}
+		}
+		TLegend * leg = gPad->BuildLegend(x1, y1, x2, y2);
+		leg->SetName("Legend_SuperImposeHist");
+		TList *lof = leg->GetListOfPrimitives();
+		TIter nl(lof);
+		while (( ob = nl() )){
+			if (ob->IsA() == TLegendEntry::Class() ) {
+				TObject *pr = ((TLegendEntry*)ob)->GetObject();
+				if (pr && pr->InheritsFrom("TGaxis")) {
+					lof->Remove(ob);
+					delete ob;
+				}
+			}
+		}
+/*		
+		TString opt;
+		TString dopt;
+		if ( fLegend == NULL ) {
+			fLegend = new HprLegend(x1, y1, x2, y2, "", "brNDC");
+			fLegend->SetName("Legend_SuperImposeHist");
 			dopt = selhist->GetOption();
 			if (selhist->GetDimension() == 2 ) {
 				if ( dopt.Contains("SCAT", TString::kIgnoreCase) ) opt = "P";

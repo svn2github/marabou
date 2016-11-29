@@ -149,7 +149,8 @@ from the \"GraphicsAtt\" popup menu\n\
 		}
 		opt           = hist->GetOption();
 		if (opt.Length() == 0 && hist->GetSumw2N()>0) {
-			cout << "Force ErrorMode[" <<i<<"] = E " << endl;
+			if (gHprDebug > 0)
+				cout << "Force ErrorMode[" <<i<<"] = E " << endl;
 			opt   = "E";
 		}
 		opt.ToUpper();
