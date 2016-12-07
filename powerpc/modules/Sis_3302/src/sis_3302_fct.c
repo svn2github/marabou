@@ -3758,7 +3758,7 @@ Bool_t sis3302_checkBusTrap(struct s_sis_3302 * Module, ULong_t Offset, Char_t *
 
 	if (!bus_trap_flag) return FALSE;
 
-	sprintf(msg, "[%s]: Bus trap at phys addr %#lx+%lx, log addr %#lx+%lx, called by %s", Module->moduleName, Module->md->physAddrVME, Offset, Module->md->physAddrVME, Offset, Method);
+	sprintf(msg, "[%s]: Bus trap at phys addr %#lx+%lx, log addr %#lx+%lx, called by %s", Module->moduleName, Module->md->physAddrVME, Offset, Module->md->vmeBase, Offset, Method);
 	f_ut_send_msg("sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 	return TRUE;
 }

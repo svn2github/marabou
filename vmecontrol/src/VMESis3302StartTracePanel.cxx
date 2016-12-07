@@ -252,6 +252,15 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fTracesPerSec->GetTextEntry()->SetEnabled(kFALSE);
 	fDisplayFrame->AddFrame(fTracesPerSec, frameGC->LH());
 
+	fMaxEnergy = new TGMrbLabelEntry(fDisplayFrame, "Energy",	200, kVMESis3302MaxEnergy,
+															frameWidth/5, kLEHeight, frameWidth/12,
+															frameGC, labelGC);
+	HEAP(fMaxEnergy);
+	fMaxEnergy->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fMaxEnergy->SetText(0);
+	fMaxEnergy->GetTextEntry()->SetEnabled(kFALSE);
+	fDisplayFrame->AddFrame(fMaxEnergy, frameGC->LH());
+
 	this->ChangeBackground(gVMEControlData->fColorGold);
 
 //	key bindings
@@ -283,8 +292,8 @@ void VMESis3302StartTracePanel::StartGUI() {
 	if (curModule == NULL) {
 		curModule = (TC2LSis3302 *) fLofModules->At(0);
 		if (curModule == NULL) return;
-		curModule->SetVerbose(gVMEControlData->IsVerbose());
 		curModule->SetOffline(gVMEControlData->IsOffline());
+		gVMEControlData->SetSis3302Verbose(curModule);
 	}
 
 	fSelectModule->Select(curModule->GetIndex());
@@ -313,8 +322,8 @@ void VMESis3302StartTracePanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
 		return;
 	}
 	curModule = (TC2LSis3302 *) fLofModules->FindByIndex(Selection);
-	curModule->SetVerbose(gVMEControlData->IsVerbose());
 	curModule->SetOffline(gVMEControlData->IsOffline());
+	gVMEControlData->SetSis3302Verbose(curModule);
 }
 
 void VMESis3302StartTracePanel::PerformAction(Int_t FrameId, Int_t Selection) {
@@ -415,6 +424,31 @@ void VMESis3302StartTracePanel::StartTrace() {
 
     Int_t chnPatt = fSelectChanPatt->GetActive();
 	curModule->SetTestBits(traceMode);
+	gVMEControlData->SetSis3302Verbose(curModule);
+	
+	Int_t bit = 1;
+	for (Int_t ch = 0; ch < 8; ch++, bit >>= 1) {
+		if (chnPatt & bit) {
+			Int_t rdl;
+			curModule->ReadRawDataSampleLength(rdl, ch);
+			if (rdl == 0) {
+				gVMEControlData->MsgBox(this, "StartHisto", "Error", Form("Raw data sample length (ch %d) may NOT be 0", ch));
+				return;
+			}
+		}
+	}
+
+	bit = 1;
+	for (Int_t ch = 0; ch < 8; ch++, bit >>= 1) {
+		if (chnPatt & bit) {
+			Int_t edl;
+			curModule->ReadEnergySampleLength(edl, ch);
+			if (edl == 0) {
+				gVMEControlData->MsgBox(this, "StartHisto", "Error", Form("Energy sample length (ch %d) may NOT be 0", ch));
+				return;
+			}
+		}
+	}
 
 	Int_t nofEvents = 1;
 
@@ -515,9 +549,8 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, TMrbNamedX * Rhisto
 	Int_t nofEvents = nxs / wpt;
 	if (nofEvents > ect) nofEvents = ect;
 
-	Int_t e = 0;
 	EvtData.Set(wpt + kSis3302EventPreHeader);
-	if (!curModule->GetTraceData(EvtData, e, chn)) {
+	if (!curModule->GetTraceData(EvtData, ect, chn)) {
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
 		return(-1);
 	}
@@ -579,6 +612,10 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, TMrbNamedX * Rhisto
 	}
 	if (max == 0) return(-1);
 
+	fMaxEnergy->GetTextEntry()->SetEnabled(kTRUE);
+	fMaxEnergy->SetText(max);
+	fMaxEnergy->GetTextEntry()->SetEnabled(kFALSE);
+	
 	subPad = (EhistoDef->GetIndex() >> 4) & 0xF;
 	c->cd(subPad);
 	h = (TH1F *) EhistoDef->GetAssignedObject();
@@ -761,7 +798,7 @@ void VMESis3302StartTracePanel::KeyPressed(Int_t FrameId, Int_t Key) {
 				gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop trace collection first");
 				return;
 			}
-			this->CloseWindow();
+			this->DeleteWindow();
 			break;
 	}
 }

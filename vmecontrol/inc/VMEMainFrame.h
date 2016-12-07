@@ -54,6 +54,7 @@ class VMEMainFrame : public TGMainFrame {
 									kVMESettingsOutputNormal, 		// pulldown menu "Settings"
 									kVMESettingsOutputVerbose,
 									kVMESettingsOutputDebug,
+									kVMESettingsOutputDebugStop,
 									kVMESettingsOffline,
 									kVMESettingsOnline,
 

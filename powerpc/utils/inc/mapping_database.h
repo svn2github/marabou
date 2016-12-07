@@ -66,7 +66,7 @@ enum	EMapSize	{	kSize_A32	=	0x10000000,
 				kSize_BLT	=	0x10000000,
 				kSize_MBLT	=	0x10000000
 			};
-#else
+#elif CPU_TYPE_RIO4
 enum	EMapAddr	{	kAddr_A32	=	0x50000000,
 				kAddr_A24	=	0x4F000000,
 				kAddr_A16	=	0x4E000000,

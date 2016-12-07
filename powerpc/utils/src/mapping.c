@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <stdint.h>
 #include <smem.h>
+#include <sys/mman.h>
 
 #include <allParam.h>
 #include <ces/vmelib.h>
@@ -67,6 +68,7 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 	UInt_t staticBase;
 	UInt_t dynamicAddr;
 	UInt_t cpuBaseAddr;
+	Int_t devmemID;
 	
 	if ((md = _createMapDescr(DescrName)) == NULL) {
 		sprintf(msg, "[mapVME] %s: mapping failed", DescrName);
@@ -103,9 +105,19 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 			switch (AddrMod) {
 				case kAM_A32:
 					staticBase = kAddr_A32;
+					if (Size > kSize_A32) {
+						sprintf(msg, "[mapVME] %s: Segment size to large for A32 - %#lx (max %#lx)", DescrName, Size, kSize_A32);
+						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						return NULL;
+					}
 					break;
 				case kAM_A24:
 					staticBase = kAddr_A24;
+					if (Size > kSize_A24) {
+						sprintf(msg, "[mapVME] %s: Segment size to large for A24 - %#lx (max %#lx)", DescrName, Size, kSize_A24);
+						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						return NULL;
+					}
 					if (PhysAddr > 0x00FFFFFF) {
 						sprintf(msg, "[mapVME] %s: Not a A24 addr - %#lx", DescrName, PhysAddr);
 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -114,6 +126,11 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 					break;
 				case kAM_A16:
 					staticBase = kAddr_A16;
+					if (Size > kSize_A16) {
+						sprintf(msg, "[mapVME] %s: Segment size to large for A16 - %#lx (max %#lx)", DescrName, Size, kSize_A16);
+						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						return NULL;
+					}
 					if (PhysAddr > 0x0000FFFF) {
 						sprintf(msg, "[mapVME] %s: Not a A16 addr - %#lx", DescrName, PhysAddr);
 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -138,7 +155,9 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 		} else if (Mapping & kVMEMappingDynamic) {
 #ifdef CPU_TYPE_RIO4
 			md->busId = bus_open("xvme_mas");
-			dynamicAddr = bus_map(md->busId, PhysAddr, 0, Size, 0xa0, 0);
+			cpuBaseAddr = bus_map(md->busId, PhysAddr, 0, Size, 0xa0, 0);
+			devmemID = open ("/dev/mem", O_RDWR);
+			dynamicAddr = (unsigned long) mmap (0, Size, PROT_READ | PROT_WRITE | PROT_UNCACHE, MAP_SHARED, devmemID, cpuBaseAddr);
 #else
  			s_param.iack = 1;
  			s_param.rdpref = 0;
@@ -169,6 +188,10 @@ struct s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size
 	md->physAddrVME = PhysAddr;
 	md->segSizeVME = Size;
 	md->nofMappings++;
+	
+#ifdef CPU_TYPE_RIO4
+	if (md->mappingVME == kVMEMappingDynamic) bus_close(md->busId);
+#endif
 	return md;
 }
 

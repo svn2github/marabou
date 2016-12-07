@@ -305,7 +305,6 @@ Bool_t VMEServerPanel::Connect() {
 			if (c2l->WaitForConnection()) break;
 			sleep(1);
 		}
-//		pgb->DeleteWindow();
 		delete pgb;
 
 	}

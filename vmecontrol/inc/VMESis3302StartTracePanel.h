@@ -69,6 +69,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 												kVMESis3302TimeStamp,
 												kVMESis3302TracesNo,
 												kVMESis3302TracesPerSecond,
+												kVMESis3302MaxEnergy,
 												kVMESis3302Close,
 		};
 
@@ -124,6 +125,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		TGMrbLabelEntry * fTimeStamp;				// timestamp
 		TGMrbLabelEntry * fTracesNo;				// traces number
 		TGMrbLabelEntry * fTracesPerSec;			// traces per second
+		TGMrbLabelEntry * fMaxEnergy;				// energy value
 		TGMrbLabelEntry * fMaxTraces;				// number of traces
 
 		TMrbLofNamedX * fLofModules;

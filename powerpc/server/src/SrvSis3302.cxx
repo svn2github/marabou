@@ -670,6 +670,16 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			if (!this->DumpRegisters(Module)) return(NULL);
 			break;
 		}
+		case kM2L_FCT_SIS_3302_SET_VERBOSE_MODE:
+		{
+			UInt_t status = data[0];
+			if (status == 0) {
+				this->ClearStatus(kSis3302StatusAnyVerboseMode);
+			} else {
+				this->SetStatus(status & kSis3302StatusAnyVerboseMode);
+			}
+			break;
+		}
 		default:
 			{
 				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Function not implemented - "
@@ -1699,8 +1709,8 @@ Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int
 	}
 
 	if (Thresh > kSis3302EndAddrThreshMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Threshold out of range - max "
-						<< setbase(16) << kSis3302EndAddrThreshMax << setbase(10) << endl;
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Threshold out of range - " << setbase(16) << Thresh << " (max "
+						<< kSis3302EndAddrThreshMax << ")" << setbase(10) << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteEndAddrThresh");
 		return(kFALSE);
 	}
@@ -3935,7 +3945,7 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 							<< setbase(16) <<  wordsPerEvent[chan] << " words, buffer size is 0x" << kSis3302MaxBufSize
 							<< setbase(10) << " bytes)" << endl;
 			gMrbLog->Flush(this->ClassName(), "StartTraceCollection");
-			nofWords = this->CA(SIS3302_NEXT_ADC_OFFSET) - 1;
+			nofWords = this->CA(SIS3302_NEXT_ADC_OFFSET) - 16;
 		}
 
 		nofEventsPerBuffer[chan] = nofWords / wordsPerEvent[chan];
@@ -3988,6 +3998,8 @@ Bool_t SrvSis3302::StopTraceCollection(SrvVMEModule * Module) {
 
 Bool_t SrvSis3302::ContinueTraceCollection(SrvVMEModule * Module) {
 
+	if (this->IsStatus(kSis3302StatusDebugMode)) cout << "<Debug> ContinueTraceCollection: sampling=" << setbase(16) << fSampling << setbase(10) << endl;
+	
 	this->KeyAddr(Module, fSampling);
 	fTraceCollection = kTRUE;
 	this->SetStatus(kSis3302StatusCollectingTraces);
@@ -4020,8 +4032,11 @@ Bool_t SrvSis3302::PauseTraceCollection(SrvVMEModule * Module) {
 //////////////////////////////////////////////////////////////////////////////
 
 Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t ChanPatt) {
-
-	if (!fTraceCollection ||  !this->DataReady(Module)) return(kTRUE);
+	
+	if (this->IsStatus(kSis3302StatusDebugMode))
+		cout << "<Debug> GetTraceLength: trace=" << (fTraceCollection ? "ON" : "OFF") << " " << (this->DataReady(Module) ? "ready" : "not ready") << endl;
+	
+//	if (!fTraceCollection ||  !this->DataReady(Module)) return(kTRUE);
 
 	this->SwitchSampling(Module);
 	Int_t k = 0;
@@ -4031,6 +4046,10 @@ Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t C
 		Data[k + 1] = energyDataLength[chan];
 		Data[k + 2] = wordsPerEvent[chan];
 		Data[k + 3] = nofEventsPerBuffer[chan];
+		
+		if (this->IsStatus(kSis3302StatusDebugMode))
+				cout << "<Debug> GetTraceLength: k=" << k << " rdl=" << Data[k + 0] << " edl=" << Data[k + 1] << " wpe=" << Data[k + 2] << " nevt=" << Data[k + 3] << endl;
+			
 		Int_t n = 0;
 		if (ChanPatt & 1) {
 			Int_t bankFlag;
@@ -4074,6 +4093,8 @@ Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t C
 
 Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & EventNo, Int_t ChanNo) {
 
+	if (this->IsStatus(kSis3302StatusDebugMode)) cout << "<Debug> GetTraceData nevts=" << EventNo << endl;
+	
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
 						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
@@ -4091,6 +4112,9 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 	Int_t evtFirst, evtLast;
 	Int_t nofEvents;
 
+//@@@
+	if (EventNo <= 0) EventNo = 1;
+	
 	if (EventNo == kSis3302MaxEvents) {
 		evtStart = 0;
 		evtFirst = 0;
@@ -4102,10 +4126,10 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 			evtLast = nofEvents - 1;
 		}
 	} else {
-		evtStart = EventNo * wpt2 * sizeof(Int_t);
-		evtFirst = EventNo;
-		evtLast = EventNo;
-		nofEvents = 1;
+		evtStart = 0;
+		evtFirst = 0;
+		evtLast = EventNo - 1;
+		nofEvents = EventNo;
 	}
 
 	Data.Set(nofEvents * wpt + kSis3302EventPreHeader);
@@ -4116,6 +4140,8 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 	Data[3] = nofEvents;
 	Data[4] = nxs;
 
+	if (this->IsStatus(kSis3302StatusDebugMode)) cout << "<Debug> GetTraceData: rdl=" << Data[0] << " edl=" << Data[1] << " wp3=" << Data[2] << " nevt=" << Data[3]  << endl;
+				
 	Int_t startAddr = SIS3302_ADC1_OFFSET + ChanNo * SIS3302_NEXT_ADC_OFFSET + evtStart;
 
 	volatile Int_t * mappedAddr = (volatile Int_t *) Module->MapAddress(this->CA(startAddr));
@@ -4129,6 +4155,8 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 
 	Int_t k = kSis3302EventPreHeader;
 	for (Int_t evtNo = evtFirst; evtNo <= evtLast; evtNo++) {
+		
+		if (this->IsStatus(kSis3302StatusDebugMode)) cout << "<Debug> GetTraceData: evt=" << evtNo << " k=" << k << endl;
 
 		volatile Int_t * mappedAddrSaved = mappedAddr;
 
@@ -4146,6 +4174,8 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 		Data[k + 1] = *mappedAddr++;	// min energy
 		Data[k + 2] = *mappedAddr++;	// pile-up & trigger
 		trailer = (UInt_t) *mappedAddr++;
+		
+		if (this->IsStatus(kSis3302StatusDebugMode)) cout << "<Debug> GetTraceData: evt=" << setbase(10) << evtNo << " max=" << Data[k] << " min=" << Data[k + 1] << " trailer=" << setbase(16) << trailer << setbase(10) << endl;
 
 		if (fDumpTrace || (trailer != 0xdeadbeef)) {
 			if (start) {

@@ -23,8 +23,6 @@
 
 #include "TMrbC2Lynx.h"
 #include "VMEControlData.h"
-#include "TC2LSis3302.h"
-#include "TC2LVulomTB.h"
 
 #include "SetColor.h"
 
@@ -87,6 +85,9 @@ VMEControlData::VMEControlData() {
 	}
 
 // open VMEcontrol's resource data base
+
+	fStatus = 0;
+	
 	TString errMsg;
 	fRootrc->Get(fRcFile, ".RcFile", ".VMEControl.rc");
 	gSystem->ExpandPathName(fRcFile);
@@ -103,6 +104,7 @@ VMEControlData::VMEControlData() {
 		fStatus = 0;
 		if (fVctrlrc->Get(".VerboseMode", kFALSE)) fStatus |= kVMEVerboseMode;
 		if (fVctrlrc->Get(".DebugMode", kFALSE)) fStatus |= kVMEDebugMode;
+		if (fVctrlrc->Get(".DebugStopMode", kFALSE)) fStatus |= kVMEDebugStopMode;
 		if (fVctrlrc->Get(".OfflineMode", kFALSE)) fStatus |= kVMEOfflineMode;
 
 		fLofPanels.Clear();
@@ -344,3 +346,23 @@ void VMEControlData::GetLofChannels(TMrbLofNamedX & LofChannels, Int_t NofChanne
 	}
 }
 
+Bool_t VMEControlData::SetSis3302Verbose(TC2LSis3302 * Module) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMEControlData::SetSis3302Verbose()
+// Purpose:        Turn on verbose and debug mode
+// Arguments:      TC2LSis3302 * Module   -- current sis module
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets verbose/debug flag, also on server side
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t status = 0;
+	
+	if (this->IsVerbose()) status |= kSis3302StatusVerboseMode;
+	if (this->IsDebug()) status |= kSis3302StatusDebugMode;
+	if (this->IsDebugStop()) status |= kSis3302StatusDebugStopMode;
+	if (!this->IsOffline() && Module != NULL) Module->SetVerboseMode(status, kSis3302StatusAnyVerboseMode);
+	return(kTRUE);
+}

@@ -144,7 +144,6 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 
-		Bool_t fTraceCollection;			// kTRUE if started
 		Bool_t fPausePressed;				// pause button
 		TFile * fHistoFile;
 		Int_t fNofHistosWritten;

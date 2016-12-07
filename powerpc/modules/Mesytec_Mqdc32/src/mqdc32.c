@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 	if (argc <= 4) {
 		fprintf(stderr, "mqdc32: Basic tests for Mesytec MQDC32 modules\n\n");
 		fprintf(stderr, "Usage: mqdc32 <addr> <addrMod> <mapMod> [<fct> [<args>]]\n\n");
-		fprintf(stderr, "       addr           VME addr, high order bits 17-31\n");
+		fprintf(stderr, "       addr           VME addr, high order bits NNNN (16-31): NNNNXXXX\n");
 		fprintf(stderr, "       addrMod        addr modifier, 0x09 (A32) or 0x39 (A24)\n");
 		fprintf(stderr, "       mapMod         mapping mode: (bit pattern) 1 (direct, RIO4 only), 2 (static), 4 (dynamic)\n");
 		fprintf(stderr, "       fct            function to be executed\n");

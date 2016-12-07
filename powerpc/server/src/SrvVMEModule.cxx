@@ -12,6 +12,8 @@
 
 #include "iostream.h"
 #include "iomanip.h"
+#include "stdio.h"
+#include "fcntl.h"
 
 #include "LwrLogger.h"
 #include "SrvUtils.h"
@@ -24,6 +26,7 @@ typedef int intptr_t;
 #include <stdint.h>
 #include <unistd.h>
 #include <smem.h>
+#include <sys/mman.h>
 #ifdef CPU_TYPE_RIO4
 #include <mem.h>
 #endif
@@ -228,6 +231,8 @@ Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t 
 	struct pdparam_master s_param; 		/* vme segment params */
 	UInt_t staticBase;
 	UInt_t dynamicAddr;
+	UInt_t cpuBaseAddr;
+	Int_t devmemID;
 	
 	if (Size == 0) Size = 4096;
 
@@ -258,9 +263,19 @@ Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t 
 			switch (AddrMod) {
 				case kAM_A32:
 					staticBase = kAddr_A32;
+					if (Size > kSize_A32) {
+						gMrbLog->Err() << "[" << this->GetName() << "] Segment size too large for A32 - " << setbase(16) << Size << " (max " << kSize_A32 << ")" << endl;
+						gMrbLog->Flush(this->ClassName(), "MapVME");
+						return kFALSE;
+					}
 					break;
 				case kAM_A24:
 					staticBase = kAddr_A24;
+					if (Size > kSize_A24) {
+						gMrbLog->Err() << "[" << this->GetName() << "] Segment size too large for A24 - " << setbase(16) << Size << " (max " << kSize_A24 << ")" << endl;
+						gMrbLog->Flush(this->ClassName(), "MapVME");
+						return kFALSE;
+					}
 					if (PhysAddr > 0x00FFFFFF) {
 						gMrbLog->Err() << "[" << this->GetName() << "] Not a A24 addr - " << setbase(16) << PhysAddr << endl;
 						gMrbLog->Flush(this->ClassName(), "MapVME");
@@ -268,6 +283,11 @@ Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t 
 					}
 				case kAM_A16:
 					staticBase = kAddr_A16;
+					if (Size > kSize_A16) {
+						gMrbLog->Err() << "[" << this->GetName() << "] Segment size too large for A16 - " << setbase(16) << Size << " (max " << kSize_A16 << ")" << endl;
+						gMrbLog->Flush(this->ClassName(), "MapVME");
+						return kFALSE;
+					}
 					if (PhysAddr > 0x0000FFFF) {
 						gMrbLog->Err() << "[" << this->GetName() << "] Not a A16 addr - " << setbase(16) << PhysAddr << endl;
 						gMrbLog->Flush(this->ClassName(), "MapVME");
@@ -291,7 +311,9 @@ Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t 
 		} else if (Mapping & kVMEMappingDynamic) {
 #ifdef CPU_TYPE_RIO4
 			fBusId = bus_open("xvme_mas");
-			dynamicAddr = bus_map(fBusId, PhysAddr, 0, Size, 0xa0, 0);
+			cpuBaseAddr = bus_map(fBusId, PhysAddr, 0, Size, 0xa0, 0);
+			devmemID = open("/dev/mem", O_RDWR);
+			dynamicAddr = (unsigned long) mmap (0, Size, PROT_READ | PROT_WRITE | PROT_UNCACHE, MAP_SHARED, devmemID, cpuBaseAddr);
 #else
  			s_param.iack = 1;
  			s_param.rdpref = 0;
@@ -321,6 +343,11 @@ Bool_t SrvVMEModule::MapVME(UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t 
 	fPhysAddrVME = PhysAddr;
 	fSegSizeVME = Size;
 	fNofMappings++;
+	
+#ifdef CPU_TYPE_RIO4
+	if (fMappingVME == kVMEMappingDynamic) bus_close(fBusId);
+#endif
+
 	return kTRUE;
 }
 

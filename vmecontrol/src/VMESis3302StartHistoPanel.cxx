@@ -54,6 +54,8 @@ extern VMEControlData * gVMEControlData;
 extern TMrbLogger * gMrbLog;
 extern TMrbC2Lynx * gMrbC2Lynx;
 
+Bool_t gHistoCollection = kFALSE;
+
 static TC2LSis3302 * curModule = NULL;
 static Int_t traceMode = 0;
 
@@ -78,8 +80,6 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 	TGMrbLayout * comboGC;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-
-	fTraceCollection = kFALSE;
 
 // geometry
 	Int_t frameWidth = this->GetWidth();
@@ -215,7 +215,7 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 																frameGC, labelGC);
 	HEAP(fNofEvtsBuf);
 	fNofEvtsBuf->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fNofEvtsBuf->SetText(0);
+	fNofEvtsBuf->SetText(100);
 	fTraceFrame->AddFrame(fNofEvtsBuf, frameGC->LH());
 
 // mode
@@ -288,12 +288,12 @@ void VMESis3302StartHistoPanel::StartGUI() {
 	if (curModule == NULL) {
 		curModule = (TC2LSis3302 *) fLofModules->At(0);
 		if (curModule == NULL) return;
-		curModule->SetVerbose(gVMEControlData->IsVerbose());
 		curModule->SetOffline(gVMEControlData->IsOffline());
+		gVMEControlData->SetSis3302Verbose(curModule);
 	}
 
 	fSelectModule->Select(curModule->GetIndex());
-	fTraceCollection = kFALSE;
+	gHistoCollection = kFALSE;
 	fPausePressed = kFALSE;
 	fHistoFile = NULL;
 	fNofHistosWritten = 0;
@@ -343,10 +343,10 @@ void VMESis3302StartHistoPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 
 	switch (Selection) {
 		case VMESis3302StartHistoPanel::kVMESis3302StartStop:
-			if (fTraceCollection) this->StopHisto(); else this->StartHisto();
+			if (gHistoCollection) this->StopHisto(); else this->StartHisto();
 			break;
 		case VMESis3302StartHistoPanel::kVMESis3302Pause:
-			if (fTraceCollection) this->PauseHisto();
+			if (gHistoCollection) this->PauseHisto();
 			break;
 		case VMESis3302StartHistoPanel::kVMESis3302DumpTrace:
 			curModule->DumpTrace();
@@ -391,8 +391,32 @@ void VMESis3302StartHistoPanel::StartHisto() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-    	Int_t chnPatt = fSelectChanPatt->GetActive();
+    Int_t chnPatt = fSelectChanPatt->GetActive();
 	curModule->SetTestBits(traceMode);
+	
+	Int_t bit = 1;
+	for (Int_t ch = 0; ch < 8; ch++, bit >>= 1) {
+		if (chnPatt & bit) {
+			Int_t rdl;
+			curModule->ReadRawDataSampleLength(rdl, ch);
+			if (rdl == 0) {
+				gVMEControlData->MsgBox(this, "StartHisto", "Error", Form("Raw data sample length (ch %d) may NOT be 0", ch));
+				return;
+			}
+		}
+	}
+
+	bit = 1;
+	for (Int_t ch = 0; ch < 8; ch++, bit >>= 1) {
+		if (chnPatt & bit) {
+			Int_t edl;
+			curModule->ReadEnergySampleLength(edl, ch);
+			if (edl != 0) {
+				gVMEControlData->MsgBox(this, "StartHisto", "Error", Form("Energy sample length (ch %d) should be 0", ch));
+				return;
+			}
+		}
+	}
 
 	Int_t nofBufsWrite = fNofBufsWrite->GetText2Int();
 
@@ -406,7 +430,7 @@ void VMESis3302StartHistoPanel::StartHisto() {
 
 	this->InitializeHistos(chnPatt);
 
-	fTraceCollection = kTRUE;
+	gHistoCollection = kTRUE;
 	fStartStopButton->SetText("STOP");
 	fStartStopButton->SetBackgroundColor(gVMEControlData->fColorRed);
 	fStartStopButton->SetForegroundColor(gVMEControlData->fColorWhite);
@@ -422,7 +446,7 @@ void VMESis3302StartHistoPanel::StartHisto() {
 	Int_t traceNo = 0;
 	for (;;) {
 		gSystem->ProcessEvents();
-		if (!fTraceCollection) {
+		if (!gHistoCollection) {
 			curModule->StopTraceCollection();
 			break;
 		}
@@ -430,7 +454,7 @@ void VMESis3302StartHistoPanel::StartHisto() {
 		TArrayI traceData(kSis3302NofChans * kSis3302EventPreHeader);
 		traceNo++;
 		Bool_t writeFlag = (nofBufsWrite > 0 && (traceNo % nofBufsWrite) == 0);
-		while (fTraceCollection) {
+		while (gHistoCollection) {
 			traceData.Reset(0);
 			if (!curModule->GetTraceLength(traceData, chnPatt)) {
 				gVMEControlData->MsgBox(this, "StartHisto", "Error", "Couldn't get trace data");
@@ -465,7 +489,7 @@ void VMESis3302StartHistoPanel::StopHisto() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	fTraceCollection = kFALSE;
+	gHistoCollection = kFALSE;
 	fStartStopButton->SetText("Start");
 	fStartStopButton->SetBackgroundColor(gVMEControlData->fColorGreen);
 	fStartStopButton->SetForegroundColor(gVMEControlData->fColorWhite);
@@ -530,27 +554,34 @@ Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, TMrbNamedX * HistoD
 	Int_t wpt2 = wpt - rdl/2;
 	if (nxs == 0 || wpt == 0 || wpt2 > nxs) return(0);
 
-	Int_t nofEvents = nxs / wpt;
-	if (nofEvents > ect) nofEvents = ect;
+	if (gVMEControlData->IsVerbose()) cout << setbase(10) << "rdl=" << rdl << " edl=" << edl << " wpt=" << wpt << " ect=" << ect << " nxs=" << nxs << endl;
+
+	Int_t nofEvents = fNofEvtsBuf->GetText2Int();
+	if (nofEvents <= 0) nofEvents = kSis3302MaxEvents;
 
 	Int_t e = kSis3302MaxEvents;
  	Int_t n = wpt * nofEvents;
 	if (n < nxs) n = nxs;
 	EvtData.Set(n + kSis3302EventPreHeader);
-	if (!curModule->GetTraceData(EvtData, e, chn)) {
+	if (!curModule->GetTraceData(EvtData, nofEvents, chn)) {
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
 		return(-1);
 	}
-	for (Int_t j = 0; j < 10; j++) {
-		for (Int_t i = 0; i < 10; i++) cout << EvtData[i] << " "; cout << endl;
+	if (gVMEControlData->IsVerbose()) {
+		for (Int_t i = 0; i < 10; i++) cout << setbase(10) << EvtData[i] << " ";
+		cout << endl;
 	}
+	
 	fEmax = 0;
-
 	Int_t k = kSis3302EventPreHeader;
 	Int_t offset = kSis3302EventHeader + rdl + edl;
+	Int_t eSize = EvtData.GetSize();
+	
+	if (gVMEControlData->IsVerbose()) cout << setbase(10) << "nofEvents=" << nofEvents << " off=" << offset << " k=" << k << " siz=" << EvtData.GetSize() << endl;
 	for (Int_t i = 0; i < nofEvents; i++) {
-		 k += offset;
-		 Int_t deltaX = EvtData[k];
+		k += offset;
+		if (k > eSize) break;
+		Int_t deltaX = EvtData[k];
 		if (deltaX > fEmax) {
 			fEmax = deltaX;
 			fMaxEnergy->GetTextEntry()->SetEnabled(kTRUE);
@@ -580,6 +611,7 @@ Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, TMrbNamedX * HistoD
 	k = kSis3302EventPreHeader;
 	for (Int_t evtNo = 0; evtNo < nofEvents; evtNo++) {
 		k += offset;
+		if (k > eSize) break;
 		Double_t x = EvtData[k] * fac * fEfac;
 		h->Fill(x);
 		k += 4;
@@ -736,7 +768,7 @@ void VMESis3302StartHistoPanel::KeyPressed(Int_t FrameId, Int_t Key) {
 
 	switch (Key) {
 		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
-			if (fTraceCollection) {
+			if (gHistoCollection) {
 				gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop accumulation of histos first");
 				return;
 			}
@@ -744,11 +776,11 @@ void VMESis3302StartHistoPanel::KeyPressed(Int_t FrameId, Int_t Key) {
 			gApplication->Terminate(0);
 			break;
 		case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-			if (fTraceCollection) {
+			if (gHistoCollection) {
 				gVMEControlData->MsgBox(this, "KeyPressed", "Error", "Stop accumulation of histos first");
 				return;
 			}
-			this->CloseWindow();
+			this->DeleteWindow();
 			break;
 	}
 }

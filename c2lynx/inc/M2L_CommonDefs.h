@@ -115,6 +115,13 @@
 #endif
 
 	enum			{	kSis3302StatusCollectingTraces	=	0x1 };
+	enum			{	kSis3302StatusCollectingHistos	=	0x2 };
+	
+	enum			{	kSis3302StatusVerboseMode		=	0x1000 };
+	enum			{	kSis3302StatusDebugMode			=	0x2000 };
+	enum			{	kSis3302StatusDebugStopMode		=	0x4000 };
+	enum			{	kSis3302StatusAnyVerboseMode	=	(kSis3302StatusVerboseMode | kSis3302StatusDebugMode | kSis3302StatusDebugStopMode)	};
+	
 	enum			{	kSis3302MaxBufSize		=	0x10000	};
 
 	enum EVulomTB	{	kVulomTBNofScalers			= 3,

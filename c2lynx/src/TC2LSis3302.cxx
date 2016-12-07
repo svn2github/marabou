@@ -54,7 +54,7 @@ Bool_t TC2LSis3302::ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & Data
 	if (this->IsVerbose() || this->IsOffline()) {
 		TMrbNamedX * f = this->FindFunction(Fcode);
 		TString fn = f ? f->GetName() : "???";
-		TString an = (ChanNo == kSis3302AllChans) ? "all" : Form("chn%d", ChanNo);
+		TString an = (ChanNo == kSis3302AllChans) ? "all" : Form("chnpat=%#x", ChanNo);
 		cout << "[" << this->GetName() << ", " << an << "] Exec function - \""
 					<< fn << "\" (0x" << setbase(16) << Fcode << setbase(10) << ")";
 		for (Int_t i = 0; i < DataSend.GetSize(); i++) {
@@ -716,13 +716,25 @@ Bool_t TC2LSis3302::StopTraceCollection() {
 Bool_t TC2LSis3302::GetTraceLength(TArrayI & Data, Int_t ChanNo) {
 	TArrayI dataSend(1);
 	Data.Set(kSis3302EventPreHeader);
-	return this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_LENGTH, dataSend, Data, ChanNo);
+	if (this->IsDebug()) cout << "[Debug] before GetTraceLength() size=" << Data.GetSize() << endl;
+	Bool_t ok = this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_LENGTH, dataSend, Data, ChanNo);
+	if (this->IsDebug()) {
+		cout << "[Debug] after GetTraceLength() size=" << Data.GetSize() << endl;
+		if (this->IsDebugStop()) getchar();
+	}
+	return ok;
 }
 
 Bool_t TC2LSis3302::GetTraceData(TArrayI & Data, Int_t & EventNo, Int_t ChanNo) {
 	TArrayI dataSend(1);
 	dataSend[0] = EventNo;
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_DATA, dataSend, Data, ChanNo));
+	if (this->IsDebug()) cout << "[Debug] before GetTraceData() size=" << Data.GetSize() << " nevts=" << EventNo << endl;
+	Bool_t ok = this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_DATA, dataSend, Data, ChanNo);
+	if (this->IsDebug()) {
+		cout << "[Debug] after GetTraceData() size=" << Data.GetSize() << endl;
+		if (this->IsDebugStop()) getchar();
+	}
+	return ok;
 }
 
 Bool_t TC2LSis3302::DumpTrace() {
@@ -740,6 +752,15 @@ Bool_t TC2LSis3302::DumpRegisters() {
 	TArrayI dataSend(1);
 	dataSend[0] = 0;
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_DUMP_REGISTERS, dataSend, dataSend, kSis3302AllChans));
+}
+
+Bool_t TC2LSis3302::SetVerboseMode(UInt_t SetFlag, UInt_t ClearFlag) {
+	if (ClearFlag != 0) fStatus &= ~ClearFlag;
+	if (SetFlag != 0) fStatus |= SetFlag;
+	if (SetFlag & kSis3302StatusDebugStopMode) fStatus |= kSis3302StatusDebugMode;
+	TArrayI dataSend(1);
+	dataSend[0] = fStatus;
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_SET_VERBOSE_MODE, dataSend, dataSend, kSis3302AllChans));
 }
 
 Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {

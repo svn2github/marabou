@@ -101,7 +101,7 @@ public:
    TIter(TIterator *it) : fIterator(it) { }
    TIter(const TIter &iter);
    TIter &operator=(const TIter &rhs);
-   virtual            ~TIter() {};
+   virtual            ~TIter() { if (fIterator) delete fIterator; };
    TObject           *operator()() { return fIterator ? fIterator->Next() : 0; }
    TObject           *Next() { return fIterator ? fIterator->Next() : 0; }
    const TCollection *GetCollection() const { return fIterator ? fIterator->GetCollection() : 0; }

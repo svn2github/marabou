@@ -102,14 +102,17 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 
 	fMenuSettings->AddEntry("&Normal", kVMESettingsOutputNormal);
 	fMenuSettings->AddEntry("&Verbose", kVMESettingsOutputVerbose);
-	fMenuSettings->AddEntry("&Debug (very verbose)", kVMESettingsOutputDebug);
+	fMenuSettings->AddEntry("&Debug", kVMESettingsOutputDebug);
+	fMenuSettings->AddEntry("&Debug and Stop", kVMESettingsOutputDebugStop);
 
 	if (gVMEControlData->fStatus & VMEControlData::kVMEVerboseMode) {
-		fMenuSettings->RCheckEntry(kVMESettingsOutputVerbose, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
+		fMenuSettings->RCheckEntry(kVMESettingsOutputVerbose, kVMESettingsOutputNormal, kVMESettingsOutputDebugStop);
 	} else if (gVMEControlData->fStatus & VMEControlData::kVMEDebugMode) {
-		fMenuSettings->RCheckEntry(kVMESettingsOutputDebug, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
+		fMenuSettings->RCheckEntry(kVMESettingsOutputDebug, kVMESettingsOutputNormal, kVMESettingsOutputDebugStop);
+	} else if (gVMEControlData->fStatus & VMEControlData::kVMEDebugStopMode) {
+		fMenuSettings->RCheckEntry(kVMESettingsOutputDebugStop, kVMESettingsOutputNormal, kVMESettingsOutputDebugStop);
 	} else {
-		fMenuSettings->RCheckEntry(kVMESettingsOutputNormal, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
+		fMenuSettings->RCheckEntry(kVMESettingsOutputNormal, kVMESettingsOutputNormal, kVMESettingsOutputDebugStop);
 	}
 
 	fMenuSettings->AddSeparator();
@@ -287,19 +290,25 @@ void VMEMainFrame::MenuSelect(Int_t Selection) {
 			break;
 
 		case kVMESettingsOutputNormal:
-			gVMEControlData->fStatus &= ~(VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode);
-			fMenuSettings->RCheckEntry(kVMESettingsOutputNormal, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
+			gVMEControlData->fStatus &= ~(VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode | VMEControlData::kVMEDebugStopMode);
+			fMenuSettings->RCheckEntry(kVMESettingsOutputNormal, kVMESettingsOutputNormal, kVMESettingsOutputDebugStop);
 			break;
 
 		case kVMESettingsOutputVerbose:
-			gVMEControlData->fStatus &= ~VMEControlData::kVMEDebugMode;
+			gVMEControlData->fStatus &= ~(VMEControlData::kVMEDebugMode | VMEControlData::kVMEDebugStopMode);
 			gVMEControlData->fStatus |= VMEControlData::kVMEVerboseMode;
-			fMenuSettings->RCheckEntry(kVMESettingsOutputVerbose, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
+			fMenuSettings->RCheckEntry(kVMESettingsOutputVerbose, kVMESettingsOutputNormal, kVMESettingsOutputDebugStop);
 			break;
 
 		case kVMESettingsOutputDebug:
+			gVMEControlData->fStatus &= ~VMEControlData::kVMEDebugStopMode;
 			gVMEControlData->fStatus |= VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode;
-			fMenuSettings->RCheckEntry(kVMESettingsOutputDebug, kVMESettingsOutputNormal, kVMESettingsOutputDebug);
+			fMenuSettings->RCheckEntry(kVMESettingsOutputDebug, kVMESettingsOutputNormal, kVMESettingsOutputDebugStop);
+			break;
+
+		case kVMESettingsOutputDebugStop:
+			gVMEControlData->fStatus |= VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode | VMEControlData::kVMEDebugStopMode;
+			fMenuSettings->RCheckEntry(kVMESettingsOutputDebugStop, kVMESettingsOutputNormal, kVMESettingsOutputDebugStop);
 			break;
 
 		case kVMESettingsOffline:

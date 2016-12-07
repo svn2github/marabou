@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 	if (argc <= 4) {
 		fprintf(stderr, "sis3302: Basic tests for SIS3302 modules\n\n");
 		fprintf(stderr, "Usage: sis3302 <addr> <addrMod> <mapMod> [<fct> [<args>]]\n\n");
-		fprintf(stderr, "       addr           VME addr, high order bits 17-31\n");
+		fprintf(stderr, "       addr           VME addr, high order bits NN (24-31): NNXXXXXX\n");
 		fprintf(stderr, "       addrMod        addr modifier, 0x09 (A32) or 0x39 (A24)\n");
 		fprintf(stderr, "       mapMod         mapping mode: (bit pattern) 1 (direct, RIO4 only), 2 (static), 4 (dynamic)\n");
 		fprintf(stderr, "       fct            function to be executed\n");
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	physAddr = (unsigned int) strtol(argv[1], NULL, 16);
-	physAddr <<= 16;
+	physAddr <<= 24;
 	addrMod =  (unsigned int) strtol(argv[2], NULL, 16);
 
 	mappingMod = (unsigned int) strtol(argv[3], NULL, 16);

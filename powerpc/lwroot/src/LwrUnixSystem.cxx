@@ -1034,7 +1034,7 @@ Int_t TUnixSystem::UnixRecv(Int_t Sock, void * Buffer, Int_t Length, Int_t Flag)
       if ((nrecv = recv(Sock, buf+n, Length-n, Flag)) <= 0) {
          if (nrecv == 0)
             break;        // EOF
-         if (flag == MSG_OOB) {
+         if (Flag == MSG_OOB) {
             if (GetErrno() == EWOULDBLOCK)
                return -2;
             else if (GetErrno() == EINVAL)

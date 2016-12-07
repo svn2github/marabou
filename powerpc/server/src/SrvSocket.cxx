@@ -70,8 +70,10 @@ void SrvSocket::Listen() {
 	TMonitor * mon = new TMonitor();
 	mon->Add(this->GetSocket());
 
+	TSocket * sock;
 	while (1) {
-		TSocket * sock = mon->Select();
+		sock = mon->Select();
+		cout << "@@@ " << setbase(16) << (Int_t *) sock << endl;
 		if (sock == NULL) continue;
 		if (sock->IsServerSocket()) {
 			TSocket * s = ((TServerSocket *) sock)->Accept();

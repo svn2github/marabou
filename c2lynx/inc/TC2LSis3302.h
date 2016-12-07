@@ -33,11 +33,11 @@ class TC2LSis3302 : public TC2LVMEModule {
 
 	public:
 
-		TC2LSis3302() {};		// default ctor
+		TC2LSis3302() { fStatus = 0; };		// default ctor
 
 		TC2LSis3302(const Char_t * ModuleName,
 			UInt_t Address = 0, Int_t SegSize = 0, Int_t NofChans = 0, UInt_t Mapping = 0, Bool_t Offline = kFALSE)
-					: TC2LVMEModule(ModuleName, "Sis3302", Address, SegSize, NofChans, Mapping, Offline) {};
+					: TC2LVMEModule(ModuleName, "Sis3302", Address, SegSize, NofChans, Mapping, Offline) { fStatus = 0; };
 
 		~TC2LSis3302() {};							// default dtor
 
@@ -154,8 +154,15 @@ class TC2LSis3302 : public TC2LVMEModule {
 		inline UInt_t GetFirmwareVersion() { return ((fMajorVersion << 8) | fMinorVersion); };
 		inline UInt_t GetFirmwareMajor() { return fMajorVersion; };
 		inline UInt_t GetFirmwareMinor() { return fMinorVersion; };
+		
+		Bool_t SetVerboseMode(UInt_t SetFlag, UInt_t ClearFlag);
+		
+		inline Bool_t IsVerbose() { return (fStatus & kSis3302StatusVerboseMode); };
+		inline Bool_t IsDebug() { return (fStatus & kSis3302StatusDebugMode); };		
+		inline Bool_t IsDebugStop() { return (fStatus & kSis3302StatusDebugStopMode); };	
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
+		
 
 	protected:
 		Bool_t ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & DataRecv, Int_t Chan = kSis3302AllChans);
@@ -163,6 +170,8 @@ class TC2LSis3302 : public TC2LVMEModule {
 	protected:
 		Int_t fMajorVersion;				// firmware version
 		Int_t fMinorVersion;
+		
+		UInt_t fStatus;
 
 	ClassDef(TC2LSis3302, 1)		// [Access to LynxOs] Connect to a Sis3302 adc
 };

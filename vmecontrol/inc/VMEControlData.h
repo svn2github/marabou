@@ -30,6 +30,11 @@
 #include "TMrbResource.h"
 #include "TMrbNamedX.h"
 
+#include "TMrbC2Lynx.h"
+#include "TC2LSis3302.h"
+#include "TC2LVulomTB.h"
+
+
 // lifo to store objects located on heap
 #define HEAP(x)	fHeap.AddFirst(x)
 
@@ -75,6 +80,7 @@ class VMEControlData : public TObject {
 		// global status bits
 		enum EDGFStatusBit		{	kVMEVerboseMode 		= BIT(0),
 									kVMEDebugMode			= BIT(1),
+									kVMEDebugStopMode		= BIT(2),
 									kVMEOfflineMode			= BIT(3),
 								};
 
@@ -106,8 +112,11 @@ class VMEControlData : public TObject {
 		inline TObject * GetPanel(Int_t Index) { return(fLofPanels.At(Index)); };
 
 		inline Bool_t IsOffline() { return((fStatus & kVMEOfflineMode) != 0); };
+
+		Bool_t SetSis3302Verbose(TC2LSis3302 * Module);
 		inline Bool_t IsVerbose() { return((fStatus & VMEControlData::kVMEVerboseMode) != 0); };
 		inline Bool_t IsDebug() { return((fStatus & VMEControlData::kVMEDebugMode) != 0); };
+		inline Bool_t IsDebugStop() { return((fStatus & VMEControlData::kVMEDebugStopMode) != 0); };
 
 		inline Int_t GetFrameHeight() { return(fFrameHeight); };
 		inline Int_t GetFrameWidth() { return(fFrameWidth); };
@@ -120,7 +129,7 @@ class VMEControlData : public TObject {
 		void GetLofChannels(TMrbLofNamedX & LofChannels, Int_t NofChannels, Char_t * Format = "chn %d", Bool_t PatternMode = kFALSE);
 
 		Bool_t SetupModuleList(TMrbLofNamedX & LofModules, const Char_t * ClassName = NULL);
-
+		
 		virtual ~VMEControlData() {};
 
 	protected:
@@ -153,7 +162,7 @@ class VMEControlData : public TObject {
 		TString fSettingsPath;
 
 		TObjArray fLofPanels;
-
+		
 	ClassDef(VMEControlData, 0) 		// [VMEControl] Common data base
 };
 
