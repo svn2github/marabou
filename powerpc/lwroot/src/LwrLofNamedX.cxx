@@ -15,9 +15,10 @@
 
 
 #include <cstdlib>
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 
+#include "LwrString.h"
 #include "LwrObjString.h"
 #include "LwrLofNamedX.h"
 #include "LwrLogger.h"
@@ -161,6 +162,7 @@ void TMrbLofNamedX::AddNamedX(TMrbLofNamedX * LofNamedX)
 									namedX->GetAssignedObject());
 		this->Add(nx);
 	}
+	delete iter;
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -235,6 +237,7 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 				Out << endl;
 			}
 		}
+//		delete iter;
 	} else {
 		while (xPnt = (TMrbNamedX *) iter->Next()) {
 			Out << Prefix;
@@ -243,6 +246,7 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 			if (same != xPnt) Out << " (same as " << same->GetName() << ")";
 			Out << endl;
 		}
+//		delete iter;
 	}
 }
 
@@ -258,9 +262,9 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 void TMrbLofNamedX::PrintNames(ostream & Out, const Char_t * Prefix, UInt_t Mask, Bool_t CrFlag) const
 {
 	TMrbNamedX * xPnt;
-	TIterator * iter = this->MakeIterator();
 	if (fPatternMode) {
 		Out << Prefix;
+		TIterator * iter = this->MakeIterator();
 		while (xPnt = (TMrbNamedX *) iter->Next()) {
 			if (xPnt->GetIndex() & TMrbLofNamedX::kPatternBit) {
 				if ((~xPnt->GetIndex() & Mask) == 0) Out << xPnt->GetName() << " ";
@@ -268,6 +272,7 @@ void TMrbLofNamedX::PrintNames(ostream & Out, const Char_t * Prefix, UInt_t Mask
 				if ((xPnt->GetIndex() & Mask) == (UInt_t) xPnt->GetIndex()) Out << xPnt->GetName() << " ";
 			}
 		}
+		delete iter;
 		if (CrFlag) Out << endl; else Out << flush;
 	} else {
 		xPnt = this->FindByIndex(Mask);
@@ -312,18 +317,21 @@ TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode
 			xName = xPnt->GetName();
 			xName.Resize(lng);
 			if (xName.CompareTo(shortName, cmp) == 0) {
-				if (namedX != NULL) return(NULL);
+				if (namedX != NULL) { delete iter; return NULL; }
 				namedX = xPnt;
 			}
 		}
+		delete iter;
 		return(namedX);
 	} else {
 		while (xPnt = (TMrbNamedX *) iter->Next()) {
 			xName = xPnt->GetName();
 			if (xName.CompareTo(shortName, cmp) == 0) {
+				delete iter;
 				return(xPnt);
 			}
 		}
+		delete iter;
 		return(NULL);
 	}
 }
@@ -342,8 +350,9 @@ TMrbNamedX * TMrbLofNamedX::FindByIndex(Int_t Index, Int_t Mask) const
 
 	TIterator * iter = this->MakeIterator();
 	while (xPnt = (TMrbNamedX *) iter->Next()) {
-		if ((xPnt->GetIndex() & Mask) == Index) return(xPnt);
+		if ((xPnt->GetIndex() & Mask) == Index) { delete iter; return xPnt; }
 	}
+	delete iter;
 	return(NULL);
 }
 
@@ -458,6 +467,7 @@ const Char_t * TMrbLofNamedX::Pattern2String(TString & Compound, UInt_t Pattern,
 			Compound += index->GetName();
 		}
 	}
+	delete iter;
 	return(Compound.Data());
 }
 
@@ -506,5 +516,6 @@ UInt_t TMrbLofNamedX::GetMask() const
 	UInt_t mask = 0;
 	TIterator * iter = this->MakeIterator();
 	while (xPnt = (TMrbNamedX *) iter->Next()) mask |= xPnt->GetIndex();
+	delete iter;
 	return(mask);
 }

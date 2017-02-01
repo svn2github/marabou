@@ -226,6 +226,41 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int
 	return(-1);
 }
 
+Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Int_t DeltaTS, Bool_t FillHisto, Int_t Didx) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent::FillSevtFromHB
+// Purpose:        Fill subevent from hitbuffer
+// Arguments:      TUsrHBX * HBX     -- pointer to hit buffer
+//                 Int_t Hidx        -- current index in hit buffer
+//                 Int_t DeltaTS     -- delta(timestamp)
+//                 Bool_t FillHisto  -- kTRUE -> write hit data to histogram
+//                 Int_t Didx        -- data index within hit
+// Results:        Int_t NextIndex   -- index to be used in next call, -1 at end
+// Exceptions:
+// Description:    Writes hit data to subevent storage.
+//                 Stops if delta(timestamp) exceeds given value.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofHits = HBX->GetNofHits();
+	if (Hidx < 0) Hidx = 0;
+	if (nofHits > 0 && Hidx < nofHits) {
+		TUsrHit * h = HBX->At(Hidx);
+		Long64_t ts = h->GetChannelTime();
+		Bool_t foundHit = kFALSE;
+		for (Int_t hidx = Hidx; hidx < nofHits; hidx++) {
+			h = HBX->At(hidx);
+			if ((h->GetChannelTime() - ts) > DeltaTS) return(foundHit ? hidx : -1);
+			h->WriteToSevtData(Didx);
+			if (FillHisto) h->FillHistogram(Didx);
+			foundHit = kTRUE;
+		}
+		return(foundHit ? nofHits : -1);
+	}
+	return(-1);
+}
+
 Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t Didx, Int_t InitValue) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

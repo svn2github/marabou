@@ -14,6 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrArrayI.h"
+#include "LwrString.h"
 #include "SrvVMEModule.h"
 
 #include "M2L_MessageTypes.h"

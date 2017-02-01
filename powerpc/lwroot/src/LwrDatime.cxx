@@ -18,8 +18,8 @@
 // R. Lutter, Apr 2008                                                  //
 //////////////////////////////////////////////////////////////////////////
 
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 
 #include <time.h>
 
@@ -73,7 +73,8 @@ Int_t TDatime::GetDayOfWeek() const
    TString wd = AsString();
    int  day;
    for (day = 0; day < 7; day++) {
-      if (wd(0, 3) == weekDays[day])
+	  TString swd = wd(0,3);
+      if (swd == weekDays[day])
          break;
    }
    return (day < 7) ? day+1: -1;

@@ -10,8 +10,8 @@
 //! $Date: 2010-10-04 11:24:38 $
 //////////////////////////////////////////////////////////////////////////////
 
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 
 #include "SrvUtils.h"
 #include "SrvVulomTB.h"
@@ -21,8 +21,6 @@
 
 extern TMrbLofNamedX * gLofVMEProtos;		//!< list of prototypes
 extern TMrbLofNamedX * gLofVMEModules;		//!< list of actual modules
-
-extern TMrbLogger * gMrbLog;				//!< message logger
 
 extern Bool_t gSignalTrap;					//!< flag indicating bus error
 
@@ -39,7 +37,6 @@ SrvVulomTB::SrvVulomTB() : SrvVMEModule(	"VulomTB",						//!< prototype
 //! \details		Prototype VulomTB
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("", "c2lynx.log");
 	this->SetID(SrvVMEModule::kModuleVulomTB);
 }
 
@@ -146,9 +143,8 @@ M2L_MsgHdr * SrvVulomTB::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			}
 		default:
 			{
-				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Function not implemented - "
-								<< Function->GetName() << " (" << setbase(16) << Function->GetIndex() << ")" << endl;
-				gMrbLog->Flush(this->ClassName(), "Dispatch");
+				cerr << setred << this->ClassName() << "::Dispatch(): [" << Module->GetName() << "]: Function not implemented - "
+								<< Function->GetName() << " (" << setbase(16) << Function->GetIndex() << ")" << setblack << endl;
 				return(NULL);
 			}
 	}
@@ -216,12 +212,10 @@ Bool_t SrvVulomTB::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 	MajorVersion = 0;
 	MinorVersion = 0;
 	if (PrintFlag) {
-		gMrbLog->Out()	<< setbase(16)
-						<< "TrigBox info: addr (phys) 0x" << Module->GetPhysAddr()
+		cout << this->ClassName() << "::GetModuleInfo(): TrigBox info: addr (phys) 0x" << setbase(16) << Module->GetPhysAddr()
 						<< " (log) 0x" << Module->GetBaseAddr()
 						<< " mod 0x" << Module->GetAddrModifier()
 						<< " type VULOM \"t5\"" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetModuleInfo");
 	}
 	return(kTRUE);
 }
@@ -238,9 +232,8 @@ Bool_t SrvVulomTB::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 Bool_t SrvVulomTB::ReadScaler(SrvVMEModule * Module, TArrayI & ScalerValues, Int_t ScalerNo) {
 
 	if (ScalerNo < 0 || ScalerNo >= kVulomTBNofScalers) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Scaler number out of range - "
-						<< ScalerNo << " (should be in [0," << (kVulomTBNofScalers - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadScaler");
+		cerr << setred << this->ClassName() << "::ReadScaler(): [" << Module->GetName() << "]: Scaler number out of range - "
+						<< ScalerNo << " (should be in [0," << (kVulomTBNofScalers - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -268,9 +261,8 @@ Bool_t SrvVulomTB::ReadScaler(SrvVMEModule * Module, TArrayI & ScalerValues, Int
 Bool_t SrvVulomTB::ReadChannel(SrvVMEModule * Module, TArrayI & ScalerValues, Int_t ChannelNo) {
 
 	if (ChannelNo < 0 || ChannelNo >= kVulomTBNofChannels) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Channel number out of range - "
-						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadChannel");
+		cerr << setred << this->ClassName() << "::ReadChannel(): [" << Module->GetName() << "]: Channel number out of range - "
+						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -298,9 +290,8 @@ Bool_t SrvVulomTB::ReadChannel(SrvVMEModule * Module, TArrayI & ScalerValues, In
 Bool_t SrvVulomTB::EnableChannel(SrvVMEModule * Module, Int_t ChannelNo) {
 
 	if (ChannelNo < 0 || ChannelNo >= kVulomTBNofChannels) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Channel number out of range - "
-						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "EnableChannel");
+		cerr << setred << this->ClassName() << "::EnableChannel(): [" << Module->GetName() << "]: Channel number out of range - "
+						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -328,9 +319,8 @@ Bool_t SrvVulomTB::EnableChannel(SrvVMEModule * Module, Int_t ChannelNo) {
 Bool_t SrvVulomTB::DisableChannel(SrvVMEModule * Module, Int_t ChannelNo) {
 
 	if (ChannelNo < 0 || ChannelNo >= kVulomTBNofChannels) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Channel number out of range - "
-						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "DisableChannel");
+		cerr << setred << this->ClassName() << "::DisableChannel(): [" << Module->GetName() << "]: Channel number out of range - "
+						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -399,16 +389,14 @@ Bool_t SrvVulomTB::SetScaleDown(SrvVMEModule * Module, Int_t & ScaleDown, Int_t 
 	}
 
 	if (ChannelNo < 0 || ChannelNo >= kVulomTBNofChannels) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Channel number out of range - "
-						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetScaleDown");
+		cerr << setred << this->ClassName() << "::SetScaleDown(): [" << Module->GetName() << "]: Channel number out of range - "
+						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (ScaleDown < 0 || ScaleDown > 0xF) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Scale down out of range - "
-						<< ScaleDown << " (should be in [0, 15])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetScaleDown");
+		cerr << setred << this->ClassName() << "::SetScaleDown(): [" << Module->GetName() << "]: Scale down out of range - "
+						<< ScaleDown << " (should be in [0, 15])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -466,9 +454,8 @@ Bool_t SrvVulomTB::ReadScaleDown(SrvVMEModule * Module, TArrayI & ScaleDown) {
 Bool_t SrvVulomTB::GetScaleDown(SrvVMEModule * Module, Int_t & ScaleDown, Int_t ChannelNo) {
 
 	if (ChannelNo < 0 || ChannelNo >= kVulomTBNofChannels) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Channel number out of range - "
-						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetScaleDown");
+		cerr << setred << this->ClassName() << "::GetScaleDown(): [" << Module->GetName() << "]: Channel number out of range - "
+						<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -508,9 +495,8 @@ Bool_t SrvVulomTB::ClearScaler(SrvVMEModule * Module, Int_t ChannelNo) {
 		this->SetEnableMask(Module, clear);
 	} else {
 		if (ChannelNo < 0 || ChannelNo >= kVulomTBNofChannels) {
-			gMrbLog->Err()	<< "[" << Module->GetName() << "]: Channel number out of range - "
-							<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])" << endl;
-			gMrbLog->Flush(this->ClassName(), "ClearScaler");
+			cerr << setred << this->ClassName() << "::ClearScaler(): [" << Module->GetName() << "]: Channel number out of range - "
+							<< ChannelNo << " (should be in [0," << (kVulomTBNofChannels - 1) << "])"<< setblack << endl;
 			return(kFALSE);
 		}
 		if (enable & (BIT(ChannelNo))) this->DisableChannel(Module, ChannelNo);

@@ -12,13 +12,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 #include <unistd.h>
 
 #include "LwrTypes.h"
 #include "LwrLynxOsSystem.h"
-#include "LwrLogger.h"
 
 #include "SrvSocket.h"
 #include "SrvVMEModule.h"
@@ -36,8 +35,6 @@ extern TLynxOsSystem * gSystem;
 
 extern TMrbLofNamedX * gLofVMEProtos;		// list of vme prototypes
 extern TMrbLofNamedX * gLofVMEModules;		// list of modules
-
-extern TMrbLogger * gMrbLog;		// message logger
 
 SrvSocket * gSrvSocket; 		// server socket
 
@@ -75,8 +72,6 @@ Int_t main(Int_t argc, Char_t *argv[]) {
 
 	gSystem = new TLynxOsSystem();
 
-	gMrbLog = new TMrbLogger("", logFile.Data());
-
 	TString serverName = basename(argv[0]);
 	Char_t * sp = strrchr(argv[0], '/');
 	if (sp) *sp = '\0';
@@ -90,6 +85,7 @@ Int_t main(Int_t argc, Char_t *argv[]) {
 	cout	<< " Blocking         : " << ((nonBlocking == 1) ? "off" : "on") << endl;
 	cout	<< " Verbose mode     : " << ((verboseMode == 1) ? "on" : "off") << endl;
 	cout	<< " Built for        : " << cpuType + 3 << " " << lynxVersion + 3 << endl;
+	cout	<< " Current PID      : " << getpid() << endl;
 	cout	<< "---------------------------------------------------------------------------" << setblack << endl;
 
 	gSrvSocket = new SrvSocket(serverName.Data(), serverPath.Data(), port, nonBlocking, verboseMode);
@@ -108,14 +104,11 @@ Int_t main(Int_t argc, Char_t *argv[]) {
 	SrvVulomTB * vulomTB = new SrvVulomTB();
 	if (verboseMode && !vulomTB->IsZombie()) vulomTB->Print();
 
-	gMrbLog->Out() << "Now listening to tcp socket  ..." << endl;
-	gMrbLog->Flush(serverName.Data(), "", setblue);
+	cout << serverName.Data() << ": Now listening to tcp socket  ..." << endl;
 
 	gSrvSocket->Listen();
 
-	gMrbLog->Out() << "Shutting down ..." << endl;
-	gMrbLog->Flush(serverName.Data(), "", setblue);
+	cout << setblue << serverName.Data() << ": Shutting down ..." << endl;
 	sleep(SRV_SLEEP);
-	gMrbLog->Close();
 	exit(0);
 };

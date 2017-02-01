@@ -15,8 +15,8 @@
 //! $Date: 2009-02-20 08:40:11 $
 //////////////////////////////////////////////////////////////////////////////
 
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 
 #include "LwrTypes.h"
 #include "LwrServerSocket.h"

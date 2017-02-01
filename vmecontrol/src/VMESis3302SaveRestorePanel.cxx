@@ -39,7 +39,7 @@ namespace std {} using namespace std;
 #include <fstream>
 
 static Char_t * kVMESis3302FileTypes[]	=	{
-												"All saves",			"*",
+												"All saves",			"*Settings.rc",
 												NULL,					NULL
 											};
 
@@ -220,24 +220,12 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 		errMsg += "\"";
 		gVMEControlData->MsgBox(this, "RestoreSettings", "Warning", errMsg);
 	} else {
-		fileInfoRestore.fIniDir = StrDup(gVMEControlData->fSettingsPath);
+		fileInfoRestore.fIniDir = StrDup(gSystem->WorkingDirectory());
 	}
 
 	new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fileInfoRestore);
 	if (fileInfoRestore.fFilename == NULL || *fileInfoRestore.fFilename == '\0') return(kFALSE);
-	TString loadDir = fileInfoRestore.fFilename;
-
-	TString baseName1, baseName2, dirName;				// check if user did a double click
-	TMrbSystem uxSys;
-	uxSys.GetBaseName(baseName1, loadDir.Data());		// as a result the last 2 parts of the returned path
-	uxSys.GetDirName(dirName, loadDir.Data());			// will be identical
-	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
-	if (baseName1.CompareTo(baseName2.Data()) == 0) loadDir = dirName;	// double click: strip off last part
-	
-	if (!uxSys.IsDirectory(loadDir.Data())) {
-		uxSys.GetDirName(dirName, loadDir.Data());
-		loadDir = dirName;
-	}
+	TString fileName = fileInfoRestore.fFilename;
 
 	Int_t nerr = 0;
 
@@ -249,10 +237,7 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 	pgb->SetRange(0, fLofSelected.GetEntries());
 	while (module = (TMrbNamedX *) iter->Next()) {
 		if (modSel & bit) {
-			TString settingsFile = loadDir;
-			settingsFile += "/";
-			settingsFile += module->GetName();
-			settingsFile += ".cfg";
+			TString settingsFile = fileName;
 			TC2LSis3302 * sis3302 = (TC2LSis3302 *)	module->GetAssignedObject();
 			if (!sis3302->RestoreSettings(settingsFile.Data())) nerr++;
 			nofModules++;
@@ -269,7 +254,7 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 	}
 
 	if (nofModules > 0) {
-		gMrbLog->Out()	<< nofModules << " SIS3302 module(s) restored from directory " << loadDir << " ("
+		gMrbLog->Out()	<< nofModules << " SIS3302 module(s) restored from directory " << fileName << " ("
 						<< nerr << " error(s))" << endl;
 		gMrbLog->Flush(this->ClassName(), "RestoreSettings", setblue);
 	}
@@ -318,37 +303,12 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 		errMsg += "\"";
 		gVMEControlData->MsgBox(this, "SaveSettings", "Warning", errMsg);
 	} else {
-		fileInfoSave.fIniDir = StrDup(gVMEControlData->fSettingsPath);
+		fileInfoSave.fIniDir = StrDup(gSystem->WorkingDirectory());
 	}
 
 	new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fileInfoSave);
 	if (fileInfoSave.fFilename == NULL || *fileInfoSave.fFilename == '\0') return(kFALSE);
-	TString saveDir = fileInfoSave.fFilename;
-
-	TString baseName1, baseName2, dirName;				// check if user did a double click
-	TMrbSystem uxSys;
-	uxSys.GetBaseName(baseName1, saveDir.Data());		// as a result the last 2 parts of the returned path
-	uxSys.GetDirName(dirName, saveDir.Data());			// will be identical
-	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
-	if (baseName1.CompareTo(baseName2.Data()) == 0) saveDir = dirName;	// double click: strip off last part
-
-	if (!uxSys.Exists(saveDir.Data())) {
-		TString cmd = "mkdir -p ";
-		cmd += saveDir;
-		gSystem->Exec(cmd);
-		if (verbose) {
-			gMrbLog->Out() << "Creating directory - " << saveDir << endl;
-			gMrbLog->Flush(this->ClassName(), "SaveSettings", setblue);
-		}
-	}
-
-	if (!uxSys.IsDirectory(saveDir.Data())) {
-		errMsg = "File \"";
-		errMsg += saveDir.Data();
-		errMsg += "\" is NOT a directory";
-		gVMEControlData->MsgBox(this, "SaveSettings", "Error", errMsg);
-		return(kFALSE);
-	}
+	TString fileName = fileInfoSave.fFilename;
 
 	Int_t nerr = 0;
 
@@ -360,10 +320,7 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 	pgb->SetRange(0, fLofSelected.GetEntries());
 	while (module = (TMrbNamedX *) iter->Next()) {
 		if (modSel & bit) {
-			TString settingsFile = saveDir;
-			settingsFile += "/";
-			settingsFile += module->GetName();
-			settingsFile += ".cfg";
+			TString settingsFile = fileName;
 			TC2LSis3302 * sis3302 = (TC2LSis3302 *)	module->GetAssignedObject();
 			if (!sis3302->SaveSettings(settingsFile.Data())) nerr++;
 			nofModules++;
@@ -380,7 +337,7 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 	}
 
 	if (nofModules > 0) {
-		gMrbLog->Out()	<< nofModules << " SIS3302 module(s) saved to directory " << saveDir << " ("
+		gMrbLog->Out()	<< nofModules << " SIS3302 module(s) saved to directory " << fileName << " ("
 						<< nerr << " error(s))" << endl;
 		gMrbLog->Flush(this->ClassName(), "SaveSettings", setblue);
 	}

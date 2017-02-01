@@ -542,7 +542,7 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, TMrbNamedX * Rhisto
 	Int_t wpt = TraceData[2];
 	Int_t ect = TraceData[3];
 	Int_t nxs = TraceData[4];
-	
+	Int_t k = 0;
 	Int_t wpt2 = wpt - rdl/2;
 	if (nxs == 0 || wpt == 0 || wpt2 > nxs) return(0);
 
@@ -554,7 +554,7 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, TMrbNamedX * Rhisto
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
 		return(-1);
 	}
-	Int_t k = kSis3302EventPreHeader;
+	k = kSis3302EventPreHeader;
 
 	ULong64_t ts = (UInt_t) EvtData[k + 1];
 	UInt_t ts48 = ((UInt_t) EvtData[k] >> 16) & 0xFFFF;

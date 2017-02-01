@@ -10,10 +10,9 @@
 //! $Date: 2011-05-20 12:21:03 $
 //////////////////////////////////////////////////////////////////////////////
 
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 
-#include "LwrLogger.h"
 #include "LwrMonitor.h"
 #include "SrvSocket.h"
 #include "SrvVMEModule.h"
@@ -27,12 +26,9 @@
 
 #include "vmelib.h"
 
-extern TMrbLogger * gMrbLog;				// message logger
 extern Bool_t gSignalTrap;
 
 extern TMrbLofNamedX * gLofVMEModules;			// list of actual modules
-
-static TMrbLogMessage * lastLogMsg = NULL;
 
 SrvSocket::SrvSocket(const Char_t * Name, const Char_t * Path, Int_t Port, Bool_t NonBlocking, Bool_t VerboseMode) : TNamed(Name, Path) {
 //__________________________________________________________________[C++ CTOR]
@@ -42,13 +38,10 @@ SrvSocket::SrvSocket(const Char_t * Name, const Char_t * Path, Int_t Port, Bool_
 //! \details		Class to define a server socket
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("", "c2lynx.log");
-
 	fSocket = new TServerSocket(Port, 1);
 	if(!fSocket->IsValid()){
 		this->MakeZombie();
-		gMrbLog->Err() << "Can't create server socket: error code " << fSocket->GetErrorCode() << endl;
-		gMrbLog->Flush(this->ClassName());
+		cerr << setred << this->ClassName() << ": Can't create server socket: error code " << fSocket->GetErrorCode() << setblack << endl;
 	} else {
 		fPort = Port;
 		fNonBlocking = NonBlocking;
@@ -73,7 +66,6 @@ void SrvSocket::Listen() {
 	TSocket * sock;
 	while (1) {
 		sock = mon->Select();
-		cout << "@@@ " << setbase(16) << (Int_t *) sock << endl;
 		if (sock == NULL) continue;
 		if (sock->IsServerSocket()) {
 			TSocket * s = ((TServerSocket *) sock)->Accept();
@@ -85,8 +77,7 @@ void SrvSocket::Listen() {
 			} else {
 				p = "secondary";
 			}
-			gMrbLog->Out()	<< "[Monitor] New (" << p.Data() << ") client added to selection list" << endl;
-			gMrbLog->Flush(this->ClassName(), "Listen");
+			cout << this->ClassName() << "::Listen(): [Monitor] New (" << p.Data() << ") client added to selection list" << endl;
 			continue;
 		}
 
@@ -108,28 +99,28 @@ void SrvSocket::Listen() {
 				SrvVMEModule * vmeModule = new SrvVMEModule(connect->fModuleName, connect->fModuleType,
 						connect->fBaseAddr, connect->fSegSize, connect->fNofChannels, connect->fMapping);
 				if (vmeModule->IsZombie()) {
-					this->Error(sock, gMrbLog);
+					this->Error(sock);
 				} else {
 					switch (vmeModule->GetID()) {
 						case SrvVMEModule::kModuleCaen785:
 							{
 								SrvCaen785 * proto = (SrvCaen785 *) vmeModule->GetPrototype();
 								if (proto->TryAccess(vmeModule)) break;
-								this->Error(sock, gMrbLog);
+								this->Error(sock);
 								continue;
 							}
 						case SrvVMEModule::kModuleSis3302:
 							{
 								SrvSis3302 * proto = (SrvSis3302 *) vmeModule->GetPrototype();
 								if (proto->TryAccess(vmeModule)) break;
-								this->Error(sock, gMrbLog);
+								this->Error(sock);
 								continue;
 							}
 						case SrvVMEModule::kModuleVulomTB:
 							{
 								SrvVulomTB * proto = (SrvVulomTB *) vmeModule->GetPrototype();
 								if (proto->TryAccess(vmeModule)) break;
-								this->Error(sock, gMrbLog);
+								this->Error(sock);
 								continue;
 							}
 					}
@@ -156,7 +147,7 @@ void SrvSocket::Listen() {
 								SrvCaen785 * proto = (SrvCaen785 *) vmeModule->GetPrototype();
 								res = proto->Dispatch(vmeModule, ftype, &exec->fData);
 								if (res) break;
-								this->Error(sock, gMrbLog);
+								this->Error(sock);
 								continue;
 							}
 						case SrvVMEModule::kModuleSis3302:
@@ -164,7 +155,7 @@ void SrvSocket::Listen() {
 								SrvSis3302 * proto = (SrvSis3302 *) vmeModule->GetPrototype();
 								res = proto->Dispatch(vmeModule, ftype, &exec->fData);
 								if (res) break;
-								this->Error(sock, gMrbLog);
+								this->Error(sock);
 								continue;
 							}
 						case SrvVMEModule::kModuleVulomTB:
@@ -172,16 +163,15 @@ void SrvSocket::Listen() {
 								SrvVulomTB * proto = (SrvVulomTB *) vmeModule->GetPrototype();
 								res = proto->Dispatch(vmeModule, ftype, &exec->fData);
 								if (res) break;
-								this->Error(sock, gMrbLog);
+								this->Error(sock);
 								continue;
 							}
 					}
 					this->CheckMessageType(res, "Listen", kFALSE, kTRUE);
 					sock->SendRaw(res, swapIt(res->fLength));
 				} else {
-					gMrbLog->Err()	<< "Unknown function code - " << setbase(16) << exec->fXhdr.fCode << setbase(10) << endl;
-					gMrbLog->Flush(this->ClassName(), "Listen");
-					this->Error(sock, gMrbLog);
+					cerr << setred << this->ClassName() << "::Listen(): Unknown function code - " << setbase(16) << exec->fXhdr.fCode << setbase(10) << setblack << endl;
+					this->Error(sock);
 				}
 			} else if (hdr->fWhat == kM2L_MESS_BYE) {
 				TIterator * iter = gLofVMEModules->MakeIterator();
@@ -207,31 +197,28 @@ void SrvSocket::Listen() {
 						}
 					}
 				}
+				delete iter;
 				if (sock == primaryClient) {
 					errCnt = 0;
-					gMrbLog->Out()	<< "Primary client has disconnected - shutting down server" << endl;
-					gMrbLog->Flush(this->ClassName(), "Listen");
-					this->Message(sock, gMrbLog);
+					cout << this->ClassName() << "::Listen(): Primary client has disconnected - shutting down server" << endl;
+					this->Message(sock);
 					return;
 				} else {
-					gMrbLog->Out()	<< "Secondary client has disconnected" << endl;
-					gMrbLog->Flush(this->ClassName(), "Listen");
-					this->Message(sock, gMrbLog);
+					cout << this->ClassName() << "::Listen(): Secondary client has disconnected" << endl;
+					this->Message(sock);
 					mon->Remove(sock);
 					continue;
 				}
 			}
 		} else if (hdr->fWhat == 0 && nofBytes == 0 && errCnt > 2) {
-			gMrbLog->Err()	<< "Giving up ..." << endl;
-			gMrbLog->Flush(this->ClassName(), "Listen");
-			this->Error(sock, gMrbLog);
+			cerr << this->ClassName() << "::Listen(): Giving up ..." << setblack << endl;
+			this->Error(sock);
 			return;
 		} else {
 			errCnt++;
-			gMrbLog->Err()	<< "Unknown message code - " << setbase(16) << hdr->fWhat
-							<< ", message length = " << nofBytes << " byte(s)" << setbase(10) << endl;
-			gMrbLog->Flush(this->ClassName(), "Listen");
-			this->Error(sock, gMrbLog);
+			cerr << this->ClassName() << "::Listen(): Unknown message code - " << setbase(16) << hdr->fWhat
+							<< ", message length = " << nofBytes << " byte(s)" << setbase(10) << setblack << endl;
+			this->Error(sock);
 		}
 	}
 }
@@ -255,35 +242,6 @@ void SrvSocket::Acknowledge(TSocket * Sock, EM2L_MessageType Type, const Char_t 
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Informs message sender about successful processing
-//! \param[in]		Sock		-- socket
-//! \param[in]		Type		-- type of acknowedgement
-//! \param[in]		Log 		-- message logger
-//////////////////////////////////////////////////////////////////////////////
-
-void SrvSocket::Acknowledge(TSocket * Sock, EM2L_MessageType Type, TMrbLogger * Log) {
-
-	TMrbLogMessage * logMsg;
-	switch (Type) {
-		case kM2L_MESS_ACK_OK:		logMsg = NULL; break;
-		case kM2L_MESS_ACK_MESSAGE:	logMsg = Log->GetLast(TMrbLogMessage::kMrbMsgMessage); break;
-		case kM2L_MESS_ACK_ERROR:	logMsg = Log->GetLast(TMrbLogMessage::kMrbMsgError); break;
-		case kM2L_MESS_ACK_WARNING:	logMsg = Log->GetLast(TMrbLogMessage::kMrbMsgWarning); break;
-	}
-	if (logMsg && (logMsg != lastLogMsg)) {
-		TString fmtMsg;
-		logMsg->Get(fmtMsg, "[LynxOs]", kFALSE, kTRUE);
-		fmtMsg.ReplaceAll("\n", "");
-		fmtMsg += setblack;
-		this->Acknowledge(Sock, Type, fmtMsg.Data());
-		lastLogMsg = logMsg;
-	} else {
-		this->Acknowledge(Sock, Type, (Char_t *) NULL);
-	}
-}
-
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
 //! \details		Checks message type and writes to log if verbose mode
 //! \param[in]		Hdr 		-- message header
 //! \param[in]		Method		-- calling method
@@ -298,7 +256,7 @@ TMrbNamedX * SrvSocket::CheckMessageType(M2L_MsgHdr * Hdr, const Char_t * Method
 
 	TMrbNamedX * mtype = fMsgTypes.FindByIndex(what);
 	if (!mtype) return(NULL);
-
+	
 	TString rs;
 	if (this->IsVerbose()) {
 		TString t = mtype->GetName();
@@ -310,11 +268,10 @@ TMrbNamedX * SrvSocket::CheckMessageType(M2L_MsgHdr * Hdr, const Char_t * Method
 			rs = "Send";
 			if (x > 0) t = t(x + 1, 1000);
 		}
-		gMrbLog->Out()	<< "[" << rs.Data() << "] "
+		cout	<< this->ClassName() << "::" << Method << "(): "<< "[" << rs.Data() << "] "
 						<< t.Data()
 						<< " (what=0x" << setbase(16) << what << ", "
 						<< setbase(10) << length << " byte(s))" << endl;
-		gMrbLog->Flush(this->ClassName(), Method);
 	}
 	return(mtype);
 }

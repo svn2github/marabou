@@ -16,8 +16,8 @@
 
 namespace std {} using namespace std;
 
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 
 #include "LwrNamedX.h"
 #include "LwrLofNamedX.h"
@@ -138,7 +138,7 @@ const Char_t * TMrbLogMessage::Get(TString & FmtMsg, const Char_t * ProgName, Bo
 //! \param[in]		LogFile		-- name of log file
 /////////////////////////////////////////////////////////////////////////////
 
-TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile)
+TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile, Int_t SizeOfMsgBuffer)
 {
 	fLog = NULL;
 	if (LogFile != NULL && *LogFile != '\0') fLog = new ofstream();
@@ -149,7 +149,6 @@ TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile)
 	fEnabled = TMrbLogger::kMrbMsgCout | TMrbLogger::kMrbMsgCerr;
 	if (fLog) fEnabled |= TMrbLogger::kMrbMsgLog;
 	fLofMessages.Delete();
-	fIndexOfLastPrinted = 0;
 	this->SetProgName(ProgName);
 	if (fLog) this->Open(LogFile);
 	this->SetName((fProgName.Length() > 0) ? fProgName.Data() : fLogFile.Data());
@@ -220,7 +219,6 @@ Bool_t TMrbLogger::Close()
 				<< " (" << fLofMessages.GetEntries() + 1 << " message(s))"
 				<< setblack << endl;
 		fLofMessages.Delete();
-		fIndexOfLastPrinted = 0;	
 		return(kTRUE);
 	} else return(kFALSE);
 }
@@ -245,7 +243,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	str = fOut->str();
 	if (str.Length() != 0) {
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgMessage, Color, ClassName, Method, str, Indent);
-		fLofMessages.Add(msg);
+		this->AddToMsgBuffer(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCout) cout << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName, kTRUE, kFALSE) << flush;
 	}
@@ -256,7 +254,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	str = fErr->str();
 	if (str.Length() != 0) {
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgError, Color, ClassName, Method, str, Indent);
-		fLofMessages.Add(msg);
+		this->AddToMsgBuffer(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
 	}
@@ -267,7 +265,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	str = fWrn->str();
 	if (str.Length() != 0) {
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgWarning, Color, ClassName, Method, str, Indent);
-		fLofMessages.Add(msg);
+		this->AddToMsgBuffer(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
 	}
@@ -299,17 +297,17 @@ Bool_t TMrbLogger::OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char
 		
 	if (MsgType == TMrbLogMessage::kMrbMsgMessage) {
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgMessage, Color, ClassName, Method, str, Indent);
-		fLofMessages.Add(msg);
+		this->AddToMsgBuffer(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCout) cout << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName, kTRUE, kFALSE) << flush;
 	} else if (MsgType == TMrbLogMessage::kMrbMsgError) {
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgError, Color, ClassName, Method, str, Indent);
-		fLofMessages.Add(msg);
+		this->AddToMsgBuffer(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
 	} else if (MsgType == TMrbLogMessage::kMrbMsgWarning) {
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgWarning, Color, ClassName, Method, str, Indent);
-		fLofMessages.Add(msg);
+		this->AddToMsgBuffer(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
 	}
@@ -433,7 +431,8 @@ void TMrbLogger::Print(Int_t Tail, UInt_t Type) const
 	TMrbLogMessage * msg;
 	TString str;
 			
-	if (Tail >= 0) idx = 0; else idx = fLofMessages.GetEntries() - Tail;
+	if ((Tail + kMrbMsgSizeofBuffer) < 0) Tail = -kMrbMsgSizeofBuffer;
+	if  (Tail >= 0) idx = 0; else idx = fLofMessages.GetEntries() - Tail;
 	if (idx < 0) idx = 0;
 	
 	msg = (TMrbLogMessage *) fLofMessages.At(idx);
@@ -441,46 +440,6 @@ void TMrbLogger::Print(Int_t Tail, UInt_t Type) const
 		if (msg->GetType() & Type) cout << msg->Get(str, "", kTRUE, kTRUE) << flush;
 		msg = (TMrbLogMessage *) fLofMessages.After(msg);
 	}
-}
-
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-//! \details		Outputs recently created messages
-//! \param[in]		Type			-- message type
-/////////////////////////////////////////////////////////////////////////////
-
-void TMrbLogger::PrintSinceLastCall(const Char_t * Type)
-{
-	TMrbLofNamedX opt;
-	TMrbNamedX * nx;
-		
-	opt.AddNamedX(kMrbMsgTypes);
-	if ((nx = opt.FindByName(Type)) != NULL) {
-		this->PrintSinceLastCall(nx->GetIndex());
-	} else {
-		cerr	<< setred
-				<< this->ClassName() << "::PrintSinceLastCall(): Illegal message type - " << Type
-				<< setblack << endl;
-	}
-}
-
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-//! \details		Outputs recently created messages
-//! \param[in]		Type			-- message type
-/////////////////////////////////////////////////////////////////////////////
-
-void TMrbLogger::PrintSinceLastCall(UInt_t Type)
-{
-	TMrbLogMessage * msg;
-	TString str;
-			
-	msg = (TMrbLogMessage *) fLofMessages.At(fIndexOfLastPrinted);
-	while (msg) {
-		if (msg->GetType() & Type) cout << msg->Get(str, "", kTRUE, kTRUE) << flush;
-		msg = (TMrbLogMessage *) fLofMessages.After(msg);
-	}
-	fIndexOfLastPrinted = fLofMessages.GetEntries() + 1;
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -506,4 +465,16 @@ const Char_t * TMrbLogger::Prefix(const Char_t * Identifier, const Char_t * Prog
 	}
 	return(fPrefix.Data());
 }
-	
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Adds a message to buffer
+//! \param[in]		Message				-- message
+//! \retval 		--
+//////////////////////////////////////////////////////////////////////////////
+
+void TMrbLogger::AddToMsgBuffer(TMrbLogMessage * Message) {
+	Int_t nofEntries = this->GetNofEntries();
+	if (nofEntries >= kMrbMsgSizeofBuffer) fLofMessages.Delete();
+	fLofMessages.Add(Message);
+}

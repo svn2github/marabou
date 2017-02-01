@@ -10,22 +10,20 @@
 //! $Date: 2012-01-18 11:11:32 $
 //////////////////////////////////////////////////////////////////////////////
 
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 #include <unistd.h>
+#include <fstream>
 
 #include "SrvUtils.h"
 #include "SrvSis3302.h"
 #include "SrvSis3302_Layout.h"
-#include "LwrLogger.h"
 #include "SetColor.h"
 
 enum	{ kMaxTry = 100 };
 
 extern TMrbLofNamedX * gLofVMEProtos;		//!< list of prototypes
 extern TMrbLofNamedX * gLofVMEModules;		//!< list of actual modules
-
-extern TMrbLogger * gMrbLog;				//!< message logger
 
 extern Bool_t gSignalTrap;
 
@@ -50,7 +48,6 @@ SrvSis3302::SrvSis3302() : SrvVMEModule(	"Sis3302",							//!< type
 //! \details		Prototype SIS3302
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("", "c2lynx.log");
 	this->SetID(SrvVMEModule::kModuleSis3302);
 }
 
@@ -69,9 +66,8 @@ Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 
 	if (!this->GetModuleInfo(Module, boardId, majorVersion, minorVersion, kTRUE)) return(kFALSE);
 	if (boardId != 3302) {
-		gMrbLog->Err()	<< "[" << Module->GetName()
-						<< "]: Wrong module type - not a " << this->GetName() << endl;
-		gMrbLog->Flush(this->ClassName(), "TryAccess");
+		cerr << setred << this->ClassName() << "::TryAccess(): [" << Module->GetName()
+						<< "]: Wrong module type - not a " << this->GetName() << setblack << endl;
 		return(kFALSE);
 	}
 	if (!this->CheckAddressSpace(Module, kTRUE)) return(kFALSE);
@@ -656,8 +652,7 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 					onoff = "ON";
 					fDumpTrace = kTRUE;
 				}
-				gMrbLog->Out()	<< "[" << Module->GetName() << "]: Turning trace dump " << onoff.Data() << endl;
-				gMrbLog->Flush(this->ClassName(), "Dispatch");
+				cout << this->ClassName() << "::Dispatch(): [" << Module->GetName() << "]: Turning trace dump " << onoff.Data() << endl;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_RAMP_DAC:
@@ -682,9 +677,8 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 		}
 		default:
 			{
-				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Function not implemented - "
-								<< Function->GetName() << " (" << setbase(16) << Function->GetIndex() << ")" << endl;
-				gMrbLog->Flush(this->ClassName(), "Dispatch");
+				cerr << setred << this->ClassName() << "::Dispatch(): [" << Module->GetName() << "]: Function not implemented - "
+								<< Function->GetName() << " (" << setbase(16) << Function->GetIndex() << ")" << setblack << endl;
 				return(NULL);
 			}
 	}
@@ -753,14 +747,13 @@ Bool_t SrvSis3302::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 	MajorVersion = (ident >> 8) & 0xFF;
 	MinorVersion = ident & 0xFF;
 	if (PrintFlag) {
-		gMrbLog->Out()	<< setbase(16)
+		cout << this->ClassName() << "::GetModuleInfo(): "	<< setbase(16)
 						<< "SIS module info: addr (phys) 0x" << Module->GetPhysAddr()
 						<< " (log) 0x" << Module->GetBaseAddr()
 						<< " mod 0x" << Module->GetAddrModifier()
 						<< setbase(10)
 						<< " type " << BoardId
 						<< " version " << setbase(16) << MajorVersion << setw(2) << setfill('0') << MinorVersion << endl;
-		gMrbLog->Flush(this->ClassName(), "GetModuleInfo");
 	}
 	return(kTRUE);
 }
@@ -795,11 +788,10 @@ Bool_t SrvSis3302::CheckAddressSpace(SrvVMEModule * Module, Bool_t PrintFlag) {
 
 	if (PrintFlag) {
 		if (reduced) {
-			gMrbLog->Out()	<< "Using REDUCED address space (16MB)" << endl;
+			cout << this->ClassName() << "::CheckAddressSpace(): Using REDUCED address space (16MB)" << endl;
 		} else {
-			gMrbLog->Out()	<< "Using FULL address space (128MB)" << endl;
+			cout << this->ClassName() << "::CheckAddressSpace(): Using FULL address space (128MB)" << endl;
 		}
-		gMrbLog->Flush(this->ClassName(), "CheckAddressSpace");
 	}
 	return(kTRUE);
 }
@@ -846,9 +838,8 @@ Bool_t SrvSis3302::SetUserLED(SrvVMEModule * Module, Bool_t & OnFlag) {
 Bool_t SrvSis3302::ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadDac");
+		cerr << setred << this->ClassName() << "::ReadDac(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -946,9 +937,8 @@ Bool_t SrvSis3302::WriteDac(SrvVMEModule * Module, Int_t & DacValue, Int_t ChanN
 Bool_t SrvSis3302::WriteDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteDac");
+		cerr << setred << this->ClassName() << "::WriteDac(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -963,9 +953,8 @@ Bool_t SrvSis3302::WriteDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t Ch
 	}
 	Int_t wc = lastchan - firstchan + 1;
 	if (wc > DacValues.GetSize()) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]:Wrong size of data array - "
-						<< DacValues.GetSize() << " (should be at least " << wc << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteDac");
+		cerr << setred << this->ClassName() << "::WriteDac(): [" << Module->GetName() << "]:Wrong size of data array - "
+						<< DacValues.GetSize() << " (should be at least " << wc << ")" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1008,8 +997,7 @@ Bool_t SrvSis3302::KeyAddr(SrvVMEModule * Module, Int_t Key) {
 		case kSis3302KeyMcaMultiscanArmScanEnable:			offset = SIS3302_KEY_MCA_MULTISCAN_ARM_SCAN_ENABLE; break;
 		case kSis3302KeyMcaMultiscanDisable:				offset = SIS3302_KEY_MCA_MULTISCAN_DISABLE; break;
 		default:
-			gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal key value - " << Key << endl;
-			gMrbLog->Flush(this->ClassName(), "KeyAddr");
+			cerr << setred << this->ClassName() << "::KeyAddr(): [" << Module->GetName() << "]: Illegal key value - " << Key << setblack << endl;
 			return(kFALSE);
 	}
 
@@ -1076,9 +1064,8 @@ Bool_t SrvSis3302::WriteControlStatus(SrvVMEModule * Module, Int_t & Bits) {
 Bool_t SrvSis3302::ReadEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadEventConfig");
+		cerr << setred << this->ClassName() << "::ReadEventConfig(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1114,9 +1101,8 @@ Bool_t SrvSis3302::ReadEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t Ch
 Bool_t SrvSis3302::WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEventConfig");
+		cerr << setred << this->ClassName() << "::WriteEventConfig(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1155,9 +1141,8 @@ Bool_t SrvSis3302::WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t C
 Bool_t SrvSis3302::ReadEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadEventExtendedConfig");
+		cerr << setred << this->ClassName() << "::ReadEventExtendedConfig(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1193,9 +1178,8 @@ Bool_t SrvSis3302::ReadEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, 
 Bool_t SrvSis3302::WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEventExtendedConfig");
+		cerr << setred << this->ClassName() << "::WriteEventExtendedConfig(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1234,9 +1218,8 @@ Bool_t SrvSis3302::WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits,
 Bool_t SrvSis3302::GetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetHeaderBits");
+		cerr << setred << this->ClassName() << "::GetHeaderBits(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1259,9 +1242,8 @@ Bool_t SrvSis3302::GetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t Chan
 Bool_t SrvSis3302::SetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < 0 || Bits > kSis3302HeaderMask) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal header data - " << setbase(16) << Bits
-						<< " (should be in [0," << kSis3302HeaderMask << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetHeaderBits");
+		cerr << setred << this->ClassName() << "::SetHeaderBits(): [" << Module->GetName() << "]: Illegal header data - " << setbase(16) << Bits
+						<< " (should be in [0," << kSis3302HeaderMask << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1297,9 +1279,8 @@ Bool_t SrvSis3302::SetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t Chan
 Bool_t SrvSis3302::GetGroupId(SrvVMEModule * Module, Int_t & GroupId, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetGroupId");
+		cerr << setred << this->ClassName() << "::GetGroupId(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1322,9 +1303,8 @@ Bool_t SrvSis3302::GetGroupId(SrvVMEModule * Module, Int_t & GroupId, Int_t Chan
 Bool_t SrvSis3302::GetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetTriggerMode");
+		cerr << setred << this->ClassName() << "::GetTriggerMode(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1351,9 +1331,8 @@ Bool_t SrvSis3302::GetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t Cha
 Bool_t SrvSis3302::SetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < kSis3302TriggerOff || Bits > kSis3302TriggerBoth) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal trigger mode - " << setbase(16) << Bits
-						<< " (should be in [" << kSis3302TriggerOff << "," << kSis3302TriggerBoth << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetTriggerMode");
+		cerr << setred << this->ClassName() << "::SetTriggerMode(): [" << Module->GetName() << "]: Illegal trigger mode - " << setbase(16) << Bits
+						<< " (should be in [" << kSis3302TriggerOff << "," << kSis3302TriggerBoth << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1392,9 +1371,8 @@ Bool_t SrvSis3302::SetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t Cha
 Bool_t SrvSis3302::GetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetGateMode");
+		cerr << setred << this->ClassName() << "::GetGateMode(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1421,9 +1399,8 @@ Bool_t SrvSis3302::GetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo
 Bool_t SrvSis3302::SetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < kSis3302GateOff || Bits > kSis3302GateBoth) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal gate mode - " << setbase(16) << Bits
-						<< " (should be in [" << kSis3302GateOff << "," << kSis3302GateBoth << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetGateMode");
+		cerr << setred << this->ClassName() << "::SetGateMode(): [" << Module->GetName() << "]: Illegal gate mode - " << setbase(16) << Bits
+						<< " (should be in [" << kSis3302GateOff << "," << kSis3302GateBoth << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1462,9 +1439,8 @@ Bool_t SrvSis3302::SetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo
 Bool_t SrvSis3302::GetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetNextNeighborTriggerMode");
+		cerr << setred << this->ClassName() << "::GetNextNeighborTriggerMode(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1491,9 +1467,8 @@ Bool_t SrvSis3302::GetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bit
 Bool_t SrvSis3302::SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < kSis3302TriggerOff || Bits > kSis3302TriggerBoth) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal next-neighbor trigger mode - " << setbase(16) << Bits
-						<< " (should be in [" << kSis3302TriggerOff << "," << kSis3302TriggerBoth << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetNextNeighborTriggerMode");
+		cerr << setred << this->ClassName() << "::SetNextNeighborTriggerMode(): [" << Module->GetName() << "]: Illegal next-neighbor trigger mode - " << setbase(16) << Bits
+						<< " (should be in [" << kSis3302TriggerOff << "," << kSis3302TriggerBoth << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1536,9 +1511,8 @@ Bool_t SrvSis3302::SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bit
 Bool_t SrvSis3302::GetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetNextNeighborGateMode");
+		cerr << setred << this->ClassName() << "::GetNextNeighborGateMode(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1565,9 +1539,8 @@ Bool_t SrvSis3302::GetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, 
 Bool_t SrvSis3302::SetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < kSis3302GateOff || Bits > kSis3302GateBoth) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal next-neighbor gate mode - " << setbase(16) << Bits
-						<< " (should be in [" << kSis3302GateOff << "," << kSis3302GateBoth << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetNextNeighborGateMode");
+		cerr << setred << this->ClassName() << "::SetNextNeighborGateMode(): [" << Module->GetName() << "]: Illegal next-neighbor gate mode - " << setbase(16) << Bits
+						<< " (should be in [" << kSis3302GateOff << "," << kSis3302GateBoth << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1606,9 +1579,8 @@ Bool_t SrvSis3302::SetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, 
 Bool_t SrvSis3302::GetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetPolarity");
+		cerr << setred << this->ClassName() << "::GetPolarity(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1664,9 +1636,8 @@ Bool_t SrvSis3302::SetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t
 Bool_t SrvSis3302::ReadEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadEndAddrThresh");
+		cerr << setred << this->ClassName() << "::ReadEndAddrThresh(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1702,16 +1673,14 @@ Bool_t SrvSis3302::ReadEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_
 Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEndAddrThresh");
+		cerr << setred << this->ClassName() << "::WriteEndAddrThresh(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (Thresh > kSis3302EndAddrThreshMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Threshold out of range - " << setbase(16) << Thresh << " (max "
-						<< kSis3302EndAddrThreshMax << ")" << setbase(10) << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEndAddrThresh");
+		cerr << setred << this->ClassName() << "::WriteEndAddrThresh(): [" << Module->GetName() << "]: Threshold out of range - " << setbase(16) << Thresh << " (max "
+						<< kSis3302EndAddrThreshMax << ")" << setbase(10) << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1750,9 +1719,8 @@ Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int
 Bool_t SrvSis3302::ReadPreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadPreTrigDelayAndGateLength");
+		cerr << setred << this->ClassName() << "::ReadPreTrigDelayAndGateLength(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1788,9 +1756,8 @@ Bool_t SrvSis3302::ReadPreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & 
 Bool_t SrvSis3302::WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WritePreTrigDelayAndGateLength");
+		cerr << setred << this->ClassName() << "::WritePreTrigDelayAndGateLength(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1829,9 +1796,8 @@ Bool_t SrvSis3302::WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t &
 Bool_t SrvSis3302::ReadPreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadPreTrigDelay");
+		cerr << setred << this->ClassName() << "::ReadPreTrigDelay() [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1855,10 +1821,9 @@ Bool_t SrvSis3302::ReadPreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t 
 Bool_t SrvSis3302::WritePreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t ChanNo) {
 
 	if (Delay < kSis3302PreTrigDelayMin || Delay > kSis3302PreTrigDelayMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Pretrigger delay out of range - "
+		cerr << setred << this->ClassName() << "::WritePreTrigDelay(): [" << Module->GetName() << "]: Pretrigger delay out of range - "
 						<< ChanNo << " (should be in [" << kSis3302PreTrigDelayMin << ","
-						<< kSis3302PreTrigDelayMax << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WritePreTrigDelay");
+						<< kSis3302PreTrigDelayMax << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1896,9 +1861,8 @@ Bool_t SrvSis3302::WritePreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t
 Bool_t SrvSis3302::ReadTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadTrigGateLength");
+		cerr << setred << this->ClassName() << "::ReadTrigGateLength(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1920,10 +1884,9 @@ Bool_t SrvSis3302::ReadTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t
 Bool_t SrvSis3302::WriteTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t ChanNo) {
 
 	if (Gate < kSis3302TrigGateLengthMin || Gate > kSis3302TrigGateLengthMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Trigger gate length out of range - "
+		cerr << setred << this->ClassName() << "::WriteTrigGateLength(): [" << Module->GetName() << "]: Trigger gate length out of range - "
 						<< Gate << " (should be in [" << kSis3302TrigGateLengthMin << ","
-						<< kSis3302TrigGateLengthMax << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTrigGateLength");
+						<< kSis3302TrigGateLengthMax << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1956,9 +1919,8 @@ Bool_t SrvSis3302::WriteTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_
 Bool_t SrvSis3302::ReadRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadRawDataBufConfig");
+		cerr << setred << this->ClassName() << "::ReadRawDataBufConfig(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -1994,9 +1956,8 @@ Bool_t SrvSis3302::ReadRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int
 Bool_t SrvSis3302::WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteRawDataBufConfig");
+		cerr << setred << this->ClassName() << "::WriteRawDataBufConfig(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2035,9 +1996,8 @@ Bool_t SrvSis3302::WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, In
 Bool_t SrvSis3302::ReadRawDataSampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadRawDataSampleLength");
+		cerr << setred << this->ClassName() << "::ReadRawDataSampleLength(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2059,22 +2019,19 @@ Bool_t SrvSis3302::ReadRawDataSampleLength(SrvVMEModule * Module, Int_t & Sample
 Bool_t SrvSis3302::WriteRawDataSampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t ChanNo) {
 
 	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't write raw data sample length - trace collection in progress ..." << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteRawDataSampleLength");
+		cerr << setred << this->ClassName() << "::WriteRawDataSampleLength(): [" << Module->GetName() << "]: Can't write raw data sample length - trace collection in progress ..." << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (SampleLength < kSis3302RawDataSampleLengthMin || SampleLength > kSis3302RawDataSampleLengthMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Sample length out of range - "
-						<< SampleLength << " (should be in [0," << kSis3302RawDataSampleLengthMax << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteRawDataSampleLength");
+		cerr << setred << this->ClassName() << "::WriteRawDataSampleLength(): [" << Module->GetName() << "]: Sample length out of range - "
+						<< SampleLength << " (should be in [0," << kSis3302RawDataSampleLengthMax << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (SampleLength % 4) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong sample alignment - "
-						<< SampleLength << " (should be mod 4)" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteRawDataSampleLength");
+		cerr << setred << this->ClassName() << "::WriteRawDataSampleLength(): [" << Module->GetName() << "]: Wrong sample alignment - "
+						<< SampleLength << " (should be mod 4)" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2107,9 +2064,8 @@ Bool_t SrvSis3302::WriteRawDataSampleLength(SrvVMEModule * Module, Int_t & Sampl
 Bool_t SrvSis3302::ReadRawDataStartIndex(SrvVMEModule * Module, Int_t & StartIndex, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadRawDataStartIndex");
+		cerr << setred << this->ClassName() << "::ReadRawDataStartIndex(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2131,16 +2087,14 @@ Bool_t SrvSis3302::ReadRawDataStartIndex(SrvVMEModule * Module, Int_t & StartInd
 Bool_t SrvSis3302::WriteRawDataStartIndex(SrvVMEModule * Module, Int_t & StartIndex, Int_t ChanNo) {
 
 	if (StartIndex < kSis3302RawDataStartIndexMin || StartIndex > kSis3302RawDataStartIndexMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Start index out of range - "
-						<< StartIndex << " (should be in [0," << kSis3302RawDataStartIndexMax << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteRawDataStartIndex");
+		cerr << setred << this->ClassName() << "::WriteRawDataStartIndex(): [" << Module->GetName() << "]: Start index out of range - "
+						<< StartIndex << " (should be in [0," << kSis3302RawDataStartIndexMax << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (StartIndex & 0x1) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong index alignment - "
-						<< StartIndex << " (should be even)" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteRawDataStartIndex");
+		cerr << setred << this->ClassName() << "::WriteRawDataStartIndex(): [" << Module->GetName() << "]: Wrong index alignment - "
+						<< StartIndex << " (should be even)" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2173,9 +2127,8 @@ Bool_t SrvSis3302::WriteRawDataStartIndex(SrvVMEModule * Module, Int_t & StartIn
 Bool_t SrvSis3302::ReadNextSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadNextSampleAddr");
+		cerr << setred << this->ClassName() << "::ReadNextSampleAddr(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2210,9 +2163,8 @@ Bool_t SrvSis3302::ReadNextSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t
 Bool_t SrvSis3302::ReadPrevBankSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadPrevBankSampleAddr");
+		cerr << setred << this->ClassName() << "::ReadPrevBankSampleAddr(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2248,9 +2200,8 @@ Bool_t SrvSis3302::ReadPrevBankSampleAddr(SrvVMEModule * Module, Int_t & Addr, I
 Bool_t SrvSis3302::ReadActualSample(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadActualSample");
+		cerr << setred << this->ClassName() << "::ReadActualSample(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2287,9 +2238,8 @@ Bool_t SrvSis3302::ReadActualSample(SrvVMEModule * Module, Int_t & Data, Int_t C
 Bool_t SrvSis3302::ReadTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadTriggerSetup");
+		cerr << setred << this->ClassName() << "::ReadTriggerSetup(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2325,9 +2275,8 @@ Bool_t SrvSis3302::ReadTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t C
 Bool_t SrvSis3302::WriteTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTriggerSetup");
+		cerr << setred << this->ClassName() << "::WriteTriggerSetup(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2374,9 +2323,8 @@ Bool_t SrvSis3302::WriteTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t 
 Bool_t SrvSis3302::ReadTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadTriggerExtendedSetup");
+		cerr << setred << this->ClassName() << "::ReadTriggerExtendedSetup(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2412,9 +2360,8 @@ Bool_t SrvSis3302::ReadTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data,
 Bool_t SrvSis3302::WriteTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTriggerExtendedSetup");
+		cerr << setred << this->ClassName() << "::WriteTriggerExtendedSetup(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2483,18 +2430,16 @@ Bool_t SrvSis3302::WriteTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, I
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't set trigger peak or gap - trace collection in progress ..." << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTriggerPeakAndGap");
+		cerr << setred << this->ClassName() << "::WriteTriggerPeakAndGap(): [" << Module->GetName() << "]: Can't set trigger peak or gap - trace collection in progress ..." << setblack << endl;
 		return(kFALSE);
 	}
 
 	Int_t sumG = Peak + Gap;
 	if (sumG > kSis3302TrigSumGMax || Peak < kSis3302TrigPeakMin || Peak > kSis3302TrigPeakMax || Gap < kSis3302TrigGapMin || Gap > kSis3302TrigGapMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Trigger peak time / gap time mismatch - "
+		cerr << setred << this->ClassName() << "::WriteTriggerPeakAndGap(): [" << Module->GetName() << "]: Trigger peak time / gap time mismatch - "
 						<< Peak << " ... " << Gap
 						<< " (peak should be in [" << kSis3302TrigPeakMin << "," << kSis3302TrigPeakMax << "], gap should be in [" << kSis3302TrigGapMin
-						<< "," << kSis3302TrigGapMax << "], sumG=p+g <= " << kSis3302TrigSumGMax << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTriggerPeakAndGap");
+						<< "," << kSis3302TrigGapMax << "], sumG=p+g <= " << kSis3302TrigSumGMax << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2551,9 +2496,8 @@ Bool_t SrvSis3302::ReadTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLe
 Bool_t SrvSis3302::WriteTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t ChanNo) {
 
 	if (PulseLength < 0 || PulseLength > 0xFF) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong trigger pulse length - "
-						<< PulseLength << " (should be in [0," << 0xFF << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTriggerPulseLength");
+		cerr << setred << this->ClassName() << "::WriteTriggerPulseLength(): [" << Module->GetName() << "]: Wrong trigger pulse length - "
+						<< PulseLength << " (should be in [0," << 0xFF << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2604,9 +2548,8 @@ Bool_t SrvSis3302::ReadTriggerInternalGate(SrvVMEModule * Module, Int_t & Gate, 
 Bool_t SrvSis3302::WriteTriggerInternalGate(SrvVMEModule * Module, Int_t & Gate, Int_t ChanNo) {
 
 	if (Gate < 0 || Gate > 0x3F) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong internal trigger gate - "
-						<< Gate << " (should be in [0," << 0x3F << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTriggerInternalGate");
+		cerr << setred << this->ClassName() << "::WriteTriggerInternalGate(): [" << Module->GetName() << "]: Wrong internal trigger gate - "
+						<< Gate << " (should be in [0," << 0x3F << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2657,9 +2600,8 @@ Bool_t SrvSis3302::ReadTriggerInternalDelay(SrvVMEModule * Module, Int_t & Delay
 Bool_t SrvSis3302::WriteTriggerInternalDelay(SrvVMEModule * Module, Int_t & Delay, Int_t ChanNo) {
 
 	if (Delay < 0 || Delay > 0x3F) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong internal trigger delay - "
-						<< Delay << " (should be in [0," << 0x3F << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTriggerInternalDelay");
+		cerr << setred << this->ClassName() << "::WriteTriggerInternalDelay(): [" << Module->GetName() << "]: Wrong internal trigger delay - "
+						<< Delay << " (should be in [0," << 0x3F << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2710,9 +2652,8 @@ Bool_t SrvSis3302::GetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimatio
 Bool_t SrvSis3302::SetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo) {
 
 	if (Decimation < 0 || Decimation > 3) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong trigger decimation - " << Decimation
-						<< " (should be in [0,3]" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetTriggerDecimation");
+		cerr << setred << this->ClassName() << "::SetTriggerDecimation(): [" << Module->GetName() << "]: Wrong trigger decimation - " << Decimation
+						<< " (should be in [0,3]" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2746,9 +2687,8 @@ Bool_t SrvSis3302::SetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimatio
 Bool_t SrvSis3302::ReadTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadTriggerThreshReg");
+		cerr << setred << this->ClassName() << "::ReadTriggerThreshReg(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2784,9 +2724,8 @@ Bool_t SrvSis3302::ReadTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int
 Bool_t SrvSis3302::WriteTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTriggerThreshReg");
+		cerr << setred << this->ClassName() << "::WriteTriggerThreshReg(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2850,9 +2789,8 @@ Bool_t SrvSis3302::ReadTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, I
 Bool_t SrvSis3302::WriteTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo) {
 
 	if (Thresh < 0 || Thresh > 0xFFFF) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong trigger threshold - "
-						<< Thresh << " (should be in [0," << 0xFFFF << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTriggerThreshold");
+		cerr << setred << this->ClassName() << "::WriteTriggerThreshold(): [" << Module->GetName() << "]: Wrong trigger threshold - "
+						<< Thresh << " (should be in [0," << 0xFFFF << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -2980,9 +2918,8 @@ Bool_t SrvSis3302::SetTriggerOut(SrvVMEModule * Module, Bool_t & Flag, Int_t Cha
 Bool_t SrvSis3302::ReadEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadEnergySetup");
+		cerr << setred << this->ClassName() << "::ReadEnergySetup(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3018,9 +2955,8 @@ Bool_t SrvSis3302::ReadEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t Ch
 Bool_t SrvSis3302::WriteEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEnergySetup");
+		cerr << setred << this->ClassName() << "::WriteEnergySetup(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3081,21 +3017,18 @@ Bool_t SrvSis3302::ReadEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int
 Bool_t SrvSis3302::WriteEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t ChanNo) {
 
 	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't set energy peak or gap - trace collection in progress ..." << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEnergyPeakAndGap");
+		cerr << setred << this->ClassName() << "::WriteEnergyPeakAndGap(): [" << Module->GetName() << "]: Can't set energy peak or gap - trace collection in progress ..." << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (Peak < kSis3302EnergyPeakMin || Peak > kSis3302EnergyPeakMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Energy peak time mismatch - "
-						<< Peak << " (should be in [0," << kSis3302EnergyPeakMax << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEnergyPeakAndGap");
+		cerr << setred << this->ClassName() << "::WriteEnergyPeakAndGap(): [" << Module->GetName() << "]: Energy peak time mismatch - "
+						<< Peak << " (should be in [0," << kSis3302EnergyPeakMax << "])" << setblack << endl;
 		return(kFALSE);
 	}
 	if (Gap < kSis3302EnergyGapMin || Gap > kSis3302EnergyGapMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Energy gap time mismatch - "
-						<< Gap << " (should be in [0," << kSis3302EnergyGapMax << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEnergyPeakAndGap");
+		cerr << setred << this->ClassName() << "::WriteEnergyPeakAndGap(): [" << Module->GetName() << "]: Energy gap time mismatch - "
+						<< Gap << " (should be in [0," << kSis3302EnergyGapMax << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3150,9 +3083,8 @@ Bool_t SrvSis3302::GetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation
 Bool_t SrvSis3302::SetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo) {
 
 	if (Decimation < 0 || Decimation > 3) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong energy decimation - " << Decimation
-						<< " (should be in [0,3]" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetEnergyDecimation");
+		cerr << setred << this->ClassName() << "::SetEnergyDecimation(): [" << Module->GetName() << "]: Wrong energy decimation - " << Decimation
+						<< " (should be in [0,3]" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3186,9 +3118,8 @@ Bool_t SrvSis3302::SetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation
 Bool_t SrvSis3302::ReadEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadEnergyGateReg");
+		cerr << setred << this->ClassName() << "::ReadEnergyGateReg(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3224,9 +3155,8 @@ Bool_t SrvSis3302::ReadEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t 
 Bool_t SrvSis3302::WriteEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEnergyGateReg");
+		cerr << setred << this->ClassName() << "::WriteEnergyGateReg(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3282,9 +3212,8 @@ Bool_t SrvSis3302::ReadEnergyGateLength(SrvVMEModule * Module, Int_t & GateLengt
 Bool_t SrvSis3302::WriteEnergyGateLength(SrvVMEModule * Module, Int_t & GateLength, Int_t ChanNo) {
 
 	if (GateLength < 0 || GateLength > 0x1FFFF) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong energy gate length - " << GateLength
-						<< " (should be in [0," << 0x1FFFF << "]" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEnergyGateLength");
+		cerr << setred << this->ClassName() << "::WriteEnergyGateLength(): [" << Module->GetName() << "]: Wrong energy gate length - " << GateLength
+						<< " (should be in [0," << 0x1FFFF << "]" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3335,9 +3264,8 @@ Bool_t SrvSis3302::GetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo
 Bool_t SrvSis3302::SetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < 0 || Bits > 0x3) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong test bits - " << Bits
-						<< " (should be in [0," << 0x3 << "]" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetTestBits");
+		cerr << setred << this->ClassName() << "::SetTestBits(): [" << Module->GetName() << "]: Wrong test bits - " << Bits
+						<< " (should be in [0," << 0x3 << "]" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3371,9 +3299,8 @@ Bool_t SrvSis3302::SetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo
 Bool_t SrvSis3302::ReadEnergySampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadEnergySampleLength");
+		cerr << setred << this->ClassName() << "::ReadEnergySampleLength(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3409,15 +3336,13 @@ Bool_t SrvSis3302::ReadEnergySampleLength(SrvVMEModule * Module, Int_t & SampleL
 Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t ChanNo) {
 
 	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't write energy sample length - trace collection in progress ..." << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEnergySampleLength");
+		cerr << setred << this->ClassName() << "::WriteEnergySampleLength(): [" << Module->GetName() << "]: Can't write energy sample length - trace collection in progress ..." << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteEnergySampleLength");
+		cerr << setred << this->ClassName() << "::WriteEnergySampleLength(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3455,9 +3380,8 @@ Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & Sample
 Bool_t SrvSis3302::ReadTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadTauFactor");
+		cerr << setred << this->ClassName() << "::ReadTauFactor(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3493,16 +3417,14 @@ Bool_t SrvSis3302::ReadTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t ChanN
 Bool_t SrvSis3302::WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTauFactor");
+		cerr << setred << this->ClassName() << "::WriteTauFactor(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (Tau < kSis3302EnergyTauMin || Tau > kSis3302EnergyTauMax) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong tau factor - " << Tau
-						<< " (should be in [0," << kSis3302EnergyTauMax << "]" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTauFactor");
+		cerr << setred << this->ClassName() << "::WriteTauFactor(): [" << Module->GetName() << "]: Wrong tau factor - " << Tau
+						<< " (should be in [0," << kSis3302EnergyTauMax << "]" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3550,9 +3472,8 @@ Bool_t SrvSis3302::WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t Chan
 Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int_t Index, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadStartIndex");
+		cerr << setred << this->ClassName() << "::ReadStartIndex(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3602,9 +3523,8 @@ Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int
 			break;
 		default:
 			{
-				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Start index out of range - "
-								<< Index << " (should be in [0,2])" << endl;
-				gMrbLog->Flush(this->ClassName(), "ReadStartIndex");
+				cerr << setred << this->ClassName() << "::ReadStartIndex(): [" << Module->GetName() << "]: Start index out of range - "
+							<< Index << " (should be in [0,2])" << setblack << endl;
 				return(kFALSE);
 			}
 	}
@@ -3630,23 +3550,20 @@ Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int
 Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int_t Index, Int_t ChanNo) {
 
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteStartIndex");
+		cerr << setred << this->ClassName() << "::WriteStartIndex(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (IndexValue < 0 || IndexValue > 0x7FF) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong sample index value - " << IndexValue
-						<< " (should be in [0," << 0x7FF << "]" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteStartIndex");
+		cerr << setred << this->ClassName() << "::WriteStartIndex(): [" << Module->GetName() << "]: Wrong sample index value - " << IndexValue
+						<< " (should be in [0," << 0x7FF << "]" << setblack << endl;
 		return(kFALSE);
 	}
 
 	if (Index < 0 || Index > 2) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Start index out of range - "
-						<< Index << " (should be in [0,2])" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadStartIndex");
+		cerr << setred << this->ClassName() << "::ReadStartIndex(): [" << Module->GetName() << "]: Start index out of range - "
+						<< Index << " (should be in [0,2])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -3784,9 +3701,8 @@ Bool_t SrvSis3302::GetClockSource(SrvVMEModule * Module, Int_t & ClockSource) {
 
 Bool_t SrvSis3302::SetClockSource(SrvVMEModule * Module, Int_t & ClockSource) {
 	if (ClockSource < 0 || ClockSource > 7) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Clock source out of range - "
-						<< ClockSource << " (should be in [0,7])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetClockSource");
+		cerr << setred << this->ClassName() << "::SetClockSource(): [" << Module->GetName() << "]: Clock source out of range - "
+						<< ClockSource << " (should be in [0,7])" << setblack << endl;
 		return(kFALSE);
 	}
 	Int_t data = (0x7 << 28);			// clear all bits
@@ -3820,9 +3736,8 @@ Bool_t SrvSis3302::GetLemoInMode(SrvVMEModule * Module, Int_t & Bits) {
 
 Bool_t SrvSis3302::SetLemoInMode(SrvVMEModule * Module, Int_t & Bits) {
 	if (Bits < 0 || Bits > 7) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: LEMO IN mode out of range - "
-						<< Bits << " (should be in [0,7])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetLemoInMode");
+		cerr << setred << this->ClassName() << "::SetLemoInMode(): [" << Module->GetName() << "]: LEMO IN mode out of range - "
+						<< Bits << " (should be in [0,7])" << setblack << endl;
 		return(kFALSE);
 	}
 	Int_t data = (0x7 << 16);			// clear all bits
@@ -3856,9 +3771,8 @@ Bool_t SrvSis3302::GetLemoOutMode(SrvVMEModule * Module, Int_t & Bits) {
 
 Bool_t SrvSis3302::SetLemoOutMode(SrvVMEModule * Module, Int_t & Bits) {
 	if (Bits < 0 || Bits > 3) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: LEMO OUT mode out of range - "
-						<< Bits << " (should be in [0,3])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetLemoOutMode");
+		cerr << setred << this->ClassName() << "::SetLemoOutMode(): [" << Module->GetName() << "]: LEMO OUT mode out of range - "
+						<< Bits << " (should be in [0,3])" << setblack << endl;
 		return(kFALSE);
 	}
 	Int_t data = (0x3 << 20);			// clear all bits
@@ -3892,9 +3806,8 @@ Bool_t SrvSis3302::GetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits) {
 
 Bool_t SrvSis3302::SetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits) {
 	if (Bits < 0 || Bits > 7) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: LEMO IN enable mask out of range - "
-						<< Bits << " (should be in [0,7])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetLemoInEnableMask");
+		cerr << setred << this->ClassName() << "::SetLemoInEnableMask(): [" << Module->GetName() << "]: LEMO IN enable mask out of range - "
+						<< Bits << " (should be in [0,7])" << setblack << endl;
 		return(kFALSE);
 	}
 	Int_t data = (0x7 << 24);			// clear all bits
@@ -3940,11 +3853,10 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 		wordsPerEvent[chan] += rdl/2;	// raw data are 32bit on output!
 
 		if (nofWords > (kSis3302MaxBufSize / sizeof(Int_t))) {
-			gMrbLog->Wrn()	<< "[" << Module->GetName() << "]: Too many events - "
+			cout << setmagenta << this->ClassName()	<< "StartTraceCollection(): [" << Module->GetName() << "]: Too many events - "
 							<< NofEvents << " (event length is " << wordsPerEvent[chan] << "|0x"
 							<< setbase(16) <<  wordsPerEvent[chan] << " words, buffer size is 0x" << kSis3302MaxBufSize
-							<< setbase(10) << " bytes)" << endl;
-			gMrbLog->Flush(this->ClassName(), "StartTraceCollection");
+							<< setbase(10) << " bytes)" << setblack << endl;
 			nofWords = this->CA(SIS3302_NEXT_ADC_OFFSET) - 16;
 		}
 
@@ -3953,8 +3865,7 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 	}
 
 	if (!foundchan) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: At least 1 channel required" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartTraceCollection");
+		cerr << setred << this->ClassName() << "::StartTraceCollection(): [" << Module->GetName() << "]: At least 1 channel required" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -4069,8 +3980,8 @@ Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t C
 				}
 			} while (++tryIt < kMaxTry);
 			if (!bankOk) {
-				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Bank switching failed for chn" << chan << " - bank bit is 0x" << setbase(16) << bankFlag << " but should be 0x" << bankShouldBe << endl;
-				gMrbLog->Flush(this->ClassName(), "GetTraceLength");
+				cerr << setred << this->ClassName() << "::GetTraceLength(): [" << Module->GetName() << "]: Bank switching failed for chn"
+						<< chan << " - bank bit is 0x" << setbase(16) << bankFlag << " but should be 0x" << bankShouldBe << setblack << endl;
 				n = 0;
 			}
 		}
@@ -4096,9 +4007,8 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 	if (this->IsStatus(kSis3302StatusDebugMode)) cout << "<Debug> GetTraceData nevts=" << EventNo << endl;
 	
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetTraceData");
+		cerr << setred << this->ClassName() << "::GetTraceData(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -4185,13 +4095,11 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 				getcwd(path, 100);
 				dump.open(traceFile.Data(), ios::out);
 				if (!dump.good()) {
-					gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't open file " << traceFile.Data() << " - dump cancelled" << endl;
-					gMrbLog->Flush(this->ClassName(), "GetTraceData");
+					cerr << setred << this->ClassName() << "::GetTraceData(): [" << Module->GetName() << "]: Can't open file " << traceFile.Data() << " - dump cancelled" << setblack << endl;
 					fDumpTrace = kFALSE;
 				} else {
 					fDumpTrace = kTRUE;
-					gMrbLog->Out()	<< "[" << Module->GetName() << "]: Dumping trace data to file " << path << "/" << traceFile.Data() << endl;
-					gMrbLog->Flush(this->ClassName(), "GetTraceData");
+					cout << this->ClassName() << "::GetTraceData(): [" << Module->GetName() << "]: Dumping trace data to file " << path << "/" << traceFile.Data() << endl;
 
 					dump << "----------------------------------------------------[start of trace data]" << endl;
 					dump << "Raw data length   : " << rdl << endl;
@@ -4240,9 +4148,8 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 			}
 
 			if (trailer != 0xdeadbeef) {
-				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Out of phase - trailer="
-								<< setbase(16) << trailer << " (should be 0xdeadbeef)" << endl;
-				gMrbLog->Flush(this->ClassName(), "GetTraceData");
+				cerr << setred << this->ClassName() << "::GetTraceData(): [" << Module->GetName() << "]: Out of phase - trailer="
+								<< setbase(16) << trailer << " (should be 0xdeadbeef)" << setblack << endl;
 				trailer = 0xdeadbeef;
 			}
 		}
@@ -4318,9 +4225,8 @@ Bool_t SrvSis3302::SetPageRegister(SrvVMEModule * Module, Int_t PageNumber) {
 Bool_t SrvSis3302::RampDac(SrvVMEModule * Module, TArrayI & Data, Int_t ChanNo) {
 
 	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
-						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "RampDac");
+		cerr << setred << this->ClassName() << "::RampDac(): [" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -4402,9 +4308,8 @@ Bool_t SrvSis3302::WriteIRWConfiguration(SrvVMEModule * Module, Int_t Vector, In
 Bool_t SrvSis3302::EnableIRQSource(SrvVMEModule * Module, UInt_t IrqSource) {
 
 	if (IrqSource < 0 || IrqSource > 7) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong IRQ source - "
-						<< IrqSource << " (should be in [0,7])" << endl;
-		gMrbLog->Flush(this->ClassName(), "EnableIRQSource");
+		cerr << setred << this->ClassName() << "::EnableIRQSource(): [" << Module->GetName() << "]: Wrong IRQ source - "
+						<< IrqSource << " (should be in [0,7])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -4446,9 +4351,8 @@ Bool_t SrvSis3302::EnableIRQ(SrvVMEModule * Module) {
 Bool_t SrvSis3302::DisableIRQSource(SrvVMEModule * Module, UInt_t IrqSource) {
 
 	if (IrqSource < 0 || IrqSource > 7) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong IRQ source - "
-						<< IrqSource << " (should be in [0,7])" << endl;
-		gMrbLog->Flush(this->ClassName(), "DisableIRQSource");
+		cerr << setred << this->ClassName() << "::DisableIRQSource(): [" << Module->GetName() << "]: Wrong IRQ source - "
+						<< IrqSource << " (should be in [0,7])" << setblack << endl;
 		return(kFALSE);
 	}
 
@@ -4533,15 +4437,12 @@ Bool_t SrvSis3302::DumpRegisters(SrvVMEModule * Module, Char_t * File)
 		fileName = File;
 	}
 
-	gMrbLog->Out() << "[" << Module->GetName() << "] Dumping registers to file " << fileName.Data() << " ..." << endl;
-	gMrbLog->Flush(this->ClassName(), "DumpRegisters");
+	cout << this->ClassName() << "::DumpRegisters(): [" << Module->GetName() << "] Dumping registers to file " << fileName.Data() << " ..." << endl;
 
 	ofstream dmp;
 	dmp.open(fileName.Data(), ios::out);
 	if (!dmp.good()) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't open file - "
-				<< File << endl;
-		gMrbLog->Flush(this->ClassName(), "DumpRegisters");
+		cerr << setred << this->ClassName() << "::DumpRegisters(): [" << Module->GetName() << "]: Can't open file - " << File << setblack << endl;
 		return(kFALSE);
 	}
 

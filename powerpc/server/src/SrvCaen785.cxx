@@ -10,20 +10,18 @@
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 
 #include "SrvCaen785.h"
 #include "SrvCaen785_Layout.h"
 #include "SrvUtils.h"
-#include "LwrLogger.h"
 #include "SetColor.h"
 
 extern TMrbLofNamedX * gLofVMEProtos;		// list of prototypes
 extern TMrbLofNamedX * gLofVMEModules;		// list of actual modules
 
 extern Bool_t gSignalTrap;
-extern TMrbLogger * gMrbLog;				// message logger
 
 SrvCaen785::SrvCaen785() : SrvVMEModule(	"Caen785",						// prototype
 											"ADC 32ch 12bit",				// description
@@ -40,7 +38,6 @@ SrvCaen785::SrvCaen785() : SrvVMEModule(	"Caen785",						// prototype
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("", "c2lynx.log");
 	this->SetID(SrvVMEModule::kModuleCaen785);
 }
 
@@ -58,9 +55,8 @@ Bool_t SrvCaen785::TryAccess(SrvVMEModule * Module) {
 	Int_t boardId, serial, revision;
 	if (!this->GetModuleInfo(Module, boardId, serial, revision, kTRUE)) return(kFALSE);
 	if (boardId != 785) {
-		gMrbLog->Err()	<< "[" << Module->GetName()
-						<< "]: Wrong module type - not a " << this->GetName() << endl;
-		gMrbLog->Flush(this->ClassName(), "TryAccess");
+		cerr << setred << this->ClassName() << "::TryAccess(): [" << Module->GetName()
+						<< "]: Wrong module type - not a " << this->GetName() << setblack << endl;
 		return(kFALSE);
 	}
 	return(kTRUE);
@@ -94,9 +90,8 @@ M2L_MsgHdr * SrvCaen785::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 				return((M2L_MsgHdr *) m);
 			}
 	}
-	gMrbLog->Err()	<< "[" << Module->GetName() << "]: Function not implemented - "
-					<< Function->GetName() << " (" << setbase(16) << Function->GetIndex() << ")" << endl;
-	gMrbLog->Flush(this->ClassName(), "Dispatch");
+	cerr << setred << this->ClassName() << "::TryAccess(): [" << Module->GetName() << "]: Function not implemented - "
+					<< Function->GetName() << " (" << setbase(16) << Function->GetIndex() << ")" << setblack << endl;
 	return(NULL);
 }
 
@@ -128,7 +123,7 @@ Bool_t SrvCaen785::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 	UShort_t serialMSB = *(firmWare + 0xF02 / sizeof(UShort_t)) & 0xFF;
 	Serial = (Int_t) (serialMSB << 8) + (Int_t) serialLSB;
 	if (PrintFlag) {
-		gMrbLog->Out()	<< setbase(16)
+		cout << this->ClassName() << "::GetModuleInfo(): " << setbase(16)
 						<< "CAEN module info: addr (phys) " << Module->GetPhysAddr()
 						<< " addr (log) " << Module->GetBaseAddr()
 						<< " mod " << Module->GetAddrModifier()
@@ -136,7 +131,6 @@ Bool_t SrvCaen785::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 						<< " type " << BoardId
 						<< " serial " << Serial
 						<< " revision " << Revision << endl;
-		gMrbLog->Flush(this->ClassName(), "GetModuleInfo");
 	}
 	return(kTRUE);
 }

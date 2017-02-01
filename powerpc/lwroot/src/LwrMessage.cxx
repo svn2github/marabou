@@ -15,8 +15,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include "iostream.h"
-#include "iomanip.h"
+#include <iostream>
+#include <iomanip>
 
 #include "LwrTypes.h"
 #include "LwrMessage.h"

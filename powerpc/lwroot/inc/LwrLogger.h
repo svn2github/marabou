@@ -109,12 +109,14 @@ class TMrbLogger: public TNamed {
 		enum EMrbMsgFileMode	{	kMrbMsgFileNew,
 									kMrbMsgFileAppend
 								};
+								
+		enum					{	kMrbMsgSizeofBuffer = 50	};
 
 	public:
 		//! Constructor
 		//! \param[in]	ProgName		-- name of calling program
 		//! \param[in]	LogFile 		-- name of log file
-		TMrbLogger(const Char_t * ProgName = "", const Char_t * LogFile = "c2lynx.log"); 	// ctor
+		TMrbLogger(const Char_t * ProgName = "", const Char_t * LogFile = "c2lynx.log", Int_t SizeOfMsgBuffer = kMrbMsgSizeofBuffer); 	// ctor
 
 		//! Destructor
 		~TMrbLogger() { Reset(); };						// dtor
@@ -149,23 +151,7 @@ class TMrbLogger: public TNamed {
 		//! \param[out] MsgArr	-- where to store messages
 		//! \param[in]	Start	-- message number to start with
 		inline Int_t GetWarnings(TList & MsgArr, Int_t Start = 0) const { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgWarning)); };
-		
-		//! Get list of messages (of any type) since last call
-		//! \param[out] MsgArr	-- where to store messages
-		inline Int_t GetEntriesSinceLastCall(TList & MsgArr) const { return(GetEntries(MsgArr, fIndexOfLastPrinted)); };
-
-		//! Get list of (normal) messages since last call
-		//! \param[out] MsgArr	-- where to store messages
-		inline Int_t GetMessagesSinceLastCall(TList & MsgArr) const { return(GetMessages(MsgArr, fIndexOfLastPrinted)); };
-
-		//! Get list of error messages since last call
-		//! \param[out] MsgArr	-- where to store messages
-		inline Int_t GetErrorsSinceLastCall(TList & MsgArr) const { return(GetErrors(MsgArr, fIndexOfLastPrinted)); };
-
-		//! Get list of warning messages since last call
-		//! \param[out] MsgArr	-- where to store messages
-		inline Int_t GetWarningsSinceLastCall(TList & MsgArr) const { return(GetWarnings(MsgArr, fIndexOfLastPrinted)); };
-		
+				
 		Int_t GetEntriesByType(TList & MsgArr, Int_t Start = 0, UInt_t Type = TMrbLogMessage::kMrbMsgAny) const;
 	
 		TMrbLogMessage * GetLast(const Char_t * Type = "*") const;
@@ -182,18 +168,13 @@ class TMrbLogger: public TNamed {
 		void Print(Int_t Tail = 0, const Char_t * Type = "*") const;
 		void Print(Int_t Tail, UInt_t Type) const;
 		
-		void PrintSinceLastCall(const Char_t * Type = "Error");
-		void PrintSinceLastCall(UInt_t Type);
+		void AddToMsgBuffer(TMrbLogMessage * Message);
 				
 		//! Reset message lists
 		inline void Reset() {
 			fLofMessages.Delete();
-			fIndexOfLastPrinted = 0;
 		};
 		
-		//! Return index of last message printed
-		inline Int_t GetIndexOfLastPrinted() const { return(fIndexOfLastPrinted); };
-				
 		const Char_t * Prefix(const Char_t * Identifier = "*", const Char_t * ProgName = NULL); 	// line prefix
 		
 		//! Output a (normal) message
@@ -246,7 +227,6 @@ class TMrbLogger: public TNamed {
 		ostrstream * fErr;
 		ostrstream * fWrn;
 
-		Int_t fIndexOfLastPrinted;	//!< index at last printout
 		TList fLofMessages; 		//!< list of messages
 };
 

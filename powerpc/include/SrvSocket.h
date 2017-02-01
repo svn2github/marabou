@@ -68,35 +68,17 @@ class SrvSocket : public TNamed {
 		//! Send acknowledge message: normal message
 		//! \param[in]		Sock		-- socket
 		//! \param[in]		Text		-- error text
-		inline void Message(TSocket * Sock, const Char_t * Text) { this->Acknowledge(Sock, kM2L_MESS_ACK_MESSAGE, Text); };
+		inline void Message(TSocket * Sock, const Char_t * Text = NULL) { this->Acknowledge(Sock, kM2L_MESS_ACK_MESSAGE, Text); };
 
 		//! Send acknowledge message: error
 		//! \param[in]		Sock		-- socket
 		//! \param[in]		Text		-- error text
-		inline void Error(TSocket * Sock, const Char_t * Text) { this->Acknowledge(Sock, kM2L_MESS_ACK_ERROR, Text); };
+		inline void Error(TSocket * Sock, const Char_t * Text = NULL) { this->Acknowledge(Sock, kM2L_MESS_ACK_ERROR, Text); };
 
 		//! Send acknowledge message: warning
 		//! \param[in]		Sock		-- socket
 		//! \param[in]		Text		-- warning text
-		inline void Warning(TSocket * Sock, const Char_t * Text) { this->Acknowledge(Sock, kM2L_MESS_ACK_WARNING, Text); };
-
-		//! Send acknowledge message
-		void Acknowledge(TSocket * Sock, EM2L_MessageType Type, TMrbLogger * Log);
-
-		//! Send acknowledge message: normal message
-		//! \param[in]		Sock		-- socket
-		//! \param[in]		Log 		-- message logger
-		inline void Message(TSocket * Sock, TMrbLogger * Log) { this->Acknowledge(Sock, kM2L_MESS_ACK_MESSAGE, Log); };
-
-		//! Send acknowledge message: error
-		//! \param[in]		Sock		-- socket
-		//! \param[in]		Log 		-- message logger
-		inline void Error(TSocket * Sock, TMrbLogger * Log) { this->Acknowledge(Sock, kM2L_MESS_ACK_ERROR, Log); };
-
-		//! Send acknowledge message: warning
-		//! \param[in]		Sock		-- socket
-		//! \param[in]		Log 		-- message logger
-		inline void Warning(TSocket * Sock, TMrbLogger * Log) { this->Acknowledge(Sock, kM2L_MESS_ACK_WARNING, Log); };
+		inline void Warning(TSocket * Sock, const Char_t * Text = NULL) { this->Acknowledge(Sock, kM2L_MESS_ACK_WARNING, Text); };
 
 		inline const Char_t * ClassName() const { return "SrvSocket"; };
 
