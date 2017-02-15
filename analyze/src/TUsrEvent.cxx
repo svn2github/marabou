@@ -205,6 +205,7 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int
 // Results:        Int_t NextIndex   -- index to be used in next call, -1 at end
 // Exceptions:
 // Description:    Writes hit data to subevent storage. Stops at end of an event.
+//                 Stops as soon as event number has changed
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -239,7 +240,7 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Int_t DeltaTS, Bool_t
 // Results:        Int_t NextIndex   -- index to be used in next call, -1 at end
 // Exceptions:
 // Description:    Writes hit data to subevent storage.
-//                 Stops if delta(timestamp) exceeds given value.
+//                 Stops as soon as delta(timestamp) exceeds given value.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -274,6 +275,7 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t 
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Loops thru hitbuffers and fills subvent storage event by event.
+//                 Stops as soon as event number has changed
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -297,6 +299,64 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t 
 	return(foundHbx);
 }
 
+Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Int_t DeltaTS, Bool_t FillHisto, Int_t Didx, Int_t InitValue) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent::FillEventFromHB
+// Purpose:        Fill event from hitbuffer
+// Arguments:      TArrayI & LofIndices   -- array of hitbuffer indices,
+//                                           has to have size=0 on start
+//                 Int_t DeltaTS          -- timestamp window
+//                 Bool_t FillHisto       -- kTRUE -> write hit data to histogram
+//                 Int_t Didx             -- data index within hit
+//                 Int_t InitValue        -- init value to reset event vector
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Loops thru hitbuffers and fills subvent storage event by event.
+//                 Stops as soon as delta(timestamp) exceeds given value.
+//
+//                 WARNING!
+//                 All modules involved have to have timestamps running synchronously
+//                 (a chain of Mesytec modules for example)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofHbx = fLofHBXs.GetEntriesFast();
+
+	if (LofIndices.GetSize() == 0) {	// reset indices
+		LofIndices.Set(nofHbx);
+		LofIndices.Reset(0);
+	}
+	Long64_t tsmin = 0;					// find minimum ts thru all hitbuffers
+	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
+		TUsrHBX * hb = this->GetHBX(hbx);
+		TUsrHit * h = hb->At(LofIndices[hbx]);
+		Long64_t ts = h->GetChannelTime();
+		tsmin = (ts < tsmin) ? ts : tsmin;
+	}
+	Bool_t foundHbx = kFALSE;
+	this->Reset(InitValue, kTRUE);		// reset data vector
+	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
+		TUsrHBX * hb = this->GetHBX(hbx);
+		Int_t hidx = LofIndices[hbx];
+		if (hb && hidx != -1) {
+			Int_t nofHits = hb->GetNofHits();
+			for (Int_t idx = hidx; idx < nofHits; idx++) {	// inspect hit by hit
+				TUsrHit * h = hb->At(idx);
+				if ((h->GetChannelTime() - tsmin) <= DeltaTS) {	// belongs to event as long as within deltaTS
+					h->WriteToSevtData(Didx);
+					if (FillHisto) h->FillHistogram(Didx);
+					LofIndices[hbx] = idx;
+					foundHbx = kTRUE;
+				} else {
+					LofIndices[hbx] = -1;	// end of hitbuffer reached
+				}
+			}
+		}
+	}
+	return(foundHbx);
+}
+	
 Int_t TUsrEvent::FillArrayFromHB(TUsrHBX * HBX, ULong64_t & TimeStamp, TArrayI & Data, Int_t Hidx, Int_t Didx, Int_t InitValue) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
