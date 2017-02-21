@@ -67,7 +67,7 @@ class TMrbLofNamedX: public TObjArray {
 
 		void AddNamedX(const SMrbNamedX * NamedX);							// add one or more indices
 		void AddNamedX(const SMrbNamedXShort * NamedX);					 	// ... (short names only)
-		void AddNamedX(TMrbNamedX * NamedX); 								// add a single index to list (clone it)
+		TMrbNamedX * AddNamedX(TMrbNamedX * NamedX); 						// add a single index to list (clone it)
 		void AddNamedX(TMrbLofNamedX * LofNamedX); 	 						// append a list of indices
 		TMrbNamedX * AddNamedX(Int_t Index, const Char_t * Name, const Char_t * Title = "", TObject * Object = NULL);
 		void AddNamedX(const Char_t * NameString, const Char_t * Delim = ":", Bool_t PatternMode = kFALSE);

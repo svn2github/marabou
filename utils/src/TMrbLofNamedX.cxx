@@ -128,13 +128,13 @@ void TMrbLofNamedX::AddNamedX(const SMrbNamedXShort * NamedX) {
 	}
 }
 
-void TMrbLofNamedX::AddNamedX(TMrbNamedX * NamedX) {
+TMrbNamedX * TMrbLofNamedX::AddNamedX(TMrbNamedX * NamedX) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::AddNamedX
 // Purpose:        Add a single index
 // Arguments:      TMrbNamedX * NamedX       -- pointer to named index
-// Results:        --
+// Results:        TMrbNamedX * NamedX       -- address of new list entry
 // Exceptions:
 // Description:    Adds a single index.
 // Keywords:
@@ -147,6 +147,7 @@ void TMrbLofNamedX::AddNamedX(TMrbNamedX * NamedX) {
 								NamedX->HasTitle() ? NamedX->GetTitle() : NULL,
 								NamedX->GetAssignedObject());
 	this->Add(namedX);
+	return namedX;
 }
 
 TMrbNamedX * TMrbLofNamedX::AddNamedX(Int_t Index, const Char_t * Name, const Char_t * Title, TObject * Object) {

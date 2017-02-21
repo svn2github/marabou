@@ -26,6 +26,7 @@
     gSystem.Load("libTSnkDDA0816.so");
     gSystem.Load("libTPolControl.so");
     THtml html;
+    html.SetInputDir("include");
     html.CreateAuxiliaryFiles();
 	html.MakeAll(kTRUE);
     TEnv env(".rootrc");
