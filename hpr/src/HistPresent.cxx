@@ -2948,12 +2948,12 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
 	TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
 	TH1* hist=0;
 	TString shname = hname;
-	if (shname.Index(";") > 0) {
-		TString sind = shname(shname.Index(";")+1, 10);
-		if (sind.IsDigit() && sind.Atoi() == 1) {
-			shname.Resize(shname.Index(";"));
-		}
-	}
+//	if (shname.Index(";") > 0) {
+//		TString sind = shname(shname.Index(";")+1, 10);
+//		if (sind.IsDigit() && sind.Atoi() == 1) {
+//			shname.Resize(shname.Index(";"));
+//		}
+//	}
 //    shname = shname.Strip(TString::kBoth);
 	if (strstr(fname,".root")) {
 		TString newhname;
@@ -3924,17 +3924,18 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 			nname += "_rdm";
 			grnew->SetName(nname);
 			grnew->SetTitle(graph2d->GetTitle());
-//			Double_t *xx = grnew->GetX();
-//			Double_t *yy = grnew->GetY();
-//			Double_t *zz = grnew->GetZ();
-//			for (Int_t i=0; i < np; i++) {
-//				if (TMath::Abs(zz[i]) < 0.00001)
-//					cout <<">>> "<< i <<" "<<xx[i]<<" "<<yy[i]<<" " << zz[i]<< endl;
-//			}
-//			TFile * ft = new TFile("temp.root", "RECREATE");
-//			grnew->Write();
-//			ft->Close();
-			
+			if (gHprDebug > 2) {
+				Double_t *xx = grnew->GetX();
+				Double_t *yy = grnew->GetY();
+				Double_t *zz = grnew->GetZ();
+				for (Int_t i=0; i < np; i++) {
+//					if (TMath::Abs(zz[i]) < 0.00001)
+					cout <<">>> "<< i <<" "<<xx[i]<<" "<<yy[i]<<" " << zz[i]<< endl;
+				}
+				TFile * ft = new TFile("temp.root", "RECREATE");
+				grnew->Write();
+				ft->Close();
+			}
 			if (np < nuse) {
 				cout << setred << "Something wrong nuse: " << nuse
 						<< " np " << endl;

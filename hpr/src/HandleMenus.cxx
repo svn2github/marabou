@@ -224,6 +224,7 @@ enum ERootCanvasCommands {
 	kFHFit2DimGaus4,
 	kFHFit2DimGaus5,
 	kFHFitExp,
+	kFHFitLandau,
 	kFHFitPol,
 	kFHFitForm,
 	kFHFillRandom,
@@ -1174,6 +1175,10 @@ again:
 							 new FitOneDimDialog(fSelHist, 2);
 //							 fFitHist->Fit1DimDialog(2);
 							break;
+						 case kFHFitLandau:
+							 new FitOneDimDialog(fSelHist, 5);
+//							 fFitHist->Fit1DimDialog(2);
+							break;
 						 case kFHFitPol:
 							 new FitOneDimDialog(fSelHist, 3);
 //							 fFitHist->Fit1DimDialog(3);
@@ -1873,6 +1878,7 @@ void HandleMenus::BuildMenus()
 //  also in case of EmptyHistogram
 					fFitMenu->AddEntry("Gaussians (with tail)",   kFHFitGausLBg);
 				fFitMenu->AddEntry("Exponential",     kFHFitExp);
+				fFitMenu->AddEntry("Landau",     kFHFitLandau);
 				fFitMenu->AddEntry("Polynomial",      kFHFitPol);
 				fFitMenu->AddEntry("User formula",    kFHFitForm);
 				fFitMenu->AddEntry("Fill Random acc Function",    kFHFillRandom);

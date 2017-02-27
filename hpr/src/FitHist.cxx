@@ -867,9 +867,11 @@ void FitHist::handle_mouse()
 //      cout << "handle_mouse select " << select->ClassName() << endl;
 		if (select->InheritsFrom("TF1")) {
 			TF1 *f = (TF1*)select;
-			cout  << endl << "------  Function " << f->GetName() << " --------" << endl;
+			cout  << endl << "Function " << f->GetName() << ": " << f->GetTitle()<< endl;
+			cout << "Chi2 / NDF " << f->GetChisquare() << "/" << f->GetNDF() << endl;
 			for (Int_t i = 0; i < f->GetNpar(); i++) {
-				cout << f->GetParName(i) << "  " << f->GetParameter(i) << endl;
+				cout << f->GetParName(i) << "  " << f->GetParameter(i)
+				<< " +- " <<  f->GetParError(i)<< endl;
 			}
 			cout  << endl << "----------------------------" << endl;
 			TH1 * h = Hpr::FindHistOfTF1(gPad, f->GetName(), 1);
