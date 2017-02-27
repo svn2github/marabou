@@ -634,8 +634,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 //	fSelPad = NULL;
 	SetBit(kMustCleanup);
 	if ( fSelHist ) {
-		fFuncName = fSelHist->GetName();
-		fFuncName += "_";
+//		fFuncName = fSelHist->GetName();
+//		fFuncName += "_";
 		TAxis *xaxis = fSelHist->GetXaxis();
 		fFrom = xaxis->GetXmin();
 		fTo	= xaxis->GetXmax() ;
@@ -643,8 +643,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		fFrom = 0;
 		fTo	= 100;
 	}
-	fFuncName += fFuncNumber;
-	fFuncNumber++;
+//	fFuncName += fFuncNumber;
+//	fFuncNumber++;
 	fNpeaks = 1;
 	fNpeaksList = 0;
 	fUseoldpars = 0;
@@ -717,6 +717,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			itemwidth = 340;
 			helptext = helptext_gaus;
 			fFuncName = fGausFuncName;
+			fFuncType = "fGausFuncName";
 			fNmarks = GetMarkers();
 	//		row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
 	//		valp[ind++] = &fNpeaks;
@@ -748,7 +749,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		} else if (type == 2) {
 			title.Prepend("Exp: ");
 			helptext = helptext_exp;
-			fFuncName.Prepend(fExpFuncName);
+			fFuncName = fExpFuncName;
+			fFuncType = "fExpFuncName";
 			row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
 //			row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*x)"));
 			valp[ind++] = &dummy;
@@ -774,7 +776,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		} else if (type == 3) {
 			title.Prepend("Poly: ");
 			helptext = helptext_pol;
-			fFuncName.Prepend(fPolFuncName);
+			fFuncName = fPolFuncName;
+			fFuncType = "fPolFuncName";
 			row_lab->Add(new TObjString("CommentOnly_Pol: a0 + a1*x +.."));
 			valp[ind++] = &dummy;
 			row_lab->Add(new TObjString("PlainIntVal+Degree"));
@@ -795,7 +798,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		} else if (type == 4) {
 			title.Prepend("User def form: ");
 			helptext = helptext_form;
-			fFuncName.Prepend(fFormFuncName);
+			fFuncName = fFormFuncName;
+			fFuncType = "fFormFuncName";
 			row_lab->Add(new TObjString("CommentOnly_User defined formula"));
 			valp[ind++] = &dummy;
 			for ( Int_t i = 0; i < 6; i ++ ) {
@@ -1285,9 +1289,9 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			}
 		}
 	}
-	TEnv env(".hprrc");
-	env.SetValue("FitOneDimDialog.fGausFuncName", fFuncName);
-	env.SaveLevel(kEnvLocal);
+//	TEnv env(".hprrc");
+//	env.SetValue("FitOneDimDialog.fGausFuncName", fFuncName);
+//	env.SaveLevel(kEnvLocal);
 
 	fFitFunc->SetParameter(0, lBinW);
 	fFitFunc->SetParameter(1, fNpeaks);
@@ -2264,7 +2268,10 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
 		fExpC = fFitFunc->GetParameter(2);
 		fExpO = fFitFunc->GetParameter(3);
 		if (fAutoClearMarks) ClearMarkers();
-		IncrementIndex(&fFuncName);
+//		IncrementIndex(&fFuncName);
+//		TEnv env1(".hprrc");
+//		env1.SetValue("FitOneDimDialog.fExpFuncName", fFuncName);
+//		env1.SaveLevel(kEnvLocal);
 		PrintCorrelation();
 	}
 	gPad->Modified(kTRUE);
@@ -2418,7 +2425,10 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
 		for (Int_t i = 0; i <= fPolN; i++) {
 			fPolPar[i] = fFitFunc->GetParameter(i);
 		}
-		IncrementIndex(&fFuncName);
+//		IncrementIndex(&fFuncName);
+//		TEnv env1(".hprrc");
+//		env1.SetValue("FitOneDimDialog.fPolFuncName", fFuncName);
+//		env1.SaveLevel(kEnvLocal);
 		if (fAutoClearMarks) ClearMarkers();
 		PrintCorrelation();
 	}
@@ -2584,7 +2594,12 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
 			fFormPar[i] = fFitFunc->GetParameter(i);
 		}
 		fCalFunc = fFitFunc;
-		IncrementIndex(&fFuncName);
+		// get function serial namber
+//		TRegexp snr("[0-9]*$");
+//		IncrementIndex(&fFuncName);
+//		TEnv env1(".hprrc");
+//		env1.SetValue("FitOneDimDialog.fFormFuncName", fFuncName);
+//		env1.SaveLevel(kEnvLocal);
 		if (fAutoClearMarks) ClearMarkers();
 		PrintCorrelation();
 	}
@@ -2744,10 +2759,10 @@ void FitOneDimDialog::RestoreDefaults()
 		tagname += i;
 		fFormFixPar[i] = env.GetValue(tagname, 0);
 	}
-	fGausFuncName			= env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_func_");
-	fExpFuncName			= env.GetValue("FitOneDimDialog.fExpFuncName", "exp_func_");
-	fPolFuncName			= env.GetValue("FitOneDimDialog.fPolFuncName", "pol_func_");
-	fFormFuncName			= env.GetValue("FitOneDimDialog.fFormFuncName", "form_func_");
+	fGausFuncName			= env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_f_");
+	fExpFuncName			= env.GetValue("FitOneDimDialog.fExpFuncName", "exp_f_");
+	fPolFuncName			= env.GetValue("FitOneDimDialog.fPolFuncName", "pol_f_");
+	fFormFuncName			= env.GetValue("FitOneDimDialog.fFormFuncName", "user_f_");
 	fNevents					= env.GetValue("FitOneDimDialog.fNevents", 10000);
 	fPeakSep					= env.GetValue("FitOneDimDialog.fPeakSep", 3);
 	fFitWindow				= env.GetValue("FitOneDimDialog.fFitWindow", 3);
@@ -2813,9 +2828,9 @@ void FitOneDimDialog::SaveDefaults()
 		env.SetValue(tagname, fFormFixPar[i]);
 	}
 //  env.SetValue("FitOneDimDialog.fGausFuncName", fGausFuncName);
-	env.SetValue("FitOneDimDialog.fExpFuncName",  fExpFuncName );
-	env.SetValue("FitOneDimDialog.fPolFuncName",  fPolFuncName );
-	env.SetValue("FitOneDimDialog.fFormFuncName", fFormFuncName);
+//	env.SetValue("FitOneDimDialog.fExpFuncName",  fExpFuncName );
+//	env.SetValue("FitOneDimDialog.fPolFuncName",  fPolFuncName );
+//	env.SetValue("FitOneDimDialog.fFormFuncName", fFormFuncName);
 	env.SetValue("FitOneDimDialog.fNevents", fNevents);
 	env.SetValue("FitOneDimDialog.fPeakSep", fPeakSep);
 	env.SetValue("FitOneDimDialog.fFitWindow", fFitWindow);
@@ -3005,6 +3020,14 @@ void FitOneDimDialog::WriteoutFunction()
 		return;
 	}
 	Save2FileDialog sfd(fFitFunc, NULL, fParentWindow);
+	IncrementIndex(&fFuncName);
+	TEnv env1(".hprrc");
+	fFuncName = env1.GetValue("Save2FileDialog.fObjName", fFuncName.Data());
+	IncrementIndex(&fFuncName);
+	TString resname("FitOneDimDialog.");
+	resname += fFuncType;
+	env1.SetValue(resname, fFuncName);
+	env1.SaveLevel(kEnvLocal);
 }
 //____________________________________________________________________________________
 

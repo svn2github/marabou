@@ -17,6 +17,7 @@ private:
    TRootCanvas* fParentWindow;
    TGMrbValuesAndText *fDialog;
    TString fFuncName;
+   TString fFuncType;
    Int_t   fFuncNumber;
    TString fFuncFromFile;
    TCanvas *fSelPad;
