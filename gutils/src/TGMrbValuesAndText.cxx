@@ -947,6 +947,8 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 				hframe->AddFrame(hButtonFrame, locx);
 			} else if (l.BeginsWith("CommandButt")) {
 				TString *sr = (TString*)fValPointers[i];
+//				cout << "i, sr " << i << " " << sr << endl;
+//				cout << "i, sr " << i << " " << sr->Data() << endl;
 				TString lab(l);
 				lab.Remove(0,12);
 				cbutton = new TGTextButton(hframe, new TGHotString(lab.Data()), i + 1000 * kIdCommand);
