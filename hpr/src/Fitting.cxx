@@ -599,6 +599,10 @@ cut applied to select a subregion of the histogram.\n\
 Within the cut mean and error of the mean value of bins\n\
 along Y for each bin in X are calculated and a polynomial\n\
 is fitted to the resulting distribution.\n\
+If \"User formula\" is selected the formula must be provide\n\
+in \".hprrc\" as resource  e.g. like this:\n\
+\"Fitting.fUserFormula:   [0]+[1]*TMath::Sqrt([3]*x) \" \n\
+\n\
 To visualize the result the variable \"gHprDebug = 1\"\n\
 should be set at the ROOt prompt.\n\
 This is essentially the same procedure as described for\n\
@@ -916,7 +920,19 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 		 "-------------------------------------------------------------"
 		 << endl;
 	TString form("pol");
-	form += ndim;
+	if (ndim >= 0) {
+		form += ndim;
+	} else {
+		TEnv env(".hprrc");
+		if (env.Defined("Fitting.fUserFormula")) {
+			form = env.GetValue("Fitting.fUserFormula", "[0]+[1]*x + [2]*x*x");
+		} else {
+			cout << setred << "No \"Fitting.fUserFormula\" in .hpprc provided" << endl;
+			return -1;
+		}
+	}
+	if (gHprDebug >0 )
+		cout << "Fitting: " << form << " from " << edgelx << " to " << edgeux<< endl;
 	TF1 *pol = new TF1(funcname, form.Data(), (float) edgelx, (float) edgeux);
 //   TF1 *pol = new TF1(funcname, "func", (float) edgelx, (float) edgeux);
 //   DisplayHist(fithist);

@@ -281,7 +281,8 @@ enum ERootCanvasCommands {
 	kFH_CASCADE1_7,
 	kFH_CASCADE1_8,
 	kFH_CASCADE1_U,
-	kFH_CASCADE2_0,
+	kFH_CASCADE1_H,
+ 	kFH_CASCADE2_0,
 	kFH_CASCADE2_1,
 	kFH_CASCADE2_2,
 	kFH_CASCADE2_3,
@@ -1290,6 +1291,9 @@ again:
 						case kFH_CASCADE1_U:
 							fFitHist->FitPolyHist(-1);
 							break;
+						case kFH_CASCADE1_H:
+							fFitHist->HelpFit2dim();
+							break;
 
 						case kFH_CASCADE2_0:
 							fFitHist->FitPolyMarks(0);
@@ -1840,6 +1844,7 @@ void HandleMenus::BuildMenus()
 			fCascadeMenu1->AddEntry("Pol 7", kFH_CASCADE1_7);
 			fCascadeMenu1->AddEntry("Pol 8", kFH_CASCADE1_8);
 			fCascadeMenu1->AddEntry("User Formula", kFH_CASCADE1_U);
+			fCascadeMenu1->AddEntry("Help", kFH_CASCADE1_H);
 
 			fCascadeMenu2 = new TGPopupMenu(fRootCanvas->GetParent());
 			fCascadeMenu2->AddEntry("Pol 0", kFH_CASCADE2_0);
@@ -1852,6 +1857,7 @@ void HandleMenus::BuildMenus()
 			fCascadeMenu2->AddEntry("Pol 7", kFH_CASCADE2_7);
 			fCascadeMenu2->AddEntry("Pol 8", kFH_CASCADE2_8);
 			fCascadeMenu2->AddEntry("User Formula", kFH_CASCADE2_U);
+			fCascadeMenu2->AddEntry("Help", kFH_CASCADE1_H);
 		}
 //		if ( fFitHist ) {
 		fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
