@@ -2831,6 +2831,8 @@ void FitOneDimDialog::SaveDefaults()
 //	env.SetValue("FitOneDimDialog.fExpFuncName",  fExpFuncName );
 //	env.SetValue("FitOneDimDialog.fPolFuncName",  fPolFuncName );
 //	env.SetValue("FitOneDimDialog.fFormFuncName", fFormFuncName);
+	if (fFormula.Length() > 1)
+		env.SetValue("FitOneDimDialog.fFormula", fFormula);
 	env.SetValue("FitOneDimDialog.fNevents", fNevents);
 	env.SetValue("FitOneDimDialog.fPeakSep", fPeakSep);
 	env.SetValue("FitOneDimDialog.fFitWindow", fFitWindow);
