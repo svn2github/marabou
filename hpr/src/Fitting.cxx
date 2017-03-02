@@ -601,7 +601,10 @@ along Y for each bin in X are calculated and a polynomial\n\
 is fitted to the resulting distribution.\n\
 If \"User formula\" is selected the formula must be provide\n\
 in \".hprrc\" as resource  e.g. like this:\n\
-\"Fitting.fUserFormula:   [0]+[1]*TMath::Sqrt([3]*x) \" \n\
+\"FitOneiDialog.fFormula:   [0]+[1]*TMath::Sqrt([3]*x) \" \n\
+Note: This is the same resource used in the 1dim fitmenu:\n\
+\"User Formula\" and may be prepared there including \n\
+start parameters and possible fix parameter settings.\n\
 \n\
 To visualize the result the variable \"gHprDebug = 1\"\n\
 should be set at the ROOt prompt.\n\
@@ -920,24 +923,53 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 		 "-------------------------------------------------------------"
 		 << endl;
 	TString form("pol");
+	TF1 *pol;
 	if (ndim >= 0) {
 		form += ndim;
+		pol = new TF1(funcname, form.Data(), (Double_t)edgelx,  (Double_t)edgeux);
 	} else {
 		TEnv env(".hprrc");
-		if (env.Defined("Fitting.fUserFormula")) {
-			form = env.GetValue("Fitting.fUserFormula", "[0]+[1]*x + [2]*x*x");
+		if (env.Defined("FitOneDimDialog.fFormula")) {
+			form = env.GetValue("FitOneDimDialog.fFormula", "[0]+[1]*x + [2]*x*x");
+			TFormula ff("NNN", form);
+			if (!ff.IsValid()) {
+				cout << setred << "Formula: " << form << " is not valid " << endl;
+				return -2;
+			}
+			pol = new TF1(funcname, form.Data(), (Double_t)edgelx, (Double_t)edgeux);
+			TString resname;
+			for (Int_t i = 0; i < ff.GetNpar(); i++) {
+				resname = "FitOneDimDialog.fFormPar";
+				resname += i;
+				if (env.Defined(resname)) {
+					pol->SetParameter(i, env.GetValue(resname, 0.));
+					cout << "FormPar" << i << " " << pol->GetParameter(i) << endl;
+				}
+				resname = "FitOneDimDialog.fFormFixPar";
+				resname += i;
+				if (env.Defined(resname)) {
+					Int_t ffix =  env.GetValue(resname, 0);
+					if (ffix) {
+						pol->FixParameter(i,  pol->GetParameter(i));
+						cout << "Fix Par" << i << endl;
+					}
+				}
+			}
+			cout << "Fitting: " << form << " from " << edgelx << " to " << edgeux<< endl;
 		} else {
-			cout << setred << "No \"Fitting.fUserFormula\" in .hpprc provided" << endl;
+			cout << setred << "No \"FitOneDimDialog.fFormula\" in .hpprc provided" 
+			<< setblack << endl;
 			return -1;
 		}
 	}
-	if (gHprDebug >0 )
-		cout << "Fitting: " << form << " from " << edgelx << " to " << edgeux<< endl;
-	TF1 *pol = new TF1(funcname, form.Data(), (float) edgelx, (float) edgeux);
+//	TF1 *pol = new TF1(funcname, form.Data(), (float) edgelx, (float) edgeux);
 //   TF1 *pol = new TF1(funcname, "func", (float) edgelx, (float) edgeux);
 //   DisplayHist(fithist);
 	pol->SetBit(kMustCleanup);
-	pol->SetLineColor(ndim + 1);
+	if (ndim >= 0)
+		pol->SetLineColor(ndim + 1);
+	else
+		pol->SetLineColor(2);
 	pol->SetLineWidth(2);
 
 	fithist->Fit(funcname, "R0");
