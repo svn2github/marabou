@@ -1251,8 +1251,7 @@ void TSplineX::Paint(Option_t * /*optin*/)
    gPad->Modified();
    gPad->Update();
 
-   if (fSleeperLength <= 0 || fSleeperDist <= 0 || fRailwaylike <= 0) {
-//  currently no arrays with railway sleepers allowed
+   if (fSleeperDist <= 0 || fRailwaylike <= 0) {
       return;
    }
 
@@ -1300,7 +1299,7 @@ void TSplineX::Paint(Option_t * /*optin*/)
 	for (Int_t i=0; i <GetLastPoint()-1; i++) {
 		total_length += Length(xc[i], yc[i], xc[i+1], yc[i+1]);
 	}
-//	cout << "points, total length: " << GetLastPoint() << " " << total_length << endl;
+//	cout << "np, points, total length: " << np << " "  << GetLastPoint() << " " << total_length << endl;
 //   Bool_t   box_done = kFALSE;
    Int_t ip = 0;
    phi = PhiOfLine( xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
