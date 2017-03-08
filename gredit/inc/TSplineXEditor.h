@@ -53,8 +53,8 @@ protected:
    TGNumberEntry       *fArrowAngle;    //
    TGNumberEntry       *fArrowIndentAngle;    //
    TGNumberEntry       *fRailwayGage;    //
-   TGNumberEntry       *fFilledLength;    //
-   TGNumberEntry       *fEmptyLength;    //
+   TGNumberEntry       *fSleeperLength;    //
+   TGNumberEntry       *fSleeperDist;    //
    TGTextButton        *fControlGraphMixer;    //
    TGTextButton        *fAddParallel;    //
    TGNumberEntry       *fDistParallelEntry;    //
@@ -99,8 +99,8 @@ public:
    virtual void DoArrowAngle();
    virtual void DoArrowIndentAngle();
    virtual void DoRailwayGage();
-   virtual void DoFilledLength();
-   virtual void DoEmptyLength();
+   virtual void DoSleeperLength();
+   virtual void DoSleeperDist();
    virtual void DoControlGraphMixer();
    virtual void DoAddParallel();
    virtual void DoDistParallelEntry();

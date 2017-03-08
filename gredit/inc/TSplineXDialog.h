@@ -31,8 +31,9 @@ private:
 	Color_t  fFcolor;  
 	Style_t  fFstyle;  
 
-	Double_t fFilled;		  
-	Double_t fEmpty; 		  
+	Double_t fSleeperLength;		  
+	Double_t fSleeperDist; 		  
+	Width_t  fSleeperWidth; 		  
 	Double_t fGage;  		  
 	Int_t    fArrow_at_start;
 	Int_t    fArrow_at_end;  

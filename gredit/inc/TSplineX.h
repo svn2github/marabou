@@ -43,7 +43,7 @@ private:
 public:
    RailwaySleeper(){};
    RailwaySleeper(Double_t * x, Double_t * y, TSplineX * parent = NULL,
-                  Color_t color = 1);
+                  Color_t color = 1, Int_t np =5);
    ~RailwaySleeper(){ };
    Int_t DistancetoPrimitive(Int_t, Int_t){return 9999;};
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
@@ -234,8 +234,10 @@ private:
    Bool_t        fClosed;
    Int_t         fRailwaylike;
    Double_t      fRailwayGage;
-   Double_t      fFilledLength;      // draw like railway in maps
-   Double_t      fEmptyLength;       // space in between
+   Double_t      fSleeperLength;      // draw like railway in maps
+   Double_t      fSleeperDist;       // space in between
+   Color_t       fSleeperColor;
+   Width_t       fSleeperWidth;
    Style_t       fLineStyle;
    Width_t       fLineWidth;
    Color_t       fLineColor;
@@ -330,25 +332,28 @@ public:
 
    ControlGraph* GetControlGraph() {return &fCPGraph;};
    TList*     GetDPolyLines() {return &fDPolyLines;};
-
+	Int_t PointByDist(Double_t dist);											//
    void Paint(Option_t * option = " ");
    void PaintArrow(Int_t where);
    void     DrawParallelGraphs();
    ParallelGraph* AddParallelGraph(Double_t dist = 2, Color_t color=0,
                             Width_t width=0, Style_t style=0);        // *MENU*
    TObjArray* GetParallelGraphs() {return &fPGraphs;};
+   void     NeedReCompute()                {fComputeDone = kFALSE;};
 
    void     SetRailwaylike (Double_t gage = 4);                       // *MENU*
    Int_t    IsRailwaylike()                {return fRailwaylike;};
    void     SetRailwayGage (Double_t gage) {SetRailwaylike(gage);};   // *MENU*
    Double_t GetRailwayGage ()              {return fRailwayGage;};    // *MENU*
-   void     SetFilledLength(Double_t flen) {fFilledLength = flen;};   // *MENU*
-   void     SetEmptyLength(Double_t elen)  {fEmptyLength = elen;};    // *MENU*
-   Double_t GetFilledLength()              {return fFilledLength;};
-   Double_t GetEmptyLength()               {return fEmptyLength;};
-   void     NeedReCompute()                {fComputeDone = kFALSE;};
-   void     SetSleeperColor(Color_t color);
-
+   void     SetSleeperLength(Double_t flen) {fSleeperLength = flen;};   // *MENU*
+   void     SetSleeperDist(Double_t elen)  {fSleeperDist = elen;};    // *MENU*
+   Double_t GetSleeperLength()              {return fSleeperLength;};
+   Double_t GetSleeperDist()               {return fSleeperDist;};
+//	void		SetSleeperColor(Color_t color){fSleeperColor = color;};
+	void		SetSleeperColor(Color_t color);  								  // *MENU*
+	void		SetSleeperWidth(Width_t width){fSleeperWidth = width;};    // *MENU*
+	Color_t	GetSleeperColor(){return fSleeperColor;};
+	Width_t	GetSleeperWidth(){return fSleeperWidth;};
    Int_t    GetParallelFill()    {return fParallelFill;};
    void     SetParallelFill(Int_t sf) {fParallelFill = sf;};          // *MENU*
 

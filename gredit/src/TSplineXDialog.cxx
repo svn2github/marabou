@@ -64,18 +64,20 @@ Railway like filling etc.\n\
 //   fValp[ind++] = &railway;
    fRow_lab->Add(new TObjString("DoubleValue_RailGage"));
    fValp[ind++] = &fGage;
-   fRow_lab->Add(new TObjString("DoubleValue+SleeperL"));
-   fValp[ind++] = &fFilled;
-   fRow_lab->Add(new TObjString("DoubleValue+SleeperD"));
-   fValp[ind++] = &fEmpty;
-   fRow_lab->Add(new TObjString("ColorSelect_Fill Color"));
+   fRow_lab->Add(new TObjString("DoubleValue+SleeperLength"));
+   fValp[ind++] = &fSleeperLength;
+   fRow_lab->Add(new TObjString("DoubleValue+SleeperDist"));
+   fValp[ind++] = &fSleeperDist;
+   fRow_lab->Add(new TObjString("PlainShtVal_SleeperWidth"));
+   fValp[ind++] = &fSleeperWidth;
+   fRow_lab->Add(new TObjString("ColorSelect+Fill Color"));
    fValp[ind++] = &fFcolor;
    fRow_lab->Add(new TObjString("Fill_Select+Fill Style"));
    fValp[ind++] = &fFstyle;
    fRow_lab->Add(new TObjString("CommandButt_Draw_the_TSplineX"));
    fValp[ind++] = &fCommand;
 
-   Int_t itemwidth = 360;
+   Int_t itemwidth = 460;
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("TSplineXDialog", NULL, &ok,itemwidth, win,
@@ -148,8 +150,9 @@ void TSplineXDialog::Draw_The_TSplineX()
    xsp->SetLineColor(fColor);
    xsp->SetLineWidth(fLwidth);
    xsp->SetLineStyle(fLstyle);
-   xsp->SetFilledLength(fFilled);
-   xsp->SetEmptyLength(fEmpty);
+   xsp->SetSleeperLength(fSleeperLength);
+   xsp->SetSleeperDist(fSleeperDist);
+   xsp->SetSleeperWidth(fSleeperWidth);
    if (fGage > 0)xsp->SetRailwaylike(fGage);
    if (fShowcp > 0) xsp->DrawControlPoints(0, 0);
    Bool_t afilled;
@@ -177,8 +180,9 @@ void TSplineXDialog::SaveDefaults()
    env.SetValue("TSplineXDialog.Lstyle"            , fLstyle            );
    env.SetValue("TSplineXDialog.Fcolor"            , fFcolor            );
    env.SetValue("TSplineXDialog.Fstyle"            , fFstyle            );
-   env.SetValue("TSplineXDialog.Filled"            , fFilled            );
-   env.SetValue("TSplineXDialog.Empty"             , fEmpty             );
+   env.SetValue("TSplineXDialog.SleeperLength"     , fSleeperLength     );
+   env.SetValue("TSplineXDialog.SleeperDist"       , fSleeperDist       );
+   env.SetValue("TSplineXDialog.SleeperWidth"      , fSleeperWidth      );
    env.SetValue("TSplineXDialog.Gage"              , fGage              );
    env.SetValue("TSplineXDialog.Arrow_at_start"    , fArrow_at_start    );
    env.SetValue("TSplineXDialog.Arrow_at_end"      , fArrow_at_end      );
@@ -203,8 +207,9 @@ void TSplineXDialog::RestoreDefaults()
    fLstyle             = env.GetValue("TSplineXDialog.Lstyle"            , 1);
    fFcolor             = env.GetValue("TSplineXDialog.Fcolor"            , 4);
    fFstyle             = env.GetValue("TSplineXDialog.Fstyle"            , 0);
-   fFilled             = env.GetValue("TSplineXDialog.Filled"            , 0);
-   fEmpty              = env.GetValue("TSplineXDialog.Empty"             , 5);
+   fSleeperLength      = env.GetValue("TSplineXDialog.SleeperLength"     , 0);
+   fSleeperDist        = env.GetValue("TSplineXDialog.SleeperDist"       , 5);
+   fSleeperWidth       = env.GetValue("TSplineXDialog.SleeperWidth"      , 2);
    fGage               = env.GetValue("TSplineXDialog.Gage"              , 0);
    fArrow_at_start     = env.GetValue("TSplineXDialog.Arrow_at_start"    , 0);
    fArrow_at_end       = env.GetValue("TSplineXDialog.Arrow_at_end"      , 0);

@@ -464,7 +464,8 @@ void TSplineX::Nextpoint(Double_t phi, Double_t x, Double_t y,
    Double_t phip = phi;
    if (phip < 0) phip += 2 * TMath::Pi();
    *a = x + dist * TMath::Cos(phip);
-   *b = y + fRatioXY * dist * TMath::Sin(phip);
+   *b = y + 1 * dist * TMath::Sin(phip);
+ //  *b = y + fRatioXY * dist * TMath::Sin(phip);
 }
 //_______________________________________________________________________________________
 
@@ -522,8 +523,8 @@ TSplineX::TSplineX():
    , fClosed ( kFALSE)
    , fRailwaylike( 0)
    , fRailwayGage( 0)
-   , fFilledLength( 0)    
-   , fEmptyLength( 0)     
+   , fSleeperLength( 0)    
+   , fSleeperDist( 0)     
    , fLineStyle( 0)
    , fLineWidth( 0)
    , fLineColor( 0)
@@ -565,8 +566,10 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
    , fClosed (closed)
    , fRailwaylike( 0)
    , fRailwayGage( 0)
-   , fFilledLength( 0)    
-   , fEmptyLength( 0)     
+   , fSleeperLength( 0)    
+   , fSleeperDist( 0)     
+   , fSleeperColor(1)
+   , fSleeperWidth(1)
    , fLineStyle( 1)
    , fLineWidth( 2)
    , fLineColor( 1)
@@ -602,8 +605,8 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
    fRailR = NULL;
    fRailwaylike = 0;
    fRailwayGage = 0;
-   fFilledLength = 0;
-   fEmptyLength = 0;
+   fSleeperLength = 0;
+   fSleeperDist = 0;
    fMStyle = 24;
    fMSize = 2;
 	fLineStyle = 1;
@@ -863,7 +866,7 @@ Int_t TSplineX::ComputeSpline()
             gr->Compute();
 
             if ((fPaintArrowAtStart || fPaintArrowAtEnd)
-                && (fFilledLength <= 0 || fEmptyLength  <= 0))
+                && (fSleeperLength <= 0 || fSleeperDist  <= 0))
               gr->CorrectForArrows( fRatioXY, fArrowLength, fArrowAngle,fArrowIndentAngle,
                                     fPaintArrowAtStart, fPaintArrowAtEnd);
          }
@@ -1248,7 +1251,7 @@ void TSplineX::Paint(Option_t * /*optin*/)
    gPad->Modified();
    gPad->Update();
 
-   if (fFilledLength <= 0 || fEmptyLength <= 0 || fRailwaylike <= 0) {
+   if (fSleeperLength <= 0 || fSleeperDist <= 0 || fRailwaylike <= 0) {
 //  currently no arrays with railway sleepers allowed
       return;
    }
@@ -1262,140 +1265,147 @@ void TSplineX::Paint(Option_t * /*optin*/)
    }
    RailwaySleeper * pl;
    Double_t xp[5], yp[5];
-   Int_t ip = 0;
    Double_t * xc = this->GetX();
    Double_t * yc = this->GetY();
    Double_t * xl = lg->GetX();
    Double_t * yl = lg->GetY();
    Double_t * xr = rg->GetX();
    Double_t * yr = rg->GetY();
-   Double_t needed = fFilledLength;
+   Double_t needed = fSleeperLength;
 
-//   Double_t dist = TMath::Abs(fPDists[0]);
    Double_t dist = TMath::Abs(lg->GetDist());
    Double_t available = 0;
-   Double_t phi, ax, ay, xcprev, ycprev, xccur, yccur;
+   Double_t phi, ax1, ay1, ax2, ay2, x, y;
+   
+// if fRwSleeperLength > 0 draw real sleepers with length
+// gage * fRwSleeperLength
+// distance btw sleepers fSleeperDist
+// otherwise
+// draw a filled box with length fSleeperDist alternating
+// with white space as used in maps
+	Int_t np = 5;
+//	TString drawopt("f");
+	Double_t dist_btw_sleepers = fSleeperDist;
+	Color_t col = this->GetLineColor();
+	if (fSleeperLength > 0 ){
+		dist *= fSleeperLength;
+		dist_btw_sleepers = fSleeperDist;
+		col = this->GetSleeperColor();
+		np = 2;
+//		drawopt="l";
+	}
+	Double_t covered_dist = 0;
+	Double_t total_length = 0;
+	
+	for (Int_t i=0; i <GetLastPoint()-1; i++) {
+		total_length += Length(xc[i], yc[i], xc[i+1], yc[i+1]);
+	}
+//	cout << "points, total length: " << GetLastPoint() << " " << total_length << endl;
 //   Bool_t   box_done = kFALSE;
+   Int_t ip = 0;
    phi = PhiOfLine( xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
-   Endpoint(phi, xc[0], yc[0], -dist, &ax, &ay);
-   xp[0] = ax;
-   yp[0] = ay;
-   Endpoint(phi, xc[0], yc[0],  dist, &ax, &ay);
-   xp[1] = ax;
-   yp[1] = ay;
-   available = Length(xc[0], yc[0], xc[1], yc[1]);
-   xcprev = xc[0];
-   ycprev = yc[0];
-   Bool_t within_gap = kFALSE;
-
-//      draw a filled box with length fFilledLength
-   while (ip < GetLastPoint() + 1 - 2) {
-      if (needed <= available) {
-         within_gap = kFALSE;
-         phi = PhiOfLine( xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
-//             extrapolate previous
-         Nextpoint(phi, xcprev, ycprev, needed, &xccur, &yccur);
-         Endpoint(phi, xccur, yccur, +dist, &ax, &ay);
-         xp[2] = ax;
-         yp[2] = ay;
-         Endpoint(phi, xccur, yccur, -dist, &ax, &ay);
-         xp[3] = ax;
-         yp[3] = ay;
-         xp[4] = xp[0];
-         yp[4] = yp[0];
-
-         pl = new RailwaySleeper(xp, yp, this, this->GetLineColor());
-         fDPolyLines.Add(pl);
-//         pl->Draw();
-         pl->Paint("F");
-
-         available -= needed;
-//         box_done = kTRUE;
-         xcprev = xccur;
-         ycprev = yccur;
-//       filled box complete, enter gap
-         needed = fEmptyLength;
-         while (1) {
-            within_gap = kTRUE;
-            if (needed <= available) {
-               phi = PhiOfLine( xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
-//                extrapolate previous
-               Nextpoint(phi, xcprev, ycprev, needed, &xccur, &yccur);
-               xcprev = xccur;
-               ycprev = yccur;
-               available -= needed;
-               needed = fFilledLength;
-               Endpoint(phi, xccur, yccur, -dist, &ax, &ay);
-               xp[0] = ax;
-               yp[0] = ay;
-               Endpoint(phi, xccur, yccur, +dist, &ax, &ay);
-               xp[1] = ax;
-               yp[1] = ay;
-               break;
-            } else {
-               ip += 1;
-               if (ip >= GetLastPoint() + 1 - 2) break;
-               needed -=   Length(xcprev, ycprev, xc[ip], yc[ip]);
-               available = Length(xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
-               xcprev = xc[ip];
-               ycprev = yc[ip];
-            }
-         }
-      } else {
-         within_gap = kFALSE;
-         xp[2] = xl[ip+1];
-         yp[2] = yl[ip+1];
-         xp[3] = xr[ip+1];
-         yp[3] = yr[ip+1];
-         xp[4] = xp[0];
-         yp[4] = yp[0];
-//         pl = new TPolyLine(5, xp, yp);
-//         pl->SetBit(kCantEdit);
-//         fDPolyLines.Add(pl);
-//         pl->SetFillStyle(1003);
-//         pl->SetFillColor(this->GetLineColor());
-//         pl->Draw("F");
-         pl = new RailwaySleeper(xp, yp, this, this->GetLineColor());
-         fDPolyLines.Add(pl);
-//         pl->Draw();
-         pl->Paint("F");
-         ip += 1;
-         needed -=   Length(xcprev, ycprev, xc[ip], yc[ip]);
-         available = Length(xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
-         xcprev = xc[ip];
-         ycprev = yc[ip];
-         xp[0] = xr[ip];
-         yp[0] = yr[ip];
-         xp[1] = xl[ip];
-         yp[1] = yl[ip];
-      }
+   Endpoint(phi, xc[0], yc[0], -dist, &ax1, &ay1);
+   Endpoint(phi, xc[0], yc[0],  dist, &ax2, &ay2);
+   xp[0] = ax1;
+   yp[0] = ay1;
+   xp[1] = ax2;
+   yp[1] = ay2;
+   // case real sleeper, put sleeper at start
+   if ( np == 2 ) {
+		pl = new RailwaySleeper(xp, yp, this, col, np);
+      fDPolyLines.Add(pl);
    }
-
+   available = Length(xc[0], yc[0], xc[1], yc[1]);
+   needed = dist_btw_sleepers;
+ //  rest = needed;
+   Bool_t within_sleeper = kTRUE;
+   Double_t dist_on_segment = 0;
+   while (covered_dist < total_length) {
+		
+      while (needed > available) {
+			ip += 1;
+			if (ip >= GetLastPoint() + 1 - 2) goto ENDOFSPLINE;
+			available += Length(xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
+		}
+		// interpolate on segment
+		dist_on_segment = Length(xc[ip], yc[ip], xc[ip+1], yc[ip+1])
+								- (available - needed) ;
+//		cout << ip << " " << yc[ip] << " " << needed  << " " << available 
+//		<< " " << dist_on_segment<< " " << covered_dist << endl;
+		x = xc[ip] + (xc[ip+1] - xc[ip]) * (dist_on_segment/ Length(xc[ip], yc[ip], xc[ip+1], yc[ip+1]));
+		y = yc[ip] + (yc[ip+1] - yc[ip]) * (dist_on_segment/ Length(xc[ip], yc[ip], xc[ip+1], yc[ip+1]));
+      phi = PhiOfLine( xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
+		Endpoint(phi, x, y, -dist, &ax1, &ay1);
+		Endpoint(phi, x, y,  dist, &ax2, &ay2);
+		if (np == 5 && within_sleeper){
+			xp[3] = ax1;
+			yp[3] = ay1;
+			xp[2] = ax2;
+			yp[2] = ay2;
+			xp[4] = xp[0];
+			yp[4] = yp[0];
+//			for (Int_t i=0; i <5; i++) 
+//				cout <<"xp["<< i << "] \t" << xp[i] <<" yp[" << i << "] \t" << yp[i] <<endl;
+			pl = new RailwaySleeper(xp, yp, this, col, np);
+			fDPolyLines.Add(pl);
+//			pl->Paint(drawopt);
+			within_sleeper = kFALSE;
+		} else {
+			xp[0] = ax1;
+			yp[0] = ay1;
+			xp[1] = ax2;
+			yp[1] = ay2;
+			within_sleeper = kTRUE;
+		}
+		if (np == 2) {
+			pl = new RailwaySleeper(xp, yp, this, col, np);
+			fDPolyLines.Add(pl);
+//			pl->Paint(drawopt);
+		}
+		available -= needed;
+		covered_dist += needed;
+		// first time needed was 0.5 * dist_btw_sleepers
+//		needed = dist_btw_sleepers;
+   }
+ENDOFSPLINE:
    ip = GetLastPoint() + 1 - 2;
-   if ( !within_gap ) {
-      xp[0] = xr[ip];
-      yp[0] = yr[ip];
-      xp[1] = xl[ip];
-      yp[1] = yl[ip];
+   if ( within_sleeper && np == 5) {
       xp[2] = xl[ip+1];
       yp[2] = yl[ip+1];
       xp[3] = xr[ip+1];
       yp[3] = yr[ip+1];
       xp[4] = xp[0];
       yp[4] = yp[0];
-
-      pl = new RailwaySleeper(xp, yp, this, this->GetLineColor());
+      
+      pl = new RailwaySleeper(xp, yp, this, col, np);
       fDPolyLines.Add(pl);
-//      pl->Draw();
-      pl->Paint("f");
+//      pl->Paint(drawopt);
    }
    gPad->Modified();
    gPad->Update();
+}
+//______________________________________________________________________
+
+Int_t TSplineX::PointByDist(Double_t dist)
+{
+	if (dist <= 0 )
+		return -1;
+	Double_t d = 0;
+	Double_t *xc = GetX();
+	Double_t *yc = GetY();
+	
+	for (Int_t i = 0; i< GetLastPoint() -1; i++) {
+		d += Length(xc[i], yc[i], xc[i+1], yc[i+1]);
+		if (d > dist)
+			return i;
+	}
+	return -1;
 }
 //_____________________________________________________________________________________
 
 void TSplineX::SetSleeperColor(Color_t color)
 {
+	fSleeperColor = color;
    SetLineColor(color);
    if (fDPolyLines.GetSize() > 0) {
       TIter next(&fDPolyLines);
@@ -1819,8 +1829,8 @@ void TSplineX::SetArrowFill(Bool_t filled)
       out<<"   splinex->SetControlPoint("<< i << "," << x << "," << y << ","<< sf <<");"<<endl;
    }
    out<<"   splinex->SetRailwayGage("<<GetRailwayGage()<<");"<<endl;
-   out<<"   splinex->SetFilledLength("<<GetFilledLength()<<");"<<endl;
-   out<<"   splinex->SetEmptyLength("<<GetEmptyLength()<<");"<<endl;
+   out<<"   splinex->SetSleeperLength("<<GetSleeperLength()<<");"<<endl;
+   out<<"   splinex->SetSleeperDist("<<GetSleeperDist()<<");"<<endl;
    if (fPaintArrowAtStart)
       out<<"   splinex->AddArrow(0,"
    << fArrowLength << ","
@@ -2160,27 +2170,35 @@ PolyLineNoEdit::PolyLineNoEdit(Int_t np, Double_t * x, Double_t * y)
 //_____________________________________________________________________________________
 
 RailwaySleeper::RailwaySleeper(Double_t * x, Double_t * y,
-                TSplineX * parent, Color_t color)
-                : TPolyLine(5, x, y), fParent(parent)
+                TSplineX * parent, Color_t color, Int_t np)
+                : TPolyLine(np, x, y), fParent(parent)
 {
    // railway sleepers are special filled polylines,
    // its ExecuteEvent method is diverted to its TSplineX parent
-
-   SetLineColor(color);
-   SetFillColor(color);
-   SetFillStyle(1003);
+	SetLineColor(color);
+	if (parent->GetSleeperLength() > 0) {
+		SetLineWidth(parent->GetSleeperWidth());
+	} else {
+		SetFillColor(color);
+		SetFillStyle(1003);
+	}
+	if ( np == 5) {
+		Paint("f");
+	} else {
+		Paint("l");
+	}
 }
 //_____________________________________________________________________________________
 void RailwaySleeper::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {
-    if (fParent) fParent->ExecuteEvent(event, px,py);
+   if (fParent) fParent->ExecuteEvent(event, px,py);
 }
 //_____________________________________________________________________________________
 
 void RailwaySleeper::Draw(Option_t * opt)
 {
 //   TPolyLine::Draw(opt);
-   TPolyLine::Paint(opt);
+	TPolyLine::Paint(opt);
 }
 
 //_____________________________________________________________________________________
@@ -2258,7 +2276,7 @@ void ParallelGraph::CorrectForArrows(Double_t rxy, Double_t alength,Double_t aan
 // to account for the lengths of the arrows
 //  no arrows with railway sleepers
 
-//   if (fFilledLength > 0 && fEmptyLength > 0) return kTRUE;
+//   if (fSleeperLength > 0 && fSleeperDist > 0) return kTRUE;
 
    Double_t chop, seglen, xm, ym;
    Int_t ip = 0;

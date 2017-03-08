@@ -155,20 +155,20 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
    fg1->AddFrame(f6, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
    TGCompositeFrame *f7 = new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
-   label = new TGLabel(f7, "Filled Len");
+   label = new TGLabel(f7, "Sleeper Len");
    f7->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
-   fFilledLength = new TGNumberEntry(f7, 10, 4, kARROW_LENGTH);
-   fFilledLength->GetNumberEntry()->SetToolTipText("Railway filled Length");
-   f7->AddFrame(fFilledLength, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
+   fSleeperLength = new TGNumberEntry(f7, 10, 4, kARROW_LENGTH);
+   fSleeperLength->GetNumberEntry()->SetToolTipText("Railway sleeper length");
+   f7->AddFrame(fSleeperLength, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
    fg1->AddFrame(f7, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
 
    TGCompositeFrame *f8 = new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
-   label = new TGLabel(f8, "Blank Len");
+   label = new TGLabel(f8, "Sleeper Dist");
    f8->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
-   fEmptyLength = new TGNumberEntry(f8, 10, 4, kARROW_LENGTH);
-   fEmptyLength->GetNumberEntry()->SetToolTipText("Railway empty Length");
-   f8->AddFrame(fEmptyLength, new TGLayoutHints(kLHintsExpandX, 1, 1, 0, 1));
+   fSleeperDist = new TGNumberEntry(f8, 10, 4, kARROW_LENGTH);
+   fSleeperDist->GetNumberEntry()->SetToolTipText("Railway sleeper dist");
+   f8->AddFrame(fSleeperDist, new TGLayoutHints(kLHintsExpandX, 1, 1, 0, 1));
    fg1->AddFrame(f8, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
    AddFrame(fg1, new TGLayoutHints(kLHintsTop, 1, 1, 1, 1));
 
@@ -282,14 +282,14 @@ void TSplineXEditor::ConnectSignals2Slots()
    (fArrowAngle->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoArrowAngle())");
    (fArrowIndentAngle->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoArrowIndentAngle())");
    (fRailwayGage->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoRailwayGage())");
-   (fFilledLength->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoFilledLength())");
-   (fEmptyLength->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoEmptyLength())");
+   (fSleeperLength->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoSleeperLength())");
+   (fSleeperDist->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoSleeperDist())");
    (fArrowLength)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoArrowLength())");
    (fArrowAngle)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoArrowAngle())");
    (fArrowIndentAngle)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoArrowIndentAngle())");
    (fRailwayGage)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoRailwayGage())");
-   (fFilledLength)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoFilledLength())");
-   (fEmptyLength)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoEmptyLength())");
+   (fSleeperLength)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoSleeperLength())");
+   (fSleeperDist)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoSleeperDist())");
    (fDistParallelEntry->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoDistParallelEntry())");
    (fDistParallelEntry)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoDistParallelEntry())");
    (fDistParallelEntry)->Connect("ValueChanged(Long_t)","TSplineXEditor",this,"DoDistParallelEntry())");
@@ -359,10 +359,10 @@ void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
 
    val = fSplineX->GetRailwayGage();
    fRailwayGage->SetNumber(val);
-   val = fSplineX->GetFilledLength();
-   fFilledLength->SetNumber(val);
-   val = fSplineX->GetEmptyLength();
-   fEmptyLength->SetNumber(val);
+   val = fSplineX->GetSleeperLength();
+   fSleeperLength->SetNumber(val);
+   val = fSplineX->GetSleeperDist();
+   fSleeperDist->SetNumber(val);
 
    fDistParallel = 10;
    fDistParallelEntry->SetNumber(fDistParallel);
@@ -533,19 +533,19 @@ void TSplineXEditor::DoRailwayGage()
 }
 //______________________________________________________________________________
 
-void TSplineXEditor::DoFilledLength()
+void TSplineXEditor::DoSleeperLength()
 {
-//    std::cout << "DoFilledLength() " << fFilledLength->GetNumber() << std::endl;
-   fSplineX->SetFilledLength(fFilledLength->GetNumber());
+//    std::cout << "DoSleeperLength() " << fSleeperLength->GetNumber() << std::endl;
+   fSplineX->SetSleeperLength(fSleeperLength->GetNumber());
    fSplineX->NeedReCompute();
    fSplineX->Paint();
 }
 //______________________________________________________________________________
 
-void TSplineXEditor::DoEmptyLength()
+void TSplineXEditor::DoSleeperDist()
 {
-//    std::cout << "DoEmptyLength() " << fEmptyLength->GetNumber() << std::endl;
-   fSplineX->SetEmptyLength(fEmptyLength->GetNumber());
+//    std::cout << "DoSleeperDist() " << fSleeperDist->GetNumber() << std::endl;
+   fSplineX->SetSleeperDist(fSleeperDist->GetNumber());
    fSplineX->NeedReCompute();
    fSplineX->Paint();
 }
