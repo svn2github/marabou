@@ -828,7 +828,16 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 		}
 		pointer += numData;
 	} else {
-		for (i = 0; i < numData; i++) *pointer++ = GET32(s->md->vmeBase, MQDC32_DATA);
+		for (i = 0; i < numData; i++) {
+			data = GET32(s->md->vmeBase, MQDC32_DATA);
+			if (i == 0) {
+				if ((data & 0xF0000000) != 0x40000000) {
+					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x)", s->mpref, s->moduleName, data);
+					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+				}
+			}	
+			if (data != 0x80000000) *pointer++ = data;
+		}
 	}
 
 	if (s->repairRawData) pointer = mqdc32_repairRawData(s, pointer, dataStart);

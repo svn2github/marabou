@@ -899,6 +899,7 @@ int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer)
 	int bmaCount;
 	int tryIt;
 	int numData, nd;
+	int nofeobs;
 
 	uint32_t ptrloc;
 
@@ -913,11 +914,14 @@ int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer)
 	numData = (int) mtdc32_getFifoLength(s);	
 	nd = (int) mtdc32_getFifoLength(s);
 	
+	tryIt = 1;
+#if 0
 	tryIt = 10;
 	while (tryIt-- && (nd != numData)) {
 		numData = nd;
 		nd = (int) mtdc32_getFifoLength(s);
 	}
+#endif
 	if (numData == 0) return(0);
 
 	if (tryIt <= 0) {
@@ -945,7 +949,13 @@ int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer)
 	} else {
 		for (i = 0; i < numData; i++) {
 			data = GET32(s->md->vmeBase, MTDC32_DATA);
-			*pointer++ = data;
+			if (i == 0) {
+				if ((data & 0xF0000000) != 0x40000000) {
+					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x)", s->mpref, s->moduleName, data);
+					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+				}
+			}	
+			if (data != 0x80000000) *pointer++ = data;
 		}
 	}
 

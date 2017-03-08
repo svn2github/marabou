@@ -253,6 +253,7 @@ void TMrbLofNamedX::Sort(Bool_t SortFlag) {
 
 	TIterator * iter = this->MakeIterator();
 	while (nx = (TMrbNamedX *) iter->Next()) nx->SortByName(SortFlag);
+	delete iter;
 	TObjArray::UnSort();
 	TObjArray::Sort();
 	fIsSorted = kTRUE;
@@ -336,6 +337,7 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 				Out << endl;
 			}
 		}
+		delete iter;
 	} else {
 		while (xPnt = (TMrbNamedX *) iter->Next()) {
 			Out << Prefix;
@@ -344,6 +346,7 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 			if (same != xPnt) Out << " (same as " << same->GetName() << ")";
 			Out << endl;
 		}
+		delete iter;
 	}
 }
 
@@ -422,11 +425,13 @@ TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode
 					namedX = xPnt;
 				}
 			}
+			delete iter;
 		} else {
-			while (xPnt = (TMrbNamedX *) iter->Next()) {
-				xName = xPnt->GetName();
-				if (xName.CompareTo(shortName, cmp) == 0) return(xPnt);
+			while (namedX = (TMrbNamedX *) iter->Next()) {
+				xName = namedX->GetName();
+				if (xName.CompareTo(shortName, cmp) == 0) break;
 			}
+			delete iter;
 		}
 		if (dialogFlag && namedX == NULL) {
 			gMrbLog->Err() << "Illegal index - " << shortName << endl;
@@ -457,6 +462,7 @@ TMrbNamedX * TMrbLofNamedX::FindByIndex(Int_t Index, Int_t Mask) const {
 	while (xPnt = (TMrbNamedX *) iter->Next()) {
 		if ((xPnt->GetIndex() & Mask) == Index) return(xPnt);
 	}
+	delete iter;
 	return(NULL);
 }
 
@@ -696,5 +702,6 @@ UInt_t TMrbLofNamedX::GetMask() const {
 	UInt_t mask = 0;
 	TIterator * iter = this->MakeIterator();
 	while (xPnt = (TMrbNamedX *) iter->Next()) mask |= xPnt->GetIndex();
+	delete iter;
 	return(mask);
 }

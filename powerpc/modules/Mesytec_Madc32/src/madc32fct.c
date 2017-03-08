@@ -864,7 +864,16 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 			
 		pointer += numData;
 	} else {
-		for (i = 0; i < numData; i++) *pointer++ = GET32(s->md->vmeBase, MADC32_DATA);
+		for (i = 0; i < numData; i++) {
+			data = GET32(s->md->vmeBase, MADC32_DATA);
+			if (i == 0) {
+				if ((data & 0xF0000000) != 0x40000000) {
+					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x)", s->mpref, s->moduleName, data);
+					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+				}
+			}	
+			if (data != 0x80000000) *pointer++ = data;
+		}
 	}
 
 	if (s->repairRawData) pointer = madc32_repairRawData(s, pointer, dataStart);

@@ -37,7 +37,7 @@ TMrbResource::TMrbResource(const Char_t * Prefix, const Char_t * ResourceFile) {
 //                 Char_t * ResourceFile   -- ROOT env file
 // Results:        --
 // Exceptions:
-// Description:    Class constructor
+// Description:    Class constructorConvert
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
