@@ -29,11 +29,13 @@ private:
 	Width_t  fLwidth;  
 	Style_t  fLstyle;  
 	Color_t  fFcolor;  
-	Style_t  fFstyle;  
+	Style_t  fFstyle; 
+	Int_t		fDoFill; 
 
 	Double_t fSleeperLength;		  
 	Double_t fSleeperDist; 		  
 	Width_t  fSleeperWidth; 		  
+	Color_t  fSleeperColor;   
 	Double_t fGage;  		  
 	Int_t    fArrow_at_start;
 	Int_t    fArrow_at_end;  

@@ -20,7 +20,10 @@ static const Char_t helptext[] =
 "This class helps to construct a Xspline with\n\
 additional graphical elements:\n\
 Arrows at either ends\n\
-Railway like filling etc.\n\
+Railway like filling can be done a la map:\n\
+alternate black and white sections if SleeperLength==0\n\
+or with real sleepers: SleeperLength = length relative\n\
+to gage: e.g 1.4\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
@@ -48,6 +51,12 @@ Railway like filling etc.\n\
    fValp[ind++] = &fLwidth;
    fRow_lab->Add(new TObjString("LineSSelect+L Style"));
    fValp[ind++] = &fLstyle;
+   fRow_lab->Add(new TObjString("ColorSelect_Fill Color"));
+   fValp[ind++] = &fFcolor;
+   fRow_lab->Add(new TObjString("Fill_Select+Fill Style"));
+   fValp[ind++] = &fFstyle;
+   fRow_lab->Add(new TObjString("CheckButton+Do Fill"));
+   fValp[ind++] = &fDoFill;
    fRow_lab->Add(new TObjString("CheckButton_Arrow@Start"));
    fValp[ind++] = &fArrow_at_start;
    fRow_lab->Add(new TObjString("CheckButton+Arrow@End"));
@@ -64,16 +73,14 @@ Railway like filling etc.\n\
 //   fValp[ind++] = &railway;
    fRow_lab->Add(new TObjString("DoubleValue_RailGage"));
    fValp[ind++] = &fGage;
-   fRow_lab->Add(new TObjString("DoubleValue+SleeperLength"));
+   fRow_lab->Add(new TObjString("DoubleValue+Sl Length"));
    fValp[ind++] = &fSleeperLength;
-   fRow_lab->Add(new TObjString("DoubleValue+SleeperDist"));
+   fRow_lab->Add(new TObjString("DoubleValue+Sl Dist"));
    fValp[ind++] = &fSleeperDist;
-   fRow_lab->Add(new TObjString("PlainShtVal_SleeperWidth"));
+   fRow_lab->Add(new TObjString("PlainShtVal_Sl Width"));
    fValp[ind++] = &fSleeperWidth;
-   fRow_lab->Add(new TObjString("ColorSelect+Fill Color"));
-   fValp[ind++] = &fFcolor;
-   fRow_lab->Add(new TObjString("Fill_Select+Fill Style"));
-   fValp[ind++] = &fFstyle;
+   fRow_lab->Add(new TObjString("ColorSelect+Sl Color"));
+   fValp[ind++] = &fSleeperColor;
    fRow_lab->Add(new TObjString("CommandButt_Draw_the_TSplineX"));
    fValp[ind++] = &fCommand;
 
@@ -144,6 +151,8 @@ void TSplineXDialog::Draw_The_TSplineX()
 	TSplineX* xsp =
 		new TSplineX(npoints, x, y, shape_factors.GetArray(), fPrec, closed_spline);
 #endif	
+	TString drawopt("L");
+	if (fDoFill >0) drawopt="LF";
    xsp->Draw("L");
    xsp->SetFillColor(fFcolor);
    xsp->SetFillStyle(fFstyle);
@@ -180,6 +189,7 @@ void TSplineXDialog::SaveDefaults()
    env.SetValue("TSplineXDialog.Lstyle"            , fLstyle            );
    env.SetValue("TSplineXDialog.Fcolor"            , fFcolor            );
    env.SetValue("TSplineXDialog.Fstyle"            , fFstyle            );
+   env.SetValue("TSplineXDialog.fDoFill"       		,fDoFill);
    env.SetValue("TSplineXDialog.SleeperLength"     , fSleeperLength     );
    env.SetValue("TSplineXDialog.SleeperDist"       , fSleeperDist       );
    env.SetValue("TSplineXDialog.SleeperWidth"      , fSleeperWidth      );
@@ -207,6 +217,7 @@ void TSplineXDialog::RestoreDefaults()
    fLstyle             = env.GetValue("TSplineXDialog.Lstyle"            , 1);
    fFcolor             = env.GetValue("TSplineXDialog.Fcolor"            , 4);
    fFstyle             = env.GetValue("TSplineXDialog.Fstyle"            , 0);
+   fDoFill             = env.GetValue("TSplineXDialog.fDoFill"           , 0);
    fSleeperLength      = env.GetValue("TSplineXDialog.SleeperLength"     , 0);
    fSleeperDist        = env.GetValue("TSplineXDialog.SleeperDist"       , 5);
    fSleeperWidth       = env.GetValue("TSplineXDialog.SleeperWidth"      , 2);

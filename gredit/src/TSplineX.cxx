@@ -1405,7 +1405,7 @@ Int_t TSplineX::PointByDist(Double_t dist)
 void TSplineX::SetSleeperColor(Color_t color)
 {
 	fSleeperColor = color;
-   SetLineColor(color);
+//   SetLineColor(color);
    if (fDPolyLines.GetSize() > 0) {
       TIter next(&fDPolyLines);
       RailwaySleeper * rs;
@@ -1415,6 +1415,7 @@ void TSplineX::SetSleeperColor(Color_t color)
       }
       gPad->Update();
    }
+   Paint();
 }
 //_____________________________________________________________________________________
 
