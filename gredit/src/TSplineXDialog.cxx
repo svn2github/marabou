@@ -63,21 +63,25 @@ to gage: e.g 1.4\n\
    fValp[ind++] = &fArrow_at_end;
    fRow_lab->Add(new TObjString("CheckButton+Fill Arrow"));
    fValp[ind++] = &fArrow_filled;
-   fRow_lab->Add(new TObjString("DoubleValue_ArLen"));
+   fRow_lab->Add(new TObjString("DoubleValue_Arrow Len"));
    fValp[ind++] = &fArrow_size;
-   fRow_lab->Add(new TObjString("DoubleValue+ArAng"));
+   fRow_lab->Add(new TObjString("DoubleValue+Arrow Ang"));
    fValp[ind++] = &fArrow_angle;
-   fRow_lab->Add(new TObjString("DoubleValue+InAng"));
+   fRow_lab->Add(new TObjString("DoubleValue+IndentAng"));
    fValp[ind++] = &fArrow_indent_angle;
 //   fRow_lab->Add(new TObjString("CheckButton_Railway (double line)"));
 //   fValp[ind++] = &railway;
-   fRow_lab->Add(new TObjString("DoubleValue_RailGage"));
+
+   fRow_lab->Add(new TObjString("ComboSelect_RailOpt;SimpleLine;DoubleLine;AsInMap;Sleepers"));
+   fValp[ind++] = &fRailOption;
+   fRow_lab->Add(new TObjString("DoubleValue+RailGage"));
    fValp[ind++] = &fGage;
-   fRow_lab->Add(new TObjString("DoubleValue+Sl Length"));
-   fValp[ind++] = &fSleeperLength;
    fRow_lab->Add(new TObjString("DoubleValue+Sl Dist"));
    fValp[ind++] = &fSleeperDist;
-   fRow_lab->Add(new TObjString("PlainShtVal_Sl Width"));
+   
+   fRow_lab->Add(new TObjString("DoubleValue_Sl Length"));
+   fValp[ind++] = &fSleeperLength;
+   fRow_lab->Add(new TObjString("PlainShtVal+Sl Width"));
    fValp[ind++] = &fSleeperWidth;
    fRow_lab->Add(new TObjString("ColorSelect+Sl Color"));
    fValp[ind++] = &fSleeperColor;
@@ -152,8 +156,9 @@ void TSplineXDialog::Draw_The_TSplineX()
 		new TSplineX(npoints, x, y, shape_factors.GetArray(), fPrec, closed_spline);
 #endif	
 	TString drawopt("L");
+	xsp->SetParallelFill(fDoFill);
 	if (fDoFill >0) drawopt="LF";
-   xsp->Draw("L");
+   xsp->Draw(drawopt);
    xsp->SetFillColor(fFcolor);
    xsp->SetFillStyle(fFstyle);
    xsp->SetLineColor(fColor);
@@ -162,7 +167,20 @@ void TSplineXDialog::Draw_The_TSplineX()
    xsp->SetSleeperLength(fSleeperLength);
    xsp->SetSleeperDist(fSleeperDist);
    xsp->SetSleeperWidth(fSleeperWidth);
-   if (fGage > 0)xsp->SetRailwaylike(fGage);
+   xsp->SetSleeperColor(fSleeperColor);
+   cout << "fRailOption " << fRailOption<< endl;
+   if (fRailOption != "SimpleLine") {
+		xsp->SetRailwaylike(fGage);
+		xsp->SetDrawAsInMap(0);
+		xsp->SetDrawSleepers(0);
+		if (fRailOption == "AsInMap") {
+			xsp->SetDrawSleepers(0);
+			xsp->SetDrawAsInMap(1);
+		} else if (fRailOption == "Sleepers") {
+			xsp->SetDrawSleepers(1);
+			xsp->SetDrawAsInMap(0);
+		}
+	}
    if (fShowcp > 0) xsp->DrawControlPoints(0, 0);
    Bool_t afilled;
    if (fArrow_filled == 0) afilled = kFALSE;
@@ -190,9 +208,11 @@ void TSplineXDialog::SaveDefaults()
    env.SetValue("TSplineXDialog.Fcolor"            , fFcolor            );
    env.SetValue("TSplineXDialog.Fstyle"            , fFstyle            );
    env.SetValue("TSplineXDialog.fDoFill"       		,fDoFill);
+   env.SetValue("TSplineXDialog.fRailOption"       ,fRailOption);
    env.SetValue("TSplineXDialog.SleeperLength"     , fSleeperLength     );
    env.SetValue("TSplineXDialog.SleeperDist"       , fSleeperDist       );
    env.SetValue("TSplineXDialog.SleeperWidth"      , fSleeperWidth      );
+   env.SetValue("TSplineXDialog.SleeperColor"      , fSleeperColor      );
    env.SetValue("TSplineXDialog.Gage"              , fGage              );
    env.SetValue("TSplineXDialog.Arrow_at_start"    , fArrow_at_start    );
    env.SetValue("TSplineXDialog.Arrow_at_end"      , fArrow_at_end      );
@@ -218,9 +238,11 @@ void TSplineXDialog::RestoreDefaults()
    fFcolor             = env.GetValue("TSplineXDialog.Fcolor"            , 4);
    fFstyle             = env.GetValue("TSplineXDialog.Fstyle"            , 0);
    fDoFill             = env.GetValue("TSplineXDialog.fDoFill"           , 0);
-   fSleeperLength      = env.GetValue("TSplineXDialog.SleeperLength"     , 0);
+   fRailOption         = env.GetValue("TSplineXDialog.fRailOption"       , "SimpleLine");
+   fSleeperLength      = env.GetValue("TSplineXDialog.SleeperLength"     , 1.5);
    fSleeperDist        = env.GetValue("TSplineXDialog.SleeperDist"       , 5);
    fSleeperWidth       = env.GetValue("TSplineXDialog.SleeperWidth"      , 2);
+   fSleeperColor       = env.GetValue("TSplineXDialog.SleeperColor"      , 50);
    fGage               = env.GetValue("TSplineXDialog.Gage"              , 0);
    fArrow_at_start     = env.GetValue("TSplineXDialog.Arrow_at_start"    , 0);
    fArrow_at_end       = env.GetValue("TSplineXDialog.Arrow_at_end"      , 0);

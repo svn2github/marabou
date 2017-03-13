@@ -234,6 +234,8 @@ private:
    Bool_t        fClosed;
    Int_t         fRailwaylike;
    Double_t      fRailwayGage;
+   Int_t			fDrawSleepers;
+   Int_t			fDrawAsInMap;
    Double_t      fSleeperLength;      // draw like railway in maps
    Double_t      fSleeperDist;       // space in between
    Color_t       fSleeperColor;
@@ -340,6 +342,11 @@ public:
                             Width_t width=0, Style_t style=0);        // *MENU*
    TObjArray* GetParallelGraphs() {return &fPGraphs;};
    void     NeedReCompute()                {fComputeDone = kFALSE;};
+   
+   Int_t		GetDrawSleepers() {return fDrawSleepers;};
+   Int_t		GetDrawAsInMap() {return fDrawAsInMap;};
+   void		SetDrawSleepers(Int_t val) {fDrawSleepers = val;};
+   void		SetDrawAsInMap(Int_t val) {fDrawAsInMap = val ;};
 
    void     SetRailwaylike (Double_t gage = 4);                       // *MENU*
    Int_t    IsRailwaylike()                {return fRailwaylike;};

@@ -121,7 +121,7 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
 
    TGCompositeFrame *f2 = new TGCompositeFrame(fg0, 50, 20, kHorizontalFrame);
    label = new TGLabel(f2, "Length");
-//    f2->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 12, 1, 0, 3));
+   f2->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 19, 1, 0, 3));
    fArrowLength = new TGNumberEntry(f2, 10, 4, kARROW_LENGTH);
    fArrowLength->GetNumberEntry()->SetToolTipText("Arrow Length");
    f2->AddFrame(fArrowLength, new TGLayoutHints(kLHintsExpandX, 8, 1, 1, 1));
@@ -129,7 +129,7 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
 
    TGCompositeFrame *f3 = new TGCompositeFrame(fg0, 50, 20, kHorizontalFrame);
    label = new TGLabel(f3, "Angle");
-   f3->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 19, 1, 0, 3));
+   f3->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 31, 1, 0, 3));
    fArrowAngle = new TGNumberEntry(f3, 30, 4, kARROW_ANGLE);
    fArrowAngle->GetNumberEntry()->SetToolTipText("Arrow Opening Angle");
    f3->AddFrame(fArrowAngle, new TGLayoutHints(kLHintsRight, 6, 1, 1, 1));
@@ -137,39 +137,54 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
 
    TGCompositeFrame *f4 = new TGCompositeFrame(fg0, 50, 20, kHorizontalFrame);
    label = new TGLabel(f4, "IndAngle");
-   f4->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
+   f4->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 8, 1, 0, 3));
    fArrowIndentAngle = new TGNumberEntry(f4, 0., 4, kARROW_INDENTANGLE);
    fArrowIndentAngle->GetNumberEntry()->SetToolTipText("Arrow Indent Angle");
-   f4->AddFrame(fArrowIndentAngle, new TGLayoutHints(kLHintsRight, 7, 1, 1, 1));
+   f4->AddFrame(fArrowIndentAngle, new TGLayoutHints(kLHintsRight, 4, 1, 1, 1));
    fg0->AddFrame(f4, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
    AddFrame(fg0, new TGLayoutHints(kLHintsTop, 1, 1, 1, 1));
 
    TGGroupFrame *fg1 = new TGGroupFrame(this, "Railway options");
 
    TGCompositeFrame *f6 = new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
-   label = new TGLabel(f6, "Gage");
-   f6->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 21, 1, 0, 3));
+   label = new TGLabel(f6, " Gage ");
+   f6->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 10, 1, 0, 3));
    fRailwayGage = new TGNumberEntry(f6, 10, 4, kARROW_LENGTH);
    fRailwayGage->GetNumberEntry()->SetToolTipText("Railway gage");
    f6->AddFrame(fRailwayGage, new TGLayoutHints(kLHintsExpandX, 7, 1, 1, 1));
    fg1->AddFrame(f6, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
    TGCompositeFrame *f7 = new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
-   label = new TGLabel(f7, "Sleeper Len");
+   label = new TGLabel(f7, "SleepLen");
    f7->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
    fSleeperLength = new TGNumberEntry(f7, 10, 4, kARROW_LENGTH);
    fSleeperLength->GetNumberEntry()->SetToolTipText("Railway sleeper length");
-   f7->AddFrame(fSleeperLength, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
+   f7->AddFrame(fSleeperLength, new TGLayoutHints(kLHintsExpandX, 3, 1, 1, 1));
    fg1->AddFrame(f7, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
-
    TGCompositeFrame *f8 = new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
-   label = new TGLabel(f8, "Sleeper Dist");
+   label = new TGLabel(f8, "SleepDst");
    f8->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
    fSleeperDist = new TGNumberEntry(f8, 10, 4, kARROW_LENGTH);
    fSleeperDist->GetNumberEntry()->SetToolTipText("Railway sleeper dist");
    f8->AddFrame(fSleeperDist, new TGLayoutHints(kLHintsExpandX, 1, 1, 0, 1));
    fg1->AddFrame(f8, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
+
+   TGCompositeFrame *f81= new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
+   label = new TGLabel(f81, "SleepWid");
+   f81->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
+   fSleeperWidth = new TGNumberEntry(f81, 10, 4, kARROW_LENGTH);
+   fSleeperWidth->GetNumberEntry()->SetToolTipText("Railway sleeper width");
+   f81->AddFrame(fSleeperWidth, new TGLayoutHints(kLHintsExpandX, 1, 1, 0, 1));
+   fg1->AddFrame(f81, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
+   
+   TGCompositeFrame *f82= new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
+   label = new TGLabel(f82, "SleepCol");
+   f82->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
+   fSleeperColor = new TGColorSelect(f82, 0, kCOLOR);
+   f82->AddFrame(fSleeperColor, new TGLayoutHints(kLHintsExpandX, 1, 1, 0, 1));
+   fg1->AddFrame(f82, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
+   
    AddFrame(fg1, new TGLayoutHints(kLHintsTop, 1, 1, 1, 1));
 
    TGCompositeFrame *f9 = new TGCompositeFrame(this, 50, 20, kVerticalFrame);
@@ -183,7 +198,7 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
    fAddParallel->SetToolTipText("Add a parallel line ");
 //   fAddParallel->Resize(60, fAddParallel->GetDefaultHeight());
    f10->AddFrame(fAddParallel, new TGLayoutHints(kLHintsLeft, 2, 1, 0, 3));
-   label = new TGLabel(f10, "Dist ");
+   label = new TGLabel(f10, "Dist");
    f10->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 2, 1, 0, 3));
    fDistParallelEntry = new TGNumberEntry(f10, 10, 4, kDISTPARALLEL);
    fDistParallelEntry ->GetNumberEntry()->SetToolTipText("Distance to TSplineX");
@@ -284,12 +299,15 @@ void TSplineXEditor::ConnectSignals2Slots()
    (fRailwayGage->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoRailwayGage())");
    (fSleeperLength->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoSleeperLength())");
    (fSleeperDist->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoSleeperDist())");
+   (fSleeperWidth->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoSleeperWidth())");
    (fArrowLength)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoArrowLength())");
    (fArrowAngle)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoArrowAngle())");
    (fArrowIndentAngle)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoArrowIndentAngle())");
    (fRailwayGage)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoRailwayGage())");
    (fSleeperLength)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoSleeperLength())");
    (fSleeperDist)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoSleeperDist())");
+   (fSleeperWidth)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoSleeperWidth())");
+    fSleeperColor->Connect("ColorSelected(Pixel_t)","TSplineXEditor",this,"DoSetSleeperColor())");
    (fDistParallelEntry->GetNumberEntry())->Connect("ReturnPressed()","TSplineXEditor",this,"DoDistParallelEntry())");
    (fDistParallelEntry)->Connect("ValueSet(Long_t)","TSplineXEditor",this,"DoDistParallelEntry())");
    (fDistParallelEntry)->Connect("ValueChanged(Long_t)","TSplineXEditor",this,"DoDistParallelEntry())");
@@ -363,6 +381,9 @@ void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
    fSleeperLength->SetNumber(val);
    val = fSplineX->GetSleeperDist();
    fSleeperDist->SetNumber(val);
+   val = (Double_t)fSplineX->GetSleeperWidth();
+   fSleeperWidth->SetNumber(val);
+   fSleeperColor->SetColor(GetColorPixelByInd(fSplineX->GetSleeperColor()));
 
    fDistParallel = 10;
    fDistParallelEntry->SetNumber(fDistParallel);
@@ -548,6 +569,24 @@ void TSplineXEditor::DoSleeperDist()
    fSplineX->SetSleeperDist(fSleeperDist->GetNumber());
    fSplineX->NeedReCompute();
    fSplineX->Paint();
+}
+//______________________________________________________________________________
+
+void TSplineXEditor::DoSleeperWidth()
+{
+//    std::cout << "DoSleeperDist() " << fSleeperDist->GetNumber() << std::endl;
+   fSplineX->SetSleeperWidth((Width_t)fSleeperWidth->GetNumber());
+   fSplineX->NeedReCompute();
+   fSplineX->Paint();
+}
+//______________________________________________________________________________
+
+void TSplineXEditor::DoSetSleeperColor()
+{
+	Int_t col = fSleeperColor->GetColor();
+	Color_t val =  TColor::GetColor((Int_t)col);
+//      std::cout << "DoSetTextColor " <<val<< std::endl;
+	fSplineX->SetSleeperColor(val);
 }
 //______________________________________________________________________________
 

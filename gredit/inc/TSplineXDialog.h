@@ -31,7 +31,7 @@ private:
 	Color_t  fFcolor;  
 	Style_t  fFstyle; 
 	Int_t		fDoFill; 
-
+	TString	fRailOption;
 	Double_t fSleeperLength;		  
 	Double_t fSleeperDist; 		  
 	Width_t  fSleeperWidth; 		  

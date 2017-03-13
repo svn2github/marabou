@@ -591,40 +591,6 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
 // calculated for the resulting smooth curve.
 // The controlpoints of TSplineX are stored in its TGraph parent.
 //
-/*
-   fControlPointList = 0;
-   fShapeFactorList = 0;
-   fPrec = prec;
-   fClosed = closed;
-   fNofControlPoints = 0;
-   fNpoints = 0;
-   fComputeDone = kFALSE;
-   fCPDrawn = kFALSE;
-//   fNP = 0;
-   fRailL = NULL;
-   fRailR = NULL;
-   fRailwaylike = 0;
-   fRailwayGage = 0;
-   fSleeperLength = 0;
-   fSleeperDist = 0;
-   fMStyle = 24;
-   fMSize = 2;
-	fLineStyle = 1;
-	fLineWidth = 2;
-	fLineColor = 1;
-	fFillColor = 4;
-	fFillStyle = 1001;
-   fParallelFill = 0;
-   fArrowAtStart = NULL;
-   fArrowAtEnd   = NULL;
-   fPaintArrowAtStart = kFALSE;
-   fPaintArrowAtEnd   = kFALSE;
-   fArrowFill    = 0;
-   fArrowLength = 10;
-   fArrowAngle  = 30;
-   fArrowIndentAngle = 15;
-   fTextList = NULL;
-*/
 	Double_t ww = (Double_t)gPad->GetWw();
 	Double_t wh = (Double_t)gPad->GetWh();
 	Double_t pxrange = gPad->GetAbsWNDC()*ww;
@@ -1177,11 +1143,16 @@ void TSplineX::Paint(Option_t * /*optin*/)
    if (fPaintArrowAtEnd)   PaintArrow(1);
 
    PaintText();
-   if (fRailwaylike > 0) {
+   PolyLineNoEdit * pl = NULL;
+   ParallelGraph *lg = NULL;
+   ParallelGraph *rg = NULL;
+   if (fRailwaylike <= 0) {
+		return;
+   } else {
       if (fRailL == 0) SetRailwaylike(fRailwayGage);
 //  fill parallel graphs
-      ParallelGraph *lg = fRailL;
-      ParallelGraph *rg = fRailR;
+      lg = fRailL;
+      rg = fRailR;
    	lg->SetLineColor(GetLineColor());
    	rg->SetLineColor(GetLineColor());
    	lg->SetLineWidth(GetLineWidth());
@@ -1191,7 +1162,7 @@ void TSplineX::Paint(Option_t * /*optin*/)
       npoints += rg->GetLastPoint()+1;
       if (fPaintArrowAtEnd) npoints += 3;
       if (fPaintArrowAtStart) npoints += 3;
-      PolyLineNoEdit * pl = new PolyLineNoEdit(npoints);
+      pl = new PolyLineNoEdit(npoints);
       Double_t * x = pl->GetX();
       Double_t * y = pl->GetY();
       Double_t * px = rg->GetX();
@@ -1227,42 +1198,33 @@ void TSplineX::Paint(Option_t * /*optin*/)
       pl->SetLineColor(GetLineColor());
       pl->SetLineWidth(GetLineWidth());
       fDPolyLines.Add(pl);
-      if (fParallelFill || GetFillStyle() != 0) {
+      if (fParallelFill && GetFillStyle() != 0) {
          pl->SetFillStyle(GetFillStyle());
          pl->SetFillColor(GetFillColor());
-//         pl->Draw("F");
          pl->Paint("F");
-//         lg->Pop();
-//         rg->Pop();
          if (fPaintArrowAtEnd) fArrowAtEnd->Pop();
          if (fPaintArrowAtStart) fArrowAtStart->Pop();
-      }
-
-      if (fClosed) {
-//  avoid closing line at end
-          rg->Paint("L");
-          lg->Paint("L");
       } else {
-         pl->Paint("L");
-      }
+			pl->Paint("L");
+		}
    }
    fPaintArrowAtStart = aas;
    fPaintArrowAtEnd   = aae;
    gPad->Modified();
    gPad->Update();
 
-   if (fSleeperDist <= 0 || fRailwaylike <= 0) {
-      return;
-   }
+   if (fDrawAsInMap == 0 && fDrawSleepers == 0 || fSleeperDist <= 0 ) {
+		return;
+	}
 
 //  draw railway sleepers
-   ParallelGraph* lg = fRailL;
-   ParallelGraph* rg = fRailR;
+   lg = fRailL;
+   rg = fRailR;
    if (lg->GetLastPoint()+1 != rg->GetLastPoint()+1 || lg->GetLastPoint()+1 < 4) {
       cout << "Not enough points on spline" << endl;
       return;
    }
-   RailwaySleeper * pl;
+   RailwaySleeper * rwsl;
    Double_t xp[5], yp[5];
    Double_t * xc = this->GetX();
    Double_t * yc = this->GetY();
@@ -1282,14 +1244,14 @@ void TSplineX::Paint(Option_t * /*optin*/)
 // otherwise
 // draw a filled box with length fSleeperDist alternating
 // with white space as used in maps
+
 	Int_t np = 5;
 //	TString drawopt("f");
 	Double_t dist_btw_sleepers = fSleeperDist;
-	Color_t col = this->GetLineColor();
-	if (fSleeperLength > 0 ){
+	Color_t col = this->GetSleeperColor();
+	if (fDrawSleepers> 0 ){
 		dist *= fSleeperLength;
 		dist_btw_sleepers = fSleeperDist;
-		col = this->GetSleeperColor();
 		np = 2;
 //		drawopt="l";
 	}
@@ -1311,8 +1273,8 @@ void TSplineX::Paint(Option_t * /*optin*/)
    yp[1] = ay2;
    // case real sleeper, put sleeper at start
    if ( np == 2 ) {
-		pl = new RailwaySleeper(xp, yp, this, col, np);
-      fDPolyLines.Add(pl);
+		rwsl = new RailwaySleeper(xp, yp, this, col, np);
+      fDPolyLines.Add(rwsl);
    }
    available = Length(xc[0], yc[0], xc[1], yc[1]);
    needed = dist_btw_sleepers;
@@ -1345,8 +1307,8 @@ void TSplineX::Paint(Option_t * /*optin*/)
 			yp[4] = yp[0];
 //			for (Int_t i=0; i <5; i++) 
 //				cout <<"xp["<< i << "] \t" << xp[i] <<" yp[" << i << "] \t" << yp[i] <<endl;
-			pl = new RailwaySleeper(xp, yp, this, col, np);
-			fDPolyLines.Add(pl);
+			rwsl = new RailwaySleeper(xp, yp, this, col, np);
+			fDPolyLines.Add(rwsl);
 //			pl->Paint(drawopt);
 			within_sleeper = kFALSE;
 		} else {
@@ -1357,8 +1319,8 @@ void TSplineX::Paint(Option_t * /*optin*/)
 			within_sleeper = kTRUE;
 		}
 		if (np == 2) {
-			pl = new RailwaySleeper(xp, yp, this, col, np);
-			fDPolyLines.Add(pl);
+			rwsl = new RailwaySleeper(xp, yp, this, col, np);
+			fDPolyLines.Add(rwsl);
 //			pl->Paint(drawopt);
 		}
 		available -= needed;
@@ -1376,10 +1338,18 @@ ENDOFSPLINE:
       xp[4] = xp[0];
       yp[4] = yp[0];
       
-      pl = new RailwaySleeper(xp, yp, this, col, np);
-      fDPolyLines.Add(pl);
+      rwsl = new RailwaySleeper(xp, yp, this, col, np);
+      fDPolyLines.Add(rwsl);
 //      pl->Paint(drawopt);
    }
+   if (fClosed || fRailwaylike>0) {
+//  avoid closing line at end
+		rg->Paint("L");
+		lg->Paint("L");
+	} else {
+		pl->Paint("L");
+	}
+
    gPad->Modified();
    gPad->Update();
 }
@@ -2176,15 +2146,12 @@ RailwaySleeper::RailwaySleeper(Double_t * x, Double_t * y,
    // railway sleepers are special filled polylines,
    // its ExecuteEvent method is diverted to its TSplineX parent
 	SetLineColor(color);
-	if (parent->GetSleeperLength() > 0) {
-		SetLineWidth(parent->GetSleeperWidth());
-	} else {
+	if ( np == 5) {
 		SetFillColor(color);
 		SetFillStyle(1003);
-	}
-	if ( np == 5) {
 		Paint("f");
 	} else {
+		SetLineWidth(parent->GetSleeperWidth());
 		Paint("l");
 	}
 }

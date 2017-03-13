@@ -55,6 +55,8 @@ protected:
    TGNumberEntry       *fRailwayGage;    //
    TGNumberEntry       *fSleeperLength;    //
    TGNumberEntry       *fSleeperDist;    //
+   TGNumberEntry       *fSleeperWidth;    //
+   TGColorSelect       *fSleeperColor;
    TGTextButton        *fControlGraphMixer;    //
    TGTextButton        *fAddParallel;    //
    TGNumberEntry       *fDistParallelEntry;    //
@@ -101,6 +103,8 @@ public:
    virtual void DoRailwayGage();
    virtual void DoSleeperLength();
    virtual void DoSleeperDist();
+   virtual void DoSleeperWidth();
+   virtual void DoSetSleeperColor();
    virtual void DoControlGraphMixer();
    virtual void DoAddParallel();
    virtual void DoDistParallelEntry();
