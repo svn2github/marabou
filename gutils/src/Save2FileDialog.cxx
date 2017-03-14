@@ -56,10 +56,10 @@ more than one level of subdirs is allowed";
    valp[ind++] = &fDir;
    row_lab->Add(new TObjString("StringValue_Save object with name"));
    valp[ind++] = &fObjName;
-   if ( obj->InheritsFrom("TH1") ){ 
-      row_lab->Add(new TObjString("CheckButton_Save hist with current ranges only"));
-		valp[ind++] = &fHistInRange;
-	}
+//   if ( obj->InheritsFrom("TH1") ){ 
+//      row_lab->Add(new TObjString("CheckButton_Save hist with current ranges only"));
+//		valp[ind++] = &fHistInRange;
+//	}
    if (fList) {
       row_lab->Add(new TObjString("CheckButton_Write functions as list"));
       valp[ind++] = &fAsList;
@@ -132,6 +132,7 @@ void Save2FileDialog::ExecuteSave()
    TNamed * objorig = 0;
    if (fObject->InheritsFrom("TNamed"))
 		objorig = (TNamed*)fObject;
+	/*
 	if ( fObject->InheritsFrom("TH1") ) {
 		TH1* ohist = (TH1*)fObject;
 		cout << "Save2FileDialog: TH1 " << ohist->GetName() << endl;
@@ -211,6 +212,7 @@ void Save2FileDialog::ExecuteSave()
 			fObject = nhist;
 		}
 	}
+	*/
 	TString sname;
 	TNamed * tn = NULL;
 	if ( fObject->InheritsFrom("TNamed") ) {
