@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
 #include <math.h>
 #include <string.h>
 #include <ces/uiocmd.h>
@@ -30,6 +31,10 @@
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
+
+void catchBerr();
+void(*signal(sig, func))();
+bool_t busError;
 
 int numData;
 int rdoWc;
@@ -65,6 +70,8 @@ struct s_madc32 * madc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 		firmware = GET16(s->md->vmeBase, MADC32_FIRMWARE_REV);
 		mainRev = (firmware >> 8) & 0xff;
 		s->memorySize = (mainRev >= 2) ? (8*1024 + 2) : (1024 + 2);
+		
+		busError = FALSE;
 	} else {
 		sprintf(msg, "[%salloc] %s: Can't allocate madc32 struct", s->mpref, s->moduleName);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -556,6 +563,13 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	sprintf(res, "MADC32.%s.MultiEvent", mnUC);
 	s->multiEvent = root_env_getval_i(res, MADC32_MULTI_EVENT_DEFAULT);
 
+	if ((s->multiEvent & MADC32_MULTI_EVENT_BERR) == 0) {
+		sprintf(msg, "[%sfill_struct] %s: Readout with BERR enabled", s->mpref, s->moduleName);
+	} else {
+		sprintf(msg, "[%sfill_struct] %s: Readout with EOB enabled", s->mpref, s->moduleName);
+	}
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+
 	sprintf(res, "MADC32.%s.XferData", mnUC);
 	s->xferData = root_env_getval_i(res, MADC32_MAX_XFER_DATA_DEFAULT);
 
@@ -826,19 +840,9 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	int sts;
 
 	dataStart = pointer;
-        /*
-	tryIt = 20;
-	while (tryIt-- && !madc32_dataReady(s)) { usleep(1000); }
-        */
-
-	numData = (int) madc32_getFifoLength(s);	
-	nd = (int) madc32_getFifoLength(s);
-	  
-	tryIt = 10;
-	while (tryIt-- && (nd != numData)) {
-		numData = nd;
-		nd = (int) madc32_getFifoLength(s);
-	}
+ 
+ 	numData = (int) madc32_getFifoLength(s);
+	
 	if (numData == 0) return(0);
 
 	if (tryIt <= 0) {
@@ -863,16 +867,37 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 		}
 			
 		pointer += numData;
-	} else {
-		for (i = 0; i < numData; i++) {
+	} else if ((s->multiEvent & MADC32_MULTI_EVENT_BERR) == 0) {
+		busError = FALSE;
+		nd = 0;
+		signal(SIGBUS, catchBerr);
+		while (1) {
+			nd++;
 			data = GET32(s->md->vmeBase, MADC32_DATA);
+			if (busError) {
+				signal(SIGBUS, SIG_DFL);
+				busError = FALSE;
+				break;
+			}
 			if (i == 0) {
 				if ((data & 0xF0000000) != 0x40000000) {
-					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x)", s->mpref, s->moduleName, data);
+					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
 					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 				}
 			}	
-			if (data != 0x80000000) *pointer++ = data;
+			*pointer++ = data;
+		}
+	} else {
+		while (1) {
+			data = GET32(s->md->vmeBase, MADC32_DATA);
+			if (i == 0) {
+				if ((data & 0xF0000000) != 0x40000000) {
+					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
+					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+				}
+			}	
+			if (data == 0x80000000) break;
+			*pointer++ = data;
 		}
 	}
 
@@ -1082,3 +1107,5 @@ void madc32_resetTimestamp_mcst(struct s_madc32 * s)
 uint32_t * madc32_repairRawData(struct s_madc32 * s, uint32_t * pointer, uint32_t * dataStart) {
 	return pointer;
 }
+
+void catchBerr() { busError = TRUE; }

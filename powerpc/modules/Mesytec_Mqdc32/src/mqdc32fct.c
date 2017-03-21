@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
 #include <math.h>
 #include <string.h>
 #include <ces/uiocmd.h>
@@ -30,6 +31,17 @@
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
+
+
+void catchBerr();
+void(*signal(sig, func))();
+bool_t busError;
+
+int numData;
+int rdoWc;
+
+int evtWc;
+int lastData;
 
 char msg[256];
 
@@ -56,6 +68,8 @@ struct s_mqdc32 * mqdc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 		firmware = GET16(s->md->vmeBase, MQDC32_FIRMWARE_REV);
 		mainRev = (firmware >> 8) & 0xff;
 		s->memorySize = (mainRev >= 2) ? (8*1024 + 2) : (1024 + 2);
+		
+		busError = FALSE;
 	} else {
 		sprintf(msg, "[%salloc] %s: Can't allocate mqdc32 struct", s->mpref, s->moduleName);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -522,6 +536,13 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 
 	sprintf(res, "MQDC32.%s.MultiEvent", mnUC);
 	s->multiEvent = root_env_getval_i(res, MQDC32_MULTI_EVENT_DEFAULT);
+	
+	if ((s->multiEvent & MQDC32_MULTI_EVENT_BERR) == 0) {
+		sprintf(msg, "[%sfill_struct] %s: Readout with BERR enabled", s->mpref, s->moduleName);
+	} else {
+		sprintf(msg, "[%sfill_struct] %s: Readout with EOB enabled", s->mpref, s->moduleName);
+	}
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	sprintf(res, "MQDC32.%s.XferData", mnUC);
 	s->xferData = root_env_getval_i(res, MQDC32_MAX_XFER_DATA_DEFAULT);
@@ -794,17 +815,8 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 
 	dataStart = pointer;
 
-/*	tryIt = 20;
-	while (tryIt-- && !mqdc32_dataReady(s)) { usleep(1000); } */
-
 	numData = (int) mqdc32_getFifoLength(s);	
-	nd = (int) mqdc32_getFifoLength(s);
 	
-	tryIt = 10;
-	while (tryIt-- && (nd != numData)) {
-		numData = nd;
-		nd = (int) mqdc32_getFifoLength(s);
-	}
 	if (numData == 0) return(0);
 
 	if (tryIt <= 0) {
@@ -827,16 +839,37 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 			return(0);
 		}
 		pointer += numData;
-	} else {
-		for (i = 0; i < numData; i++) {
+	} else if ((s->multiEvent & MQDC32_MULTI_EVENT_BERR) == 0) {
+		busError = FALSE;
+		nd = 0;
+		signal(SIGBUS, catchBerr);
+		while (1) {
+			nd++;
 			data = GET32(s->md->vmeBase, MQDC32_DATA);
+			if (busError) {
+				signal(SIGBUS, SIG_DFL);
+				busError = FALSE;
+				break;
+			}
 			if (i == 0) {
 				if ((data & 0xF0000000) != 0x40000000) {
-					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x)", s->mpref, s->moduleName, data);
+					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
 					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 				}
 			}	
-			if (data != 0x80000000) *pointer++ = data;
+			*pointer++ = data;
+		}
+	} else {
+		while (1) {
+			data = GET32(s->md->vmeBase, MQDC32_DATA);
+			if (i == 0) {
+				if ((data & 0xF0000000) != 0x40000000) {
+					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
+					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+				}
+			}	
+			if (data == 0x80000000) break;
+			*pointer++ = data;
 		}
 	}
 
@@ -1048,3 +1081,5 @@ uint32_t * mqdc32_repairRawData(struct s_mqdc32 * s, uint32_t * pointer, uint32_
 	return pointer;
 }
 
+
+void catchBerr() { busError = TRUE; }
