@@ -932,7 +932,12 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 		if (env.Defined("FitOneDimDialog.fFormula")) {
 			form = env.GetValue("FitOneDimDialog.fFormula", "[0]+[1]*x + [2]*x*x");
 			TFormula ff("NNN", form);
-			if (!ff.IsValid()) {
+#if ROOTVERSION >= 60000
+			if (!ff.IsValid())
+#else
+			if (!ff.GetNdim() <= 0)
+#endif
+			{
 				cout << setred << "Formula: " << form << " is not valid " << endl;
 				return -2;
 			}
