@@ -25,7 +25,7 @@
 
 									/* init module $moduleNameLC at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-					s_$moduleNameLC = mtdc32_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
+					if (s_$moduleNameLC == 0) s_$moduleNameLC = mtdc32_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
  					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
 					mtdc32_moduleInfo(s_$moduleNameLC);						/* read module info */
 					mtdc32_soft_reset(s_$moduleNameLC);	 						/* reset module */
@@ -151,7 +151,7 @@
 %%DEFINE_PROTOTYPES%%
 
 %%BeginOfCode%%
-static struct s_mtdc32 * s_$moduleName;
+static struct s_mtdc32 * s_$moduleName = 0;
 %%EndOfCode%%
 %%DEFINE_GLOBALS%%
 

@@ -215,7 +215,7 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 																frameGC, labelGC);
 	HEAP(fNofEvtsBuf);
 	fNofEvtsBuf->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fNofEvtsBuf->SetText(100);
+	fNofEvtsBuf->SetText(10);
 	fTraceFrame->AddFrame(fNofEvtsBuf, frameGC->LH());
 
 // mode
@@ -301,9 +301,9 @@ void VMESis3302StartHistoPanel::StartGUI() {
 	fMaxEnergy->GetTextEntry()->SetEnabled(kTRUE);
 	fMaxEnergy->SetText(fEmax);
 	fMaxEnergy->GetTextEntry()->SetEnabled(kFALSE);
-	fHsize = 16;
+	fHsize = 8;
 	fHistoSize->SetText(fHsize);
-	fEfac = 1.0;
+	fEfac = 0.5;
 	fEnergyFactor->SetText(fEfac);
 
 	fLofHistos.Delete();

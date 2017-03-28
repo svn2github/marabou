@@ -12,7 +12,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <sigcontext.h>
 #include <signal.h>
 #include <math.h>
 #include <string.h>
@@ -33,8 +32,6 @@
 #include "err_mask_def.h"
 #include "errnum_def.h"
 
-
-void catchBerr();
 void(*signal(sig, func))();
 bool_t busError;
 
@@ -48,6 +45,7 @@ char msg[256];
 
 struct s_mtdc32 * be;
 
+void mtdc32_catchBerr() { busError = TRUE; }
 
 struct s_mtdc32 * mtdc32_alloc(char * moduleName, struct s_mapDescr * md, int serial)
 {
@@ -68,6 +66,9 @@ struct s_mtdc32 * mtdc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 		s->cbltSignature = 0x0;
 		s->firstInChain = FALSE;
 		s->lastInChain = FALSE;
+		
+		s->mcstAddr = 0;
+		s->cbltAddr = 0;
 
 		firmware = GET16(s->md->vmeBase, MTDC32_FIRMWARE_REV);
 		mainRev = (firmware >> 8) & 0xff;
@@ -945,7 +946,7 @@ int mtdc32_readout(struct s_mtdc32 * s, uint32_t * pointer)
 	} else if ((s->multiEvent & MTDC32_MULTI_EVENT_BERR) == 0) {
 		busError = FALSE;
 		nd = 0;
-		signal(SIGBUS, catchBerr);
+		signal(SIGBUS, mtdc32_catchBerr);
 		while (1) {
 			nd++;
 			data = GET32(s->md->vmeBase, MTDC32_DATA);
@@ -1044,7 +1045,7 @@ void mtdc32_stopAcq(struct s_mtdc32 * s)
 void mtdc32_resetFifo(struct s_mtdc32 * s)
 {
 	SET16(s->md->vmeBase, MTDC32_FIFO_RESET, 0x1);
-}
+}void catchBerr();
 
 void mtdc32_setMcstCblt_db(struct s_mtdc32 * s) {
 	mtdc32_setMcstAddr(s, s->mcstSignature);
@@ -1057,8 +1058,15 @@ void mtdc32_setMcstCblt_db(struct s_mtdc32 * s) {
 void mtdc32_setMcstAddr(struct s_mtdc32 * s, unsigned long Signature) {
 	SET16(s->md->vmeBase, MTDC32_MCST_ADDRESS, Signature);
 	if (Signature != 0) {
-		s->mcstAddr = mapAdditionalVME(s->md, (Signature & 0xFF) << 24, 0);
-		if (s->mcstAddr) mtdc32_setMcstEnable(s); else mtdc32_setMcstDisable(s);
+		if (s->mcstAddr == 0) s->mcstAddr = mapAdditionalVME(s->md, (Signature & 0xFF) << 24, 0);
+		if (s->mcstAddr) {
+			mtdc32_setMcstEnable(s);
+			sprintf(msg, "[%ssetMcstAddr] %s: MCST enabled - signature=%#x, addr=%#x", s->mpref, s->moduleName, Signature, s->mcstAddr);
+		} else {
+			mtdc32_setMcstDisable(s);
+			sprintf(msg, "[%ssetMcstAddr] %s: MCST disabled - signature=%#x", s->mpref, s->moduleName, Signature);
+		}
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	} else {
 		mtdc32_setMcstDisable(s);
 	}
@@ -1087,8 +1095,15 @@ bool_t mtdc32_mcstIsEnabled(struct s_mtdc32 * s) {
 void mtdc32_setCbltAddr(struct s_mtdc32 * s, unsigned long Signature) {
 	SET16(s->md->vmeBase, MTDC32_CBLT_ADDRESS, Signature);
 	if (Signature != 0) {
-		s->cbltAddr = mapAdditionalVME(s->md, (Signature & 0xFF) << 24, 0);
-		if (s->cbltAddr) mtdc32_setCbltEnable(s); else mtdc32_setCbltDisable(s);
+		if (s->cbltAddr == 0) s->cbltAddr = mapAdditionalVME(s->md, (Signature & 0xFF) << 24, 0);
+		if (s->cbltAddr) {
+			mtdc32_setCbltEnable(s);
+			sprintf(msg, "[%ssetCbltAddr] %s: CBLT enabled - signature=%#x, addr=%#x", s->mpref, s->moduleName, Signature, s->cbltAddr);
+		} else {
+			mtdc32_setCbltDisable(s);
+			sprintf(msg, "[%ssetCbltAddr] %s: CBLT disabled - signature=%#x", s->mpref, s->moduleName, Signature);
+		}
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	} else {
 		mtdc32_setCbltDisable(s);
 	}
@@ -1184,5 +1199,4 @@ uint32_t * mtdc32_repairRawData(struct s_mtdc32 * s, uint32_t * pointer, uint32_
 	return pointer;
 }
 
-void catchBerr() { busError = TRUE; }
 

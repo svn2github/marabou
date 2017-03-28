@@ -175,7 +175,7 @@ MTDC32.$moduleName.EclTerm: 			$eclTerm
 
 # ECL trig1/osc (0x6064)        0  -->  trig1 (default)
 #                               1  -->  oscillator
-MTDC32.$moduleName.EclTrig1Osc:			$eclTrig1Osc
+MTDC32.$moduleName.EclT1Osc:			$eclT1Osc
 
 # trigger select (0x6068)       0  -->  from NIM inputs (default)
 #                               1  -->  from ECL inputs
@@ -183,7 +183,7 @@ MTDC32.$moduleName.TrigSelect:			$trigSelect
 
 # NIM trig1/osc (0x606A)        0  -->  trig1 (default)
 #                               1  -->  oscillator
-MTDC32.$moduleName.NimTrig1Osc:			$nimTrig1Osc
+MTDC32.$moduleName.NimT1Osc:			$nimT1Osc
 
 # NIM busy (0x606E)             0  -->  busy (default)
 #                               3  -->  cbus out

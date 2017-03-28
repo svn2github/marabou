@@ -614,7 +614,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 		default:
 			gMrbLog->Err()	<< "Illegal trigger number - #" << EventData->i_trigger << endl;
 			gMrbLog->Flush(this->ClassName(), "ProcessEvent");
-			return(kFALSE);
+			return(kTRUE);				// kTRUE -> ignore it, continue data taking!
 	}
 	return(kTRUE);
 }

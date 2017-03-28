@@ -600,10 +600,10 @@ TEnv * TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	this->UseGG(madcEnv->Get(moduleName.Data(), "UseGG", kUseGG0));
 	this->SetInputRange(madcEnv->Get(moduleName.Data(), "InputRange", kInpRng4V));
 	this->SetEclTerm(madcEnv->Get(moduleName.Data(), "EclTerm", kEclTermOn));
-	this->SetEclG1Osc(madcEnv->Get(moduleName.Data(), "EclG1Osc:EclG1OrOsc", kEclG1));
-	this->SetEclFclRts(madcEnv->Get(moduleName.Data(), "EclFclRts:EclFclOrRts", kEclFcl));
-	this->SetNimG1Osc(madcEnv->Get(moduleName.Data(), "NimG1Osc:NimG1OrOsc", kNimG1));
-	this->SetNimFclRts(madcEnv->Get(moduleName.Data(), "NimFclRts:NimFclOrRts", kNimFcl));
+	this->SetEclG1Osc(madcEnv->Get(moduleName.Data(), "EclG1Osc:EclG1Osc", kEclG1));
+	this->SetEclFclRts(madcEnv->Get(moduleName.Data(), "EclFclRts:EclFclRts", kEclFcl));
+	this->SetNimG1Osc(madcEnv->Get(moduleName.Data(), "NimG1Osc:NimG1Osc", kNimG1));
+	this->SetNimFclRts(madcEnv->Get(moduleName.Data(), "NimFclRts:NimFclRts", kNimFcl));
 	this->SetNimBusy(madcEnv->Get(moduleName.Data(), "NimBusy", kNimBusy));
 	this->SetBufferThresh(madcEnv->Get(moduleName.Data(), "BufferThresh", 0));
 	this->SetPulserStatus(madcEnv->Get(moduleName.Data(), "PulserStatus", 0));

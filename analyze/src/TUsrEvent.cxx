@@ -339,20 +339,7 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Int_t DeltaTS, Bool_t Fi
 	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
 		TUsrHBX * hb = this->GetHBX(hbx);
 		Int_t hidx = LofIndices[hbx];
-		if (hb && hidx != -1) {
-			Int_t nofHits = hb->GetNofHits();
-			for (Int_t idx = hidx; idx < nofHits; idx++) {	// inspect hit by hit
-				TUsrHit * h = hb->At(idx);
-				if ((h->GetChannelTime() - tsmin) <= DeltaTS) {	// belongs to event as long as within deltaTS
-					h->WriteToSevtData(Didx);
-					if (FillHisto) h->FillHistogram(Didx);
-					LofIndices[hbx] = idx;
-					foundHbx = kTRUE;
-				} else {
-					LofIndices[hbx] = -1;	// end of hitbuffer reached
-				}
-			}
-		}
+		LofIndices[hbx] = this->FillSevtFromHB(hb, hidx, DeltaTS, FillHisto, Didx);
 	}
 	return(foundHbx);
 }

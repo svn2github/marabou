@@ -147,11 +147,11 @@ MQDC32.$moduleName.EclTerm: 			$eclTerm
 
 # ECL gate1/osc (0x6064)        0  -->  gate1 (default)
 #                               1  -->  oscillator
-MQDC32.$moduleName.EclG1OrOsc:			$eclG1OrOsc
+MQDC32.$moduleName.EclG1Osc:			$eclG1Osc
 
 # ECL fast clear/reset (0x6066) 0  -->  fast clear (default)
 #                               1  -->  reset timestamp osc
-MQDC32.$moduleName.EclFclOrRts:			$eclFclOrRts
+MQDC32.$moduleName.EclFclRts:			$eclFclRts
 
 # gate select (0x6068)          0  -->  NIM inputs (default)
 #                               1  -->  ECL inputs
@@ -159,11 +159,11 @@ MQDC32.$moduleName.GateSelect:			$gateSelect
 
 # NIM gate1/osc (0x606A)        0  -->  gate1 (default)
 #                               1  -->  oscillator
-MQDC32.$moduleName.NimG1OrOsc:			$nimG1OrOsc
+MQDC32.$moduleName.NimG1Osc:			$nimG1Osc
 
 # NIM fast clear/reset (0x606C) 0  -->  fast clear (default)
 #                               1  -->  reset timestamp osc, hold at value 0
-MQDC32.$moduleName.NimFclOrRts:			$nimFclOrRts
+MQDC32.$moduleName.NimFclRts:			$nimFclRts
 
 # NIM busy (0x606E)             0  -->  busy (default)
 #                               4  -->  buffer full

@@ -26,7 +26,7 @@
 									/* init module $moduleName at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 
-					s_$moduleNameLC = sis3302_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
+					if (s_$moduleNameLC == 0) s_$moduleNameLC = sis3302_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
 					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
 					sis3302_moduleInfo(s_$moduleNameLC);				/* read module info */
 					sis3302_checkAddressSpace(s_$moduleNameLC);			/* check address space: full(128MB) or reduced(16MB) */
@@ -135,7 +135,7 @@
 %%DEFINE_PROTOTYPES%%
 
 %%BeginOfCode%%
-static struct s_sis_3302 * s_$moduleNameLC;
+static struct s_sis_3302 * s_$moduleNameLC = 0;
 %%EndOfCode%%
 %%DEFINE_GLOBALS%%
 

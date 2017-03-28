@@ -580,11 +580,11 @@ TEnv * TMrbMesytec_Mqdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetExpTrigDelay(mqdcEnv->Get(moduleName.Data(), "ExpTrigDelay", "1", kExpTrigDelOff), 1);
 	this->SetInputCoupling(mqdcEnv->Get(moduleName.Data(), "InputCoupling", kInpCplAC));
 	this->SetEclTerm(mqdcEnv->Get(moduleName.Data(), "EclTerm", kEclTermBanksIndiv));
-	this->SetEclG1Osc(mqdcEnv->Get(moduleName.Data(), "EclG1Osc:EclG1OrOsc", kEclG1));
-	this->SetEclFclRts(mqdcEnv->Get(moduleName.Data(), "EclFclRts:EclFclOrRts", kEclFcl));
+	this->SetEclG1Osc(mqdcEnv->Get(moduleName.Data(), "EclG1Osc:EclG1Osc", kEclG1));
+	this->SetEclFclRts(mqdcEnv->Get(moduleName.Data(), "EclFclRts:EclFclRts", kEclFcl));
 	this->SetGateSelect(mqdcEnv->Get(moduleName.Data(), "GateSelect", kGateSelNim));
-	this->SetNimG1Osc(mqdcEnv->Get(moduleName.Data(), "NimG1Osc:NimG1OrOsc", kNimG1));
-	this->SetNimFclRts(mqdcEnv->Get(moduleName.Data(), "NimFclRts:NimFclOrRts", kNimFcl));
+	this->SetNimG1Osc(mqdcEnv->Get(moduleName.Data(), "NimG1Osc:NimG1Osc", kNimG1));
+	this->SetNimFclRts(mqdcEnv->Get(moduleName.Data(), "NimFclRts:NimFclRts", kNimFcl));
 	this->SetNimBusy(mqdcEnv->Get(moduleName.Data(), "NimBusy", kNimBusy));
 	this->SetBufferThresh(mqdcEnv->Get(moduleName.Data(), "BufferThresh", 0));
 	this->SetPulserStatus(mqdcEnv->Get(moduleName.Data(), "PulserStatus", 0));
