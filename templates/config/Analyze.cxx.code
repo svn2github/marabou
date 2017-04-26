@@ -284,15 +284,25 @@ Bool_t TMrbAnalyze::AdjustWindowPointers() {
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
-%1D%	$varName = ($className *) gMrbLofUserVars->Find("$varName");
-%1D%	if ($varName == NULL) {
-%1D%		gMrbLog->Err()	<< "Not in list of windows - $varName" << endl;
+%1D%	if (($varName != NULL) && ($varName->GetName() != "$varName")) {
+%1D%		gMrbLog->Err()	<< "Different names don't work - TMrbWindow: " << $varName->GetName() << " ... pointer: $varName" << endl;
 %1D%		gMrbLog->Flush(this->ClassName(), "AdjustWindowPointers");
+%1D%	} else {
+%1D%		$varName = ($className *) gMrbLofUserVars->Find("$varName");
+%1D%		if ($varName == NULL) {
+%1D%			gMrbLog->Err()	<< "Not in list of windows - $varName" << endl;
+%1D%			gMrbLog->Flush(this->ClassName(), "AdjustWindowPointers");
+%1D%		}
 %1D%	}
-%2D%	$varName = ($className *) gMrbLofUserVars->Find("$varName");
-%2D%	if ($varName == NULL) {
-%2D%		gMrbLog->Err()	<< "Not in list of windows - $varName" << endl;
+%2D%	if (($varName != NULL) && ($varName->GetName() != "$varName")) {
+%2D%		gMrbLog->Err()	<< "Different names don't work - TMrbWindow2D: " << $varName->GetName() << " ... pointer: $varName" << endl;
 %2D%		gMrbLog->Flush(this->ClassName(), "AdjustWindowPointers");
+%2D%	} else {
+%2D%		$varName = ($className *) gMrbLofUserVars->Find("$varName");
+%2D%		if ($varName == NULL) {
+%2D%			gMrbLog->Err()	<< "Not in list of windows - $varName" << endl;
+%2D%			gMrbLog->Flush(this->ClassName(), "AdjustWindowPointers");
+%2D%		}
 %2D%	}
 %%EndOfCode%%
 %%WDW_ADJUST_POINTERS%%
