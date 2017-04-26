@@ -60,7 +60,8 @@ int GetBPars(const char *cmd, TObject * /*cc*/, int xpos, int ypos, float dx,
 //	*tmp = cc->GetName();
 	(*tmp) += "->";
 	(*tmp) += cmd;
-	(*tmp) += "();";
+	if ( !(*tmp).EndsWith(");"))
+		(*tmp) += "();";
 
 	*x0 = (float) ((xpos - 1) * dx);
 	*x1 = *x0 + 0.97 * dx;

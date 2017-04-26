@@ -2076,7 +2076,7 @@ void HistPresent::OperateHist(Int_t op)
 		WarnBox("Name for result hist got too long, watch terminal");
 	}
 	hresult->SetName((const char *)name1);
-	cout << " ->> " << name1  << endl;
+	cout << " store as: " << name1  << endl;
 	ShowHist(hresult);
 }
 //________________________________________________________________________________________
