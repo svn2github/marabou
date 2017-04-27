@@ -564,6 +564,11 @@ and fTo or by setting 2 marks.\n\
 Fitting of any combination of functions is provided\n\
 in the \"Fit User formula\" popup menu.\n\
 ";
+static const Char_t helptext_landau[] =
+"Landau function\n\
+The Landau function has 3 parameters:\n\
+Normalization, Location and Scale\n\
+";
 
 static const Char_t helptext_pol[] =
 "Fit polynomial f(x) = a0 + a1*x +a2*x*x ..)\n\
@@ -681,6 +686,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		static TString explcmd("FitPeakList()");
 		static TString exgcmd("FitGausExecute()");
 		static TString expcmd("FitExpExecute()");
+		static TString exlandcmd("FitLandauExecute()");
+		static TString drlandcmd("DrawLandauExecute()");
 		static TString exdcmd("DrawExpExecute()");
 		static TString exstpcmd("CalcStartParExp()");
 		static TString expolcmd("FitPolExecute()");
@@ -709,12 +716,11 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 
 	//	fSelHist->Dump();
 		const char * helptext = NULL;
-		Int_t itemwidth = 320;
+		Int_t itemwidth = 400;
 		TString tagname;
 		title = fSelHist->GetName();
 		if (type == 1) {
 			title.Prepend("Fit Gauss: ");
-			itemwidth = 340;
 			helptext = helptext_gaus;
 			fFuncName = fGausFuncName;
 			fFuncType = "fGausFuncName";
@@ -772,6 +778,23 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			valp[ind++] = &fExpFixO;
 //			row_lab->Add(new TObjString("CommentOnly+ -----"));
 //			valp[ind++] = &dummy;
+		} else if (type == 5) {
+			title.Prepend("Landau: ");
+			helptext = helptext_landau;
+			fFuncName.Prepend(fLandauFuncName);
+			row_lab->Add(new TObjString("CommentOnly_Landau Function"));
+			valp[ind++] = &dummy;
+			row_lab->Add(new TObjString("DoubleV+CbF_Norm"));
+			valp[ind++] = &fLandauA;
+			valp[ind++] = &fLandauFixA;
+			row_lab->Add(new TObjString("DoubleV+CbF+Loca"));
+			valp[ind++] = &fLandauB;
+			valp[ind++] = &fLandauFixB;
+			row_lab->Add(new TObjString("DoubleV+CbF_Scal"));
+			valp[ind++] = &fLandauC;
+			valp[ind++] = &fLandauFixC;
+			row_lab->Add(new TObjString("CommentOnly+ "));
+			valp[ind++] = &dummy;
 
 		} else if (type == 3) {
 			title.Prepend("Poly: ");
@@ -848,6 +871,10 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			valp[ind++] = &exdcmd;
 			row_lab->Add(new TObjString("CommandButt+Calc Start Pars"));
 			valp[ind++] = &exstpcmd;
+		} else if (type == 5) {
+			valp[ind++] = &exlandcmd;
+			row_lab->Add(new TObjString("CommandButt+Draw only"));
+			valp[ind++] = &drlandcmd;
 		} else if (type == 3) {
 			valp[ind++] = &expolcmd;
 			row_lab->Add(new TObjString("CommandButt+Draw only"));
@@ -1168,7 +1195,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			}
 		}
 		if (fOnesig == 0) {
-			cout << "With tail ignore: Force common Gaus width" << endl;
+			cout << setred << "Gauss+Tail selected: Force Same Gauss width" << setblack << endl;
 			fOnesig = 1;
 		}
 	}
@@ -2204,16 +2231,16 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
 //	}
 	fFitFunc = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*(x - [3]))",fFrom,fTo);
 	fFitFunc->SetParameter(0, fExpA);
-	if (fExpFixA |= 0) fFitFunc->FixParameter(0, fExpA);
+	if (fExpFixA != 0) fFitFunc->FixParameter(0, fExpA);
 	fFitFunc->SetParName(0, "a (y_off)");
 	fFitFunc->SetParameter(1, fExpB);
-	if (fExpFixB |= 0) fFitFunc->FixParameter(1, fExpB);
+	if (fExpFixB != 0) fFitFunc->FixParameter(1, fExpB);
 	fFitFunc->SetParName(1, "b (const)");
 	fFitFunc->SetParameter(2, fExpC);
-	if (fExpFixC |= 0) fFitFunc->FixParameter(2, fExpC);
+	if (fExpFixC != 0) fFitFunc->FixParameter(2, fExpC);
 	fFitFunc->SetParName(2, "c (slope)");
 	fFitFunc->SetParameter(3, fExpO);
-	if (fExpFixO |= 0) fFitFunc->FixParameter(3, fExpO);
+	if (fExpFixO != 0) fFitFunc->FixParameter(3, fExpO);
 	fFitFunc->SetParName(3, "d (x_off)");
 	fFitFunc->SetLineWidth(fWidth);
 	fFitFunc->SetLineColor(fColor);
@@ -2272,6 +2299,109 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
 //		TEnv env1(".hprrc");
 //		env1.SetValue("FitOneDimDialog.fExpFuncName", fFuncName);
 //		env1.SaveLevel(kEnvLocal);
+		PrintCorrelation();
+	}
+	gPad->Modified(kTRUE);
+	gPad->Update();
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::FitLandauExecute()
+{
+	LandauExecute(0);	 // do fitting
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::DrawLandauExecute()
+{
+	LandauExecute(1);	 // draw only
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::LandauExecute(Int_t draw_only)
+{
+	Int_t retval = 0;
+	Check4Reselect();
+	if (draw_only == 0 && fSelHist == NULL && (fGraph != NULL && fGraph->GetN()) == 0) {
+		new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+					 "Warning",
+					 "No histogram nore graph defined\n Use Draw only" ,
+					 kMBIconExclamation, kMBDismiss, &retval);
+		return;
+	}
+	 GetMarkers();
+//	if ( GetMarkers() <= 0 ) {
+ //	  new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+//					 "Warning", "No marks set,\n need at least 2" ,
+//					 kMBIconExclamation, kMBDismiss, &retval);
+//		return;
+//	}
+	fFitFunc = new TF1(fFuncName.Data(),"[0]*TMath::Landau(x, [1], [2])",fFrom,fTo);
+	fFitFunc->SetParameter(0, fLandauA);
+	if (fLandauFixA |= 0) fFitFunc->FixParameter(0, fLandauA);
+	fFitFunc->SetParName(0, "Norm");
+	fFitFunc->SetParameter(1, fLandauB);
+	if (fLandauFixB |= 0) fFitFunc->FixParameter(1, fLandauB);
+	fFitFunc->SetParName(1, "Location");
+	fFitFunc->SetParameter(2, fLandauC);
+	if (fLandauFixC |= 0) fFitFunc->FixParameter(2, fLandauC);
+	fFitFunc->SetParName(2, "Scale");
+	
+	fFitFunc->SetLineWidth(fWidth);
+	fFitFunc->SetLineColor(fColor);
+//	cout << " ????????????????????????????? " << endl;
+//	cout << "Formula: |" << fFitFunc->GetTitle() << "|"<< endl;
+	if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
+		fFitFunc->Draw("same");
+//		fFitFunc->Print();
+	} else {
+		TString fitopt = "R";	  // fit in range
+		if (fFitOptLikelihood)fitopt += "L";
+		if (fFitOptQuiet)	  fitopt += "Q";
+		if (fFitOptVerbose)	fitopt += "V";
+		if (fFitOptMinos)	  fitopt += "E";
+		if (fFitOptErrors1)	fitopt += "W";
+		if (fFitOptIntegral)  fitopt += "I";
+		if (fFitOptNoDraw)	 fitopt += "0";
+		if (fFitOptAddAll)	 fitopt += "+";
+//		Bool_t bound = (fExpFixA + fExpFixB + fExpFixC + fExpFixD) != 0;
+		Bool_t bound = (fExpFixA + fExpFixB + fExpFixC) != 0;
+		if (bound)				fitopt += "B";	// some pars are bound
+		
+		if (fGraph != NULL) {
+			fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+	//	  add to ListOfFunctions if requested
+			if (fFitOptAddAll) {
+				TList *lof = fGraph->GetListOfFunctions();
+				if (lof->GetSize() > 1) {
+					TObject *last = lof->Last();
+					lof->Remove(last);
+					lof->AddFirst(last);
+				}
+			}
+
+		} else if (fSelHist != NULL) {
+			gStyle->SetOptFit(1);
+			TPaveStats *stats = (TPaveStats *)fSelHist->GetListOfFunctions()->FindObject("stats");
+			if ( stats )
+				delete stats;
+//			fFitFunc->Print();
+			fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
+	//	  add to ListOfFunctions if requested
+			if (fFitOptAddAll) {
+				TList *lof = fSelHist->GetListOfFunctions();
+				if (lof->GetSize() > 1) {
+					TObject *last = lof->Last();
+					lof->Remove(last);
+					lof->AddFirst(last);
+				}
+			}
+		}
+		fLandauA = fFitFunc->GetParameter(0);
+		fLandauB = fFitFunc->GetParameter(1);
+		fLandauC = fFitFunc->GetParameter(2);
+		if (fAutoClearMarks) ClearMarkers();
+		IncrementIndex(&fFuncName);
 		PrintCorrelation();
 	}
 	gPad->Modified(kTRUE);
@@ -2735,6 +2865,12 @@ void FitOneDimDialog::RestoreDefaults()
 	fExpB				 = env.GetValue("FitOneDimDialog.fExpB", 1.);
 	fExpC				 = env.GetValue("FitOneDimDialog.fExpC", 1.);
 	fExpO				 = env.GetValue("FitOneDimDialog.fExpO", 0.);
+	fLandauA				 = env.GetValue("FitOneDimDialog.fLandauA", 10.);
+	fLandauB				 = env.GetValue("FitOneDimDialog.fLandauB", 10.);
+	fLandauC				 = env.GetValue("FitOneDimDialog.fLandauB", 1.);
+	fLandauFixA			 = env.GetValue("FitOneDimDialog.fLandauFixA", 0);
+	fLandauFixB			 = env.GetValue("FitOneDimDialog.fLandauFixB", 0);
+	fLandauFixC			 = env.GetValue("FitOneDimDialog.fLandauFixC", 0);
 //	fExpD				 = env.GetValue("FitOneDimDialog.fExpD", 0.);
 	fExpFixA			 = env.GetValue("FitOneDimDialog.fExpFixA", 0);
 	fExpFixB			 = env.GetValue("FitOneDimDialog.fExpFixB", 0);
@@ -2759,10 +2895,11 @@ void FitOneDimDialog::RestoreDefaults()
 		tagname += i;
 		fFormFixPar[i] = env.GetValue(tagname, 0);
 	}
-	fGausFuncName			= env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_f_");
-	fExpFuncName			= env.GetValue("FitOneDimDialog.fExpFuncName", "exp_f_");
-	fPolFuncName			= env.GetValue("FitOneDimDialog.fPolFuncName", "pol_f_");
-	fFormFuncName			= env.GetValue("FitOneDimDialog.fFormFuncName", "user_f_");
+	fGausFuncName			= env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_f");
+	fExpFuncName			= env.GetValue("FitOneDimDialog.fExpFuncName", "exp_f");
+	fPolFuncName			= env.GetValue("FitOneDimDialog.fPolFuncName", "pol_f");
+	fLandauFuncName		= env.GetValue("FitOneDimDialog.fLandauFuncName", "landau_f");
+	fFormFuncName			= env.GetValue("FitOneDimDialog.fFormFuncName", "user_f");
 	fNevents					= env.GetValue("FitOneDimDialog.fNevents", 10000);
 	fPeakSep					= env.GetValue("FitOneDimDialog.fPeakSep", 3);
 	fFitWindow				= env.GetValue("FitOneDimDialog.fFitWindow", 3);
@@ -2827,6 +2964,12 @@ void FitOneDimDialog::SaveDefaults()
 		tagname += i;
 		env.SetValue(tagname, fFormFixPar[i]);
 	}
+	env.SetValue("FitOneDimDialog.fLandauA",   fLandauA);
+	env.SetValue("FitOneDimDialog.fLandauB",   fLandauB);
+	env.SetValue("FitOneDimDialog.fLandauB",   fLandauC);
+	env.SetValue("FitOneDimDialog.fLandauFixA",fLandauFixA);
+	env.SetValue("FitOneDimDialog.fLandauFixB",fLandauFixB);
+	env.SetValue("FitOneDimDialog.fLandauFixC",fLandauFixC);
 //  env.SetValue("FitOneDimDialog.fGausFuncName", fGausFuncName);
 //	env.SetValue("FitOneDimDialog.fExpFuncName",  fExpFuncName );
 //	env.SetValue("FitOneDimDialog.fPolFuncName",  fPolFuncName );

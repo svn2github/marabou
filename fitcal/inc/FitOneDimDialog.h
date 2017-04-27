@@ -31,6 +31,7 @@ private:
    TString fName;
    TString fGausFuncName;
    TString fExpFuncName;
+   TString fLandauFuncName;
    TString fPolFuncName;
    TString fFormFuncName;
    TString fFormula;
@@ -43,13 +44,18 @@ private:
    Double_t fExpA;
    Double_t fExpB;
    Double_t fExpC;
+   Double_t fExpFixA;
+   Double_t fExpFixB;
+   Double_t fExpFixC;
    Double_t fExpO;     // Offset
-//   Double_t fExpD;
-   Int_t fExpFixA;
-   Int_t fExpFixB;
-   Int_t fExpFixC;
-   Int_t fExpFixO;
-//   Int_t fExpFixD;
+   Double_t fExpFixO;     // Offset
+   
+   Double_t fLandauA;
+   Double_t fLandauB;
+   Double_t fLandauC;
+   Int_t fLandauFixA;
+   Int_t fLandauFixB;
+   Int_t fLandauFixC;
    Int_t fPolN;
    Double_t fPolPar[6];
    Int_t    fPolFixPar[6];
@@ -117,8 +123,11 @@ public:
    Bool_t FitGausExecute();
    void FitExpExecute();
    void DrawExpExecute();
+   void FitLandauExecute();
+   void DrawLandauExecute();
    void CalcStartParExp();
    void ExpExecute(Int_t draw_only = 0);
+   void LandauExecute(Int_t draw_only = 0);
    void FitPolExecute();
    void DrawPolExecute();
    void PolExecute(Int_t draw_only = 0);
