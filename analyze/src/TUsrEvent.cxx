@@ -204,8 +204,11 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int
 //                 Int_t Didx        -- data index within hit
 // Results:        Int_t NextIndex   -- index to be used in next call, -1 at end
 // Exceptions:
-// Description:    Writes hit data to subevent storage. Stops at end of an event.
-//                 Stops as soon as event number has changed
+// Description:    Writes hit data to subevent storage.
+//                 ###########################################################
+//                 Stops at end of an event
+//                 i.e. as soon as event number has changed
+//                 ###########################################################
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -227,10 +230,10 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int
 	return(-1);
 }
 
-Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Int_t DeltaTS, Bool_t FillHisto, Int_t Didx) {
+Int_t TUsrEvent::FillSevtFromHB_TS(TUsrHBX * HBX, Int_t Hidx, Int_t DeltaTS, Bool_t FillHisto, Int_t Didx) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrEvent::FillSevtFromHB
+// Name:           TUsrEvent::FillSevtFromHB_TS
 // Purpose:        Fill subevent from hitbuffer
 // Arguments:      TUsrHBX * HBX     -- pointer to hit buffer
 //                 Int_t Hidx        -- current index in hit buffer
@@ -240,7 +243,10 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Int_t DeltaTS, Bool_t
 // Results:        Int_t NextIndex   -- index to be used in next call, -1 at end
 // Exceptions:
 // Description:    Writes hit data to subevent storage.
-//                 Stops as soon as delta(timestamp) exceeds given value.
+//                 ###########################################################
+//                 Stops as soon as soon as TS(hit) > (TS0 + DeltaTS)
+//                 where TS0 is timestamp of hit[Hidx]
+//                 ###########################################################
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -274,8 +280,12 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t 
 //                 Int_t InitValue        -- init value to reset event vector
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Loops thru hitbuffers and fills subvent storage event by event.
-//                 Stops as soon as event number has changed
+// Description:    Loops thru all hitbuffers and fills subvent storage event by event.
+//                 ###########################################################
+//                 Stops at end of an event
+//                 i.e. as soon as event number has changed
+//                 (uses method FillSevtFromHB() in a loop)
+//                 ###########################################################
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -299,10 +309,51 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t 
 	return(foundHbx);
 }
 
-Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Int_t DeltaTS, Bool_t FillHisto, Int_t Didx, Int_t InitValue) {
+Bool_t TUsrEvent::FillEventFromHB_TS(TArrayI & LofIndices, Int_t DeltaTS, Bool_t FillHisto, Int_t Didx, Int_t InitValue) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrEvent::FillEventFromHB
+// Name:           TUsrEvent::FillEventFromHB_TS
+// Purpose:        Fill event from hitbuffer
+// Arguments:      TArrayI & LofIndices   -- array of hitbuffer indices,
+//                                           has to have size=0 on start
+//                 Int_t DeltaTS          -- delta(timestamp)
+//                 Bool_t FillHisto       -- kTRUE -> write hit data to histogram
+//                 Int_t Didx             -- data index within hit
+//                 Int_t InitValue        -- init value to reset event vector
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Loops thru all hitbuffers and fills subvent storage event by event.
+//                 ###########################################################
+//                 Stops as soon as soon as TS(hit) > (TS0 + DeltaTS)
+//                 (uses method FillSevtFromHB_TS() in a loop)
+//                 ###########################################################
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofHbx = fLofHBXs.GetEntriesFast();
+
+	if (LofIndices.GetSize() == 0) {
+		LofIndices.Set(nofHbx);
+		LofIndices.Reset(0);
+	}
+	Bool_t foundHbx = kFALSE;
+	this->Reset(InitValue, kTRUE);
+	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
+		TUsrHBX * h = this->GetHBX(hbx);
+		Int_t hidx = LofIndices[hbx];
+		if (h && hidx != -1) {
+			hidx = this->FillSevtFromHB_TS(h, hidx, DeltaTS, FillHisto, Didx);
+			LofIndices[hbx] = hidx;
+			foundHbx = kTRUE;
+		}
+	}
+	return(foundHbx);
+}
+
+Bool_t TUsrEvent::FillEventFromHB_EB(TArrayI & LofIndices, Int_t DeltaTS, Bool_t FillHisto, Int_t Didx, Int_t InitValue) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent::FillEventFromHB_EB
 // Purpose:        Fill event from hitbuffer
 // Arguments:      TArrayI & LofIndices   -- array of hitbuffer indices,
 //                                           has to have size=0 on start
@@ -313,10 +364,15 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Int_t DeltaTS, Bool_t Fi
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Loops thru hitbuffers and fills subvent storage event by event.
-//                 Stops as soon as delta(timestamp) exceeds given value.
+//                 ###########################################################
+//                 Collects any hits with TS(hit) < (TS0 + DeltaTS)
+//                 where TS0 is the minimum timestamp thru all hitbuffers
+//                 ###########################################################
+//
+//                 "EB" -> real event building along time stamps
 //
 //                 WARNING!
-//                 All modules involved have to have timestamps running synchronously
+//                 All modules involved have to have their timestamps running synchronously
 //                 (a chain of Mesytec modules for example)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -339,7 +395,20 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Int_t DeltaTS, Bool_t Fi
 	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
 		TUsrHBX * hb = this->GetHBX(hbx);
 		Int_t hidx = LofIndices[hbx];
-		LofIndices[hbx] = this->FillSevtFromHB(hb, hidx, DeltaTS, FillHisto, Didx);
+		Int_t nofHits = hb->GetNofHits();
+		LofIndices[hbx] = nofHits;
+		if (nofHits > 0 && hidx < nofHits) {
+			for (Int_t x = hidx; x < nofHits; x++) {
+				TUsrHit * h = hb->At(x);
+				if ((h->GetChannelTime() - tsmin) > DeltaTS) {
+					LofIndices[hbx] = x;
+					break;
+				}
+				foundHbx = kTRUE;
+				h->WriteToSevtData(Didx);
+				if (FillHisto) h->FillHistogram(Didx);
+			}
+		}
 	}
 	return(foundHbx);
 }
