@@ -40,6 +40,8 @@
 #include <iostream.h>
 #include <iomanip.h>
 
+#include "SetColor.h"
+
 void osp2xxx(const Char_t * FileName, Int_t ToAscii)
 //>>_________________________________________________(do not change this line)
 //
@@ -47,7 +49,6 @@ void osp2xxx(const Char_t * FileName, Int_t ToAscii)
 	TString ospFile, rootFile, datFile, cmd;
 
     gROOT->Macro("LoadUtilityLibs.C"); 	// load utility libs 
-    gROOT->Macro("LoadColors.C");
 
 	TString progName = ToAscii ? "osp2ascii" : "osp2root";
 

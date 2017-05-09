@@ -32,11 +32,12 @@
 
 #include <iostream.h>
 
+#include "SetColor.h"
+
 void esone(const Char_t * HostName = "ppc-0")
 //>>__________________________________________________(do not change this line)
 //
 {
-	gROOT->Macro("LoadColors.C");
 	gROOT->Macro("LoadEsoneLibs.C");
 
 	TMrbEsone * cold = new TMrbEsone();

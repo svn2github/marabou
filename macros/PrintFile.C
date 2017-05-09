@@ -12,13 +12,13 @@
 
 {
 	#include <time.h>
+	#include "SetColor.h"
+
 	TString rootFile;
 	Int_t startTime, stopTime;
 	TString timeString;
 
 	Float_t totalDeadTime = 0;
-
-	gROOT->Macro("LoadColors.C");		// enable coloured output
 
 // try to load user's local lib
 	TString wd = gSystem->WorkingDirectory();

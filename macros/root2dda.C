@@ -28,12 +28,13 @@
 #include <iostream.h>
 #include <iomanip.h>
 
+#include "SetColor.h"
+
 void root2dda(const Char_t * SnakeFile)
 //>>_________________________________________________(do not change this line)
 //
 {
 	gROOT->Macro("LoadUtilityLibs.C");
-	gROOT->Macro("LoadColors.C");
 	gSystem->Load("$MARABOU/lib/libTSnkDDA0816.so");
 	TFile * snakeFile = new TFile(SnakeFile);
 	if (snakeFile->IsOpen()) {

@@ -1,7 +1,8 @@
 // setup scaler readout
 {
+	#include "SetColor.h"
+	
 	ULong_t lsb, msb, data;
-	gROOT->Macro("LoadColors.C");
 	gROOT->Macro("LoadConfigLibs.C");
 	gROOT->Macro("LoadEsoneLibs.C");
 

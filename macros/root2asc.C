@@ -28,6 +28,8 @@
 #include <iostream.h>
 #include <iomanip.h>
 
+#include "SetColor.h"
+
 void root2asc(const Char_t * FileNHisto)
 //>>_________________________________________________(do not change this line)
 //
@@ -40,7 +42,6 @@ void root2asc(const Char_t * FileNHisto)
 	ofstream asc;
 	
 	gROOT->Macro("LoadUtilityLibs.C"); 	// load utility libs 
-	gROOT->Macro("LoadColors.C");
 
 	if (FileNHisto == NULL) {
 		cerr	<< setred

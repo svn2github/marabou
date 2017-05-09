@@ -33,6 +33,8 @@
 #include "TGraph.h"
 #include "TGraphErrors.h"
 
+#include "SetColor.h"
+
 void fitgraph(const Char_t * FileName)
 //>>_________________________________________________(do not change this line)
 //
@@ -43,7 +45,6 @@ void fitgraph(const Char_t * FileName)
 	TObject * obj;
 					
 	gROOT->Macro("LoadUtilityLibs.C"); 	// load utility libs 
-	gROOT->Macro("LoadColors.C");
 
 	TFile * f = new TFile(FileName);
 	if (!f->IsOpen()) {

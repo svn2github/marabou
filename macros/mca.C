@@ -91,6 +91,7 @@
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
+#include "SetColor.h"
 
 void mca(const Char_t * Module = "<TMrbDGF.LastSelected",
          Int_t AccuTime = 10,
@@ -102,8 +103,6 @@ void mca(const Char_t * Module = "<TMrbDGF.LastSelected",
 //>>_________________________________________________(do not change this line)
 {
 	TMrbDGF * dgf;
-
-	gROOT->Macro("LoadColors.C");
 
 	dgf = (TMrbDGF *) gROOT->FindObject(Module);
 	if (dgf == NULL) {

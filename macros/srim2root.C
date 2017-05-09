@@ -109,6 +109,8 @@
 #include <iostream.h>
 #include <iomanip.h>
 
+#include "SetColor.h"
+
 Bool_t isLoaded = kFALSE;
 
 void srim2root(const Char_t * SrimFile = NULL,
@@ -125,7 +127,6 @@ void srim2root(const Char_t * SrimFile = NULL,
 {
 	if (!isLoaded) {
 		gROOT->Macro("LoadUtilityLibs.C"); 	// load utility libs 
-		gROOT->Macro("LoadColors.C");
 		isLoaded = kTRUE;
 	}
 

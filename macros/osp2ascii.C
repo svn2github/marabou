@@ -1,7 +1,8 @@
+#include "SetColor.h"
+
 void osp2ascii(const Char_t * FileName)
 {
     gROOT->Macro("LoadUtilityLibs.C"); 	// load utility libs 
-    gROOT->Macro("LoadColors.C");
 	if (FileName == NULL) {
 		cerr	<< endl << setred
 				<< "osp2ascii: file name missing"
