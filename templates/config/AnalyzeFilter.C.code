@@ -1,3 +1,5 @@
+#include "SetColor.h"
+
 //________________________________________________________________[ROOT MACRO]
 //////////////////////////////////////////////////////////////////////////////
 // Name:             %%ANALYZE_FILE%%Filter.C
@@ -14,7 +16,6 @@
 %%ANALYZE_FILE%%Filter(Bool_t ReplayMode)
 {
 	gROOT->Reset();
-	gROOT->Macro("LoadColors.C");
 
 // how to find objects in the ROOT dictionary
 //	TObject * obj = gROOT->FindObject(ObjName);
