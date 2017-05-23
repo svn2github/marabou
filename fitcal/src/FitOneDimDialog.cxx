@@ -642,8 +642,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 //		fFuncName = fSelHist->GetName();
 //		fFuncName += "_";
 		TAxis *xaxis = fSelHist->GetXaxis();
-		fFrom = xaxis->GetXmin();
-		fTo	= xaxis->GetXmax() ;
+		fFrom = xaxis->GetBinLowEdge(xaxis->GetFirst());
+		fTo	= xaxis->GetBinUpEdge(xaxis->GetLast());
 	} else {
 		fFrom = 0;
 		fTo	= 100;
@@ -793,7 +793,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			row_lab->Add(new TObjString("DoubleV+CbF_Scal"));
 			valp[ind++] = &fLandauC;
 			valp[ind++] = &fLandauFixC;
-			row_lab->Add(new TObjString("CommentOnly+ "));
+			row_lab->Add(new TObjString("CommentOnly+  "));
 			valp[ind++] = &dummy;
 
 		} else if (type == 3) {
@@ -2688,8 +2688,9 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
 		if (fFitOptMinos)	  fitopt += "E";
 		if (fFitOptErrors1)	fitopt += "W";
 		if (fFitOptIntegral)  fitopt += "I";
-		if (fFitOptNoDraw)	 fitopt += "0";
+//		if (fFitOptNoDraw)	 fitopt += "0";
 		if (fFitOptAddAll)	 fitopt += "+";
+		fitopt += "0";
 		Int_t bound = 0;
 		for (Int_t i = 0; i < 6; i++) {
 			bound += fFormFixPar[i];
@@ -2708,6 +2709,10 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
 			}
 
 		} else if (fSelHist != NULL){
+			TPaveStats *stats = (TPaveStats *)fSelHist->GetListOfFunctions()->FindObject("stats");
+			gStyle->SetOptFit(1);
+			if ( stats )
+				delete stats;
 			fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
 	//	  add to ListOfFunctions if requested
 			if (fFitOptAddAll) {
@@ -2719,7 +2724,8 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
 				}
 			}
 		}
-
+		if ( !fFitOptNoDraw )
+			fFitFunc->Draw("same");
 		for (Int_t i = 0; i < npars; i++) {
 			fFormPar[i] = fFitFunc->GetParameter(i);
 		}
