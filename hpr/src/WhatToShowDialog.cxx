@@ -52,22 +52,24 @@ especially which values to display in the statistics box\n\
 //   static TString stycmd("SetWhatToShowPermLocal()");
 
    RestoreDefaults();
-   fRow_lab->Add(new TObjString("CheckButton_   Title"));
+   fRow_lab->Add(new TObjString("CheckButton_  Title"));
    fValp[ind++] = &fShowTitle ;
-   fRow_lab->Add(new TObjString("CheckButton+Stat Box"));
+   fRow_lab->Add(new TObjString("CheckButton+StatBox"));
    fValp[ind++] = &fShowStatBox ;
    
 	if ( fHist->GetDimension() == 2) {
-		fRow_lab->Add(new TObjString("CheckButton+Suppr Zero"));
+		fRow_lab->Add(new TObjString("CheckButton_Suppr Zero"));
 		fValp[ind++] = &fLegoSuppressZero;
 	}
-   fRow_lab->Add(new TObjString("CheckButton_Date Box"));
-   fRow_lab->Add(new TObjString("CheckButton+Use CurrTime"));
+   fRow_lab->Add(new TObjString("CheckButton+  Date"));
+   fRow_lab->Add(new TObjString("CheckButton+CurrTime\
+&Choose between current time\n\
+and creation time"));
    fRow_lab->Add(new TObjString("CommentOnly_Content in Statistics Box"));
    fRow_lab->Add(new TObjString("CheckButton_HistName"));
    fRow_lab->Add(new TObjString("CheckButton+ Entries"));
    fRow_lab->Add(new TObjString("CheckButton+    Mean"));
-   fRow_lab->Add(new TObjString("CheckButton+     RMS"));
+   fRow_lab->Add(new TObjString("CheckButton+ Std Dev"));
    fRow_lab->Add(new TObjString("CheckButton_ Undflow"));
    fRow_lab->Add(new TObjString("CheckButton+ Ovrflow"));
    fRow_lab->Add(new TObjString("CheckButton+Integral"));

@@ -128,13 +128,16 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 //   hp = (HistPresent *) gROOT->FindObject("mypres");
 	if (!gHpr)
 		cout << "running without HistPresent" << endl;
+	fSelHist = hist;
 	fHname = hname;
 //   Int_t pp = fHname.Index(".");
 //   if(pp) fHname.Remove(0,pp+1);
-	if (gHprDebug > 0)
+	if (gHprDebug > 0) {
 		cout << "FitHist ctor: " << this << " name: " << name << " title: " << name
-		<< " hname: " << fHname.Data()
+		<< endl << " hname: " << fHname.Data()<< "HistAddr " << hist
 		<< endl << flush;
+		PrintMarks();
+	}
 	fCutPanel = NULL;
 //   fDialog  = NULL;
 	fSetRange = kFALSE;
@@ -161,7 +164,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 //   datebox = 0;
 	fExpInd = 0;
 	fLiveConstBG = 0;
-	fSelHist = hist;
 	fFit1DimD = 0;
 	fFit2DimD = 0;
 	fCalHist = NULL;
@@ -200,7 +202,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fTimer.SetTimerID(0);
 	fTimer.Connect("Timeout()", "FitHist", this, "DoSaveLimits()");
 
-//   fMarkers = new FhMarkerList(0);
 	peaks = new TObjArray(0);
 	fDimension = hist->GetDimension();
 //  look for cuts and windows
@@ -368,6 +369,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	RestoreDefaultRanges();
 	DisplayHist(hist, win_topx, win_topy, win_widx, win_widy);
 //	RestoreDefaultRanges();
+	ClearMarks();
 	fLogx = fCanvas->GetLogx();
 	fLogy = fCanvas->GetLogy();
 	fLogz = fCanvas->GetLogz();
@@ -389,7 +391,11 @@ FitHist::~FitHist()
 		<< " fCanvas " <<fCanvas << endl;
 //		fSelHist->Print();
 	}
-//   cout<< "enter FitHist  dtor "<< GetName()<<endl;
+	if (gHprClosing ){
+		if ( gHprDebug > 0 )
+			cout<< " gHprClosing = 1"<<endl;
+//		return;
+	}
 	if (!fExpHist && gHpr && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
 	gROOT->GetList()->Remove(this);
 	gROOT->GetListOfCleanups()->Remove(this);
@@ -397,10 +403,15 @@ FitHist::~FitHist()
 	if ( fFit2DimD ) fFit2DimD->CloseDialog();
 	if ( WindowSizeDialog::fNwindows > 0 ) 
 		WindowSizeDialog::fNwindows -= 1;
+	
+	if ( fExpHist == fSelHist) {
+      cout << "fExpHist == fSelHist return " << endl;
+      return;
+	}
 	if ( fExpHist ) {
 //      cout << "fExpHist " << fExpHist->GetName() << endl;
 //      dont delete possible windows
-		fExpHist->GetListOfFunctions()->Clear("nodelete");
+//		fExpHist->GetListOfFunctions()->Clear("nodelete");
 		gROOT->GetList()->Remove(fExpHist);
 		delete fExpHist;
 		fExpHist = 0;
@@ -895,6 +906,9 @@ void FitHist::handle_mouse()
 //	TEnv env(".hprrc");
 	if ( fDimension == 1) { 
 		fLiveStat1Dim = (Int_t)env.GetValue("Set1DimOptDialog.fLiveStat1Dim",0);
+		fLiveGauss    = (Int_t)env.GetValue("Set1DimOptDialog.fLiveGauss", 0);
+		if (fLiveGauss > 0)		// force stat box when fitting gauss
+			fLiveStat1Dim = 1;
 		if (fLiveStat1Dim == 0)
 			return;
 	}
@@ -956,7 +970,7 @@ void FitHist::handle_mouse()
 			if (fLiveStat2Dim == 0)
 			return;
 		}
-		return;
+//		return;
 	}
 	
 	if (event == kButton1Down) {
@@ -1063,8 +1077,8 @@ void FitHist::handle_mouse()
 				if (!fTofLabels) {
 					TOrdCollection rowlabels;
 					if (is2dim) {
-						rowlabels.Add(new TObjString("Low left Bin: Number (x,y), Low edge (x,y)"));
-						rowlabels.Add(new TObjString("Up right Bin: Number (x,y), Up edge (x,y)"));
+						rowlabels.Add(new TObjString("Low left Bin: binx,biny, x,y"));
+						rowlabels.Add(new TObjString("Up right Bin: binx,biny),x,y"));
 					} else {
 						rowlabels.Add(new TObjString("Low left Bin: Number, Low edge"));
 						rowlabels.Add(new TObjString("Up right Bin: Number, Up edge"));
@@ -1076,9 +1090,9 @@ void FitHist::handle_mouse()
 						rowlabels.Add(new TObjString("Integral, Mean"));
 					TOrdCollection values;
 					if (is2dim) {
-						values.Add(new TObjString(Form("%d,  %d,  %lg,  %lg",
+						values.Add(new TObjString(Form("%d, %d, %lg, %lg",
 									 startbinX, startbinY, startbinX_lowedge , startbinY_lowedge)));
-						values.Add(new TObjString(Form("%d,  %d,  %lg,  %lg",
+						values.Add(new TObjString(Form("%d, %d, %lg, %lg",
 									 startbinX, startbinY,
 									 startbinX_lowedge + hist->GetBinWidth(startbinX),
 									 startbinY_lowedge + hist->GetYaxis()->GetBinWidth(startbinY))));
@@ -1089,16 +1103,16 @@ void FitHist::handle_mouse()
 						TString timestring;
 						if (hist->GetXaxis()->GetTimeDisplay()) {
 							ConvertTimeToString((time_t)startbinX_lowedge, hist->GetXaxis(), &timestring);
-							timestring.Prepend(Form("%d, ", startbinX));
+							timestring.Prepend(Form("%d,", startbinX));
 							values.Add(new TObjString(timestring.Data()));
 							ConvertTimeToString((time_t)(startbinX_lowedge + hist->GetBinWidth(startbinX)),
 																  hist->GetXaxis(), &timestring);
-							timestring.Prepend(Form("%d, ", startbinX));
+							timestring.Prepend(Form("%d,", startbinX));
 							values.Add(new TObjString(timestring.Data()));
 
 						} else {
-							values.Add(new TObjString(Form("%d,  %lg", startbinX, startbinX_lowedge )));
-							values.Add(new TObjString(Form("%d,  %lg", startbinX, startbinX_lowedge
+							values.Add(new TObjString(Form("%d, %lg", startbinX, startbinX_lowedge )));
+							values.Add(new TObjString(Form("%d, %lg", startbinX, startbinX_lowedge
 								  + hist->GetBinWidth(startbinX))));
 						}
 						values.Add(new TObjString(Form("%lg", cont)));
@@ -1188,10 +1202,10 @@ void FitHist::handle_mouse()
 					if (totbins > 0) mean = sum / (Double_t)totbins;
 					else             mean = 0;
 
-					fTofLabels->SetLabelText(0,0,Form("%d,  %d,  %lg,  %lg", binXlow, binYlow, XlowEdge, XupEdge));
-					fTofLabels->SetLabelText(0,1,Form("%d,  %d,   %lg,  %lg", binXup,  binYup,  YlowEdge, YupEdge));
+					fTofLabels->SetLabelText(0,0,Form("%d, %d, %lg, %lg", binXlow, binYlow, XlowEdge, XupEdge));
+					fTofLabels->SetLabelText(0,1,Form("%d, %d,  %lg, %lg", binXup,  binYup,  YlowEdge, YupEdge));
 					fTofLabels->SetLabelText(0,2,Form("%lg", cont));
-					fTofLabels->SetLabelText(0,3,Form("%lg,  %lg", sum, mean));
+					fTofLabels->SetLabelText(0,3,Form("%lg, %lg", sum, mean));
 				}
 			} else {
 				if (fTofLabels) {
@@ -1207,17 +1221,17 @@ void FitHist::handle_mouse()
 					TString timestring;
 					if (hist->GetXaxis()->GetTimeDisplay()) {
 						ConvertTimeToString((time_t)XlowEdge, hist->GetXaxis(), &timestring);
-						timestring.Prepend(Form("%d, ", binXlow));
+						timestring.Prepend(Form("%d,", binXlow));
 						fTofLabels->SetLabelText(0, 0, timestring.Data());
 						ConvertTimeToString((time_t)XupEdge, hist->GetXaxis(), &timestring);
-						timestring.Prepend(Form("%d, ", binXup));
+						timestring.Prepend(Form("%d,", binXup));
 						fTofLabels->SetLabelText(0, 1, timestring.Data());
 					} else {
-						fTofLabels->SetLabelText(0,0,Form("%d,  %lg", binXlow, XlowEdge));
-						fTofLabels->SetLabelText(0,1,Form("%d,  %lg", binXup, XupEdge ));
+						fTofLabels->SetLabelText(0,0,Form("%d,%lg", binXlow, XlowEdge));
+						fTofLabels->SetLabelText(0,1,Form("%d,%lg", binXup, XupEdge ));
 					}
 					fTofLabels->SetLabelText(0,2,Form("%lg", cont));
-					fTofLabels->SetLabelText(0,3,Form("%lg,  %lg", sum, mean));
+					fTofLabels->SetLabelText(0,3,Form("%lg,%lg", sum, mean));
 					// set initial parameters
 					if (fLiveGauss &&  (binXup - binXlow - npar) > 0) {
 						Int_t ndf = binXup - binXlow - npar;
@@ -1274,19 +1288,19 @@ void FitHist::handle_mouse()
 							Double_t a = gFitGauss->GetParameter(0);
 							Double_t b = gFitGauss->GetParameter(1);
 							bcont = (a + 0.5 * b * (XupEdge+XlowEdge))*(XupEdge-XlowEdge) / bwidth;
-							fTofLabels->SetLabelText(0,4,Form("%lg,  %lg,  %lg", bcont, a, b));
+							fTofLabels->SetLabelText(0,4,Form("%lg,%lg,%lg", bcont, a, b));
 						}		
 						else if (fLiveConstBG) {
 							Double_t a = gFitGauss->GetParameter(0);
 							bcont = a * (XupEdge-XlowEdge) / bwidth;
-							fTofLabels->SetLabelText(0,4,Form("%lg,  %lg", bcont, a));
+							fTofLabels->SetLabelText(0,4,Form("%lg,%lg", bcont, a));
 						}		
 						sigma = gFitGauss->GetParameter(paroff + 2);
 						gconst = gFitGauss->GetParameter(paroff + 0) * sqrt2pi * sigma / bwidth;
 						center = gFitGauss->GetParameter(paroff + 1);
 						Int_t laboff = 0;
 						if (paroff > 0) laboff =1;
-						fTofLabels ->SetLabelText(0,laboff + 4, Form("%lg,  %lg,  %lg,  %lg",
+						fTofLabels ->SetLabelText(0,laboff + 4, Form("%lg,%lg,%lg,%lg",
 											 gconst, center, sigma, chi2));
 					}
 				}
@@ -2099,7 +2113,7 @@ void FitHist::Set2Marks()
 	}
 	PaintMarks();
 };
-//_______________________________________________________________________________________
+//______________________________________________________________________
 
 void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
 {
@@ -2966,8 +2980,8 @@ void FitHist::ProfileY()
 void FitHist::ExpandProject(Int_t what)
 {
 //   enum dowhat {expand, projectx, projecty, statonly, profilex, profiley};
-
-//   cout << "enter ExpandProject(Int_t what)" << what << endl;
+	if (gHprDebug > 0)
+		cout << "enter ExpandProject(Int_t what)" << what << endl;
 	if (!fSelPad) {
 		cout << "Cant find pad, call Debugger" << endl;
 	}
@@ -2976,7 +2990,11 @@ void FitHist::ExpandProject(Int_t what)
 		cout << "No selection" << endl;
 	}
 	TString expname;
-	GetLimits();
+	if (what == expand || what == statonly) {
+		GetLimits();
+	} else {
+		ClearMarks();
+	}
 //   cout << "fBinX_1,2 " << fBinX_1 << " " << fBinX_2 << endl;
 //   cout << "fBinY_1,2 " << fBinY_1 << " " << fBinY_2 << endl;
 //  1-dim case
@@ -3086,10 +3104,10 @@ void FitHist::ExpandProject(Int_t what)
 		fBinly = YBinNumber(fOrigHist, fExply + 0.5 * ybw);
 		fBinuy = YBinNumber(fOrigHist, fExpuy - 0.5 * ybw);
 		Int_t NbinY = fBinuy - fBinly + 1;
-//      cout << "fExplx, ux, ly, uy "
-//       <<fExplx << " "  << fExpux<< " "  << fExply<< " "  << fExpuy<< endl;
-//      cout << "fBinlx, ux, ly, uy "
-//       <<fBinlx << " "  << fBinux<< " "  << fBinly<< " "  << fBinuy<< endl;
+      cout << "fExplx, ux, ly, uy "
+       <<fExplx << " "  << fExpux<< " "  << fExply<< " "  << fExpuy<< endl;
+     cout << "NBinX, NbinY fBinlx, ux, ly, uy " << NbinX << " " << NbinY  << " "
+       <<fBinlx << " "  << fBinux<< " "  << fBinly<< " "  << fBinuy<< endl;
 		Int_t nperbinX = 1, nperbinY = 1;
 		TString pname(fOrigHist->GetName());
 		if (what == projectx ||what == projectx_func || what == projectboth) {
@@ -3106,12 +3124,13 @@ void FitHist::ExpandProject(Int_t what)
 		
 		if (what == projecty || what == projectf || what == projectboth) {
 			Axis_t low = fExply;
-			Axis_t up = fExpuy;
+			Axis_t up  = fExpuy;
 			if (what == projectf) {
-				up = 1.5 * 0.5 * (fExpuy - fExply);
+				up = 1.5 * 0.5 * TMath::Max((fExpuy - fExply), (fExpux - fExplx));
 				low = -up;
 				pname += "_Pfunc";
 				pname += fSerialPf;
+				cout << "projectf " <<up << " " << low<< endl;
 				fSerialPf++;
 			} else {
 				pname += "_ProjY";
@@ -3202,9 +3221,10 @@ void FitHist::ExpandProject(Int_t what)
 			}
 		}
 		if (what == statonly) {
+			ClearMarks();
 			return;
 		}
-		ClearMarks();
+//		ClearMarks();
 		fSelPad->cd();
 		if (what == projectboth) {
 			TList temp;
@@ -3320,9 +3340,11 @@ void FitHist::ExpandProject(Int_t what)
 			fCanvas->Update();
 			return;
 		} else if (what == projectx ||what == projectx_func  ) {
+			ClearMarks();
 			gHpr->ShowHist(fProjHistX);
 			return;
 		} else if (what == projecty || what == projectf) {
+			ClearMarks();
 			gHpr->ShowHist(fProjHistY);
 			return;
 		} else {
@@ -3342,6 +3364,7 @@ void FitHist::ExpandProject(Int_t what)
 	}
 	fSelHist = fExpHist;
 	fCanvas->cd();
+	ClearMarks();
 	if (is2dim(fSelHist))
 		Draw2Dim();
 	else if (is3dim(fSelHist))
@@ -3512,7 +3535,7 @@ void FitHist::Draw1Dim()
 			if ( p->InheritsFrom(TF1::Class()) &&
 				drawopt.Contains("HIST") ) {
 				((TF1*)p)->Draw("SAME");
-				cout << "Draw manually: " << p->GetName() << endl;
+//				cout << "Draw manually: " << p->GetName() << endl;
 			} else if (p->InheritsFrom(TMrbWindow::Class())) {
 				TMrbWindow *w = (TMrbWindow *) p;
 				w->SetParent(fSelHist);

@@ -73,6 +73,12 @@ HTCanvas::~HTCanvas()
 {
 	if ( gHprDebug > 0 )
 		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
+	if ( gHprClosing ) {
+		if ( gHprDebug > 0 )
+			cout << " hpr closing" << endl;
+		return;
+	}
+	
 //   TQObject::Disconnect((TPad*)this, "Modified()");
 	if ( strcmp (GetName(), "FileList") == 0) {
 		if (fHistPresent) fHistPresent->fFileList = NULL;
@@ -99,7 +105,8 @@ HTCanvas::~HTCanvas()
    if(fFitHist) {
       fFitHist->UpdateCut();
       fFitHist->SetCanvasIsDeleted();
-//      cout << "HTCanvas: delete fFitHist " << this << endl;
+		if ( gHprDebug > 0 )
+			cout << "HTCanvas: " << this << " delete fFitHist " << fFitHist << endl<< flush;
       delete fFitHist;
    }
 };

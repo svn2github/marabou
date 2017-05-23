@@ -261,18 +261,24 @@ from the \"GraphicsAtt\" popup menu\n\
 		fValp[ind++] = &fLineStyle[i];
 		fValp[ind++] = &fLineWidth[i];
 
-		fRow_lab->Add(new TObjString("CheckButton_Draw Mark  "));
+		fRow_lab->Add(new TObjString("CheckButton_Draw Mark  \
+&Draw Marks excludes Fill"));
 		fValp[ind++] = &fShowMarkers[i];
 		fRow_lab->Add(new TObjString("ColorSelect+MColor"));
 		fValp[ind++] = &fMarkerColor[i];
 		fRow_lab->Add(new TObjString("Mark_Select+MStyle"));
 		fValp[ind++] = &fMarkerStyle[i];
-		fRow_lab->Add(new TObjString("Float_Value+MSiz;0;5"));
+		fRow_lab->Add(new TObjString("Float_Value+MSiz;0;5\
+&Note: Markers 1,6,7 (dots)\n\
+can not be scaled"));
 		fValp[ind++] = &fMarkerSize[i];
 
 		fRow_lab->Add(new TObjString("ComboSelect_ErrMod;none;E;E1;E2;E3;E4;E5;E6"));
 		fValp[ind++] = &fErrorMode[i];
-		fRow_lab->Add(new TObjString("CheckButton+   Fill"));
+		fRow_lab->Add(new TObjString("CheckButton+   Fill\
+&Fill histogram with selected style\n\
+Needs \"HistContour\" to be activated\n\
+Marks and Fill are mutually exclusive"));
 		fValp[ind++] = &fFill[i];
 		fRow_lab->Add(new TObjString("ColorSelect+FColor"));
 		fValp[ind++] = &fFillColor[i];
@@ -287,11 +293,18 @@ from the \"GraphicsAtt\" popup menu\n\
 	fRow_lab->Add(new TObjString("StringValue+Title Y "));
 	fValp[ind++] = &fTitleY;
 
-	fRow_lab->Add(new TObjString("Float_Value_EndErrSz "));
+	fRow_lab->Add(new TObjString("Float_Value_EndErrSz\
+&Size in pixel of small lines\n\
+drawn at end of error bars"));
 	fValp[ind++] = &fEndErrorSize;
-	fRow_lab->Add(new TObjString("Float_Value-X ErrSz;0.0,0.5"));
+	fRow_lab->Add(new TObjString("Float_Value-X ErrSz;0.0,0.5\
+&Length of X error bars\n\
+relative to binwidth "));
 	fValp[ind++] = &fErrorX;
-	fRow_lab->Add(new TObjString("CheckButton-Set Min Y=Min Cont"));
+	fRow_lab->Add(new TObjString("CheckButton-Set MinY=MinCont\
+&Set minimum of Y axis\n\
+to minimum of hist content\n\
+default is minimum Y = 0"));
 	fAdjustMinYButton = ind;
 	fValp[ind++] = &fAdjustMinY;
 	fRow_lab->Add(new TObjString("CheckButton_     Log X"));
@@ -299,8 +312,10 @@ from the \"GraphicsAtt\" popup menu\n\
 	fRow_lab->Add(new TObjString("CheckButton+     Log Y"));
 	fValp[ind++] = &fOneDimLogY;
 
-	fRow_lab->Add(new TObjString("CheckButton+X Lab Top"));
-	fRow_lab->Add(new TObjString("CheckButton+Y Lab Right"));
+	fRow_lab->Add(new TObjString("CheckButton+X Lab Top\
+&Show labels at top of frame"));
+	fRow_lab->Add(new TObjString("CheckButton+Y Lab Right\
+&Show labels at right side of frame"));
 	fValp[ind++] = &fLabelsTopX;
 	fValp[ind++] = &fLabelsRightY;
 	if ( fAdvanced1Dim ) {
@@ -310,7 +325,7 @@ from the \"GraphicsAtt\" popup menu\n\
 		fValp[ind++] = &fSimpleLine;
 		fRow_lab->Add(new TObjString("CheckButton+     Text"));
 		fValp[ind++] = &fText;
-		fRow_lab->Add(new TObjString("PlainIntVal+Angle"));
+		fRow_lab->Add(new TObjString("PlainIntVal+Angle&Text angle"));
 		fValp[ind++] = &fTextAngle;
 
 		fRow_lab->Add(new TObjString("CheckButton_  BarChart"));
@@ -322,13 +337,21 @@ from the \"GraphicsAtt\" popup menu\n\
 		fRow_lab->Add(new TObjString("CheckButton+ PieChart"));
 		fValp[ind++] = &fPieChart;
 	}
-	fRow_lab->Add(new TObjString("CheckButton_Live Stats"));
+	fRow_lab->Add(new TObjString("CheckButton_Live Stats\
+&Show a widget with statistics\n\
+when dragging mouse in histogram\n\
+with button 1 pressed"));
 	fValp[ind++] = &fLiveStat1Dim;
-	fRow_lab->Add(new TObjString("CheckButton+Live Gauss"));
+	fRow_lab->Add(new TObjString("CheckButton+Live Gauss \
+&Do a Gauss fit when dragging\n\
+mouse in histogram\n\
+with button 1 pressed"));
 	fValp[ind++] = &fLiveGauss;
-	fRow_lab->Add(new TObjString("CheckButton+Const bg "));
+	fRow_lab->Add(new TObjString("CheckButton+Const bg\
+&Use constant background"));
 	fValp[ind++] = &fLiveConstBG;
-	fRow_lab->Add(new TObjString("CheckButton+Linear bg"));
+	fRow_lab->Add(new TObjString("CheckButton+Linear bg\
+&Use linear background"));
 	fValp[ind++] = &fLiveBG;
 	fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
 	fValp[ind++] = &stycmd;

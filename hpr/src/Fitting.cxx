@@ -1069,6 +1069,7 @@ void FitHist::DrawSelectedFunctions()
 		funcname.Remove(0, isp+1);
 		TF1 * func = (TF1*)f->Get(funcname);
 		if (func) {
+			func->SetLineColor(gStyle->GetFuncColor());
 			func->Draw("same");
 			if (fSelHist)
 				fSelHist->GetListOfFunctions()->Add(func);

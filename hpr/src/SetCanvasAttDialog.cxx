@@ -46,9 +46,9 @@ SetCanvasAttDialog::SetCanvasAttDialog(TGWindow * win)
    fRow_lab->Add(new TObjString("Float_Value+RightMarg;0;1"));
    fRow_lab->Add(new TObjString("CheckButton_GridX"));
    fRow_lab->Add(new TObjString("CheckButton+GridY"));
-   fRow_lab->Add(new TObjString("CheckButton_Ticks at top X"));
-   fRow_lab->Add(new TObjString("CheckButton+Ticks at right Y"));
-   fRow_lab->Add(new TObjString("CheckButton_Labels at top X"));
+   fRow_lab->Add(new TObjString("CheckButton_   Ticks at top X"));
+   fRow_lab->Add(new TObjString("CheckButton+ Ticks at right Y"));
+   fRow_lab->Add(new TObjString("CheckButton_  Labels at top X"));
    fRow_lab->Add(new TObjString("CheckButton+Labels at right Y"));
 //   fValp[ind++] = &fPadColor;
 //  fValp[ind++] = &fPadBorderSize;

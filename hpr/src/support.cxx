@@ -1902,27 +1902,38 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 	Int_t lastx  = hist->GetXaxis()->GetLast();
 	Int_t firsty = hist->GetYaxis()->GetFirst();
 	Int_t lasty  = hist->GetYaxis()->GetLast();
+	Int_t firstxr = hrot->GetXaxis()->GetFirst();
+	Int_t lastxr  = hrot->GetXaxis()->GetLast();
+	Int_t firstyr = hrot->GetYaxis()->GetFirst();
+	Int_t lastyr  = hrot->GetYaxis()->GetLast();
 	Int_t nbinsx = hist->GetXaxis()->GetNbins();
 	Int_t nbinsy = hist->GetYaxis()->GetNbins();
-//	Axis_t xoff = 0.5 * (Axis_t)(lastx - firstx + 2);
-//	Axis_t yoff = 0.5 * (Axis_t)(lasty - firsty + 2);
-	Axis_t xoff = 0.5 * (Axis_t)(nbinsx + 1);
-	Axis_t yoff = 0.5 * (Axis_t)(nbinsy + 1);
-//	cout << xoff << " " << yoff << endl;
+	Axis_t xoff = 0.5 * (Axis_t)(lastx - firstx + 2);
+	Axis_t yoff = 0.5 * (Axis_t)(lasty - firsty + 2);
+	Int_t xcent = firstx + (Int_t)xoff;
+	Int_t ycent = firsty + (Int_t)yoff;
+	
+//	Axis_t xoff = 0.5 * (Axis_t)(nbinsx + 1);
+//	Axis_t yoff = 0.5 * (Axis_t)(nbinsy + 1);
+	cout<< " xcent, ycent "  << xcent << " " << ycent << endl;
 	Float_t angle = TMath::Pi() * angle_deg / 180.;
 //	Float_t angle = TMath::ATan(tan_a);
 	Float_t sina = TMath::Sin(angle);
 	Float_t cosa = TMath::Cos(angle);
-	for (Int_t binx = firstx; binx <= lastx; binx++) {
-		for (Int_t biny = firsty; biny <= lasty; biny++) {
-			Axis_t x = (Axis_t)binx - xoff;
-			Axis_t y = (Axis_t)biny - yoff;
-			Int_t xr = Int_t(x * cosa - y *sina + xoff);
-			Int_t yr = Int_t(x * sina + y *cosa + yoff);
-			if (xr >= firstx && xr <= lastx && yr >= firsty && yr <= lasty)
+//	for (Int_t binx = firstx; binx <= lastx; binx++) {
+//		for (Int_t biny = firsty; biny <= lasty; biny++) {
+	for (Int_t binx = 1; binx <= nbinsx; binx++) {
+		for (Int_t biny = 1; biny <= nbinsy; biny++) {
+			Axis_t x = (Axis_t)(-xcent + binx);
+			Axis_t y = (Axis_t)(-ycent + biny);
+			Int_t xr = Int_t(x * cosa - y *sina + xcent);
+			Int_t yr = Int_t(x * sina + y *cosa + ycent);
+//			if (xr >= firstx && xr <= lastx && yr >= firsty && yr <= lasty)
+			if (xr >= 1 && xr <= nbinsx && yr >= 1 && yr <= nbinsy)
 				hrot->SetBinContent(binx, biny, hist->GetBinContent(xr, yr));
 		}
 	}
+	
 //	cout << "Exit rotate_hist" << endl << flush;
 	return hrot;
 }
