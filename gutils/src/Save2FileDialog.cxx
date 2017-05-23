@@ -50,11 +50,17 @@ more than one level of subdirs is allowed";
 	fObjName(vers) = "";
 
    TList *row_lab = new TList();
-   row_lab->Add(new TObjString("StringValue_Name of Output root file"));
+   row_lab->Add(new TObjString("StringValue_Output root file"));
    valp[ind++] = &fFileName;
-   row_lab->Add(new TObjString("StringValue_Name of dir in root file"));
+   row_lab->Add(new TObjString("StringValue_Dir in root file\
+&root files may have directories\n\
+as in UNIX if this name is not blank\n\
+object will be saved in this dir\n\
+if not existing it will be created"));
    valp[ind++] = &fDir;
-   row_lab->Add(new TObjString("StringValue_Save object with name"));
+   row_lab->Add(new TObjString("StringValue_Save with name\
+&Default is to save with same name\n\
+a new name may be given here"));
    valp[ind++] = &fObjName;
 //   if ( obj->InheritsFrom("TH1") ){ 
 //      row_lab->Add(new TObjString("CheckButton_Save hist with current ranges only"));

@@ -51,4 +51,5 @@
 #pragma link C++ class TGedAlignSelect;
 #pragma link C++ class TGedAlignPopup;
 #pragma link C++ class Save2FileDialog;
+#pragma link C++ class TTLabel;
 #endif

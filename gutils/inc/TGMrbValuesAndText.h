@@ -7,6 +7,7 @@
 #include <TGButton.h>
 #include <TGListBox.h>
 #include <TGComboBox.h>
+#include <TGLabel.h>
 #include "TGedMarkerSelect.h"
 #include "TGedPatternSelect.h"
 #include <TObjString.h>
@@ -60,6 +61,31 @@ void SavePrimitive(std::ofstream &out, Option_t *);
                    Emit("AlignSelected(Style_t)", align ? align : GetAlignStyle()); }  // *SIGNAL*
 
    ClassDef(TGedAlignSelect,0)  // Align selection button
+};
+//_________________________________________________________________________________________
+
+class TGWindow;
+class TGToolTip;
+class TGString;
+
+class TTLabel : public TGLabel {
+
+protected:
+   TGToolTip     *fTip;         // tool tip associated label
+public:
+   TTLabel(const TGWindow *p, TGString *text,
+           GContext_t norm = GetDefaultGC()(),
+           FontStruct_t font = GetDefaultFontStruct(),
+           UInt_t options = kChildFrame,
+           Pixel_t back = GetDefaultFrameBackground());
+   virtual ~TTLabel() {};
+
+   virtual Bool_t       HandleButton(Event_t *event);
+   virtual Bool_t       HandleCrossing(Event_t *event);
+   virtual void         SetToolTipText(const char *text, Long_t delayms = 400);
+   virtual TGToolTip   *GetToolTip() const { return fTip; }
+   
+ClassDef(TTLabel, 0)
 };
 
 //_________________________________________________________________________________________

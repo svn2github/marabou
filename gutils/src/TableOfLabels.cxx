@@ -1,6 +1,7 @@
 namespace std {} using namespace std;
 
 #include <iostream>
+#include "TEnv.h"
 #include "TableOfLabels.h"
 ClassImp(TableOfLabels)
 TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
@@ -56,9 +57,9 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
    if(fNcols != 0 && fNrows == 0) fNrows = nvalues/fNcols;
 
    fLO1 = new TGLayoutHints(kLHintsExpandX, 2, 2, 2, 2);
-   fLO2 = new TGLayoutHints(kLHintsLeft | kLHintsExpandY, 2, 2, 2, 2);
+   fLO2 = new TGLayoutHints(kLHintsExpandX |kLHintsCenterX | kLHintsExpandY, 2, 2, 2, 2);
    fLO3 = new TGLayoutHints(kLHintsExpandX | kLHintsRight, 2, 2, 2, 2);
-   fLO4 = new TGLayoutHints(kLHintsExpandX | kLHintsExpandY |kLHintsCenterY| kLHintsCenterX, 1, 1, 1, 1);
+   fLO4 = new TGLayoutHints(kLHintsExpandY |kLHintsCenterY| kLHintsCenterX, 1, 1, 1, 1);
    fWidgets->AddFirst(fLO1);
    fWidgets->AddFirst(fLO2);
    fWidgets->AddFirst(fLO3);
@@ -67,10 +68,11 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
    TObjString *objs;
    TString s;
    Int_t rl =0;
+   Int_t longest_line = 0;
    if(row_labels)rl=1;
    Int_t itemwidth;
    if(fNcols == 1) itemwidth = 240;
-   else            itemwidth = 180;
+   else            itemwidth = 220;
    Int_t istart = 1;
    if(row_labels) istart = 0;
    if(col_labels){
@@ -82,6 +84,8 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
          if(i > 0){
             objs = (TObjString *)col_labels->At(i-1);
             s = objs->String();
+            if (s.Length() > longest_line)
+					longest_line = s.Length();
             fLabel    = new TGLabel(fLabelFrame, new TGString((const char *)s));
             fLabelFrame->AddFrame(fLabel, fLO4);
             fWidgets->AddFirst(fLabel);
@@ -95,15 +99,19 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
 
    TIter next(values);
    for(Int_t j = 0; j < fNrows; j++){
-      fRowFrame      = new TGCompositeFrame(this, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
+      fRowFrame      = new TGCompositeFrame(this, itemwidth*(fNcols+rl), 20, kFixedWidth |kHorizontalFrame);  
       fWidgets->AddFirst(fRowFrame);
       if(row_labels){
          objs = (TObjString *)row_labels->At(j);
          s = objs->String();
-         fLabelFrame = new TGCompositeFrame(fRowFrame,itemwidth,20,kVerticalFrame | kFixedWidth |kRaisedFrame);
+			if (s.Length() > longest_line)
+				longest_line = s.Length();
+         fLabelFrame = new TGCompositeFrame(fRowFrame,itemwidth,20,kVerticalFrame |kRaisedFrame);
          fWidgets->AddFirst(fLabelFrame);
          fLabel    = new TGLabel(fLabelFrame, new TGString((const char *)s));
-         fLabelFrame->AddFrame(fLabel, fLO4);
+         fLabel->SetTextFont(gEnv->GetValue("Gui.MenuHiFont",
+						"-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1"));
+         fLabelFrame->AddFrame(fLabel, fLO2);
          fWidgets->AddFirst(fLabel);
          fRowFrame->AddFrame(fLabelFrame,fLO2);
          fLabel->ChangeBackground(grey);
@@ -112,11 +120,15 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
       for(Int_t i=0; i < fNcols; i++){
          objs = (TObjString*)next();
          s = objs->String();
+			if (s.Length() > longest_line)
+				longest_line = s.Length();
 //         cout << s << endl;
-         fLabelFrame = new TGCompositeFrame(fRowFrame,itemwidth,20,kVerticalFrame | kFixedWidth |kRaisedFrame);
+         fLabelFrame = new TGCompositeFrame(fRowFrame,itemwidth-5,20,kFixedWidth |kVerticalFrame);
          fWidgets->AddFirst(fLabelFrame);
          fLabel    = new TGLabel(fLabelFrame, new TGString((const char *)s));
-         fLabelFrame->AddFrame(fLabel, fLO4);
+         fLabel->SetTextFont(gEnv->GetValue("Gui.MenuHiFont",
+						"-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1"));
+         fLabelFrame->AddFrame(fLabel, fLO2);
          fWidgets->AddFirst(fLabel);
          fEntries->Add(fLabel);
          fRowFrame->AddFrame(fLabelFrame,fLO2);
@@ -126,8 +138,8 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
       this->AddFrame(fRowFrame,fLO1);                // frame into main frame
    }
 
-   fRowFrame      = new TGCompositeFrame(this, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
-   fWidgets->AddFirst(fRowFrame);
+//   fRowFrame      = new TGCompositeFrame(this, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
+//   fWidgets->AddFirst(fRowFrame);
 //   fActionFrame  = new TGCompositeFrame(fMainFrame, 100, 20, kHorizontalFrame);  
 //   fCancelButton = new TGTextButton
 //                         (fRowFrame, "Cancel", M_CANCEL);
@@ -136,7 +148,7 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
    
 //   fRowFrame->AddFrame(fCancelButton,fLO1);
 //   fCancelButton->SetCommand(cmd);
-   this->AddFrame(fRowFrame,fLO1);                // frame into main frame
+//   this->AddFrame(fRowFrame,fLO1);                // frame into main frame
 
    if(title)this->SetWindowName((const char *)*title);
    this->MapSubwindows();
@@ -144,7 +156,9 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
    UInt_t width  = this->GetDefaultWidth();
 //   UInt_t width  = itemwidth*(fNcols+rl) +30;
    UInt_t height = this->GetDefaultHeight();
-   this->Resize(width, height);
+//   cout << "Width " << width << " longest_line " << longest_line << endl;
+//   cout << fLabel << " text: |" << fLabel->GetText() << endl;
+   this->Resize(width+20, height);
    this->ChangeBackground(brown);
 
 //   gVirtualX->ChangeWindowAttributes(fMainFrame->GetId(), &wattbrown);
@@ -163,6 +177,8 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
    this->Move(ax, ay);
    this->SetWMPosition(ax, ay);
    this->MapWindow();
+//   this->Resize(width, height);
+//   gClient->NeedRedraw(this);
 //   gClient->WaitFor(fMainFrame);
 };
 

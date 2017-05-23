@@ -37,6 +37,11 @@ namespace std {} using namespace std;
 #include <TGTab.h>
 #include <TGSlider.h>
 #include <TGColorSelect.h>
+
+#include "TGToolTip.h"
+#include "TGButton.h"
+#include "TGLabel.h"
+
 #include "TGMrbValuesAndText.h"
 //#include "TGedAlignSelect.h"
 //#include "SetColor.h"
@@ -243,7 +248,7 @@ Int_t Matches(TList * list, const char * s, Int_t * matchlength)
 
 //#include "TGResourcePool.h"
 //#include "TGPicture.h"
-//#include "TGToolTip.h"
+#include "TGToolTip.h"
 //#include "TGButton.h"
 //#include "Riostream.h"
 
@@ -698,6 +703,71 @@ void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *)
 }
 //________________________________________________________________________________________
 
+ClassImp(TTLabel)
+
+TTLabel::TTLabel(const TGWindow *p, TGString *text,
+           GContext_t norm,
+           FontStruct_t font,
+           UInt_t options,
+           Pixel_t back):
+           TGLabel(p, text, norm, font, options, back)
+{
+	fTip = NULL;
+	AddInput(kPointerMotionMask | kEnterWindowMask | kLeaveWindowMask);
+}
+
+//______________________________________________________________________________
+Bool_t TTLabel::HandleButton(Event_t *event)
+{
+   // Handle mouse button event.
+//printf("HandleButton %d\n", event->fType);
+   
+   if (fTip) fTip->Hide();
+
+//   DoRedraw();
+   return kTRUE;
+}
+
+
+//______________________________________________________________________________
+Bool_t TTLabel::HandleCrossing(Event_t *event)
+{
+   // Handle mouse crossing event.
+//printf("HandleCrossing %d\n", event->fType);
+
+   if (fTip) {
+      if (event->fType == kEnterNotify)
+         fTip->Reset();
+      else
+         fTip->Hide();
+   }
+   
+//   DoRedraw();
+   return kTRUE;
+}
+
+//______________________________________________________________________________
+
+void TTLabel::SetToolTipText(const char *text, Long_t delayms)
+{
+   // Set tool tip text associated with this button. The delay is in
+   // milliseconds (minimum 250). To remove tool tip call method with
+   // text = 0.
+//   DoRedraw();
+
+   if (fTip) {
+      delete fTip;
+      fTip = 0;
+   }
+
+   if (text && strlen(text)) {
+      fTip = new TGToolTip(gClient->GetRoot(), this, text, delayms);
+ //     printf("SetToolTipText: %s\n", text);
+   }
+}
+
+//________________________________________________________________________________________
+
 enum buttonId {kIdOk = 101, kIdCancel = 102, kIdHelp = 103, kIdClearHist = 104,
 					kIdText = 201, kIdFileName = 202, kIdTextValue = 301,
 					kIdTextSelect, kIdListBoxReq = 401,
@@ -816,7 +886,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
 	TGCompositeFrame *hframe = NULL , *hframe1 = NULL, *hButtonFrame = NULL;
 	if (RowLabels) {
-		TGLabel * label = NULL;
+		TTLabel * label = NULL;
 		TGTextEntry * tentry;
 		TGNumberEntry * tnentry;
 		TGButton * cbutton;
@@ -833,7 +903,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 			hframe->AddFrame(hframe1, l2);
 			hframe1 = new TGCompositeFrame(hframe, win_width*1/6, 20, kFixedWidth);
 //         fWidgets->AddFirst(hframe1);
-			label = new TGLabel(hframe1, new TGString(Flagslabel));
+			label = new TTLabel(hframe1, new TGString(Flagslabel));
 //			fWidgets->AddFirst(label);
 			hframe1->AddFrame(label, lor);
 			hframe->AddFrame(hframe1, lor);
@@ -888,8 +958,16 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 			if (!l.BeginsWith("CommandButt") && !l.BeginsWith("Exec_Button")) {
 // label
 				TString lab(l);
+				TString tt_text;
 				if (lab.Length() > 11) {
 					lab.Remove(0,12);
+					// care about tool tip
+					Int_t tt_ind = lab.Index("&");
+					if (tt_ind > 1) {
+						tt_text = lab(tt_ind+1, lab.Length());
+						lab.Resize(tt_ind);
+					}
+					
 // look for min / max for number entries
 					TObjArray * tokens;
 					tokens = lab.Tokenize(";");
@@ -930,11 +1008,13 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 					if (l.BeginsWith("CommentRigh")) loc = lor;
 					hButtonFrame = new TGCompositeFrame(hframe, win_width, 20, kHorizontalFrame);
 					if ( lab.Length() > 0 ) {
-						label = new TGLabel(hButtonFrame, new TGString((const char *)lab));
+						label = new TTLabel(hButtonFrame, new TGString((const char *)lab));
 						hButtonFrame->AddFrame(label, lol);
-						((TGLabel*)label)->SetTextFont(gEnv->GetValue("Gui.MenuHiFont",
+						if (tt_text.Length() > 0) {
+							label->SetToolTipText(tt_text.Data(),250);
+						}
+						((TTLabel*)label)->SetTextFont(gEnv->GetValue("Gui.MenuHiFont",
 						"-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1"));
-//						((TGLabel*)label)->SetTextFont("-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
 						label->ChangeBackground(lgrey);
 						if (l.BeginsWith("Comment")) fEntries->Add(label);
 					}
@@ -1128,11 +1208,11 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 				fEntries->Add(tnentry);
 				hButtonFrame->AddFrame(tnentry, l1);
 				if (l.BeginsWith("DoubleV+CbF")) {
-					label = new TGLabel(hButtonFrame, new TGString("Fix"));
+					label = new TTLabel(hButtonFrame, new TGString("Fix"));
 				} else if (l.BeginsWith("DoubleV+CbU")) {
-					label = new TGLabel(hButtonFrame, new TGString("Use"));
+					label = new TTLabel(hButtonFrame, new TGString("Use"));
 				} else {
-					label = new TGLabel(hButtonFrame, new TGString(" "));
+					label = new TTLabel(hButtonFrame, new TGString(" "));
 				}
 				hButtonFrame->AddFrame(label, lone);
 				label->ChangeBackground(lgrey);
@@ -1598,7 +1678,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 					 }
 					 break;
 				 case kTE_ENTER:
-//                cout << "kTE_ENTER parm1 " << idCmd << " kIdText " << kIdText << " " << fText << endl;
+//                cout << "kTE_ENTER parm1 " << idCmd << "  kIdText " << kIdText << " " << fText << endl;
 					 if (idCmd == kIdFileName) {
 						 TString fn = fFileNameEntry->GetBuffer()->GetString();
 						 UpdateRequestBox(fn, kTRUE, idButton);
