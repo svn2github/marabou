@@ -1902,10 +1902,6 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 	Int_t lastx  = hist->GetXaxis()->GetLast();
 	Int_t firsty = hist->GetYaxis()->GetFirst();
 	Int_t lasty  = hist->GetYaxis()->GetLast();
-	Int_t firstxr = hrot->GetXaxis()->GetFirst();
-	Int_t lastxr  = hrot->GetXaxis()->GetLast();
-	Int_t firstyr = hrot->GetYaxis()->GetFirst();
-	Int_t lastyr  = hrot->GetYaxis()->GetLast();
 	Int_t nbinsx = hist->GetXaxis()->GetNbins();
 	Int_t nbinsy = hist->GetYaxis()->GetNbins();
 	Axis_t xoff = 0.5 * (Axis_t)(lastx - firstx + 2);
