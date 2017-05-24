@@ -876,6 +876,16 @@ void FitHist::handle_mouse()
 	py = gPad->GetEventY();
 	if (event == kButton1Down) {
 //      cout << "handle_mouse select " << select->ClassName() << endl;
+		if (select->InheritsFrom("TH2") && !gSystem->AccessPathName("fh_user_macro.C")) {
+			TString cmd("fh_user_macro_2d.C(");
+			cmd += gPad->AbsPixeltoX(px);
+			cmd += ",";
+			cmd += gPad->AbsPixeltoY(py);
+			cmd += ")";
+//			cout << cmd  << endl;
+			gROOT->Macro(cmd);
+			return;
+		}
 		if (select->InheritsFrom("TF1")) {
 			TF1 *f = (TF1*)select;
 			cout  << endl << "Function " << f->GetName() << ": " << f->GetTitle()<< endl;
