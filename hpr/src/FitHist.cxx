@@ -602,7 +602,8 @@ void FitHist::SaveDefaults(Bool_t /*recalculate*/)
 			env->SetValue("fZtitle", fZtitle);
 	}
 	if (gHprDebug > 1)
-		cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " << fBinux << fLogy << endl;
+		cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " 
+		<< fBinux << " " << fLogy << endl;
 	env->SaveLevel(kEnvLocal);
 	delete env;
 	return;
@@ -2332,14 +2333,18 @@ void FitHist::Superimpose(Int_t mode)
 void FitHist::GetLimits()
 {
 	Int_t inp;
-	fBinX_1 = 0;
-	fBinY_1 = 0;
-	fBinX_2 = 0;
-	fBinY_2 = 0;
-
+	fBinX_1 = fBinX_2 = fBinY_1 = fBinY_2 = 0;
 	FhMarker *p;
 	fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
-	if (fMarkers == NULL) return;
+	if (fMarkers == NULL) {
+		fBinX_1 = fSelHist->GetXaxis()->GetFirst();
+		fBinX_2 = fSelHist->GetXaxis()->GetLast();
+		if (fSelHist->GetDimension() == 2) {
+			fBinY_1 = fSelHist->GetYaxis()->GetFirst();
+			fBinY_2 = fSelHist->GetYaxis()->GetLast();
+		}
+		return;
+	}
 	TIter next(fMarkers);
 //   fMarkers->Sort();
 	while ( (p = (FhMarker *) next()) ) {
@@ -3000,13 +3005,10 @@ void FitHist::ExpandProject(Int_t what)
 		cout << "No selection" << endl;
 	}
 	TString expname;
-	if (what == expand || what == statonly) {
-		GetLimits();
-	} else {
+	if (what == projectf) {
 		ClearMarks();
 	}
-//   cout << "fBinX_1,2 " << fBinX_1 << " " << fBinX_2 << endl;
-//   cout << "fBinY_1,2 " << fBinY_1 << " " << fBinY_2 << endl;
+	GetLimits();
 //  1-dim case
 	if (fSelHist->GetDimension() == 1 ) {
 		Double_t x = 0, cont = 0;
@@ -3167,6 +3169,7 @@ void FitHist::ExpandProject(Int_t what)
 			fExpHist->GetXaxis()->SetTitle(fOrigHist->GetXaxis()->GetTitle());
 			fExpHist->GetYaxis()->SetTitle(fOrigHist->GetYaxis()->GetTitle());
 			fSelHist = fExpHist;
+       cout << "nperbinX " << nperbinX << " nperbinY " << nperbinY << endl;
 		}
 		TAxis *xa = fSelHist->GetXaxis();
 		TAxis *ya = fSelHist->GetYaxis();
@@ -3175,59 +3178,87 @@ void FitHist::ExpandProject(Int_t what)
 		Axis_t ycent;
 		UpdateCut();
 		int nc = Ncuts();
-		for (Int_t i = 0; i <= fOrigHist->GetNbinsX() + 1; i++) {
-			Double_t yf = 0;
-			xcent = xaxis->GetBinCenter(i);
-			if (func && what == projectx_func ) {
-				// calculate function value +- road width/2
-				yf = func->Eval(xcent);
-				fBinly = ya->FindBin(yf - fRoad2);
-				fBinuy = ya->FindBin(yf + fRoad2);
-			}
-			for (Int_t j = 0; j <= fOrigHist->GetNbinsY() + 1; j++) {
+		if ( what == projecty ) {
+			for (Int_t j = fBinly; j <= fBinuy + 1; j++) {
 				ycent = yaxis->GetBinCenter(j);
-				if (nc && !InsideCut((float) xcent, (float) ycent))
-					continue;
-				Stat_t cont = fOrigHist->GetBinContent(i, j);
-				if (what == projectx || what == projectboth || what == projectx_func) {
-					if (j >= fBinly && j <= fBinuy)
-						fProjHistX->Fill(xcent, cont);
+				Double_t errsum2 = 0.;
+				Double_t cont = 0.;
+				for (Int_t i = fBinlx; i <= fBinux; i++) {
+					xcent = xaxis->GetBinCenter(i);
+					if (nc && !InsideCut(xcent, ycent))
+						continue;
+					cont += fOrigHist->GetBinContent(i, j);
+					Stat_t exy = fOrigHist->GetBinError(i, j);
+					errsum2 += exy;
 				}
-				if (what == projecty || what == projectboth) {
-					if (i >= fBinlx && i <= fBinux)
-						fProjHistY->Fill(ycent, cont);
+				sum += cont;
+				fProjHistY->SetBinContent(j-fBinly+1, cont);
+				fProjHistY->SetBinError(j-fBinly+1, TMath::Sqrt(errsum2));
+			}
+		} else {
+			for (Int_t i = fBinlx; i <= fBinux + 1; i++) {
+//			for (Int_t i = 1; i <= fOrigHist->GetNbinsX(); i++) {
+				Double_t yf = 0;
+				xcent = xaxis->GetBinCenter(i);
+				if (func && what == projectx_func ) {
+					// calculate function value +- road width/2
+					yf = func->Eval(xcent);
+					fBinly = ya->FindBin(yf - fRoad2);
+					fBinuy = ya->FindBin(yf + fRoad2);
 				}
-				if (what == projectf) {
-					if (i >= fBinlx && i <= fBinux) {
-						Double_t dist = ycent - func->Eval(xcent);
-//						Double_t dist = (apol*xcent -ycent +cpol)/TMath::Sqrt(apol*apol +1);
-						fProjHistY->Fill(dist, cont);
+				Double_t errsum2 = 0.;
+				Double_t cont = 0.;
+				for (Int_t j = fBinly; j <= fBinuy + 1; j++) {
+//				for (Int_t j = 1; j <= fOrigHist->GetNbinsY(); j++) {
+					ycent = yaxis->GetBinCenter(j);
+					if (nc && !InsideCut((float) xcent, (float) ycent))
+						continue;
+					cont += fOrigHist->GetBinContent(i, j);
+					Stat_t exy = fOrigHist->GetBinError(i, j);
+					errsum2 += exy*exy;
+					if (what == projectboth || what == projectx_func) {
+						if (j >= fBinly && j <= fBinuy)
+							fProjHistX->Fill(xcent, fOrigHist->GetBinContent(i, j));
+					}
+					if ( what == projectboth) {
+						if (i >= fBinlx && i <= fBinux)
+							fProjHistY->Fill(ycent, fOrigHist->GetBinContent(i, j));
+					}
+					if (what == projectf) {
+						if (i >= fBinlx && i <= fBinux) {
+							Double_t dist = ycent - func->Eval(xcent);
+	//						Double_t dist = (apol*xcent -ycent +cpol)/TMath::Sqrt(apol*apol +1);
+							fProjHistY->Fill(dist, fOrigHist->GetBinContent(i, j));
+						}
+					}
+					if (what == expand) {
+						Int_t irebin = Int_t((i - fBinlx) / nperbinX + 1);
+						if (irebin < 0)
+							irebin = 0;
+						if (irebin > fSelHist->GetNbinsX() + 1)
+							irebin = fSelHist->GetNbinsX() + 1;
+						Int_t jrebin = Int_t((j - fBinly) / nperbinY + 1);
+						if (jrebin < 0)
+							jrebin = 0;
+						if (jrebin > fSelHist->GetNbinsY() + 1)
+							jrebin = fSelHist->GetNbinsY() + 1;
+						Stat_t oldcont = fSelHist->GetBinContent(irebin, jrebin);
+	//                 cout << i << " " << j << " "<< irebin << " "<< jrebin << endl;
+	//                 cout << xcent << " " << ycent << " " << oldcont << " " << cont<< endl;
+						oldcont +=  fOrigHist->GetBinContent(i, j);
+						xcent = xa->GetBinCenter(irebin);
+						ycent = ya->GetBinCenter(jrebin);
+
+						fSelHist->SetBinContent(irebin, jrebin, 0);
+						TH2 *ph2 = (TH2 *) fSelHist;
+						ph2->Fill(xcent, ycent, oldcont);
+					}
+					sum += cont;
+					if (what == projectx) {
+						fProjHistX->SetBinContent(i-fBinlx+1, cont);
+						fProjHistX->SetBinError(i-fBinlx+1, TMath::Sqrt(errsum2));
 					}
 				}
-				if (what == expand) {
-					Int_t irebin = Int_t((i - fBinlx) / nperbinX + 1);
-					if (irebin < 0)
-						irebin = 0;
-					if (irebin > fSelHist->GetNbinsX() + 1)
-						irebin = fSelHist->GetNbinsX() + 1;
-					Int_t jrebin = Int_t((j - fBinly) / nperbinY + 1);
-					if (jrebin < 0)
-						jrebin = 0;
-					if (jrebin > fSelHist->GetNbinsY() + 1)
-						jrebin = fSelHist->GetNbinsY() + 1;
-					Stat_t oldcont = fSelHist->GetBinContent(irebin, jrebin);
-//                 cout << i << " " << j << " "<< irebin << " "<< jrebin << endl;
-//                 cout << xcent << " " << ycent << " " << oldcont << " " << cont<< endl;
-					oldcont += cont;
-					xcent = xa->GetBinCenter(irebin);
-					ycent = ya->GetBinCenter(jrebin);
-
-					fSelHist->SetBinContent(irebin, jrebin, 0);
-					TH2 *ph2 = (TH2 *) fSelHist;
-					ph2->Fill(xcent, ycent, oldcont);
-				}
-				if (i >= fBinlx && i <= fBinux && j >= fBinly && j <= fBinuy)
-					sum += cont;
 			}
 		}
 		if (what == statonly) {
