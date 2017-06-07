@@ -24,6 +24,11 @@ static Char_t * rioType = "RIO4";
 //! $Date: $
 ////////////////////////////////////////////////////////////////////////////*/
 
+enum	EMrbBLTInit	{	kBLTInitNotDone	=	0,
+						kBLTInitDone	=	1,
+						kBLTInitError	=	-1
+					};
+					
 /* mapping modes */
 /* !!! has to be same as defined in TMrbConfig.h !!! */
 enum EMrbVMEMapping	 {	kVMEMappingUndef	=	0,			/* vme mapping */
@@ -81,7 +86,7 @@ enum	EMapSize	{	kSize_A32	=	0x06000000,
 #endif
 
 
-struct s_mapDescr {
+typedef struct {
 	Char_t mdName[MAP_STRLEN];		/* name, to be used with smem_create() etc */
 
 	UInt_t mappingModes;			/* possible VME mapping modes */
@@ -108,5 +113,5 @@ struct s_mapDescr {
 	void * prevDescr;				/* linked list */
 	void * nextDescr;
 
-};
+} s_mapDescr;
 #endif

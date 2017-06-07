@@ -222,7 +222,7 @@ typedef enum {
 #define NOF_CHANNELS	8
 #define NOF_GROUPS		4
 
-struct s_sis_3300 {
+typedef struct {
 	unsigned long vmeAddr;					/* phys addr given by module switches */
 	volatile unsigned char * baseAddr;		/* addr mapped via find_controller() */
 
@@ -262,6 +262,6 @@ struct s_sis_3300 {
 	uint8_t triggerMode[NOF_GROUPS];
 	uint8_t pulsMode[NOF_GROUPS];
 	uint8_t pulsLength[NOF_GROUPS];
-};
+} s_sis_3300;
 
 #endif

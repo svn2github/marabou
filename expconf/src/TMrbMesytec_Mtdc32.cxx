@@ -205,6 +205,7 @@ TMrbMesytec_Mtdc32::TMrbMesytec_Mtdc32(const Char_t * ModuleName, UInt_t BaseAdd
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
 
 				fMCSTSignature = 0;
+				fMCSTMaster = kFALSE;
 				fCBLTSignature = 0;
 				fFirstInChain = kFALSE;
 				fLastInChain = kFALSE;
@@ -516,9 +517,10 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetAddressSource(mtdcEnv->Get(moduleName.Data(), "AddressSource", kAddressBoard));
 	this->SetAddressRegister(mtdcEnv->Get(moduleName.Data(), "AddressRegister", 0));
 	this->SetMcstSignature(mtdcEnv->Get(moduleName.Data(), "MCSTSignature", (Int_t) fMCSTSignature));
+	this->SetMcstMaster(mtdcEnv->Get(moduleName.Data(), "MCSTMaster", fMCSTMaster));
 	this->SetCbltSignature(mtdcEnv->Get(moduleName.Data(), "CBLTSignature", (Int_t) fCBLTSignature));
-	this->SetFirstInChain(mtdcEnv->Get(moduleName.Data(), "FirstInChain", fFirstInChain));
-	this->SetLastInChain(mtdcEnv->Get(moduleName.Data(), "LastInChain", fLastInChain));
+	this->SetFirstInChain(mtdcEnv->Get(moduleName.Data(), "CBLTFirstInChain", fFirstInChain));
+	this->SetLastInChain(mtdcEnv->Get(moduleName.Data(), "CBLTLastInChain", fLastInChain));
 	Int_t mid = mtdcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
 	if (mid == 0xFF) mid = this->GetSerial();
 	this->SetModuleId(mid);
@@ -568,7 +570,39 @@ TEnv * TMrbMesytec_Mtdc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetMultLowLimit(mtdcEnv->Get(moduleName.Data(), "MultLowLimit", "1", kMultLowLimit), 1);
 
 	fSettings = mtdcEnv->Env();
+	
+	this->UpdateSettings();
+		
+	this->SetupMCST();
+	
 	return(mtdcEnv->Env());
+}
+
+void TMrbMesytec_Mtdc32::SetupMCST() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Mtdc32::SetupMCST
+// Purpose:        Setup MCST mode
+// Arguments:      --
+// Results:       --
+// Exceptions:
+// Description:    Check if module is using MCST
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fMCSTSignature == 0) return;
+	
+	TMrbNamedX * mcst = gMrbConfig->GetLofMesytecMCST()->FindByIndex(fMCSTSignature);
+	TObjArray * oa;
+	if (mcst == NULL) {
+		oa = new TObjArray();
+		mcst = new TMrbNamedX(fMCSTSignature, "", "", oa);
+		gMrbConfig->GetLofMesytecMCST()->AddNamedX(mcst);
+	} else {
+		oa = (TObjArray *) mcst->GetAssignedObject();
+	}
+	TMrbNamedX * m = new TMrbNamedX(fMCSTMaster ? 1 : 0, this->GetName(), "Mtdc32");
+	oa->Add(m);
 }
 
 Bool_t TMrbMesytec_Mtdc32::UpdateSettings() {
@@ -586,14 +620,14 @@ Bool_t TMrbMesytec_Mtdc32::UpdateSettings() {
 	TString settingsVersion;
 	TMrbResource * mtdcEnv = new TMrbResource("MTDC32", fSettingsFile.Data());
 	mtdcEnv->Get(settingsVersion, ".SettingsVersion", "");
-	if (settingsVersion.CompareTo("10.2014") != 0) {
-		gMrbLog->Out() << "Settings file \"" << fSettingsFile << "\" has wrong (old?) version \"" << settingsVersion << "\" (should be 10.2014)" << endl;
+	if (settingsVersion.CompareTo("5.2017") != 0) {
+		gMrbLog->Out() << "Settings file \"" << fSettingsFile << "\" has wrong (old?) version \"" << settingsVersion << "\" (should be 5.2017)" << endl;
 		gMrbLog->Flush(this->ClassName(), "UpdateSettings", setblue);
 		TString oldFile = fSettingsFile;
 		oldFile += "-old";
 		gSystem->Rename(fSettingsFile, oldFile);
 		this->SaveSettings(fSettingsFile.Data());
-		gMrbLog->Out() << "Settings file \"" << fSettingsFile << "\" converted to version 10.2014, old one renamed to \"" << oldFile << "\"" << endl;
+		gMrbLog->Out() << "Settings file \"" << fSettingsFile << "\" converted to version 4.2017, old one renamed to \"" << oldFile << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "UpdateSettings", setblue);
 	}
 	return kTRUE;
@@ -672,10 +706,11 @@ Bool_t TMrbMesytec_Mtdc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$addrSource", this->GetAddressSource());
 						tmpl.Substitute("$addrReg", this->GetAddressRegister());
 						tmpl.Substitute("$moduleId", this->GetModuleId());
-						tmpl.Substitute("$mcstSignature", (Int_t) fMCSTSignature);
+						tmpl.Substitute("$mcstSignature", (Int_t) fMCSTSignature, 16);
+						tmpl.Substitute("$mcstMaster", fMCSTMaster ? "TRUE" : "FALSE");
 						tmpl.Substitute("$cbltSignature", (Int_t) fCBLTSignature);
-						tmpl.Substitute("$firstInChain", fFirstInChain ? "TRUE" : "FALSE");
-						tmpl.Substitute("$lastInChain", fLastInChain ? "TRUE" : "FALSE");
+						tmpl.Substitute("$cbltFirstInChain", fFirstInChain ? "TRUE" : "FALSE");
+						tmpl.Substitute("$cbltLastInChain", fLastInChain ? "TRUE" : "FALSE");
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%FifoHandling%");
@@ -861,14 +896,12 @@ Bool_t TMrbMesytec_Mtdc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 		case TMrbConfig::kModuleStopAcquisition:
 		case TMrbConfig::kModuleStartAcquisitionGroup:
 		case TMrbConfig::kModuleStopAcquisitionGroup:
-			{
-				if (this->McstEnabled()) fCodeTemplates.InitializeCode("%M%"); else fCodeTemplates.InitializeCode("%N%");
-				fCodeTemplates.Substitute("$moduleName", this->GetName());
-				fCodeTemplates.Substitute("$nofParams", this->GetNofChannelsUsed());
-				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
-				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-				fCodeTemplates.WriteCode(RdoStrm);
-			}
+			fCodeTemplates.InitializeCode();
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$nofParams", this->GetNofChannelsUsed());
+			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleReadModule:
 			fCodeTemplates.InitializeCode();

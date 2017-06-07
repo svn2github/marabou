@@ -297,10 +297,10 @@ Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t 
 	}
 	Bool_t foundHbx = kFALSE;
 	this->Reset(InitValue, kTRUE);
-	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
-		TUsrHBX * h = this->GetHBX(hbx);
+	for (Int_t hbx = 1; hbx < nofHbx; hbx++) {	// hbx indices start with 1 !!
+		TUsrHBX * h = this->GetHBX(hbx);		// may return an empty slot (if subevent without hitbuffer)!
 		Int_t hidx = LofIndices[hbx];
-		if (h && hidx != -1) {
+		if (h && (hidx != -1)) {
 			hidx = this->FillSevtFromHB(h, hidx, FillHisto, Didx);
 			LofIndices[hbx] = hidx;
 			foundHbx = kTRUE;
@@ -338,10 +338,10 @@ Bool_t TUsrEvent::FillEventFromHB_TS(TArrayI & LofIndices, Int_t DeltaTS, Bool_t
 	}
 	Bool_t foundHbx = kFALSE;
 	this->Reset(InitValue, kTRUE);
-	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
-		TUsrHBX * h = this->GetHBX(hbx);
+	for (Int_t hbx = 1; hbx < nofHbx; hbx++) {	// hbx indices start with 1 !!
+		TUsrHBX * h = this->GetHBX(hbx);		// may return an empty slot (if subevent without hitbuffer)!
 		Int_t hidx = LofIndices[hbx];
-		if (h && hidx != -1) {
+		if (h && (hidx != -1)) {
 			hidx = this->FillSevtFromHB_TS(h, hidx, DeltaTS, FillHisto, Didx);
 			LofIndices[hbx] = hidx;
 			foundHbx = kTRUE;
@@ -384,93 +384,40 @@ Bool_t TUsrEvent::FillEventFromHB_EB(TArrayI & LofIndices, Int_t DeltaTS, Bool_t
 		LofIndices.Reset(0);
 	}
 	Long64_t tsmin = 0;					// find minimum ts thru all hitbuffers
-	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
-		TUsrHBX * hb = this->GetHBX(hbx);
-		TUsrHit * h = hb->At(LofIndices[hbx]);
-		Long64_t ts = h->GetChannelTime();
-		tsmin = (ts < tsmin) ? ts : tsmin;
+	for (Int_t hbx = 1; hbx < nofHbx; hbx++) {	// hbx indices start with 1 !!
+		TUsrHBX * hb = this->GetHBX(hbx);		// may return an empty slot (if subevent without hitbuffer)!
+		if (hb) {
+			Int_t nofHits = hb->GetNofHits();
+			Int_t x = LofIndices[hbx];
+			if (x < nofHits) {
+				TUsrHit * h = hb->At(LofIndices[hbx]);
+				Long64_t ts = h->GetChannelTime();
+				if (tsmin == 0) tsmin = ts;
+				tsmin = (ts < tsmin) ? ts : tsmin;
+			}
+		}
 	}
 	Bool_t foundHbx = kFALSE;
 	this->Reset(InitValue, kTRUE);		// reset data vector
-	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
-		TUsrHBX * hb = this->GetHBX(hbx);
-		Int_t hidx = LofIndices[hbx];
-		Int_t nofHits = hb->GetNofHits();
-		LofIndices[hbx] = nofHits;
-		if (nofHits > 0 && hidx < nofHits) {
-			for (Int_t x = hidx; x < nofHits; x++) {
-				TUsrHit * h = hb->At(x);
-				if ((h->GetChannelTime() - tsmin) > DeltaTS) {
-					LofIndices[hbx] = x;
-					break;
+	for (Int_t hbx = 1; hbx < nofHbx; hbx++) {	// hbx indices start with 1 !!
+		TUsrHBX * hb = this->GetHBX(hbx);		// may return an empty slot (if subevent without hitbuffer)!
+		if (hb) {
+			Int_t hidx = LofIndices[hbx];
+			Int_t nofHits = hb->GetNofHits();
+			LofIndices[hbx] = nofHits;
+			if (nofHits > 0 && hidx < nofHits) {
+				for (Int_t x = hidx; x < nofHits; x++) {
+					TUsrHit * h = hb->At(x);
+					if ((h->GetChannelTime() - tsmin) > DeltaTS) {
+						LofIndices[hbx] = x;
+						break;
+					}
+					foundHbx = kTRUE;
+					h->WriteToSevtData(Didx);
+					if (FillHisto) h->FillHistogram(Didx);
 				}
-				foundHbx = kTRUE;
-				h->WriteToSevtData(Didx);
-				if (FillHisto) h->FillHistogram(Didx);
 			}
 		}
 	}
 	return(foundHbx);
 }
-	
-Int_t TUsrEvent::FillArrayFromHB(TUsrHBX * HBX, ULong64_t & TimeStamp, TArrayI & Data, Int_t Hidx, Int_t Didx, Int_t InitValue) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrEvent::FillArrayFromHB
-// Purpose:        Fill array from hitbuffer
-// Arguments:      TUsrHBX * HBX          -- pointer to hit buffer
-//                 Int_t Hidx             -- current index in hit buffer
-//                 Int_t Didx             -- data index within hit
-//                 Int_t InitValue        -- init value for reset
-// Results:        ULong64_t & TimeStamp  -- time stamp
-//                 TArrayI & Data         -- data
-//                 Int_t NextIndex   -- index to be used in next call, -1 at end
-// Exceptions:
-// Description:    Get next event from hit buffer.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t nofHits = HBX->GetNofHits();				// number of hits in hitbuffer
-	if (Hidx < 0) Hidx = 0;
-	if (nofHits > 0 && Hidx < nofHits) {
-		Data.Reset(InitValue);						// reset data vector
-		TUsrHit * hit = HBX->At(Hidx);				// inspect head of hitlist
-		Int_t evtNo = hit->GetEventNumber();		// extract event number
-		TimeStamp = hit->GetChannelTime();			// and timestamp
-		Bool_t foundHit = kFALSE;
-		for (Int_t hidx = Hidx; hidx < nofHits; hidx++) {		// loop over hits as long as event number doesn't change
-			hit = HBX->At(hidx);
-			if (hit->GetEventNumber() != evtNo) return(foundHit ? hidx : -1);		// return start index of next event
-			Data[hit->GetChannel()] = hit->GetData(Didx);							// fill vector with data for given channel
-			foundHit = kTRUE;
-		}
-		return(foundHit ? nofHits : -1);			// end of hitbuffer
-	}
-	return(-1);		// no more data
-}
-
-void TUsrEvent::Print(const Char_t * Text, UInt_t TimeStamp) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrEvent::Print
-// Purpose:        Output time stamp
-// Arguments:      Char_t * Text     -- text to be printed
-//                 UInt_t TimeStamp  -- time stamp
-// Results:
-// Exceptions:
-// Description:    Outputs a time stamp message
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if (TimeStamp == 0) TimeStamp = fClockSecs;
-	if (TimeStamp > 0) {
-		TDatime d;
-		d.Set((UInt_t) TimeStamp, kFALSE);
-		gMrbLog->Out() << Text << " at " << d.AsString() << endl;
-		gMrbLog->Flush(this->ClassName(), "Print", setblue);
-	} else {
-		gMrbLog->Wrn() << Text << ": No time stamp given" << endl;
-		gMrbLog->Flush(this->ClassName(), "Print");
-	}
-}
-

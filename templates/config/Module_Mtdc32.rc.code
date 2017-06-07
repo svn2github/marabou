@@ -17,7 +17,7 @@ MTDC32.Firmware: 						$moduleFirmware
 MTDC32.VerboseMode:						FALSE
 MTDC32.DumpRegisters:					FALSE
 
-MTDC32.SettingsVersion:					10.2014
+MTDC32.SettingsVersion:					5.2017
 
 %%End(Preamble)%%
 
@@ -37,14 +37,16 @@ MTDC32.$moduleName.AddrReg: 			$addrReg
 # module id (0x6004)            default = 0xFF -> use high byte of board coder
 MTDC32.$moduleName.ModuleId: 			$moduleId
 
-# mcst/cblt (0x6020, 0x6022, 0x6024)
+# mcst/cblt  (0x6020, 0x6022, 0x6024)
 #          signature   0xNN, bits 31 ... 24
-#          first       TRUE if first module in chain
-#          last        TRUE if last module in chain
+#          master      TRUE if module triggers mcst operations
+#          first       TRUE if first module in cblt chain
+#          last        TRUE if last module in cblt chain
 MTDC32.$moduleName.MCSTSignature:		$mcstSignature
+MTDC32.$moduleName.MCSTMaster:			$mcstMaster
 MTDC32.$moduleName.CBLTSignature:		$cbltSignature
-MTDC32.$moduleName.FirstInChain:		$firstInChain
-MTDC32.$moduleName.LastInChain:			$lastInChain
+MTDC32.$moduleName.CBLTFirstInChain:	$cbltFirstInChain
+MTDC32.$moduleName.CBLTLastInChain:		$cbltLastInChain
 
 %%End(AddressRegisters)%%
 

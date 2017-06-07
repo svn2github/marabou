@@ -35,11 +35,11 @@
 
 char msg[256];
 
-struct s_mapDescr * mapGassiplex(char * moduleName, uint32_t physAddr, int addrMod) {
-	struct s_mapDescr * md;
-	struct s_gassiplex * gs;
+s_mapDescr * mapGassiplex(char * moduleName, uint32_t physAddr, int addrMod) {
+	s_mapDescr * md;
+	s_gassiplex * gs;
 
-	gs = (struct s_gassiplex *) calloc(1, sizeof(struct s_gassiplex));
+	gs = (s_gassiplex *) calloc(1, sizeof(s_gassiplex));
 	
 	if ((md = _createMapDescr(moduleName)) == NULL) {
 		sprintf(msg, "[mapGassiplex] %s: creating mapping struct failed", moduleName);
@@ -83,19 +83,19 @@ struct s_mapDescr * mapGassiplex(char * moduleName, uint32_t physAddr, int addrM
 	return md;
 }
 
-void gassiplex_initialize(struct s_gassiplex * s)
+void gassiplex_initialize(s_gassiplex * s)
 {
 	HDTU_initDefaults(s->hdtu);
 }
 
-void gassiplex_startAcq(struct s_gassiplex * s) {
+void gassiplex_startAcq(s_gassiplex * s) {
 	HDTU_reset(s->hdtu);
 	HDTU_arm(s->hdtu);
 }
 
-void gassiplex_stopAcq(struct s_gassiplex * s) {}
+void gassiplex_stopAcq(s_gassiplex * s) {}
 
-int gassiplex_readout(struct s_gassiplex * s, uint32_t * pointer) {
+int gassiplex_readout(s_gassiplex * s, uint32_t * pointer) {
 	int nofWords;
 	
 	HDTU_waitData(s->hdtu);

@@ -28,12 +28,12 @@
 
 #define MADC_NOF_CHANNELS	32
 
-struct s_madc32 {
+typedef struct {
 	char moduleName[100];
 	char prefix[100];			/* "m_read_meb" (default) or any other */
 	char mpref[10]; 			/* "madc32: " or "" */
 
-	struct s_mapDescr * md;			/* mapping descriptor */
+	s_mapDescr * md;			/* mapping descriptor */
 
 	int serial; 				/* MARaBOU's serial number */
 
@@ -76,13 +76,14 @@ struct s_madc32 {
 	bool_t blockXfer;			/* TRUE if block xfer enabled */
 	bool_t repairRawData;		/* TRUE if raw data should be repaired (missing EOEs) */
 
-	unsigned long mcstSignature;		/* MCST signature */
+	unsigned long mcstSignature;	/* MCST signature */
 	volatile char * mcstAddr;		/* ... after mapping */
-	unsigned long cbltSignature;		/* CBLT signature */
+	bool_t mcstMaster;				/* TRUE if MCST master */
+	unsigned long cbltSignature;	/* CBLT signature */
 	volatile char * cbltAddr;		/* ... after mapping */
-	bool_t firstInChain;			/* TRUE if head of chain */
-	bool_t lastInChain;			/* TRUE if end of chain */
-};
+	bool_t firstInCbltChain;		/* TRUE if head of CBLT chain */
+	bool_t lastInCbltChain;			/* TRUE if end of CBLT chain */
+} s_madc32;
 
 #endif
 

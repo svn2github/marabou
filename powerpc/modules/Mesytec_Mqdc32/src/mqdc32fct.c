@@ -45,12 +45,12 @@ char msg[256];
 
 void mqdc32_catchBerr() { busError = TRUE; }
 
-struct s_mqdc32 * mqdc32_alloc(char * moduleName, struct s_mapDescr * md, int serial)
+s_mqdc32 * mqdc32_alloc(char * moduleName, s_mapDescr * md, int serial)
 {
-	struct s_mqdc32 * s;
+	s_mqdc32 * s;
 	int firmware, mainRev;
 
-	s = (struct s_mqdc32 *) calloc(1, sizeof(struct s_mqdc32));
+	s = (s_mqdc32 *) calloc(1, sizeof(s_mqdc32));
 	if (s != NULL) {
 		s->md = md;
 		strcpy(s->moduleName, moduleName);
@@ -62,8 +62,8 @@ struct s_mqdc32 * mqdc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 
 		s->mcstSignature = 0x0;
 		s->cbltSignature = 0x0;
-		s->firstInChain = FALSE;
-		s->lastInChain = FALSE;
+		s->firstInCbltChain = FALSE;
+		s->lastInCbltChain = FALSE;
 		
 		s->mcstAddr = 0;
 		s->cbltAddr = 0;
@@ -81,38 +81,62 @@ struct s_mqdc32 * mqdc32_alloc(char * moduleName, struct s_mapDescr * md, int se
 	return s;
 }
 
-void mqdc32_initialize(struct s_mqdc32 * s)
-{ }
+bool_t mqdc32_initBLT(s_mqdc32 * s, bool_t flag)
+{
+	if (!s->blockXfer) return flag;			/* not using BLT -> nothing to do */
+	
+	if (flag == kBLTInitError) {			/* BLT not available */
+		s->blockXfer = FALSE;
+		return kBLTInitError;
+	}
+		
+	if (flag == kBLTInitNotDone) {			/* we have to call InitBLT() once */
+		if (!initBLT()) {
+			s->blockXfer = FALSE;			/* not successful: turn off BLT */
+			return kBLTInitError;
+		}
+	}
+	
+	if (s->md->mappingBLT == kVMEMappingUndef) {	/* already mapped? */
+		if (mapBLT(s->md, 0xb) == NULL) {			/* no, map BLT page */
+			s->blockXfer = FALSE;					/* no succedss, turn BLT off */
+			return kBLTInitDone;					/* BLT status remains unchanged */
+		}
+	}
 
-bool_t mqdc32_useBLT(struct s_mqdc32 * s) {
+	setBLTMode(s->md, BMA_M_Vsz32, BMA_M_WzD32, TRUE);
+	return kBLTInitDone;
+}
+
+bool_t mqdc32_useBLT(s_mqdc32 * s) {
 	return s->blockXfer;
 }
 
-void mqdc32_soft_reset(struct s_mqdc32 * s)
+void mqdc32_soft_reset(s_mqdc32 * s)
 {
 /*  SET16(s->md->vmeBase, MQDC32_SOFT_RESET, 0x1);	*/
 }
 
-uint16_t mqdc32_getThreshold(struct s_mqdc32 * s, uint16_t channel)
+uint16_t mqdc32_getThreshold(s_mqdc32 * s, uint16_t channel)
 {
 	uint16_t thresh = 0;
 	if (channel < MQDC_NOF_CHANNELS) thresh = GET16(s->md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel) & MQDC32_THRESHOLD_MASK;
 	return thresh;
 }
 
-void mqdc32_setThreshold_db(struct s_mqdc32 * s, uint16_t channel)
+void mqdc32_setThreshold_db(s_mqdc32 * s, uint16_t channel)
 {
 	if (channel < MQDC_NOF_CHANNELS) mqdc32_setThreshold(s, channel, s->threshold[channel]);
 }
 
-void mqdc32_setThreshold(struct s_mqdc32 * s, uint16_t channel, uint16_t thresh)
+void mqdc32_setThreshold(s_mqdc32 * s, uint16_t channel, uint16_t thresh)
 {
 	if (channel < MQDC_NOF_CHANNELS) SET16(s->md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel, thresh & MQDC32_THRESHOLD_MASK);
 }
 
-void mqdc32_setAddrReg_db(struct s_mqdc32 * s) { mqdc32_setAddrReg(s, s->addrReg); }
+void mqdc32_setAddrReg_db(s_mqdc32 * s) { mqdc32_setAddrReg(s, s->addrReg); }
 
-void mqdc32_setAddrReg(struct s_mqdc32 * s, uint16_t vmeAddr)
+void mqdc32_setAddrReg(s_mqdc32 * s, uint16_t vmeAddr)
 {
 	if (vmeAddr) {
 		SET16(s->md->vmeBase, MQDC32_ADDR_REG, vmeAddr);
@@ -121,105 +145,105 @@ void mqdc32_setAddrReg(struct s_mqdc32 * s, uint16_t vmeAddr)
 	}
 }
 
-uint16_t mqdc32_getAddrReg(struct s_mqdc32 * s)
+uint16_t mqdc32_getAddrReg(s_mqdc32 * s)
 {
 	uint16_t source = GET16(s->md->vmeBase, MQDC32_ADDR_SOURCE);
 	if (source & MQDC32_ADDR_SOURCE_REG) return GET16(s->md->vmeBase, MQDC32_ADDR_REG);
 	else return 0;
 }
 
-void mqdc32_setModuleId_db(struct s_mqdc32 * s) { mqdc32_setModuleId(s, s->moduleId); }
+void mqdc32_setModuleId_db(s_mqdc32 * s) { mqdc32_setModuleId(s, s->moduleId); }
 
-void mqdc32_setModuleId(struct s_mqdc32 * s, uint16_t id)
+void mqdc32_setModuleId(s_mqdc32 * s, uint16_t id)
 {
 	SET16(s->md->vmeBase, MQDC32_MODULE_ID, id & MQDC32_MODULE_ID_MASK);
 }
 
-uint16_t mqdc32_getModuleId(struct s_mqdc32 * s)
+uint16_t mqdc32_getModuleId(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_MODULE_ID) & MQDC32_MODULE_ID_MASK;
 }
 
-uint16_t mqdc32_getFifoLength(struct s_mqdc32 * s)
+uint16_t mqdc32_getFifoLength(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_BUFFER_DATA_LENGTH) & MQDC32_BUFFER_DATA_LENGTH_MASK;
 }
 
-void mqdc32_setDataWidth_db(struct s_mqdc32 * s) { mqdc32_setDataWidth(s, s->dataWidth); }
+void mqdc32_setDataWidth_db(s_mqdc32 * s) { mqdc32_setDataWidth(s, s->dataWidth); }
 
-void mqdc32_setDataWidth(struct s_mqdc32 * s, uint16_t width)
+void mqdc32_setDataWidth(s_mqdc32 * s, uint16_t width)
 {
 	SET16(s->md->vmeBase, MQDC32_DATA_LENGTH_FORMAT, width & MQDC32_DATA_LENGTH_FORMAT_MASK);
 }
 
-uint16_t mqdc32_getDataWidth(struct s_mqdc32 * s)
+uint16_t mqdc32_getDataWidth(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_DATA_LENGTH_FORMAT) & MQDC32_DATA_LENGTH_FORMAT_MASK;
 }
 
-void mqdc32_setMultiEvent_db(struct s_mqdc32 * s) { mqdc32_setMultiEvent(s, s->multiEvent); }
+void mqdc32_setMultiEvent_db(s_mqdc32 * s) { mqdc32_setMultiEvent(s, s->multiEvent); }
 
-void mqdc32_setMultiEvent(struct s_mqdc32 * s, uint16_t mode)
+void mqdc32_setMultiEvent(s_mqdc32 * s, uint16_t mode)
 {
 	SET16(s->md->vmeBase, MQDC32_MULTI_EVENT, mode & MQDC32_MULTI_EVENT_MASK);
 }
 
-uint16_t mqdc32_getMultiEvent(struct s_mqdc32 * s)
+uint16_t mqdc32_getMultiEvent(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_MULTI_EVENT) & MQDC32_MULTI_EVENT_MASK;
 }
 
-void mqdc32_setXferData_db(struct s_mqdc32 * s) { mqdc32_setXferData(s, s->xferData); }
+void mqdc32_setXferData_db(s_mqdc32 * s) { mqdc32_setXferData(s, s->xferData); }
 
-void mqdc32_setXferData(struct s_mqdc32 * s, uint16_t wc)
+void mqdc32_setXferData(s_mqdc32 * s, uint16_t wc)
 {
 	SET16(s->md->vmeBase, MQDC32_MAX_XFER_DATA, wc & MQDC32_MAX_XFER_DATA_MASK);
 }
 
-uint16_t mqdc32_getXferData(struct s_mqdc32 * s)
+uint16_t mqdc32_getXferData(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_MAX_XFER_DATA) & MQDC32_MAX_XFER_DATA_MASK;
 }
 
-void mqdc32_setMarkingType_db(struct s_mqdc32 * s) { mqdc32_setMarkingType(s, s->markingType); }
+void mqdc32_setMarkingType_db(s_mqdc32 * s) { mqdc32_setMarkingType(s, s->markingType); }
 
-void mqdc32_setMarkingType(struct s_mqdc32 * s, uint16_t type)
+void mqdc32_setMarkingType(s_mqdc32 * s, uint16_t type)
 {
 	SET16(s->md->vmeBase, MQDC32_MARKING_TYPE, type & MQDC32_MARKING_TYPE_MASK);
 }
 
-uint16_t mqdc32_getMarkingType(struct s_mqdc32 * s)
+uint16_t mqdc32_getMarkingType(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_MARKING_TYPE) & MQDC32_MARKING_TYPE_MASK;
 }
 
-void mqdc32_setBankOperation_db(struct s_mqdc32 * s) { mqdc32_setBankOperation(s, s->bankOperation); }
+void mqdc32_setBankOperation_db(s_mqdc32 * s) { mqdc32_setBankOperation(s, s->bankOperation); }
 
-void mqdc32_setBankOperation(struct s_mqdc32 * s, uint16_t oper)
+void mqdc32_setBankOperation(s_mqdc32 * s, uint16_t oper)
 {
 	SET16(s->md->vmeBase, MQDC32_BANK_OPERATION, oper & MQDC32_BANK_OPERATION_MASK);
 }
 
-uint16_t mqdc32_getBankOperation(struct s_mqdc32 * s)
+uint16_t mqdc32_getBankOperation(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_BANK_OPERATION) & MQDC32_BANK_OPERATION_MASK;
 }
 
-void mqdc32_setAdcResolution_db(struct s_mqdc32 * s) { mqdc32_setAdcResolution(s, s->adcResolution); }
+void mqdc32_setAdcResolution_db(s_mqdc32 * s) { mqdc32_setAdcResolution(s, s->adcResolution); }
 
-void mqdc32_setAdcResolution(struct s_mqdc32 * s, uint16_t res)
+void mqdc32_setAdcResolution(s_mqdc32 * s, uint16_t res)
 {
 	SET16(s->md->vmeBase, MQDC32_ADC_RESOLUTION, res & MQDC32_ADC_RESOLUTION_MASK);
 }
 
-uint16_t mqdc32_getAdcResolution(struct s_mqdc32 * s)
+uint16_t mqdc32_getAdcResolution(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_ADC_RESOLUTION) & MQDC32_ADC_RESOLUTION_MASK;
 }
 
-void mqdc32_setBankOffset_db(struct s_mqdc32 * s, uint16_t bank) { mqdc32_setBankOffset(s, bank, s->bankOffset[bank]); }
+void mqdc32_setBankOffset_db(s_mqdc32 * s, uint16_t bank) { mqdc32_setBankOffset(s, bank, s->bankOffset[bank]); }
 
-void mqdc32_setBankOffset(struct s_mqdc32 * s, uint16_t bank, uint16_t offset)
+void mqdc32_setBankOffset(s_mqdc32 * s, uint16_t bank, uint16_t offset)
 {
 	int addr;
 	switch (bank) {
@@ -230,7 +254,7 @@ void mqdc32_setBankOffset(struct s_mqdc32 * s, uint16_t bank, uint16_t offset)
 	SET16(s->md->vmeBase, addr, offset & MQDC32_BANK_OFFSET_MASK);
 }
 
-uint16_t mqdc32_getBankOffset(struct s_mqdc32 * s, uint16_t bank)
+uint16_t mqdc32_getBankOffset(s_mqdc32 * s, uint16_t bank)
 {
 	int addr;
 	switch (bank) {
@@ -241,9 +265,9 @@ uint16_t mqdc32_getBankOffset(struct s_mqdc32 * s, uint16_t bank)
 	return GET16(s->md->vmeBase, addr) & MQDC32_BANK_OFFSET_MASK;
 }
 
-void mqdc32_setGateLimit_db(struct s_mqdc32 * s, uint16_t bank) { mqdc32_setGateLimit(s, bank, s->gateLimit[bank]); }
+void mqdc32_setGateLimit_db(s_mqdc32 * s, uint16_t bank) { mqdc32_setGateLimit(s, bank, s->gateLimit[bank]); }
 
-void mqdc32_setGateLimit(struct s_mqdc32 * s, uint16_t bank, uint16_t limit)
+void mqdc32_setGateLimit(s_mqdc32 * s, uint16_t bank, uint16_t limit)
 {
 	int addr;
 	switch (bank) {
@@ -254,7 +278,7 @@ void mqdc32_setGateLimit(struct s_mqdc32 * s, uint16_t bank, uint16_t limit)
 	SET16(s->md->vmeBase, addr, limit & MQDC32_GATE_LIMIT_MASK);
 }
 
-uint16_t mqdc32_getGateLimit(struct s_mqdc32 * s, uint16_t bank)
+uint16_t mqdc32_getGateLimit(s_mqdc32 * s, uint16_t bank)
 {
 	int addr;
 	switch (bank) {
@@ -265,182 +289,182 @@ uint16_t mqdc32_getGateLimit(struct s_mqdc32 * s, uint16_t bank)
 	return GET16(s->md->vmeBase, addr) & MQDC32_GATE_LIMIT_MASK;
 }
 
-void mqdc32_setSlidingScaleOff_db(struct s_mqdc32 * s) { mqdc32_setSlidingScaleOff(s, s->slidingScaleOff); }
+void mqdc32_setSlidingScaleOff_db(s_mqdc32 * s) { mqdc32_setSlidingScaleOff(s, s->slidingScaleOff); }
 
-void mqdc32_setSlidingScaleOff(struct s_mqdc32 * s, bool_t flag)
+void mqdc32_setSlidingScaleOff(s_mqdc32 * s, bool_t flag)
 {
 	uint16_t f = flag ? 1 : 0;
 	SET16(s->md->vmeBase, MQDC32_SLIDING_SCALE_OFF, f);
 }
 
-bool_t mqdc32_getSlidingScaleOff(struct s_mqdc32 * s)
+bool_t mqdc32_getSlidingScaleOff(s_mqdc32 * s)
 {
 	uint16_t f = GET16(s->md->vmeBase, MQDC32_SLIDING_SCALE_OFF) & MQDC32_SLIDING_SCALE_OFF_MASK;
 	return (f != 0) ? TRUE : FALSE;
 }
 
-void mqdc32_setSkipOutOfRange_db(struct s_mqdc32 * s) { mqdc32_setSkipOutOfRange(s, s->skipOutOfRange); }
+void mqdc32_setSkipOutOfRange_db(s_mqdc32 * s) { mqdc32_setSkipOutOfRange(s, s->skipOutOfRange); }
 
-void mqdc32_setSkipOutOfRange(struct s_mqdc32 * s, bool_t flag)
+void mqdc32_setSkipOutOfRange(s_mqdc32 * s, bool_t flag)
 {
 	uint16_t f = flag ? 1 : 0;
 	SET16(s->md->vmeBase, MQDC32_SKIP_OUT_OF_RANGE, f);
 }
 
-bool_t mqdc32_getSkipOutOfRange(struct s_mqdc32 * s)
+bool_t mqdc32_getSkipOutOfRange(s_mqdc32 * s)
 {
 	uint16_t f = GET16(s->md->vmeBase, MQDC32_SKIP_OUT_OF_RANGE) & MQDC32_SKIP_OUT_OF_RANGE_MASK;
 	return (f != 0) ? TRUE : FALSE;
 }
 
-void mqdc32_setIgnoreThresholds_db(struct s_mqdc32 * s) { mqdc32_setIgnoreThresholds(s, s->ignoreThresh); }
+void mqdc32_setIgnoreThresholds_db(s_mqdc32 * s) { mqdc32_setIgnoreThresholds(s, s->ignoreThresh); }
 
-void mqdc32_setIgnoreThresholds(struct s_mqdc32 * s, bool_t flag)
+void mqdc32_setIgnoreThresholds(s_mqdc32 * s, bool_t flag)
 {
 	uint16_t f = flag ? 1 : 0;
 	SET16(s->md->vmeBase, MQDC32_IGNORE_THRESHOLDS, f);
 }
 
-bool_t mqdc32_getIgnoreThresholds(struct s_mqdc32 * s)
+bool_t mqdc32_getIgnoreThresholds(s_mqdc32 * s)
 {
 	uint16_t f = GET16(s->md->vmeBase, MQDC32_IGNORE_THRESHOLDS) & MQDC32_IGNORE_THRESH_MASK;
 	return (f != 0) ? TRUE : FALSE;
 }
 
-void mqdc32_setInputCoupling_db(struct s_mqdc32 * s) { mqdc32_setInputCoupling(s, s->inputCoupling); }
+void mqdc32_setInputCoupling_db(s_mqdc32 * s) { mqdc32_setInputCoupling(s, s->inputCoupling); }
 
-void mqdc32_setInputCoupling(struct s_mqdc32 * s, uint16_t coupling)
+void mqdc32_setInputCoupling(s_mqdc32 * s, uint16_t coupling)
 {
 	SET16(s->md->vmeBase, MQDC32_INPUT_COUPLING, coupling & MQDC32_INPUT_COUPLING_MASK);
 }
 
-uint16_t mqdc32_getInputCoupling(struct s_mqdc32 * s)
+uint16_t mqdc32_getInputCoupling(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_INPUT_COUPLING) & MQDC32_INPUT_COUPLING_MASK;
 }
 
-void mqdc32_setEclTerm_db(struct s_mqdc32 * s) { mqdc32_setEclTerm(s, s->eclTerm); }
+void mqdc32_setEclTerm_db(s_mqdc32 * s) { mqdc32_setEclTerm(s, s->eclTerm); }
 
-void mqdc32_setEclTerm(struct s_mqdc32 * s, uint16_t term)
+void mqdc32_setEclTerm(s_mqdc32 * s, uint16_t term)
 {
 	SET16(s->md->vmeBase, MQDC32_ECL_TERMINATORS, term & MQDC32_ECL_TERMINATORS_MASK);
 }
 
-uint16_t mqdc32_getEclTerm(struct s_mqdc32 * s)
+uint16_t mqdc32_getEclTerm(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_ECL_TERMINATORS) & MQDC32_ECL_TERMINATORS_MASK;
 }
 
-void mqdc32_setEclG1Osc_db(struct s_mqdc32 * s) { mqdc32_setEclG1Osc(s, s->eclG1Osc); }
+void mqdc32_setEclG1Osc_db(s_mqdc32 * s) { mqdc32_setEclG1Osc(s, s->eclG1Osc); }
 
-void mqdc32_setEclG1Osc(struct s_mqdc32 * s, uint16_t go)
+void mqdc32_setEclG1Osc(s_mqdc32 * s, uint16_t go)
 {
 	SET16(s->md->vmeBase, MQDC32_ECL_G1_OSC, go & MQDC32_ECL_G1_OSC_MASK);
 }
 
-uint16_t mqdc32_getEclG1Osc(struct s_mqdc32 * s)
+uint16_t mqdc32_getEclG1Osc(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_ECL_G1_OSC) & MQDC32_ECL_G1_OSC_MASK;
 }
 
-void mqdc32_setEclFclRts_db(struct s_mqdc32 * s) { mqdc32_setEclFclRts(s, s->eclFclRts); }
+void mqdc32_setEclFclRts_db(s_mqdc32 * s) { mqdc32_setEclFclRts(s, s->eclFclRts); }
 
-void mqdc32_setEclFclRts(struct s_mqdc32 * s, uint16_t fr)
+void mqdc32_setEclFclRts(s_mqdc32 * s, uint16_t fr)
 {
 	SET16(s->md->vmeBase, MQDC32_ECL_FCL_RTS, fr & MQDC32_ECL_FCL_RTS_MASK);
 }
 
-uint16_t mqdc32_getEclFclRts(struct s_mqdc32 * s)
+uint16_t mqdc32_getEclFclRts(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_ECL_FCL_RTS) & MQDC32_ECL_FCL_RTS_MASK;
 }
 
-void mqdc32_setGateSelect_db(struct s_mqdc32 * s) { mqdc32_setGateSelect(s, s->gateSelect); }
+void mqdc32_setGateSelect_db(s_mqdc32 * s) { mqdc32_setGateSelect(s, s->gateSelect); }
 
-void mqdc32_setGateSelect(struct s_mqdc32 * s, uint16_t select)
+void mqdc32_setGateSelect(s_mqdc32 * s, uint16_t select)
 {
 	SET16(s->md->vmeBase, MQDC32_GATE_SELECT, select & MQDC32_GATE_SELECT_MASK);
 }
 
-uint16_t mqdc32_getGateSelect(struct s_mqdc32 * s)
+uint16_t mqdc32_getGateSelect(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_GATE_SELECT) & MQDC32_GATE_SELECT_MASK;
 }
 
-void mqdc32_setNimG1Osc_db(struct s_mqdc32 * s) { mqdc32_setNimG1Osc(s, s->nimG1Osc); }
+void mqdc32_setNimG1Osc_db(s_mqdc32 * s) { mqdc32_setNimG1Osc(s, s->nimG1Osc); }
 
-void mqdc32_setNimG1Osc(struct s_mqdc32 * s, uint16_t go)
+void mqdc32_setNimG1Osc(s_mqdc32 * s, uint16_t go)
 {
 	SET16(s->md->vmeBase, MQDC32_NIM_G1_OSC, go & MQDC32_NIM_G1_OSC_MASK);
 }
 
-uint16_t mqdc32_getNimG1Osc(struct s_mqdc32 * s)
+uint16_t mqdc32_getNimG1Osc(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_NIM_G1_OSC) & MQDC32_NIM_G1_OSC_MASK;
 }
 
 
-void mqdc32_setNimFclRts_db(struct s_mqdc32 * s) { mqdc32_setNimFclRts(s, s->nimFclRts); }
+void mqdc32_setNimFclRts_db(s_mqdc32 * s) { mqdc32_setNimFclRts(s, s->nimFclRts); }
 
-void mqdc32_setNimFclRts(struct s_mqdc32 * s, uint16_t fr)
+void mqdc32_setNimFclRts(s_mqdc32 * s, uint16_t fr)
 {
 	SET16(s->md->vmeBase, MQDC32_NIM_FCL_RTS, fr & MQDC32_NIM_FCL_RTS_MASK);
 }
 
-uint16_t mqdc32_getNimFclRts(struct s_mqdc32 * s)
+uint16_t mqdc32_getNimFclRts(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_NIM_FCL_RTS) & MQDC32_NIM_FCL_RTS_MASK;
 }
 
-void mqdc32_setNimBusy_db(struct s_mqdc32 * s) { mqdc32_setNimBusy(s, s->nimBusy); }
+void mqdc32_setNimBusy_db(s_mqdc32 * s) { mqdc32_setNimBusy(s, s->nimBusy); }
 
-void mqdc32_setNimBusy(struct s_mqdc32 * s, uint16_t busy)
+void mqdc32_setNimBusy(s_mqdc32 * s, uint16_t busy)
 {
 	SET16(s->md->vmeBase, MQDC32_NIM_BUSY, busy & MQDC32_NIM_BUSY_MASK);
 }
 
-uint16_t mqdc32_getNimBusy(struct s_mqdc32 * s)
+uint16_t mqdc32_getNimBusy(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_NIM_BUSY) & MQDC32_NIM_BUSY_MASK;
 }
 
-void mqdc32_setPulserStatus_db(struct s_mqdc32 * s) { mqdc32_setPulserStatus(s, s->pulserStatus); }
+void mqdc32_setPulserStatus_db(s_mqdc32 * s) { mqdc32_setPulserStatus(s, s->pulserStatus); }
 
-void mqdc32_setPulserStatus(struct s_mqdc32 * s, uint16_t mode)
+void mqdc32_setPulserStatus(s_mqdc32 * s, uint16_t mode)
 {
 	SET16(s->md->vmeBase, MQDC32_PULSER_STATUS, mode & MQDC32_PULSER_STATUS_MASK);
 }
 
-uint16_t mqdc32_getPulserStatus(struct s_mqdc32 * s)
+uint16_t mqdc32_getPulserStatus(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_PULSER_STATUS) & MQDC32_PULSER_STATUS_MASK;
 }
 
-void mqdc32_setTsSource_db(struct s_mqdc32 * s) { mqdc32_setTsSource(s, s->ctraTsSource); }
+void mqdc32_setTsSource_db(s_mqdc32 * s) { mqdc32_setTsSource(s, s->ctraTsSource); }
 
-void mqdc32_setTsSource(struct s_mqdc32 * s, uint16_t source)
+void mqdc32_setTsSource(s_mqdc32 * s, uint16_t source)
 {
 	SET16(s->md->vmeBase, MQDC32_CTRA_TS_SOURCE, source & MQDC32_CTRA_TS_SOURCE_MASK);
 }
 
-uint16_t mqdc32_getTsSource(struct s_mqdc32 * s)
+uint16_t mqdc32_getTsSource(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_CTRA_TS_SOURCE) & MQDC32_CTRA_TS_SOURCE_MASK;
 }
 
-void mqdc32_setTsDivisor_db(struct s_mqdc32 * s) { mqdc32_setTsDivisor(s, s->ctraTsDivisor); }
+void mqdc32_setTsDivisor_db(s_mqdc32 * s) { mqdc32_setTsDivisor(s, s->ctraTsDivisor); }
 
-void mqdc32_setTsDivisor(struct s_mqdc32 * s, uint16_t div)
+void mqdc32_setTsDivisor(s_mqdc32 * s, uint16_t div)
 {
 	SET16(s->md->vmeBase, MQDC32_CTRA_TS_DIVISOR, div & MQDC32_CTRA_TS_DIVISOR_MASK);
 }
 
-uint16_t mqdc32_getTsDivisor(struct s_mqdc32 * s)
+uint16_t mqdc32_getTsDivisor(s_mqdc32 * s)
 {
 	return GET16(s->md->vmeBase, MQDC32_CTRA_TS_DIVISOR) & MQDC32_CTRA_TS_DIVISOR_MASK;
 }
 
-void mqdc32_moduleInfo(struct s_mqdc32 * s)
+void mqdc32_moduleInfo(s_mqdc32 * s)
 {
 	int firmware, mainRev, subRev;
 	firmware = GET16(s->md->vmeBase, MQDC32_FIRMWARE_REV);
@@ -455,13 +479,13 @@ void mqdc32_moduleInfo(struct s_mqdc32 * s)
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }
 
-void mqdc32_setPrefix(struct s_mqdc32 * s, char * prefix)
+void mqdc32_setPrefix(s_mqdc32 * s, char * prefix)
 {
 	strcpy(s->prefix, prefix);
 	strcpy(s->mpref, "");
 }
 
-bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
+bool_t mqdc32_fillStruct(s_mqdc32 * s, char * file)
 {
 	char res[256];
 	char mnUC[256];
@@ -493,7 +517,7 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 	sprintf(res, "MQDC32.%s.BlockXfer", mnUC);
 	s->blockXfer = root_env_getval_b(res, FALSE);
 
-	sprintf(res, "MADC32.%s.RepairRawData", mnUC);
+	sprintf(res, "MQDC32.%s.RepairRawData", mnUC);
 	s->repairRawData = root_env_getval_b(res, FALSE);
 
 	for (i = 0; i < MQDC_NOF_CHANNELS; i++) {
@@ -515,12 +539,14 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 
 	sprintf(res, "MQDC32.%s.MCSTSignature", mnUC);
 	s->mcstSignature = root_env_getval_x(res, 0x0);
+	sprintf(res, "MQDC32.%s.MCSTMaster", mnUC);
+	s->mcstMaster = root_env_getval_b(res, FALSE);
 	sprintf(res, "MQDC32.%s.CBLTSignature", mnUC);
 	s->cbltSignature = root_env_getval_x(res, 0x0);
-	sprintf(res, "MQDC32.%s.FirstInChain", mnUC);
-	s->firstInChain = root_env_getval_b(res, FALSE);
-	sprintf(res, "MQDC32.%s.LastInChain", mnUC);
-	s->lastInChain = root_env_getval_b(res, FALSE);
+	sprintf(res, "MQDC32.%s.FirstInCbltChain", mnUC);
+	s->firstInCbltChain = root_env_getval_b(res, FALSE);
+	sprintf(res, "MQDC32.%s.LastInCbltChain", mnUC);
+	s->lastInCbltChain = root_env_getval_b(res, FALSE);
 
 	sprintf(res, "MQDC32.%s.ModuleId", mnUC);
 	s->moduleId = root_env_getval_i(res, MQDC32_MODULE_ID_DEFAULT);
@@ -615,7 +641,7 @@ bool_t mqdc32_fillStruct(struct s_mqdc32 * s, char * file)
 	return TRUE;
 }
 
-void mqdc32_loadFromDb(struct s_mqdc32 * s, uint32_t chnPattern)
+void mqdc32_loadFromDb(s_mqdc32 * s, uint32_t chnPattern)
 {
 	int ch;
 	int b;
@@ -657,7 +683,7 @@ void mqdc32_loadFromDb(struct s_mqdc32 * s, uint32_t chnPattern)
 }
 
 
-bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file)
+bool_t mqdc32_dumpRegisters(s_mqdc32 * s, char * file)
 {
 	FILE * f;
 
@@ -692,8 +718,8 @@ bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file)
 	else				fprintf(f, "CBLT                      : disabled\n");
 	mcstOrCblt |= flag;
 	if (mcstOrCblt) {
-		if (mqdc32_isFirstInChain(s)) fprintf(f, "MCST/CBLT chain           : first module in chain\n");
-		else if (mqdc32_isLastInChain(s)) fprintf(f, "MCST/CBLT chain           : last module in chain\n");
+		if (mqdc32_isFirstInCbltChain(s)) fprintf(f, "MCST/CBLT chain           : first module in chain\n");
+		else if (mqdc32_isLastInCbltChain(s)) fprintf(f, "MCST/CBLT chain           : last module in chain\n");
 		else fprintf(f, "MCST/CBLT chain   : module in the middle\n");
 	}
 	fprintf(f, "Module ID         : %d\n", mqdc32_getModuleId(s));
@@ -726,7 +752,7 @@ bool_t mqdc32_dumpRegisters(struct s_mqdc32 * s, char * file)
 	fclose(f);
 }
 
-bool_t mqdc32_dumpRaw(struct s_mqdc32 * s, char * file)
+bool_t mqdc32_dumpRaw(s_mqdc32 * s, char * file)
 {
 	int i;
 	FILE * f;
@@ -749,7 +775,7 @@ bool_t mqdc32_dumpRaw(struct s_mqdc32 * s, char * file)
 	fclose(f);
 }
 
-void mqdc32_printDb(struct s_mqdc32 * s)
+void mqdc32_printDb(s_mqdc32 * s)
 {
 	int ch;
 	int b;
@@ -765,8 +791,8 @@ void mqdc32_printDb(struct s_mqdc32 * s)
 					printf("CBLT signature    : %#x\n", s->cbltSignature);
 	else				printf("CBLT              : disabled\n");
 	if ((s->mcstSignature != 0) || (s->cbltSignature != 0)) {
-		if (s->firstInChain) printf("MCST/CBLT chain   : first module in chain\n");
-		else if (s->lastInChain) printf("MCST/CBLT chain   : last module in chain\n");
+		if (s->firstInCbltChain) printf("MCST/CBLT chain   : first module in chain\n");
+		else if (s->lastInCbltChain) printf("MCST/CBLT chain   : last module in chain\n");
 		else printf("MCST/CBLT chain   : module in the middle\n");
 	}
 	printf("Module ID         : %d\n", s->moduleId);
@@ -798,7 +824,7 @@ void mqdc32_printDb(struct s_mqdc32 * s)
 	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
 }
 
-int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
+int mqdc32_readout(s_mqdc32 * s, uint32_t * pointer)
 {
 	static int addrOffset = 0;
 
@@ -831,7 +857,14 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 
 	if (s->blockXfer) {
 		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));
-		if (ptrloc == NULL) return(0);
+		if (ptrloc == NULL) {
+			sprintf(msg, "[%sreadout] %s: Can't relocate mapped pointer %#lx to phys addr - BLT turned off", s->mpref, s->moduleName, pointer);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			s->blockXfer = FALSE;
+		}
+	}
+	
+	if (s->blockXfer) {
 		bmaError = bma_read(s->md->bltBase + MQDC32_DATA, ptrloc, numData, s->md->bltModeId);
 		if (bmaError != 0) {
 			if (bmaError < 0) {
@@ -885,7 +918,7 @@ int mqdc32_readout(struct s_mqdc32 * s, uint32_t * pointer)
 }
 
 
-int mqdc32_readTimeB(struct s_mqdc32 * s, uint32_t * pointer)
+int mqdc32_readTimeB(s_mqdc32 * s, uint32_t * pointer)
 {
 	uint16_t * p16 = pointer;
 	*p16++ = 0;
@@ -895,207 +928,196 @@ int mqdc32_readTimeB(struct s_mqdc32 * s, uint32_t * pointer)
 	return 4 * sizeof(uint16_t) / sizeof(uint32_t);
 }
 
-bool_t mqdc32_dataReady(struct s_mqdc32 * s)
+bool_t mqdc32_dataReady(s_mqdc32 * s)
 {
 	return TSTB16(s->md->vmeBase, MQDC32_DATA_READY, 0) ;
 }
 
-void mqdc32_resetReadout(struct s_mqdc32 * s)
+void mqdc32_resetReadout(s_mqdc32 * s)
 {
 	SET16(s->md->vmeBase, MQDC32_READOUT_RESET, 0x1);
 }
 
-bool_t mqdc32_testBusError(struct s_mqdc32 * s)
+bool_t mqdc32_testBusError(s_mqdc32 * s)
 {
 	return TSTB16(s->md->vmeBase, MQDC32_MULTI_EVENT, MQDC32_MULTI_EVENT_BERR) == 1 ? FALSE : TRUE;
 }
 
-void mqdc32_enableBusError(struct s_mqdc32 * s)
+void mqdc32_enableBusError(s_mqdc32 * s)
 {
 	CLRB16(s->md->vmeBase, MQDC32_MULTI_EVENT, MQDC32_MULTI_EVENT_BERR);
 }
 
-void mqdc32_disableBusError(struct s_mqdc32 * s)
+void mqdc32_disableBusError(s_mqdc32 * s)
 {
 	SETB16(s->md->vmeBase, MQDC32_MULTI_EVENT, MQDC32_MULTI_EVENT_BERR);
 }
 
-void mqdc32_startAcq(struct s_mqdc32 * s)
+void mqdc32_startAcq(s_mqdc32 * s)
 {
-	SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x0);
-	mqdc32_resetFifo(s);
-	mqdc32_resetReadout(s);
-	mqdc32_resetTimestamp(s);
-	SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x1);
+	if (mqdc32_mcstIsEnabled(s)) {
+		if (s->mcstMaster) {
+			SET16(s->mcstAddr, MQDC32_START_ACQUISITION, 0x0);
+			mqdc32_resetFifo_mcst(s);
+			mqdc32_resetReadout_mcst(s);
+			mqdc32_resetTimestamp_mcst(s);
+			SET16(s->mcstAddr, MQDC32_START_ACQUISITION, 0x1);
+		}
+	} else {	
+		SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x0);
+		mqdc32_resetFifo(s);
+		mqdc32_resetReadout(s);
+		mqdc32_resetTimestamp(s);
+		SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x1);
+	}
 }
 
-void mqdc32_stopAcq(struct s_mqdc32 * s)
+void mqdc32_stopAcq(s_mqdc32 * s)
 {
-	SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x0);
-	mqdc32_resetFifo(s);
-	mqdc32_resetReadout(s);
-	mqdc32_resetTimestamp(s);
+	if (mqdc32_mcstIsEnabled(s)) {
+		if (s->mcstMaster) {
+			SET16(s->mcstAddr, MQDC32_START_ACQUISITION, 0x0);
+			mqdc32_resetFifo_mcst(s);
+			mqdc32_resetReadout_mcst(s);
+			mqdc32_resetTimestamp_mcst(s);
+		}
+	} else {	
+		SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x0);
+		mqdc32_resetFifo(s);
+		mqdc32_resetReadout(s);
+		mqdc32_resetTimestamp(s);
+	}
 }
 
-void mqdc32_resetFifo(struct s_mqdc32 * s)
+void mqdc32_resetFifo(s_mqdc32 * s)
 {
 	SET16(s->md->vmeBase, MQDC32_FIFO_RESET, 0x1);
 }
 
-void mqdc32_resetTimestamp(struct s_mqdc32 * s)
+void mqdc32_resetTimestamp(s_mqdc32 * s)
 {
 	SET16(s->md->vmeBase, MQDC32_CTRA_RESET_A_OR_B, 0x3);
 }
 
-void mqdc32_setMcstCblt_db(struct s_mqdc32 * s) {
-	mqdc32_setMcstAddr(s, s->mcstSignature);
-	mqdc32_setCbltAddr(s, s->cbltSignature);
-	if (s->firstInChain) mqdc32_setFirstInChain(s);
-	else if (s->lastInChain) mqdc32_setLastInChain(s);
-	else mqdc32_setMiddleOfChain(s);
-}
-
-void mqdc32_setMcstAddr(struct s_mqdc32 * s, unsigned long Signature) {
-	SET16(s->md->vmeBase, MQDC32_MCST_ADDRESS, Signature);
-	if (Signature != 0) {
-		if (s->mcstAddr == 0) s->mcstAddr = mapAdditionalVME(s->md, (Signature & 0xFF) << 24, 0);
-		if (s->mcstAddr) {
-			mqdc32_setMcstEnable(s);
-			sprintf(msg, "[%ssetMcstAddr] %s: MCST enabled - signature=%#x, addr=%#x", s->mpref, s->moduleName, Signature, s->mcstAddr);
-		} else {
-			mqdc32_setMcstDisable(s);
-			sprintf(msg, "[%ssetMcstAddr] %s: MCST disabled - signature=%#x", s->mpref, s->moduleName, Signature);
-		}
+void mqdc32_initMCST(s_mqdc32 * s)
+{	
+	if (mqdc32_mcstIsEnabled(s) && mqdc32_isMcstMaster(s)) {
+		if (s->mcstAddr == 0) s->mcstAddr = mapAdditionalVME(s->md, (s->mcstSignature & 0xFF) << 24, 0);
+		sprintf(msg, "[%smsctInit] %s: MCST initialized - signature %#x, addr %#lx\n", s->mpref, s->moduleName, s->mcstSignature, s->mcstAddr);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	} else {
-		mqdc32_setMcstDisable(s);
 	}
 }
 
-uint16_t mqdc32_getMcstSignature(struct s_mqdc32 * s) {
+void mqdc32_setMcstCblt_db(s_mqdc32 * s) {
+	mqdc32_setMcstSignature(s, s->mcstSignature);
+	mqdc32_setCbltSignature(s, s->cbltSignature);
+	if (s->firstInCbltChain) mqdc32_setFirstInCbltChain(s);
+	else if (s->lastInCbltChain) mqdc32_setLastInCbltChain(s);
+	else mqdc32_setMiddleOfCbltChain(s);
+}
+
+void mqdc32_setMcstSignature(s_mqdc32 * s, unsigned long Signature) {
+	SET16(s->md->vmeBase, MQDC32_MCST_ADDRESS, Signature);
+	if (Signature != 0) mqdc32_setMcstEnable(s); else mqdc32_setMcstDisable(s);
+}
+
+uint16_t mqdc32_getMcstSignature(s_mqdc32 * s) {
 	uint16_t addr8;
 	addr8 = GET16(s->md->vmeBase, MQDC32_MCST_ADDRESS);
 	return addr8;
 }
 
-void mqdc32_setMcstEnable(struct s_mqdc32 * s) {
+bool_t mqdc32_isMcstMaster(s_mqdc32 * s) { return s->mcstMaster; }
+
+void mqdc32_setMcstEnable(s_mqdc32 * s) {
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_MCST_ENA);
 }
 
-void mqdc32_setMcstDisable(struct s_mqdc32 * s) {
+void mqdc32_setMcstDisable(s_mqdc32 * s) {
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_MCST_DIS);
 }
 
-bool_t mqdc32_mcstIsEnabled(struct s_mqdc32 * s) {
+bool_t mqdc32_mcstIsEnabled(s_mqdc32 * s) {
 	uint16_t ctrl;
 	ctrl = GET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL);
 	return ((ctrl & MQDC32_MCST_DIS) != 0);
 }
 
-void mqdc32_setCbltAddr(struct s_mqdc32 * s, unsigned long Signature) {
+void mqdc32_setCbltSignature(s_mqdc32 * s, unsigned long Signature) {
 	SET16(s->md->vmeBase, MQDC32_CBLT_ADDRESS, Signature);
-	if (Signature != 0) {
-		if (s->cbltAddr == 0) s->cbltAddr = mapAdditionalVME(s->md, (Signature & 0xFF) << 24, 0);
-		if (s->cbltAddr) {
-			mqdc32_setCbltEnable(s);
-			sprintf(msg, "[%ssetCbltAddr] %s: CBLT enabled - signature=%#x, addr=%#x", s->mpref, s->moduleName, Signature, s->cbltAddr);
-		} else {
-			mqdc32_setCbltDisable(s);
-			sprintf(msg, "[%ssetCbltAddr] %s: CBLT disabled - signature=%#x", s->mpref, s->moduleName, Signature);
-		}
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	} else {
-		mqdc32_setCbltDisable(s);
-	}
+	if (Signature != 0) mqdc32_setCbltEnable(s); else mqdc32_setCbltDisable(s);
 }
 
-uint16_t mqdc32_getCbltSignature(struct s_mqdc32 * s) {
+uint16_t mqdc32_getCbltSignature(s_mqdc32 * s) {
 	uint16_t addr8;
 	addr8 = GET16(s->md->vmeBase, MQDC32_CBLT_ADDRESS);
 	return addr8;
 }
 
-void mqdc32_setCbltEnable(struct s_mqdc32 * s) {
+void mqdc32_setCbltEnable(s_mqdc32 * s) {
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_ENA);
 }
 
-void mqdc32_setCbltDisable(struct s_mqdc32 * s) {
+void mqdc32_setCbltDisable(s_mqdc32 * s) {
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_DIS);
 }
 
-bool_t mqdc32_cbltIsEnabled(struct s_mqdc32 * s) {
+bool_t mqdc32_cbltIsEnabled(s_mqdc32 * s) {
 	uint16_t ctrl;
 	ctrl = GET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL);
 	return ((ctrl & MQDC32_CBLT_DIS) != 0);
 }
 
-void mqdc32_setFirstInChain(struct s_mqdc32 * s) {
+void mqdc32_setFirstInCbltChain(s_mqdc32 * s) {
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_ENA);
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_DIS);
 }
 
-bool_t mqdc32_isFirstInChain(struct s_mqdc32 * s) {
+bool_t mqdc32_isFirstInCbltChain(s_mqdc32 * s) {
 	uint16_t ctrl;
 	ctrl = GET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL);
 	return ((ctrl & MQDC32_CBLT_FIRST_DIS) != 0);
 }
 
-void mqdc32_setLastInChain(struct s_mqdc32 * s) {
+void mqdc32_setLastInCbltChain(s_mqdc32 * s) {
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_ENA);
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_DIS);
 }
 
-bool_t mqdc32_isLastInChain(struct s_mqdc32 * s) {
+bool_t mqdc32_isLastInCbltChain(s_mqdc32 * s) {
 	uint16_t ctrl;
 	ctrl = GET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL);
 	return ((ctrl & MQDC32_CBLT_LAST_DIS) != 0);
 }
 
-void mqdc32_setMiddleOfChain(struct s_mqdc32 * s) {
+void mqdc32_setMiddleOfCbltChain(s_mqdc32 * s) {
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_DIS);
 	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_DIS);
 }
 
-bool_t mqdc32_isMiddleOfChain(struct s_mqdc32 * s) {
+bool_t mqdc32_isMiddleOfCbltChain(s_mqdc32 * s) {
 	bool_t first, last;
-	first = mqdc32_isFirstInChain(s);
-	last = mqdc32_isLastInChain(s);
+	first = mqdc32_isFirstInCbltChain(s);
+	last = mqdc32_isLastInCbltChain(s);
 	return (!first && !last);
 }
 
-void mqdc32_startAcq_mcst(struct s_mqdc32 * s)
-{
-	SET16(s->mcstAddr, MQDC32_START_ACQUISITION, 0x0);
-	mqdc32_resetFifo_mcst(s);
-	mqdc32_resetReadout_mcst(s);
-	mqdc32_resetTimestamp_mcst(s);
-	SET16(s->mcstAddr, MQDC32_START_ACQUISITION, 0x1);
-}
-
-void mqdc32_stopAcq_mcst(struct s_mqdc32 * s)
-{
-	SET16(s->mcstAddr, MQDC32_START_ACQUISITION, 0x0);
-	mqdc32_resetFifo_mcst(s);
-	mqdc32_resetReadout_mcst(s);
-	mqdc32_resetTimestamp_mcst(s);
-}
-
-void mqdc32_resetFifo_mcst(struct s_mqdc32 * s)
+void mqdc32_resetFifo_mcst(s_mqdc32 * s)
 {
 	SET16(s->mcstAddr, MQDC32_FIFO_RESET, 0x1);
 }
 
-void mqdc32_resetReadout_mcst(struct s_mqdc32 * s)
+void mqdc32_resetReadout_mcst(s_mqdc32 * s)
 {
 	SET16(s->mcstAddr, MQDC32_READOUT_RESET, 0x1);
 }
 
-void mqdc32_resetTimestamp_mcst(struct s_mqdc32 * s)
+void mqdc32_resetTimestamp_mcst(s_mqdc32 * s)
 {
 	SET16(s->mcstAddr, MQDC32_CTRA_RESET_A_OR_B, 0x3);
 }
 
-uint32_t * mqdc32_repairRawData(struct s_mqdc32 * s, uint32_t * pointer, uint32_t * dataStart) {
+uint32_t * mqdc32_repairRawData(s_mqdc32 * s, uint32_t * pointer, uint32_t * dataStart) {
 	return pointer;
 }
 

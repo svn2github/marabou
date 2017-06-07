@@ -14,6 +14,9 @@
 #include <ces/vmelib.h>
 #include <ces/bmalib.h>
 
+#include "block.h"
+#include "mapping_database.h"
+
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			sis3302_Database.h
@@ -33,7 +36,7 @@
 
 #define SIS_GROUP(adc)		(adc >> 1)
 
-struct s_sis_3302 {
+typedef struct {
 	Char_t moduleName[SIS3302_STRLEN];
 	Char_t prefix[SIS3302_STRLEN];				/* "m_read_meb" (default) or any other */
 	Char_t mpref[10]; 					/* "sis3302: " or "" */
@@ -47,7 +50,7 @@ struct s_sis_3302 {
 	Bool_t verbose;
 	Bool_t dumpRegsOnInit;
 
-	struct s_mapDescr * md;				/* mapping descriptor */
+	s_mapDescr * md;				/* mapping descriptor */
 
 	Bool_t blockXfer;					/* block xfer */
 	Int_t bufferSize;					/* max buffer size */
@@ -107,5 +110,5 @@ struct s_sis_3302 {
 	Int_t energyTauFactor[SIS_NOF_CHANNELS];
 
 	unsigned long mcstAddr;			/* MCST signature */
-};
+} s_sis_3302;
 #endif

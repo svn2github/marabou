@@ -16,8 +16,7 @@
 %%MODULE_DEFS%%
 
 %%BeginOfCode%%
-					mesytec_use_mcst = FALSE;
-					mesytec_firstModuleInChain = NULL;
+
 %%EndOfCode%%
 %%INIT_COMMON_CODE%%
 
@@ -25,29 +24,21 @@
 
 									/* init module $moduleNameLC at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-					if (s_$moduleNameLC == 0) s_$moduleNameLC = madc32_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
+					if (s_$moduleNameLC == NULL) s_$moduleNameLC = madc32_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
  					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
 					madc32_moduleInfo(s_$moduleNameLC);						/* read module info */
 					madc32_soft_reset(s_$moduleNameLC);	 						/* reset module */
 					madc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill database from environment data */
 					madc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
-					if (madc32_mcstIsEnabled(s_$moduleNameLC)) {
-						mesytec_use_mcst = TRUE;
-						if (madc32_isFirstInChain(s_$moduleNameLC)) mesytec_firstModuleInChain = (void *) s_$moduleNameLC;
-					}
-					if (madc32_useBLT(s_$moduleNameLC)) use_block_xfer = TRUE;	/* check if block xfer should be enabled */
+					madc32_initMCST(s_$moduleNameLC); 							/* initialize MCST */
 					madc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
 					madc32_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
-					madc32_initialize(s_$moduleNameLC);		 					/* initialize module */
-
+					blt_init_flag = madc32_initBLT(s_$moduleNameLC, blt_init_flag);	/* initialize block xfer */
 %%EndOfCode%%
 %%INIT_MODULE%%
 
 %%BeginOfCode%%
-						if (madc32_useBLT(s_$moduleName)) {
-							mapBLT(md_$moduleName, $baseAddr, $size, $addrMod);
-							setBLTMode(md_$moduleName, BMA_M_Vsz32, BMA_M_WzD32, $fifoMode);
-						}
+
 %%EndOfCode%%
 %%INIT_BLOCK_XFER%%
 
@@ -102,18 +93,8 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-%M%					if (mesytec_use_mcst && (mesytec_firstModuleInChain == (void *) s_$moduleName)) { 	/* start modules in multicast mode */
-%M%						sprintf(msg, "[Starting Mesytec modules via MCST - first module in chain is %s]\n", s_$moduleName->moduleName);
-%M% 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
-%M%						madc32_stopAcq_mcst(s_$moduleName);
-%M%						madc32_startAcq_mcst(s_$moduleName);
-%M%					}
-%M%					if (!mesytec_use_mcst) {
-%M%						madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
-%M%						madc32_startAcq(s_$moduleName);
-%M%					}
-%N%					madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
-%N%					madc32_startAcq(s_$moduleName);
+					madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
+					madc32_startAcq(s_$moduleName);
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -123,15 +104,7 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-%M%					if (mesytec_use_mcst && (mesytec_firstModuleInChain == (void *) s_$moduleName)) { 	/* stop modules in multicast mode */
-%M%						sprintf(msg, "[Stopping Mesytec modules via MCST - first module in chain is %s]\n", s_$moduleName->moduleName);
-%M% 						f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
-%M%						madc32_stopAcq_mcst(s_$moduleName);
-%M%					}
-%M%					if (!mesytec_use_mcst) {
-%M%						madc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
-%M%					}
-%N%					madc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
+					madc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 
@@ -151,7 +124,7 @@
 %%DEFINE_PROTOTYPES%%
 
 %%BeginOfCode%%
-static struct s_madc32 * s_$moduleName = 0;
+static s_madc32 * s_$moduleName = NULL;
 %%EndOfCode%%
 %%DEFINE_GLOBALS%%
 

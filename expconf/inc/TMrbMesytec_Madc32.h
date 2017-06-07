@@ -302,10 +302,12 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline void EnableMCST(UInt_t Signature, Bool_t FirstInChain= kFALSE, Bool_t LastInChain = kFALSE) { fMCSTSignature = Signature; fFirstInChain = FirstInChain; fLastInChain = LastInChain; };
 		inline void EnableCBLT(UInt_t Signature, Bool_t FirstInChain= kFALSE, Bool_t LastInChain = kFALSE) { fCBLTSignature = Signature; fFirstInChain = FirstInChain; fLastInChain = LastInChain; };
 		inline void SetMcstSignature(UInt_t Signature) { fMCSTSignature = Signature; };
+		inline void SetMcstMaster(Bool_t Flag) { fMCSTMaster = Flag; };
 		inline void SetCbltSignature(UInt_t Signature) { fCBLTSignature = Signature; };
 		inline void SetFirstInChain(Bool_t Flag) { fFirstInChain = Flag; };
 		inline void SetLastInChain(Bool_t Flag) { fLastInChain = Flag; };
 		inline Bool_t McstEnabled() { return (fMCSTSignature != 0); };
+		inline Bool_t IsMcstMaster() { return fMCSTMaster; };
 		inline Bool_t CbltEnabled() { return (fCBLTSignature != 0); };
 		inline Bool_t IsFirstInChain() { return fFirstInChain; };
 		inline Bool_t IsLastInChain() { return fLastInChain; };
@@ -329,6 +331,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 	protected:
 		void DefineRegisters(); 							// define vme registers
 		Bool_t UpdateSettings();							// update settings
+		void SetupMCST();									// MCST settings
 
 	protected:
 		TString fSettingsFile;
@@ -343,6 +346,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		Int_t fBufferThresh;
 
 		UInt_t fMCSTSignature;
+		Bool_t fMCSTMaster;
 		UInt_t fCBLTSignature;
 		Bool_t fFirstInChain;
 		Bool_t fLastInChain;

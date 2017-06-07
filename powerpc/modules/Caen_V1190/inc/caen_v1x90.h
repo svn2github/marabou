@@ -376,7 +376,7 @@
 #define SET_DATA(s_module, offset, value) 		*((volatile unsigned short *) (s_module->baseAddr + offset)) = value
 #define GET_DATA32(s_module, offset)			*((volatile unsigned long *) (s_module->baseAddr + offset))
 
-struct s_caen_v1x90 {
+typedef struct {
 	unsigned long vmeAddr;							/* phys addr given by module switches */
 	volatile unsigned char * baseAddr;				/* addr mapped via find_controller() */
 
@@ -420,6 +420,6 @@ struct s_caen_v1x90 {
 	uint32_t bltBufferSize;
 	uint32_t bltBlockSize;
 	uint8_t * bltBuffer;
-};
+} s_caen_v1x90;
 
 #endif

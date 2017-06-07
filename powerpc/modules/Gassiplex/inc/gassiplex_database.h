@@ -30,15 +30,15 @@
 ////////////////////////////////////////////////////////////////////////////*/
 
 
-struct s_gassiplex {
+typedef struct {
 	char moduleName[100];
 
-	struct s_mapDescr * md;			/* mapping descriptor */
+	s_mapDescr * md;			/* mapping descriptor */
 	HDTU * hdtu;						/* pointer to dtu struct */
 	HRace * hrace;						/* ... to race struct */
 
 	bool_t verbose;
-};
+} s_gassiplex;
 
 #endif
 

@@ -1,51 +1,64 @@
-CC = gcc 
+CC = gcc
 
 PPCINC 		=	../../../include
 CESINC		=	/usr/include/ces
+UTIINC		=	../../../utils/inc
 MBSINC		=	$(MBSROOT)/inc
 
-CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(MBSROOT)/inc -I../inc -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
+CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(MBSROOT)/inc -I../inc -I$(UTIINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
+
+BIN_DIR = ../../../bin/$(GSI_OS_VERSION)
 
 # ------------ Libaries ------------------------------------------------
 
 AR = ar
 ARFLAG = -rv
 
+LIB		= $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
+
+ifeq ($(GSI_CPU_PLATFORM),RIO2)
+MBSLIBS	= -llynx -lvme -lbma -luio -lnetinet
+else
+MBSLIBS	= -llynx -lvme -lbma -lbus -luio -lnetinet
+endif
+
 # ------------ Library-Objects ----------------------------------------
 
-LIB_TARGETS = ../../../lib/$(LYNX_VERSION)/libCaen_v1x90.a
+ObjSuf		=	o
+SrcSuf		=	c
+LibSuf		=	a
 
-libCaen_v1x90.OBJS = caen_v1x90_fct.o
+LIBCAEN		=	../../../lib/$(GSI_OS_VERSION)/libCaen_v1x90.$(LibSuf)
 
-# ------------ Suffix Rules -------------------------------------------
+OBJS		=	$(LIBCAEN)(caen_v1x90_fct.$(ObjSuf))
 
-.SUFFIXES:
+PROGS		=	caen_v1x90
 
-# ----- C Code ---------
-%.o: %.c
-	$(CC) $< -c $(CFLAGS) -o $@ 
+.SUFFIXES: .$(SrcSuf)
 
-.SUFFIXES: .o .c 
+all:			$(LIBCAEN) $(PROGS)
 
-# ------------ Targets -------------------------------------------------
-
-all: $(LIB_TARGETS) caen_v1x90
-
-$(LIB_TARGETS): $(libCaen_v1x90.OBJS)
-	$(AR) $(ARFLAGS) $@ $^
+$(LIBCAEN):  	$(OBJS)
 	ranlib $@
+	cp ../inc/*.h ../../../include
 
-caen_v1x90:	caen_v1x90.o $(LIB_TARGETS)
-		$(CC) -o caen_v1x90 caen_v1x90.o \
-			-L ../../../lib/$(LYNX_VERSION) \
-			-L /lib/ces \
-			-lCaen_v1x90 -lUti -lvme -lnetinet
-		cp caen_v1x90 ../../../bin/$(LYNX_VERSION)
+caen_v1x90:	caen_v1x90.o $(LIBMADC32)
+	$(CC) -o caen_v1x90 caen_v1x90.o \
+		-L ../../../lib/$(GSI_OS_VERSION) \
+		-L /lib/ces \
+		-lCaen_v1x90 -lUti \
+		$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
+		$(MBSLIBS)
+	mv caen_v1x90 $(BIN_DIR)
+	
+.$(SrcSuf).$(ObjSuf):
+			$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f *.o core core.* $(LIB_TARGETS)
+	rm -f *.o core core.* $(LIBCAEN)
 
 depend:
 	gcc -MM $(CFLAGS) $(CPPFLAGS) *.c
 
 # ------------ Dependencies --------------------------------------------
+

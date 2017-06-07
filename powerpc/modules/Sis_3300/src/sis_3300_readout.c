@@ -25,7 +25,7 @@
 
 char msg[256];
 
-int sis_3300_readout(struct s_sis_3300 * s, uint8_t bank, uint32_t * pointer)
+int sis_3300_readout(s_sis_3300 * s, uint8_t bank, uint32_t * pointer)
 {
 	static const uint32_t memoryOffset[4] = {0x000000, 1 * 0x080000, 2 * 0x080000, 3 * 0x080000};
 	

@@ -57,7 +57,7 @@
 #include "%%READOUT_FILE%%.h"
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/ Static variables
+/ Common variables
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 static long clock_resolution;		/* clock resolution as given by clock_getres system call */
 static long trigger_count; 		/* count user triggers */
@@ -66,10 +66,7 @@ static long total_event_count; 	/* events since last start */
 static long dt_event_count;		/* events since last dead-time stamp */
 static long dt_scaler_contents;	/* contents of dead-time scaler */
 
-static bool_t use_block_xfer = FALSE;	/* TRUE if at least one module wants to use BLT */
-
-static bool_t mesytec_use_mcst = FALSE;
-static void * mesytec_firstModuleInChain = NULL;
+static bool_t blt_init_flag = kBLTInitNotDone;	/* flag to initialize BLT */
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Global variables
@@ -108,11 +105,11 @@ static void * mesytec_firstModuleInChain = NULL;
 %CC32%static volatile unsigned long * cam_sreg_C$crateNo; 	/* X/Q enable in crate C$crateNo */
 %CC32%static volatile unsigned long * cam_lam_C$crateNo;  	/* LAM pattern in crate C$crateNo */
 %V%static volatile char * $moduleName;	 				/* VME: $modulePosition: $moduleTitle */
-%V%static struct s_mapDescr * md_$moduleName;				/* VME: mapping descriptor for $moduleName */
+%V%static s_mapDescr * md_$moduleName;				/* VME: mapping descriptor for $moduleName */
 %OM%static volatile char * $moduleName;	 				/* VME: $modulePosition: $moduleTitle */
-%OM%static struct s_mapDescr * md_$moduleName;				/* VME: private mapping for $moduleName */
+%OM%static s_mapDescr * md_$moduleName;				/* VME: private mapping for $moduleName */
 %VS%														/* VME: $modulePosition: $moduleTitle */
-%VS%static struct s_mapDescr * md_$moduleName;				/* --	mapping descriptor */
+%VS%static s_mapDescr * md_$moduleName;				/* --	mapping descriptor */
 %VS%static volatile char * $moduleNameBase;	 			/* --   base addr */
 %VS%static volatile char * $moduleName;	 				/* --   offset for subdevice $subdevice */
 
@@ -263,9 +260,6 @@ int f_user_init (unsigned char  bh_crate_nr,
 %CBCC32%			CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: dataway disable */
 %CBCC32%			CIO_WRITE_R2B(cam_lam_C$crateNo, F(16), A(0), 0L);		/* crate C$crateNo: clear lam ff */
 %CECC32%
-%CEVME1%					if (use_block_xfer) use_block_xfer = initBLT();		/* initialize block xfer if needed */
-%CEVME1%					if (use_block_xfer) {
-%CEVME2%					}
 %CE% 			break;
 %CE%
 %E%  		default:

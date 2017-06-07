@@ -17,7 +17,7 @@ MQDC32.Firmware: 						$moduleFirmware
 MQDC32.VerboseMode:						FALSE
 MQDC32.DumpRegisters:					FALSE
 
-MQDC32.SettingsVersion:					10.2014
+MQDC32.SettingsVersion:					5.2017
 
 %%End(Preamble)%%
 
@@ -37,14 +37,16 @@ MQDC32.$moduleName.AddrReg: 			$addrReg
 # module id (0x6004)            default = 0xFF -> use high byte of board coder
 MQDC32.$moduleName.ModuleId: 			$moduleId
 
-# mcst/cblt
+# mcst/cblt  (0x6020, 0x6022, 0x6024)
 #          signature   0xNN, bits 31 ... 24
-#          first       TRUE if first module in chain
-#          last        TRUE if last module in chain
+#          master      TRUE if module triggers mcst operations
+#          first       TRUE if first module in cblt chain
+#          last        TRUE if last module in cblt chain
 MQDC32.$moduleName.MCSTSignature:		$mcstSignature
+MQDC32.$moduleName.MCSTMaster:			$mcstMaster
 MQDC32.$moduleName.CBLTSignature:		$cbltSignature
-MQDC32.$moduleName.FirstInChain:		$firstInChain
-MQDC32.$moduleName.LastInChain:			$lastInChain
+MQDC32.$moduleName.CBLTFirstInChain:	$cbltFirstInChain
+MQDC32.$moduleName.CBLTLastInChain:		$cbltLastInChain
 
 %%End(AddressRegisters)%%
 

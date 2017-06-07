@@ -572,7 +572,7 @@ class TMrbConfig : public TNamed {
 								};
 
 		enum					{	kRdoHeaderBit		=	BIT(31)	};
-
+		
 		enum					{	kMbsSevtSize		=	0x1000 };
 		enum					{	kMbsPipeSegLength_RIO2	=	0x0100000 };	// 1MB
 		enum					{	kMbsPipeSegLength_RIO3	=	0x2000000 };	// 16MB
@@ -875,6 +875,8 @@ class TMrbConfig : public TNamed {
 		inline TMrbLofNamedX * GetLofUserIncludes() { return(&fLofUserIncludes); };
 		inline TMrbLofNamedX * GetLofUserClasses() { return(&fLofUserClasses); };
 		inline TMrbLofNamedX * GetLofUserLibs() { return(&fLofUserLibs); };
+		inline TMrbLofNamedX * GetLofMesytecMCST() { return(&fLofMesytecMCST); };
+		inline TMrbLofNamedX * GetLofMesytecCBLT() { return(&fLofMesytecCBLT); };
 
 		Bool_t NameNotLegal(const Char_t * ObjType, const Char_t * ObjName) const;	// check if name is legal within MARaBOU
 
@@ -939,6 +941,8 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofGlobals;				//! list of global vars
 		TMrbLofNamedX fLofDefines;				//! list of #define statements
 		TMrbLofNamedX fLofMbsBranches;			//! list of mbs branches
+		TMrbLofNamedX fLofMesytecMCST;			//! list of multicasts for Mesytec modules
+		TMrbLofNamedX fLofMesytecCBLT;			//! list of chained blts for Mesytec modules
 
 	protected:
 		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);

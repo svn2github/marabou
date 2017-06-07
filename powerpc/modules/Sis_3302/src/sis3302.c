@@ -32,7 +32,7 @@
 
 #include "Version.h"
 
-static struct s_sis_3302 * s_sis;
+static s_sis_3302 * s_sis;
 
 void f_ut_send_msg(char * prefix, char * msg, int flag);
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 	unsigned int mappingMod;
 	int reg, val;
 
-	struct s_mapDescr * md;
+	s_mapDescr * md;
 
 	char fct;
 	char file[256];

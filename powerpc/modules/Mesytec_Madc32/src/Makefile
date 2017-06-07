@@ -40,7 +40,7 @@ all:			$(LIBMADC32) $(PROGS)
 
 $(LIBMADC32):  	$(OBJS)
 	ranlib $@
-	cp ../inc/*.h ../../../include
+	cp ../inc/*.h $(PPCINC)
 
 madc32:	madc32.o $(LIBMADC32)
 	$(CC) -o madc32 madc32.o \

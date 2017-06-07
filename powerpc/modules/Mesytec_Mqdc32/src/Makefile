@@ -40,7 +40,7 @@ all:			$(LIBMQDC32) $(PROGS)
 
 $(LIBMQDC32):  	$(OBJS)
 	ranlib $@
-	cp ../inc/*.h ../../../include
+	cp ../inc/*.h $(PPCINC)
 
 mqdc32:	mqdc32.o $(LIBMQDC32)
 	$(CC) -o mqdc32 mqdc32.o \

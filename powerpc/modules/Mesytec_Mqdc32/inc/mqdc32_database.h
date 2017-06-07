@@ -26,12 +26,12 @@
 
 #define MQDC_NOF_CHANNELS	32
 
-struct s_mqdc32 {
+typedef struct {
 	char moduleName[100];
 	char prefix[100];			/* "m_read_meb" (default) or any other */
 	char mpref[10]; 			/* "mqdc32: " or "" */
 
-	struct s_mapDescr * md;			/* mapping descriptor */
+	s_mapDescr * md;			/* mapping descriptor */
 
 	int serial; 				/* MARaBOU's serial number */
 
@@ -75,11 +75,12 @@ struct s_mqdc32 {
 
 	unsigned long mcstSignature;		/* MCST signature */
 	volatile char * mcstAddr;		/* ... after mapping */
+	bool_t mcstMaster;				/* TRUE if MCST master */
 	unsigned long cbltSignature;		/* CBLT signature */
 	volatile char * cbltAddr;		/* ... after mapping */
-	bool_t firstInChain;			/* TRUE if head of chain */
-	bool_t lastInChain;			/* TRUE if end of chain */
+	bool_t firstInCbltChain;			/* TRUE if head of CBLT chain */
+	bool_t lastInCbltChain;			/* TRUE if end of CBLT chain */
 
-};
+} s_mqdc32;
 
 #endif

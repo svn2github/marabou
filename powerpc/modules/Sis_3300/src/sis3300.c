@@ -27,7 +27,7 @@
 #include "Version.h"
 
 static struct pdparam_master s_param; 		/* vme segment params */
-static struct s_sis_3300 * s_adc;
+static s_sis_3300 * s_adc;
 
 void f_ut_send_msg(char * prefix, char * msg, int flag);
 

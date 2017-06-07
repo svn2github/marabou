@@ -27,6 +27,7 @@
     gSystem.Load("libTPolControl.so");
     THtml html;
     html.SetInputDir("include");
+    html.SetProductName("MARaBOU Data Acquisition");
     html.CreateAuxiliaryFiles();
 	html.MakeAll(kTRUE);
     TEnv env(".rootrc");

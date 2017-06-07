@@ -32,7 +32,7 @@
 
 #include "Version.h"
 
-static struct s_mtdc32 * s_tdc;
+static s_mtdc32 * s_tdc;
 
 void f_ut_send_msg(char * prefix, char * msg, int flag);
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 	unsigned int mappingMod;
 	int reg, val;
 
-	struct s_mapDescr * md;
+	s_mapDescr * md;
 
 	char fct;
 	char file[256];
@@ -62,11 +62,11 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "       mapMod         mapping mode: (bit pattern) 1 (direct, RIO4 only), 2 (static), 4 (dynamic)\n");
 		fprintf(stderr, "       fct            function to be executed\n");
 		fprintf(stderr, "            v         read firmware version\n");
-		fprintf(stderr, "            r         reset module\n");
 		fprintf(stderr, "            l file    load settings from file <file>\n");
 		fprintf(stderr, "            d file    dump settings to file <file>\n");
 		fprintf(stderr, "            s reg val set register at relative addr <reg> with value <val>\n");
 		fprintf(stderr, "            g reg     get register at relative addr <reg>\n\n");
+		fprintf(stderr, "            a         access module in a loop - DTACK led should be ON\n\n");
 		exit(1);
 	}
 
@@ -75,6 +75,8 @@ int main(int argc, char *argv[]) {
 	addrMod =  (unsigned int) strtol(argv[2], NULL, 16);
 
 	mappingMod = (unsigned int) strtol(argv[3], NULL, 16);
+
+	if (mappingMod == 2) smem_remove("mtdc32");		/* remove previous mappings */
 
 	md = mapVME("mtdc32", physAddr, 0x10000L, addrMod, mappingMod);
 	if (md == NULL) {
@@ -137,9 +139,13 @@ int main(int argc, char *argv[]) {
 					val = GET16(s_tdc->md->vmeBase, reg);
 					printf("mtdc32: Register %#x: %#x\n", reg, val);
 					break;
+		case 'a':	while (1) {
+						val = GET16(s_tdc->md->vmeBase, 0x6030);
+					}
+					break;
 					
 					
-		default:	fprintf(stderr, "mtdc32: Illegal function - %s\n", argv[2]);
+		default:	fprintf(stderr, "mtdc32: Illegal function - %s\n", argv[4]);
 					exit(1);
 	}
 	exit(0);

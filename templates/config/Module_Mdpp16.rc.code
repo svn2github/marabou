@@ -14,7 +14,7 @@ MDPP16.ModuleSerial: 					$moduleSerial
 
 MDPP16.Firmware: 						$moduleFirmware
 
-MDPP16.SettingsVersion:					4.2016
+MDPP16.SettingsVersion:					5.2017
 
 MDPP16.VerboseMode:						FALSE
 MDPP16.DumpRegisters:					FALSE
@@ -39,12 +39,14 @@ MDPP16.$moduleName.ModuleId: 			$moduleId
 
 # mcst/cblt  (0x6020, 0x6022, 0x6024)
 #          signature   0xNN, bits 31 ... 24
-#          first       TRUE if first module in chain
-#          last        TRUE if last module in chain
+#          master      TRUE if module triggers mcst operations
+#          first       TRUE if first module in cblt chain
+#          last        TRUE if last module in cblt chain
 MDPP16.$moduleName.MCSTSignature:		$mcstSignature
+MDPP16.$moduleName.MCSTMaster:			$mcstMaster
 MDPP16.$moduleName.CBLTSignature:		$cbltSignature
-MDPP16.$moduleName.FirstInChain:		$firstInChain
-MDPP16.$moduleName.LastInChain:			$lastInChain
+MDPP16.$moduleName.CBLTFirstInChain:	$cbltFirstInChain
+MDPP16.$moduleName.CBLTLastInChain:		$cbltLastInChain
 
 %%End(AddressRegisters)%%
 

@@ -29,10 +29,10 @@
 
 char msg[256];
 
-struct s_sis_3300 * sis_3300_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * name, int serial)
+s_sis_3300 * sis_3300_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * name, int serial)
 {
-	struct s_sis_3300 * s;
-	s = (struct s_sis_3300 *) calloc(1, sizeof(struct s_sis_3300));
+	s_sis_3300 * s;
+	s = (s_sis_3300 *) calloc(1, sizeof(s_sis_3300));
 	if (s != NULL) {
 		s->baseAddr = base;
 		s->vmeAddr = vmeAddr;
@@ -46,7 +46,7 @@ struct s_sis_3300 * sis_3300_alloc(unsigned long vmeAddr, volatile unsigned char
 	return(s);
 }
 
-void sis_3300_module_info(struct s_sis_3300 * s)
+void sis_3300_module_info(s_sis_3300 * s)
 {
 	unsigned long ident;
 	unsigned short modId;
@@ -58,7 +58,7 @@ void sis_3300_module_info(struct s_sis_3300 * s)
 	f_ut_send_msg("__sis_3300", msg, ERR__MSG_INFO, MASK__PRTT);
 }
 
-int sis_3300_fill_struct(struct s_sis_3300 * s, char * file)
+int sis_3300_fill_struct(s_sis_3300 * s, char * file)
 {
 	char res[256];
 	const char * sp;
@@ -301,7 +301,7 @@ int sis_3300_fill_struct(struct s_sis_3300 * s, char * file)
 	}
 }
 
-void sis_3300_enable_bma(struct s_sis_3300 * s)
+void sis_3300_enable_bma(s_sis_3300 * s)
 {
 /* use blocktransfer */
 /* buffersize (in 32bit words) : Memory     = 131072 * 4    */
@@ -325,62 +325,62 @@ void sis_3300_enable_bma(struct s_sis_3300 * s)
 	}
 }
 
-void sis_3300_reset(struct s_sis_3300 * s)
+void sis_3300_reset(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_KEY_RESET, 0x1);
 }
 
-void sis_3300_setStartDelay(struct s_sis_3300 * s, uint16_t delay)
+void sis_3300_setStartDelay(s_sis_3300 * s, uint16_t delay)
 {
 	SET32(s->baseAddr, SIS_3300_EXT_START_DELAY, (uint32_t) delay);
 }
 
-uint16_t sis_3300_getStartDelay(struct s_sis_3300 * s)
+uint16_t sis_3300_getStartDelay(s_sis_3300 * s)
 {
 	return GET32(s->baseAddr, SIS_3300_EXT_START_DELAY) & 0xffff;
 }
 
-void sis_3300_setStopDelay(struct s_sis_3300 * s, uint16_t delay)
+void sis_3300_setStopDelay(s_sis_3300 * s, uint16_t delay)
 {
 	SET32(s->baseAddr, SIS_3300_EXT_STOP_DELAY, (uint32_t) delay);
 }
 
-uint16_t sis_3300_getStopDelay(struct s_sis_3300 * s)
+uint16_t sis_3300_getStopDelay(s_sis_3300 * s)
 {
 	return GET32(s->baseAddr, SIS_3300_EXT_STOP_DELAY) & 0xffff;
 }
 
-void sis_3300_setTimeStampPredivider(struct s_sis_3300 * s, uint16_t divider)
+void sis_3300_setTimeStampPredivider(s_sis_3300 * s, uint16_t divider)
 {
 	SET32(s->baseAddr, SIS_3300_TIMESTAMP_PREDIVIDER, (uint32_t)divider);
 }
 
-uint16_t sis_3300_getTimeStampPredivider(struct s_sis_3300 * s)
+uint16_t sis_3300_getTimeStampPredivider(s_sis_3300 * s)
 {
 	return (uint16_t)(GET32(s->baseAddr, SIS_3300_TIMESTAMP_PREDIVIDER) & 0xffff);
 }
 
-void sis_3300_startSampling(struct s_sis_3300 * s)
+void sis_3300_startSampling(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_KEY_START, 0x1);
 }
 
-void sis_3300_stopSampling(struct s_sis_3300 * s)
+void sis_3300_stopSampling(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_KEY_STOP, 0x1);
 }
 
-void sis_3300_startAutoBankSwitch(struct s_sis_3300 * s)
+void sis_3300_startAutoBankSwitch(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_KEY_START_AUTO_BANK_SWITCH, 0x1);
 }
 
-void sis_3300_stopAutoBankSwitch(struct s_sis_3300 * s)
+void sis_3300_stopAutoBankSwitch(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_KEY_STOP_AUTO_BANK_SWITCH, 0x1);
 }
 
-void sis_3300_clearBankFull(struct s_sis_3300 * s, uint8_t bank)
+void sis_3300_clearBankFull(s_sis_3300 * s, uint8_t bank)
 {
 	switch (bank) {
 	case 0:
@@ -396,7 +396,7 @@ void sis_3300_clearBankFull(struct s_sis_3300 * s, uint8_t bank)
 
 /* ------------- Event Timestamp Directory ------------------------------ */
 
-uint32_t sis_3300_getEventTimeStamp(struct s_sis_3300 * s, uint8_t bank, uint16_t event)
+uint32_t sis_3300_getEventTimeStamp(s_sis_3300 * s, uint8_t bank, uint16_t event)
 {
 	if (event < 1024) {
 		switch (bank) {
@@ -415,67 +415,67 @@ uint32_t sis_3300_getEventTimeStamp(struct s_sis_3300 * s, uint8_t bank, uint16_
 
 /* ------------- Event Configuration Register --------------------------- */
 
-void sis_3300_setPageSize(struct s_sis_3300 * s, uint8_t pagesize)
+void sis_3300_setPageSize(s_sis_3300 * s, uint8_t pagesize)
 {
 	uint32_t bits = (GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0xfffffff8);
 		bits |= (pagesize & 0x07);
 	SET32(s->baseAddr, SIS_3300_EVT_CONFIG, bits);
 }
 
-uint8_t sis_3300_getPageSize(struct s_sis_3300 * s)
+uint8_t sis_3300_getPageSize(s_sis_3300 * s)
 {
 	return (uint8_t)(GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0x7);
 }
 
-void sis_3300_enableWrapAroundMode(struct s_sis_3300 * s)
+void sis_3300_enableWrapAroundMode(s_sis_3300 * s)
 {
 	uint32_t bits = (GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0xfffffff7) | 0x8;
 	SET32(s->baseAddr, SIS_3300_EVT_CONFIG, bits);
 }
 
-void sis_3300_disableWrapAroundMode(struct s_sis_3300 * s)
+void sis_3300_disableWrapAroundMode(s_sis_3300 * s)
 {
 	uint32_t bits = GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0xfffffff7;
 	SET32(s->baseAddr, SIS_3300_EVT_CONFIG, bits);
 }
 
-uint8_t sis_3300_wrapAroundModeEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_wrapAroundModeEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0xfffffff7) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableGateChaining(struct s_sis_3300 * s)
+void sis_3300_enableGateChaining(s_sis_3300 * s)
 {
 	uint32_t bits = (GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0xffffffef) | 0x10;
 	SET32(s->baseAddr, SIS_3300_EVT_CONFIG, bits);
 }
 
-void sis_3300_disableGateChaining(struct s_sis_3300 * s)
+void sis_3300_disableGateChaining(s_sis_3300 * s)
 {
 	uint32_t bits = (GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0xffffffef);
 	SET32(s->baseAddr, SIS_3300_EVT_CONFIG, bits);
 }
 
-uint8_t sis_3300_gateChainingEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_gateChainingEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0xffffffef) != 0 ? 1 : 0);
 }
 
-void sis_3300_setAverage(struct s_sis_3300 * s, uint8_t average)
+void sis_3300_setAverage(s_sis_3300 * s, uint8_t average)
 {
 	uint32_t bits = GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0xfff8ffff;
 	bits &= ((average & 0x07) << 16);
 	SET32(s->baseAddr, SIS_3300_EVT_CONFIG, bits);
 }
 
-uint8_t sis_3300_getAverage(struct s_sis_3300 * s)
+uint8_t sis_3300_getAverage(s_sis_3300 * s)
 {
 	return (GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG) & 0x070000) >> 16;
 }
 
 /* ------------- Threshold Register ------------------------------------- */
 
-void sis_3300_setThreshold(struct s_sis_3300 * s, uint8_t channel, uint16_t value)
+void sis_3300_setThreshold(s_sis_3300 * s, uint8_t channel, uint16_t value)
 {
 	uint32_t bits;
 	bits = value;
@@ -520,7 +520,7 @@ void sis_3300_setThreshold(struct s_sis_3300 * s, uint8_t channel, uint16_t valu
 	}
 }
 
-uint16_t sis_3300_getThreshold(struct s_sis_3300 * s, uint8_t channel)
+uint16_t sis_3300_getThreshold(s_sis_3300 * s, uint8_t channel)
 {
 	uint16_t threshold;
 
@@ -560,7 +560,7 @@ uint16_t sis_3300_getThreshold(struct s_sis_3300 * s, uint8_t channel)
 
 /* ------------- Trigger Flag Clear Counter Register -------------------- */
 
-void sis_3300_setTriggerClearCounter(struct s_sis_3300 * s, uint8_t channelGrp, uint16_t value)
+void sis_3300_setTriggerClearCounter(s_sis_3300 * s, uint8_t channelGrp, uint16_t value)
 {
 	switch (channelGrp) {
 	case 0:
@@ -580,7 +580,7 @@ void sis_3300_setTriggerClearCounter(struct s_sis_3300 * s, uint8_t channelGrp, 
 	}
 }
 
-uint16_t sis_3300_getTriggerClearCounter(struct s_sis_3300 * s, uint8_t channelGrp)
+uint16_t sis_3300_getTriggerClearCounter(s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint16_t counter;
 	switch (channelGrp) {
@@ -605,31 +605,31 @@ uint16_t sis_3300_getTriggerClearCounter(struct s_sis_3300 * s, uint8_t channelG
 
 /* ------------- Clock Predivider Register ------------------------------ */
 
-void sis_3300_setClockPredivider(struct s_sis_3300 * s, uint8_t predivider)
+void sis_3300_setClockPredivider(s_sis_3300 * s, uint8_t predivider)
 {
 	SET32(s->baseAddr, SIS_3300_CLOCK_PREDIVIDER_ALL_ADC , (uint32_t)predivider);
 }
 
-uint8_t sis_3300_getClockPredivider(struct s_sis_3300 * s)
+uint8_t sis_3300_getClockPredivider(s_sis_3300 * s)
 {
 	return (uint8_t)(GET32(s->baseAddr, SIS_3300_CLOCK_PREDIVIDER_ADC12) & 0xff);
 }
 
 /* ------------- Number of Sample Register ------------------------------ */
 
-void sis_3300_setNumberOfSamples(struct s_sis_3300 * s, uint8_t value)
+void sis_3300_setNumberOfSamples(s_sis_3300 * s, uint8_t value)
 {
 	SET32(s->baseAddr, SIS_3300_NO_OF_SAMPLE_ALL_ADC, (uint32_t)value);
 }
 
-uint8_t sis_3300_getNumberOfSamples(struct s_sis_3300 * s)
+uint8_t sis_3300_getNumberOfSamples(s_sis_3300 * s)
 {
 	return (uint8_t)(GET32(s->baseAddr, SIS_3300_NO_OF_SAMPLE_ADC12) & 0xff);
 }
 
 /* ------------- Trigger Setup Register --------------------------------- */
 
-void sis_3300_setTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp, uint8_t value)
+void sis_3300_setTriggerGapTime(s_sis_3300 * s, uint8_t channelGrp, uint8_t value)
 {
 	uint32_t bits;
 	bits = ((uint32_t)value) << 8;
@@ -656,7 +656,7 @@ void sis_3300_setTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp, uint8
 	}
 }
 
-uint8_t sis_3300_getTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp)
+uint8_t sis_3300_getTriggerGapTime(s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint8_t gaptime;
 
@@ -681,7 +681,7 @@ uint8_t sis_3300_getTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp)
 	return gaptime;
 }
 
-void sis_3300_setTriggerPeakingTime(struct s_sis_3300 * s, uint8_t channelGrp,
+void sis_3300_setTriggerPeakingTime(s_sis_3300 * s, uint8_t channelGrp,
 																	 uint8_t value)
 {
 	uint32_t bits;
@@ -712,7 +712,7 @@ void sis_3300_setTriggerPeakingTime(struct s_sis_3300 * s, uint8_t channelGrp,
 	}
 }
 
-uint8_t sis_3300_getTriggerPeakingTime(struct s_sis_3300 * s, uint8_t channelGrp)
+uint8_t sis_3300_getTriggerPeakingTime(s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint8_t peaktime = 0;
 
@@ -735,7 +735,7 @@ uint8_t sis_3300_getTriggerPeakingTime(struct s_sis_3300 * s, uint8_t channelGrp
 	return peaktime;
 }
 
-void sis_3300_setTriggerPulseLength(struct s_sis_3300 * s, uint8_t channelGrp, uint8_t value)
+void sis_3300_setTriggerPulseLength(s_sis_3300 * s, uint8_t channelGrp, uint8_t value)
 {
 	uint32_t bits;
 
@@ -760,7 +760,7 @@ void sis_3300_setTriggerPulseLength(struct s_sis_3300 * s, uint8_t channelGrp, u
 	}
 }
 
-uint8_t sis_3300_getTriggerPulseLength(struct s_sis_3300 * s, uint8_t channelGrp)
+uint8_t sis_3300_getTriggerPulseLength(s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint8_t pulselength;
 
@@ -791,7 +791,7 @@ uint8_t sis_3300_getTriggerPulseLength(struct s_sis_3300 * s, uint8_t channelGrp
 
 /* BE CAREFUL: contrary to to the sis3300 manual we are counting the	 */
 /* channels from 0 to 7, so even corresponds to channel 0, 2, 4, 6		 */
-void sis_3300_enableFIRTestEven(struct s_sis_3300 * s, uint8_t channelGrp)
+void sis_3300_enableFIRTestEven(s_sis_3300 * s, uint8_t channelGrp)
 {
 	switch (channelGrp) {
 	case 0:
@@ -811,7 +811,7 @@ void sis_3300_enableFIRTestEven(struct s_sis_3300 * s, uint8_t channelGrp)
 	}
 }
 
-void sis_3300_disableFIRTestEven(struct s_sis_3300 * s, uint8_t channelGrp)
+void sis_3300_disableFIRTestEven(s_sis_3300 * s, uint8_t channelGrp)
 {
 	switch (channelGrp) {
 	 case 0:
@@ -831,7 +831,7 @@ void sis_3300_disableFIRTestEven(struct s_sis_3300 * s, uint8_t channelGrp)
 	 }
 }
 
-uint8_t sis_3300_FIRTestEvenEnabled(struct s_sis_3300 * s, uint8_t channelGrp)
+uint8_t sis_3300_FIRTestEvenEnabled(s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint8_t ret;
 
@@ -855,7 +855,7 @@ uint8_t sis_3300_FIRTestEvenEnabled(struct s_sis_3300 * s, uint8_t channelGrp)
 	return (ret != 0) ? 0 : 1;
 }
 
-void sis_3300_enableFIRTestMode(struct s_sis_3300 * s, uint8_t channelGrp)
+void sis_3300_enableFIRTestMode(s_sis_3300 * s, uint8_t channelGrp)
 {
 	switch (channelGrp) {
 	case 0:
@@ -875,7 +875,7 @@ void sis_3300_enableFIRTestMode(struct s_sis_3300 * s, uint8_t channelGrp)
 	}
 }
 
-void sis_3300_disableFIRTestMode(struct s_sis_3300 * s, uint8_t channelGrp)
+void sis_3300_disableFIRTestMode(s_sis_3300 * s, uint8_t channelGrp)
 {
 	switch (channelGrp) {
 	case 0:
@@ -895,7 +895,7 @@ void sis_3300_disableFIRTestMode(struct s_sis_3300 * s, uint8_t channelGrp)
 	}
 }
 
-uint8_t sis_3300_FIRTestModeEnabled(struct s_sis_3300 * s, uint8_t channelGrp)
+uint8_t sis_3300_FIRTestModeEnabled(s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint8_t ret;
 
@@ -919,7 +919,7 @@ uint8_t sis_3300_FIRTestModeEnabled(struct s_sis_3300 * s, uint8_t channelGrp)
 	return (ret != 0) ? 1 : 0;
 }
 
-void sis_3300_setTriggerMode(struct s_sis_3300 * s, uint8_t channel, uint8_t mode)
+void sis_3300_setTriggerMode(s_sis_3300 * s, uint8_t channel, uint8_t mode)
 {
 	/* mode == 0: none, mode == 1: less, mode == 2 greater, mode == 3 both */
 
@@ -958,7 +958,7 @@ void sis_3300_setTriggerMode(struct s_sis_3300 * s, uint8_t channel, uint8_t mod
 	}
 }
 
-uint8_t sis_3300_getTriggerMode(struct s_sis_3300 * s, uint8_t channel)
+uint8_t sis_3300_getTriggerMode(s_sis_3300 * s, uint8_t channel)
 { /* mode = 0: none, mode == 1: less, mode == 2 greater, mode == 3 both */
 
 	uint8_t ret;
@@ -994,7 +994,7 @@ uint8_t sis_3300_getTriggerMode(struct s_sis_3300 * s, uint8_t channel)
 	return ret;
 }
 
-void sis_3300_enablePulseMode(struct s_sis_3300 * s, uint8_t channel)
+void sis_3300_enablePulseMode(s_sis_3300 * s, uint8_t channel)
 {
 	switch (channel) {
 	case 0:
@@ -1014,7 +1014,7 @@ void sis_3300_enablePulseMode(struct s_sis_3300 * s, uint8_t channel)
 	}
 }
 
-void sis_3300_disablePulseMode(struct s_sis_3300 * s, uint8_t channel)
+void sis_3300_disablePulseMode(s_sis_3300 * s, uint8_t channel)
 {
 	switch (channel) {
 	case 0:
@@ -1034,7 +1034,7 @@ void sis_3300_disablePulseMode(struct s_sis_3300 * s, uint8_t channel)
 	}
 }
 
-uint8_t sis_3300_pulseModeEnabled(struct s_sis_3300 * s, uint8_t channel)
+uint8_t sis_3300_pulseModeEnabled(s_sis_3300 * s, uint8_t channel)
 {
 	uint8_t ret;
 
@@ -1059,7 +1059,7 @@ uint8_t sis_3300_pulseModeEnabled(struct s_sis_3300 * s, uint8_t channel)
 	return (ret != 0 ? 1 : 0);
 }
 
-void sis_3300_enableFIRTrigger(struct s_sis_3300 * s, uint8_t channelGrp)
+void sis_3300_enableFIRTrigger(s_sis_3300 * s, uint8_t channelGrp)
 {
 	switch (channelGrp) {
 	case 0:
@@ -1079,7 +1079,7 @@ void sis_3300_enableFIRTrigger(struct s_sis_3300 * s, uint8_t channelGrp)
 	}
 }
 
-void sis_3300_disableFIRTrigger(struct s_sis_3300 * s, uint8_t channelGrp)
+void sis_3300_disableFIRTrigger(s_sis_3300 * s, uint8_t channelGrp)
 {
 	switch (channelGrp) {
 	case 0:
@@ -1099,7 +1099,7 @@ void sis_3300_disableFIRTrigger(struct s_sis_3300 * s, uint8_t channelGrp)
 	}
 }
 
-uint8_t sis_3300_FIRTriggerEnabled(struct s_sis_3300 * s, uint8_t channel)
+uint8_t sis_3300_FIRTriggerEnabled(s_sis_3300 * s, uint8_t channel)
 {
 	uint8_t ret;
 
@@ -1124,7 +1124,7 @@ uint8_t sis_3300_FIRTriggerEnabled(struct s_sis_3300 * s, uint8_t channel)
 	return (ret != 0 ? 1 : 0);
 }
 
-uint32_t sis_3300_getTriggerSetupRegister(struct s_sis_3300 * s, uint8_t channelGrp)
+uint32_t sis_3300_getTriggerSetupRegister(s_sis_3300 * s, uint8_t channelGrp)
 {
 	switch (channelGrp) {
 	case 0:
@@ -1148,19 +1148,19 @@ uint32_t sis_3300_getTriggerSetupRegister(struct s_sis_3300 * s, uint8_t channel
 
 /* ------------- Max Number Event Register ------------------------------ */
 
-void sis_3300_setMaxNumberOfEvents(struct s_sis_3300 * s, uint16_t maxno)
+void sis_3300_setMaxNumberOfEvents(s_sis_3300 * s, uint16_t maxno)
 {
 	SET32(s->baseAddr, SIS_3300_MAX_NUMBER_OF_EVENTS_ALL_ADC, (uint32_t) maxno);
 }
 
-uint16_t sis_3300_getMaxNumberOfEvents(struct s_sis_3300 * s)
+uint16_t sis_3300_getMaxNumberOfEvents(s_sis_3300 * s)
 {
 	return (uint16_t)(GET32(s->baseAddr, SIS_3300_MAX_NUMBER_OF_EVENTS_ADC12) & 0xffff);
 }
 
 /* -------------- Acquisition Control Register --------------------------- */
 
-void sis_3300_armBank(struct s_sis_3300 * s, uint8_t bank)
+void sis_3300_armBank(s_sis_3300 * s, uint8_t bank)
 {
 	switch (bank) {
 	case 0:
@@ -1174,7 +1174,7 @@ void sis_3300_armBank(struct s_sis_3300 * s, uint8_t bank)
 	}
 }
 
-void sis_3300_disarmBank(struct s_sis_3300 * s, uint8_t bank)
+void sis_3300_disarmBank(s_sis_3300 * s, uint8_t bank)
 {
 	switch (bank) {
 	case 0:
@@ -1188,7 +1188,7 @@ void sis_3300_disarmBank(struct s_sis_3300 * s, uint8_t bank)
 	}
 }
 
-uint8_t sis_3300_bankArmed(struct s_sis_3300 * s, uint8_t bank)
+uint8_t sis_3300_bankArmed(s_sis_3300 * s, uint8_t bank)
 {
 	uint8_t armed;
 
@@ -1209,142 +1209,142 @@ uint8_t sis_3300_bankArmed(struct s_sis_3300 * s, uint8_t bank)
 	return (armed != 0 ? 1 : 0);
 }
 
-void sis_3300_enableAutoBankSwitch(struct s_sis_3300 * s)
+void sis_3300_enableAutoBankSwitch(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, 0x4);
 }
 
-void sis_3300_disableAutoBankSwitch(struct s_sis_3300 * s)
+void sis_3300_disableAutoBankSwitch(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, 0x40000);
 }
 
-uint8_t sis_3300_autoBankSwitchEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_autoBankSwitchEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_STATUS) & 0x4) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableAutostart(struct s_sis_3300 * s)
+void sis_3300_enableAutostart(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_AUTOSTART_ON);
 }
 
-void sis_3300_disableAutostart(struct s_sis_3300 * s)
+void sis_3300_disableAutostart(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_AUTOSTART_OFF);
 }
 
-uint8_t sis_3300_autostartEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_autostartEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_STATUS) & SIS_3300_ACQ_AUTOSTART_ON) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableMultiEventMode(struct s_sis_3300 * s)
+void sis_3300_enableMultiEventMode(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_MULTIEVENT_ON);
 }
 
-void sis_3300_disableMultiEventMode(struct s_sis_3300 * s)
+void sis_3300_disableMultiEventMode(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_MULTIEVENT_OFF);
 }
 
-uint8_t sis_3300_multiEventModeEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_multiEventModeEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_STATUS) & SIS_3300_ACQ_MULTIEVENT_ON) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableStartDelay(struct s_sis_3300 * s)
+void sis_3300_enableStartDelay(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_STARTDELAY_ON);
 }
 
-void sis_3300_disableStartDelay(struct s_sis_3300 * s)
+void sis_3300_disableStartDelay(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_STARTDELAY_OFF);
 }
 
-uint8_t sis_3300_startDelayEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_startDelayEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_STATUS) & SIS_3300_ACQ_STARTDELAY_ON) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableStopDelay(struct s_sis_3300 * s)
+void sis_3300_enableStopDelay(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_STOPDELAY_ON);
 }
 
-void sis_3300_disableStopDelay(struct s_sis_3300 * s)
+void sis_3300_disableStopDelay(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_STOPDELAY_OFF);
 }
 
-uint8_t sis_3300_stopDelayEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_stopDelayEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_STATUS) & SIS_3300_ACQ_STOPDELAY_ON) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableFrontStartStop(struct s_sis_3300 * s)
+void sis_3300_enableFrontStartStop(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_FRONTSTART_ON);
 }
 
-void sis_3300_disableFrontStartStop(struct s_sis_3300 * s)
+void sis_3300_disableFrontStartStop(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_FRONTSTART_OFF);
 }
 
-uint8_t sis_3300_frontStartStopEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_frontStartStopEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_STATUS) & SIS_3300_ACQ_FRONTSTART_ON) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableP2StartStop(struct s_sis_3300 * s)
+void sis_3300_enableP2StartStop(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_P2START_OFF);
 }
 
-void sis_3300_disableP2StartStop(struct s_sis_3300 * s)
+void sis_3300_disableP2StartStop(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_P2START_OFF);
 }
 
-uint8_t sis_3300_P2StartStopEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_P2StartStopEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_STATUS) & SIS_3300_ACQ_P2START_ON) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableFrontPanelGateMode(struct s_sis_3300 * s)
+void sis_3300_enableFrontPanelGateMode(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_GATE_ON);
 }
 
-void sis_3300_disableFrontPanelGateMode(struct s_sis_3300 * s)
+void sis_3300_disableFrontPanelGateMode(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_FRONTSTART_OFF);
 }
 
-uint8_t sis_3300_gateModeFrontPanelEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_gateModeFrontPanelEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_STATUS) & SIS_3300_ACQ_GATE_ON) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableExtClockRandomMode(struct s_sis_3300 * s)
+void sis_3300_enableExtClockRandomMode(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, 0x0800);
 }
 
-void sis_3300_disableExtClockRandomMode(struct s_sis_3300 * s)
+void sis_3300_disableExtClockRandomMode(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, 0x8000000);
 }
 
-uint8_t sis_3300_extClockRandomModeEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_extClockRandomModeEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_STATUS) & 0x0800) != 0 ? 1 : 0);
 }
 
-void sis_3300_setClockSource(struct s_sis_3300 * s, uint8_t mode)
+void sis_3300_setClockSource(s_sis_3300 * s, uint8_t mode)
 {
 	if (mode <= 7) {
 		/* first you have to clear all clock sources */
@@ -1379,22 +1379,22 @@ void sis_3300_setClockSource(struct s_sis_3300 * s, uint8_t mode)
 	}
 }
 
-uint8_t sis_3300_getClockSource(struct s_sis_3300 * s)
+uint8_t sis_3300_getClockSource(s_sis_3300 * s)
 {
 	return (GET32(s->baseAddr, SIS_3300_ACQ_CONTROL) & 0x7000) >> 12;
 }
 
-uint8_t sis_3300_getADC_BUSY(struct s_sis_3300 * s)
+uint8_t sis_3300_getADC_BUSY(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_CONTROL) & 0x10000) != 0 ? 1 : 0);
 }
 
-uint8_t sis_3300_getBankSwitchBusy(struct s_sis_3300 * s)
+uint8_t sis_3300_getBankSwitchBusy(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_ACQ_CONTROL) & 0x40000) != 0 ? 1 : 0);
 }
 
-uint8_t sis_3300_getBankBusy(struct s_sis_3300 * s, uint8_t bank)
+uint8_t sis_3300_getBankBusy(s_sis_3300 * s, uint8_t bank)
 {
 	switch (bank) {
 	case 0:
@@ -1409,7 +1409,7 @@ uint8_t sis_3300_getBankBusy(struct s_sis_3300 * s, uint8_t bank)
 	return 0;
 }
 
-uint8_t sis_3300_getBankFull(struct s_sis_3300 * s, uint8_t bank)
+uint8_t sis_3300_getBankFull(s_sis_3300 * s, uint8_t bank)
 {
 	switch (bank) {
 	case 0:
@@ -1429,7 +1429,7 @@ uint8_t sis_3300_getBankFull(struct s_sis_3300 * s, uint8_t bank)
 /* ------------ Module Control Register ---------------------- ---------- */
 
 
-void sis_3300_setUserLED(struct s_sis_3300 * s, uint8_t on)
+void sis_3300_setUserLED(s_sis_3300 * s, uint8_t on)
 {
 	if (on == 1)
 		SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_LED_ON);
@@ -1437,12 +1437,12 @@ void sis_3300_setUserLED(struct s_sis_3300 * s, uint8_t on)
 		SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_LED_OFF);
 }
 
-uint8_t sis_3300_getUserLED(struct s_sis_3300 * s)
+uint8_t sis_3300_getUserLED(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & SIS_3300_CTL_LED_ON) != 0 ? 1 : 0);
 }
 
-void sis_3300_setUserOutput(struct s_sis_3300 * s, uint8_t on)
+void sis_3300_setUserOutput(s_sis_3300 * s, uint8_t on)
 {
 	if (on == 1)
 		SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_USEROUT_ON);
@@ -1450,72 +1450,72 @@ void sis_3300_setUserOutput(struct s_sis_3300 * s, uint8_t on)
 		SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_USEROUT_OFF);
 }
 
-uint8_t sis_3300_getUserOutput(struct s_sis_3300 * s)
+uint8_t sis_3300_getUserOutput(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & SIS_3300_CTL_USEROUT_ON) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableTriggerOut(struct s_sis_3300 * s)
+void sis_3300_enableTriggerOut(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_ENABLE_TRIGOUT);
 }
 
-void sis_3300_disableTriggerOut(struct s_sis_3300 * s)
+void sis_3300_disableTriggerOut(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_ENABLE_USEROUT);
 }
 
-uint8_t sis_3300_triggerOutEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_triggerOutEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & SIS_3300_CTL_ENABLE_TRIGOUT) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableInverseTriggerOut(struct s_sis_3300 * s)
+void sis_3300_enableInverseTriggerOut(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_INVERSE_TRIGOUT);
 }
 
-void sis_3300_disableInverseTriggerOut(struct s_sis_3300 * s)
+void sis_3300_disableInverseTriggerOut(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_STRAIGHT_TRIGOUT);
 }
 
-uint8_t sis_3300_inverseTriggerOutEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_inverseTriggerOutEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & SIS_3300_CTL_INVERSE_TRIGOUT) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableTriggerArmedStart(struct s_sis_3300 * s)
+void sis_3300_enableTriggerArmedStart(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_TRIGOUT_ARMSTART);
 }
 
-void sis_3300_disableTriggerArmedStart(struct s_sis_3300 * s)
+void sis_3300_disableTriggerArmedStart(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_CONTROL, SIS_3300_CTL_TRIGOUT_ARMED);
 }
 
-uint8_t sis_3300_triggerArmedStartEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_triggerArmedStartEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & SIS_3300_CTL_TRIGOUT_ARMSTART) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableTriggerRouting(struct s_sis_3300 * s)
+void sis_3300_enableTriggerRouting(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_CONTROL, 0x00000040);
 }
 
-void sis_3300_disableTriggerRouting(struct s_sis_3300 * s)
+void sis_3300_disableTriggerRouting(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_CONTROL, 0x00400000);
 }
 
-uint8_t sis_3300_triggerRoutingEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_triggerRoutingEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & 0x0040) != 0 ? 1 : 0);
 }
 
-void sis_3300_enableBankFullLemo(struct s_sis_3300 * s, uint8_t lemo)
+void sis_3300_enableBankFullLemo(s_sis_3300 * s, uint8_t lemo)
 {
 	if (lemo < 3) {
 		SET32(s->baseAddr, SIS_3300_CONTROL, 0x07000000);
@@ -1523,27 +1523,27 @@ void sis_3300_enableBankFullLemo(struct s_sis_3300 * s, uint8_t lemo)
 	}
 }
 
-void sis_3300_disableBankFullLemo(struct s_sis_3300 * s)
+void sis_3300_disableBankFullLemo(s_sis_3300 * s)
 {
 	SET32(s->baseAddr, SIS_3300_CONTROL, 0x07000000);
 }
 
-uint8_t sis_3300_bankFullLemoEnabled(struct s_sis_3300 * s)
+uint8_t sis_3300_bankFullLemoEnabled(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & 0x0700) >> 8);
 }
 
-uint8_t sis_3300_getP2_TEST_IN(struct s_sis_3300 * s)
+uint8_t sis_3300_getP2_TEST_IN(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & SIS_3300_CTL_USEROUT_OFF) != 0 ? 1 : 0);
 }
 
-uint8_t sis_3300_getP2_RESET_IN(struct s_sis_3300 * s)
+uint8_t sis_3300_getP2_RESET_IN(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & SIS_3300_CTL_ENABLE_USEROUT) != 0 ? 1 : 0);
 }
 
-uint8_t sis_3300_getP2_SAMPLE_IN(struct s_sis_3300 * s)
+uint8_t sis_3300_getP2_SAMPLE_IN(s_sis_3300 * s)
 {
 	return ((GET32(s->baseAddr, SIS_3300_STATUS) & (SIS_3300_CTL_ENABLE_USEROUT << 1)) != 0 ? 1 : 0);
 }
@@ -1551,12 +1551,12 @@ uint8_t sis_3300_getP2_SAMPLE_IN(struct s_sis_3300 * s)
 
 /* -------- IRQ Config Register ----------------------------------------- */
 
-void	sis_3300_enableVMEIRQ(struct s_sis_3300 * s)
+void	sis_3300_enableVMEIRQ(s_sis_3300 * s)
 {
  SET32(s->baseAddr, SIS_3300_IRQ_CONFIG, SIS_3300_IRQ_ENABLE);
 }
 
-void	sis_3300_enableROAKIRQ(struct s_sis_3300 * s)
+void	sis_3300_enableROAKIRQ(s_sis_3300 * s)
 {
  SET32(s->baseAddr, SIS_3300_IRQ_CONFIG, SIS_3300_IRQ_ROAK);
 }
@@ -1564,7 +1564,7 @@ void	sis_3300_enableROAKIRQ(struct s_sis_3300 * s)
 
 /* -------- IRQ Control Register ------------------------------------------ */
 
-void sis_3300_enableIRQ(struct s_sis_3300 * s, uint8_t source)
+void sis_3300_enableIRQ(s_sis_3300 * s, uint8_t source)
 {
 	switch (source) {
 	case 0:
@@ -1582,7 +1582,7 @@ void sis_3300_enableIRQ(struct s_sis_3300 * s, uint8_t source)
 	}
 }
 
-void sis_3300_disableIRQ(struct s_sis_3300 * s, uint8_t source)
+void sis_3300_disableIRQ(s_sis_3300 * s, uint8_t source)
 {
 	switch (source) {
 	case 0:
@@ -1600,7 +1600,7 @@ void sis_3300_disableIRQ(struct s_sis_3300 * s, uint8_t source)
 	}
 }
 
-uint8_t sis_3300_IRQEnabled(struct s_sis_3300 * s, uint8_t source)
+uint8_t sis_3300_IRQEnabled(s_sis_3300 * s, uint8_t source)
 {
 	uint8_t ret = 0;
 
@@ -1622,7 +1622,7 @@ uint8_t sis_3300_IRQEnabled(struct s_sis_3300 * s, uint8_t source)
 	return (ret != 0) ? 1 : 0;
 }
 
-void sis_3300_clearIRQ(struct s_sis_3300 * s, uint8_t source)
+void sis_3300_clearIRQ(s_sis_3300 * s, uint8_t source)
 {
 	switch (source) {
 	case 0:
@@ -1640,7 +1640,7 @@ void sis_3300_clearIRQ(struct s_sis_3300 * s, uint8_t source)
 	}
 }
 
-uint8_t sis_3300_getIRQStatusFlag(struct s_sis_3300 * s, uint8_t source)
+uint8_t sis_3300_getIRQStatusFlag(s_sis_3300 * s, uint8_t source)
 {
 	uint8_t ret = 0;
 
@@ -1667,7 +1667,7 @@ uint8_t sis_3300_getIRQStatusFlag(struct s_sis_3300 * s, uint8_t source)
 }
 
 
-uint8_t sis_3300_getIRQStatus(struct s_sis_3300 * s, uint8_t source)
+uint8_t sis_3300_getIRQStatus(s_sis_3300 * s, uint8_t source)
 {
 	uint8_t ret = 0;
 
@@ -1690,19 +1690,19 @@ uint8_t sis_3300_getIRQStatus(struct s_sis_3300 * s, uint8_t source)
 	return (ret != 0) ? 1 : 0;
 }
 
-uint8_t sis_3300_getIRQInternalStatus(struct s_sis_3300 * s)
+uint8_t sis_3300_getIRQInternalStatus(s_sis_3300 * s)
 {
 	return GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_INTERNAL_STAT;
 }
 
-uint8_t sis_3300_getIRQVMEStatus(struct s_sis_3300 * s)
+uint8_t sis_3300_getIRQVMEStatus(s_sis_3300 * s)
 {
 	return GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_STAT;
 }
 
 /* ---------- Functions to be inlined ----------------------------------- */
 
-uint32_t sis_3300_getTriggerEventDirectory(struct s_sis_3300 * s, uint8_t bank,
+uint32_t sis_3300_getTriggerEventDirectory(s_sis_3300 * s, uint8_t bank,
 																					uint16_t event)
 {
 	if (event < 1024) {
@@ -1720,13 +1720,13 @@ uint32_t sis_3300_getTriggerEventDirectory(struct s_sis_3300 * s, uint8_t bank,
 	return 0;
 }
 
-uint8_t sis_3300_getEventWrap(struct s_sis_3300 * s, uint8_t bank, uint16_t event)
+uint8_t sis_3300_getEventWrap(s_sis_3300 * s, uint8_t bank, uint16_t event)
 {
 	return (sis_3300_getTriggerEventDirectory(s, bank, event) & 0x80000) >> 19;
 }
 
 
-uint32_t sis_3300_getPageBegin(struct s_sis_3300 * s, uint8_t bank, uint8_t channelGrp, uint16_t event)
+uint32_t sis_3300_getPageBegin(s_sis_3300 * s, uint8_t bank, uint8_t channelGrp, uint16_t event)
 {
 
 	uint32_t offset = event * sis_3300_getPageSizeVal(s) * 4;
@@ -1763,19 +1763,19 @@ uint32_t sis_3300_getPageBegin(struct s_sis_3300 * s, uint8_t bank, uint8_t chan
 	return 0;
 }
 
-uint32_t sis_3300_getPageEnd(struct s_sis_3300 * s, uint8_t bank, uint8_t channelGrp, uint16_t event)
+uint32_t sis_3300_getPageEnd(s_sis_3300 * s, uint8_t bank, uint8_t channelGrp, uint16_t event)
 {
 	return sis_3300_getPageBegin(s, bank, channelGrp, event + 1) - 4;
 }
 
 
-uint32_t sis_3300_getEventEnd(struct s_sis_3300 * s, uint8_t bank, uint8_t channelGrp, uint16_t event)
+uint32_t sis_3300_getEventEnd(s_sis_3300 * s, uint8_t bank, uint8_t channelGrp, uint16_t event)
 {
 	return	sis_3300_getPageBegin(s, bank, channelGrp, 0) +
 		4 * ((sis_3300_getTriggerEventDirectory(s, bank, event) & 0x01ffff));
 }
 
-uint32_t sis_3300_getAddressCounter(struct s_sis_3300 * s, uint8_t bank)
+uint32_t sis_3300_getAddressCounter(s_sis_3300 * s, uint8_t bank)
 {
 	switch (bank) {
 	case 0:
@@ -1793,7 +1793,7 @@ uint32_t sis_3300_getAddressCounter(struct s_sis_3300 * s, uint8_t bank)
 	return 0;
 }
 
-uint16_t sis_3300_getEventCounter(struct s_sis_3300 * s, uint8_t bank)
+uint16_t sis_3300_getEventCounter(s_sis_3300 * s, uint8_t bank)
 {
 	uint16_t evtCnt = 0;
 
@@ -1812,7 +1812,7 @@ uint16_t sis_3300_getEventCounter(struct s_sis_3300 * s, uint8_t bank)
 	return (evtCnt > 0) ? evtCnt - 1 : 0;
 }
 
-uint32_t sis_3300_getActualSampleValue(struct s_sis_3300 * s, uint8_t channelGrp)
+uint32_t sis_3300_getActualSampleValue(s_sis_3300 * s, uint8_t channelGrp)
 {
 	switch (channelGrp) {
 	case 0:
@@ -1836,7 +1836,7 @@ uint32_t sis_3300_getActualSampleValue(struct s_sis_3300 * s, uint8_t channelGrp
 
 /* ---------------------------------------------------------------------- */
 
-float sis_3300_getFrequency(struct s_sis_3300 * s)
+float sis_3300_getFrequency(s_sis_3300 * s)
 {
 	float freq;
 
@@ -1866,7 +1866,7 @@ float sis_3300_getFrequency(struct s_sis_3300 * s)
 	return freq;
 }
 
-uint32_t sis_3300_getPageSizeVal(struct s_sis_3300 * s)
+uint32_t sis_3300_getPageSizeVal(s_sis_3300 * s)
 {
 	uint32_t pagesize;
 	switch (sis_3300_getPageSize(s)) {
@@ -1904,7 +1904,7 @@ uint32_t sis_3300_getPageSizeVal(struct s_sis_3300 * s)
 
 /* ---------------------------------------------------------------------- */
 
-int sis_3300_initialize(struct s_sis_3300 * s)
+int sis_3300_initialize(s_sis_3300 * s)
 {
 	uint16_t ch;
 
@@ -2030,12 +2030,12 @@ static char * showBits(uint32_t val)
 	return buffer;
 }
 
-uint32_t sis_3300_getRevision(struct s_sis_3300 * s)
+uint32_t sis_3300_getRevision(s_sis_3300 * s)
 {
   return GET32(s->baseAddr, SIS_3300_MODULE_ID);
 }
 
-void sis_3300_dumpRegisters(struct s_sis_3300 * s)
+void sis_3300_dumpRegisters(s_sis_3300 * s)
 {
 	unsigned int i;
 

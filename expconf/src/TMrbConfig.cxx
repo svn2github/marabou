@@ -701,6 +701,12 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		fLofMbsBranches.Delete();
 		fLofMbsBranches.SetName("MBS branches");
+		
+		fLofMesytecMCST.Delete();
+		fLofMesytecMCST.SetName("Mesytec multicast");
+
+		fLofMesytecCBLT.Delete();
+		fLofMesytecCBLT.SetName("Mesytec chained blt");
 
 		this->GetAuthor();		 								// author's name
 		this->GetMailAddr();		 							// author's name
@@ -2062,16 +2068,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag += "%";
 								rdoTmpl.InitializeCode(iniTag.Data());
 								rdoTmpl.Substitute("$crateNo", crate);
-								rdoTmpl.WriteCode(rdoStrm);
-							} else {
-								rdoTmpl.InitializeCode("%CEVME1%");
-								rdoTmpl.WriteCode(rdoStrm);
-								module = (TMrbModule *) this->FindModuleByCrate(crate);
-								while (module) {
-									if (module->GetMbsBranchNo() == pp->GetB()) module->MakeReadoutCode(rdoStrm, kModuleInitBLT);
-									module = (TMrbModule *) this->FindModuleByCrate(crate, module);
-								}
-								rdoTmpl.InitializeCode("%CEVME2%");
 								rdoTmpl.WriteCode(rdoStrm);
 							}
 							crate = this->FindCrate(crate);
@@ -8735,7 +8731,36 @@ Bool_t TMrbConfig::CheckConfig() {
 		if (!this->CheckModuleAddress(module, kFALSE)) nofErrors++;
 		if (!module->CheckProcType()) nofErrors++;
 	}
-
+	
+	TIterator * iter = fLofMesytecMCST.MakeIterator();
+	TMrbNamedX * mcst;
+	while (mcst = (TMrbNamedX *) iter->Next()) {
+		TObjArray * oa = (TObjArray *) mcst->GetAssignedObject();
+		TIterator * miter = oa->MakeIterator();
+		TMrbNamedX * m;
+		TMrbNamedX *master = NULL;
+		while (m = (TMrbNamedX *) miter->Next()) {
+			if (m->GetIndex() != 0) {
+				if (master) {
+					gMrbLog->Err()	<< "More than one MCST master with signature \"0x" << setbase(16) << mcst->GetIndex() << setbase(10)
+									<< "\": " << m->GetName() << " ... " << master->GetName() << endl;
+					gMrbLog->Flush(this->ClassName(), "CheckConfig");
+					nofErrors++;
+				} else {
+					master = m;
+				}
+			}
+		}
+		if (master == NULL) {
+			gMrbLog->Err()	<< "No MCST master defined for signature \"0x" << setbase(16) << mcst->GetIndex() << setbase(10) << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+			nofErrors++;
+		} else if (this->IsVerbose()) {
+			gMrbLog->Out()	<< "Module \"" << master->GetName() << "\" (type " << master->GetTitle() << ") is MCST master for signature \"0x" << setbase(16) << mcst->GetIndex() << setbase(10) << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+		}
+	}
+	
 	TString camacContr = gEnv->GetValue("TMbsSetup.CamacController", "");
 	if (camacContr.IsNull()) camacContr = gEnv->GetValue("TMrbEsone.Controller", "");
 

@@ -13,124 +13,124 @@
 ////////////////////////////////////////////////////////////////////////////*/
 
 
-struct s_caen_v1x90 * caen_v1x90_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial);
+s_caen_v1x90 * caen_v1x90_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial);
 
-bool_t caen_v1x90_moduleInfo(struct s_caen_v1x90 * s);
-void caen_v1x90_setPrefix(struct s_caen_v1x90 * s, char * prefix);
+bool_t caen_v1x90_moduleInfo(s_caen_v1x90 * s);
+void caen_v1x90_setPrefix(s_caen_v1x90 * s, char * prefix);
 
-bool_t caen_v1x90_fillStruct(struct s_caen_v1x90 * s, char * file);
+bool_t caen_v1x90_fillStruct(s_caen_v1x90 * s, char * file);
 
-void caen_v1x90_loadFromDb(struct s_caen_v1x90 * s);
+void caen_v1x90_loadFromDb(s_caen_v1x90 * s);
 
-bool_t caen_v1x90_dumpRegisters(struct s_caen_v1x90 * s, char * file);
-void caen_v1x90_printDb(struct s_caen_v1x90 * s);
+bool_t caen_v1x90_dumpRegisters(s_caen_v1x90 * s, char * file);
+void caen_v1x90_printDb(s_caen_v1x90 * s);
 
-void caen_v1x90_reset(struct s_caen_v1x90 * s);
+void caen_v1x90_reset(s_caen_v1x90 * s);
 
-void caen_v1x90_setTriggerMatchingOn(struct s_caen_v1x90 * s, bool_t flag);
-void caen_v1x90_setTriggerMatchingOn_db(struct s_caen_v1x90 * s);
-bool_t caen_v1x90_triggerMatchingIsOn(struct s_caen_v1x90 * s);
+void caen_v1x90_setTriggerMatchingOn(s_caen_v1x90 * s, bool_t flag);
+void caen_v1x90_setTriggerMatchingOn_db(s_caen_v1x90 * s);
+bool_t caen_v1x90_triggerMatchingIsOn(s_caen_v1x90 * s);
 
-void caen_v1x90_setWindowWidth(struct s_caen_v1x90 * s, uint16_t ticks);
-void caen_v1x90_setWindowWidth_db(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getWindowWidth(struct s_caen_v1x90 * s);
+void caen_v1x90_setWindowWidth(s_caen_v1x90 * s, uint16_t ticks);
+void caen_v1x90_setWindowWidth_db(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getWindowWidth(s_caen_v1x90 * s);
 
-void caen_v1x90_setWindowOffset(struct s_caen_v1x90 * s, uint16_t ticks);
-void caen_v1x90_setWindowOffset_db(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getWindowOffset(struct s_caen_v1x90 * s);
+void caen_v1x90_setWindowOffset(s_caen_v1x90 * s, uint16_t ticks);
+void caen_v1x90_setWindowOffset_db(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getWindowOffset(s_caen_v1x90 * s);
 
-void caen_v1x90_setRejectMargin(struct s_caen_v1x90 * s, uint16_t ticks);
-void caen_v1x90_setRejectMargin_db(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getRejectMargin(struct s_caen_v1x90 * s);
+void caen_v1x90_setRejectMargin(s_caen_v1x90 * s, uint16_t ticks);
+void caen_v1x90_setRejectMargin_db(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getRejectMargin(s_caen_v1x90 * s);
 
-void caen_v1x90_setSearchMargin(struct s_caen_v1x90 * s, uint16_t ticks);
-void caen_v1x90_setSearchMargin_db(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getSearchMargin(struct s_caen_v1x90 * s);
+void caen_v1x90_setSearchMargin(s_caen_v1x90 * s, uint16_t ticks);
+void caen_v1x90_setSearchMargin_db(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getSearchMargin(s_caen_v1x90 * s);
 
-void caen_v1x90_enableTriggerTimeSubtraction(struct s_caen_v1x90 * s, bool_t flag);
-void caen_v1x90_enableTriggerTimeSubtraction_db(struct s_caen_v1x90 * s);
-bool_t caen_v1x90_triggerTimeSubtractionEnabled(struct s_caen_v1x90 * s);
+void caen_v1x90_enableTriggerTimeSubtraction(s_caen_v1x90 * s, bool_t flag);
+void caen_v1x90_enableTriggerTimeSubtraction_db(s_caen_v1x90 * s);
+bool_t caen_v1x90_triggerTimeSubtractionEnabled(s_caen_v1x90 * s);
 
-void caen_v1x90_readTriggerSettings(struct s_caen_v1x90 * s);
+void caen_v1x90_readTriggerSettings(s_caen_v1x90 * s);
 
-void caen_v1x90_setResolution(struct s_caen_v1x90 * s, uint16_t mode, uint16_t resolution, uint16_t pairWidth);
-void caen_v1x90_setResolution_db(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getEdgeDetection(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getEdgeResolution(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getPairResolution(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getPairWidth(struct s_caen_v1x90 * s);
+void caen_v1x90_setResolution(s_caen_v1x90 * s, uint16_t mode, uint16_t resolution, uint16_t pairWidth);
+void caen_v1x90_setResolution_db(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getEdgeDetection(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getEdgeResolution(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getPairResolution(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getPairWidth(s_caen_v1x90 * s);
 
-void caen_v1x90_readResolutionSettings(struct s_caen_v1x90 * s);
+void caen_v1x90_readResolutionSettings(s_caen_v1x90 * s);
 
-void caen_v1x90_setDeadTime(struct s_caen_v1x90 * s, uint16_t ticks);
-void caen_v1x90_setDeadTime_db(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getDeadTime(struct s_caen_v1x90 * s);
+void caen_v1x90_setDeadTime(s_caen_v1x90 * s, uint16_t ticks);
+void caen_v1x90_setDeadTime_db(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getDeadTime(s_caen_v1x90 * s);
 
-void caen_v1x90_enableErrorMark(struct s_caen_v1x90 * s, bool_t flag);
-void caen_v1x90_enableErrorMark_db(struct s_caen_v1x90 * s);
-bool_t caen_v1x90_errorMarkEnabled(struct s_caen_v1x90 * s);
+void caen_v1x90_enableErrorMark(s_caen_v1x90 * s, bool_t flag);
+void caen_v1x90_enableErrorMark_db(s_caen_v1x90 * s);
+bool_t caen_v1x90_errorMarkEnabled(s_caen_v1x90 * s);
 
-void caen_v1x90_setEventSize(struct s_caen_v1x90 * s, uint16_t hits);
-void caen_v1x90_setEventSize_db(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getEventSize(struct s_caen_v1x90 * s);
+void caen_v1x90_setEventSize(s_caen_v1x90 * s, uint16_t hits);
+void caen_v1x90_setEventSize_db(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getEventSize(s_caen_v1x90 * s);
 
-void caen_v1x90_setFifoSize(struct s_caen_v1x90 * s, uint16_t words);
-void caen_v1x90_setFifoSize_db(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getFifoSize(struct s_caen_v1x90 * s);
+void caen_v1x90_setFifoSize(s_caen_v1x90 * s, uint16_t words);
+void caen_v1x90_setFifoSize_db(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getFifoSize(s_caen_v1x90 * s);
 
-void caen_v1x90_enableHeaderTrailer(struct s_caen_v1x90 * s, bool_t flag);
-void caen_v1x90_enableHeaderTrailer_db(struct s_caen_v1x90 * s);
-bool_t caen_v1x90_headerTrailerEnabled(struct s_caen_v1x90 * s);
+void caen_v1x90_enableHeaderTrailer(s_caen_v1x90 * s, bool_t flag);
+void caen_v1x90_enableHeaderTrailer_db(s_caen_v1x90 * s);
+bool_t caen_v1x90_headerTrailerEnabled(s_caen_v1x90 * s);
 
-void caen_v1x90_enableExtendedTriggerTag(struct s_caen_v1x90 * s, bool_t flag);
-void caen_v1x90_enableExtendedTriggerTag_db(struct s_caen_v1x90 * s);
-bool_t caen_v1x90_extendedTriggerTagEnabled(struct s_caen_v1x90 * s);
+void caen_v1x90_enableExtendedTriggerTag(s_caen_v1x90 * s, bool_t flag);
+void caen_v1x90_enableExtendedTriggerTag_db(s_caen_v1x90 * s);
+bool_t caen_v1x90_extendedTriggerTagEnabled(s_caen_v1x90 * s);
 
-void caen_v1x90_enableEmptyEvent(struct s_caen_v1x90 * s, bool_t flag);
-void caen_v1x90_enableEmptyEvent_db(struct s_caen_v1x90 * s);
-bool_t caen_v1x90_emptyEventEnabled(struct s_caen_v1x90 * s);
+void caen_v1x90_enableEmptyEvent(s_caen_v1x90 * s, bool_t flag);
+void caen_v1x90_enableEmptyEvent_db(s_caen_v1x90 * s);
+bool_t caen_v1x90_emptyEventEnabled(s_caen_v1x90 * s);
 
-void caen_v1x90_enableEventFifo(struct s_caen_v1x90 * s, bool_t flag);
-void caen_v1x90_enableEventFifo_db(struct s_caen_v1x90 * s);
-bool_t caen_v1x90_eventFifoEnabled(struct s_caen_v1x90 * s);
+void caen_v1x90_enableEventFifo(s_caen_v1x90 * s, bool_t flag);
+void caen_v1x90_enableEventFifo_db(s_caen_v1x90 * s);
+bool_t caen_v1x90_eventFifoEnabled(s_caen_v1x90 * s);
 
-void caen_v1x90_setAlmostFullLevel(struct s_caen_v1x90 * s, uint16_t level);
-void caen_v1x90_setAlmostFullLevel_db(struct s_caen_v1x90 * s);
-uint16_t caen_v1x90_getAlmostFullLevel(struct s_caen_v1x90 * s);
+void caen_v1x90_setAlmostFullLevel(s_caen_v1x90 * s, uint16_t level);
+void caen_v1x90_setAlmostFullLevel_db(s_caen_v1x90 * s);
+uint16_t caen_v1x90_getAlmostFullLevel(s_caen_v1x90 * s);
 
-void caen_v1x90_enableChannel(struct s_caen_v1x90 * s, uint16_t * chnPat);
-void caen_v1x90_enableChannel_db(struct s_caen_v1x90 * s);
-void caen_v1x90_getChannelPattern(struct s_caen_v1x90 * s);
+void caen_v1x90_enableChannel(s_caen_v1x90 * s, uint16_t * chnPat);
+void caen_v1x90_enableChannel_db(s_caen_v1x90 * s);
+void caen_v1x90_getChannelPattern(s_caen_v1x90 * s);
 
-void caen_v1x90_setControl(struct s_caen_v1x90 * s, uint16_t control);
-uint16_t caen_v1x90_getControl(struct s_caen_v1x90 * s);
+void caen_v1x90_setControl(s_caen_v1x90 * s, uint16_t control);
+uint16_t caen_v1x90_getControl(s_caen_v1x90 * s);
 
-uint16_t caen_v1x90_geStatus(struct s_caen_v1x90 * s);
+uint16_t caen_v1x90_geStatus(s_caen_v1x90 * s);
 
-bool_t caen_v1x90_updateSettings(struct s_caen_v1x90 * s, char * updFile);
+bool_t caen_v1x90_updateSettings(s_caen_v1x90 * s, char * updFile);
 
-bool_t caen_v1x90_waitWrite(struct s_caen_v1x90 * s, uint16_t opCode);
-bool_t caen_v1x90_waitRead(struct s_caen_v1x90 * s, uint16_t opCode);
-bool_t caen_v1x90_readPending(struct s_caen_v1x90 * s, uint16_t opCode);
+bool_t caen_v1x90_waitWrite(s_caen_v1x90 * s, uint16_t opCode);
+bool_t caen_v1x90_waitRead(s_caen_v1x90 * s, uint16_t opCode);
+bool_t caen_v1x90_readPending(s_caen_v1x90 * s, uint16_t opCode);
 
-bool_t caen_v1x90_writeMicro(struct s_caen_v1x90 * s, uint16_t opCode, uint16_t data);
-uint16_t caen_v1x90_writeMicroBlock(struct s_caen_v1x90 * s, uint16_t opCode, uint16_t * data, int nofWords);
+bool_t caen_v1x90_writeMicro(s_caen_v1x90 * s, uint16_t opCode, uint16_t data);
+uint16_t caen_v1x90_writeMicroBlock(s_caen_v1x90 * s, uint16_t opCode, uint16_t * data, int nofWords);
 
-uint16_t caen_v1x90_readMicro(struct s_caen_v1x90 * s, uint16_t opCode);
-uint16_t caen_v1x90_readMicroBlock(struct s_caen_v1x90 * s, uint16_t opCode, uint16_t * data, int nofWords);
+uint16_t caen_v1x90_readMicro(s_caen_v1x90 * s, uint16_t opCode);
+uint16_t caen_v1x90_readMicroBlock(s_caen_v1x90 * s, uint16_t opCode, uint16_t * data, int nofWords);
 
-uint32_t caen_v1x90_read_config_rom(struct s_caen_v1x90 * s, uint16_t offset, int nofWords);
+uint32_t caen_v1x90_read_config_rom(s_caen_v1x90 * s, uint16_t offset, int nofWords);
 
 void caen_v1x90_softClear();
 void caen_v1x90_reset();
 
-void caen_v1x90_startAcq(struct s_caen_v1x90 * s);
-void caen_v1x90_stopAcq(struct s_caen_v1x90 * s);
+void caen_v1x90_startAcq(s_caen_v1x90 * s);
+void caen_v1x90_stopAcq(s_caen_v1x90 * s);
 
-bool_t caen_v1x90_waitFifoReady(struct s_caen_v1x90 * s);
-bool_t caen_v1x90_waitDataReady(struct s_caen_v1x90 * s);
-int caen_v1x90_getEventWcFromFifo(struct s_caen_v1x90 * s);
+bool_t caen_v1x90_waitFifoReady(s_caen_v1x90 * s);
+bool_t caen_v1x90_waitDataReady(s_caen_v1x90 * s);
+int caen_v1x90_getEventWcFromFifo(s_caen_v1x90 * s);
 
-int caen_v1x90_readout(struct s_caen_v1x90 * s, uint32_t * pointer);
+int caen_v1x90_readout(s_caen_v1x90 * s, uint32_t * pointer);
 
 #endif

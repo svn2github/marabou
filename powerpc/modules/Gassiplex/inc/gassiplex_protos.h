@@ -15,12 +15,12 @@
 //! $Date$
 ////////////////////////////////////////////////////////////////////////////*/
 
-struct s_mapDescr * mapGassiplex(char * moduleName, uint32_t hdtuAddr, int addrMod);
+s_mapDescr * mapGassiplex(char * moduleName, uint32_t hdtuAddr, int addrMod);
 
-void gassiplex_initialize(struct s_gassiplex * s);
+void gassiplex_initialize(s_gassiplex * s);
 
-void gassiplex_startAcq(struct s_gassiplex * s);
-void gassiplex_stopAcq(struct s_gassiplex * s);
+void gassiplex_startAcq(s_gassiplex * s);
+void gassiplex_stopAcq(s_gassiplex * s);
 
-int gassiplex_readout(struct s_gassiplex * s, uint32_t * pointer);
+int gassiplex_readout(s_gassiplex * s, uint32_t * pointer);
 #endif

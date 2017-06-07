@@ -28,11 +28,11 @@
 #include "Version.h"
 
 static struct pdparam_master s_param; 		/* vme segment params */
-static struct s_caen_v1x90 * s_tdc;
+static s_caen_v1x90 * s_tdc;
 
 void f_ut_send_msg(char * prefix, char * msg, int flag);
-void read_micro_reg(struct s_caen_v1x90 * s, char *argv[]);
-void write_micro_reg(struct s_caen_v1x90 * s, char *argv[]);
+void read_micro_reg(s_caen_v1x90 * s, char *argv[]);
+void write_micro_reg(s_caen_v1x90 * s, char *argv[]);
 
 int main(int argc, char *argv[]) {
 
@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
 
 void f_ut_send_msg(char * prefix, char * msg, int flag) { printf("%s\n", msg); }
 
-void read_micro_reg(struct s_caen_v1x90 * s, char *argv[]) {
+void read_micro_reg(s_caen_v1x90 * s, char *argv[]) {
 
 	int i;
 	char reg[256];
@@ -213,7 +213,7 @@ void read_micro_reg(struct s_caen_v1x90 * s, char *argv[]) {
 	}
 }
 
-void write_micro_reg(struct s_caen_v1x90 * s, char *argv[]) {
+void write_micro_reg(s_caen_v1x90 * s, char *argv[]) {
 
 	int i;
 	unsigned short res, width, data;
