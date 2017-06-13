@@ -876,12 +876,6 @@ int madc32_readout(s_madc32 * s, uint32_t * pointer)
 	
 	if (numData == 0) return(0);
 
-	if (tryIt <= 0) {
-		sprintf(msg, "[%sreadout] %s: Error while reading event data (numData=%d != %d)", s->mpref, s->moduleName, numData, nd);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-		return 0;
-	}
-
 	if (s->blockXfer) {
 		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));
 		if (ptrloc == NULL) {
@@ -902,6 +896,7 @@ int madc32_readout(s_madc32 * s, uint32_t * pointer)
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
+		printf("@@@ numData=%d, bmaError=%d\n", numData, bmaError);
 			
 		pointer += numData;
 	} else if ((s->multiEvent & MADC32_MULTI_EVENT_BERR) == 0) {
@@ -916,7 +911,7 @@ int madc32_readout(s_madc32 * s, uint32_t * pointer)
 				busError = FALSE;
 				break;
 			}
-			if (i == 0) {
+			if (nd == 1) {
 				if ((data & 0xF0000000) != 0x40000000) {
 					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
 					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -925,9 +920,11 @@ int madc32_readout(s_madc32 * s, uint32_t * pointer)
 			*pointer++ = data;
 		}
 	} else {
+		nd = 0;
 		while (1) {
 			data = GET32(s->md->vmeBase, MADC32_DATA);
-			if (i == 0) {
+			nd++;
+			if (nd == 1) {
 				if ((data & 0xF0000000) != 0x40000000) {
 					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
 					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);

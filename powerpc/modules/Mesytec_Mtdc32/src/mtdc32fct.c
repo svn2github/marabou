@@ -987,7 +987,7 @@ int mtdc32_readout(s_mtdc32 * s, uint32_t * pointer)
 				busError = FALSE;
 				break;
 			}
-			if (i == 0) {
+			if (nd == 1) {
 				if ((data & 0xF0000000) != 0x40000000) {
 					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
 					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -996,9 +996,11 @@ int mtdc32_readout(s_mtdc32 * s, uint32_t * pointer)
 			*pointer++ = data;
 		}
 	} else {
+		nd = 0;
 		while (1) {
 			data = GET32(s->md->vmeBase, MTDC32_DATA);
-			if (i == 0) {
+			nd++;
+			if (nd == 1) {
 				if ((data & 0xF0000000) != 0x40000000) {
 					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
 					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
