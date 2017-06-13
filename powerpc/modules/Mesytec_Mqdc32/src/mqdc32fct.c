@@ -114,7 +114,7 @@ bool_t mqdc32_useBLT(s_mqdc32 * s) {
 
 void mqdc32_soft_reset(s_mqdc32 * s)
 {
-/*  SET16(s->md->vmeBase, MQDC32_SOFT_RESET, 0x1);	*/
+  SET16(s->md->vmeBase, MQDC32_SOFT_RESET, 0x1);
 }
 
 uint16_t mqdc32_getThreshold(s_mqdc32 * s, uint16_t channel)
