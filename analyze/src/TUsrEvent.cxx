@@ -421,3 +421,64 @@ Bool_t TUsrEvent::FillEventFromHB_EB(TArrayI & LofIndices, Int_t DeltaTS, Bool_t
 	}
 	return(foundHbx);
 }
+
+Int_t TUsrEvent::FillArrayFromHB(TUsrHBX * HBX, ULong64_t & TimeStamp, TArrayI & Data, Int_t Hidx, Int_t Didx, Int_t InitValue) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent::FillArrayFromHB
+// Purpose:        Fill array from hitbuffer
+// Arguments:      TUsrHBX * HBX          -- pointer to hit buffer
+//                 Int_t Hidx             -- current index in hit buffer
+//                 Int_t Didx             -- data index within hit
+//                 Int_t InitValue        -- init value for reset
+// Results:        ULong64_t & TimeStamp  -- time stamp
+//                 TArrayI & Data         -- data
+//                 Int_t NextIndex   -- index to be used in next call, -1 at end
+// Exceptions:
+// Description:    Get next event from hit buffer.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofHits = HBX->GetNofHits();				// number of hits in hitbuffer
+	if (Hidx < 0) Hidx = 0;
+	if (nofHits > 0 && Hidx < nofHits) {
+		Data.Reset(InitValue);						// reset data vector
+		TUsrHit * hit = HBX->At(Hidx);				// inspect head of hitlist
+		Int_t evtNo = hit->GetEventNumber();		// extract event number
+		TimeStamp = hit->GetChannelTime();			// and timestamp
+		Bool_t foundHit = kFALSE;
+		for (Int_t hidx = Hidx; hidx < nofHits; hidx++) {		// loop over hits as long as event number doesn't change
+			hit = HBX->At(hidx);
+			if (hit->GetEventNumber() != evtNo) return(foundHit ? hidx : -1);		// return start index of next event
+			Data[hit->GetChannel()] = hit->GetData(Didx);							// fill vector with data for given channel
+			foundHit = kTRUE;
+		}
+		return(foundHit ? nofHits : -1);			// end of hitbuffer
+	}
+	return(-1);		// no more data
+}
+
+void TUsrEvent::Print(const Char_t * Text, UInt_t TimeStamp) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent::Print
+// Purpose:        Output time stamp
+// Arguments:      Char_t * Text     -- text to be printed
+//                 UInt_t TimeStamp  -- time stamp
+// Results:
+// Exceptions:
+// Description:    Outputs a time stamp message
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (TimeStamp == 0) TimeStamp = fClockSecs;
+	if (TimeStamp > 0) {
+		TDatime d;
+		d.Set((UInt_t) TimeStamp, kFALSE);
+		gMrbLog->Out() << Text << " at " << d.AsString() << endl;
+		gMrbLog->Flush(this->ClassName(), "Print", setblue);
+	} else {
+		gMrbLog->Wrn() << Text << ": No time stamp given" << endl;
+		gMrbLog->Flush(this->ClassName(), "Print");
+	}
+}
