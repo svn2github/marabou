@@ -8,6 +8,7 @@
 // @(#)Author:       R. Lutter
 // @(#)Revision:     SCCS:  %W%
 // @(#)Date:         20-Aug-2001
+// Modified:         20-Jun-2017 O.Schaile, adjust to root6 (Cling) 
 // URL:              
 // Keywords:
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
@@ -25,16 +26,34 @@
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
-#include <iostream.h>
-#include <iomanip.h>
 
-#include "SetColor.h"
+#include "TROOT.h"
+#include "TH1.h"
+#include "TString.h"
+#include "TFile.h"
+//#include "SetColor.h"  // doesnt work with root5
+#include "TSystem.h"
+
+#include <fstream>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+using namespace std;
 
 void root2asc(const Char_t * FileNHisto)
 //>>_________________________________________________(do not change this line)
 //
 {
-	TMrbSystem ux;
+	static const char setblack[]    =       "\033[39m";     // set "default" color -
+	                                                        // may be other than "black"
+	static const char setred[]      =       "\033[31m";
+	static const char setgreen[]    =       "\033[32m";
+	static const char setyellow[]   =       "\033[33m";
+	static const char setblue[]     =       "\033[34m";
+	static const char setmagenta[]  =       "\033[35m";
+	static const char setcyan[]     =       "\033[36m";
+	static const char bell[]        =       "\007\007\007";
+	
 	TString datFile, rootFile;
 	TString histName;
 	TString line;
@@ -42,6 +61,7 @@ void root2asc(const Char_t * FileNHisto)
 	ofstream asc;
 	
 	gROOT->Macro("LoadUtilityLibs.C"); 	// load utility libs 
+//	gROOT->Macro("LoadColors.C");   // doesnt work for root6 (some versions)
 
 	if (FileNHisto == NULL) {
 		cerr	<< setred
@@ -61,10 +81,10 @@ void root2asc(const Char_t * FileNHisto)
 	histName = rootFile(idx + 1, rootFile.Length());
 		
 	rootFile.Resize(idx);
-	Int_t idx = rootFile.Index(".root", 0);
+	idx = rootFile.Index(".root", 0);
 	if (idx == -1) {
 		cerr	<< setred
-				<< "root2asc.C: Not a ROOT file - " << FileName
+				<< "root2asc.C: Not a ROOT file - " << rootFile
 				<< setblack << endl;
 		return;
 	}
@@ -91,7 +111,7 @@ void root2asc(const Char_t * FileNHisto)
 		return;
 	}
 	
-	ux.GetBaseName(datFile, rootFile.Data());
+	datFile = gSystem->BaseName(rootFile.Data());
 	idx = datFile.Index(".root", 0);
 	datFile.Resize(idx);
 	datFile += ".";
@@ -106,7 +126,7 @@ void root2asc(const Char_t * FileNHisto)
 		return;
 	}
 
-	hist = (TH1 *) obj;
+	TH1 *hist = (TH1 *) obj;
 	Int_t dim = hist->GetDimension();
 	Int_t nchans = 0;
 	if (dim == 1) {
