@@ -267,6 +267,7 @@ public:
 	Bool_t InsideState(){return fSelInside;};
 	void PaintMarks();               //
 	void PrintMarks();               //
+	void DistBetween2Marks();
 	void Set2Marks();               //
 	TObjArray* GetPointertoMarks(){return fMarkers;};
 	void AddFunctionsToHist();

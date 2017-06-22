@@ -2238,6 +2238,21 @@ void FitHist::PrintMarks()
 };
 //_______________________________________________________________________________________
 
+void FitHist::DistBetween2Marks()
+{
+	fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+	if (fMarkers != NULL && fMarkers->GetEntries() != 2) {
+		cout << "Please set exactly 2 marks" << endl;
+		return;
+	}
+	Double_t x1 = ((FhMarker *)fMarkers->At(0))->GetX();
+	Double_t y1 = ((FhMarker *)fMarkers->At(0))->GetY();
+	Double_t x2 = ((FhMarker *)fMarkers->At(1))->GetX();
+	Double_t y2 = ((FhMarker *)fMarkers->At(1))->GetY();
+	cout << "Dist " << TMath::Sqrt((x2-x1)*(x2-x1) +(y2-y1)*(y2-y1))  << endl;
+};
+//_______________________________________________________________________________________
+
 void FitHist::PaintMarks()
 {
 	fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");

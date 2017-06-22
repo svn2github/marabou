@@ -131,6 +131,7 @@ enum ERootCanvasCommands {
 	kFHMarkoff,
 	kFHClearMarks,
 	kFHPrintMarks,
+	kFHDistMarks,
 	kFHSet2Marks,
 	kFHColorMarked,
 	kFHSelectInside,
@@ -806,6 +807,10 @@ again:
 						case kFHPrintMarks:
 							fFitHist->PrintMarks();
 							break;
+						case kFHDistMarks:
+							fFitHist->DistBetween2Marks();
+							break;
+							
 						case kFHSet2Marks:
 							fFitHist->Set2Marks();
 							break;
@@ -1704,6 +1709,7 @@ void HandleMenus::BuildMenus()
 				fDisplayMenu->AddEntry("ClearMarks",   kFHClearMarks);
 				fDisplayMenu->AddEntry("PrintMarks",   kFHPrintMarks);
 				fDisplayMenu->AddEntry("Set2Marks",    kFHSet2Marks);
+				fDisplayMenu->AddEntry("DistBetween2Marks",    kFHDistMarks);
 				fDisplayMenu->AddEntry("Highlight marked area", kFHColorMarked);
 		//      fDisplayMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
 				fDisplayMenu->AddSeparator();
@@ -1897,7 +1903,7 @@ void HandleMenus::BuildMenus()
 			fFitMenu->AddSeparator();
 
 			fFitMenu->AddEntry("Add Functions to Hist", kFHFuncsToHist);
-			fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
+//			fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
 			fFitMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
 			fFitMenu->AddEntry("Subtract Function",       kFHSubtractFunction);
 			fFitMenu->AddSeparator();
