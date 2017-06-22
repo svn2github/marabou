@@ -45,7 +45,7 @@ more than one level of subdirs is allowed";
    } else {
       fList = NULL;
    }
-	cout << fObjName << endl;
+	cout << "lname " << lname << "fObjName " << fObjName << endl;
 	TRegexp vers(";[0-9]*");
 	fObjName(vers) = "";
 
@@ -226,11 +226,13 @@ void Save2FileDialog::ExecuteSave()
 		if ( sname != fObjName) {
 			tn = (TNamed *)fObject;
 			tn->SetName(fObjName);
+			cout << "tn->SetName(fObjName) " << fObjName<< endl;
 		}
 	}
 	fObject->Write();
 	outfile->Close();
 	if ( tn && fObject == objorig) {
+		cout << "objorig->SetName(smame) " << sname << endl;
 		objorig->SetName(sname);
 	}
 };
