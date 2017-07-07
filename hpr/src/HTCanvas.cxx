@@ -44,7 +44,8 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //--------------------------------------------------------------------------
 
    fHandleMenus = NULL;
-	
+   TRootCanvas *rc = (TRootCanvas *)fCanvas->GetCanvasImp();
+   rc->Connect("CloseWindow()", "HTCanvas", this, "HTCanvasClosed()");
    if (TestBit(kMenuBar)) {
       BuildHprMenus(fHistPresent, fFitHist, fGraph);
       if (flag & GrCanvas::kIsAEditorPage) {
@@ -59,6 +60,14 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 	ConnectToModified();
 //   fTimer = new TTimer();
 	fTimer.Connect("Timeout()", "HTCanvas", this, "DoSaveLegendStats()");
+}
+//______________________________________________________________________________________
+
+void HTCanvas::HTCanvasClosed()
+{
+	if ( gHprDebug > 0 )
+		cout << endl << "HTCanvas::HTCanvasClosed() " << this << " " << GetName() << endl;
+	delete this;
 }
 //______________________________________________________________________________________
 

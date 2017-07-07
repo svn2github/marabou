@@ -43,6 +43,8 @@ public:
            Int_t ww, Int_t wh, HistPresent * hpr = 0, FitHist * fh = 0,
            TGraph * graph = 0, Int_t flag = 0);
    virtual ~HTCanvas();
+   void HTCanvasClosed();
+   
    virtual void HandleInput(EEventType button, Int_t x, Int_t y);
 	void         HandlePadModified();
 	void         ConnectToModified();
