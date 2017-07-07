@@ -105,7 +105,8 @@ void GrCanvas::MyClose()
 
 GrCanvas::~GrCanvas()
 {
-//  cout << "dtor GrCanvas: " << this << " " << GetName()<< endl;
+	if (gDebug > 0)
+		cout << "dtor GrCanvas: " << this << " " << GetName()<< endl;
 };
 //____________________________________________________________________________
 
