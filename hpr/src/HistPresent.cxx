@@ -3222,6 +3222,10 @@ void HistPresent::CloseAllCanvases()
 			|| cn == "ContentList"  || cn == "Windows"|| cn == "Cuts") continue;
 		htc->Disconnect("TPad", "Modified()");
 		TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
+		if (rc == NULL) {
+			cout << "CloseAllCanvases: " << htc << " " << htc->GetName()<< " " << rc<< endl;
+			continue;
+		}
 		if (htc->TestBit(HTCanvas::kIsAEditorPage)) {
 			cout << "rc->ShowEditor(kFALSE);"<< endl;
 			rc->ShowEditor(kFALSE);

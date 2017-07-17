@@ -43,6 +43,16 @@ void HistPresent::GraphFromASCII(TGWindow * win)
 ;
 //________________________________________________________________________________________
 
+void HistPresent::Graph2DFromASCII(TGWindow * win)
+{
+   static Int_t winx = 100,  winy = 100;
+   GetWindowPosition(&winx, &winy);
+   new Ascii2GraphDialog(win, winx, winy, 2);
+   return;
+}
+;
+//________________________________________________________________________________________
+
 void HistPresent::HistFromASCII(TGWindow * win)
 {
     new Ascii2HistDialog(win);

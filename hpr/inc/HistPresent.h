@@ -245,6 +245,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void CutsFromASCII(TGWindow * win = 0);
    void HistFromASCII(TGWindow * win = 0);
    void GraphFromASCII(TGWindow * win = 0);
+   void Graph2DFromASCII(TGWindow * win = 0);
    void NtupleFromASCII(TGWindow * win = 0);
    void SaveFromSocket(const char*, const char* bp =0);
    TH1*  GetHist(const char*, const char*, const char*);

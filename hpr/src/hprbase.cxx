@@ -468,9 +468,12 @@ TH1 * FindHistInPad(TVirtualPad * ca, Int_t lfgraph, Int_t lfstack, TObject **pa
 				}
 			}	
 			return h;
-		}
 		if (lfgraph && obj->InheritsFrom("TGraph")) {
 			return ((TGraph*)obj)->GetHistogram();
+		}
+		}
+		if (lfgraph && obj->InheritsFrom("TGraph2D")) {
+			return ((TGraph2D*)obj)->GetHistogram();
 		}
 		if (lfstack && obj->InheritsFrom("THStack")) {
 			return ((THStack*)obj)->GetHistogram();

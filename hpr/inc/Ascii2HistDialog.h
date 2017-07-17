@@ -7,7 +7,8 @@
 #include <iostream>
 //_____________________________________________________________________________________
 
-
+class TH1;
+class HTCanvas;
 namespace std {} using namespace std;
 class Ascii2HistDialog : public TObject {
 
@@ -17,8 +18,11 @@ private:
    TArrayD  fZval;
    TArrayD  fWval;
 
+	TH1  *fHist;
+	HTCanvas *fCanvas;
    TGMrbValuesAndText *fDialog;
    TString  fCommand;
+   TString  fSaveCommand;
    TString  fCommandHead;
    TString  fReadCommand;
    TString  fHistFileName;
@@ -59,6 +63,7 @@ public:
    void Draw_The_Hist();
    void Read_Input();
    void Show_Head_of_File();
+   void WriteoutHist();
    void SaveDefaults();
    void GetDim();
    void SetDim();

@@ -202,6 +202,7 @@ enum ERootCanvasCommands {
 	kFHASCIIToHist,
 	kFHNtuple,
 	kFHGraph,
+	kFHGraph2D,
 	kFHEmptyHist,
 
 	kFHCut,
@@ -1114,6 +1115,9 @@ again:
 						case kFHGraph:
 							fHistPresent->GraphFromASCII(fRootCanvas);
 							break;
+						case kFHGraph2D:
+							fHistPresent->Graph2DFromASCII(fRootCanvas);
+							break;
 						case kFHEmptyHist:
 							new EmptyHistDialog(fRootCanvas, WindowSizeDialog::fWincurx,
 													  WindowSizeDialog::fWincury); 
@@ -1549,7 +1553,7 @@ void HandleMenus::BuildMenus()
 	fFitMenu      = NULL;
 	fOptionMenu   = NULL;
 	fAttrMenu     = NULL;
-
+	fHistInPad = Hpr::FindHistInPad(fHCanvas);
 //	Bool_t is2dim = kFALSE;
 	TGPopupMenu * pmo = fRootsMenuBar->GetPopup("Options");
 	if (pmo) {
@@ -1572,18 +1576,20 @@ void HandleMenus::BuildMenus()
 		fFileMenu->AddEntry("Select ROOT file from any dir",  kFHSelAnyDir);
 		fFileMenu->AddEntry("dCache File-List",  kFHSeldCache);
 		fFileMenu->AddSeparator();
-		fFileMenu->AddEntry("ASCII data from file to Ntuple", kFHNtuple);
-		fFileMenu->AddEntry("ASCII data from file to histogram ",  kFHASCIIToHist);
-		fFileMenu->AddEntry("ASCII data from file to graph",  kFHGraph);
+		fFileMenu->AddEntry("ASCII data to Ntuple", kFHNtuple);
+		fFileMenu->AddEntry("ASCII data to histogram ",  kFHASCIIToHist);
+		fFileMenu->AddEntry("ASCII data to 1D graph",  kFHGraph);
+		fFileMenu->AddEntry("ASCII data to 2D graph",  kFHGraph2D);
 		fFileMenu->AddEntry("Create empty histogram",  kFHEmptyHist);
 	} else {
 		fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
-		fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
-		fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
-		fFileMenu->AddEntry("Hist_as_Graph_to_ROOT-File", kFHHistToGraph);
-		if ( nDim < 3)
-			fFileMenu->AddEntry("Histogram bin content",  kFHContHist );
-
+		if (fFitHist != NULL ) {
+			fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
+			fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
+			fFileMenu->AddEntry("Hist_as_Graph_to_ROOT-File", kFHHistToGraph);
+			if ( nDim < 3)
+				fFileMenu->AddEntry("Histogram bin content",  kFHContHist );
+		}
 		fFileMenu->AddSeparator();
 		fFileMenu->AddEntry("Picture to Printer",  kFHCanvas2LP);
 		fFileMenu->AddEntry("Picture to PS-File",  kFHPictToPS);
@@ -1877,7 +1883,7 @@ void HandleMenus::BuildMenus()
 				fFitMenu->AddPopup("Fit 2 dim Gaussian", g2p);
 				fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
 				fFitMenu->AddPopup("FitPolyMarks", fCascadeMenu2);
-				fFitMenu->AddEntry("Display Save2FileDialog",  kFHDisplayS2FD);
+				fFitMenu->AddEntry("Auto display Save2FileDialog after fit",  kFHDisplayS2FD);
 				if(fFitHist->GetAutoDisplayS2FD()) fFitMenu->CheckEntry(kFHDisplayS2FD);
 				else                            fFitMenu->UnCheckEntry(kFHDisplayS2FD);
 				
@@ -1903,7 +1909,7 @@ void HandleMenus::BuildMenus()
 			fFitMenu->AddSeparator();
 
 			fFitMenu->AddEntry("Add Functions to Hist", kFHFuncsToHist);
-//			fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
+			fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
 			fFitMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
 			fFitMenu->AddEntry("Subtract Function",       kFHSubtractFunction);
 			fFitMenu->AddSeparator();

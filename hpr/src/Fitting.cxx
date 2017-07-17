@@ -618,8 +618,23 @@ Force left and right limits of a cut to be vertical.\n\
 i.e. all points of cut closer to xmin or xmax than \n\
 his limit are set to xmin or xmax respectively.\n\
 \n\
-The fitted functions may be saved to a ROOT file for later\n\
-use. The default appended by an auto increasing index may\n\
+To customize the default function name the entry\n\
+\"Fit2dim.FuncName\" in the resource file \".hprrc\"\n\
+should be modified.\n\
+The fitted functions may be saved to a ROOT file for later use\n\
+This can be done in 2 ways:\n\
+1. Check the entry in menu:\n\
+   \"Auto display Save2FileDialog after fit\"\n\
+   In this case the Save2FileDialog is called automatically\n\
+   after the fit.\n\
+2. Use the menu item:\n\
+   \"Write Functions to File\"\n\
+   All currently functions willbe written\n\
+   N.B. Names of functions can not be changed in the\n\
+   Save2FileDialog, if needed it should be done from\n\
+   the functions context menu, click with right mouse\n\
+   and use \"SetName\"\n\
+The default name appended by an auto increasing index may\n\
 modified and are remembered across sessions.\n\
 If other functions than polynomials are needed you should\n\
 use the option \"ProfileX\" from the \"Display\" menu\n\
@@ -740,6 +755,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	TString sfunc = fHname;
 	Int_t ip = sfunc.Index(";");
 	if (ip > 0)sfunc.Resize(ip);
+	sfunc.Prepend("func_");
 	TString funcname = env.GetValue("Fit2dim.FuncName", sfunc);
 	funcname += "_";
 	funcname += fFuncNumb;
@@ -1040,6 +1056,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 			fFuncNumb++;
 		}
 	} else {
+		fFuncNumb++;
 		cout << setblue << "You may save the function from the popup menu" << setblack << endl;
 	}
 	cout << setblue << "Dont forget to clear marks if no longer needed" << setblack << endl;

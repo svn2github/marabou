@@ -1963,7 +1963,23 @@ void FitHist::WriteFunctions()
 {
 	if (fSelHist) {
 		ClearMarks();
-		Save2FileDialog sfd(fSelHist->GetListOfFunctions(), NULL, GetMyCanvas());
+		TList *temp = new TList();
+		TIter next(fSelHist->GetListOfFunctions());
+		Int_t nf = 0;
+		TObject *obj;
+		while ( (obj = next() ) ){
+			if (obj->InheritsFrom("TF1")) {
+				temp->Add(obj);
+//				cout << "Adding: " << (TF1*)obj->GetName() << endl;
+				nf++;
+			}
+		}
+		cout << nf << " functions found" << endl;
+		if (nf > 0) {
+			Save2FileDialog sfd((TObject*)temp, NULL, GetMyCanvas());
+		}
+		delete temp;
+//		Save2FileDialog sfd(fSelHist->GetListOfFunctions(), NULL, GetMyCanvas());
 	}
 };
 //_______________________________________________________________________________________

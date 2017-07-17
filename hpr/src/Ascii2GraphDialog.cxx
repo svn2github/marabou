@@ -1,4 +1,5 @@
 #include "TROOT.h"
+#include "TRootCanvas.h"
 #include "TEnv.h"
 #include "TPad.h"
 #include "TSystem.h"
@@ -6,16 +7,17 @@
 #include "TObjString.h"
 #include "TString.h"
 #include "TGWindow.h"
-#ifdef MARABOUVERS
+#include "TGraphAsymmErrors.h"
+#include "TGraphErrors.h"
+#include "TGraph2D.h"
+#include "TH2D.h"
 #include "HTCanvas.h"
-#else
-#include "TCanvas.h"
-#endif
 #include "GraphAttDialog.h"
 #include "SetHistOptDialog.h"
 #include "Ascii2GraphDialog.h"
 #include "FitOneDimDialog.h"
 #include "TGMrbValuesAndText.h"
+#include "Save2FileDialog.h"
 //#include "support.h"
 #include <fstream>
 extern TString gHprLocalEnv;
@@ -32,8 +34,8 @@ void ExecGausFitG(TGraph * graph, Int_t type)
 
 ClassImp(Ascii2GraphDialog)
 
-Ascii2GraphDialog::Ascii2GraphDialog(TGWindow * win, Int_t winx,  Int_t winy)
-              : fWinx(winx), fWiny(winy)
+Ascii2GraphDialog::Ascii2GraphDialog(TGWindow * win, Int_t winx,  Int_t winy, Int_t dim)
+              : fWinx(winx), fWiny(winy), fDim(dim)
 {
 
 static const Char_t helpText[] =
@@ -56,14 +58,30 @@ Select columns:\n\
 The graph can be drawn / overlayed in a selected pad.\n\
 Default is to construct a new canvas\n\
 ";
+static const Char_t helpText2d[] =
+"Read values from ASCII file and construct a TGraph2d\n\
+Input data have the format:\n\
+X, Y, Z\n\
+Select columns:\n\
+   Select 3 columns to be used as X, Y, Z\n\
+   White space or comma are used as separators\n\
+   Unused columns may contain any characters \n\
+   Columns are counted from 1\n\
+";
 
    static void *valp[50];
    Int_t ind = 0;
-   Bool_t ok = kTRUE;
    fGraphSerialNr = 0;
+   fUseXaxisMax=0;
+   fUseYaxisMax=0;
+   fUseZaxisMax=0;
+   fCanvas = NULL;
+   fGraph1D = NULL;
+   fGraph2D = NULL;
    fCommand = "Draw_The_Graph()";
    fCommandHead = "Show_Head_of_File()";
    fCommandTail = "Show_Tail_of_File()";
+   fCommandSave = "WriteoutGraph()";
    RestoreDefaults();
    
    if ( fXaxisMax <= fXaxisMin || fMinMaxZero != 0) {
@@ -71,98 +89,138 @@ Default is to construct a new canvas\n\
 	}
    fGraphSelPad = 0;    // start with new canvas as default
    TList *row_lab = new TList();
-   row_lab->Add(new TObjString("RadioButton_Empty pad only                 "));
-   row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors         "));
-   row_lab->Add(new TObjString("RadioButton_Simple: X, Y draw as histogram "));
-   row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, (Ex), Ey     "));
-   row_lab->Add(new TObjString("RadioButton_Asym Ers: X,Y,Exl,Exu,Eyl,Eyu  "));
-   row_lab->Add(new TObjString("RadioButton_Select columns, X, Y           "));
-   row_lab->Add(new TObjString("PlainIntVal_Column Sel"));
-   row_lab->Add(new TObjString("PlainIntVal+Column Sel"));
-
+   if ( fDim == 1) {
+		row_lab->Add(new TObjString("RadioButton_Simple:X,Y no Errs"));
+		row_lab->Add(new TObjString("RadioButton+ErrorS:X,Y,(Ex),Ey"));
+		row_lab->Add(new TObjString("RadioButton_Asym Error: X,Y,Exl,Exu,Eyl,Eyu "));
+		row_lab->Add(new TObjString("RadioButton_      Empty pad only"));
+		row_lab->Add(new TObjString("RadioButton+Select columns, X,Y"));
+//		row_lab->Add(new TObjString("RadioButton+Simple: X, Y draw as hist"));
+	}
+   if ( fDim == 2) 
+		row_lab->Add(new TObjString("CheckButton_Select columns,X,Y,Z"));
+   row_lab->Add(new TObjString("PlainIntVal_Col1 Sel"));
+   row_lab->Add(new TObjString("PlainIntVal+Col2 Sel"));
+   if ( fDim == 2) {
+		row_lab->Add(new TObjString("PlainIntVal+Col3 Sel"));
+	}
    row_lab->Add(new TObjString("FileRequest_Inputfile"));
    row_lab->Add(new TObjString("StringValue_GraphName"));
    row_lab->Add(new TObjString("CheckButton-Use Name as title"));
-   row_lab->Add(new TObjString("StringValue_Title X  "));
+   row_lab->Add(new TObjString("StringValue_Title X"));
    row_lab->Add(new TObjString("StringValue+Title Y  "));
-   row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
-   row_lab->Add(new TObjString("DoubleValue+Xaxis max"));
-   row_lab->Add(new TObjString("DoubleValue_Yaxis min"));
-   row_lab->Add(new TObjString("DoubleValue+Yaxis max"));
-
-   row_lab->Add(new TObjString("CheckButton_Force auto Xmin/Xmax"));
-   row_lab->Add(new TObjString("CheckButton+Draw/Overl in sel pad"));
+   if ( fDim == 2) 
+		row_lab->Add(new TObjString("StringValue+Title Z"));
+   row_lab->Add(new TObjString("DoubleValue_Xax min"));
+   row_lab->Add(new TObjString("DoubleV+CbU+Xax max"));
+   row_lab->Add(new TObjString("DoubleValue_Yax min"));
+   row_lab->Add(new TObjString("DoubleV+CbU+Yax max"));
+   if ( fDim == 2) {
+		row_lab->Add(new TObjString("DoubleValue_Zax min"));
+		row_lab->Add(new TObjString("DoubleV+CbU+Zax max"));
+	}
+//   row_lab->Add(new TObjString("CheckButton_Force auto Xmin/Xmax"));
    row_lab->Add(new TObjString("PlainIntVal_Xsize canvas"));
    row_lab->Add(new TObjString("PlainIntVal+Ysize canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Div X canvas"));
    row_lab->Add(new TObjString("PlainIntVal+Div Y canvas"));
-   row_lab->Add(new TObjString("CheckButton_Marker      "));
-   row_lab->Add(new TObjString("CheckButton+Simple line "));
-	row_lab->Add(new TObjString("CheckButton+Smooth line "));
-	row_lab->Add(new TObjString("Float_Value_MarkSize "));
-	row_lab->Add(new TObjString("Mark_Select+MarkStyle"));
-   row_lab->Add(new TObjString("ColorSelect+MarkColor"));
-   row_lab->Add(new TObjString("PlainShtVal_LineWidth"));
-	row_lab->Add(new TObjString("LineSSelect+LStyle"));
-	row_lab->Add(new TObjString("ColorSelect+LineColor"));
-	row_lab->Add(new TObjString("CheckButton_Fill area   "));
-   row_lab->Add(new TObjString("Fill_Select+FillStyle"));
-   row_lab->Add(new TObjString("ColorSelect+FillColor"));
-   row_lab->Add(new TObjString("ComboSelect_ErrMod; (default);X(no Err);Z(no XErr);>;|>;||(only end);2;3;4"));
-	row_lab->Add(new TObjString("Float_Value+EndErrS "));
-	row_lab->Add(new TObjString("Float_Value+X ErrS"));
+   row_lab->Add(new TObjString("CheckButton+Use sel pad"));
+   if (fDim == 1) {
+		row_lab->Add(new TObjString("CheckButton_Marker    "));
+		row_lab->Add(new TObjString("CheckButton+SimpleLine"));
+		row_lab->Add(new TObjString("CheckButton+SmoothLine"));
+		row_lab->Add(new TObjString("Float_Value_MarkSize "));
+		row_lab->Add(new TObjString("Mark_Select+MarkStyle"));
+		row_lab->Add(new TObjString("ColorSelect+MarkColor"));
+		row_lab->Add(new TObjString("PlainShtVal_LineWidth"));
+		row_lab->Add(new TObjString("LineSSelect+LStyle   "));
+		row_lab->Add(new TObjString("ColorSelect+LineColor"));
+		row_lab->Add(new TObjString("CheckButton_Fill area"));
+		row_lab->Add(new TObjString("Fill_Select+FillStyle"));
+		row_lab->Add(new TObjString("ColorSelect+FillColor"));
+		row_lab->Add(new TObjString("ComboSelect_ErrMod; (default);X(no Err);Z(no XErr);>;|>;||(only end);2;3;4"));
+		row_lab->Add(new TObjString("Float_Value+EndErrS "));
+		row_lab->Add(new TObjString("Float_Value+X ErrS"));
+	}
    row_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
    row_lab->Add(new TObjString("CommandButt+Show_Tail_of_File"));
    row_lab->Add(new TObjString("CommandButt_Draw_the_Graph"));
+   row_lab->Add(new TObjString("CommandButt+Save_Graph_to_File"));
 //   row_lab->Add(new TObjString("CommandButt_Cancel"));
 //      Int_t nrows = row_lab->GetSize();
 
-   valp[ind++] = &fEmptyPad;
-   valp[ind++] = &fGraph_Simple;
-   valp[ind++] = &fGraph_AsHist;
-   valp[ind++] = &fGraph_Error;
-   valp[ind++] = &fGraph_AsymError;
+   if ( fDim == 1) {
+		valp[ind++] = &fGraph_Simple;
+		valp[ind++] = &fGraph_Error;
+		valp[ind++] = &fGraph_AsymError;
+		valp[ind++] = &fEmptyPad;
+//		valp[ind++] = &fGraph_AsHist;
+	}
    valp[ind++] = &fGraphColSelect;
    valp[ind++] = &fGraphColSel1;
    valp[ind++] = &fGraphColSel2;
+   if ( fDim == 2) {
+		valp[ind++] = &fGraphColSel3;
+	}
    valp[ind++] = &fGraphFileName;
    valp[ind++] = &fGraphName;
    valp[ind++] = &fGraphShowTitle;
    valp[ind++] = &fGraphXtitle;
    valp[ind++] = &fGraphYtitle;
+   if ( fDim == 2) 
+		valp[ind++] = &fGraphZtitle;
    valp[ind++] = &fXaxisMin;
    valp[ind++] = &fXaxisMax;
+   valp[ind++] = &fUseXaxisMax;
    valp[ind++] = &fYaxisMin;
    valp[ind++] = &fYaxisMax;
-   valp[ind++] = &fMinMaxZero;
-   valp[ind++] = &fGraphSelPad;
+   valp[ind++] = &fUseYaxisMax;
+   if (fDim ==2) {
+		valp[ind++] = &fZaxisMin;
+		valp[ind++] = &fZaxisMax;
+		valp[ind++] = &fUseZaxisMax;
+	}
+//   valp[ind++] = &fMinMaxZero;
    valp[ind++] = &fGraphXsize;
    valp[ind++] = &fGraphYsize;
    valp[ind++] = &fGraphXdiv;
    valp[ind++] = &fGraphYdiv;
-   valp[ind++] = &fGraphPolyMarker;
-   valp[ind++] = &fGraphSimpleLine;
-	valp[ind++] = &fGraphSmoothLine;
-	valp[ind++] = &fGraphMarkerSize;
-	valp[ind++] = &fGraphMarkerStyle;
-   valp[ind++] = &fGraphMarkerColor;
-   valp[ind++] = &fGraphLineWidth;
-   valp[ind++] = &fGraphLineStyle;
-	valp[ind++] = &fGraphLineColor;
-	valp[ind++] = &fGraphFill;
-	valp[ind++] = &fGraphFillStyle;
-	valp[ind++] = &fGraphFillColor;
-   valp[ind++] = &fErrorMode;
-	valp[ind++] = &fEndErrorSize;
-	valp[ind++] = &fErrorX;
+   valp[ind++] = &fGraphSelPad;
+   if (fDim == 1){
+		valp[ind++] = &fGraphPolyMarker;
+		valp[ind++] = &fGraphSimpleLine;
+		valp[ind++] = &fGraphSmoothLine;
+		valp[ind++] = &fGraphMarkerSize;
+		valp[ind++] = &fGraphMarkerStyle;
+		valp[ind++] = &fGraphMarkerColor;
+		valp[ind++] = &fGraphLineWidth;
+		valp[ind++] = &fGraphLineStyle;
+		valp[ind++] = &fGraphLineColor;
+		valp[ind++] = &fGraphFill;
+		valp[ind++] = &fGraphFillStyle;
+		valp[ind++] = &fGraphFillColor;
+		valp[ind++] = &fErrorMode;
+		valp[ind++] = &fEndErrorSize;
+		valp[ind++] = &fErrorX;
+	}
    valp[ind++] = &fCommandHead;
    valp[ind++] = &fCommandTail;
    valp[ind++] = &fCommand;
+   valp[ind++] = &fCommandSave;
+   const char *ht = NULL;
+   if (fDim == 1) {
+		ht = &helpText[0];
+	} else {
+		ht = &helpText2d[0];
+	}
+   Int_t ok;
    Int_t itemwidth = 380;
-   ok = GetStringExt("Graphs parameters", NULL, itemwidth, win,
+   fDialog =
+      new TGMrbValuesAndText("Graphs parameters", NULL, &ok,itemwidth, win,
                    NULL, NULL, row_lab, valp,
-                   NULL, NULL, &helpText[0], this, this->ClassName());
-	if ( ok ) ;
+                   NULL, NULL, ht, this, this->ClassName());
+   fDialog->Move(100,100);
+//	if ( ok ) ;
 };
 //_________________________________________________________________________
 
@@ -182,42 +240,30 @@ void Ascii2GraphDialog::Draw_The_Graph()
 	cout << endl;
 	if (fEmptyPad != 0) {
 		cout << "Empty pad only" << endl;
-		TGraph *graph = new TGraph();
-#ifdef MARABOUVERS
-		HTCanvas * cg = new HTCanvas("Empty", "Empty", fWinx, fWiny,
-							fGraphXsize, fGraphYsize, hpr, NULL, graph);
+		fGraph1D = new TGraph();
+		fCanvas = new HTCanvas("Empty", "Empty", fWinx, fWiny,
+							fGraphXsize, fGraphYsize, hpr, NULL, fGraph1D);
 		if ( fGraphLogX )
-			 cg->SetLogx();
+			 fCanvas->SetLogx();
 		else
-			cg->SetLogx(kFALSE);
+			fCanvas->SetLogx(kFALSE);
 		if ( fGraphLogY )
-			cg->SetLogy();
+			fCanvas->SetLogy();
 		else
-			cg->SetLogy(kFALSE);
-		//                         fGraphXsize, fGraphYsize, fHistPresent, 0, graph);
-#else
-		TCanvas * cg = new TCanvas("Empty", "Empty", fWinx, fWiny,
-							fGraphXsize, fGraphYsize);
-		if ( fGraphLogX )
-			cg->SetLogx();
-		else
-			cg->SetLogx(kFALSE);
-		if ( fGraphLogY )
-			cg->SetLogy();
-		else
-			cg->SetLogy(kFALSE);
-#endif
+			fCanvas->SetLogy(kFALSE);
+		//                         fGraphXsize, fGraphYsize, fHistPresent, 0, fGraph1D);
       if (fGraphXdiv > 1 || fGraphYdiv > 1) {
-         cg->Divide(fGraphXdiv, fGraphYdiv);
-         cg->cd(1);
+         fCanvas->Divide(fGraphXdiv, fGraphYdiv);
+         fCanvas->cd(1);
       }
       Double_t xmin = 0, xmax = 100;
       Double_t ymin = 0, ymax = 100;
-      if (fXaxisMin != 0 || fXaxisMax != 0) {
+      if (fUseXaxisMax > 0 && (fXaxisMin != 0 || fXaxisMax != 0)) {
          xmin = fXaxisMin;
          xmax = fXaxisMax;
-      }
-      if (fYaxisMin != 0 || fYaxisMax != 0) {
+      //}
+      //~ if (fUseXaxisMax > 0 && (fYaxisMin != 0 || fYaxisMax != 0)) {
+      //~ if (fUseXaxisMax > 0 && (fYaxisMin != 0 || fYaxisMax != 0)) {
          ymin = fYaxisMin;
          ymax = fYaxisMax;
       }
@@ -231,7 +277,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
          gh->GetXaxis()->SetTitle(fGraphXtitle.Data());
       if (fGraphYtitle.Length() > 0)
          gh->GetYaxis()->SetTitle(fGraphYtitle.Data());
-      graph->SetHistogram(gh);
+      fGraph1D->SetHistogram(gh);
       gPad->Update();
       return;
    }
@@ -253,11 +299,17 @@ void Ascii2GraphDialog::Draw_The_Graph()
    TObjArray * oa;
    TString val; 
 	Double_t xmin_val = 1e20, xmax_val = -1e20;
+	Double_t ymin_val = 1e20, ymax_val = -1e20;
+	Double_t zmin_val = 1e20, zmax_val = -1e20;
 	while ( 1 ) {
 		line.ReadLine(infile);
 		if (infile.eof()) break;
 //		if (line.BeginsWith("#") ) 
 //			continue;
+		// check for DOS format
+		if ( line.EndsWith("\r") ) {
+			line.Resize(line.Length() - 1);
+		}
 		oa = line.Tokenize(del);
 		Int_t nent = oa->GetEntries();
 		if (nent < 1)
@@ -271,11 +323,16 @@ void Ascii2GraphDialog::Draw_The_Graph()
          cout << "Not enough entries at: " << n+1 << endl;
          break;
       }
+      if (fDim == 2 && nent < 3) {
+         cout << "Not enough entries at: " << n+1 << endl;
+         break;
+      }
       if ( nent > x.GetSize() ) { 
 			x.Set(nent);
 		}
 		for (Int_t i = 0; i < nent; i++) {
 			val = ((TObjString*)oa->At(i))->String();
+			
 			if (!val.IsFloat()) {
 				cout << "Illegal double: " << val << " at line: " << n+1 << endl;
 				x[i] = 0;
@@ -288,37 +345,61 @@ void Ascii2GraphDialog::Draw_The_Graph()
 				cout << "Columns are numbered from 1 " << n << endl;
 				return;
          }
+			if ( fDim == 2 && fGraphColSel3 <= 0) {
+				cout << "Columns are numbered from 1 " << n << endl;
+				return;
+         }
 			if ( fGraphColSel1 > nent || fGraphColSel2 > nent) {
 				cout << "Not enough entries " << nent << " at: " << n << endl;
 				break;
          }
+			if (  fDim == 2 && fGraphColSel3 > nent) {
+				cout << "Not enough entries " << nent << " at: " << n << endl;
+				break;
+         }
          xval.AddAt(x[fGraphColSel1-1], n);
-			if (x[fGraphColSel1-1] < xmin_val) xmin_val = x[0];
-			if (x[fGraphColSel1-1] > xmax_val) xmax_val = x[0];
+			if (x[fGraphColSel1-1] < xmin_val) xmin_val = x[fGraphColSel1-1];
+			if (x[fGraphColSel1-1] > xmax_val) xmax_val = x[fGraphColSel1-1];
          yval.AddAt(x[fGraphColSel2-1], n);
-         n++;
+			if (x[fGraphColSel2-1] < ymin_val) ymin_val = x[fGraphColSel2-1];
+			if (x[fGraphColSel2-1] > ymax_val) ymax_val = x[fGraphColSel2-1];
+			if (fDim == 2) {
+				zval.AddAt(x[fGraphColSel3-1], n);
+				if (x[fGraphColSel3-1] < zmin_val) zmin_val = x[fGraphColSel3-1];
+				if (x[fGraphColSel3-1] > zmax_val) zmax_val = x[fGraphColSel3-1];
+			}
+			n++;
       	if (n >= xval.GetSize()){
          	xval.Set(n+100);
          	yval.Set(n+100);
+         	zval.Set(n+100);
          }
       } else {
          xval.AddAt(x[0], n);
 			if (x[0] < xmin_val) xmin_val = x[0];
 			if (x[0] > xmax_val) xmax_val = x[0];
          yval.AddAt(x[1], n);
-//       if only 3 values  assume x, y, ye
-         if (nent == 3) {
-            x[3] = x[2];
-            x[2] = 0;
-         }
-         if (fGraph_Error == 1 || fGraph_AsymError == 1) {
-            zval.AddAt(x[2], n);
-            wval.AddAt(x[3], n);
-            if ( fGraph_AsymError == 1 ) {
-               eyl.AddAt(x[4], n);
-               eyh.AddAt(x[5], n);
-            }
-         }
+			if (x[1] < ymin_val) ymin_val = x[1];
+			if (x[1] > ymax_val) ymax_val = x[1];
+         if (fDim == 2) {
+				zval.AddAt(x[2], n);
+				if (x[2] < zmin_val) zmin_val = x[2];
+				if (x[2] > zmax_val) zmax_val = x[2];
+			} else {	
+	//       if only 3 values  assume x, y, ye
+				if (nent == 3) {
+					x[3] = x[2];
+					x[2] = 0;
+				}
+				if (fGraph_Error == 1 || fGraph_AsymError == 1) {
+					zval.AddAt(x[2], n);
+					wval.AddAt(x[3], n);
+					if ( fGraph_AsymError == 1 ) {
+						eyl.AddAt(x[4], n);
+						eyh.AddAt(x[5], n);
+					}
+				}
+			}
       	n++;
       	if (n >= xval.GetSize()){
          	xval.Set(n+100);
@@ -332,18 +413,18 @@ void Ascii2GraphDialog::Draw_The_Graph()
    }
    infile.close();
 
-//   cout << "entries " << n << endl;
    if (n < 1) return;
-	if (fMinMaxZero != 0 ) {
-		fXaxisMax = fXaxisMin = 0;
-	}
+//	if (fMinMaxZero != 0 ) {
+//		fXaxisMax = fXaxisMin = 0;
+//	}
    Double_t dx_low = TMath::Abs(xval[n-1] - xval[n-2]);
    Double_t dx_up  = TMath::Abs(xval[n-1] - xval[n-2]);
-   if (fXaxisMax == 0 && fXaxisMin == 0) {
+   if (fUseXaxisMax == 0) {
 		fXaxisMax = xmax_val + 0.5 * dx_up;
 		fXaxisMin = xmin_val - 0.5 * dx_low;
 	}
-   cout << "entries " << n << " fXaxisMin " <<fXaxisMin << " fXaxisMax " <<fXaxisMax <<   endl;
+   cout << "entries " << n << " fXaxisMin " <<fXaxisMin 
+			<< " fXaxisMax " <<fXaxisMax <<   endl;
    TString hname = fGraphFileName;
    hname = gSystem->BaseName(hname);
    Int_t ip = hname.Index(".");
@@ -351,164 +432,201 @@ void Ascii2GraphDialog::Draw_The_Graph()
    TString htitle = hname;
    htitle.Prepend("Values from ");
    hname.Prepend("g_");
-
-//   TMrbString temp;
-
+	TString cname = hname;
+	cname.Prepend("C_");
+	TObject * cc = gROOT->GetListOfCanvases()->FindObject(cname.Data());
+	if (cc != NULL) {
+		cname += "_";
+		cname += fGraphSerialNr ++;
+	}
 //  TGraph part
-
-   TGraph * graph = 0;
-   if (fGraph_Simple == 1 || fGraphColSelect){
-      graph = new TGraph(n, xval.GetArray(), yval.GetArray());
-   } else if (fGraph_Error == 1) {
-      graph = new TGraphErrors(n, xval.GetArray(), yval.GetArray(),
-                                  zval.GetArray(), wval.GetArray());
-   } else if (fGraph_AsymError == 1) {
-      graph = new TGraphAsymmErrors(n, xval.GetArray(), yval.GetArray(),
-                                       zval.GetArray(), wval.GetArray(),
-                                       eyl.GetArray(),  eyh.GetArray());
-   } else if (fGraph_AsHist == 1) {
-		graph = new TGraph(2 * n);
-		Int_t ipg = 0;
-		Double_t dx = 1;
-		for (Int_t i=0; i < n; i++) {
-			if ( i == 0 && n>2) {
-				dx = (xval[i + 1] - xval[i]) - 0.5 * (xval[i + 2] - xval[1]);
-			} else if ( i < n-1 ) {
-				dx = 0.5 * (xval[i + 1] - xval[i]);
+	fGraph2D = NULL;
+   TH1 * gh = NULL;
+   if (fDim == 2 ) {
+//		cout << xval[0] << " " << yval[0] << " " << zval[0] << endl;
+//		cout << xval[30] << " " << yval[30] << " " << zval[30] << endl;
+		fGraph2D = new TGraph2D(n, xval.GetArray(), yval.GetArray(),
+												zval.GetArray());
+		fCanvas = new HTCanvas(cname, htitle, fWinx, fWiny,
+									fGraphXsize, fGraphYsize, hpr, NULL);
+		if ( fGraphLogX )
+			fCanvas->SetLogx();
+		else
+			fCanvas->SetLogx(kFALSE);
+		if ( fGraphLogY )
+			fCanvas->SetLogy();
+		else
+			fCanvas->SetLogy(kFALSE);
+		fGraph2D->Draw("TRI2");
+//		TH2D *h2g = fGraph2D->GetHistogram();
+		if (fUseXaxisMax) {
+			fGraph2D->GetHistogram()->GetXaxis()->SetRangeUser(fXaxisMin, fXaxisMax);
+		}
+		if (fUseYaxisMax) {
+			fGraph2D->GetHistogram()->GetYaxis()->SetRangeUser(fYaxisMin, fYaxisMax);
+		}
+		if (fUseZaxisMax) {
+//			cout <<fZaxisMin << " " << fZaxisMax<< endl;
+			fGraph2D->GetHistogram()->GetZaxis()->SetRangeUser(fZaxisMin, fZaxisMax);
+		}
+		gh = (TH1*)fGraph2D->GetHistogram();
+		if (fGraphName.Length() <= 0) {
+			fGraph2D->SetName(fGraphFileName.Data());
+			fGraph2D->SetTitle(fGraphFileName.Data());
+		} else  {
+			fGraph2D->SetName(fGraphName.Data());
+			fGraph2D->SetTitle(fGraphName.Data());
+		}
+		gPad->Modified();
+		gPad->Update();
+	} else {
+		if (fGraph_Simple == 1 || fGraphColSelect){
+			fGraph1D = new TGraph(n, xval.GetArray(), yval.GetArray());
+		} else if (fGraph_Error == 1) {
+			fGraph1D = new TGraphErrors(n, xval.GetArray(), yval.GetArray(),
+												 zval.GetArray(), wval.GetArray());
+		} else if (fGraph_AsymError == 1) {
+			fGraph1D = new TGraphAsymmErrors(n, xval.GetArray(), yval.GetArray(),
+														zval.GetArray(), wval.GetArray(),
+														eyl.GetArray(),  eyh.GetArray());
+		} 
+		/*
+		else if (fGraph_AsHist == 1) {
+			fGraph1D = new TGraph(2 * n);
+			Int_t ipg = 0;
+			Double_t dx = 1;
+			for (Int_t i=0; i < n; i++) {
+				if ( i == 0 && n>2) {
+					dx = (xval[i + 1] - xval[i]) - 0.5 * (xval[i + 2] - xval[1]);
+				} else if ( i < n-1 ) {
+					dx = 0.5 * (xval[i + 1] - xval[i]);
+				}
+				fGraph1D->SetPoint(ipg, xval[i]-dx, yval[i]);
+				ipg++;
+				fGraph1D->SetPoint(ipg, xval[i]+dx, yval[i]);
+				ipg++;
 			}
-			graph->SetPoint(ipg, xval[i]-dx, yval[i]);
-			ipg++;
-			graph->SetPoint(ipg, xval[i]+dx, yval[i]);
-			ipg++;
+		}
+		*/	
+		if (fGraph1D) {
+			if (fGraphName.Length() <= 0) {
+				fGraph1D->SetName(fGraphFileName.Data());
+				fGraph1D->SetTitle(fGraphFileName.Data());
+			} else  {
+				fGraph1D->SetName(fGraphName.Data());
+				fGraph1D->SetTitle(fGraphName.Data());
+			}
+
+	//      fGraph1D->SetTitle(fGraph1D->GetName());
+			TString drawopt(fErrorMode);           // draw axis as default
+			if (drawopt.Index("(") > 0)
+				drawopt.Resize(drawopt.Index("("));
+			drawopt += "A";
+			if (fGraphPolyMarker == 0 && fGraphSmoothLine == 0
+				&& fGraphSimpleLine == 0 ) {
+					drawopt+= "L";
+			} else {
+				if (fGraphPolyMarker) drawopt+= "P";
+				if (fGraphSmoothLine)
+					drawopt+= "C";
+				else if (fGraphSimpleLine)
+					drawopt+= "L";
+			}
+	//		else if (fGraphBarChart)
+	//			drawopt+= "B";
+			if (fGraphFill && TMath::Abs(fGraphLineWidth) < 100) {
+				drawopt+= "F";
+				if ( fGraphFillStyle == 0 )
+					fGraphFillStyle = 3001;
+			}
+			if ( fGraphShowTitle )
+				gStyle->SetOptTitle(kTRUE);
+			else
+				gStyle->SetOptTitle(kFALSE);
+	//         cout << "gPad->GetName() " <<gPad->GetName() << endl;
+			if (fGraphSelPad) {
+				Int_t ngr = FindGraphs(gPad, NULL, NULL);
+				if (ngr > 0) {
+					TString oo(drawopt);
+					Int_t inda = drawopt.Index("A", 0, TString::kIgnoreCase);
+					if (inda>=0) drawopt.Remove(inda,1);
+	//            cout << "oo: " << oo<< endl;
+
+					drawopt += "SAME";
+					fGraph1D->Draw(drawopt);
+					if (fGraphXtitle.Length() > 0)
+						fGraph1D->GetHistogram()->GetXaxis()->SetTitle(fGraphXtitle.Data());
+					if (fGraphYtitle.Length() > 0)
+						fGraph1D->GetHistogram()->GetYaxis()->SetTitle(fGraphYtitle.Data());
+
+				} else {
+					fGraph1D->Draw(drawopt);
+				}
+	//            gPad->Modified();
+	//            gPad->Update();
+			} else {
+				fCanvas = new HTCanvas(cname, htitle, fWinx, fWiny,
+									fGraphXsize, fGraphYsize, hpr, NULL, fGraph1D);
+				if ( fGraphLogX )
+					fCanvas->SetLogx();
+				else
+					fCanvas->SetLogx(kFALSE);
+				if ( fGraphLogY )
+					fCanvas->SetLogy();
+				else
+					fCanvas->SetLogy(kFALSE);
+				if (fGraphXdiv > 1 || fGraphYdiv > 1) {
+					fCanvas->Divide(fGraphXdiv, fGraphYdiv);
+					fCanvas->cd(1);
+				}
+				fDrawOpt = drawopt;
+				fGraph1D->Draw(drawopt);
+	//            gPad->Modified();
+	//            gPad->Update();
+			}
+	//      TEnv env(gHprLocalEnv);
+
+			gh = fGraph1D->GetHistogram();
+
+			fGraph1D->SetMarkerStyle(fGraphMarkerStyle);
+			fGraph1D->SetMarkerColor(fGraphMarkerColor);
+			fGraph1D->SetMarkerSize(fGraphMarkerSize);
+			fGraph1D->SetLineStyle(fGraphLineStyle);
+			fGraph1D->SetLineColor(fGraphLineColor);
+			fGraph1D->SetFillStyle(fGraphFillStyle);
+			fGraph1D->SetFillColor(fGraphFillColor);
+			fGraph1D->SetLineWidth(fGraphLineWidth);
+			if (fUseXaxisMax != 0) fGraph1D->GetXaxis()->SetLimits(fXaxisMin, fXaxisMax);
+			if (fUseYaxisMax != 0) fGraph1D->SetMinimum(fYaxisMin);
+			if (fUseYaxisMax != 0) fGraph1D->SetMaximum(fYaxisMax);
+			gPad->Modified();
+			gPad->Update();
+			cout << "TGraph *gr = (TGraph*)" << fGraph1D << "; << opt: " << fDrawOpt<< endl;
 		}
 	}
-		
-   if (graph) {
-      if (fGraphName.Length() <= 0) {
-         graph->SetName(fGraphFileName.Data());
-         graph->SetTitle(fGraphFileName.Data());
-      } else  {
-         graph->SetName(fGraphName.Data());
-         graph->SetTitle(fGraphName.Data());
-      }
-
-//      graph->SetTitle(graph->GetName());
-      TString drawopt(fErrorMode);           // draw axis as default
-		if (drawopt.Index("(") > 0)
-			drawopt.Resize(drawopt.Index("("));
-		drawopt += "A";
-		if (fGraphPolyMarker == 0 && fGraphSmoothLine == 0
-			&& fGraphSimpleLine == 0 ) {
-				drawopt+= "L";
-		} else {
-			if (fGraphPolyMarker) drawopt+= "P";
-			if (fGraphSmoothLine)
-				drawopt+= "C";
-			else if (fGraphSimpleLine)
-				drawopt+= "L";
+	if (gh != NULL) {
+//		cout << "gh " << gh << endl;
+//		gh->Print();
+		if (fGraphXtitle.Length() > 0){
+			gh->GetXaxis()->SetTitle(fGraphXtitle.Data());
+			if ( env.GetValue("SetHistOptDialog.fTitleCenterX", 1))
+				gh->GetXaxis()->CenterTitle(kTRUE);
 		}
-//		else if (fGraphBarChart)
-//			drawopt+= "B";
-		if (fGraphFill && TMath::Abs(fGraphLineWidth) < 100) {
-			drawopt+= "F";
-			if ( fGraphFillStyle == 0 )
-				fGraphFillStyle = 3001;
+		if (fGraphYtitle.Length() > 0){
+			gh->GetYaxis()->SetTitle(fGraphYtitle.Data());
+			if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 1))
+				gh->GetYaxis()->CenterTitle(kTRUE);
 		}
-		if ( fGraphShowTitle )
-			gStyle->SetOptTitle(kTRUE);
-		else
-			gStyle->SetOptTitle(kFALSE);
-//         cout << "gPad->GetName() " <<gPad->GetName() << endl;
-      if (fGraphSelPad) {
-         Int_t ngr = FindGraphs(gPad, NULL, NULL);
-         if (ngr > 0) {
-            TString oo(drawopt);
-            Int_t inda = drawopt.Index("A", 0, TString::kIgnoreCase);
-            if (inda>=0) drawopt.Remove(inda,1);
-//            cout << "oo: " << oo<< endl;
-
-            drawopt += "SAME";
-            graph->Draw(drawopt);
-            if (fGraphXtitle.Length() > 0)
-               graph->GetHistogram()->GetXaxis()->SetTitle(fGraphXtitle.Data());
-            if (fGraphYtitle.Length() > 0)
-               graph->GetHistogram()->GetYaxis()->SetTitle(fGraphYtitle.Data());
-
-         } else {
-            graph->Draw(drawopt);
-         }
-//            gPad->Modified();
-//            gPad->Update();
-      } else {
-//            cout << "New graph: " << endl;
-         TString cname = hname;
-         cname.Prepend("C_");
-         TObject * cc = gROOT->GetListOfCanvases()->FindObject(cname.Data());
-         if (cc != NULL) {
-            cname += "_";
-            cname += fGraphSerialNr ++;
-         }
-#ifdef MARABOUVERS
-			HTCanvas * cg = new HTCanvas(cname, htitle, fWinx, fWiny,
-								fGraphXsize, fGraphYsize, hpr, NULL, graph);
-			if ( fGraphLogX )
-				cg->SetLogx();
-			else
-				cg->SetLogx(kFALSE);
-			if ( fGraphLogY )
-				cg->SetLogy();
-			else
-				cg->SetLogy(kFALSE);
-#else
-			TCanvas * cg = new TCanvas(cname, htitle, fWinx, fWiny,
-							fGraphXsize, fGraphYsize);
-			if ( fGraphLogX )
-				cg->SetLogx();
-			else
-				cg->SetLogx(kFALSE);
-			if ( fGraphLogY )
-				cg->SetLogy();
-			else
-				cg->SetLogy(kFALSE);
-#endif
-			if (fGraphXdiv > 1 || fGraphYdiv > 1) {
-            cg->Divide(fGraphXdiv, fGraphYdiv);
-            cg->cd(1);
-         }
-         fDrawOpt = drawopt;
-         graph->Draw(drawopt);
-//            gPad->Modified();
-//            gPad->Update();
-      }
-//      TEnv env(gHprLocalEnv);
-
-		TH1 * gh = graph->GetHistogram();
-      if (fGraphXtitle.Length() > 0)
-         gh->GetXaxis()->SetTitle(fGraphXtitle.Data());
-      if (fGraphYtitle.Length() > 0)
-         gh->GetYaxis()->SetTitle(fGraphYtitle.Data());
-      gh->SetLineWidth(1);
+		if (fDim == 2 && fGraphZtitle.Length() > 0) {
+			gh->GetZaxis()->SetTitle(fGraphZtitle.Data());
+			if ( env.GetValue("SetHistOptDialog.fTitleCenterZ", 1))
+				gh->GetZaxis()->CenterTitle(kTRUE);
+		}
+		gh->SetLineWidth(1);
 		gh->SetLineColor(0);
-		if ( env.GetValue("SetHistOptDialog.fTitleCenterX", 1))
-			gh->GetXaxis()->CenterTitle(kTRUE);
-		if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 1))
-			gh->GetYaxis()->CenterTitle(kTRUE);
-
-      graph->SetMarkerStyle(fGraphMarkerStyle);
-      graph->SetMarkerColor(fGraphMarkerColor);
-      graph->SetMarkerSize(fGraphMarkerSize);
-      graph->SetLineStyle(fGraphLineStyle);
-      graph->SetLineColor(fGraphLineColor);
-      graph->SetFillStyle(fGraphFillStyle);
-      graph->SetFillColor(fGraphFillColor);
-      graph->SetLineWidth(fGraphLineWidth);
-      if (fXaxisMin != 0 || fXaxisMax != 0) graph->GetXaxis()->SetLimits(fXaxisMin, fXaxisMax);
-      if (fYaxisMin != 0) graph->SetMinimum(fYaxisMin);
-      if (fYaxisMax != 0) graph->SetMaximum(fYaxisMax);
-      gPad->Modified();
-      gPad->Update();
-      cout << "TGraph *gr = (TGraph*)" << graph << "; << opt: " << fDrawOpt<< endl;
-   }
+		gPad->Modified();
+		gPad->Update();
+	}
    SaveDefaults();
    return;
 };
@@ -572,11 +690,14 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.GraphYsize"  	 , fGraphYsize      );
    env.SetValue("Ascii2GraphDialog.GraphXtitle" 	 , fGraphXtitle     );
    env.SetValue("Ascii2GraphDialog.GraphYtitle" 	 , fGraphYtitle     );
+   env.SetValue("Ascii2GraphDialog.GraphZtitle" 	 , fGraphZtitle     );
    env.SetValue("Ascii2GraphDialog.fMinMaxZero"  	 , fMinMaxZero       );
    env.SetValue("Ascii2GraphDialog.XaxisMin"  		 , fXaxisMin        );
    env.SetValue("Ascii2GraphDialog.YaxisMin"  		 , fYaxisMin        );
+   env.SetValue("Ascii2GraphDialog.ZaxisMin"  		 , fZaxisMin        );
    env.SetValue("Ascii2GraphDialog.XaxisMax"  		 , fXaxisMax        );
    env.SetValue("Ascii2GraphDialog.YaxisMax"  		 , fYaxisMax        );
+   env.SetValue("Ascii2GraphDialog.ZaxisMax"  		 , fZaxisMax        );
    env.SetValue("Ascii2GraphDialog.GraphXdiv"		 , fGraphXdiv       );
    env.SetValue("Ascii2GraphDialog.GraphYdiv"		 , fGraphYdiv       );
    env.SetValue("Ascii2GraphDialog.fErrorMode"		 , fErrorMode       );
@@ -607,15 +728,18 @@ void Ascii2GraphDialog::RestoreDefaults()
 	fGraphNewPad      = env.GetValue("Ascii2GraphDialog.GraphNewPad"		, 1);
    fGraphXsize       = env.GetValue("Ascii2GraphDialog.GraphXsize" 		, 800);
    fGraphYsize       = env.GetValue("Ascii2GraphDialog.GraphYsize" 		, 800);
-   fGraphXtitle      = env.GetValue("Ascii2GraphDialog.GraphXtitle"	   , "Xvalues");
-   fGraphYtitle      = env.GetValue("Ascii2GraphDialog.GraphYtitle"		, "Yvalues");
+   fGraphXtitle      = env.GetValue("Ascii2GraphDialog.GraphXtitle"	   , "Xval");
+   fGraphZtitle      = env.GetValue("Ascii2GraphDialog.GraphYtitle"		, "Yval");
+   fGraphZtitle      = env.GetValue("Ascii2GraphDialog.GraphZtitle"		, "Zval");
    fGraphXdiv        = env.GetValue("Ascii2GraphDialog.GraphXdiv"  		, 1);
    fMinMaxZero       = env.GetValue("Ascii2GraphDialog.fMinMaxZero"		, 0 );
    fXaxisMin         = env.GetValue("Ascii2GraphDialog.XaxisMin"  		, 0.);
    fYaxisMin         = env.GetValue("Ascii2GraphDialog.YaxisMin"  		, 0.);
+   fZaxisMin         = env.GetValue("Ascii2GraphDialog.ZaxisMin"  		, 0.);
    fXaxisMax         = env.GetValue("Ascii2GraphDialog.XaxisMax"  		, 0.);
-   cout <<"fXaxisMin,fXaxisMax " << fXaxisMin << " " << fXaxisMax << endl;
+//   cout <<"fXaxisMin,fXaxisMax " << fXaxisMin << " " << fXaxisMax << endl;
    fYaxisMax         = env.GetValue("Ascii2GraphDialog.YaxisMax"  		, 0.);
+   fZaxisMax         = env.GetValue("Ascii2GraphDialog.ZaxisMax"  		, 0.);
    fGraphYdiv        = env.GetValue("Ascii2GraphDialog.GraphYdiv"  		, 1);
 	fDrawOpt          = env.GetValue("GraphAttDialog.fDrawOpt"           , "PA");
    fErrorMode        = env.GetValue("Ascii2GraphDialog.fErrorMode"		, " ");
@@ -641,6 +765,21 @@ void Ascii2GraphDialog::RestoreDefaults()
 	fGraphFillStyle   = env.GetValue("GraphAttDialog.fFillStyle",  0);
 	fGraphFillColor   = env.GetValue("GraphAttDialog.fFillColor",  1);
 	fGraphFill        = env.GetValue("GraphAttDialog.fGraphFill",  0);
+}
+//_________________________________________________________________________
+void Ascii2GraphDialog::WriteoutGraph()
+{
+	TRootCanvas *cimp = NULL;
+	if (fCanvas != NULL)
+		cimp = (TRootCanvas *)fCanvas->GetCanvasImp();
+	if (fGraph1D) {
+		Save2FileDialog sfd(fGraph1D, NULL, cimp);
+	} else if (fGraph2D) {
+		Save2FileDialog sfd(fGraph2D, NULL, cimp);
+	} else {
+		cout << "No graph defined" << endl;
+		return;
+	}
 }
 //_________________________________________________________________________
 

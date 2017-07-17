@@ -1,9 +1,7 @@
 #include "Ascii2HistDialog.h"
 #include "TGMrbValuesAndText.h"
-
-#ifdef MARABOUVERS
 #include "HistPresent.h"
-#endif
+#include "FitHist.h"
 
 #include "TMath.h"
 #include "TEnv.h"
@@ -46,6 +44,11 @@ For convenience the first N columns of the input data\n\
 may be skipped typically if the first value is just a\n\
 a serial number.\n\
 \n\
+Note when filling with weights:\n\
+The bin error is set to sqrt(content) as was the\n\
+default with root version 5\n\
+The default behavior in root 6 is now\n\
+bin error = sqrt(sum(weigth**2))\n\
 A common error may be applied to all channels\n\
 if this value is > 0\n\
 \n\
@@ -60,19 +63,20 @@ for the axis can be calculated if the option\n\
    Int_t ind = 0;
    fNvalues = 0;
    fCommand = "Draw_The_Hist()";
+   fSaveCommand = "WriteoutHist()";
    fReadCommand = "Read_Input()";
    fCommandHead = "Show_Head_of_File()";
    RestoreDefaults();
    TList *row_lab = new TList();
-   row_lab->Add(new TObjString("RadioButton_1 Dim, Spectrum, channel cont, no X "));
-   row_lab->Add(new TObjString("RadioButton_1 Dim, X values to be filled        "));
-   row_lab->Add(new TObjString("RadioButton_1 Dim, X, Weight                    "));
-	row_lab->Add(new TObjString("RadioButton_1 Dim, X, Weight, Error             "));
-	row_lab->Add(new TObjString("RadioButton_2 Dim, X, Y values to be filled     "));
-   row_lab->Add(new TObjString("RadioButton_2 Dim, X, Y, Weight                 "));
-   row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z values to be filled  "));
-   row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z, Weight              "));
-	row_lab->Add(new TObjString("PlainIntVal_Skip first n columns, n:            "));
+   row_lab->Add(new TObjString("RadioButton_1 Dim,Spectrum, channel cont,no X"));
+   row_lab->Add(new TObjString("RadioButton_1 Dim,X values to be filled      "));
+   row_lab->Add(new TObjString("RadioButton_1 Dim,X,Weight                   "));
+	row_lab->Add(new TObjString("RadioButton_1 Dim,X,Weight, Error            "));
+	row_lab->Add(new TObjString("RadioButton_2 Dim,X,Y values to be filled    "));
+   row_lab->Add(new TObjString("RadioButton_2 Dim,X,Y, Weight                "));
+   row_lab->Add(new TObjString("RadioButton_3 Dim,X,Y,Z values to be filled  "));
+   row_lab->Add(new TObjString("RadioButton_3 Dim,X,Y,Z, Weight              "));
+	row_lab->Add(new TObjString("PlainIntVal_Skip first n columns, n:         "));
 	row_lab->Add(new TObjString("FileRequest_Input datafile"));
    row_lab->Add(new TObjString("StringValue_Name"));
    row_lab->Add(new TObjString("StringValue_Title"));
@@ -88,8 +92,9 @@ for the axis can be calculated if the option\n\
    row_lab->Add(new TObjString("CheckButton_Keep limits"));
    row_lab->Add(new TObjString("DoubleValue+Common error"));
    row_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
-   row_lab->Add(new TObjString("CommandButt_Read_Input"));
+   row_lab->Add(new TObjString("CommandButt+Read_Input"));
    row_lab->Add(new TObjString("CommandButt_Draw_the_Histogram"));
+   row_lab->Add(new TObjString("CommandButt+Save_Hist_to_File"));
 
    valp[ind++] = &fSpectrum;
    valp[ind++] = &f1Dim;
@@ -118,12 +123,14 @@ for the axis can be calculated if the option\n\
    valp[ind++] = &fCommandHead;
    valp[ind++] = &fReadCommand;
    valp[ind++] = &fCommand;
+   valp[ind++] = &fSaveCommand;
    Int_t ok;
    Int_t itemwidth = 380;
    fDialog =
       new TGMrbValuesAndText("Hists parameters", NULL, &ok,itemwidth, win,
                       NULL, NULL, row_lab, valp,
                       NULL, NULL, helptext, this, this->ClassName());
+   fDialog->Move(100,100);
 
 //   Int_t itemwidth = 380;
 //   ok = GetStringExt("Hists parameters", NULL, itemwidth, win,
@@ -305,10 +312,11 @@ void Ascii2HistDialog::Draw_The_Hist()
       cout << "No values, do: Read_Input first" << endl;
       return;
    }
-   TH1 * hist = 0;
+   fHist = NULL;
 	if (fSpectrum ||f1Dim || f1DimWithWeight || f1DimWithErrors) {
       TH1D * hist1 = new TH1D(fHistName, fHistTitle, fNbinsX, fXlow, fXup);
-      hist = hist1;
+      hist1->Sumw2(kTRUE);
+      fHist = hist1;
       if (fSpectrum) {
          for (Int_t i = 0; i < fNvalues; i++) {
             hist1->SetBinContent(i+1, fXval[i]);
@@ -327,18 +335,21 @@ void Ascii2HistDialog::Draw_The_Hist()
          }
 		}
       // case of common error
-		if (fError > 0) {
+		if (fError > 0 || f1DimWithWeight) {
          for (Int_t i = 0; i < fNbinsX; i++) {
-            if (hist1->GetBinError(i+1) != 0)
-               hist1->SetBinError(i+1, fError);
-         }
-      }
-   }
-
+            if (hist1->GetBinContent(i+1) > 0) {
+					if (fError > 0)
+						hist1->SetBinError(i+1, fError);
+					else
+						hist1->SetBinError(i+1, TMath::Sqrt(hist1->GetBinContent(i+1)));
+				}
+			}
+		}
+	}
    if (f2Dim || f2DimWithWeight) {
       TH2F * hist2 = new TH2F(fHistName, fHistTitle, fNbinsX, fXlow, fXup,
                                             fNbinsY, fYlow, fYup);
-      hist = hist2;
+      fHist = hist2;
       if (f2Dim) {
          for (Int_t i = 0; i < fNvalues; i++) {
             hist2->Fill(fXval[i], fYval[i]);
@@ -363,7 +374,7 @@ void Ascii2HistDialog::Draw_The_Hist()
       TH3F * hist3 = new TH3F(fHistName, fHistTitle, fNbinsX, fXlow, fXup,
                              fNbinsY, fYlow, fYup, fNbinsZ, fZlow, fZup);
 		hist3->Sumw2();
-      hist = hist3;
+      fHist = hist3;
       if (f3Dim) {
          for (Int_t i = 0; i < fNvalues; i++) {
             hist3->Fill(fXval[i], fYval[i], fZval[i]);
@@ -376,14 +387,12 @@ void Ascii2HistDialog::Draw_The_Hist()
          }
       }
    }
-
-#ifdef MARABOUVERS
-//   HistPresent * hpr = (HistPresent*)gROOT->GetList()->FindObject("mypres");
-   if (gHpr) gHpr->ShowHist(hist);
-   else     hist->Draw();
-#else
-   hist->Draw();
-#endif
+   if (gHpr) {
+		 FitHist *fh = gHpr->ShowHist(fHist);
+		 if (fh ) fCanvas = fh->GetCanvas();
+   } else {
+		fHist->Draw();
+	}
    SaveDefaults();
    return;
 
@@ -502,6 +511,16 @@ void Ascii2HistDialog::RestoreDefaults()
  	GetDim();
  	SetDim();
 //   cout << "fXup " << fXup<< endl;
+}
+//_________________________________________________________________________
+void Ascii2HistDialog::WriteoutHist()
+{
+	TRootCanvas *cimp = NULL;
+	if (fCanvas != NULL)
+		cimp = (TRootCanvas *)fCanvas->GetCanvasImp();
+	if (fHist) {
+		Save2FileDialog sfd(fHist, NULL, cimp);
+	}
 }
 //_________________________________________________________________________
 

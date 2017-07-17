@@ -1,30 +1,43 @@
 #ifndef ASCII2GRAPHDIALOG
 #define ASCII2GRAPHDIALOG
-#include "TGraphErrors.h"
 #include "TVirtualPad.h"
-#include "TGraphAsymmErrors.h"
+
 #include <iostream>
 //_____________________________________________________________________________________
 
-
+class TGraph;
+class TGraph2D;
+class fCanvas;
 namespace std {} using namespace std;
 
 class Ascii2GraphDialog : public TObject {
 
 private:
+   TGMrbValuesAndText *fDialog;
+	TGraph *fGraph1D;
+	TGraph2D *fGraph2D;
+	HTCanvas *fCanvas;
    Int_t   fWinx;
    Int_t   fWiny;
+   Int_t	  fDim;
    TString fCommand;
    TString fCommandHead;
    TString fCommandTail;
+   TString fCommandSave;
    TString fGraphFileName;
    TString fGraphName;
    TString fGraphXtitle;
    TString fGraphYtitle;
+   TString fGraphZtitle;
    Double_t fXaxisMin;
    Double_t fYaxisMin;
+   Double_t fZaxisMin;
    Double_t fXaxisMax;
    Double_t fYaxisMax;
+   Double_t fZaxisMax;
+   Int_t fUseXaxisMax;
+   Int_t fUseYaxisMax;
+   Int_t fUseZaxisMax;
    Int_t   fMinMaxZero;
    Int_t   fGraphColSelect;
    Int_t   fGraphColSel1;
@@ -65,12 +78,13 @@ private:
 	Int_t   fGraphLogZ;
 	
 public:
-   Ascii2GraphDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100);
+   Ascii2GraphDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100, Int_t dim=1);
    ~Ascii2GraphDialog();
    void Draw_The_Graph();
    void Show_Head_of_File();
    void Show_Tail_of_File();
    Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads);
+   void WriteoutGraph();
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown(Int_t wid);
