@@ -559,7 +559,7 @@ static alignDescription_t* GetAlignByNumber(int number)
 static const char *filetypes[] = {
 					"All files",     "*",
 					"ROOTfile",   "*.root",
-					"TextFile",   "*.[t|d|a][x|a|s][t|t|c]",
+					"TextFile",   "*.[t|d|a][x|a|s][t|t|c]*",
 					"Imagefiles", "*.[p|j|g][n|p|i][g|g|f]", 
 					NULL,				NULL};
 
@@ -793,11 +793,6 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 								 TGTransientFrame(gClient->GetRoot(), Win, 10, 10)
 {
 	// Create  input dialog.
-	if ( gDebug > 0 && Win) {
-		cout << "ctor TGMrbValuesAndText: Id, fId(Main) " << this->GetId() 
-		<< " " << Win->GetId() << endl
-		<< "TGTransientFrame * trf=(TGTransientFrame*)"<< this << endl;
-	}
 	SetCleanup(kDeepCleanup);
 
 	Pixel_t red, blue, lblue, brown, grey, lgrey, wheat;
@@ -845,6 +840,12 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 		fMyWindow = main;
 		fCallingCanvas = NULL;
 	}
+	if ( gDebug > 0 && Win) {
+		cout << "ctor TGMrbValuesAndText: Id, fId(Main) " << this->GetId() 
+		<< " " << Win->GetId() << endl
+		<< "TGTransientFrame * trf=(TGTransientFrame*)"<< this << endl;
+		cout << "fLabels " << fLabels<< endl;
+	}
 	fCompList = complist;
 	fCloseFlag = *ok;
 	Bool_t mustwait = kFALSE;
@@ -875,13 +876,26 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 	TGLayoutHints * locx = new TGLayoutHints( kLHintsCenterX , 2, 2, 2, 2);
 	TGLayoutHints * l1 = new TGLayoutHints(kLHintsExpandX|kLHintsLeft | kLHintsCenterY, 2, 2, 2, 2);
 	TGLayoutHints * l2 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2);
-//   TGLayoutHints * l3 = new TGLayoutHints(kLHintsLeft | kLHintsCenterY | kLHintsExpandX, 2, 2, 2, 2);/**//**/
-//   fWidgets->AddFirst(l3);
-//   fWidgets->AddFirst(lor);
-//   fWidgets->AddFirst(l1);
-//   fWidgets->AddFirst(l2);
-//   fWidgets->AddFirst(lo1);
-
+	// find label font and use as length norm fixed font courier
+	TString label_fontname(gEnv->GetValue("Gui.MenuHiFont",
+						"-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1"));
+	TGFont *label_font = gClient->GetFont(label_fontname);
+	TGFont *ref_font = NULL;
+	FontMetrics_t font_m;;
+	label_font->GetFontMetrics(&font_m);
+	if (!font_m.fFixed) {
+		TObjArray * oo = label_fontname.Tokenize("-");
+		TString sh = ((TObjString*)oo->At(6))->String();
+		if ( sh.IsDec() ) {
+			TString ref_fontname("-adobe-courier-bold-r-*-*-");
+			ref_fontname += sh;
+			ref_fontname += "-*-*-*-*-*-iso8859-1";
+			ref_font = gClient->GetFont(ref_fontname);
+	//		cout << "ref_font " << ref_fontname << endl;
+		}
+	}
+//	cout << "label_font " << label_fontname << " sh " << sh << endl;
+	
 //  table part
 
 	TGCompositeFrame *hframe = NULL , *hframe1 = NULL, *hButtonFrame = NULL;
@@ -909,6 +923,22 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 			hframe->AddFrame(hframe1, lor);
 
 			this->AddFrame(hframe, lor);
+		}
+		// find longest label in pixel for sel font
+		Int_t longest_label = 0;
+		if (!font_m.fFixed) {
+			for (Int_t indrows= 0; indrows < fNrows; indrows++) {
+				l = ((TObjString *)RowLabels->At(indrows))->String();
+				// chop off args
+				Int_t isem = l.Index(";");
+				if (isem > 0)
+					l.Resize(isem);
+				// chop off command part
+				l.Remove(0,12);
+				Int_t ll = label_font->TextWidth(l);
+				if (ll > longest_label)
+					longest_label = ll;
+			}
 		}
 		fEntries = new TList();
 		hframe = NULL;
@@ -1008,13 +1038,33 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 					if (l.BeginsWith("CommentRigh")) loc = lor;
 					hButtonFrame = new TGCompositeFrame(hframe, win_width, 20, kHorizontalFrame);
 					if ( lab.Length() > 0 ) {
-						label = new TTLabel(hButtonFrame, new TGString((const char *)lab));
-						hButtonFrame->AddFrame(label, lol);
+						// adjust length assuming fixed font
+//						lolab->SetPadLeft(2);
+//						lolab->SetPadRight(2);
+						if (label_font && ref_font) {
+							Int_t lleng = label_font->TextWidth(lab);
+							Int_t rleng = ref_font->TextWidth(lab);
+							if (rleng > longest_label) rleng = longest_label;
+//							cout << lab << " "  << lleng << " " << rleng << endl;
+							if (rleng > lleng) {
+								Int_t space_leng = label_font->TextWidth(" ");
+								Int_t extra = (rleng-lleng)/space_leng;
+								if (extra > 0) {
+									for (Int_t is = 0; is<extra; is++) {
+										if (lab.BeginsWith(" "))
+											lab.Prepend(" ");
+										else 
+											lab.Append(" ");
+									}
+								}
+							}
+						}
+						label = new TTLabel(hButtonFrame, new TGString(lab));
+						label->SetTextFont(label_fontname);
+						hButtonFrame->AddFrame(label,lol);	
 						if (tt_text.Length() > 0) {
 							label->SetToolTipText(tt_text.Data(),250);
 						}
-						((TTLabel*)label)->SetTextFont(gEnv->GetValue("Gui.MenuHiFont",
-						"-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1"));
 						label->ChangeBackground(lgrey);
 						if (l.BeginsWith("Comment")) fEntries->Add(label);
 					}

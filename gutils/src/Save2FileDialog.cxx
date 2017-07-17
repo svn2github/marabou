@@ -3,6 +3,7 @@
 #include "TCanvasImp.h"
 #include "TEnv.h"
 #include "TFile.h"
+#include "TObject.h"
 #include "TObjArray.h"
 #include "TRegexp.h"
 #include "TObjString.h"
@@ -22,7 +23,11 @@ Save2FileDialog::Save2FileDialog(TObject * obj, const char *lname, TRootCanvas *
 "Save object to file in current unix directory.\n\
 It can be saved into a subdir in the rootfile.\n\
 If it does not exist it will be created \n\
-more than one level of subdirs is allowed";
+more than one level of subdirs is allowed\n\
+If the object is a TList it may be saved as \n\
+a TList optionally with a name or as single objects\n\
+in which case there names are the original ones.\n\
+";
 
    static void *valp[50];
    Int_t ind = 0;
@@ -45,7 +50,7 @@ more than one level of subdirs is allowed";
    } else {
       fList = NULL;
    }
-	cout << "lname " << lname << "fObjName " << fObjName << endl;
+//	cout << "lname " << lname << "fObjName " << fObjName << endl;
 	TRegexp vers(";[0-9]*");
 	fObjName(vers) = "";
 
@@ -53,14 +58,15 @@ more than one level of subdirs is allowed";
    row_lab->Add(new TObjString("StringValue_Output root file"));
    valp[ind++] = &fFileName;
    row_lab->Add(new TObjString("StringValue_Dir in root file\
-&root files may have directories\n\
-as in UNIX if this name is not blank\n\
-object will be saved in this dir\n\
-if not existing it will be created"));
+&ROOT files may have directories.n\
+If this name is not blank\n\
+object will be saved in this dir.\n\
+If not existing it will be created"));
    valp[ind++] = &fDir;
    row_lab->Add(new TObjString("StringValue_Save with name\
 &Default is to save with same name\n\
 a new name may be given here"));
+	fBidObjName = ind;
    valp[ind++] = &fObjName;
 //   if ( obj->InheritsFrom("TH1") ){ 
 //      row_lab->Add(new TObjString("CheckButton_Save hist with current ranges only"));
@@ -68,6 +74,7 @@ a new name may be given here"));
 //	}
    if (fList) {
       row_lab->Add(new TObjString("CheckButton_Write functions as list"));
+      fBidAsList = ind;
       valp[ind++] = &fAsList;
 	}
    Int_t itemwidth = 320;
@@ -80,10 +87,11 @@ a new name may be given here"));
    text.Prepend ("Save ");
    text.Append(" to rootfile");
    Int_t retval = -2;   //wait for answer
-   fWidget = new TGMrbValuesAndText(text, NULL,
+   fDialog = new TGMrbValuesAndText(text, NULL,
                    &retval, itemwidth, window,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, helpText);
+ //                  NULL, NULL, helpText, this, this->ClassName());
    cout << "retval " <<retval << endl;
    if (retval >= 0) {
       ExecuteSave();
@@ -128,10 +136,23 @@ void Save2FileDialog::ExecuteSave()
       }
    }
    if (fList) {
-      if (fAsList)
+		TObject *obj;
+		TIter next((TList*)fList);
+		while ( (obj = next()) ) {
+			cout << "Writing: " << obj->GetName() << endl;
+		}
+      if (fAsList) {
+			if (fObjName.Length() == 0) {
+				fObjName = "func_list";
+			}
+			cout << endl 
+			<< "Warning: List will not yet be displayed by HistPresent"
+			<< endl << "Stored with name " << fObjName 
+			<< endl;
          fList->Write(fObjName, 1);
-      else
+      } else {
          fList->Write();
+      }
       outfile->Close();
       return;
    }
@@ -226,13 +247,14 @@ void Save2FileDialog::ExecuteSave()
 		if ( sname != fObjName) {
 			tn = (TNamed *)fObject;
 			tn->SetName(fObjName);
-			cout << "tn->SetName(fObjName) " << fObjName<< endl;
+//			cout << "tn->SetName(fObjName) " << fObjName<< endl;
 		}
 	}
 	fObject->Write();
+	cout << "Write object with name: " << fObject->GetName() << endl;
 	outfile->Close();
 	if ( tn && fObject == objorig) {
-		cout << "objorig->SetName(smame) " << sname << endl;
+//		cout << "objorig->SetName(smame) " << sname << endl;
 		objorig->SetName(sname);
 	}
 };
@@ -257,13 +279,25 @@ void Save2FileDialog::RestoreDefaults()
 	fDir = env.GetValue("Save2FileDialog.Dir", "");
    fAsList = env.GetValue("Save2FileDialog.AsList", 0);
 }
+//______________________________________________________________________
+
+void Save2FileDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
+{
+	cout << "Save2FileDialog::CRButtonPressed " << bid << endl;
+	if (bid  ==  fBidAsList ) {
+		if (fAsList == 0) 
+			fDialog->DisableButton(fBidObjName);
+		else 
+			fDialog->EnableButton(fBidObjName);
+	}
+}
 //_________________________________________________________________________
 
 void Save2FileDialog::CloseDown(Int_t /*wid*/)
 {
    cout << "Save2FileDialog::CloseDown()" << endl;
-   SaveDefaults();
-   delete this;
+ //  SaveDefaults();
+ //  delete this;
 }
 //_______________________________________________________________________
 
@@ -271,6 +305,6 @@ void Save2FileDialog::CloseDialog()
 {
  //  cout << "FitOneDimDialog::CloseDialog() " << endl;
    gROOT->GetListOfCleanups()->Remove(this);
-   if ( fWidget ) fWidget->CloseWindowExt();
+   if ( fDialog ) fDialog->CloseWindowExt();
    delete this;
 }

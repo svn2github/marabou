@@ -18,11 +18,13 @@ private:
    TString fObjName;
    TString fFileName;
    TString fDir;
+   Int_t   fBidObjName;
+   Int_t   fBidAsList;
    Int_t   fHistInRange;
    Int_t   fKeepDialog;
    Int_t   fAsList;
    Int_t   fCanceled;
-   TGMrbValuesAndText * fWidget;
+   TGMrbValuesAndText * fDialog;
 
 public:
    Save2FileDialog(TObject *obj, const char *lname = NULL, TRootCanvas *win = NULL);
@@ -32,7 +34,7 @@ public:
    void RestoreDefaults();
    void CloseDown(Int_t wid = 0);
    void CloseDialog();
-   void CRButtonPressed(Int_t, Int_t, TObject *) {};
+   void CRButtonPressed(Int_t, Int_t, TObject *);
    const char * GetObjName(){return fObjName.Data();};
 	Int_t Canceled() { return fCanceled; };
 ClassDef(Save2FileDialog,0)
