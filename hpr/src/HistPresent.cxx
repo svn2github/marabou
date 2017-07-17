@@ -3203,7 +3203,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 
 void HistPresent::CloseAllCanvases()
 {
-//     Cleaning all FitHist objects
+// Cleaning all FitHist objects
    if (gHprDebug > 0 )
 		cout << "Enter CloseAllCanvases()" << endl;
 	TQObject::Disconnect("TPad", "Modified()");

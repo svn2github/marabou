@@ -93,8 +93,8 @@ Select columns:\n\
 		row_lab->Add(new TObjString("RadioButton_Simple:X,Y no Errs"));
 		row_lab->Add(new TObjString("RadioButton+ErrorS:X,Y,(Ex),Ey"));
 		row_lab->Add(new TObjString("RadioButton_Asym Error: X,Y,Exl,Exu,Eyl,Eyu "));
-		row_lab->Add(new TObjString("RadioButton_      Empty pad only"));
-		row_lab->Add(new TObjString("RadioButton+Select columns, X,Y"));
+		row_lab->Add(new TObjString("RadioButton_Empty pad only"));
+		row_lab->Add(new TObjString("RadioButton+Select cols,X,Y"));
 //		row_lab->Add(new TObjString("RadioButton+Simple: X, Y draw as hist"));
 	}
    if ( fDim == 2) 
