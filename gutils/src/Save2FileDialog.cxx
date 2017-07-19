@@ -17,40 +17,46 @@
 
 ClassImp(Save2FileDialog)
 
-Save2FileDialog::Save2FileDialog(TObject * obj, const char *lname, TRootCanvas *win)
+Save2FileDialog::Save2FileDialog(TObject * obj, const char */*lname*/, TRootCanvas *win)
 {
    static const Char_t helpText[] =
-"Save object to file in current unix directory.\n\
+"Save object(s) to file in current Unix directory.\n\
 It can be saved into a subdir in the rootfile.\n\
-If it does not exist it will be created \n\
-more than one level of subdirs is allowed\n\
-If the object is a TList it may be saved as \n\
-a TList optionally with a name or as single objects\n\
-in which case there names are the original ones.\n\
+If this does not exist it will be created. \n\
+More than one level of subdirs is allowed\n\
+Names may be changed before storing.\n\
+Original names may optionally be restored on exit.\n\
 ";
 
    static void *valp[50];
+   
    Int_t ind = 0;
 //   Bool_t ok = kTRUE;
 	fCanceled = 0;
    fCommand = "ExecuteSave()";
+   Int_t dummy;
    RestoreDefaults();
    SetBit(kMustCleanup);
    fKeepDialog = 0;
-   fHistInRange = 0;
+   fRestoreNames = 1;
+   fAsList = 0;
    fObject = obj;
    fObjName = obj->GetName();
-   if (lname)
-      fObjName = lname;
-   else
-      fObjName = obj->GetName();
+   fOrigName = obj->GetName();
    if (obj->InheritsFrom("TList")) {
       fList = (TList*)obj;
       fObjName = "";
+      // get names of objs in list
+      TIter next(fList);
+      TObject *o;
+      while ( (o = next()) ){
+			fNames.Add(new TObjString(o->GetName()));
+			fTitles.Add(new TObjString(o->GetTitle()));
+			fNamesSave.Add(new TObjString(o->GetName()));
+		}
    } else {
       fList = NULL;
    }
-//	cout << "lname " << lname << "fObjName " << fObjName << endl;
 	TRegexp vers(";[0-9]*");
 	fObjName(vers) = "";
 
@@ -58,25 +64,54 @@ in which case there names are the original ones.\n\
    row_lab->Add(new TObjString("StringValue_Output root file"));
    valp[ind++] = &fFileName;
    row_lab->Add(new TObjString("StringValue_Dir in root file\
-&ROOT files may have directories.n\
+&ROOT files may have directories.\n\
 If this name is not blank\n\
 object will be saved in this dir.\n\
 If not existing it will be created"));
    valp[ind++] = &fDir;
-   row_lab->Add(new TObjString("StringValue_Save with name\
-&Default is to save with same name\n\
-a new name may be given here"));
-	fBidObjName = ind;
-   valp[ind++] = &fObjName;
-//   if ( obj->InheritsFrom("TH1") ){ 
-//      row_lab->Add(new TObjString("CheckButton_Save hist with current ranges only"));
-//		valp[ind++] = &fHistInRange;
-//	}
+   if (fList == NULL ) {
+		TString lab("Save with name  ");
+		if (fObject->InheritsFrom("TNamed")){
+			lab.Prepend("StringValue_");
+			lab+= "&Title: ";
+			lab += obj->GetTitle();
+			valp[ind++] = &fObjName;
+		} else {
+			lab = "CommentOnly_";
+			lab += obj->ClassName();
+			lab += ":Name: ";
+			lab += fObjName;
+			lab+= "&Title: ";
+			lab += obj->GetTitle();
+			valp[ind++] = &dummy;
+		}
+		row_lab->Add(new TObjString(lab));
+	} else {
+		TString lab;
+		Int_t nent = fNames.GetEntries();
+		for (Int_t ie = 0; ie<nent; ie++) {
+			lab = "StringValue_Ent_";
+			lab += ie;
+			lab+= "&";
+			lab += ((TObjString*)fTitles.At(ie))->String();
+			row_lab->Add(new TObjString(lab));
+			
+			valp[ind++] = &(((TObjString*)fNames.At(ie))->String());
+			
+		}
+	}
+	if (fList != NULL || fObject->InheritsFrom("TNamed")){
+		row_lab->Add(new TObjString("CheckButton_Restore original names"));
+		valp[ind++] = &fRestoreNames;
+	}
+	/*		
    if (fList) {
       row_lab->Add(new TObjString("CheckButton_Write functions as list"));
-      fBidAsList = ind;
       valp[ind++] = &fAsList;
+		row_lab->Add(new TObjString("StringValue_Save list with name"));
+		valp[ind++] = &fObjName;
 	}
+	*/
    Int_t itemwidth = 320;
 
 //   valp[ind++] = &fCommand;
@@ -90,23 +125,23 @@ a new name may be given here"));
    fDialog = new TGMrbValuesAndText(text, NULL,
                    &retval, itemwidth, window,
                    NULL, NULL, row_lab, valp,
-                   NULL, NULL, helpText);
- //                  NULL, NULL, helpText, this, this->ClassName());
-   cout << "retval " <<retval << endl;
+//                   NULL, NULL, helpText);
+                   NULL, NULL, helpText, this, this->ClassName());
+//  cout << "retval " <<retval << endl;
    if (retval >= 0) {
       ExecuteSave();
       SaveDefaults();
    } else {
-      cout << "Cancelled " <<retval << endl;
+      cout << "Canceled " <<retval << endl;
       fCanceled = 1;
    }
-//   delete this;
 };
 //_________________________________________________________________________
 
 Save2FileDialog::~Save2FileDialog()
 {
-//   cout << "dtor Save2FileDialog" << endl;
+	if (gDebug >0)
+		cout << "dtor Save2FileDialog" << endl;
 };
 //_________________________________________________________________________
 
@@ -135,11 +170,23 @@ void Save2FileDialog::ExecuteSave()
          }
       }
    }
+	Int_t name_changed = 0;
    if (fList) {
-		TObject *obj;
+//		TObject *obj;
+		TString temp;
 		TIter next((TList*)fList);
-		while ( (obj = next()) ) {
-			cout << "Writing: " << obj->GetName() << endl;
+		for (Int_t ie=0; ie<fNames.GetEntries(); ie++) {
+			if (fList->At(ie)->InheritsFrom("TNamed")) {
+				if (((TObjString*)fNames.At(ie))->String() !=
+					 ((TObjString*)fNamesSave.At(ie))->String() ) {
+					name_changed++;
+					((TNamed*)fList->At(ie))->SetName(((TObjString*)fNames.At(ie))->String());
+				}
+				cout << "Writing: \"" << ((TObjString*)fNamesSave.At(ie))->String()
+				<< "\" with name: \"" << fList->At(ie)->GetName()<< "\"" << endl;
+			} else {
+				cout <<fList->At(ie)->ClassName() << " has no method SetName()" << endl;
+			}
 		}
       if (fAsList) {
 			if (fObjName.Length() == 0) {
@@ -154,108 +201,33 @@ void Save2FileDialog::ExecuteSave()
          fList->Write();
       }
       outfile->Close();
-      return;
-   }
-   TNamed * objorig = 0;
-   if (fObject->InheritsFrom("TNamed"))
-		objorig = (TNamed*)fObject;
-	/*
-	if ( fObject->InheritsFrom("TH1") ) {
-		TH1* ohist = (TH1*)fObject;
-		cout << "Save2FileDialog: TH1 " << ohist->GetName() << endl;
-		TAxis *xa = ohist->GetXaxis();
-		TAxis *ya = NULL;
-		if (ohist->GetDimension() > 1)
-			ya = ohist->GetYaxis();
-		TAxis *za = NULL;
-		if (ohist->GetDimension() > 2)
-			za = ohist->GetZaxis();
-			
-		Bool_t fulld = xa->GetFirst() == 1 && xa->GetLast() == xa->GetNbins();
-		if (fulld && ya)
-			fulld = ya->GetFirst() == 1 && ya->GetLast() == ya->GetNbins();
-		if (fulld && za)
-			fulld = za->GetFirst() == 1 && za->GetLast() == za->GetNbins();
-		if ( !fulld ) {	
-			TH1* nhist = (TH1*)ohist->Clone();
-			nhist->Reset();
-			Int_t nx1 =  xa->GetFirst();
-			Int_t nx2 =  xa->GetLast();
-			if (ohist->GetDimension() == 1) {
-				nhist->SetBins(nx2 - nx1 + 1,
-						xa->GetBinLowEdge(nx1),
-						xa->GetBinLowEdge(nx2)+ xa->GetBinWidth(nx2));
-				Int_t n=1;
-				for (Int_t i = nx1; i <= nx2; i++ ) {
-					nhist->SetBinContent(n, ohist->GetBinContent(i));
-					n++;
-				}
-			} else {
-				Int_t ny1 =  ya->GetFirst();
-				Int_t ny2 =  ya->GetLast();
-				if ( ohist->GetDimension() == 2) {
-					nhist->SetBins(nx2 - nx1 + 1,
-						xa->GetBinLowEdge(nx1),
-						xa->GetBinLowEdge(nx2)+ xa->GetBinWidth(nx2),
-						ny2 - ny1 + 1,
-						ya->GetBinLowEdge(ny1),
-						ya->GetBinLowEdge(ny2)+ ya->GetBinWidth(ny2));
-					Int_t nx=1;
-					for (Int_t i = nx1; i <= nx2; i++ ) {
-						Int_t ny=1;
-						for (Int_t j = ny1; j <= ny2; j++ ) {
-							nhist->SetBinContent(nx, ny, ohist->GetBinContent(i,j));
-							ny++;
-						}
-						nx++;
-					}
-				} else {
-					Int_t nz1 =  za->GetFirst();
-					Int_t nz2 =  za->GetLast();
-					nhist->SetBins(nx2 - nx1 + 1,
-						xa->GetBinLowEdge(nx1),
-						xa->GetBinLowEdge(nx2)+ xa->GetBinWidth(nx2),
-						ny2 - ny1 + 1,
-						ya->GetBinLowEdge(ny1),
-						ya->GetBinLowEdge(ny2)+ ya->GetBinWidth(ny2),
-						nz2 - nz1 + 1,
-						za->GetBinLowEdge(nz1),
-						za->GetBinLowEdge(nz2)+ za->GetBinWidth(nz2));
-					Int_t nx=1;
-					for (Int_t i = nx1; i <= nx2; i++ ) {
-						Int_t ny = 1;
-						for (Int_t j = ny1; j <= ny2; j++ ) {
-							Int_t nz = 1;
-							for (Int_t k = nz1; k <= nz2; k++ ) {
-								nhist->SetBinContent(nx, ny, nz, ohist->GetBinContent(i,j,k));
-								nz++;
-							}
-							ny++;
-						}
-						nx++;
-					}
+      if (name_changed && fRestoreNames) {
+			for (Int_t ie=0; ie<fNames.GetEntries(); ie++) {
+				if (fList->At(ie)->InheritsFrom("TNamed")) {
+					((TNamed*)fList->At(ie))->SetName(((TObjString*)fNamesSave.At(ie))->String());
+					cout << "Restoring: \"" << ((TObjString*)fNames.At(ie))->String()
+					<< "\" with name orig \"" << fList->At(ie)->GetName()<<"\"" << endl;
 				}
 			}
-			fObject = nhist;
 		}
-	}
-	*/
-	TString sname;
-	TNamed * tn = NULL;
-	if ( fObject->InheritsFrom("TNamed") ) {
-		sname = fObject->GetName();
-		if ( sname != fObjName) {
-			tn = (TNamed *)fObject;
-			tn->SetName(fObjName);
-//			cout << "tn->SetName(fObjName) " << fObjName<< endl;
+      return;
+   }
+	if ( fOrigName != fObjName) {
+		if (fObject->InheritsFrom("TNamed")) {
+			name_changed++;
+			((TNamed*)fObject)->SetName(fObjName);
+			cout << "fObject->SetName(fObjName) " << fObjName<< endl;
+		} else {
+			cout << " Cant change name of " <<fOrigName << " " 
+			<< fObject->ClassName() << " has no method SetName()" << endl;
 		}
 	}
 	fObject->Write();
 	cout << "Write object with name: " << fObject->GetName() << endl;
 	outfile->Close();
-	if ( tn && fObject == objorig) {
+	if (fRestoreNames && name_changed) {
 //		cout << "objorig->SetName(smame) " << sname << endl;
-		objorig->SetName(sname);
+		((TNamed*)fObject)->SetName(fOrigName);
 	}
 };
 //_________________________________________________________________________
@@ -268,6 +240,7 @@ void Save2FileDialog::SaveDefaults()
 	env.SetValue("Save2FileDialog.fObjName", fObjName);
 	env.SetValue("Save2FileDialog.Dir",      fDir);
 	env.SetValue("Save2FileDialog.AsList",   fAsList);
+	env.SetValue("Save2FileDialog.fRestoreNames",   fRestoreNames);
    env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
@@ -278,19 +251,9 @@ void Save2FileDialog::RestoreDefaults()
 	fFileName = env.GetValue("Save2FileDialog.FileName", "workfile.root");
 	fDir = env.GetValue("Save2FileDialog.Dir", "");
    fAsList = env.GetValue("Save2FileDialog.AsList", 0);
+   fRestoreNames= env.GetValue("Save2FileDialog.fRestoreNames", 1);
 }
-//______________________________________________________________________
 
-void Save2FileDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)
-{
-	cout << "Save2FileDialog::CRButtonPressed " << bid << endl;
-	if (bid  ==  fBidAsList ) {
-		if (fAsList == 0) 
-			fDialog->DisableButton(fBidObjName);
-		else 
-			fDialog->EnableButton(fBidObjName);
-	}
-}
 //_________________________________________________________________________
 
 void Save2FileDialog::CloseDown(Int_t /*wid*/)

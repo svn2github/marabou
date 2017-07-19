@@ -13,16 +13,18 @@ class Save2FileDialog : public TObject {
 
 private:
    TObject * fObject;
-   TObject * fList;
+   TList * fList;
+   TList fNames;
+   TList fTitles;
+   TList fNamesSave;
    TString fCommand;
    TString fObjName;
+   TString fOrigName;
    TString fFileName;
    TString fDir;
-   Int_t   fBidObjName;
-   Int_t   fBidAsList;
-   Int_t   fHistInRange;
    Int_t   fKeepDialog;
    Int_t   fAsList;
+   Int_t   fRestoreNames;
    Int_t   fCanceled;
    TGMrbValuesAndText * fDialog;
 
@@ -34,7 +36,7 @@ public:
    void RestoreDefaults();
    void CloseDown(Int_t wid = 0);
    void CloseDialog();
-   void CRButtonPressed(Int_t, Int_t, TObject *);
+   void CRButtonPressed(Int_t, Int_t, TObject *){};
    const char * GetObjName(){return fObjName.Data();};
 	Int_t Canceled() { return fCanceled; };
 ClassDef(Save2FileDialog,0)

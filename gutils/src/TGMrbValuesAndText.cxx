@@ -929,8 +929,11 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 		if (!font_m.fFixed) {
 			for (Int_t indrows= 0; indrows < fNrows; indrows++) {
 				l = ((TObjString *)RowLabels->At(indrows))->String();
-				// chop off args
+				// chop off args or tool tip
 				Int_t isem = l.Index(";");
+				if (isem > 0)
+					l.Resize(isem);
+				isem = l.Index("&");
 				if (isem > 0)
 					l.Resize(isem);
 				// chop off command part
