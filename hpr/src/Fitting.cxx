@@ -757,6 +757,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 	if (ip > 0)sfunc.Resize(ip);
 	sfunc.Prepend("func_");
 	TString funcname = env.GetValue("Fit2dim.FuncName", sfunc);
+	funcname = funcname.Strip(TString::kBoth);
 	funcname += "_";
 	funcname += fFuncNumb;
 //	func.Prepend(Form("%d_", fFuncNumb));

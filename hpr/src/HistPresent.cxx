@@ -1818,6 +1818,14 @@ void HistPresent::ShowFunction(const char* fname, const char* dir, const char* n
 	}
 //  gROOT->ls();
 	if (func) {
+		cout  << endl << "Function " << func->GetName() << ": " << func->GetTitle()<< endl;
+		cout << "Chi2 / NDF " << func->GetChisquare() << "/" << func->GetNDF() << endl;
+		for (Int_t i = 0; i < func->GetNpar(); i++) {
+			cout << func->GetParName(i) << "  " << func->GetParameter(i)
+			<< " +- " <<  func->GetParError(i)<< endl;
+		}
+		cout  << endl << "----------------------------" << endl;
+
 		if (func->InheritsFrom("TF2") ) {
 			new HprFunc2((TF2*)func); 
 		} else {
