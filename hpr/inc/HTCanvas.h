@@ -22,7 +22,7 @@ namespace std {} using namespace std;
 class FitHist;
 class HistPresent;
 class HandleMenus;
-class TGraph;
+class TObject;
 class TButton;
 
 class HTCanvas : public GrCanvas {
@@ -32,7 +32,7 @@ friend class HandleMenus;
 private:
    HistPresent    * fHistPresent;     //! dont stream
    FitHist        * fFitHist;         //! dont stream
-   TGraph         * fGraph;           //! dont stream
+   TObject        * fObject;           //! dont stream
    HandleMenus    * fHandleMenus;     //! dont stream
    TButton        * fCmdButton;       //!
    TTimer         fTimer;					//! dont stream
@@ -40,8 +40,8 @@ private:
 public:
    HTCanvas();
    HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
-           Int_t ww, Int_t wh, HistPresent * hpr = 0, FitHist * fh = 0,
-           TGraph * graph = 0, Int_t flag = 0);
+           Int_t ww, Int_t wh, HistPresent *hpr=NULL, FitHist *fh=NULL,
+           TObject *obj=NULL, Int_t flag = 0);
    virtual ~HTCanvas();
    void HTCanvasClosed();
    
@@ -53,7 +53,7 @@ public:
    FitHist      *GetFitHist() {return fFitHist;};
    void          SetHistPresent(HistPresent* hpr) {fHistPresent = hpr;};
    void          SetFitHist(FitHist* fh) {fFitHist = fh;};
-   void          BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr);
+   void          BuildHprMenus(HistPresent *hpr, FitHist *fh, TObject *obj);
 	HandleMenus   *GetHandleMenus() { return fHandleMenus;};
 	void          SetCmdButton(TButton *b) { fCmdButton = b; };
 	TButton       *GetCmdButton() { return fCmdButton; };

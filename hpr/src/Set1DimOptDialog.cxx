@@ -33,11 +33,11 @@ Set1DimOptDialog::Set1DimOptDialog(Int_t /*batch*/)
 Set1DimOptDialog::Set1DimOptDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
-"Note: Changeing options only influence the current histogram\n\
+"Note: Changeing options only influences the current histogram\n\
 To make them active for subsequently displayed histograms\n\
 press: \"Set as global default\"\n\
 \n\
-\"Reset all to default\" sets \"factory \" defaults\n\
+\"Reset all to default\" sets \"factory\" defaults\n\
 To make these permanent also needs \"Set as global def\"\n\
 \n\
 A histogram can either been drawn as a line (\"Contour\")\n\
@@ -50,17 +50,17 @@ Error Drawing Modes:\n\
 E  Draw error bars.\n\
 E0 Draw error bars. Markers are drawn for bins with 0 contents.\n\
 E1 Draw error bars with perpendicular lines at the edges.\n\
-	Length is controled by EndErrSize.\n\
+   Length is controled by EndErrSize.\n\
 E2 Draw error bars with rectangles.\n\
 E3 Draw a fill area through the end points of the\n\
-	vertical error bars.\n\
+   vertical error bars.\n\
 E4 Draw a smoothed filled area through the end points\n\
 	of the error bars.\n\
 E5 Like E3 but ignore the bins with 0 contents.\n\
 E6 Like E4 but ignore the bins with 0 contents.\n\
 \n\
 Options E3-E6: Choose: \"Contour Off\" and \"FillHist On\" to get area\n\
-					filled between the error lines.\n\
+               filled between the error lines.\n\
 X ErrorSz controls drawing of error bars in X.\n\
 A value of 0.5 draws a line X +- 0.5*BinWidth\n\
 \"EndErrorSz\" controls the length of the perpendicular lines\n\
@@ -359,7 +359,7 @@ with button 1 pressed"));
 	fValp[ind++] = &sadcmd;
 
 	fOk = 0;
-	Int_t itemwidth = 420;
+   Int_t itemwidth =  50 * Hpr::LabelLetterWidth();
 	fDialog =
 		new TGMrbValuesAndText(fCanvas->GetName(), NULL, &fOk,itemwidth, win,
 							 NULL, NULL, fRow_lab, fValp,

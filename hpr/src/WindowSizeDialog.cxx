@@ -24,8 +24,6 @@ Int_t WindowSizeDialog::fWinwidy_1dim;
 Int_t WindowSizeDialog::fWinshiftx;
 Int_t WindowSizeDialog::fWinshifty;
 Int_t WindowSizeDialog::fWinwidx_hlist;
-Int_t WindowSizeDialog::fFittext;
-Int_t WindowSizeDialog::fUsecustom;
 Double_t WindowSizeDialog::fProjectBothRatio;
 //___________________________________________________________________
 
@@ -79,36 +77,24 @@ _____________________________________________________\n\
    Int_t ind = 0;
 //   static Int_t dummy;
 //   static TString stycmd("SetWindowSizePermLocal()");
-   fFittext = 0;
-   fUsecustom = 0;
-   if (fWinwidx_hlist == -1) {
-      fFittext = 1;
-      fWinwidx_hlist = fMainWidth;
-   }
-   else if (fWinwidx_hlist > 0) {
-      fUsecustom = 1;
-   } else {
-      fUsecustom = 0;
-      fWinwidx_hlist = fMainWidth;
-   }
    fRow_lab->Add(new TObjString("PlainIntVal_Main Window Width"));
-   fRow_lab->Add(new TObjString("PlainIntVal_Lists Width"));
-   fRow_lab->Add(new TObjString("CheckButton+Expand to fit text"));
-   fRow_lab->Add(new TObjString("CheckButton+Fixed width"));
+   fRow_lab->Add(new TObjString("PlainIntVal+Lists Width"));
+//   fRow_lab->Add(new TObjString("CheckButton+Fit text"));
+//   fRow_lab->Add(new TObjString("CheckButton+Fixed width"));
    fRow_lab->Add(new TObjString("PlainIntVal_X_Width_1dim"));
    fRow_lab->Add(new TObjString("PlainIntVal+Y_Width_1dim"));
    fRow_lab->Add(new TObjString("PlainIntVal_X_Width_2dim"));
    fRow_lab->Add(new TObjString("PlainIntVal+Y_Width_2dim"));
-   fRow_lab->Add(new TObjString("PlainIntVal_Shift_X"));
-   fRow_lab->Add(new TObjString("PlainIntVal+Shift_Y"));
-   fRow_lab->Add(new TObjString("PlainIntVal_Start Top_X"));
-   fRow_lab->Add(new TObjString("PlainIntVal+Start Top_Y"));
+   fRow_lab->Add(new TObjString("PlainIntVal_Shift_X     "));
+   fRow_lab->Add(new TObjString("PlainIntVal+Shift_Y     "));
+   fRow_lab->Add(new TObjString("PlainIntVal_Start Top_X "));
+   fRow_lab->Add(new TObjString("PlainIntVal+Start Top_Y "));
    fRow_lab->Add(new TObjString("DoubleValue_Project_Both_Ratio"));
 
    fValp[ind++] = &fMainWidth;
    fValp[ind++] = &fWinwidx_hlist;
-   fValp[ind++] = &fFittext;
-   fValp[ind++] = &fUsecustom;
+//   fValp[ind++] = &fFittext;
+//   fValp[ind++] = &fUsecustom;
    fValp[ind++] = &fWinwidx_1dim;
    fValp[ind++] = &fWinwidy_1dim;
    fValp[ind++] = &fWinwidx_2dim;
@@ -161,7 +147,7 @@ void WindowSizeDialog::SaveDefaults()
    env.SetValue("WindowSizeDialog.fWinshiftx", fWinshiftx);
    env.SetValue("WindowSizeDialog.fWinshifty", fWinshifty);
    env.SetValue("WindowSizeDialog.fWinwidx_hlist", fWinwidx_hlist);
-   env.SetValue("WindowSizeDialog.fFittext", fFittext);
+//   env.SetValue("WindowSizeDialog.fFittext", fFittext);
    env.SetValue("WindowSizeDialog.fProjectBothRatio", fProjectBothRatio);
    env.SaveLevel(kEnvLocal);
 }
@@ -182,7 +168,7 @@ void WindowSizeDialog::RestoreDefaults()
    fWinshiftx = env.GetValue("WindowSizeDialog.fWinshiftx", 30);
    fWinshifty = env.GetValue("WindowSizeDialog.fWinshifty", 30);
    fWinwidx_hlist = env.GetValue("WindowSizeDialog.fWinwidx_hlist", 0);
-   fFittext = env.GetValue("WindowSizeDialog.fFittext", 0);
+//   fFittext = env.GetValue("WindowSizeDialog.fFittext", 1);
    fProjectBothRatio = env.GetValue("WindowSizeDialog.fProjectBothRatio", 0.5);
 }
 //___________________________________________________________________

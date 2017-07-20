@@ -28,8 +28,8 @@ public:
    static Int_t fWinshiftx;
    static Int_t fWinshifty;
    static Int_t fWinwidx_hlist;
-   static Int_t fFittext;
-   static Int_t fUsecustom;
+//   static Int_t fFittext;
+//   static Int_t fUsecustom;
    static Double_t fProjectBothRatio;
 
    WindowSizeDialog(TGWindow * win = NULL);

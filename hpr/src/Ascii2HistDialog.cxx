@@ -2,9 +2,11 @@
 #include "TGMrbValuesAndText.h"
 #include "HistPresent.h"
 #include "FitHist.h"
+#include "hprbase.h"
 
 #include "TMath.h"
 #include "TEnv.h"
+#include "TGFont.h"
 #include "TH1D.h"
 #include "TH2F.h"
 #include "TH3F.h"
@@ -125,7 +127,9 @@ for the axis can be calculated if the option\n\
    valp[ind++] = &fCommand;
    valp[ind++] = &fSaveCommand;
    Int_t ok;
-   Int_t itemwidth = 380;
+//	TGFont *label_font = gClient->GetFont(gEnv->GetValue("Gui.MenuHiFont",
+//						"-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1"));
+   Int_t itemwidth =  50 * Hpr::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText("Hists parameters", NULL, &ok,itemwidth, win,
                       NULL, NULL, row_lab, valp,

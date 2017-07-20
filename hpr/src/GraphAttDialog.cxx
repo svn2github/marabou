@@ -10,6 +10,7 @@
 #include "TStyle.h"
 #include "GraphAttDialog.h"
 #include "support.h"
+#include "hprbase.h"
 #include <iostream>
 
 extern Int_t gHprDebug;
@@ -204,7 +205,7 @@ _________________________________________________________________________\n\
  //  fValp[ind++] = &;
 
    static Int_t ok;
-   Int_t itemwidth = 480;
+   Int_t itemwidth =  50 * Hpr::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,

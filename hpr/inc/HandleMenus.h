@@ -4,9 +4,7 @@
 #include "TList.h"
 #include "TCanvas.h"
 #include "TGMenu.h"
-#include "TGraph.h"
 #include "TGStatusBar.h"
-#include "TRootCanvas.h"
 #include <iostream>
 
 namespace std {} using namespace std;
@@ -15,13 +13,18 @@ class FitHist;
 class HistPresent;
 class GrCanvas;
 class GEdit;
+class TGraph;
+class TGraph2D;
+class TRootCanvas;
 
 class HandleMenus : public TGFrame {
 private:
    GrCanvas       * fHCanvas;
    HistPresent    * fHistPresent; 
    FitHist        * fFitHist;
-   TGraph         * fGraph;
+   TObject        * fObject;
+   TGraph         * fGraph1D;
+   TGraph2D       * fGraph2D;
 	GEdit          * fEditor;
 	TH1            * fHistInPad;
 	TH1				* fSelHist;
@@ -49,7 +52,7 @@ private:
    TGStatusBar         *fStatusBar;          // statusbar widget
    TGLayoutHints       *fStatusBarLayout;    // layout hints for statusbar
 public:
-   HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph * graph = 0);
+   HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TObject *obj=NULL);
    ~HandleMenus();
    Bool_t   ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void BuildMenus();

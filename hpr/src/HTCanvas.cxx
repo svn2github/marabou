@@ -1,4 +1,7 @@
 #include "TEnv.h"
+#include "TGraph.h"
+#include "TGraph2D.h"
+#include "TRootCanvas.h"
 #include "TPaveStats.h"
 #include "HTCanvas.h"
 #include "HandleMenus.h"
@@ -16,15 +19,15 @@ HTCanvas::HTCanvas():GrCanvas()
 {
    fHistPresent = NULL;
    fFitHist     = NULL;
-   fGraph       = NULL;
+   fObject      = NULL;
    fHandleMenus = NULL;
 };
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
            Int_t ww, Int_t wh, HistPresent * hpr, FitHist * fh,
-           TGraph * graph, Int_t flag)
+           TObject * obj, Int_t flag)
            : GrCanvas(name, title, wtopx, wtopy, ww,wh),
-			    fHistPresent(hpr), fFitHist(fh),fGraph(graph)
+			    fHistPresent(hpr), fFitHist(fh),fObject(obj)
 {
 
 //*-*-*-*-*-*-*-*-*-*-*-*Canvas constructor*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -47,7 +50,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    TRootCanvas *rc = (TRootCanvas *)fCanvas->GetCanvasImp();
    rc->Connect("CloseWindow()", "HTCanvas", this, "HTCanvasClosed()");
    if (TestBit(kMenuBar)) {
-      BuildHprMenus(fHistPresent, fFitHist, fGraph);
+      BuildHprMenus(fHistPresent, fFitHist, fObject);
       if (flag & GrCanvas::kIsAEditorPage) {
 			cout << "HTCanvas::kIsAEditorPage" << endl;
          SetBit(GrCanvas::kIsAEditorPage);
@@ -259,13 +262,13 @@ void HTCanvas::DoSaveLegendStats()
 }
 //______________________________________________________________________________
 
-void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
+void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TObject *obj)
 {
    fHistPresent = hpr;
    fFitHist     = fh;
-   fGraph       = gr;
+   fObject      = obj;
 
-   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);
+   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fObject);
 	if ( gHprDebug  > 1)
 		cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
    fHandleMenus->BuildMenus();

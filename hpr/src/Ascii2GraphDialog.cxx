@@ -6,6 +6,7 @@
 #include "TStyle.h"
 #include "TObjString.h"
 #include "TString.h"
+#include "TGFont.h"
 #include "TGWindow.h"
 #include "TGraphAsymmErrors.h"
 #include "TGraphErrors.h"
@@ -18,6 +19,7 @@
 #include "FitOneDimDialog.h"
 #include "TGMrbValuesAndText.h"
 #include "Save2FileDialog.h"
+#include "hprbase.h"
 //#include "support.h"
 #include <fstream>
 extern TString gHprLocalEnv;
@@ -214,7 +216,7 @@ Select columns:\n\
 		ht = &helpText2d[0];
 	}
    Int_t ok;
-   Int_t itemwidth = 380;
+   Int_t itemwidth =  50 * Hpr::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText("Graphs parameters", NULL, &ok,itemwidth, win,
                    NULL, NULL, row_lab, valp,
@@ -448,7 +450,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 		fGraph2D = new TGraph2D(n, xval.GetArray(), yval.GetArray(),
 												zval.GetArray());
 		fCanvas = new HTCanvas(cname, htitle, fWinx, fWiny,
-									fGraphXsize, fGraphYsize, hpr, NULL);
+									fGraphXsize, fGraphYsize, hpr, NULL, fGraph2D);
 		if ( fGraphLogX )
 			fCanvas->SetLogx();
 		else

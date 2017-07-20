@@ -351,9 +351,9 @@ static const char *gSaveAsTypes[] = { "PostScript",   "*.ps",
 
 ClassImp (HandleMenus)
 
-HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph * graph)
+HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TObject *obj)
 				  : TGFrame(gClient->GetRoot(), 10 ,10),
-					 fHCanvas(c),fHistPresent(hpr), fFitHist(fh), fGraph(graph)
+					 fHCanvas(c),fHistPresent(hpr), fFitHist(fh), fObject(obj)
 {
 	if ( fHCanvas->IsBatch() ) {
 		cout << setred << "Cannot open canvas, did you forget option -X with ssh "
@@ -366,6 +366,13 @@ HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph *
 	fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
 	fEditor = NULL;
 	fHistInPad = NULL;
+	fGraph1D = NULL;
+	fGraph2D = NULL;
+	if (obj && obj->InheritsFrom("TGraph"))
+		fGraph1D =(TGraph*)obj;
+	if (obj && obj->InheritsFrom("TGraph2D"))
+		fGraph2D =(TGraph2D*)obj;
+	
 	//   MapWindow();
 //   UnMapWindow();
 };
@@ -915,10 +922,10 @@ again:
 							fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas, 1);
 							break;
 						case kFHSetAxisGraphX:
-							SetAxisGraphX((TCanvas*)fHCanvas, fGraph);
+							SetAxisGraphX((TCanvas*)fHCanvas, fGraph1D);
 							break;
 						case kFHSetAxisGraphY:
-							SetAxisGraphY((TCanvas*)fHCanvas, fGraph);
+							SetAxisGraphY((TCanvas*)fHCanvas, fGraph1D);
 							break;
 						case kFHKolmogorov:
 							fFitHist->KolmogorovTest();
@@ -1070,7 +1077,11 @@ again:
 							break;
 							
 						case kFHGraphToFile:
-							Hpr::WriteOutGraph(fGraph, fRootCanvas);
+						
+							if (fGraph1D)
+								Save2FileDialog(fGraph1D,NULL, fRootCanvas);
+							if (fGraph2D)
+								Save2FileDialog(fGraph2D,NULL, fRootCanvas);
 							break;
 						case kFHSelAnyDir:
 							{
@@ -1083,7 +1094,8 @@ again:
 							fHistPresent->SelectdCache();
 							break;
 						case kFHGraphToASCII:
-							Hpr::WriteGraphasASCII(fGraph, fRootCanvas);
+							if (fGraph1D)
+								Hpr::WriteGraphasASCII(fGraph1D, fRootCanvas);
 							break;
 						case kFHCanvasToFile:
 //                      fFitHist->WriteOutCanvas();
@@ -1202,19 +1214,24 @@ again:
 //							 fFitHist->Fit1DimDialog(4);
 							break;
 						case kFHFitUserG:
-							ExecFitMacroG(fGraph, fRootCanvas);   // global function !!
+							if (fGraph1D) 
+								ExecFitMacroG(fGraph1D, fRootCanvas);   // global function !!
 							break;
 						case kFHGausFitG:
-							ExecGausFitG(fGraph, 1);                 // global function !!
+							if (fGraph1D)
+								ExecGausFitG(fGraph1D, 1);                 // global function !!
 							break;
 						case kFHExpFitG:
-							ExecGausFitG(fGraph, 2);                 // global function !!
+							if (fGraph1D)
+								ExecGausFitG(fGraph1D, 2);                 // global function !!
 							break;
 						 case kFHPolFitG:
-							ExecGausFitG(fGraph, 3);                 // global function !!
+							if (fGraph1D)
+								ExecGausFitG(fGraph1D, 3);                 // global function !!
 							break;
 						case kFHFormFitG:
-							ExecGausFitG(fGraph, 4);                 // global function !!
+							if (fGraph1D)
+								ExecGausFitG(fGraph1D, 4);                 // global function !!
 							break;
 					  case kFHFitUser:
 							fFitHist->ExecFitMacro();
@@ -1391,7 +1408,6 @@ void HandleMenus::BuildMenus()
 	Bool_t fh_menus = kFALSE;
 	Bool_t graph1d = kFALSE;
 	Bool_t graph2d = kFALSE;
-	Bool_t graph3d = kFALSE;
 	Bool_t its_start_window = kFALSE;
 // turn of auto slicing	
 	fNbinLiveSliceX = fNbinLiveSliceY = 0;
@@ -1403,15 +1419,11 @@ void HandleMenus::BuildMenus()
 	TString cn(fHCanvas->GetName());
 	if ( cn == "cHPr" )
 		its_start_window = kTRUE;
-	if ( fGraph ) {
-		if ( fGraph->InheritsFrom("TGraph2D") ) {
-			graph2d = kTRUE;
-		} else if ( fGraph->InheritsFrom("TGraph3D") ) {
-			graph3d = kTRUE;
-		} else {
-			graph1d = kTRUE;
-		}
-	}
+	if ( fGraph2D )
+		graph2d = kTRUE;
+	if ( fGraph1D )
+		graph1d = kTRUE;
+	
 	if(fHistPresent){
 		hbrowser=fHistPresent->GetHelpBrowser();
 	}
@@ -1616,14 +1628,14 @@ void HandleMenus::BuildMenus()
 	}
 
 	fOptionMenu = new TGPopupMenu(fRootCanvas->GetParent());
-	if(!fGraph && !fFitHist) {
+	if(!fObject && !fFitHist) {
 		fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
 		fOptionMenu->AddEntry("Default window sizes", kOptionWin);
 		fOptionMenu->AddEntry("Options when showing trees", kOptionTree);
 		fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
 
 	}
-	if (!fGraph && fFitHist) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
+	if (!fObject && fFitHist) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
 	if ( nDim == 1)
 		fOptionMenu->AddEntry("How to display a 1-dim histogram", kOption1Dim);
 	if ( graph2d || (fFitHist && fFitHist->Its2dim())) {
@@ -1633,17 +1645,17 @@ void HandleMenus::BuildMenus()
 			fOptionMenu->AddEntry("How to display a 2-dim histogram ", kOption2Dim);
 		fOptionMenu->AddEntry("Color Palette", kOption2DimCol);
 	}
-	if ( graph3d || nDim == 3) {
+	if ( nDim == 3) {
 		fOptionMenu->AddEntry("How to display a 3-dim histogram ", kOption3Dim);
 		fOptionMenu->AddEntry("Color Palette", kOption2DimCol);
 	}
 	if ( graph1d ) {
 		fOptionMenu->AddEntry("How to display a graph", kOptionGraph);
-		if (!fGraph) {
-			fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
-			fOptionMenu->AddEntry("Default window sizes", kOptionWin);
-			fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
-		}
+//		if (!fGraph1) {
+//			fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
+//			fOptionMenu->AddEntry("Default window sizes", kOptionWin);
+//			fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
+//		}
 	}
 	fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
 	fAttrMenu->AddEntry("Axis / Title / StatBox Attributes", kOptionHist);
