@@ -83,7 +83,7 @@ may be created.\n\
       hfile.close();
    }
    if (gROOT->GetVersionInt() < 40000) history = NULL;
-   Int_t itemwidth = 320;
+   Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Function Dialog", fTpointer, &ok,itemwidth, win,

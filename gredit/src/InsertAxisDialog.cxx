@@ -4,6 +4,7 @@
 #include "TAxis.h"
 #include "THprGaxis.h"
 #include "TLine.h"
+#include "TMath.h"
 #include "TStyle.h"
 #include "InsertAxisDialog.h"
 #include <iostream>
@@ -57,7 +58,7 @@ static const Char_t helptext[] =
    fRow_lab->Add(new TObjString("CommandButt_Execute Insert()"));
    fValp[ind++] = &execute_cmd;
 
-   Int_t itemwidth = 300;
+   Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Insert Axis", NULL, &ok,itemwidth, fWindow,
@@ -86,6 +87,10 @@ void InsertAxisDialog::ExecuteInsert()
          fX1 = l->GetX2();
          fY1 = l->GetY2();
          delete l;
+         if (TMath::Sqrt((fX1-fX0)*(fX1-fX0) + (fY1-fY0)*(fY1-fY0)) < 0.00001) {
+				cout << "Line length 0" << endl;
+				return;
+			}
          bycursor = kTRUE;
       } else {
          cout << "No TLine found, try again" << endl;

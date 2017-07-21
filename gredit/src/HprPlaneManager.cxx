@@ -87,7 +87,7 @@ In the latter case the target plane must be empty.\n\
       }
    }
    static Int_t ok;
-   Int_t itemwidth = 420;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
 //   cout << this->ClassName()<< endl;
    fDialog =
       new TGMrbValuesAndText("PlaneManager", NULL, &ok,itemwidth, fWindow,

@@ -52,7 +52,7 @@ static const Char_t helptext[] =
    fRow_lab->Add(new TObjString("CommandButt_Execute Insert()"));
    fValp[ind++] = &execute_cmd;
 
-   Int_t itemwidth = 320;
+   Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Insert hist / graph", NULL, &ok,itemwidth, fWindow,

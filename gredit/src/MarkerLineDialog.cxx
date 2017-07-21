@@ -76,7 +76,7 @@ end with click at same position or double click\n\
    fValp[ind++] = &pol;
 //   fRow_lab->Add(new TObjString("CommandButt+Diamond"));
 //   fValp[ind++] = &dia;
-   Int_t itemwidth = 340;
+   Int_t itemwidth =  40 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Marker / Polyline", NULL, &ok,itemwidth, win,

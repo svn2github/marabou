@@ -79,7 +79,7 @@ This has not the features of auto-align and adopt.\n\
    fValp[ind++] = &fStrongAlign;
    fRow_lab->Add(new TObjString("CommandButt_Execute Insert()"));
    fValp[ind++] = &execute_cmd;
-   Int_t itemwidth = 360;
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Text Box", NULL, &ok,itemwidth, win,

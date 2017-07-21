@@ -109,7 +109,7 @@ size it can be inserted directly\n\
 	fPsSuffix = ".ps";
 	fCanvasFromFile = fRootFileName;
 	fCanvasFromFile += "|GrCanvas|pic";
-	Int_t itemwidth = 400;
+	Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
 	Int_t ok = 0;
 	row_lab->Add(new TObjString("StringValue+Name"));
 	valp[ind++] = &fProjectName;

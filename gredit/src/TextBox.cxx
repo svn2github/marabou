@@ -638,6 +638,7 @@ void TextBox::PrintMembers()
 void TextBox::Wakeup()
 {
 	if (gROOT->GetEditorMode() != 0) return;
+	if ( gPad->GetListOfPrimitives() == 0) return;
 	Int_t nfp = gPad->GetListOfPrimitives()->GetEntries();
 	if (nfp <= fPrimitives) {
 		fPrimitives = nfp;

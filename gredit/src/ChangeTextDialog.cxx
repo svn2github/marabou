@@ -75,7 +75,7 @@ static const Char_t helptext[] =
    fRow_lab->Add(new TObjString("CommandButt_Execute Change Text"));
    fValp[ind++] = &excmd;
 
-   Int_t itemwidth = 280;
+   Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Modify Text", NULL, &ok,itemwidth, win,

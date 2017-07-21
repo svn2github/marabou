@@ -54,7 +54,7 @@ arrows at the ends\n\
    fRow_lab->Add(new TObjString("CommandButt_Execute_Insert"));
    fValp[ind++] = &exc;
 
-   Int_t itemwidth = 320;
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Curly / Wave line with arrow", NULL, &ok,itemwidth, win,

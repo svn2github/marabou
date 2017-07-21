@@ -276,7 +276,7 @@ LaTeX itself.\n\
       history = hist_file;
 //      if (gROOT->GetVersionInt() < 40000) history = NULL;
    }
-   Int_t itemwidth = 320;
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    TObject *caller = this;
    if ( fCaller )

@@ -87,8 +87,7 @@ to gage: e.g 1.4\n\
    fValp[ind++] = &fSleeperColor;
    fRow_lab->Add(new TObjString("CommandButt_Draw_the_TSplineX"));
    fValp[ind++] = &fCommand;
-
-   Int_t itemwidth = 460;
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("TSplineXDialog", NULL, &ok,itemwidth, win,

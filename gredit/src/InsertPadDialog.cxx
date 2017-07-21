@@ -64,7 +64,7 @@ active.\n\
    fValp[ind++] = &fFillStyle;
    fRow_lab->Add(new TObjString("CommandButt_Execute Insert()"));
    fValp[ind++] = &execute_cmd;
-   Int_t itemwidth = 300;
+   Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Graphics Pad", NULL, &ok,itemwidth, win,

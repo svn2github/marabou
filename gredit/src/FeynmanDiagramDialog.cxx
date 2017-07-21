@@ -75,7 +75,7 @@ by Phi start / end. (counterclock wise)\n\
    fValp[ind++] = &fPhi1;
    fRow_lab->Add(new TObjString("PlainIntVal+Phi end"));
    fValp[ind++] = &fPhi2;
-   Int_t itemwidth = 260;
+   Int_t itemwidth =  40 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Feynman diagram", NULL, &ok,itemwidth, win,

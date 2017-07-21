@@ -663,7 +663,7 @@ void GEdit::ListAllObjects()
 
    Int_t ret = -1;
    Int_t prec = 3;
-   Int_t itemwidth = 150;
+   Int_t itemwidth =  20 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "All objects", itemwidth,
                           ncols, nrows, values, prec,
@@ -919,7 +919,7 @@ void GEdit::ModifyTexts()
    col_lab->Add(new TObjString("Size"));
    col_lab->Add(new TObjString("Apply"));
    Int_t ret;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableFrame(win, &ret, "Text", itemwidth,
                           ncols, nrows, &values,
@@ -1007,7 +1007,7 @@ void GEdit::ModifyCurlyLines()
    col_lab->Add(new TObjString("Amplitude"));
    col_lab->Add(new TObjString("Apply"));
    Int_t ret = 0;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "CurlyLine", itemwidth,
                           ncols, nrows, values, prec,
@@ -1081,7 +1081,7 @@ void GEdit::ModifyCurlyArcs()
    col_lab->Add(new TObjString("Amplitude"));
    col_lab->Add(new TObjString("Apply"));
    Int_t ret = 0;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "CurlyArc", itemwidth,
                           ncols, nrows, values, prec,
@@ -1155,7 +1155,7 @@ void GEdit::ModifyArrows()
    col_lab->Add(new TObjString("Angle"));
    col_lab->Add(new TObjString("Apply"));
    Int_t ret = 0;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Arrow", itemwidth,
                           ncols, nrows, values, prec,
@@ -1227,7 +1227,7 @@ void GEdit::ModifyArcs()
    col_lab->Add(new TObjString("End Phi"));
    col_lab->Add(new TObjString("Apply"));
    Int_t ret = 0;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Arc", itemwidth,
                           ncols, nrows, values, prec,
@@ -1302,7 +1302,7 @@ void GEdit::ModifyEllipses()
    col_lab->Add(new TObjString("Theta"));
    col_lab->Add(new TObjString("Apply"));
    Int_t ret = 0;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Ellipse", itemwidth,
                           ncols, nrows, values, prec,
@@ -1372,7 +1372,7 @@ void GEdit::ModifyMarkers()
    col_lab->Add(new TObjString("Size"));
    col_lab->Add(new TObjString("Apply"));
    Int_t ret = 0;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Marker", itemwidth,
                           ncols, nrows, values, prec,
@@ -1450,7 +1450,7 @@ void GEdit::ModifyPads()
    col_lab->Add(new TObjString("Height"));
    col_lab->Add(new TObjString("Apply"));
    Int_t ret = 0;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Pad", itemwidth,
                           ncols, nrows, values, prec,
@@ -1519,7 +1519,7 @@ void GEdit::ModifyPaves()
    col_lab->Add(new TObjString("Height"));
    col_lab->Add(new TObjString("Apply"));
    Int_t ret = 0;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Pave", itemwidth,
                           ncols, nrows, values, prec,
@@ -1595,7 +1595,7 @@ void GEdit::ModifyGraphs()
    col_lab->Add(new TObjString("Npoints"));
    col_lab->Add(new TObjString("Select"));
    Int_t ret = 0;
-   Int_t itemwidth = 100;
+   Int_t itemwidth =  12 * TGMrbValuesAndText::LabelLetterWidth();
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Select Graph", itemwidth,
                           ncols, nrows, values, prec,
@@ -2291,7 +2291,7 @@ void GEdit::InsertGObjects(const char * objname)
 
 
    Bool_t ok;
-   Int_t itemwidth = 240;
+   Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
    ok = GetStringExt("Insert Compound Params", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, valp);
    if (!ok) return;
@@ -2524,7 +2524,7 @@ void GEdit::PutObjectsOnGrid(TList* list)
    valp[ind++] = &doxspline;
 
    Bool_t ok;
-   Int_t itemwidth = 320;
+   Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
 
    ok = GetStringExt("Align Objects at Grid", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, valp);
@@ -2682,6 +2682,10 @@ void GEdit::DeleteObjects()
 {
    fParent->cd();
    TObject *enclosingCut = gPad->FindObject("HprRaRegion");
+   if (enclosingCut == NULL ) {
+		cout << "No enclosingCut defined" << endl;
+		return;
+	}
    TCutG * cut = NULL;
    if ( enclosingCut->IsA() == TCutG::Class() ) {
       cut = (TCutG*)enclosingCut;
@@ -2879,7 +2883,7 @@ static const Char_t helpText[] =
 
 
    Bool_t ok;
-   Int_t itemwidth = 320;
+   Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
 tryagain:
    ok = GetStringExt("Axis Params", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, valp,
@@ -3062,7 +3066,7 @@ void GEdit::SetEditGrid(Double_t x, Double_t y, Double_t xvis, Double_t yvis)
       valp[ind++] = &fVisibleGridX;
       valp[ind++] = &fVisibleGridY;
       Bool_t ok;
-      Int_t itemwidth = 280;
+      Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
 
       ok = GetStringExt("Define edit grid", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, valp);

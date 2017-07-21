@@ -122,7 +122,7 @@ value          - value bottom image same as top image\n\
    static TString imwrite_cmd("ImageToFile()");
    fRow_lab->Add(new TObjString("CommandButt_Write Image to File"));
    fValp[ind++] = &imwrite_cmd;
-   Int_t itemwidth = 300;
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Select image file", NULL, &ok,

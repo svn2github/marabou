@@ -86,7 +86,7 @@ radius is not 0 only the center must be marked  \n\
    fRow_lab->Add(new TObjString("CommandButt_ArcByPointsOnCircumference()"));
    fValp[ind++] = &byponcf;
    static Int_t ok;
-   Int_t itemwidth = 360;
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText("Arc, Circle, Ellipse,", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
