@@ -13,6 +13,7 @@
 #include "PeakFinder.h"
 #include "FindPeakDialog.h"
 #include "support.h"
+#include "hprbase.h"
 #include <fstream>
 
 using std::cout;
@@ -137,9 +138,7 @@ Only Mean is obligatory the others are optional\n\
 		valp[ind++] = &exrcmd;
 		row_lab->Add(new TObjString("FileRequest_Filename"));
 		valp[ind++] = &fPeakListName;
-		Int_t itemwidth = 320;
-	//   TRootCanvas* fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
-	//   cout << "fParentWindow " << fParentWindow << endl;
+		Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
 		Int_t ok = 0;
 		fDialog =
 		new TGMrbValuesAndText ("FindPeaks", NULL, &ok, itemwidth,

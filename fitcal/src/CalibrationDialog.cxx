@@ -322,12 +322,7 @@ The procedure to use previously fitted peaks is as follows:\n\
 		valp[ind++] = &svcmd;
 		row_lab->Add(new TObjString("CommandButt+Get Cal Func from File"));
 		valp[ind++] = &gfcmd;
-	//   row_lab->Add(new TObjString("CommandButt+Clear Peaklist"));
-	//   valp[ind++] = &clcmd;
-	//  row_lab->Add(new TObjString("CommandButt+Clear Hists Plist"));
-	//   valp[ind++] = &chcmd;
-
-		Int_t itemwidth = 480;
+		Int_t itemwidth = 60 * TGMrbValuesAndText::LabelLetterWidth();
 		Int_t ok = 0;
 		fDialog =
 		new TGMrbValuesAndText ("Calibration function formula", &fFormula, &ok, itemwidth,
@@ -446,7 +441,7 @@ The following options are provided:\n\
    valp[ind++] = &nvcmd;
    row_lab->Add(new TObjString("CommandButt_Auto Select"));
    valp[ind++] = &ascmd;
-   Int_t itemwidth = 200;
+	Int_t itemwidth =  30 * TGMrbValuesAndText::LabelLetterWidth();
    Int_t ok = 0;
    fDialogSetNominal =
    new TGMrbValuesAndText ("Choose nominal values", NULL, &ok, -itemwidth,
@@ -477,7 +472,7 @@ Format: Name(eg. 60Co) energy error intensity\n\
 	va[ind++] = &fCustomGaugeFile;
 	row_l->Add(new TObjString("CommandButt_Read values"));
 	va[ind++] = &rdcmd;
-	Int_t itemwidth = 400;
+	Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
 	Int_t ok = 0;
 	new TGMrbValuesAndText ("Read gauge values", NULL, &ok, -itemwidth,
 							fParentWindow, NULL, NULL, row_l, va,
@@ -649,8 +644,7 @@ static const Char_t helptext[] =
    valp[ind++] = &fVerbose;
    row_lab->Add(new TObjString("CommandButt+ExecuteSelect"));
    valp[ind++] = &ascmd;
-
-   Int_t itemwidth = 400;
+	Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    Int_t ok = 0;
    fAutoSelectDialog =
    new TGMrbValuesAndText ("Auto select", NULL, &ok, -itemwidth,
@@ -1186,7 +1180,7 @@ Note: As default the last entry is selected\n\
 */
    row_lab->Add(new TObjString("CommandButt_Read function"));
    valp[ind++] = &gfcmd;
-   Int_t itemwidth = 300;
+	Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    Int_t ok = 0;
    new TGMrbValuesAndText ("Get Function from file", NULL, &ok, -itemwidth,
                       fParentWindow, NULL, NULL, row_lab, valp,

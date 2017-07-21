@@ -716,7 +716,6 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 
 	//	fSelHist->Dump();
 		const char * helptext = NULL;
-		Int_t itemwidth = 400;
 		TString tagname;
 		title = fSelHist->GetName();
 		if (type == 1) {
@@ -922,6 +921,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			valp[ind++] = &fNevents;
 		}
 		Int_t ok = 0;
+		Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
 		fDialog =
 		new TGMrbValuesAndText (title.Data(), text, &ok, itemwidth,
 								fParentWindow, history, NULL, row_lab, valp,
@@ -1523,9 +1523,9 @@ Bool_t FitOneDimDialog::FitGausExecute()
 		title += Form("%g", fFrom);
 		title += " to ";
 		title += Form("%g", fTo);
-		Int_t itemwidth = 120;
 		Int_t precission = 5;
 	//	row_lab.Print();
+		Int_t itemwidth =  30 * TGMrbValuesAndText::LabelLetterWidth();
 
 	//	TGMrbTableOfDoubles(NULL, &ret, title.Data(), itemwidth,
 		TGMrbTableOfDoubles(fParentWindow, &ret, title.Data(), itemwidth,
@@ -2182,13 +2182,11 @@ void FitOneDimDialog::SetFittingOptions()
 	valp[ind++] = &fFitWindow;
 	valp[ind++] = &fPeakSep;
 	Int_t ok = -2;
-	new TGMrbValuesAndText ("Fitting options", NULL, &ok, 260,
+	Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
+
+	new TGMrbValuesAndText ("Fitting options", NULL, &ok, itemwidth,
 								fParentWindow, NULL, NULL, row_lab, valp,
 								NULL, NULL, helptext_par);
-//	Bool_t ok;
-//	Int_t itemwidth = 260;
-//	ok = GetStringExt("Fitting options", NULL, itemwidth, fParentWindow
-//							,NULL, NULL, row_lab, valp, NULL, NULL, helptext_par);
 	if (ok == 0) SaveDefaults();
 }
 //_______________________________________________________________________
@@ -3072,7 +3070,7 @@ Note: As default the last entry is selected\n\
 */
 	row_lab->Add(new TObjString("CommandButt_Read function"));
 	valp[ind++] = &gfcmd;
-	Int_t itemwidth = 300;
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
 	Int_t ok = 0;
 	new TGMrbValuesAndText ("Get Function from file", NULL, &ok, -itemwidth,
 							 fParentWindow, NULL, NULL, row_lab, valp,
