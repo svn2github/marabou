@@ -197,8 +197,8 @@ https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
 	fValp[ind++] = &fMtransRGB;
 	fRow_lab->Add(new TObjString("CommandButt+Set RGB"));
 	fValp[ind++] = &rgbcmd;
-	fRow_lab->Add(new TObjString("ColorSelect_Start color RGB"));
-	fRow_lab->Add(new TObjString("ColorSelect+End   color RGB"));
+	fRow_lab->Add(new TObjString("ColorSelect_Start color RGB "));
+	fRow_lab->Add(new TObjString("ColorSelect+End color RGB   "));
 	fValp[ind++] = &fStartColor;
 	fValp[ind++] = &fEndColor;
 
@@ -206,7 +206,7 @@ https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
 	fValp[ind++] = &stycmd;
 
 	static Int_t ok;
-	Int_t itemwidth = 420;
+   Int_t itemwidth =  58 * TGMrbValuesAndText::LabelLetterWidth();
 	fDialog =
 		new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
 							 NULL, NULL, fRow_lab, fValp,

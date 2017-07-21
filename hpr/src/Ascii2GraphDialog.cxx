@@ -216,7 +216,7 @@ Select columns:\n\
 		ht = &helpText2d[0];
 	}
    Int_t ok;
-   Int_t itemwidth =  50 * Hpr::LabelLetterWidth();
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText("Graphs parameters", NULL, &ok,itemwidth, win,
                    NULL, NULL, row_lab, valp,

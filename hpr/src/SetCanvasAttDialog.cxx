@@ -105,7 +105,7 @@ SetCanvasAttDialog::SetCanvasAttDialog(TGWindow * win)
    fRow_lab->Add(new TObjString("CommandButt+Set as global default"));
    fValp[ind++] = &stycmd;
 	fOk = 0;
-   Int_t itemwidth =  60 * Hpr::LabelLetterWidth();
+   Int_t itemwidth =  60 * TGMrbValuesAndText::LabelLetterWidth();
 	fDialog = new TGMrbValuesAndText(fCanvas->GetName(), NULL, &fOk,itemwidth, win,
 				NULL, NULL, fRow_lab, fValp,
 				NULL, NULL, helptext, this, this->ClassName());

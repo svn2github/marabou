@@ -205,7 +205,7 @@ _________________________________________________________________________\n\
  //  fValp[ind++] = &;
 
    static Int_t ok;
-   Int_t itemwidth =  50 * Hpr::LabelLetterWidth();
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,

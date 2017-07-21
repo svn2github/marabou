@@ -8,6 +8,7 @@
 #include "TH1.h"
 #include "TStyle.h"
 #include "WindowSizeDialog.h"
+#include "hprbase.h"
 #include <iostream>
 
 namespace std {} using namespace std;
@@ -106,7 +107,7 @@ _____________________________________________________\n\
    fValp[ind++] = &fProjectBothRatio;
 
    static Int_t ok;
-   Int_t itemwidth = 360;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,

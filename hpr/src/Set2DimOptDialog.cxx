@@ -329,7 +329,7 @@ For further details contact ROOTs documentation.\n\
 	fValp[ind++] = &sadcmd;
 
 	static Int_t ok;
-	Int_t itemwidth = 380;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
 	fDialog =
 		new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
 							 NULL, NULL, fRow_lab, fValp,

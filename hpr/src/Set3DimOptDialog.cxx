@@ -286,7 +286,7 @@ since the other options dont have a real histogram anymore\n\
    fValp[ind++] = &sadcmd;
 
    static Int_t ok;
-   Int_t itemwidth = 360;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,

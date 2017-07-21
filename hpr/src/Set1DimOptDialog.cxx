@@ -314,7 +314,7 @@ default is minimum Y = 0"));
 
 	fRow_lab->Add(new TObjString("CheckButton+X Lab Top\
 &Show labels at top of frame"));
-	fRow_lab->Add(new TObjString("CheckButton+Y Lab Right\
+	fRow_lab->Add(new TObjString("CheckButton+Y LabRight\
 &Show labels at right side of frame"));
 	fValp[ind++] = &fLabelsTopX;
 	fValp[ind++] = &fLabelsRightY;
@@ -342,12 +342,12 @@ default is minimum Y = 0"));
 when dragging mouse in histogram\n\
 with button 1 pressed"));
 	fValp[ind++] = &fLiveStat1Dim;
-	fRow_lab->Add(new TObjString("CheckButton+Live Gauss \
+	fRow_lab->Add(new TObjString("CheckButton+Live Gauss\
 &Do a Gauss fit when dragging\n\
 mouse in histogram\n\
 with button 1 pressed"));
 	fValp[ind++] = &fLiveGauss;
-	fRow_lab->Add(new TObjString("CheckButton+Const bg\
+	fRow_lab->Add(new TObjString("CheckButton+Const bg \
 &Use constant background"));
 	fValp[ind++] = &fLiveConstBG;
 	fRow_lab->Add(new TObjString("CheckButton+Linear bg\
@@ -359,7 +359,7 @@ with button 1 pressed"));
 	fValp[ind++] = &sadcmd;
 
 	fOk = 0;
-   Int_t itemwidth =  50 * Hpr::LabelLetterWidth();
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
 	fDialog =
 		new TGMrbValuesAndText(fCanvas->GetName(), NULL, &fOk,itemwidth, win,
 							 NULL, NULL, fRow_lab, fValp,

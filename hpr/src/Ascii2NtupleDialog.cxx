@@ -4,6 +4,7 @@
 #include "TSystem.h"
 #include "TGMrbValuesAndText.h"
 #include "Ascii2NtupleDialog.h"
+#include "hprbase.h"
 
 ClassImp(Ascii2NtupleDialog)
 
@@ -27,7 +28,7 @@ Values in variable list must ne separated by colons (:)";
    row_lab->Add(new TObjString("StringValue_List of Variables"));
    row_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
    row_lab->Add(new TObjString("CommandButt_Fill_The_Ntuple"));
-   Int_t itemwidth = 320;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
 
    valp[ind++] = &fInputFileName;
    valp[ind++] = &fOutputFileName;

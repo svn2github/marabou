@@ -1840,13 +1840,5 @@ TH1F* projectany(TH2* hin , TH1F* hp, Double_t co, Double_t sl)
 	}
 	return hproj;
 }
-//______________________________________________________________________
-
-Int_t LabelLetterWidth()
-{
-	TGFont *label_font = gClient->GetFont(gEnv->GetValue("Gui.MenuHiFont",
-						"-adobe-courier-bold-r-*-*-13-*-*-*-*-*-iso8859-1"));
-   return label_font->TextWidth("A");
-}
 
 }   // end namespace Hpr

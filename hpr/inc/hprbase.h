@@ -10,7 +10,9 @@
 #include "TPaveStats.h"
 #include "HprGaxis.h"
 #include "HprLegend.h"
+
 class TPolyLine3D;
+class TRootCanvas;
 
 namespace Hpr
 {
@@ -45,7 +47,6 @@ namespace Hpr
 	Int_t GetFreeColorIndex();
 	Double_t DtoL(Double_t px, Double_t py, Double_t x1, Double_t y1, Double_t x2, Double_t y2 );
 	TH1F* projectany(TH2* hin , TH1F* hp, Double_t co, Double_t sl);
-	Int_t LabelLetterWidth();
 
 }
 #endif

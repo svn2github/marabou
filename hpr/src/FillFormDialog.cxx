@@ -12,7 +12,7 @@
 #include "HistPresent.h"
 #include "FillFormDialog.h"
 #include "TGMrbInputDialog.h"
-
+#include "hprbase.h"
 #include <fstream>
 #include <iostream>
 #include <Riostream.h>
@@ -66,8 +66,8 @@ when generating printed output.\n\
 	fValp[ind++] = &edit_cmd;
 	 fRow_lab->Add(new TObjString("CommandButt_Write Output"));
 	fValp[ind++] = &writepdf_cmd;
- 
-	Int_t itemwidth = 300;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
+
 	static Int_t ok;
 	fDialog =
 		new TGMrbValuesAndText("Fill out a form", NULL, &ok,

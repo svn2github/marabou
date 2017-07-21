@@ -5,6 +5,7 @@
 #include "HprTh3Dialog.h"
 #ifdef MARABOUVERS
 #include "HistPresent.h"
+#include "hprbase.h"
 #endif
 #include <iostream>
 #include <Riostream.h>
@@ -70,7 +71,7 @@ Projections are defined by \"xy\" \"xz\" etc.\n\
 
    fRow_lab->Add(new TObjString("CommandButt+Execute Project()"));
    fValp[ind++] = &execute_cmd;
-   Int_t itemwidth = 320;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("TH3 dialog", NULL, &ok,itemwidth, fWindow,

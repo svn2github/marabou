@@ -8,6 +8,7 @@
 #include "TH1.h"
 #include "TStyle.h"
 #include "WhatToShowDialog.h"
+#include "hprbase.h"
 #include "support.h"
 #include <iostream>
 
@@ -93,7 +94,7 @@ and creation time"));
 //   fValp[ind++] = &stycmd;
 
    static Int_t ok; 
-   Int_t itemwidth = 360;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
    fDialog = 
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,

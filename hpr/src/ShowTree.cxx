@@ -1073,7 +1073,7 @@ See help for \"Histo/Leaf/Canvas mask\" on main window\n\
 	if ( w == NULL)
 		w = fRootCanvas;
    static Int_t ok;
-   Int_t itemwidth = 280;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
    fDialogShowTree =
       new TGMrbValuesAndText("Set Show tree options",
            NULL, &ok,itemwidth, win,

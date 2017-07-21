@@ -129,7 +129,7 @@ for the axis can be calculated if the option\n\
    Int_t ok;
 //	TGFont *label_font = gClient->GetFont(gEnv->GetValue("Gui.MenuHiFont",
 //						"-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1"));
-   Int_t itemwidth =  50 * Hpr::LabelLetterWidth();
+   Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText("Hists parameters", NULL, &ok,itemwidth, win,
                       NULL, NULL, row_lab, valp,

@@ -359,7 +359,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
 		fBidReselect = ind;
 		fValp[ind++] = &relcmd;
 	}
-   Int_t itemwidth = 420;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
 	fOk = 0;
    fDialog =
       new TGMrbValuesAndText(fObjTitle, NULL, &fOk,itemwidth, win,

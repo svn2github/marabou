@@ -1,6 +1,7 @@
 #include "TFile.h"
 #include "TGMrbValuesAndText.h"
 #include "Rebin2DimDialog.h"
+#include "hprbase.h"
 
 #include <iostream>
 
@@ -70,7 +71,7 @@ discarded.\n\
 	fRow_lab->Add(new TObjString("CommandButt+Execute Rebin"));
 	fValp[ind++] = &rebincmd;
 	static Int_t ok;
-	Int_t itemwidth = 300;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
 	fDialog =
 	new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
 								  NULL, NULL, fRow_lab, fValp,

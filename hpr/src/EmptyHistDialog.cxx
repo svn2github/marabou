@@ -8,6 +8,7 @@
 #include "TString.h"
 #include "HTCanvas.h"
 #include "HandleMenus.h"
+#include "hprbase.h"
 #include "TGMrbValuesAndText.h"
 #include "EmptyHistDialog.h"
 #include "SetCanvasAttDialog.h"
@@ -80,7 +81,7 @@ divided into pads to allow for more than one histogram\n\
    valp[ind++] = &fHistXdiv;
    valp[ind++] = &fHistYdiv;
    valp[ind++] = &fCommand;
-   Int_t itemwidth = 400;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
    GetStringExt("Hists parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());

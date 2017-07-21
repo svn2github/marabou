@@ -13,6 +13,7 @@
 #include "GeneralAttDialog.h"
 #include "HistPresent.h"
 #include "SetColor.h"
+#include "hprbase.h"
 #include <iostream>
 
 
@@ -254,7 +255,7 @@ ____________________________________________________________\n\
    fValp[ind++] = &fStackedPads;
 */
    static Int_t ok;
-   Int_t itemwidth = 360;
+   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
    fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,

@@ -25,6 +25,7 @@
 #include <iostream>
 //#ifdef MARABOUVERS
 #include "HprFunc2.h"
+#include "hprbase.h"
 // #include "HistPresent.h"
 //#endif
 
@@ -319,7 +320,7 @@ the position of peak to be fitted.";
 //			valp[ind++] = &fhrcmd;
 //			row_lab->Add(new TObjString("PlainIntVal+N events"));
 //			valp[ind++] = &fNevents;
-		Int_t itemwidth = 360;
+		Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
 		Int_t ok = 0;
 		fDialog =
 		new TGMrbValuesAndText (title.Data(), text, &ok, itemwidth,
