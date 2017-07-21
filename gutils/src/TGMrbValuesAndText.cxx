@@ -2282,3 +2282,13 @@ Bool_t GetStringExt(const char *Prompt, TString  *text ,
 	if(ret == 0) return kTRUE;
 	else         return kFALSE;
 }
+//_____________________________________________________________________
+
+Int_t TGMrbValuesAndText::LabelLetterWidth()
+{
+	TGFont *label_font = gClient->GetFont(gEnv->GetValue("Gui.MenuHiFont",
+						"-adobe-courier-bold-r-*-*-13-*-*-*-*-*-iso8859-1"));
+	label_font->Print();
+	cout << "LabelLetterWidth: " << label_font->TextWidth("A")<< endl;
+   return label_font->TextWidth("A");
+}

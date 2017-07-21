@@ -112,7 +112,7 @@ If not existing it will be created"));
 		valp[ind++] = &fObjName;
 	}
 	*/
-   Int_t itemwidth = 320;
+	Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
 
 //   valp[ind++] = &fCommand;
    TRootCanvas* window = win;
