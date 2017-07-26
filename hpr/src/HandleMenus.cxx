@@ -39,6 +39,7 @@
 #include "SetCanvasAttDialog.h"
 #include "WhatToShowDialog.h"
 #include "WindowSizeDialog.h"
+#include "FontSelectDialog.h"
 #include "GeneralAttDialog.h"
 #include "GraphAttDialog.h"
 #include "HprTh3Dialog.h"
@@ -125,6 +126,7 @@ enum ERootCanvasCommands {
 	kOptionHpr,
 	kOptionResetAll,
 	kOptionWin,
+	kOptionFont,
 	kOptionTree,
 	kFHMarks,
 	kFHMarkon,
@@ -752,6 +754,11 @@ again:
 						case kOptionWin:
 							{
 							new WindowSizeDialog(fRootCanvas);
+							}
+							break;
+						case kOptionFont:
+							{
+							new FontSelectDialog(fRootCanvas);
 							}
 							break;
 						case kOptionTree:
@@ -1631,6 +1638,7 @@ void HandleMenus::BuildMenus()
 	if(!fObject && !fFitHist) {
 		fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
 		fOptionMenu->AddEntry("Default window sizes", kOptionWin);
+		fOptionMenu->AddEntry("Fonts used in GUI widgets", kOptionFont);
 		fOptionMenu->AddEntry("Options when showing trees", kOptionTree);
 		fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
 

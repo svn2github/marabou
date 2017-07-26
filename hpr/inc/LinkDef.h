@@ -29,6 +29,7 @@
 #pragma link C++ class GraphAttDialog;
 #pragma link C++ class HprTh3Dialog;
 #pragma link C++ class WindowSizeDialog;
+#pragma link C++ class FontSelectDialog;
 #pragma link C++ class Rebin2DimDialog;
 #pragma link C++ class AddFitMenus;
 #pragma link C++ class HprStack;
