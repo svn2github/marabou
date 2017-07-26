@@ -1211,6 +1211,10 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 				fComboSelect = (TString*)fValPointers[i];
 				fComboBox = new TGComboBox(hButtonFrame, i + 1000*kIdComboS);
 				TString lab(l);
+				Int_t tt_ind = lab.Index("&");  // Tool tip
+				if (tt_ind > 1) {
+					lab.Resize(tt_ind);
+				}
 				Int_t sel = 0;
 				Int_t maxcha = 0;
 				if (lab.Length() > 12) {
@@ -2288,7 +2292,9 @@ Int_t TGMrbValuesAndText::LabelLetterWidth()
 {
 	TGFont *label_font = gClient->GetFont(gEnv->GetValue("Gui.MenuHiFont",
 						"-adobe-courier-bold-r-*-*-13-*-*-*-*-*-iso8859-1"));
-	label_font->Print();
-	cout << "LabelLetterWidth: " << label_font->TextWidth("A")<< endl;
+	if (gDebug > 0) {
+		label_font->Print();
+		cout << "LabelLetterWidth: " << label_font->TextWidth("A")<< endl;
+	}
    return label_font->TextWidth("A");
 }
