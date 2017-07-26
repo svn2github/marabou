@@ -696,13 +696,23 @@ void GrCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selecte
       sprintf(atext, "%d,%d", px, py);
    fCanvasImp->SetStatusText(atext,2);
 //   printf("Sel %s\n", selected->GetName());
+	Bool_t use_td = kFALSE;
+	
    if ( (selected->InheritsFrom("TH1") &&
-		((TH1*)selected)->GetXaxis()->GetTimeDisplay()) ||
-		 (selected->InheritsFrom("TAxis") && ((TAxis*)selected)->GetTimeDisplay()) ) {
+		((TH1*)selected)->GetXaxis()->GetTimeDisplay()) ) use_td = kTRUE;
+   if ( (selected->InheritsFrom("TGraph") &&
+		((TGraph*)selected)->GetXaxis()->GetTimeDisplay()) ) use_td = kTRUE;
+	if (selected->InheritsFrom("TAxis") && ((TAxis*)selected)->GetTimeDisplay())
+		use_td = kTRUE;
+	if ( use_td ) {
 		UInt_t tt=(UInt_t)gPad->AbsPixeltoX(px);
 		TDatime dt(tt);
+		Double_t yy =(Double_t)gPad->AbsPixeltoY(py);
+		TString stt(dt.AsSQLString());
+		stt += " Val: ";
+		stt += Form("%5.1f", yy);
 //		dt.Print();
-		fCanvasImp->SetStatusText(dt.AsSQLString(),3);
+		fCanvasImp->SetStatusText(stt,3);
 	} else {
 		fCanvasImp->SetStatusText(selected->GetObjectInfo(px,py),3);
 	}
