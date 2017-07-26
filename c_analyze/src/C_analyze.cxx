@@ -383,6 +383,7 @@ FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h,
 //  on success fComSocket and  fOurPidFile will be defined
 
 	fWidgets = new TList();
+	fComSocket = NULL;
 	fMbsControl = 0;
 	fMbsDebug = kFALSE;
 	fMessageServer = 0;
