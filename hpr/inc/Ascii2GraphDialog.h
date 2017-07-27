@@ -7,7 +7,8 @@
 
 class TGraph;
 class TGraph2D;
-class fCanvas;
+class HTCanvas;
+class TGMrbValuesAndText;
 namespace std {} using namespace std;
 
 class Ascii2GraphDialog : public TObject {
