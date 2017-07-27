@@ -9,10 +9,10 @@ int main(int argc, char **argv)
 {
    gSystem->Load("libHistPainter.so");
    HistPresent *hp;
+   gEnv->SetValue("Gui.IconPath", ".:$HOME/icons:$MARABOU/icons:$ROOTSYS/icons:");
    TRint *theApp = new TRint("App", &argc, argv);
    TDatime dt;
    
-//   gEnv->SetValue("Gui.IconPath", "$MARABOU/icons");
    cout << "Starting HistPresent at: " << dt.AsSQLString()<< endl;
    hp = new HistPresent("mypres","mypres");
    hp->ShowMain();
