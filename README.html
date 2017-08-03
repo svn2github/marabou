@@ -1,0 +1,60 @@
+<h3>How to download or update MARaBOU / HistPresent from SVN</h3>
+<UL>
+	MARaBOU is (still) maintained under SVN (subversion)<br>
+	<p></p>
+	<a href= "https://github.com/svn2github/marabou/"> MARaBOU in github </a> is a clone of this.
+	<p>
+	<LI>
+	Download the latest version of MARaBOU and store in directory <strong>marabou</strong>:<br>
+	<p>
+	<code><strong>svn co https://svn.physik.uni-muenchen.de/repos/marabou/trunk/marabou marabou</strong></code><br>
+	<p>
+	You might need to install the package <strong>subversion</strong>.
+
+</UL>
+<br>
+<h3>How to compile MARaBOU after download or update</h3>
+<ul>
+	<li>Prior to installation of MARaBOU <a href = "https://root.cern.ch/downloading-root">
+	ROOT </a>must be installed in standard manner.<br>
+	I.e. assume <strong>$ROOTSYS</strong> points to the install directory.<br>
+	Then this directory must contain subdirs: bin, lib, include etc. <br>
+	Note: For the debian package of ROOT this is not the case.<br>
+	ROOT must be compiled with <strong>OpenGL</strong> enabled.<br>
+	For this the packages as described in
+	<a href= "https://root.cern.ch/build-prerequisites">
+	ROOTs prerequisits page</a>
+	must be installled in your Linux system.<br>
+	To check whether <strong>OpenGL</strong> is enabled you should
+	look in <br>
+	<strong>$ROOTSYS/include/RConfigOptions.h</strong> for <strong>opengl</strong>.
+	
+	</li>
+	<p></p>
+	</li>
+	<li>Change to your installation directory <strong>marabou</strong>
+	<p>
+	<li>Adjust file <strong>iniMrbPath</strong> to reflect your installation path <strong>ROOTSYS</strong>
+   <br>
+	(<strong>SYSMODE=y</strong>, <strong>MARABOU=`pwd`</strong>, <strong>ROOTSYS</strong> set properly)</li>
+	<p>
+	<li>Execute "<strong>. iniMrbPath</strong>" to activate environment settings (dont forget the <strong>.</strong> (dot))</li>
+	<p>
+	<li>Do a <strong>make clean; make</strong> to recompile MARaBOU</li>
+	<p>
+	<li>If you only need <strong>HistPresent</strong>: <strong>make hpr</strong></li>
+	<p></p>
+	If you get an error like this: <strong>TGLHistPainter.h not found</strong><br>
+	then <strong>OpenGL</strong> is missing in your ROOT installation.
+	<p>
+	For running <strong>$MARABOU/lib</strong> must be part of your <strong>$LIBRARY_PATH</strong>
+	and <strong>$MARABOU/bin</strong> of your <strong>$PATH</strong> <bR>
+	You might use  <strong>iniMrbPath</strong> for this (see below)
+	<p></p>
+	<li>If a <strong>make install</strong> is needed to make it accessible to others:<br>
+	Adjust <strong>MARABOU_INSTALL_PATH</strong> in <strong>iniMrbPath</strong> properly and <strong>make install</strong>.
+	</li>
+	<p>
+	<li>You can provide a modified <strong>iniMrbPath</strong> for users <br>
+	with: <strong>SYSMODE=n</strong>, <strong>MARABOU=$MARABOU_INSTALL_PATH</strong></li>
+</ul>
