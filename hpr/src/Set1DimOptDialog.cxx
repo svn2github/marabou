@@ -359,7 +359,7 @@ with button 1 pressed"));
 	fValp[ind++] = &sadcmd;
 
 	fOk = 0;
-   Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
+   Int_t itemwidth =  58 * TGMrbValuesAndText::LabelLetterWidth();
 	fDialog =
 		new TGMrbValuesAndText(fCanvas->GetName(), NULL, &fOk,itemwidth, win,
 							 NULL, NULL, fRow_lab, fValp,
