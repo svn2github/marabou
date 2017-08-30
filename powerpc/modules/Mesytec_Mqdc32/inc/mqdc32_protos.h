@@ -26,7 +26,7 @@ bool_t mqdc32_fillStruct(s_mqdc32 * s, char * file);
 
 void mqdc32_loadFromDb(s_mqdc32 * s, uint32_t chnPattern);
 
-bool_t mqdc32_initBLT(s_mqdc32 * s, bool_t flag);
+int mqdc32_initBLT(s_mqdc32 * s, int flag);
 void mqdc32_enableBLT(s_mqdc32 * s);
 bool_t mqdc32_useBLT(s_mqdc32 * s);
 
@@ -196,6 +196,8 @@ void mqdc32_stopAcq_msct(s_mqdc32 * s);
 void mqdc32_resetFifo_mcst(s_mqdc32 * s);
 void mqdc32_resetTimestamp_mcst(s_mqdc32 * s);
 void mqdc_resetReadout_mcst(s_mqdc32 * s);
+
+void mqdc32_reportReadErrors(s_mqdc32 * s);
 
 uint32_t * mqdc32_repairRawData(s_mqdc32 * s, uint32_t * pointer, uint32_t * dataStart);
 #endif

@@ -66,7 +66,7 @@ static long total_event_count; 	/* events since last start */
 static long dt_event_count;		/* events since last dead-time stamp */
 static long dt_scaler_contents;	/* contents of dead-time scaler */
 
-static bool_t blt_init_flag = kBLTInitNotDone;	/* flag to initialize BLT */
+static int blt_init_flag = kBLTInitNotDone;	/* flag to initialize BLT */
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Global variables
@@ -193,12 +193,12 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 %CC32% 	cam_rddw_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(27));	/* read double word in crate C$crateNo */
 %CC32% 	cam_bcast_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(25));	/* broadcast in crate C$crateNo */
 %CC32% 	cam_lam_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));		/* LAM pattern in crate C$crateNo */
-%V% 	md_$moduleNameLC = mapVME("$moduleNameLC", $baseAddrL, $segSizeL, $addrMod, $mapping);	/* $moduleNameLC ($moduleTitle) */
+%V% 	md_$moduleNameLC = mapVME("$moduleNameLC", $baseAddrL, $segSizeL, $addrMod, $mappingVME, $mappingBLT);	/* $moduleNameLC ($moduleTitle) */
 %V%	if (md_$moduleNameLC == NULL) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
 %V% 	else $moduleNameLC = md_$moduleNameLC->vmeBase;
 %V% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %VS%																		/* $moduleName: $moduleTitle */
-%VS% 	md_$moduleNameLC = mapVME("$moduleNameLC", $baseAddrL, $segSizeL, $addrMod, $mapping);	/* $moduleNameLC ($moduleTitle) */
+%VS% 	md_$moduleNameLC = mapVME("$moduleNameLC", $baseAddrL, $segSizeL, $addrMod, $mappingVME, $mappingBLT);	/* $moduleNameLC ($moduleTitle) */
 %VS%	if (md_$moduleNameLC == NULL) f_ut_send_msg("m_read_meb", "get_virt_ptr: Can't map addr $baseAddr (size=$segSize, addrMod=$addrMod)", ERR__MSG_ERROR, MASK__PRTT);
 %VS% 	$moduleNameLC = $mnemoLC_get_subdevice(md_$moduleNameLC->vmeBase, $subDevice);								/* -- subdevice $subDevice */
 %VS% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;

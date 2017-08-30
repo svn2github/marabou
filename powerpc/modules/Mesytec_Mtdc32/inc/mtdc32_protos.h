@@ -26,7 +26,7 @@ bool_t mtdc32_fillStruct(s_mtdc32 * s, char * file);
 
 void mtdc32_loadFromDb(s_mtdc32 * s, uint32_t chnPattern);
 
-bool_t mtdc32_initBLT(s_mtdc32 * s, bool_t flag);
+int mtdc32_initBLT(s_mtdc32 * s, int flag);
 void mtdc32_enableBLT(s_mtdc32 * s);
 bool_t mtdc32_useBLT(s_mtdc32 * s);
 
@@ -190,6 +190,8 @@ void mtdc32_setCbltDisable(s_mtdc32 * s);
 bool_t mtdc32_cbltIsEnabled(s_mtdc32 * s);
 
 void mtdc32_setMcstCblt_db(s_mtdc32 * s);
+
+void mtdc32_reportReadErrors(s_mtdc32 * s);
 
 uint32_t * mtdc32_repairRawData(s_mtdc32 * s, uint32_t * pointer, uint32_t * dataStart);
 #endif

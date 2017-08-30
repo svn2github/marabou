@@ -54,7 +54,7 @@ const SMrbNamedXShort kMrbMultiEvent[] =
 		{
 			{	TMrbMesytec_Madc32::kMultiEvtNo,			"singleEvent"	},
 			{	TMrbMesytec_Madc32::kMultiEvtYes,			"multiEvent"	},
-			{	TMrbMesytec_Madc32::kMultiEvt1By1,			"oneByOne"		},
+			{	TMrbMesytec_Madc32::kMultiEvtLim,			"multiLimWc"	},
 			{	TMrbMesytec_Madc32::kMultiEvtNoBerr,		"multiNoBerr"	},
 			{	0,			 								NULL,			}
 		};
@@ -631,7 +631,16 @@ TEnv * TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	
 	this->UpdateSettings();
 	
+	if (this->BlockXferEnabled()) {
+		Int_t multi = this->GetMultiEvent();
+		if (multi == kMultiEvtNoBerr) {
+			gMrbLog->Err()	<< "[" << this->GetName() << "] BERR turned off (reg 0x6036 = " << kMultiEvtNoBerr << ")  while BlockXfer is ON" << endl;
+			gMrbLog->Flush(this->ClassName(), "UseSettings");
+		}
+	}
+	
 	this->SetupMCST();
+	this->SetupCBLT();
 	
 	return(madcEnv->Env());
 }
@@ -651,8 +660,8 @@ Bool_t TMrbMesytec_Madc32::UpdateSettings() {
 	TString settingsVersion;
 	TMrbResource * madcEnv = new TMrbResource("MADC32", fSettingsFile.Data());
 	madcEnv->Get(settingsVersion, ".SettingsVersion", "");
-	if (settingsVersion.CompareTo("5.2017") != 0) {
-		gMrbLog->Out() << "Settings file \"" << fSettingsFile << "\" has wrong (old?) version \"" << settingsVersion << "\" (should be 5.2017)" << endl;
+	if (settingsVersion.CompareTo("7.2017") != 0) {
+		gMrbLog->Out() << "Settings file \"" << fSettingsFile << "\" has wrong (old?) version \"" << settingsVersion << "\" (should be 7.2017)" << endl;
 		gMrbLog->Flush(this->ClassName(), "UpdateSettings", setblue);
 		TString oldFile = fSettingsFile;
 		oldFile += "-old";
@@ -689,6 +698,57 @@ void TMrbMesytec_Madc32::SetupMCST() {
 	}
 	TMrbNamedX * m = new TMrbNamedX(fMCSTMaster ? 1 : 0, this->GetName(), "Madc32");
 	oa->Add(m);
+}
+
+void TMrbMesytec_Madc32::SetupCBLT() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Madc32::SetupCBLT
+// Purpose:        Setup CBLT mode
+// Arguments:      --
+// Results:       --
+// Exceptions:
+// Description:    Check if module is using CBLT
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fCBLTSignature == 0) return;
+	
+	if (fMCSTSignature == 0) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "] CBLT cannot be used with MCST turned off" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetupCBLT");
+		return;
+	}
+
+	if (fMCSTSignature == fCBLTSignature) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "] CBLT and MCST signatures have to be different" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetupCBLT");
+		return;
+	}
+
+	TMrbNamedX * cblt = gMrbConfig->GetLofMesytecCBLT()->FindByIndex(fCBLTSignature);
+	TObjArray * oa;
+	if (cblt == NULL) {
+		oa = new TObjArray();
+		cblt = new TMrbNamedX(fCBLTSignature, "", "", oa);
+		gMrbConfig->GetLofMesytecCBLT()->AddNamedX(cblt);
+	} else {
+		oa = (TObjArray *) cblt->GetAssignedObject();
+	}
+	TMrbNamedX * c;
+	if (this->IsFirstInChain()) {
+		if (!this->IsMcstMaster()) {
+			gMrbLog->Err()	<< "[" << this->GetName() << "] module is \"fist in CBLT chain\" but NOT MCST master" << endl;
+			gMrbLog->Flush(this->ClassName(), "SetupCBLT");
+			return;
+		}
+		c = new TMrbNamedX(1, this->GetName(), "Madc32");
+	} else if (this->IsLastInChain()) {
+		c = new TMrbNamedX(-1, this->GetName(), "Madc32");
+	} else {
+		c = new TMrbNamedX(0, this->GetName(), "Madc32");
+	}
+	oa->Add(c);
 }
 
 Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {

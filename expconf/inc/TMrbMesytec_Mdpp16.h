@@ -103,7 +103,7 @@ class TMrbMesytec_Mdpp16 : public TMrbVMEModule {
 
 		enum EMrbMultiEvent				{	kMultiEvtNo			=	0,
 											kMultiEvtYes		=	1,
-											kMultiEvt1By1		=	3,
+											kMultiEvtLim		=	3,
 											kMultiEvtNoBerr		=	5
 										};
 

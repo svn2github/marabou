@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
 	mappingMod = (unsigned int) strtol(argv[3], NULL, 16);
 
-	md = mapVME("sis3302", physAddr, 0x10000L, addrMod, mappingMod);
+	md = mapVME("sis3302", physAddr, 0x10000L, addrMod, mappingMod, 0);
 	if (md == NULL) {
 		fprintf(stderr, "sis3302: Can't map addr %#lx (mod=%#lx)\n", physAddr, addrMod);
 		exit(1);

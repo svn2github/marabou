@@ -90,6 +90,7 @@ typedef struct {
 	Char_t mdName[MAP_STRLEN];		/* name, to be used with smem_create() etc */
 
 	UInt_t mappingModes;			/* possible VME mapping modes */
+	UInt_t mappingModesBLT;			/* ... for BLT */
 
 	UInt_t mappingVME;				/* used VME mapping */
 	UInt_t addrModVME;				/* address modifier */

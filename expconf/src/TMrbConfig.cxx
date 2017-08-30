@@ -8738,11 +8738,11 @@ Bool_t TMrbConfig::CheckConfig() {
 		TObjArray * oa = (TObjArray *) mcst->GetAssignedObject();
 		TIterator * miter = oa->MakeIterator();
 		TMrbNamedX * m;
-		TMrbNamedX *master = NULL;
+		TMrbNamedX * master = NULL;
 		while (m = (TMrbNamedX *) miter->Next()) {
 			if (m->GetIndex() != 0) {
 				if (master) {
-					gMrbLog->Err()	<< "More than one MCST master with signature \"0x" << setbase(16) << mcst->GetIndex() << setbase(10)
+					gMrbLog->Err()	<< "MCST - more than one master with signature \"0x" << setbase(16) << mcst->GetIndex() << setbase(10)
 									<< "\": " << m->GetName() << " ... " << master->GetName() << endl;
 					gMrbLog->Flush(this->ClassName(), "CheckConfig");
 					nofErrors++;
@@ -8752,11 +8752,75 @@ Bool_t TMrbConfig::CheckConfig() {
 			}
 		}
 		if (master == NULL) {
-			gMrbLog->Err()	<< "No MCST master defined for signature \"0x" << setbase(16) << mcst->GetIndex() << setbase(10) << "\"" << endl;
+			gMrbLog->Err()	<< "MCST - no master defined for signature \"0x" << setbase(16) << mcst->GetIndex() << setbase(10) << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "CheckConfig");
 			nofErrors++;
 		} else if (this->IsVerbose()) {
-			gMrbLog->Out()	<< "Module \"" << master->GetName() << "\" (type " << master->GetTitle() << ") is MCST master for signature \"0x" << setbase(16) << mcst->GetIndex() << setbase(10) << "\"" << endl;
+			gMrbLog->Out()	<< "MCST - module \"" << master->GetName()
+							<< "\" (type " << master->GetTitle() << ") is master for signature \"0x"
+							<< setbase(16) << mcst->GetIndex() << setbase(10) << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+		}
+	}
+	
+	iter = fLofMesytecCBLT.MakeIterator();
+	TMrbNamedX * cblt;
+	while (cblt = (TMrbNamedX *) iter->Next()) {
+		if (fLofMesytecMCST.FindByIndex(cblt->GetIndex()) != NULL) {
+			gMrbLog->Err()	<< "CBLT - signature \"0x" << setbase(16) << cblt->GetIndex() << " already used for MCST" << setbase(10) << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+			nofErrors++;
+			continue;		
+		}	
+		TObjArray * oa = (TObjArray *) cblt->GetAssignedObject();
+		TIterator * citer = oa->MakeIterator();
+		TMrbNamedX * c;
+		TMrbNamedX * fic = NULL;
+		TMrbNamedX * lic = NULL;
+		while (c = (TMrbNamedX *) citer->Next()) {
+			switch (c->GetIndex()) {
+				case 1:
+					if (fic) {
+						gMrbLog->Err()	<< "CBLT - more than one module \"first in chain\" with signature \"0x" << setbase(16) << cblt->GetIndex() << setbase(10)
+										<< "\": " << c->GetName() << " ... " << fic->GetName() << endl;
+						gMrbLog->Flush(this->ClassName(), "CheckConfig");
+						nofErrors++;
+					} else {
+						fic = c;
+					}
+					break;
+				case -1:
+					if (lic) {
+						gMrbLog->Err()	<< "MCBLT - more than one module \"last in chain\" with signature \"0x" << setbase(16) << cblt->GetIndex() << setbase(10)
+										<< "\": " << c->GetName() << " ... " << lic->GetName() << endl;
+						gMrbLog->Flush(this->ClassName(), "CheckConfig");
+						nofErrors++;
+					} else {
+						lic = c;
+					}
+					break;
+				case 0:
+				default:	break;
+			}
+		}
+		if (fic == NULL) {
+			gMrbLog->Err()	<< "CBLT - no module \"first in chain\" defined for signature \"0x" << setbase(16) << cblt->GetIndex() << setbase(10) << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+			nofErrors++;
+		} else if (this->IsVerbose()) {
+			gMrbLog->Out()	<< "CBLT - module \"" << fic->GetName() << "\" (type "
+							<< fic->GetTitle() << ") is \"first in chain\" for signature \"0x"
+							<< setbase(16) << cblt->GetIndex() << setbase(10) << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+		}
+		if (lic == NULL) {
+			gMrbLog->Err()	<< "CBLT - no module \"last in chain\" defined for signature \"0x" << setbase(16) << cblt->GetIndex() << setbase(10) << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+			nofErrors++;
+		} else if (this->IsVerbose()) {
+			gMrbLog->Out()	<< "CBLT - module \"" << lic->GetName() << "\" (type "
+							<< lic->GetTitle() << ") is \"last in chain\" for signature \"0x"
+							<< setbase(16) << cblt->GetIndex() << setbase(10) << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "CheckConfig");
 		}
 	}

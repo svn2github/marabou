@@ -79,9 +79,11 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 
 		fVMEMapping = TMrbConfig::kVMEMappingDirect | TMrbConfig::kVMEMappingStatic | TMrbConfig::kVMEMappingDynamic;
 		fVMEMapping = gEnv->GetValue("TMrbConfig.VMEMapping",  (Int_t) fVMEMapping);
+		fBLTMapping = gEnv->GetValue("TMrbConfig.BLTMapping",  0);
 		TString moduleNameUC = ModuleName;
 		moduleNameUC(0,1).ToUpper();
 		fVMEMapping = gEnv->GetValue(Form("TMrbConfig.%s.VMEMapping", moduleNameUC.Data()), (Int_t) fVMEMapping);
+		fBLTMapping = gEnv->GetValue(Form("TMrbConfig.%s.BLTMapping", moduleNameUC.Data()), (Int_t) fBLTMapping);
 		
 		
 		fSubDevice = SubDevice;
@@ -186,7 +188,8 @@ Bool_t TMrbVMEModule::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadou
 		Template.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 		Template.Substitute("$addrMod", (Int_t) this->GetAddrModifier(), 16);
 		Template.Substitute("$segSize", this->GetSegmentSize(), 16);
-		Template.Substitute("$mapping", this->GetVMEMapping(), 16);
+		Template.Substitute("$mappingVME", this->GetVMEMapping(), 16);
+		Template.Substitute("$mappingBLT", this->GetBLTMapping(), 16);
 		Template.WriteCode(RdoStrm);
 	}
 	return(kTRUE);

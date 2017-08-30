@@ -14,7 +14,7 @@ MADC32.ModuleSerial: 					$moduleSerial
 
 MADC32.Firmware: 						$moduleFirmware
 
-MADC32.SettingsVersion:					5.2017
+MADC32.SettingsVersion:					7.2017
 
 MADC32.VerboseMode:						FALSE
 MADC32.DumpRegisters:					FALSE
@@ -120,6 +120,11 @@ MADC32.$moduleName.IgnoreThresh:		$ignoreThresh
 
 # repair raw data               true/false
 MADC32.$moduleName.RepairRawData:		$repairRawData
+
+# error report on read          0   --> report all errors
+#                               -1  --> don't report errors
+#                               N>0 --> stop after N errors
+MADC32.$moduleName.ReportReadErrors:		$reportReadErrors
 %%End(OperationMode)%%
 
 %%Begin(GateGenerator)%%

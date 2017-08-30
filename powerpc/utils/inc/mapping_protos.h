@@ -15,7 +15,7 @@
 //! $Date: $
 ////////////////////////////////////////////////////////////////////////////*/
 
-s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t Mapping);
+s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size, UInt_t AddrMod, UInt_t VMEMapping, UInt_t BLTMapping);
 
 volatile Char_t * mapAdditionalVME(s_mapDescr * mapDescr, UInt_t PhysAddr, Int_t Size);
 

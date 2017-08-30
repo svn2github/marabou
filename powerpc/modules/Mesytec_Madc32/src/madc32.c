@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 	
 	if (mappingMod == 2) smem_remove("madc32");		/* remove previous mappings */
 
-	md = mapVME("madc32", physAddr, 0x10000L, addrMod, mappingMod);
+	md = mapVME("madc32", physAddr, 0x10000L, addrMod, mappingMod, 0);
 	if (md == NULL) {
 		fprintf(stderr, "madc32: Can't map addr %#lx (mod=%#lx)\n", physAddr, addrMod);
 		exit(1);

@@ -91,7 +91,7 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 
 		enum EMrbMultiEvent				{	kMultiEvtNo			=	0,
 											kMultiEvtYes		=	1,
-											kMultiEvt1By1		=	3,
+											kMultiEvtLim		=	3,
 											kMultiEvtNoBerr		=	5
 										};
 
@@ -335,6 +335,7 @@ class TMrbMesytec_Mqdc32 : public TMrbVMEModule {
 		void DefineRegisters(); 							// define vme registers
 		Bool_t UpdateSettings();							// update settings
 		void SetupMCST();									// MCST settings
+		void SetupCBLT();									// CBLT settings
 
 	protected:
 		TString fSettingsFile;

@@ -89,9 +89,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 										};
 
 		enum EMrbMultiEvent				{	kMultiEvtNo			=	0,
-											kMultiEvtYes		=	1,
-											kMultiEvt1By1		=	3,
-											kMultiEvtNoBerr		=	5
+											kMultiEvtYes		=	BIT(0),
+											kMultiEvtLim		=	(BIT(0) | BIT(1)),
+											kMultiEvtNoBerr		=	(BIT(0) | BIT(2))
 										};
 
 		enum EMrbMarkingType			{	kMarkingTypeEvent	=	0x0,
@@ -332,6 +332,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		void DefineRegisters(); 							// define vme registers
 		Bool_t UpdateSettings();							// update settings
 		void SetupMCST();									// MCST settings
+		void SetupCBLT();									// CBLT settings
 
 	protected:
 		TString fSettingsFile;

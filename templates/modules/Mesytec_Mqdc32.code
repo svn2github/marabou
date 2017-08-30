@@ -104,7 +104,8 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-							mqdc32_stopAcq(s_$moduleName);	/* stop module $moduleName */
+					mdc32_stopAcq(s_$moduleName);			/* stop module $moduleName */
+					mqdc32_reportReadErrors(s_$moduleName);	/* error report */
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 

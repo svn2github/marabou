@@ -78,6 +78,9 @@ class TMrbVMEModule : public TMrbModule {
 		inline void UseVMEMapping(UInt_t Mapping) { fVMEMapping = Mapping; };
 		inline UInt_t GetVMEMapping() { return fVMEMapping; };
 
+		inline void UseBLTMapping(UInt_t Mapping) { fBLTMapping = Mapping; };
+		inline UInt_t GetBLTMapping() { return fBLTMapping; };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
@@ -89,6 +92,7 @@ class TMrbVMEModule : public TMrbModule {
 		UInt_t fAddrModifier;					// address modifier
 		Int_t fSegmentSize; 					// segment size
 		UInt_t fVMEMapping;					// VME mapping
+		UInt_t fBLTMapping;					// BLT mapping
 
 	ClassDef(TMrbVMEModule, 1)		// [Config] Base class for VME modules
 };

@@ -14,7 +14,7 @@ MDPP16.ModuleSerial: 					$moduleSerial
 
 MDPP16.Firmware: 						$moduleFirmware
 
-MDPP16.SettingsVersion:					5.2017
+MDPP16.SettingsVersion:					7.2017
 
 MDPP16.VerboseMode:						FALSE
 MDPP16.DumpRegisters:					FALSE
@@ -65,7 +65,7 @@ MDPP16.$moduleName.DataWidth:			$dataWidth
 # multievent (0x6036)           0  -->  no / single event
 #                               1  -->  yes
 #                               3  -->  limited amount of data
-#						        5  -->  same as 1, but BERR turned off
+#						        5  -->  same as 1, but BERR turned off, send EOB instead
 MDPP16.$moduleName.MultiEvent:			$multiEvent
 
 # max xfer data (0x601A, if multievent is set to "3", default = 0)
@@ -108,6 +108,11 @@ MDPP16.$moduleName.AdcResolution:		$adcResolution
 
 # repair raw data               true/false
 MDPP16.$moduleName.RepairRawData:		$repairRawData
+
+# error report on read          0   --> report all errors
+#                               -1  --> don't report errors
+#                               N>0 --> stop after N errors
+MDPP16.$moduleName.ReportReadErrors:	$reportReadErrors
 %%End(OperationMode)%%
 
 %%Begin(Trigger)%%
@@ -146,7 +151,7 @@ MDPP16.$moduleName.TrigSrcChan:        $trigSrcChan
 #     (c) bank                  bit[0]  --> bank on
 MDPP16.$moduleName.TrigSrcBank:        $trigSrcBank
 
-# first hit (0x605C)            = 1 --> take first hit only
+# first hit (0x605C)            1 --> take first hit only (default)
 #                               
 MDPP16.$moduleName.FirstHit:            $trigFirstHit
 

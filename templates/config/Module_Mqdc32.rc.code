@@ -17,7 +17,7 @@ MQDC32.Firmware: 						$moduleFirmware
 MQDC32.VerboseMode:						FALSE
 MQDC32.DumpRegisters:					FALSE
 
-MQDC32.SettingsVersion:					5.2017
+MQDC32.SettingsVersion:					7.2017
 
 %%End(Preamble)%%
 
@@ -108,6 +108,11 @@ MQDC32.$moduleName.IgnoreThresh:		$ignoreThresh
 
 # repair raw data               true/false
 MQDC32.$moduleName.RepairRawData:		$repairRawData
+
+# error report on read          0   --> report all errors
+#                               -1  --> don't report errors
+#                               N>0 --> stop after N errors
+MQDC32.$moduleName.ReportReadErrors:	$reportReadErrors
 %%End(OperationMode)%%
 
 %%Begin(GateGenerator)%%

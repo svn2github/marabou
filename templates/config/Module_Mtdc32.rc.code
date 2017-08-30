@@ -17,7 +17,7 @@ MTDC32.Firmware: 						$moduleFirmware
 MTDC32.VerboseMode:						FALSE
 MTDC32.DumpRegisters:					FALSE
 
-MTDC32.SettingsVersion:					5.2017
+MTDC32.SettingsVersion:					7.2017
 
 %%End(Preamble)%%
 
@@ -107,6 +107,11 @@ MTDC32.$moduleName.OutputFormat:		$outputFormat
 
 # repair raw data               true/false
 MTDC32.$moduleName.RepairRawData:		$repairRawData
+
+# error report on read          0   --> report all errors
+#                               -1  --> don't report errors
+#                               N>0 --> stop after N errors
+MTDC32.$moduleName.ReportReadErrors:	$reportReadErrors
 %%End(OperationMode)%%
 
 %%Begin(Trigger)%%

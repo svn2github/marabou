@@ -82,7 +82,7 @@ s_mtdc32 * mtdc32_alloc(char * moduleName, s_mapDescr * md, int serial)
 	return s;
 }
 
-bool_t mtdc32_initBLT(s_mtdc32 * s, bool_t flag)
+int mtdc32_initBLT(s_mtdc32 * s, int flag)
 {
 	if (!s->blockXfer) return flag;			/* not using BLT -> nothing to do */
 	
@@ -611,6 +611,9 @@ bool_t mtdc32_fillStruct(s_mtdc32 * s, char * file)
 	sprintf(res, "MTDC32.%s.RepairRawData", mnUC);
 	s->repairRawData = root_env_getval_b(res, FALSE);
 
+	sprintf(res, "MTDC32.%s.ReportReadErrors", mnUC);
+	s->reportReadErrors = root_env_getval_i(res, 0);
+
 	sprintf(res, "MTDC32.%s.AddrSource", mnUC);
 	s->addrSource = root_env_getval_i(res, MTDC32_ADDR_SOURCE_DEFAULT);
 
@@ -953,11 +956,16 @@ int mtdc32_readout(s_mtdc32 * s, uint32_t * pointer)
 	
 	if (numData == 0) return(0);
 
+	s->nofReads++;
+	
 	if (s->blockXfer) {
 		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));
 		if (ptrloc == NULL) {
-			sprintf(msg, "[%sreadout] %s: Can't relocate mapped pointer %#lx to phys addr - BLT turned off", s->mpref, s->moduleName, pointer);
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			s->nofReadErrors++;
+			if ((s->reportReadErrors == 0) || (s->nofReadErrors <= s->reportReadErrors)) {
+				sprintf(msg, "[%sreadout] %s: Can't relocate mapped pointer %#lx to phys addr - BLT turned off", s->mpref, s->moduleName, pointer);
+				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			}
 			s->blockXfer = FALSE;
 		}
 	}
@@ -965,12 +973,15 @@ int mtdc32_readout(s_mtdc32 * s, uint32_t * pointer)
 	if (s->blockXfer) {
 		bmaError = bma_read(s->md->bltBase + MTDC32_DATA, ptrloc, numData, s->md->bltModeId);
 		if (bmaError != 0) {
-			if (bmaError < 0) {
-				sprintf(msg, "[%sreadout] %s: Error %d while reading event data (numData=%d)", s->mpref, s->moduleName, bmaError, numData);
-			} else {
-				sprintf(msg, "[%sreadout] %s: Error \"%s\" (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, bmaErrlist[bmaError], bmaError, numData);
+			s->nofReadErrors++;
+			if ((s->reportReadErrors == 0) || (s->nofReadErrors <= s->reportReadErrors)) {
+				if (bmaError < 0) {
+					sprintf(msg, "[%sreadout] %s: Error %d while reading event data (numData=%d)", s->mpref, s->moduleName, bmaError, numData);
+				} else {
+					sprintf(msg, "[%sreadout] %s: Error \"%s\" (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, bmaErrlist[bmaError], bmaError, numData);
+				}
+				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			}
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
 			
@@ -989,8 +1000,11 @@ int mtdc32_readout(s_mtdc32 * s, uint32_t * pointer)
 			}
 			if (nd == 1) {
 				if ((data & 0xF0000000) != 0x40000000) {
-					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
-					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+					s->nofReadErrors++;
+					if ((s->reportReadErrors == 0) || (s->nofReadErrors <= s->reportReadErrors)) {
+						sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
+						f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+					}
 				}
 			}	
 			*pointer++ = data;
@@ -1002,8 +1016,11 @@ int mtdc32_readout(s_mtdc32 * s, uint32_t * pointer)
 			nd++;
 			if (nd == 1) {
 				if ((data & 0xF0000000) != 0x40000000) {
-					sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
-					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+					s->nofReadErrors++;
+					if ((s->reportReadErrors == 0) || (s->nofReadErrors <= s->reportReadErrors)) {
+						sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
+						f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+					}
 				}
 			}	
 			if (data == 0x80000000) break;
@@ -1216,6 +1233,12 @@ void mtdc32_resetReadout_mcst(s_mtdc32 * s)
 void mtdc32_resetTimestamp_mcst(s_mtdc32 * s)
 {
 	SET16(s->mcstAddr, MTDC32_CTRA_RESET_A_OR_B, 0x3);
+}
+
+void mtdc32_reportReadErrors(s_mtdc32 * s)
+{
+	sprintf(msg, "[%sreadout] %s: read_requests=%d read_errors=%d", s->mpref, s->moduleName, s->nofReads, s->nofReadErrors);
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }
 
 uint32_t * mtdc32_repairRawData(s_mtdc32 * s, uint32_t * pointer, uint32_t * dataStart) {

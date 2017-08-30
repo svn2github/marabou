@@ -54,7 +54,7 @@ const SMrbNamedXShort kMrbMultiEvent[] =
 		{
 			{	TMrbMesytec_Mdpp16::kMultiEvtNo,			"singleEvent"	},
 			{	TMrbMesytec_Mdpp16::kMultiEvtYes,			"multiEvent"	},
-			{	TMrbMesytec_Mdpp16::kMultiEvt1By1,			"oneByOne"		},
+			{	TMrbMesytec_Mdpp16::kMultiEvtLim,			"multiLimWc"	},
 			{	TMrbMesytec_Mdpp16::kMultiEvtNoBerr,		"multiNoBerr"	},
 			{	0,			 								NULL,			}
 		};
@@ -882,7 +882,15 @@ TEnv * TMrbMesytec_Mdpp16::UseSettings(const Char_t * SettingsFile) {
 	
 	this->UpdateSettings();
 	
-	this->SetupMCST();
+	if (this->BlockXferEnabled()) {
+		Int_t multi = this->GetMultiEvent();
+		if (multi == kMultiEvtNoBerr) {
+			gMrbLog->Err()	<< "[" << this->GetName() << "] BERR turned off (reg 0x6036 = " << kMultiEvtNoBerr << ")  while BlockXfer is ON" << endl;
+			gMrbLog->Flush(this->ClassName(), "UseSettings");
+		}
+	}
+	
+this->SetupMCST();
 	
 	return(mdppEnv->Env());
 }
