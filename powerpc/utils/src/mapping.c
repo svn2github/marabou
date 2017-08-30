@@ -87,7 +87,7 @@ s_mapDescr * mapVME(const Char_t * DescrName, UInt_t PhysAddr, Int_t Size, UInt_
 	md->mappingBLT = kVMEMappingUndef;
 	
 #ifdef CPU_TYPE_RIO4
-	if (Mapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
+	if (VMEMapping & kVMEMappingDirect && AddrMod == kAM_A32) {	/* direct mapping for RIO4/A32 only */
 		if (PhysAddr > 0x0FFFFFFF) {
 			sprintf(msg, "[mapVME] %s: Direct mapping not possible - %#lx (max 0x0FFFFFFF)", DescrName, PhysAddr);
 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
