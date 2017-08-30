@@ -17,11 +17,9 @@
 #ifdef CPU_TYPE_RIO2
 #include <iostream.h>
 #include <iomanip.h>
-#include <cstdlib.h>
 #else
 #include <iostream>
 #include <iomanip>
-#include <cstdlib>
 #endif
 
 
