@@ -10,8 +10,13 @@
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef CPU_TYPE_RIO2
+#include <iostream.h>
+#include <iomanip.h>
+#else
 #include <iostream>
 #include <iomanip>
+#endif
 
 #include "SrvCaen785.h"
 #include "SrvCaen785_Layout.h"

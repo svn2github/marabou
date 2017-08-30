@@ -12,8 +12,14 @@
 #include "LwrArrayI.h"
 
 
-#include "iostream.h"
-#include "iomanip.h"
+#ifdef CPU_TYPE_RIO2
+#include <iostream.h>
+#include <iomanip.h>
+#else
+#include <iostream>
+#include <iomanip>
+#endif
+
 
 //______________________________________________________________________________
 TArrayI::TArrayI()

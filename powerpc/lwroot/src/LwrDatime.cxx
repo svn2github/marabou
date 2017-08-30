@@ -18,8 +18,14 @@
 // R. Lutter, Apr 2008                                                  //
 //////////////////////////////////////////////////////////////////////////
 
+#ifdef CPU_TYPE_RIO2
+#include <iostream.h>
+#include <iomanip.h>
+#else
 #include <iostream>
 #include <iomanip>
+#endif
+
 
 #include <time.h>
 

@@ -10,8 +10,13 @@
 //! $Date: 2010-12-27 09:02:14 $
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef CPU_TYPE_RIO2
+#include <iostream.h>
+#include <iomanip.h>
+#else
 #include <iostream>
 #include <iomanip>
+#endif
 
 #include "LwrTypes.h"
 #include "SrvUtils.h"

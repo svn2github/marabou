@@ -15,8 +15,14 @@
 //! $Date: 2009-02-20 08:40:11 $
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef CPU_TYPE_RIO2
+#include <iostream.h>
+#include <iomanip.h>
+#else
 #include <iostream>
 #include <iomanip>
+#endif
+
 
 #include "LwrTypes.h"
 #include "LwrServerSocket.h"

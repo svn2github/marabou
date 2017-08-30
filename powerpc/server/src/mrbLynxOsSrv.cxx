@@ -12,8 +12,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef CPU_TYPE_RIO2
+#include <iostream.h>
+#include <iomanip.h>
+#else
 #include <iostream>
 #include <iomanip>
+#endif
 #include <unistd.h>
 
 #include "LwrTypes.h"

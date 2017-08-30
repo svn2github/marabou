@@ -59,3 +59,4 @@ $(SRVLIB):   $(INCS) $(OBJS)
 
 .$(SrcSuf).$(ObjSuf):
 			$(CXX) $(CXXFLAGS) -c $<
+			

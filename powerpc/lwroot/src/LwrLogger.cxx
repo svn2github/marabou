@@ -16,8 +16,14 @@
 
 namespace std {} using namespace std;
 
+#ifdef CPU_TYPE_RIO2
+#include <iostream.h>
+#include <iomanip.h>
+#else
 #include <iostream>
 #include <iomanip>
+#endif
+
 
 #include "LwrNamedX.h"
 #include "LwrLofNamedX.h"

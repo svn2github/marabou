@@ -10,10 +10,16 @@
 //! $Date: 2012-01-18 11:11:32 $
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef CPU_TYPE_RIO2
+#include <iostream.h>
+#include <iomanip.h>
+#include <fstream.h>
+#else
 #include <iostream>
 #include <iomanip>
-#include <unistd.h>
 #include <fstream>
+#endif
+#include <unistd.h>
 
 #include "SrvUtils.h"
 #include "SrvSis3302.h"
