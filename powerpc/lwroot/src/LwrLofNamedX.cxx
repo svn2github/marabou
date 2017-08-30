@@ -125,7 +125,7 @@ void TMrbLofNamedX::AddNamedX(TMrbNamedX * NamedX)
 
 	namedX = new TMrbNamedX(	NamedX->GetIndex(),
 								NamedX->GetName(),
-								NamedX->HasTitle() ? NamedX->GetTitle() : NULL,
+								NamedX->HasTitle() ? NamedX->GetTitle() : (const char *) NULL,
 								NamedX->GetAssignedObject());
 	this->Add(namedX);
 }
@@ -163,7 +163,7 @@ void TMrbLofNamedX::AddNamedX(TMrbLofNamedX * LofNamedX)
 	while (namedX = (TMrbNamedX *) iter->Next()) {
 		TMrbNamedX * nx = new TMrbNamedX( namedX->GetIndex(),
 									namedX->GetName(),
-									namedX->HasTitle() ? namedX->GetTitle() : NULL,
+									namedX->HasTitle() ? namedX->GetTitle() : (const char *) NULL,
 									namedX->GetAssignedObject());
 		this->Add(nx);
 	}
