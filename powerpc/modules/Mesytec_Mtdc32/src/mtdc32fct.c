@@ -971,6 +971,16 @@ int mtdc32_readout(s_mtdc32 * s, uint32_t * pointer)
 	}
 	
 	if (s->blockXfer) {
+#ifndef CPU_TYPE_RIO2
+		bmaCount = bma_read_count(s->md->bltBase + MTDC32_DATA, ptrloc, numData, s->md->bltModeId);
+		if (bmaCount < 0) {
+			s->nofReadErrors++;
+			sprintf(msg, "[%sreadout] %s: Error \"%s\" (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, bmaErrlist[bmaError], bmaError, numData);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			return(0);
+		}		
+		pointer += bmaCount;
+#else
 		bmaError = bma_read(s->md->bltBase + MTDC32_DATA, ptrloc, numData, s->md->bltModeId);
 		if (bmaError != 0) {
 			s->nofReadErrors++;
@@ -983,9 +993,9 @@ int mtdc32_readout(s_mtdc32 * s, uint32_t * pointer)
 				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			}
 			return(0);
-		}
-			
+		}			
 		pointer += numData;
+#endif
 	} else if ((s->multiEvent & MTDC32_MULTI_EVENT_BERR) == 0) {
 		busError = FALSE;
 		nd = 0;

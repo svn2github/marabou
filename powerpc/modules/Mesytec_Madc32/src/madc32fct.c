@@ -894,6 +894,7 @@ int madc32_readout(s_madc32 * s, uint32_t * pointer)
 	}
 		
 	if (s->blockXfer) {
+#ifndef CPU_TYPE_RIO2
 		bmaCount = bma_read_count(s->md->bltBase + MADC32_DATA, ptrloc, numData, s->md->bltModeId);
 		if (bmaCount < 0) {
 			s->nofReadErrors++;
@@ -902,7 +903,7 @@ int madc32_readout(s_madc32 * s, uint32_t * pointer)
 			return(0);
 		}		
 		pointer += bmaCount;
-#if 0
+#else
 		bmaError = bma_read(s->md->bltBase + MADC32_DATA, ptrloc, numData, s->md->bltModeId);
 		if (bmaError != 0) {
 			s->nofReadErrors++;
