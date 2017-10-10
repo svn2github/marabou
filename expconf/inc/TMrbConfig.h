@@ -764,20 +764,20 @@ class TMrbConfig : public TNamed {
 		inline Bool_t IncludeUserCode(const Char_t * UserFile, Bool_t AutoGenFlag = kFALSE) {
 			return(this->IncludeUserCode("", UserFile, AutoGenFlag));
 		};
-		inline Bool_t UserCodeToBeIncluded() const { return(fLofUserIncludes.Last() >= 0); };
+		inline Bool_t UserCodeToBeIncluded() const { return(fLofUserIncludes.Last() != NULL); };
 
 		Bool_t IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib, Bool_t MakeIt = kFALSE);
 		inline Bool_t IncludeUserLib(const Char_t * UserLib, Bool_t MakeIt = kFALSE) {
 			return(this->IncludeUserLib("", UserLib, MakeIt));
 		}
-		inline Bool_t UserLibsToBeIncluded() const { return(fLofUserLibs.Last() >= 0); };
+		inline Bool_t UserLibsToBeIncluded() const { return(fLofUserLibs.Last() != NULL); };
 
 		Bool_t IncludeUserClass(const Char_t * IclPath, const Char_t * UserClass,
 								Bool_t UserDefinedEvent = kFALSE);
 		inline Bool_t IncludeUserClass(const Char_t * UserClass, Bool_t UserDefinedEvent = kFALSE) {
 			return(this->IncludeUserClass("", UserClass, UserDefinedEvent));
 		}
-		inline Bool_t UserClassesToBeIncluded() const { return(fLofUserClasses.Last() >= 0); };
+		inline Bool_t UserClassesToBeIncluded() const { return(fLofUserClasses.Last() != NULL); };
 
 		inline void AddUserClass(EMrbIncludeOptions Opt, const Char_t * Name, const Char_t * Path = NULL) { 							// add a user class
 			if (fLofUserClasses.FindByName(Name) == NULL) fLofUserClasses.AddNamedX((Int_t) Opt, Name, Path);
