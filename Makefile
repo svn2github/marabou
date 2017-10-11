@@ -63,7 +63,7 @@ else ifeq ($(findstring $(MAKECMDGOALS),analyze),analyze)
 	MODULES      += c_analyze analyze transport mbssetup mbsio expconf
 else 
 # otherwise all modules are needed
-	MODULES      += c_analyze analyze mbssetup mbsio transport expconf macrobrowser c2lynx camcli vmecontrol esone polar xiadgf dgfcomm dgfcontrol tidy tidylib
+	MODULES      += c_analyze analyze mbssetup mbsio transport expconf macrobrowser c2lynx camcli vmecontrol esone polar xiadgf dgfcomm dgfcontrol
 endif
 
 $(info Using MODULES: )
