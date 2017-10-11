@@ -16,11 +16,11 @@
 #include "TNamed.h"
 #include "TSystem.h"
 #include "TH1.h"
-#include "TF1.h"
+//#include "TF1.h"
 #include "TString.h"
 #include "TArrayI.h"
 #include "TObjArray.h"
-
+class TF1;
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGFEventBuffer

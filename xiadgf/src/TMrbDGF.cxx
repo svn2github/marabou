@@ -20,6 +20,8 @@ namespace std {} using namespace std;
 #include <iomanip>
 #include <fstream>
 #include <math.h>
+#include "TF1.h"
+#include "TH1.h"
 
 #include "Rtypes.h"
 #include "TRegexp.h"

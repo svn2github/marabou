@@ -19,8 +19,8 @@
 #include "TTimer.h"
 #include "TNamed.h"
 #include "TEnv.h"
-#include "TH1.h"
-#include "TF1.h"
+//#include "TH1.h"
+//#include "TF1.h"
 #include "TArrayS.h"
 
 #include "TMrbLofNamedX.h"
@@ -29,7 +29,8 @@
 #include "TMrbDGFData.h"
 #include "TMrbDGFEventBuffer.h"
 #include "TMrbDGFHistogramBuffer.h"
-
+class TF1;
+class TH1;
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF
