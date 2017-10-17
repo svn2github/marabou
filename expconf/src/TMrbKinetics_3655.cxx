@@ -590,8 +590,6 @@ Bool_t TMrbKinetics_3655::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMo
 	mnemoUC = mnemoLC;
 	mnemoUC.ToUpper();
 
-	TMrbCamacChannel * camacChannel	= (TMrbCamacChannel *) Channel;
-
 	switch (TagIndex) {}
 	return(kTRUE);
 }

@@ -47,7 +47,7 @@
 /*                The LAM identification is not used in this          */
 /*                implementation and must be zero.                    */                            
 /*                                                                    */
-/*+ return value: return -1 if X = 0, otherwise return 0              */
+/*+ return value: return -1 if Xgithub marabou = 0, otherwise return 0              */
 /*                                                                    */
 /*3+Function******+***********+****************************************/
 /*                                                                    */
@@ -79,12 +79,9 @@
 #include "camlib.h"
 
 extern int _cam_errno;
+extern int _camac_blk (struct camacadd *, int *, struct ctrlblk *);
 
-csubc (f, ext_p, data, cb)
-unsigned int f;
-struct camacadd *ext_p;
-int *data;
-struct ctrlblk *cb;
+int csubc (unsigned int f, struct camacadd *ext_p, int *data, struct ctrlblk *cb)
 {
     int i,
         status;

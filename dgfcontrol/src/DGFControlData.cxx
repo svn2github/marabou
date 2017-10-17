@@ -282,7 +282,7 @@ Int_t DGFControlData::SetupModuleList() {
 					TString sevtLofModules; fDgfrc->Get(sevtLofModules, ".Subevent", sevtNuna.Data(), "LofModules", "");
 					Int_t modNo = 0;
 					TString dgfName;
-					Int_t crate;
+					Int_t crate = -1;
 					Int_t from = 0;
 					while (sevtLofModules.Tokenize(dgfName, from, ":")) {
 						TString dn = dgfName;

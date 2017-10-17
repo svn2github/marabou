@@ -2781,10 +2781,11 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 
 	int infoWord;
 	int swInfoWord;
+	int nb;
 
 	errno = 0;
 
-	read(fildes, &infoWord, sizeof(infoWord));
+	nb = read(fildes, &infoWord, sizeof(infoWord));
 	if (infoWord == 1) {
 		info->is_swapped = FALSE;
 	} else {
@@ -2798,7 +2799,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 		}
 	}
 
-	read(fildes, &infoWord, sizeof(infoWord));
+	nb = read(fildes, &infoWord, sizeof(infoWord));
 	if (info->is_swapped) {
 		bto_get_int32((int *) &swInfoWord, (char *) &infoWord, 1, BYTE_ORDER_REV);
 		info->buf_size = swInfoWord;
@@ -2806,7 +2807,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 		info->buf_size = infoWord;
 	}
 
-	read(fildes, &infoWord, sizeof(infoWord));
+	nb = read(fildes, &infoWord, sizeof(infoWord));
 	if (info->is_swapped) {
 		bto_get_int32((int *) &swInfoWord, (char *) &infoWord, 1, BYTE_ORDER_REV);
 		info->buf_p_stream = swInfoWord;
@@ -2814,7 +2815,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 		info->buf_p_stream = infoWord;
 	}
 
-	read(fildes, &infoWord, sizeof(infoWord));
+	nb = read(fildes, &infoWord, sizeof(infoWord));
 	if (info->is_swapped) {
 		bto_get_int32((int *) &swInfoWord, (char *) &infoWord, 1, BYTE_ORDER_REV);
 		info->nof_streams = swInfoWord;

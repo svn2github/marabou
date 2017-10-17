@@ -60,11 +60,9 @@
 
 extern int _cam_notqx;
 
-int cfsa (f, ext_p, data, qptr)
-unsigned int f;
-struct camacadd *ext_p;
-int *data;
-int *qptr;
+extern int _camac_act (struct camacadd *, int *);
+
+int cfsa (unsigned int f, struct camacadd *ext_p, int *data, int *qptr)
 {
     int q,
         status,

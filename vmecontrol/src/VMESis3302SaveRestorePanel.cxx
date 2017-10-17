@@ -75,9 +75,6 @@ VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(const TGWindow * Window, 
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
-// geometry
-	Int_t frameWidth = this->GetWidth();
-
 //	Clear focus list
 	fFocusList.Clear();
 
@@ -204,8 +201,6 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 	TString errMsg;
 	TGFileInfo fileInfoRestore;
 
-	Bool_t verbose = gVMEControlData->IsVerbose();
-
 	UInt_t modSel = fModules->GetActive();
 	if (modSel == 0) {
 		gVMEControlData->MsgBox(this, "RestoreSettings", "Error", "No modules selected");
@@ -279,8 +274,6 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 
 	TGFileInfo fileInfoSave;
 	TString errMsg;
-
-	Bool_t verbose = gVMEControlData->IsVerbose();
 
 	UInt_t modSel = fModules->GetActive();
 	if (modSel == 0) {

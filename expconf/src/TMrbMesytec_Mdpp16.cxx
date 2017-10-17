@@ -878,6 +878,7 @@ TEnv * TMrbMesytec_Mdpp16::UseSettings(const Char_t * SettingsFile) {
 		for (Int_t ch = 0; ch < 8; ch++, ch2 += 2) this->SetResetTime(mdppEnv->Get(moduleName.Data(), "Rise", Form("%d", ch2), kRiseTimeDefault), ch);	
 	}
 	
+	
 	fSettings = mdppEnv->Env();
 	
 	this->UpdateSettings();
@@ -890,7 +891,8 @@ TEnv * TMrbMesytec_Mdpp16::UseSettings(const Char_t * SettingsFile) {
 		}
 	}
 	
-this->SetupMCST();
+	this->SetupMCST();
+	this->SetupCBLT();
 	
 	return(mdppEnv->Env());
 }
@@ -948,6 +950,57 @@ void TMrbMesytec_Mdpp16::SetupMCST() {
 	}
 	TMrbNamedX * m = new TMrbNamedX(fMCSTMaster ? 1 : 0, this->GetName(), "Mdpp16");
 	oa->Add(m);
+}
+
+void TMrbMesytec_Mdpp16::SetupCBLT() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Mdpp16::SetupCBLT
+// Purpose:        Setup CBLT mode
+// Arguments:      --
+// Results:       --
+// Exceptions:
+// Description:    Check if module is using CBLT
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fCBLTSignature == 0) return;
+	
+	if (fMCSTSignature == 0) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "] CBLT cannot be used with MCST turned off" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetupCBLT");
+		return;
+	}
+
+	if (fMCSTSignature == fCBLTSignature) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "] CBLT and MCST signatures have to be different" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetupCBLT");
+		return;
+	}
+
+	TMrbNamedX * cblt = gMrbConfig->GetLofMesytecCBLT()->FindByIndex(fCBLTSignature);
+	TObjArray * oa;
+	if (cblt == NULL) {
+		oa = new TObjArray();
+		cblt = new TMrbNamedX(fCBLTSignature, "", "", oa);
+		gMrbConfig->GetLofMesytecCBLT()->AddNamedX(cblt);
+	} else {
+		oa = (TObjArray *) cblt->GetAssignedObject();
+	}
+	TMrbNamedX * c;
+	if (this->IsFirstInChain()) {
+		if (!this->IsMcstMaster()) {
+			gMrbLog->Err()	<< "[" << this->GetName() << "] module is \"fist in CBLT chain\" but NOT MCST master" << endl;
+			gMrbLog->Flush(this->ClassName(), "SetupCBLT");
+			return;
+		}
+		c = new TMrbNamedX(1, this->GetName(), "Madc32");
+	} else if (this->IsLastInChain()) {
+		c = new TMrbNamedX(-1, this->GetName(), "Madc32");
+	} else {
+		c = new TMrbNamedX(0, this->GetName(), "Madc32");
+	}
+	oa->Add(c);
 }
 
 Bool_t TMrbMesytec_Mdpp16::SaveSettings(const Char_t * SettingsFile) {

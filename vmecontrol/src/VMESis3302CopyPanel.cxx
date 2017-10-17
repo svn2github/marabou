@@ -160,7 +160,6 @@ VMESis3302CopyPanel::VMESis3302CopyPanel(const TGWindow * Window, TMrbLofNamedX 
 
 	TMrbLofNamedX lofChannelBits;
 	gVMEControlData->GetLofChannels(lofChannelBits, VMESis3302Panel::kVMENofSis3302Chans, "chn %d", kTRUE);
-	Int_t bit = 0x1;
 
 	fLofDests.Delete();
 	for (Int_t i = 0; i < nofModules; i++) {

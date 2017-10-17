@@ -68,9 +68,7 @@ extern int _cam_errno;
 char *my_time(char *);
 char print_error[STR_LEN];
 
-char *cerror (my_error, flag)
-int my_error;
-int flag;
+char *cerror (int my_error, int flag)
 {
   char pc_time[STR_LEN];
 
@@ -186,7 +184,7 @@ int flag;
 char *my_time(char *g_pc_time)
 {
   time_t tp;
-  struct tm st_time, *p_st_time;
+  struct tm *p_st_time;
 
   time(&tp);
   p_st_time = localtime(&tp);

@@ -56,12 +56,7 @@
   
 #include "camlib.h"
 
-cgreg (ext, b, c, n, a)
-struct camacadd *ext;
-struct camacadd **b;
-int *c;
-int *n;
-int *a;
+int cgreg (struct camacadd *ext, struct camacadd **b, int *c, int *n, int *a)
 {
     *b = ext->n_branch;
     *c = ext->n_crate;

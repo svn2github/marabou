@@ -59,12 +59,7 @@
 
 extern int _cam_errno;
 
-cdreg (ext, b, c, n, a)
-struct camacadd **ext;
-struct camacadd *b;
-int c;
-int n;
-int a;
+int cdreg (struct camacadd **ext, struct camacadd *b, int c, int n, int a)
 {
     _cam_errno = EC_NORMAL;
  

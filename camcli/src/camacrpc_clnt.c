@@ -6,11 +6,15 @@
 #include <memory.h> /* for memset */
 #include "camacrpc.h"
 
+extern int _camac_act (struct camacadd *, int *);
+extern int _camac_mact (struct camacadd *, int *, int *, int *, struct ctrlblk *);
+extern int _camac_blk (struct camacadd *, int *, struct ctrlblk *);
+extern int _camac_open (struct camacent *, struct camacadd **);
+
 /* Default timeout can be changed using clnt_control() */
 static struct timeval TIMEOUT = { 25, 0 };
 
-struct open_out *
-_r_camac_open_2(struct open_in *argp, CLIENT *clnt)
+struct open_out * _r_camac_open_2(struct open_in *argp, CLIENT *clnt)
 {
 	static struct open_out clnt_res;
 
@@ -24,8 +28,7 @@ _r_camac_open_2(struct open_in *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
-struct init_out *
-_r_camac_init_2(struct init_in *argp, CLIENT *clnt)
+struct init_out * _r_camac_init_2(struct init_in *argp, CLIENT *clnt)
 {
 	static struct init_out clnt_res;
 
@@ -39,8 +42,7 @@ _r_camac_init_2(struct init_in *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
-struct onl_out *
-_r_camac_onl_2(struct onl_in *argp, CLIENT *clnt)
+struct onl_out * _r_camac_onl_2(struct onl_in *argp, CLIENT *clnt)
 {
 	static struct onl_out clnt_res;
 
@@ -54,8 +56,7 @@ _r_camac_onl_2(struct onl_in *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
-struct act_out *
-_r_camac_act_2(struct act_in *argp, CLIENT *clnt)
+struct act_out * _r_camac_act_2(struct act_in *argp, CLIENT *clnt)
 {
 	static struct act_out clnt_res;
 
@@ -69,8 +70,7 @@ _r_camac_act_2(struct act_in *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
-struct addscan_out *
-_r_camac_addscan_2(struct addscan_in *argp, CLIENT *clnt)
+struct addscan_out * _r_camac_addscan_2(struct addscan_in *argp, CLIENT *clnt)
 {
 	static struct addscan_out clnt_res;
 
@@ -84,8 +84,7 @@ _r_camac_addscan_2(struct addscan_in *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
-struct blk_out *
-_r_camac_blk_2(struct blk_in *argp, CLIENT *clnt)
+struct blk_out * _r_camac_blk_2(struct blk_in *argp, CLIENT *clnt)
 {
 	static struct blk_out clnt_res;
 
@@ -99,8 +98,7 @@ _r_camac_blk_2(struct blk_in *argp, CLIENT *clnt)
 	return (&clnt_res);
 }
 
-struct mact_out *
-_r_camac_mact_2(struct mact_in *argp, CLIENT *clnt)
+struct mact_out * _r_camac_mact_2(struct mact_in *argp, CLIENT *clnt)
 {
 	static struct mact_out clnt_res;
 

@@ -211,8 +211,6 @@ Bool_t TMrbAdcd_9701::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 	mnemoUC = mnemoLC;
 	mnemoUC.ToUpper();
 
-	TMrbCamacChannel * camacChannel	= (TMrbCamacChannel *) Channel;
-
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:
 		case TMrbConfig::kModuleWriteSubaddr:

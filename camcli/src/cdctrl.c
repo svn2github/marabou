@@ -38,9 +38,7 @@
 int _cam_ctrl_type;
 
 extern int _cam_errno;
-
-cdctrl (ctrl_type)
-int ctrl_type;
+int cdctrl (int ctrl_type)
 {
     _cam_errno = EC_NORMAL;
 	_cam_ctrl_type = ctrl_type; 

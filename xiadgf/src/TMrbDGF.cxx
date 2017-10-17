@@ -4735,15 +4735,20 @@ Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t Chan
 		gMrbLog->Err() << gSystem->GetError() << " - " << datFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh");
 	}
-	fread(Buffer.GetArray(), nofChannels * 32 * 1024 * sizeof(UInt_t), 1, f);
-	for (Int_t i = 0; i < nofChannels * 32 * 1024; i++) {
-		Int_t d = Buffer[i];
-		Int_t res  = (d >> 24) & 0xff;
-		res += (d >> 8)  & 0xff00;
-		res += (d << 8)  & 0xff0000;
-		res += (d << 24) & 0xff000000;
-		Buffer[i] = res;
+	if (fread(Buffer.GetArray(), nofChannels * 32 * 1024 * sizeof(UInt_t), 1, f) > 0) {
+		for (Int_t i = 0; i < nofChannels * 32 * 1024; i++) {
+			Int_t d = Buffer[i];
+			Int_t res  = (d >> 24) & 0xff;
+			res += (d >> 8)  & 0xff00;
+			res += (d << 8)  & 0xff0000;
+			res += (d << 24) & 0xff000000;
+			Buffer[i] = res;
+		}
+	} else {
+		gMrbLog->Err() << "No data in file " << datFile << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh");
 	}
+
 	delete hdEnv;
 	return(nofWords);
 }

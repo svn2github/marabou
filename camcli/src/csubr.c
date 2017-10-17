@@ -82,12 +82,9 @@
 #include "camlib.h"
 
 extern int _cam_errno;
+extern int _camac_blk (struct camacadd *, int *, struct ctrlblk *);
 
-csubr (f, ext_p, data, cb)
-unsigned int f;
-struct camacadd *ext_p;
-int *data;
-struct ctrlblk *cb;
+int csubr (unsigned int f, struct camacadd *ext_p, int *data, struct ctrlblk *cb)
 {
     int i,
         status;

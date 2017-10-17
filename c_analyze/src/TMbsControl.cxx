@@ -120,7 +120,7 @@ Int_t TMbsControl::GetNodeNames(){
       cmd = fRshSshCmd; cmd += fCurNode; cmd += " pwd";
       cout << cmd << endl;
       fp = gSystem->OpenPipe(cmd.Data(), "r");
-      fgets(line,60,fp);
+      if (fgets(line,60,fp) == NULL) return -1;
       if(strlen(line)>2) line[strlen(line)-1]='\0';
       else return -1;
       dir = line;
@@ -134,7 +134,7 @@ Int_t TMbsControl::GetNodeNames(){
    cmd = fRshSshCmd; cmd += fCurNode;  cmd += " cat ";
    cmd += dir; cmd += "/node_list.txt";
    fp = gSystem->OpenPipe(cmd.Data(), "r");
-   while (fgets(line,60,fp) != 0) {
+   while (fgets(line,60,fp) != NULL) {
       line[strlen(line)-1]='\0';
       cout << "Node: " << line;
       if(strstr(line, "Unknown")) cout << setred<< "!!!!!!!!!!!!!!";

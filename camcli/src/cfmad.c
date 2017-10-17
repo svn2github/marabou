@@ -77,11 +77,7 @@
 
 extern int _cam_errno;
 
-cfmad (f, ext_h, data, cb)
-unsigned int f;
-struct camacadd *ext_h [];
-int *data;
-struct ctrlblk *cb;
+int cfmad (unsigned int f, struct camacadd *ext_h [], int *data, struct ctrlblk *cb)
 {
     int status;
 

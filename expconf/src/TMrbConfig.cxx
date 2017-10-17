@@ -1550,7 +1550,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	TMrbEvent * evt;
 	TMrbSubevent * sevt;
 	TMrbModule * module;
-	TMrbVMEModule * vmeModule;
 	TString cf, tf, tf1, tf2;
 	TString expName, expTitle;
 	TString moduleName, sevtName;
@@ -7592,10 +7591,6 @@ Bool_t TMrbConfig::WriteToFile(const Char_t * ConfigFile,  Option_t * Options) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString cf;
-	TFile * cfgFile;
-	TList * objList;
-	TObject * obj;
-	Int_t nofObjects;
 
 	gMrbLog->Err() << "Method is obsolete - please remove it from Config.C" << endl;
 	gMrbLog->Flush(this->ClassName(), "WriteToFile");
@@ -7689,7 +7684,7 @@ const Char_t * TMrbConfig::GetAuthor() {
 		FILE * ldap = gSystem->OpenPipe(cmd.Data(), "r");
 		if (ldap) {
 			Char_t result[512];
-			fread(result, 1, 512, ldap);
+			if (fread(result, 1, 512, ldap) == 0) result[0] = '\0';
 			fclose(ldap);
 			fAuthor = (result[0] == '\0') ? fUser : result;
 			Int_t x = fAuthor.Index("\n", 0);
@@ -7721,7 +7716,7 @@ const Char_t * TMrbConfig::GetMailAddr() {
 		FILE * ldap = gSystem->OpenPipe(cmd.Data(), "r");
 		if (ldap) {
 			Char_t result[512];
-			fread(result, 1, 512, ldap);
+			if (fread(result, 1, 512, ldap) == 0) result[0] = '\0';
 			fclose(ldap);
 			fMailAddr = result;
 			Int_t x = fMailAddr.Index("\n", 0);
@@ -7867,7 +7862,7 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	mbsSetup->ReadoutProc(0)->SetCratesToBeRead(c[0], c[1], c[2], c[3], c[4]);
 
 	if (fSevtSize > 0) {
-		Int_t psl;
+		Int_t psl = 0;
 		TString procType = gEnv->GetValue("TMbsSetup.ProcType", "RIO2");
 		if (procType == "RIO2" || procType == "PPC") psl = kMbsPipeSegLength_RIO2;
 		else if (procType == "RIO3") psl = kMbsPipeSegLength_RIO3;

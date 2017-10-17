@@ -56,7 +56,8 @@
 /*+ Version     : 1.0                                                 */
 /*+ Maintainance: F. Humbert                                          */
 /*+ Created     : 15-May-1996                                         */
-/*+ Updates     : Date         Purpose                                */
+/*+ Updates     : Date                                                */
+/*+ Purpose     :                                                     */
 /*1- C Procedure *************+****************************************/
  
 #include <stdio.h>
@@ -73,8 +74,7 @@ extern int _cam_notqx;
     0 0    3
 */
 
-int ctstat (kptr)
-int *kptr;
+int ctstat (int * kptr)
 {
     int k;
 

@@ -1248,8 +1248,6 @@ void DGFSetupPanel::SetupGeneral() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t bits = fDGFFrame->GetActive();
-
 	gDGFControlData->fSimulStartStop = (fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0;
 	this->SetSynchWait(gDGFControlData->fSimulStartStop);
 

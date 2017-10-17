@@ -21,8 +21,6 @@ SONSTIGES
 
 *****************************************************************************/
 
-static char sccs_id[] = "%W%";
-
 #include <string.h>
 #include "byte_order.h"
 

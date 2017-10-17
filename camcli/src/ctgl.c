@@ -56,9 +56,9 @@
 extern int _cam_ctrl_type; 
 extern int _cam_notqx;
 
-int ctgl (ext_p, lptr)
-struct camacadd *ext_p;
-int *lptr;
+extern int _camac_act (struct camacadd *, int *);
+
+int ctgl (struct camacadd *ext_p, int *lptr)
 {
     struct camacadd ext;
     int q,

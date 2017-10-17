@@ -508,7 +508,7 @@ Bool_t TMrbC2Lynx::CheckAccessToLynxOs(const Char_t * Host, const Char_t * Path)
 	}
 
 	char line[512];
-	fgets(line, 512, rsh);
+	if (fgets(line, 512, rsh) == NULL) line[0] = '\0';
 	TString str = line;
 	if (str.IsNull() || str.Contains("No route")) {
 		gMrbLog->Err()	<< "Can't access host - " << host << endl;
@@ -516,7 +516,7 @@ Bool_t TMrbC2Lynx::CheckAccessToLynxOs(const Char_t * Host, const Char_t * Path)
 		return(kFALSE);
 	}
 
-	cmd = Form("rsh %s -e \'echo @X@%cls %s%c@X@\'", host.Data(), '\`', path.Data(), '\`');
+	cmd = Form("rsh %s -e \'echo @X@%cls %s%c@X@\'", host.Data(), '`', path.Data(), '`');
 	FILE * ls = gSystem->OpenPipe(cmd.Data(), "r");
 	if (!ls) {
 		gMrbLog->Err()	<< "Can't exec command - \"" << cmd << "\"" << endl;
@@ -524,7 +524,7 @@ Bool_t TMrbC2Lynx::CheckAccessToLynxOs(const Char_t * Host, const Char_t * Path)
 		return(kFALSE);
 	}
 
-	fgets(line, 512, ls);
+	if (fgets(line, 512, ls) == NULL) line[0] = '\0';
 	str = line;
 	if (str.Contains("@X@@X@") || !str.Contains(Form("@X@%s", path.Data()))) {
 		gMrbLog->Err()	<< "Can't access file from LynxOs host - \"" << host << ":" << path << "\"" << endl;

@@ -559,7 +559,6 @@ Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, TMrbNamedX * HistoD
 	Int_t nofEvents = fNofEvtsBuf->GetText2Int();
 	if (nofEvents <= 0) nofEvents = kSis3302MaxEvents;
 
-	Int_t e = kSis3302MaxEvents;
  	Int_t n = wpt * nofEvents;
 	if (n < nxs) n = nxs;
 	EvtData.Set(n + kSis3302EventPreHeader);

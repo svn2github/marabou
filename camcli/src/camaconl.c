@@ -33,13 +33,9 @@ $Copyright
 extern int _cam_errno;
 extern int _cam_notqx;
 
-#ifdef __STDC__
+extern int _decode_neterr (int);
+
 int _camac_onl (struct camacadd *ext,int *status)
-#else
-int _camac_onl (ext,status)
-struct camacadd *ext;
-int *status;
-#endif
 {
     struct onl_in in;
     struct onl_out *out;

@@ -83,16 +83,13 @@
 
 extern int _cam_notqx;
 
-int csga (f, ext, data, q, cb)
-unsigned int *f;
-struct camacadd *ext [];
-int *data;
-int *q;
-struct ctrlblk *cb;
+extern int _camac_mact (struct camacadd *ext[], int *f_p, int *data_p, int *q_p, struct ctrlblk *cb);
+
+int csga (unsigned int *f, struct camacadd *ext [], int *data, int *q, struct ctrlblk *cb)
 {
     int i, status;
 
-    status = _camac_mact (ext, data, q, cb);
+    status = _camac_mact (ext, (int *) f, data, q, cb);
 
       /* short access, mask high word */
       for (i = 0; i < cb->tally; i++)

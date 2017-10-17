@@ -54,8 +54,9 @@
 extern int _cam_ctrl_type; 
 extern int _cam_notqx;
 
-int cccc (ext_p)
-struct camacadd *ext_p;
+extern int _camac_act (struct camacadd *, int *);
+
+int cccc (struct camacadd *ext_p)
 {
     struct camacadd ext;
     int status,

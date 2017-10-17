@@ -1026,7 +1026,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							tmpl.Substitute("$chanNo", i);
 							Int_t trigMode;
 							this->GetTriggerMode(trigMode, i);
-							Char_t * tm;
+							Char_t * tm = "??";
 							switch (trigMode) {
 								case 0: tm = "NoTrig"; break;
 								case 1: tm = "Int"; break;
@@ -1036,7 +1036,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							tmpl.Substitute("$trigMode", Form("%#x (%s)", trigMode, tm));
 							Int_t gateMode;
 							this->GetGateMode(gateMode, i);
-							Char_t * gm;
+							Char_t * gm = "??";
 							switch (gateMode) {
 								case 0: gm = "NoGate"; break;
 								case 1: gm = "Int"; break;
@@ -1119,7 +1119,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							tmpl.Substitute("$pulseLength", pulse);
 							Int_t decim;
 							this->GetTrigDecimation(decim, i);
-							char * dm;
+							char * dm  = "??";
 							switch (decim) {
 								case 0: dm = "NoDecim"; break;
 								case 1: dm = "2-fold"; break;
@@ -1160,7 +1160,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							tmpl.Substitute("$gapTime", gap);
 							Int_t decim;
 							this->GetEnergyDecimation(decim, i);
-							char * dm;
+							char * dm = "??";
 							switch (decim) {
 								case 0: dm = "NoDecim"; break;
 								case 1: dm = "2-fold"; break;

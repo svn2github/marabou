@@ -51,23 +51,18 @@
  
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "camdef.h"
 #include "camlib.h"
 
 int     _cam_errno;
 int     _cam_notqx;
 
-#ifdef __STDC__
 static void copycamacent (struct camacent*, struct camacent*);
-#else
-static void copycamacent();
-#endif
+extern int _camac_open (struct camacent *, struct camacadd **);
 
-int ccopen (camac, net_h)
-char *camac;
-struct camacadd **net_h;
+int ccopen (char *camac, struct camacadd **net_h)
 {
-    int path;
     int status;
     char *s;
     struct camacent camcam;  
@@ -138,13 +133,7 @@ struct camacadd **net_h;
   copy struct camacent from s to d, and allocate
   permanently space for strings.
 */
-#ifdef __STDC__
 static void copycamacent (struct camacent *d, struct camacent *s)
-#else
-static void copycamacent (d,s)
-	struct camacent *d;
-	struct camacent *s;
-#endif
 {
     struct camacent t;
 

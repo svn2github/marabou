@@ -8,9 +8,6 @@
 bool_t
 xdr_camacadd_lcl (XDR *xdrs, camacadd_lcl *objp)
 {
-	 register long *buf;
-
-	int i;
 	 if (!xdr_int (xdrs, &objp->n_path))
 		 return FALSE;
 	 if (!xdr_vector (xdrs, (char *)objp->n_cnaf, 4,
@@ -19,8 +16,7 @@ xdr_camacadd_lcl (XDR *xdrs, camacadd_lcl *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_ctrlblk_lcl (XDR *xdrs, ctrlblk_lcl *objp)
+bool_t xdr_ctrlblk_lcl (XDR *xdrs, ctrlblk_lcl *objp)
 {
 	 register long *buf;
 
@@ -74,11 +70,8 @@ xdr_ctrlblk_lcl (XDR *xdrs, ctrlblk_lcl *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_act_in (XDR *xdrs, act_in *objp)
+bool_t xdr_act_in (XDR *xdrs, act_in *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_pointer (xdrs, (char **)&objp->ext, sizeof (camacadd_lcl), (xdrproc_t) xdr_camacadd_lcl))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->data))
@@ -86,11 +79,8 @@ xdr_act_in (XDR *xdrs, act_in *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_act_out (XDR *xdrs, act_out *objp)
+bool_t xdr_act_out (XDR *xdrs, act_out *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_int (xdrs, &objp->errno))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->status))
@@ -100,11 +90,8 @@ xdr_act_out (XDR *xdrs, act_out *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_addscan_in (XDR *xdrs, addscan_in *objp)
+bool_t xdr_addscan_in (XDR *xdrs, addscan_in *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_array (xdrs, (char **)&objp->extarr.extarr_val, (u_int *) &objp->extarr.extarr_len, 2,
 		sizeof (camacadd_lcl), (xdrproc_t) xdr_camacadd_lcl))
 		 return FALSE;
@@ -116,11 +103,8 @@ xdr_addscan_in (XDR *xdrs, addscan_in *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_addscan_out (XDR *xdrs, addscan_out *objp)
+bool_t xdr_addscan_out (XDR *xdrs, addscan_out *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_int (xdrs, &objp->errno))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->status))
@@ -133,21 +117,15 @@ xdr_addscan_out (XDR *xdrs, addscan_out *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_onl_in (XDR *xdrs, onl_in *objp)
+bool_t xdr_onl_in (XDR *xdrs, onl_in *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_pointer (xdrs, (char **)&objp->ext, sizeof (camacadd_lcl), (xdrproc_t) xdr_camacadd_lcl))
 		 return FALSE;
 	return TRUE;
 }
 
-bool_t
-xdr_onl_out (XDR *xdrs, onl_out *objp)
+bool_t xdr_onl_out (XDR *xdrs, onl_out *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_int (xdrs, &objp->errno))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->status))
@@ -155,21 +133,15 @@ xdr_onl_out (XDR *xdrs, onl_out *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_init_in (XDR *xdrs, init_in *objp)
+bool_t xdr_init_in (XDR *xdrs, init_in *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_pointer (xdrs, (char **)&objp->ext, sizeof (camacadd_lcl), (xdrproc_t) xdr_camacadd_lcl))
 		 return FALSE;
 	return TRUE;
 }
 
-bool_t
-xdr_init_out (XDR *xdrs, init_out *objp)
+bool_t xdr_init_out (XDR *xdrs, init_out *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_int (xdrs, &objp->errno))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->status))
@@ -177,11 +149,8 @@ xdr_init_out (XDR *xdrs, init_out *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_open_in (XDR *xdrs, open_in *objp)
+bool_t xdr_open_in (XDR *xdrs, open_in *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_string (xdrs, &objp->dev, ~0))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->unit))
@@ -189,11 +158,8 @@ xdr_open_in (XDR *xdrs, open_in *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_open_out (XDR *xdrs, open_out *objp)
+bool_t xdr_open_out (XDR *xdrs, open_out *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_int (xdrs, &objp->errno))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->path))
@@ -201,11 +167,8 @@ xdr_open_out (XDR *xdrs, open_out *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_blk_in (XDR *xdrs, blk_in *objp)
+bool_t xdr_blk_in (XDR *xdrs, blk_in *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_pointer (xdrs, (char **)&objp->ext, sizeof (camacadd_lcl), (xdrproc_t) xdr_camacadd_lcl))
 		 return FALSE;
 	 if (!xdr_pointer (xdrs, (char **)&objp->cb, sizeof (ctrlblk_lcl), (xdrproc_t) xdr_ctrlblk_lcl))
@@ -216,11 +179,8 @@ xdr_blk_in (XDR *xdrs, blk_in *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_blk_out (XDR *xdrs, blk_out *objp)
+bool_t xdr_blk_out (XDR *xdrs, blk_out *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_int (xdrs, &objp->errno))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->status))
@@ -233,11 +193,8 @@ xdr_blk_out (XDR *xdrs, blk_out *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_mact_in (XDR *xdrs, mact_in *objp)
+bool_t xdr_mact_in (XDR *xdrs, mact_in *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_array (xdrs, (char **)&objp->ext.ext_val, (u_int *) &objp->ext.ext_len, ~0,
 		sizeof (camacadd_lcl), (xdrproc_t) xdr_camacadd_lcl))
 		 return FALSE;
@@ -255,11 +212,8 @@ xdr_mact_in (XDR *xdrs, mact_in *objp)
 	return TRUE;
 }
 
-bool_t
-xdr_mact_out (XDR *xdrs, mact_out *objp)
+bool_t xdr_mact_out (XDR *xdrs, mact_out *objp)
 {
-	 register long *buf;
-
 	 if (!xdr_int (xdrs, &objp->errno))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->status))

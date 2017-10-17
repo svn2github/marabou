@@ -202,7 +202,7 @@ Bool_t TMrbSubevent_Sis_3300::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbCon
 	TString pType[2];
 	TString pName[2];
 	Bool_t pIsTrig[2];
-	Int_t nofChansPerGroup;
+	Int_t nofChansPerGroup = -1;
 	TIterator * piter;
 
 	switch (TagIndex) {

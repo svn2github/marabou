@@ -70,24 +70,11 @@ struct dev
 
 struct timeval tv; /* struct for changing client timeout */
 
-#ifdef __STDC__
 static int cmpdev (char*, struct dev*);
 static int hput (char*, void*);
 static void *hget (char*, int (*)());
-#else
-static int cmpdev ();
-static int hput ();
-static void *hget ();
-#endif
 
-
-#ifdef __STDC__
 int _camac_open (struct camacent *cam, struct camacadd **net)
-#else
-int _camac_open (cam, net)
-struct camacent *cam;
-struct camacadd **net;
-#endif
 {
     struct open_in in;
     struct open_out *out;
@@ -132,7 +119,7 @@ struct camacadd **net;
         
         tv.tv_sec = 300; /* change timeout to 5 minutes */ 
         tv.tv_usec = 0; /* default value */
-        clnt_control(p->cl, CLSET_TIMEOUT, &tv);        
+        clnt_control(p->cl, CLSET_TIMEOUT, (char *) &tv);        
 
         if (hput (p->dev, p) != 0)
         {
@@ -156,7 +143,7 @@ struct camacadd **net;
 
         tv.tv_sec = 300; /* change timeout to 5 minutes */ 
         tv.tv_usec = 0; /* default value */
-        clnt_control(p->cl, CLSET_TIMEOUT, &tv); 
+        clnt_control(p->cl, CLSET_TIMEOUT, (char *) &tv); 
 
 	if (p->cl == NULL)
 	{
@@ -197,13 +184,7 @@ struct camacadd **net;
     return (0) ;
 }
 
-#ifdef __STDC__
 static int cmpdev (char *k, struct dev *s)
-#else
-static int cmpdev (k, s)
-char *k;
-struct dev *s;
-#endif
 {
      return (strcmp (k, s->dev));
 }
@@ -217,19 +198,9 @@ struct dev *s;
 static void *hash_table [HASH_DIM];
 static int hash_count;
 
-#ifdef __STDC__
 static int hash (char*);
-#else
-static int hash ();
-#endif
 
-#ifdef __STDC__
 static int hput (char *k, void *x)
-#else
-static int hput (k, x)
-void *x;
-char *k;
-#endif
 {
     unsigned int hashval = hash (k);
     unsigned int h = hashval & (HASH_DIM - 1);
@@ -252,13 +223,7 @@ char *k;
     }
 }
 
-#ifdef __STDC__
 static void *hget (char *k, int (*cmp)())
-#else
-static void *hget (k, cmp)
-char *k;
-int (*cmp)();
-#endif
 {
     unsigned int hashval = hash (k);
     unsigned int h = hashval & (HASH_DIM - 1);
@@ -278,12 +243,7 @@ int (*cmp)();
     return NULL;
 }
 
-#ifdef __STDC__
 static int hash (char *k)
-#else
-static int hash (k)
-char *k;
-#endif
 {
     unsigned int h = 0;
     unsigned int g;

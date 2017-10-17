@@ -409,6 +409,7 @@ class TMrbMesytec_Mdpp16 : public TMrbVMEModule {
 		void DefineRegisters(); 							// define vme registers
 		Bool_t UpdateSettings();							// update settings
 		void SetupMCST();									// MCST settings
+		void SetupCBLT();									// CBLT settings
 
 	protected:
 		TString fSettingsFile;
