@@ -1853,7 +1853,7 @@ void VMESis3302Panel::UpdateDecayTime(TC2LSis3302 * Module, Int_t Channel) {
 		Module->ReadTauFactor(tau, Channel);
 	}
 
-	Double_t sampling;
+	Double_t sampling = 0;
 	switch (decim) {
 		case kVMEDecimDis:	sampling = 1000.; break;
 		case kVMEDecim2:	sampling = 2000.; break;
