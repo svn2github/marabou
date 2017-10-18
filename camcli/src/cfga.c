@@ -83,13 +83,13 @@
 
 extern int _cam_notqx;
 
-extern int _camac_mact (struct camacadd *, int *, int *, int *, struct ctrlblk *);
+extern int _camac_mact (struct camacadd **, int *, int *, int *, struct ctrlblk *);
 
 int cfga (unsigned int *f, struct camacadd *ext [], int *data, int *q, struct ctrlblk *cb)
 {
     int status;
 
-    status = _camac_mact (ext, f, data, q, cb);
+    status = _camac_mact (ext, (int *) f, data, q, cb);
 
     return (status);
 }
