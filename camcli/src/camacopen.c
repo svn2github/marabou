@@ -60,6 +60,8 @@
 
 extern int _cam_errno;
 
+int _decode_neterr (int);
+
 /* HASH TABLE */
 struct dev
 {
@@ -78,7 +80,6 @@ int _camac_open (struct camacent *cam, struct camacadd **net)
 {
     struct open_in in;
     struct open_out *out;
-    struct rpcent *r;
     char name [80];
     struct dev *p ;
     long rnumber;    

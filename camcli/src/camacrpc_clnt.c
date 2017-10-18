@@ -6,11 +6,6 @@
 #include <memory.h> /* for memset */
 #include "camacrpc.h"
 
-extern int _camac_act (struct camacadd *, int *);
-extern int _camac_mact (struct camacadd *, int *, int *, int *, struct ctrlblk *);
-extern int _camac_blk (struct camacadd *, int *, struct ctrlblk *);
-extern int _camac_open (struct camacent *, struct camacadd **);
-
 /* Default timeout can be changed using clnt_control() */
 static struct timeval TIMEOUT = { 25, 0 };
 
