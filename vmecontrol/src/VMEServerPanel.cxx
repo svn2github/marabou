@@ -57,9 +57,9 @@ const SMrbNamedX kVMEServerLogTypes[] =
 				{0, 									NULL,			NULL						}
 			};
 
-static Char_t * kVMEServerFileTypes[]	=	{	"All files",			"*",
-												NULL,					NULL
-											};
+//static Char_t * kVMEServerFileTypes[]	=	{	"All files",			"*",
+//												NULL,					NULL
+//											};
 
 extern TMrbC2Lynx * gMrbC2Lynx;
 extern VMEControlData * gVMEControlData;

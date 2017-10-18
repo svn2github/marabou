@@ -223,7 +223,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf, Bool_t Energy
 	const Char_t * sp;
 	TMrbString moduleName, paramName;
 
-	UInt_t energy = EnergyLongFlag ? *((UInt_t *) &fData[kHitEnergyLong]) : (UInt_t) fData[kHitEnergy];
+	UInt_t energy = EnergyLongFlag ? ((fData[kHitEnergy] << 16) | fData[kHitEnergyLong]) : (UInt_t) fData[kHitEnergy];
 
 	if (PrintNames) {
 		sp = gMrbAnalyze->GetModuleName(fModuleNumber);

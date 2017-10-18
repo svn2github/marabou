@@ -18,11 +18,11 @@ xdr_camacadd_lcl (XDR *xdrs, camacadd_lcl *objp)
 
 bool_t xdr_ctrlblk_lcl (XDR *xdrs, ctrlblk_lcl *objp)
 {
-	 register long *buf;
+	 long *buf;
 
 
 	if (xdrs->x_op == XDR_ENCODE) {
-		buf = XDR_INLINE(xdrs,4 * BYTES_PER_XDR_UNIT);
+		buf = (long *) xdr_inline(xdrs,4 * BYTES_PER_XDR_UNIT);
 		if (buf == NULL) {
 			 if (!xdr_u_int (xdrs, &objp->rpt_count))
 				 return FALSE;
@@ -40,7 +40,7 @@ bool_t xdr_ctrlblk_lcl (XDR *xdrs, ctrlblk_lcl *objp)
 		}
 		return TRUE;
 	} else if (xdrs->x_op == XDR_DECODE) {
-		buf = XDR_INLINE(xdrs,4 * BYTES_PER_XDR_UNIT);
+		buf = (long *) xdr_inline(xdrs,4 * BYTES_PER_XDR_UNIT);
 		if (buf == NULL) {
 			 if (!xdr_u_int (xdrs, &objp->rpt_count))
 				 return FALSE;
