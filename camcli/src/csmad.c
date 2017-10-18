@@ -77,6 +77,8 @@
 
 extern int _cam_errno;
 
+extern int _camac_addscan (struct camacadd **, int *, struct ctrlblk *);
+
 int csmad (unsigned int f, struct camacadd *ext_h [], int *data, struct ctrlblk *cb)
 {
     int i,
