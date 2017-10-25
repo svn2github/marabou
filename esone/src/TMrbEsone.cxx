@@ -1298,9 +1298,9 @@ void TMrbEsone::PrintStatus(const Char_t * Method) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * action;
-	Bool_t xFlag;
-	Bool_t qFlag;
-	Int_t errorCode;
+	Bool_t xFlag = kFALSE;
+	Bool_t qFlag = kFALSE;
+	Int_t errorCode = 0;
 	TString errorMsg;
 
 	action = this->GetAction();

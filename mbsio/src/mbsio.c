@@ -2782,10 +2782,14 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 	int infoWord;
 	int swInfoWord;
 	int nb;
-
+	
 	errno = 0;
 
 	nb = read(fildes, &infoWord, sizeof(infoWord));
+	if (nb == -1) {
+		sprintf(loc_errbuf, "?SYSERR-[mbs_read_server_info]- %s (%d)", strerror(errno), errno);
+		return NULL;
+	}
 	if (infoWord == 1) {
 		info->is_swapped = FALSE;
 	} else {
@@ -2795,7 +2799,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 		} else {
 			sprintf(loc_errbuf,
 				"?ILINFB-[mbs_read_server_info]- Illegal info data (version mismatch?)");
-			return(NULL);
+			return NULL;
 		}
 	}
 
@@ -2808,6 +2812,10 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 	}
 
 	nb = read(fildes, &infoWord, sizeof(infoWord));
+	if (nb == -1) {
+		sprintf(loc_errbuf, "?SYSERR-[mbs_read_server_info]- %s (%d)", strerror(errno), errno);
+		return NULL;
+	}
 	if (info->is_swapped) {
 		bto_get_int32((int *) &swInfoWord, (char *) &infoWord, 1, BYTE_ORDER_REV);
 		info->buf_p_stream = swInfoWord;
@@ -2816,6 +2824,10 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 	}
 
 	nb = read(fildes, &infoWord, sizeof(infoWord));
+	if (nb == -1) {
+		sprintf(loc_errbuf, "?SYSERR-[mbs_read_server_info]- %s (%d)", strerror(errno), errno);
+		return NULL;
+	}
 	if (info->is_swapped) {
 		bto_get_int32((int *) &swInfoWord, (char *) &infoWord, 1, BYTE_ORDER_REV);
 		info->nof_streams = swInfoWord;
@@ -2829,9 +2841,9 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 			info->nof_streams);
 	if (errno != 0) {
 		sprintf(loc_errbuf, "?SYSERR-[mbs_read_server_info]- %s (%d)", strerror(errno), errno);
-		return(NULL);
+		return NULL;
 	}
-	return(info);
+	return info;
 }
 
 /*-------------------------------------------------------------------------------------------*/

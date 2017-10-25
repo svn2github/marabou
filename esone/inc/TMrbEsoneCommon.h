@@ -76,10 +76,10 @@ enum					{	kEsoneDataMask			=	BIT(24) - 1 };
 enum					{	kEsoneNofRepeats		=	0x10000	 	};
 enum 					{	kEsoneWaitForServer		=	15		 	};
 
-#define C(x)    x
-#define N(x)    x
-#define A(x)    x
-#define F(x)    x
+#define CC(x)	x		// changed from C(x) to CC(x) to avoid collision with function C() in TMath.h
+#define N(x)	x
+#define A(x)	x
+#define F(x)	x
 
 #define IS_F_READ(s)    ((Bool_t) (((UInt_t)(s) & 0x18) == 0))
 #define IS_F_WRITE(s)   ((Bool_t) (((UInt_t)(s) & 0x18) == 0x10))
