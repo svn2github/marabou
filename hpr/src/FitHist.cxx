@@ -593,7 +593,7 @@ void FitHist::SaveDefaults(Bool_t /*recalculate*/)
 			env->SetValue("fRangeUpY",  fRangeUpY);
 		}
 	}
-	if (fSelHist && fSelHist->TestBit(TObject::kNotDeleted)) {
+	if (GeneralAttDialog::fRememberTitle && fSelHist && fSelHist->TestBit(TObject::kNotDeleted)) {
 		if (fXtitle.Length() > 0)
 			env->SetValue("fXtitle", fXtitle);
 		if (fYtitle.Length() > 0)
@@ -644,9 +644,9 @@ void FitHist::RestoreDefaultRanges()
 			fSelHist->GetXaxis()->SetRange(fBinlx, fBinux);
 		}
 
-		if (lastset->Lookup("fXtitle"))
+		if (GeneralAttDialog::fRememberTitle && lastset->Lookup("fXtitle"))
 			fSelHist->GetXaxis()->SetTitle(lastset->GetValue("fXtitle", ""));
-		if (lastset->Lookup("fYtitle"))
+		if (GeneralAttDialog::fRememberTitle && lastset->Lookup("fYtitle"))
 			fSelHist->GetYaxis()->SetTitle(lastset->GetValue("fYtitle", ""));
 
 		if (is2dim(fSelHist)) {

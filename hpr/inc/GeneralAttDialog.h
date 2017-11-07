@@ -26,6 +26,7 @@ public:
    static Int_t fShowListsOnly;
    static Int_t fRememberLastSet;
    static Int_t fRememberZoom;
+   static Int_t fRememberTitle;
    static Int_t fRememberStatBox;
 	static Int_t fRememberLegendBox;
 	static Int_t fUseAttributeMacro;

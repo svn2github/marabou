@@ -1643,7 +1643,8 @@ void HandleMenus::BuildMenus()
 		fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
 
 	}
-	if (!fObject && fFitHist) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
+	if (!fObject && fFitHist)
+		fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
 	if ( nDim == 1)
 		fOptionMenu->AddEntry("How to display a 1-dim histogram", kOption1Dim);
 	if ( graph2d || (fFitHist && fFitHist->Its2dim())) {
@@ -1665,6 +1666,9 @@ void HandleMenus::BuildMenus()
 //			fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
 //		}
 	}
+	if (!fObject && fFitHist)
+		fOptionMenu->AddEntry("Default window sizes", kOptionWin);
+
 	fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
 	fAttrMenu->AddEntry("Axis / Title / StatBox Attributes", kOptionHist);
 	fAttrMenu->AddEntry("Canvas, Pad, Frame", kOptionPad);

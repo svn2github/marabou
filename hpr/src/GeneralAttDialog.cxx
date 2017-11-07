@@ -29,6 +29,7 @@ Int_t GeneralAttDialog::fUseRegexp = 0;
 Int_t GeneralAttDialog::fShowListsOnly = 0;
 Int_t GeneralAttDialog::fRememberLastSet = 1;
 Int_t GeneralAttDialog::fRememberZoom = 1;
+Int_t GeneralAttDialog::fRememberTitle = 0;
 Int_t GeneralAttDialog::fRememberStatBox = 0;
 Int_t GeneralAttDialog::fRememberLegendBox = 1;
 Int_t GeneralAttDialog::fUseAttributeMacro = 0;
@@ -202,6 +203,8 @@ ____________________________________________________________\n\
    fValp[ind++] = &fRememberLastSet;
    fRow_lab->Add(new TObjString("CheckButton_Remember Zoomings (by left mouse)"));
    fValp[ind++] = &fRememberZoom;
+   fRow_lab->Add(new TObjString("CheckButton_             Remember axis titles"));
+   fValp[ind++] = &fRememberTitle;
    fRow_lab->Add(new TObjString("CheckButton_     Remember position of StatBox"));
    fValp[ind++] = &fRememberStatBox;
 	fRow_lab->Add(new TObjString("CheckButton_   Remember position of LegendBox"));
@@ -327,6 +330,7 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fShowListsOnly",     fShowListsOnly);
    env.SetValue("GeneralAttDialog.fRememberLastSet",   fRememberLastSet);
    env.SetValue("GeneralAttDialog.fRememberZoom",      fRememberZoom);
+   env.SetValue("GeneralAttDialog.fRememberTitle",     fRememberTitle);
 	env.SetValue("GeneralAttDialog.fRememberStatBox",   fRememberStatBox);
 	env.SetValue("GeneralAttDialog.fRememberLegendBox", fRememberLegendBox);
 	env.SetValue("GeneralAttDialog.fUseAttributeMacro", fUseAttributeMacro);
@@ -363,6 +367,7 @@ void GeneralAttDialog::RestoreDefaults()
    fShowListsOnly = env.GetValue("GeneralAttDialog.fShowListsOnly", 0);
    fRememberLastSet = env.GetValue("GeneralAttDialog.fRememberLastSet", 1);
    fRememberZoom = env.GetValue("GeneralAttDialog.fRememberZoom", 1);
+   fRememberTitle = env.GetValue("GeneralAttDialog.fRememberTitle", 0);
 	fRememberStatBox = env.GetValue("GeneralAttDialog.fRememberStatBox", (Int_t)0);
 	fRememberLegendBox = env.GetValue("GeneralAttDialog.fRememberLegendBox", 1);
 	fUseAttributeMacro = env.GetValue("GeneralAttDialog.fUseAttributeMacro", 0);
