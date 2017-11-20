@@ -15,7 +15,7 @@ TMrbStatistics * getstat() {
 
   cout <<"MessageToM_analyze, send: " << mess << endl;
   sock->Send(mess);          // send message
-  Int_t  retval=0;
+  retval=0;
 
 //  cout << "Send" << endl;
 
@@ -30,7 +30,7 @@ TMrbStatistics * getstat() {
         char *str0 = new char[nobs];
         mess0->ReadString(str0, nobs);
         cout << str0 << endl;
-        delete str0;
+        delete [] str0;
         break;
      } else if ( mess0->What() == kMESS_OBJECT ) {
 

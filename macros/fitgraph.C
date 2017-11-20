@@ -27,8 +27,8 @@
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
-#include <iostream.h>
-#include <iomanip.h>
+#include <iostream>
+#include <iomanip>
 #include "TH1.h"
 #include "TGraph.h"
 #include "TGraphErrors.h"

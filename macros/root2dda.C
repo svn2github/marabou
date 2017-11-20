@@ -24,9 +24,8 @@
 //                   Arg1.Orientation:    horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
-
-#include <iostream.h>
-#include <iomanip.h>
+#include <iostream>
+#include <iomanip>
 
 #include "SetColor.h"
 

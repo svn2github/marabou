@@ -38,10 +38,12 @@ Int_t addup_all_hists(const char * filelist, const char * outfile){
       TIter next(inhist->GetListOfKeys());
       TKey* key;
       const char * hname;
-      while(key= (TKey*)next()){
+      TH1 *hresult, *hist;
+      
+      while( (key = (TKey*)next())){
          if(!strncmp(key->GetClassName(),"TH1",3) ||
             !strncmp(key->GetClassName(),"TH2",3)){
-            hname = (TObject*)key->GetName(); 
+            hname = key->GetName(); 
             cout << "histogram " << hname << endl;
             hresult = (TH1*)gROOT->GetList()->FindObject(hname);
             if(hresult)hresult->Print();
@@ -73,7 +75,7 @@ Int_t addup_all_hists(const char * filelist, const char * outfile){
       TIter next(gROOT->GetList());
       TH1 *h;
       TObject* obj;
-      while(obj= (TObject*)next()){
+      while( (obj = (TObject*)next())){
          if(obj->InheritsFrom(TH1::Class())){
             h = (TH1*)obj;
             h->Print();
