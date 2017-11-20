@@ -58,6 +58,7 @@ public:
    void BuildMenus();
    void SetLog(Int_t state);
    void Canvas2RootFile();
+   void AsTCanvas2RootFile();
 	void SetHist(TH1 *hist) { fSelHist = hist; };
 	TH1 *GetHist() { return fSelHist; };
 	void SetLiveSliceX(Int_t state);

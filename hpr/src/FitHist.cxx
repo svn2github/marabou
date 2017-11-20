@@ -522,7 +522,7 @@ void FitHist::DoSaveLimits()
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-	if (gHprDebug > 0)
+	if (gHprDebug > 2)
 		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist
 		<< " RecursiveRemove: " << obj << " " <<obj->GetName() << endl;
 	//fSelHist->Print();
@@ -532,7 +532,7 @@ void FitHist::RecursiveRemove(TObject * obj)
 		return;
 	}
 	if (fSelHist && obj != fSelHist) {
-		if (gHprDebug > 0) {
+		if (gHprDebug > 2) {
 			cout << "fSelHist->GetListOfFunctions()->GetSize() " 
 				<< fSelHist->GetListOfFunctions()->GetSize() << endl;
 //			if (fSelHist->GetListOfFunctions()->GetSize() > 0) 

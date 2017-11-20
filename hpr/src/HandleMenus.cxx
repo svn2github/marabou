@@ -196,6 +196,7 @@ enum ERootCanvasCommands {
 	kFHSelAnyDir,
 	kFHSeldCache,
 	kFHCanvasToFile,
+	kFHAsTCanvasToFile,
 	kFHHistToASCII,
 	kFHHistToGraph,
 	kFHPictToPS,
@@ -1105,8 +1106,10 @@ again:
 								Hpr::WriteGraphasASCII(fGraph1D, fRootCanvas);
 							break;
 						case kFHCanvasToFile:
-//                      fFitHist->WriteOutCanvas();
 							Canvas2RootFile();
+							break;
+						case kFHAsTCanvasToFile:
+							AsTCanvas2RootFile();
 							break;
 						case kFHHistToASCII:
 							fHistInPad = Hpr::FindHistInPad(fHCanvas);
@@ -1602,6 +1605,7 @@ void HandleMenus::BuildMenus()
 		fFileMenu->AddEntry("Create empty histogram",  kFHEmptyHist);
 	} else {
 		fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
+		fFileMenu->AddEntry("As TCanvas_to_ROOT-File", kFHAsTCanvasToFile);
 		if (fFitHist != NULL ) {
 			fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
 			fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
@@ -2039,6 +2043,25 @@ void HandleMenus::SetLiveSliceY(Int_t state)
 		fDisplayMenu->UnCheckEntry(kFHLiveSliceY);
 }
 
+//_______________________________________________________________________________________
+void HandleMenus::AsTCanvas2RootFile()
+{
+	TRootCanvas * trc = (TRootCanvas*)fHCanvas->GetCanvasImp();
+	Bool_t se = fHCanvas->GetShowEditor();
+	if ( se && fEditor != NULL) {
+		trc->ShowEditor(kFALSE);
+		fEditor->ShowToolBar(kFALSE);
+		fEditor->ExecuteAdjustSize(-1);
+	}
+   TCanvas *can =  Hpr::HT2TC(fHCanvas);
+	Save2FileDialog sfd(can, NULL, trc);
+	if ( se  && fEditor != NULL) {
+		trc->ShowEditor(kTRUE);
+		fEditor->ExecuteAdjustSize( 1);
+		fEditor->ShowToolBar(kTRUE);
+	}
+   delete can;
+}
 //_______________________________________________________________________________________
 void HandleMenus::Canvas2RootFile()
 {

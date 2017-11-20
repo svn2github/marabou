@@ -756,6 +756,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	static Int_t   lIncrColors  = env.GetValue("SuperImposeHist.AutoIncrColors", 1);
 	static Int_t   lSkipDialog  = env.GetValue("SuperImposeHist.SkipDialog", 0);
 	static Int_t   lWarnDiffBin = env.GetValue("SuperImposeHist.WarnDiffBin", 1);
+	static Int_t   lPaintStat   = env.GetValue("SuperImposeHist.PaintStat", 1);
 	
 	Double_t axis_offset;
 	static Double_t label_offset = 0.01;
@@ -805,6 +806,48 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 			nhists++;
 		}
 	}
+	if (gHprDebug > 0) 
+		cout << "nhists " << nhists
+		 << " maxLColor " <<  maxLColor 
+		 << " maxMColor " << maxMColor 
+		 << " maxFillColor " << maxFillColor 
+		<< endl;
+	// extract rgb from transparent color
+	if (maxFillColor > 10) {
+		TColor *ct = gROOT->GetColor(maxFillColor);
+		if (ct->GetRed() > 0.95) {
+			if (ct->GetGreen() > 0.95) {
+				if (ct->GetBlue() > 0.95) {
+					maxFillColor = 0;			//white
+				} else {
+					maxFillColor = 5; 		// yellow
+				}
+			} else {
+				if ( ct->GetBlue() > 0.95) {
+					maxFillColor = 6;				// magenta
+				} else {
+					maxFillColor = 2;				// red
+				}
+			}
+		} else {
+			if (ct->GetGreen() > 0.95) {
+				if (ct->GetBlue() > 0.95) {
+					maxFillColor = 7;			// cyan
+				} else {
+					maxFillColor = 3; 		// green
+				}
+			} else {
+				if (ct->GetBlue() > 0.95) {
+					maxFillColor = 4;			// blue
+				} else {
+					maxFillColor = 1; 		// black
+				}
+			}
+		}
+	}
+	if (gHprDebug > 0) 
+		cout << " maxFillColor conv " << maxFillColor 
+		<< endl;
 	if ( lIncrColors && nhists > 1) {
 		lLColor = maxLColor + 1;
 		lMColor = maxMColor + 1;
@@ -816,14 +859,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	Int_t do_scale = mode;
 	Int_t auto_scale = mode;
 //	lFillColor = env.GetValue("SuperImposeHist.FillColor", 2);
-	if (gHprDebug > 0)
-		cout << "nhists " << nhists << endl;
-//	if (nhists < 2) {
-//		axis_offset = 0.;
-//		lLColor = 2; 
-//		lMColor = 2;
-//		lFillColor = 2; 
-//	}
+
 	axis_color = lLColor;
 	static Style_t lFStyle;
 	static Style_t lLStyle;
@@ -848,6 +884,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		lStatBoxDX2 = sbo->GetX2NDC();
 		lStatBoxDY1 = sbo->GetY1NDC();
 		lStatBoxDY2 = sbo->GetY2NDC();
+		
 	}
 	if (hist->GetDimension() == 1 ) {
 		if ( !sbo ) {
@@ -879,9 +916,9 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		drawopt = "E";
 	}
 	if ( gHprDebug  > 0 ) {
-		cout << "horig->GetDrawOption() " << drawopt<< endl;
+		cout << "horig->GetDrawOption() |" << drawopt << "|"<< endl;
 		horig->Print();
-		cout << "hist->GetDrawOption() " << hist->GetDrawOption() << endl;
+		cout << "hist->GetDrawOption() |" << hist->GetDrawOption()<< "|" << endl;
 		hist->Print();
 	}
 	if ( lSkipDialog == 0 || nhists < 2 ) {
@@ -934,8 +971,8 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		valp[ind++] = &lIncrColors;
 		row_lab->Add(new TObjString("CheckButton+Skip Dialog"));
 		valp[ind++] = &lSkipDialog;
-		row_lab->Add(new TObjString("CheckButton+WarnDiffBin"));
-		valp[ind++] = &lWarnDiffBin;
+		row_lab->Add(new TObjString("CheckButton+Statboxes"));
+		valp[ind++] = &lPaintStat;
 		//		row_lab->Add(new TObjString("CheckButton+NoStatBox"));
 		//		valp[ind++] = &lNoStatBox;
 		
@@ -1040,26 +1077,35 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 		TRegexp zopt("Z");
 		drawopt(zopt)="";
 	}
-	if ( !drawopt.Contains("SAME") )
-		drawopt += "SAME";
 	if (gHprDebug > 0) 
-		cout << "DrawCopy(drawopt) " << drawopt << endl;
+		cout << "DrawCopy(drawopt) 1 " << drawopt << endl;
+	if ( lPaintStat > 0) {
+		if ( !drawopt.Contains("SAMES") )
+		drawopt += "SAMES";
+	} else {
+		if ( !drawopt.Contains("SAME") )
+		 drawopt += "SAME";
+	}
+	if (gHprDebug > 0) 
+		cout << "DrawCopy(drawopt) 2 " << drawopt << endl;
 	TH1 * hdrawn = hdisp->DrawCopy(drawopt.Data());
+	gPad->Modified();
+	gPad->Update();
 	nhs++;
 	TPaveStats *sb = (TPaveStats*)hdrawn->GetListOfFunctions()->FindObject("stats");
 	if ( sb ) {
 		if (gHprDebug > 0) {
-			cout << "SetStatBox: "  
-			<< " lStatBoxDX1 " << lStatBoxDX1<< 
-			" lStatBoxDX2 " << lStatBoxDX2<< 
-			" lStatBoxDY1 " << lStatBoxDY1<< 
-			" lStatBoxDY2 " << lStatBoxDY2<< 
+			cout << "SetStatBox: " << " n " << nhists 
+			<< " X1 " << lStatBoxDX1<< 
+			" X2 " << lStatBoxDX2<< 
+			" Y1 " << lStatBoxDY1<< 
+			" Y2 " << lStatBoxDY2<< 
 			endl;
 		}
 		sb->SetX1NDC(lStatBoxDX1);
 		sb->SetX2NDC(lStatBoxDX2);
-		sb->SetY1NDC(lStatBoxDY1 - nhists*(lStatBoxDY2 - lStatBoxDY1) );
-		sb->SetY2NDC(lStatBoxDY2 - nhists*(lStatBoxDY2 - lStatBoxDY1));
+		sb->SetY1NDC(lStatBoxDY1 - (lStatBoxDY2 - lStatBoxDY1));
+		sb->SetY2NDC(lStatBoxDY2 - (lStatBoxDY2 - lStatBoxDY1));
 	}
 	if ( new_axis != 0 && hist->GetDimension() == 1 ) {
 		//		TString opt("+SL");->GetFrame()->GetX1()
@@ -1200,6 +1246,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	env.SetValue("SuperImposeHist.AutoIncrColors", lIncrColors);
 	env.SetValue("SuperImposeHist.SkipDialog", lSkipDialog);
 	env.SetValue("SuperImposeHist.WarnDiffBin", lWarnDiffBin);
+	env.SetValue("SuperImposeHist.PaintStat", lPaintStat);
 	env.SaveLevel(kEnvLocal);
 	return nhs;
 }
@@ -1839,6 +1886,31 @@ TH1F* projectany(TH2* hin , TH1F* hp, Double_t co, Double_t sl)
 		}
 	}
 	return hproj;
+}
+//______________________________________________________________________
+
+TCanvas * HT2TC(GrCanvas *htc)
+{
+	Int_t ww = htc->GetWindowWidth();
+	Int_t wh = htc->GetWindowHeight()-26;	// account for decor
+	TString cn = htc->GetName();
+	// make name differ
+	if (cn.BeginsWith("C_")){
+		cn = cn(2,100);
+	} else {
+		cn.Prepend("TC_");
+	}
+	TString ct = htc->GetTitle();
+	TCanvas * tc = new TCanvas(cn, ct, ww,wh);
+	tc->Draw();
+	TList *lop = tc->GetListOfPrimitives();
+	TIter next( htc->GetListOfPrimitives());
+	TObject *obj;
+	while ( (obj = next()) ){
+		lop->Add(obj);
+	}
+//	tc->Draw();
+	return tc;
 }
 
 }   // end namespace Hpr
