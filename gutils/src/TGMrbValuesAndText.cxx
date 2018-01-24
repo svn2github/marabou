@@ -2131,7 +2131,8 @@ void TGMrbValuesAndText::SaveList()
 TGMrbValuesAndText::~TGMrbValuesAndText()
 {
 // Cleanup dialog.
-//      cout << "enter dtor: TGMrbValuesAndText " << endl;
+		if (gDebug > 0)
+			cout << "enter dtor: TGMrbValuesAndText " << endl;
 		if ( fMustRestoreDir ) {
 			gSystem->cd(fStartDir);
 //			cout << gSystem->Getenv("PWD") << endl;
@@ -2145,9 +2146,8 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
 				delete fClassName[i];
 		}
 		delete  [] fClassName;
-//      fWidgets->Delete("slow");
-//      delete fWidgets;
-//      cout << "exit dtor: TGMrbValuesAndText " << endl;
+		if (gDebug > 0)
+			cout << "exit dtor: TGMrbValuesAndText " << endl;
 }
 //_______________________________________________________________________________________
 
