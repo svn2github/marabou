@@ -28,7 +28,7 @@ private:
 public:
 
    ~TMrbHelpBrowser();
-
+	TMrbHelpBrowser();
    TMrbHelpBrowser(const char * InputFile = 0);
 	void RecursiveRemove(TObject*);
    void SetTextSize(Int_t size);

@@ -86,15 +86,17 @@ ClassImp(TMrbHelpBrowser)
 //End_Html
 //Use View Page source to see how it is done.
 
-TMrbHelpBrowser::~TMrbHelpBrowser()
+
+TMrbHelpBrowser::TMrbHelpBrowser()
 {
-	gROOT->GetList()->Remove(this);
-	gROOT->GetListOfCleanups()->Remove(this);
+	cout << "TMrbHelpBrowser default ctor " << this << endl<<flush;
 }
+//___________________________________________________________
 
 TMrbHelpBrowser::TMrbHelpBrowser(const char * InputFile)
 				:TNamed("TMrbHelpBrowser", "TMrbHelpBrowser")
 {
+	if (gDebug>0) cout << "TMrbHelpBrowser normal ctor " << this << endl;
 	UInt_t w, h;
 	Int_t screen_x, screen_y;
 	//  screen size in pixels
@@ -115,7 +117,7 @@ TMrbHelpBrowser::TMrbHelpBrowser(const char * InputFile)
 	fCanvasList = new TList();
 	fRootFile = 0;
 	fGifViewer = "xv";
-	gROOT->Append(this);
+	gROOT->GetList()->Add(this);
 	if(!InputFile){
 		cout << "WARNING: No input file given" << endl;
 	} else {
@@ -131,6 +133,14 @@ TMrbHelpBrowser::TMrbHelpBrowser(const char * InputFile)
 	gROOT->GetListOfCleanups()->Add(this);
 	cout << "Init TMrbHelpBrowser from: " << InputFile << endl;
 }
+//________________________________________________________________________________
+TMrbHelpBrowser::~TMrbHelpBrowser()
+{
+//	cout << "TMrbHelpBrowser dtor " << this << endl<<flush;
+	gROOT->GetList()->Remove(this);
+	gROOT->GetListOfCleanups()->Remove(this);
+}
+
 //________________________________________________________________________________
 
 void TMrbHelpBrowser::SetTextSize(Int_t size){
