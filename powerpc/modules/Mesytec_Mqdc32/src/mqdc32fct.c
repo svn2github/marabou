@@ -21,6 +21,10 @@
 
 #include "gd_readout.h"
 
+#include "mesy.h"
+#include "mesy_database.h"
+#include "mesy_protos.h"
+
 #include "mqdc32.h"
 #include "mqdc32_database.h"
 #include "mqdc32_protos.h"
@@ -32,95 +36,12 @@
 #include "err_mask_def.h"
 #include "errnum_def.h"
 
-void(*signal(sig, func))();
-bool_t busError;
-
-int numData;
-int rdoWc;
-
-int evtWc;
-int lastData;
-
 char msg[256];
-
-void mqdc32_catchBerr() { busError = TRUE; }
-
-s_mqdc32 * mqdc32_alloc(char * moduleName, s_mapDescr * md, int serial)
-{
-	s_mqdc32 * s;
-	int firmware, mainRev;
-
-	s = (s_mqdc32 *) calloc(1, sizeof(s_mqdc32));
-	if (s != NULL) {
-		s->md = md;
-		strcpy(s->moduleName, moduleName);
-		strcpy(s->prefix, "m_read_meb");
-		strcpy(s->mpref, "mqdc32: ");
-		s->serial = serial;
-		s->verbose = FALSE;
-		s->dumpRegsOnInit = FALSE;
-
-		s->mcstSignature = 0x0;
-		s->cbltSignature = 0x0;
-		s->firstInCbltChain = FALSE;
-		s->lastInCbltChain = FALSE;
-		
-		s->mcstAddr = 0;
-		s->cbltAddr = 0;
-
-
-		firmware = GET16(s->md->vmeBase, MQDC32_FIRMWARE_REV);
-		mainRev = (firmware >> 8) & 0xff;
-		s->memorySize = (mainRev >= 2) ? (8*1024 + 2) : (1024 + 2);
-		
-		busError = FALSE;
-	} else {
-		sprintf(msg, "[%salloc] %s: Can't allocate mqdc32 struct", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	}
-	return s;
-}
-
-int mqdc32_initBLT(s_mqdc32 * s, int flag)
-{
-	if (!s->blockXfer) return flag;			/* not using BLT -> nothing to do */
-	
-	if (flag == kBLTInitError) {			/* BLT not available */
-		s->blockXfer = FALSE;
-		return kBLTInitError;
-	}
-		
-	if (flag == kBLTInitNotDone) {			/* we have to call InitBLT() once */
-		if (!initBLT()) {
-			s->blockXfer = FALSE;			/* not successful: turn off BLT */
-			return kBLTInitError;
-		}
-	}
-	
-	if (s->md->mappingBLT == kVMEMappingUndef) {	/* already mapped? */
-		if (mapBLT(s->md, 0xb) == NULL) {			/* no, map BLT page */
-			s->blockXfer = FALSE;					/* no succedss, turn BLT off */
-			return kBLTInitDone;					/* BLT status remains unchanged */
-		}
-	}
-
-	setBLTMode(s->md, BMA_M_Vsz32, BMA_M_WzD32, TRUE);
-	return kBLTInitDone;
-}
-
-bool_t mqdc32_useBLT(s_mqdc32 * s) {
-	return s->blockXfer;
-}
-
-void mqdc32_soft_reset(s_mqdc32 * s)
-{
-  SET16(s->md->vmeBase, MQDC32_SOFT_RESET, 0x1);
-}
 
 uint16_t mqdc32_getThreshold(s_mqdc32 * s, uint16_t channel)
 {
 	uint16_t thresh = 0;
-	if (channel < MQDC_NOF_CHANNELS) thresh = GET16(s->md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel) & MQDC32_THRESHOLD_MASK;
+	if (channel < MQDC_NOF_CHANNELS) thresh = GET16(s->m.md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel) & MQDC32_THRESHOLD_MASK;
 	return thresh;
 }
 
@@ -131,114 +52,31 @@ void mqdc32_setThreshold_db(s_mqdc32 * s, uint16_t channel)
 
 void mqdc32_setThreshold(s_mqdc32 * s, uint16_t channel, uint16_t thresh)
 {
-	if (channel < MQDC_NOF_CHANNELS) SET16(s->md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel, thresh & MQDC32_THRESHOLD_MASK);
-}
-
-void mqdc32_setAddrReg_db(s_mqdc32 * s) { mqdc32_setAddrReg(s, s->addrReg); }
-
-void mqdc32_setAddrReg(s_mqdc32 * s, uint16_t vmeAddr)
-{
-	if (vmeAddr) {
-		SET16(s->md->vmeBase, MQDC32_ADDR_REG, vmeAddr);
-		SET16(s->md->vmeBase, MQDC32_ADDR_SOURCE, MQDC32_ADDR_SOURCE_REG);
-		s->md->vmeBase = vmeAddr;
-	}
-}
-
-uint16_t mqdc32_getAddrReg(s_mqdc32 * s)
-{
-	uint16_t source = GET16(s->md->vmeBase, MQDC32_ADDR_SOURCE);
-	if (source & MQDC32_ADDR_SOURCE_REG) return GET16(s->md->vmeBase, MQDC32_ADDR_REG);
-	else return 0;
-}
-
-void mqdc32_setModuleId_db(s_mqdc32 * s) { mqdc32_setModuleId(s, s->moduleId); }
-
-void mqdc32_setModuleId(s_mqdc32 * s, uint16_t id)
-{
-	SET16(s->md->vmeBase, MQDC32_MODULE_ID, id & MQDC32_MODULE_ID_MASK);
-}
-
-uint16_t mqdc32_getModuleId(s_mqdc32 * s)
-{
-	return GET16(s->md->vmeBase, MQDC32_MODULE_ID) & MQDC32_MODULE_ID_MASK;
-}
-
-uint16_t mqdc32_getFifoLength(s_mqdc32 * s)
-{
-	return GET16(s->md->vmeBase, MQDC32_BUFFER_DATA_LENGTH) & MQDC32_BUFFER_DATA_LENGTH_MASK;
-}
-
-void mqdc32_setDataWidth_db(s_mqdc32 * s) { mqdc32_setDataWidth(s, s->dataWidth); }
-
-void mqdc32_setDataWidth(s_mqdc32 * s, uint16_t width)
-{
-	SET16(s->md->vmeBase, MQDC32_DATA_LENGTH_FORMAT, width & MQDC32_DATA_LENGTH_FORMAT_MASK);
-}
-
-uint16_t mqdc32_getDataWidth(s_mqdc32 * s)
-{
-	return GET16(s->md->vmeBase, MQDC32_DATA_LENGTH_FORMAT) & MQDC32_DATA_LENGTH_FORMAT_MASK;
-}
-
-void mqdc32_setMultiEvent_db(s_mqdc32 * s) { mqdc32_setMultiEvent(s, s->multiEvent); }
-
-void mqdc32_setMultiEvent(s_mqdc32 * s, uint16_t mode)
-{
-	SET16(s->md->vmeBase, MQDC32_MULTI_EVENT, mode & MQDC32_MULTI_EVENT_MASK);
-}
-
-uint16_t mqdc32_getMultiEvent(s_mqdc32 * s)
-{
-	return GET16(s->md->vmeBase, MQDC32_MULTI_EVENT) & MQDC32_MULTI_EVENT_MASK;
-}
-
-void mqdc32_setXferData_db(s_mqdc32 * s) { mqdc32_setXferData(s, s->xferData); }
-
-void mqdc32_setXferData(s_mqdc32 * s, uint16_t wc)
-{
-	SET16(s->md->vmeBase, MQDC32_MAX_XFER_DATA, wc & MQDC32_MAX_XFER_DATA_MASK);
-}
-
-uint16_t mqdc32_getXferData(s_mqdc32 * s)
-{
-	return GET16(s->md->vmeBase, MQDC32_MAX_XFER_DATA) & MQDC32_MAX_XFER_DATA_MASK;
-}
-
-void mqdc32_setMarkingType_db(s_mqdc32 * s) { mqdc32_setMarkingType(s, s->markingType); }
-
-void mqdc32_setMarkingType(s_mqdc32 * s, uint16_t type)
-{
-	SET16(s->md->vmeBase, MQDC32_MARKING_TYPE, type & MQDC32_MARKING_TYPE_MASK);
-}
-
-uint16_t mqdc32_getMarkingType(s_mqdc32 * s)
-{
-	return GET16(s->md->vmeBase, MQDC32_MARKING_TYPE) & MQDC32_MARKING_TYPE_MASK;
+	if (channel < MQDC_NOF_CHANNELS) SET16(s->m.md->vmeBase, MQDC32_THRESHOLD + sizeof(uint16_t) * channel, thresh & MQDC32_THRESHOLD_MASK);
 }
 
 void mqdc32_setBankOperation_db(s_mqdc32 * s) { mqdc32_setBankOperation(s, s->bankOperation); }
 
 void mqdc32_setBankOperation(s_mqdc32 * s, uint16_t oper)
 {
-	SET16(s->md->vmeBase, MQDC32_BANK_OPERATION, oper & MQDC32_BANK_OPERATION_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_BANK_OPERATION, oper & MQDC32_BANK_OPERATION_MASK);
 }
 
 uint16_t mqdc32_getBankOperation(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_BANK_OPERATION) & MQDC32_BANK_OPERATION_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_BANK_OPERATION) & MQDC32_BANK_OPERATION_MASK;
 }
 
 void mqdc32_setAdcResolution_db(s_mqdc32 * s) { mqdc32_setAdcResolution(s, s->adcResolution); }
 
 void mqdc32_setAdcResolution(s_mqdc32 * s, uint16_t res)
 {
-	SET16(s->md->vmeBase, MQDC32_ADC_RESOLUTION, res & MQDC32_ADC_RESOLUTION_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_ADC_RESOLUTION, res & MQDC32_ADC_RESOLUTION_MASK);
 }
 
 uint16_t mqdc32_getAdcResolution(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_ADC_RESOLUTION) & MQDC32_ADC_RESOLUTION_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_ADC_RESOLUTION) & MQDC32_ADC_RESOLUTION_MASK;
 }
 
 void mqdc32_setBankOffset_db(s_mqdc32 * s, uint16_t bank) { mqdc32_setBankOffset(s, bank, s->bankOffset[bank]); }
@@ -251,7 +89,7 @@ void mqdc32_setBankOffset(s_mqdc32 * s, uint16_t bank, uint16_t offset)
 		case 1: addr = MQDC32_OFFSET_BANK_1; break;
 		default: return;
 	}
-	SET16(s->md->vmeBase, addr, offset & MQDC32_BANK_OFFSET_MASK);
+	SET16(s->m.md->vmeBase, addr, offset & MQDC32_BANK_OFFSET_MASK);
 }
 
 uint16_t mqdc32_getBankOffset(s_mqdc32 * s, uint16_t bank)
@@ -262,7 +100,7 @@ uint16_t mqdc32_getBankOffset(s_mqdc32 * s, uint16_t bank)
 		case 1: addr = MQDC32_OFFSET_BANK_1; break;
 		default: return;
 	}
-	return GET16(s->md->vmeBase, addr) & MQDC32_BANK_OFFSET_MASK;
+	return GET16(s->m.md->vmeBase, addr) & MQDC32_BANK_OFFSET_MASK;
 }
 
 void mqdc32_setGateLimit_db(s_mqdc32 * s, uint16_t bank) { mqdc32_setGateLimit(s, bank, s->gateLimit[bank]); }
@@ -275,7 +113,7 @@ void mqdc32_setGateLimit(s_mqdc32 * s, uint16_t bank, uint16_t limit)
 		case 1: addr = MQDC32_GATE_LIMIT_BANK_1; break;
 		default: return;
 	}
-	SET16(s->md->vmeBase, addr, limit & MQDC32_GATE_LIMIT_MASK);
+	SET16(s->m.md->vmeBase, addr, limit & MQDC32_GATE_LIMIT_MASK);
 }
 
 uint16_t mqdc32_getGateLimit(s_mqdc32 * s, uint16_t bank)
@@ -286,7 +124,7 @@ uint16_t mqdc32_getGateLimit(s_mqdc32 * s, uint16_t bank)
 		case 1: addr = MQDC32_GATE_LIMIT_BANK_1; break;
 		default: return;
 	}
-	return GET16(s->md->vmeBase, addr) & MQDC32_GATE_LIMIT_MASK;
+	return GET16(s->m.md->vmeBase, addr) & MQDC32_GATE_LIMIT_MASK;
 }
 
 void mqdc32_setSlidingScaleOff_db(s_mqdc32 * s) { mqdc32_setSlidingScaleOff(s, s->slidingScaleOff); }
@@ -294,12 +132,12 @@ void mqdc32_setSlidingScaleOff_db(s_mqdc32 * s) { mqdc32_setSlidingScaleOff(s, s
 void mqdc32_setSlidingScaleOff(s_mqdc32 * s, bool_t flag)
 {
 	uint16_t f = flag ? 1 : 0;
-	SET16(s->md->vmeBase, MQDC32_SLIDING_SCALE_OFF, f);
+	SET16(s->m.md->vmeBase, MQDC32_SLIDING_SCALE_OFF, f);
 }
 
 bool_t mqdc32_getSlidingScaleOff(s_mqdc32 * s)
 {
-	uint16_t f = GET16(s->md->vmeBase, MQDC32_SLIDING_SCALE_OFF) & MQDC32_SLIDING_SCALE_OFF_MASK;
+	uint16_t f = GET16(s->m.md->vmeBase, MQDC32_SLIDING_SCALE_OFF) & MQDC32_SLIDING_SCALE_OFF_MASK;
 	return (f != 0) ? TRUE : FALSE;
 }
 
@@ -308,12 +146,12 @@ void mqdc32_setSkipOutOfRange_db(s_mqdc32 * s) { mqdc32_setSkipOutOfRange(s, s->
 void mqdc32_setSkipOutOfRange(s_mqdc32 * s, bool_t flag)
 {
 	uint16_t f = flag ? 1 : 0;
-	SET16(s->md->vmeBase, MQDC32_SKIP_OUT_OF_RANGE, f);
+	SET16(s->m.md->vmeBase, MQDC32_SKIP_OUT_OF_RANGE, f);
 }
 
 bool_t mqdc32_getSkipOutOfRange(s_mqdc32 * s)
 {
-	uint16_t f = GET16(s->md->vmeBase, MQDC32_SKIP_OUT_OF_RANGE) & MQDC32_SKIP_OUT_OF_RANGE_MASK;
+	uint16_t f = GET16(s->m.md->vmeBase, MQDC32_SKIP_OUT_OF_RANGE) & MQDC32_SKIP_OUT_OF_RANGE_MASK;
 	return (f != 0) ? TRUE : FALSE;
 }
 
@@ -322,12 +160,12 @@ void mqdc32_setIgnoreThresholds_db(s_mqdc32 * s) { mqdc32_setIgnoreThresholds(s,
 void mqdc32_setIgnoreThresholds(s_mqdc32 * s, bool_t flag)
 {
 	uint16_t f = flag ? 1 : 0;
-	SET16(s->md->vmeBase, MQDC32_IGNORE_THRESHOLDS, f);
+	SET16(s->m.md->vmeBase, MQDC32_IGNORE_THRESHOLDS, f);
 }
 
 bool_t mqdc32_getIgnoreThresholds(s_mqdc32 * s)
 {
-	uint16_t f = GET16(s->md->vmeBase, MQDC32_IGNORE_THRESHOLDS) & MQDC32_IGNORE_THRESH_MASK;
+	uint16_t f = GET16(s->m.md->vmeBase, MQDC32_IGNORE_THRESHOLDS) & MQDC32_IGNORE_THRESH_MASK;
 	return (f != 0) ? TRUE : FALSE;
 }
 
@@ -335,72 +173,72 @@ void mqdc32_setInputCoupling_db(s_mqdc32 * s) { mqdc32_setInputCoupling(s, s->in
 
 void mqdc32_setInputCoupling(s_mqdc32 * s, uint16_t coupling)
 {
-	SET16(s->md->vmeBase, MQDC32_INPUT_COUPLING, coupling & MQDC32_INPUT_COUPLING_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_INPUT_COUPLING, coupling & MQDC32_INPUT_COUPLING_MASK);
 }
 
 uint16_t mqdc32_getInputCoupling(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_INPUT_COUPLING) & MQDC32_INPUT_COUPLING_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_INPUT_COUPLING) & MQDC32_INPUT_COUPLING_MASK;
 }
 
 void mqdc32_setEclTerm_db(s_mqdc32 * s) { mqdc32_setEclTerm(s, s->eclTerm); }
 
 void mqdc32_setEclTerm(s_mqdc32 * s, uint16_t term)
 {
-	SET16(s->md->vmeBase, MQDC32_ECL_TERMINATORS, term & MQDC32_ECL_TERMINATORS_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_ECL_TERMINATORS, term & MQDC32_ECL_TERMINATORS_MASK);
 }
 
 uint16_t mqdc32_getEclTerm(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_ECL_TERMINATORS) & MQDC32_ECL_TERMINATORS_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_ECL_TERMINATORS) & MQDC32_ECL_TERMINATORS_MASK;
 }
 
 void mqdc32_setEclG1Osc_db(s_mqdc32 * s) { mqdc32_setEclG1Osc(s, s->eclG1Osc); }
 
 void mqdc32_setEclG1Osc(s_mqdc32 * s, uint16_t go)
 {
-	SET16(s->md->vmeBase, MQDC32_ECL_G1_OSC, go & MQDC32_ECL_G1_OSC_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_ECL_G1_OSC, go & MQDC32_ECL_G1_OSC_MASK);
 }
 
 uint16_t mqdc32_getEclG1Osc(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_ECL_G1_OSC) & MQDC32_ECL_G1_OSC_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_ECL_G1_OSC) & MQDC32_ECL_G1_OSC_MASK;
 }
 
 void mqdc32_setEclFclRts_db(s_mqdc32 * s) { mqdc32_setEclFclRts(s, s->eclFclRts); }
 
 void mqdc32_setEclFclRts(s_mqdc32 * s, uint16_t fr)
 {
-	SET16(s->md->vmeBase, MQDC32_ECL_FCL_RTS, fr & MQDC32_ECL_FCL_RTS_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_ECL_FCL_RTS, fr & MQDC32_ECL_FCL_RTS_MASK);
 }
 
 uint16_t mqdc32_getEclFclRts(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_ECL_FCL_RTS) & MQDC32_ECL_FCL_RTS_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_ECL_FCL_RTS) & MQDC32_ECL_FCL_RTS_MASK;
 }
 
 void mqdc32_setGateSelect_db(s_mqdc32 * s) { mqdc32_setGateSelect(s, s->gateSelect); }
 
 void mqdc32_setGateSelect(s_mqdc32 * s, uint16_t select)
 {
-	SET16(s->md->vmeBase, MQDC32_GATE_SELECT, select & MQDC32_GATE_SELECT_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_GATE_SELECT, select & MQDC32_GATE_SELECT_MASK);
 }
 
 uint16_t mqdc32_getGateSelect(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_GATE_SELECT) & MQDC32_GATE_SELECT_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_GATE_SELECT) & MQDC32_GATE_SELECT_MASK;
 }
 
 void mqdc32_setNimG1Osc_db(s_mqdc32 * s) { mqdc32_setNimG1Osc(s, s->nimG1Osc); }
 
 void mqdc32_setNimG1Osc(s_mqdc32 * s, uint16_t go)
 {
-	SET16(s->md->vmeBase, MQDC32_NIM_G1_OSC, go & MQDC32_NIM_G1_OSC_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_NIM_G1_OSC, go & MQDC32_NIM_G1_OSC_MASK);
 }
 
 uint16_t mqdc32_getNimG1Osc(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_NIM_G1_OSC) & MQDC32_NIM_G1_OSC_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_NIM_G1_OSC) & MQDC32_NIM_G1_OSC_MASK;
 }
 
 
@@ -408,81 +246,43 @@ void mqdc32_setNimFclRts_db(s_mqdc32 * s) { mqdc32_setNimFclRts(s, s->nimFclRts)
 
 void mqdc32_setNimFclRts(s_mqdc32 * s, uint16_t fr)
 {
-	SET16(s->md->vmeBase, MQDC32_NIM_FCL_RTS, fr & MQDC32_NIM_FCL_RTS_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_NIM_FCL_RTS, fr & MQDC32_NIM_FCL_RTS_MASK);
 }
 
 uint16_t mqdc32_getNimFclRts(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_NIM_FCL_RTS) & MQDC32_NIM_FCL_RTS_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_NIM_FCL_RTS) & MQDC32_NIM_FCL_RTS_MASK;
 }
 
 void mqdc32_setNimBusy_db(s_mqdc32 * s) { mqdc32_setNimBusy(s, s->nimBusy); }
 
 void mqdc32_setNimBusy(s_mqdc32 * s, uint16_t busy)
 {
-	SET16(s->md->vmeBase, MQDC32_NIM_BUSY, busy & MQDC32_NIM_BUSY_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_NIM_BUSY, busy & MQDC32_NIM_BUSY_MASK);
 }
 
 uint16_t mqdc32_getNimBusy(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_NIM_BUSY) & MQDC32_NIM_BUSY_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_NIM_BUSY) & MQDC32_NIM_BUSY_MASK;
 }
 
 void mqdc32_setPulserStatus_db(s_mqdc32 * s) { mqdc32_setPulserStatus(s, s->pulserStatus); }
 
 void mqdc32_setPulserStatus(s_mqdc32 * s, uint16_t mode)
 {
-	SET16(s->md->vmeBase, MQDC32_PULSER_STATUS, mode & MQDC32_PULSER_STATUS_MASK);
+	SET16(s->m.md->vmeBase, MQDC32_PULSER_STATUS, mode & MQDC32_PULSER_STATUS_MASK);
 }
 
 uint16_t mqdc32_getPulserStatus(s_mqdc32 * s)
 {
-	return GET16(s->md->vmeBase, MQDC32_PULSER_STATUS) & MQDC32_PULSER_STATUS_MASK;
+	return GET16(s->m.md->vmeBase, MQDC32_PULSER_STATUS) & MQDC32_PULSER_STATUS_MASK;
 }
 
 void mqdc32_setTsSource_db(s_mqdc32 * s) { mqdc32_setTsSource(s, s->ctraTsSource); }
 
 void mqdc32_setTsSource(s_mqdc32 * s, uint16_t source)
 {
-	SET16(s->md->vmeBase, MQDC32_CTRA_TS_SOURCE, source & MQDC32_CTRA_TS_SOURCE_MASK);
-}
-
-uint16_t mqdc32_getTsSource(s_mqdc32 * s)
-{
-	return GET16(s->md->vmeBase, MQDC32_CTRA_TS_SOURCE) & MQDC32_CTRA_TS_SOURCE_MASK;
-}
-
-void mqdc32_setTsDivisor_db(s_mqdc32 * s) { mqdc32_setTsDivisor(s, s->ctraTsDivisor); }
-
-void mqdc32_setTsDivisor(s_mqdc32 * s, uint16_t div)
-{
-	SET16(s->md->vmeBase, MQDC32_CTRA_TS_DIVISOR, div & MQDC32_CTRA_TS_DIVISOR_MASK);
-}
-
-uint16_t mqdc32_getTsDivisor(s_mqdc32 * s)
-{
-	return GET16(s->md->vmeBase, MQDC32_CTRA_TS_DIVISOR) & MQDC32_CTRA_TS_DIVISOR_MASK;
-}
-
-void mqdc32_moduleInfo(s_mqdc32 * s)
-{
-	int firmware, mainRev, subRev;
-	firmware = GET16(s->md->vmeBase, MQDC32_FIRMWARE_REV);
-	mainRev = (firmware >> 8) & 0xff;
-	subRev = firmware & 0xff;
-	sprintf(msg, "[%smodule_info] %s: phys addr %#lx, mapped to %#lx, firmware %02x.%02x (%dk memory)",
-									s->mpref,
-									s->moduleName,
-									s->md->physAddrVME,
-									s->md->vmeBase,
-									mainRev, subRev, (mainRev >= 2) ? 8 : 1);
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-}
-
-void mqdc32_setPrefix(s_mqdc32 * s, char * prefix)
-{
-	strcpy(s->prefix, prefix);
-	strcpy(s->mpref, "");
+	SET16(s->m.md->vmeBase, MESY_CTRA_TS_SOURCE, source & MESY_CTRA_TS_SOURCE_MASK);
 }
 
 bool_t mqdc32_fillStruct(s_mqdc32 * s, char * file)
@@ -491,37 +291,40 @@ bool_t mqdc32_fillStruct(s_mqdc32 * s, char * file)
 	char mnUC[256];
 	const char * sp;
 	int i;
+	s_mesy * m;
+	
+	m = &s->m;
 
 	if (root_env_read(file) < 0) {
-		sprintf(msg, "[%sfill_struct] %s: Error reading file %s", s->mpref, s->moduleName, file);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		sprintf(msg, "[%sfill_struct] %s: Error reading file %s", m->mpref, m->moduleName, file);
+		f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 
-	sprintf(msg, "[%sfill_struct] %s: Reading settings from file %s", s->mpref, s->moduleName, file);
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	sprintf(msg, "[%sfill_struct] %s: Reading settings from file %s", m->mpref, m->moduleName, file);
+	f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
-	s->verbose = root_env_getval_b("MQDC32.VerboseMode", FALSE);
+	m->verbose = root_env_getval_b("MQDC32.VerboseMode", FALSE);
 
-	s->dumpRegsOnInit = root_env_getval_b("MQDC32.DumpRegisters", FALSE);
+	m->dumpRegsOnInit = root_env_getval_b("MQDC32.DumpRegisters", FALSE);
 
 	sp = root_env_getval_s("MQDC32.ModuleName", "");
-	if (strcmp(s->moduleName, "mqdc32") != 0 && strcmp(sp, s->moduleName) != 0) {
-		sprintf(msg, "[%sfill_struct] %s: File %s contains wrong module name - %s", s->mpref, s->moduleName, file, sp);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	if (strcmp(m->moduleName, "mqdc32") != 0 && strcmp(sp, m->moduleName) != 0) {
+		sprintf(msg, "[%sfill_struct] %s: File %s contains wrong module name - %s", m->mpref, m->moduleName, file, sp);
+		f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 	strcpy(mnUC, sp);
 	mnUC[0] = toupper(mnUC[0]);
 
 	sprintf(res, "MQDC32.%s.BlockXfer", mnUC);
-	s->blockXfer = root_env_getval_b(res, FALSE);
+	m->blockXfer = root_env_getval_b(res, FALSE);
 
 	sprintf(res, "MQDC32.%s.RepairRawData", mnUC);
-	s->repairRawData = root_env_getval_b(res, FALSE);
+	m->repairRawData = root_env_getval_b(res, FALSE);
 
 	sprintf(res, "MQDC32.%s.ReportReadErrors", mnUC);
-	s->reportReadErrors = root_env_getval_i(res, 0);
+	m->reportReadErrors = root_env_getval_i(res, 0);
 
 	for (i = 0; i < MQDC_NOF_CHANNELS; i++) {
 		sprintf(res, "MQDC32.%s.Thresh.%d", mnUC, i);
@@ -529,59 +332,49 @@ bool_t mqdc32_fillStruct(s_mqdc32 * s, char * file)
 	}
 
 	sprintf(res, "MQDC32.%s.AddrSource", mnUC);
-	s->addrSource = root_env_getval_i(res, MQDC32_ADDR_SOURCE_DEFAULT);
+	m->addrSource = root_env_getval_i(res, MESY_ADDR_SOURCE_DEFAULT);
 
-	if (s->addrSource == MQDC32_ADDR_SOURCE_REG) {
+	if (m->addrSource == MESY_ADDR_SOURCE_REG) {
 		sprintf(res, "MQDC32.%s.AddrReg", mnUC);
-		s->addrReg = root_env_getval_i(res, 0);
-		if (s->addrReg == 0) {
-			sprintf(msg, "[%sfill_struct] %s: vme addr missing (addr source = reg)", s->mpref, s->moduleName);
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		m->addrReg = root_env_getval_i(res, 0);
+		if (m->addrReg == 0) {
+			sprintf(msg, "[%sfill_struct] %s: vme addr missing (addr source = reg)", m->mpref, m->moduleName);
+			f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 	}
 
 	sprintf(res, "MQDC32.%s.MCSTSignature", mnUC);
-	s->mcstSignature = root_env_getval_x(res, 0x0);
+	m->mcstSignature = root_env_getval_x(res, 0x0);
 	sprintf(res, "MQDC32.%s.MCSTMaster", mnUC);
-	s->mcstMaster = root_env_getval_b(res, FALSE);
+	m->mcstMaster = root_env_getval_b(res, FALSE);
 	sprintf(res, "MQDC32.%s.CBLTSignature", mnUC);
-	s->cbltSignature = root_env_getval_x(res, 0x0);
+	m->cbltSignature = root_env_getval_x(res, 0x0);
 	sprintf(res, "MQDC32.%s.FirstInCbltChain", mnUC);
-	s->firstInCbltChain = root_env_getval_b(res, FALSE);
+	m->firstInCbltChain = root_env_getval_b(res, FALSE);
 	sprintf(res, "MQDC32.%s.LastInCbltChain", mnUC);
-	s->lastInCbltChain = root_env_getval_b(res, FALSE);
+	m->lastInCbltChain = root_env_getval_b(res, FALSE);
 
 	sprintf(res, "MQDC32.%s.ModuleId", mnUC);
-	s->moduleId = root_env_getval_i(res, MQDC32_MODULE_ID_DEFAULT);
-
-	sprintf(res, "MQDC32.%s.FifoLength", mnUC);
-	s->fifoLength = root_env_getval_i(res, 0);
-
-#if 0
-	if (s->fifoLength == 0) {
-		sprintf(msg, "[%sfill_struct] %s: fifo length missing", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	}
-#endif
+	m->moduleId = root_env_getval_i(res, MESY_MODULE_ID_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.DataWidth", mnUC);
-	s->dataWidth = root_env_getval_i(res, MQDC32_DATA_LENGTH_FORMAT_DEFAULT);
+	m->dataWidth = root_env_getval_i(res, MESY_DATA_LENGTH_FORMAT_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.MultiEvent", mnUC);
-	s->multiEvent = root_env_getval_i(res, MQDC32_MULTI_EVENT_DEFAULT);
+	m->multiEvent = root_env_getval_i(res, MESY_MULTI_EVENT_DEFAULT);
 	
-	if ((s->multiEvent & MQDC32_MULTI_EVENT_BERR) == 0) {
-		sprintf(msg, "[%sfill_struct] %s: Readout with BERR enabled", s->mpref, s->moduleName);
+	if ((m->multiEvent & MESY_MULTI_EVENT_BERR) == 0) {
+		sprintf(msg, "[%sfill_struct] %s: Readout with BERR enabled", m->mpref, m->moduleName);
 	} else {
-		sprintf(msg, "[%sfill_struct] %s: Readout with EOB enabled", s->mpref, s->moduleName);
+		sprintf(msg, "[%sfill_struct] %s: Readout with EOB enabled", m->mpref, m->moduleName);
 	}
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	sprintf(res, "MQDC32.%s.XferData", mnUC);
-	s->xferData = root_env_getval_i(res, MQDC32_MAX_XFER_DATA_DEFAULT);
+	m->xferData = root_env_getval_i(res, MESY_MAX_XFER_DATA_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.MarkingType", mnUC);
-	s->markingType = root_env_getval_i(res, MQDC32_MARKING_TYPE_DEFAULT);
+	m->markingType = root_env_getval_i(res, MESY_MARKING_TYPE_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.BankOperation", mnUC);
 	s->bankOperation = root_env_getval_i(res, MQDC32_BANK_OPERATION_DEFAULT);
@@ -636,10 +429,10 @@ bool_t mqdc32_fillStruct(s_mqdc32 * s, char * file)
 	s->pulserStatus = root_env_getval_i(res, MQDC32_PULSER_STATUS_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.TsSource", mnUC);
-	s->ctraTsSource = root_env_getval_i(res, MQDC32_CTRA_TS_SOURCE_DEFAULT);
+	m->ctraTsSource = root_env_getval_i(res, MESY_CTRA_TS_SOURCE_DEFAULT);
 
 	sprintf(res, "MQDC32.%s.TsDivisor", mnUC);
-	s->ctraTsDivisor = root_env_getval_i(res, MQDC32_CTRA_TS_DIVISOR_DEFAULT);
+	m->ctraTsDivisor = root_env_getval_i(res, MESY_CTRA_TS_DIVISOR_DEFAULT);
 
 	return TRUE;
 }
@@ -649,14 +442,17 @@ void mqdc32_loadFromDb(s_mqdc32 * s, uint32_t chnPattern)
 	int ch;
 	int b;
 	uint32_t bit;
+	s_mesy * m;
+	
+	m = &s->m;
 
-	mqdc32_setAddrReg_db(s);
-	mqdc32_setMcstCblt_db(s);
-	mqdc32_setModuleId_db(s);
-	mqdc32_setDataWidth_db(s);
-	mqdc32_setMultiEvent_db(s);
-	mqdc32_setMarkingType_db(s);
-	mqdc32_setXferData_db(s);
+	mesy_setAddrReg_db(m);
+	mesy_setMcstCblt_db(m);
+	mesy_setModuleId_db(m);
+	mesy_setDataWidth_db(m);
+	mesy_setMultiEvent_db(m);
+	mesy_setMarkingType_db(m);
+	mesy_setXferData_db(m);
 	mqdc32_setBankOperation_db(s);
 	mqdc32_setAdcResolution_db(s);
 	for (b = 0; b <= 1; b++) {
@@ -675,12 +471,12 @@ void mqdc32_loadFromDb(s_mqdc32 * s, uint32_t chnPattern)
 	mqdc32_setNimFclRts_db(s);
 	mqdc32_setNimBusy_db(s);
 	mqdc32_setPulserStatus_db(s);
-	mqdc32_setTsSource_db(s);
-	mqdc32_setTsDivisor_db(s);
+	mesy_setTsSource_db(m);
+	mesy_setTsDivisor_db(m);
 
 	bit = 1;
 	for (ch = 0; ch < MQDC_NOF_CHANNELS; ch++) {
-		if (chnPattern & bit) mqdc32_setThreshold_db(s, ch); else mqdc32_setThreshold(s, ch, MQDC32_D_CHAN_INACTIVE);
+		if (chnPattern & bit) mqdc32_setThreshold_db(s, ch); else mqdc32_setThreshold(s, ch, MESY_D_CHAN_INACTIVE);
 		bit <<= 1;
 	}
 }
@@ -692,44 +488,46 @@ bool_t mqdc32_dumpRegisters(s_mqdc32 * s, char * file)
 
 	int ch;
 	int b;
+	bool_t mcstOrCblt, flag;
+	s_mesy * m;
+	
+	m = &s->m;
 
-	bool_t mcstOrCblt, flag;;
-
-	if (!s->dumpRegsOnInit) return(TRUE);
+	if (!m->dumpRegsOnInit) return(TRUE);
 
 	f = fopen(file, "w");
 	if (f == NULL) {
-		sprintf(msg, "[%sdumpRegisters] %s: Error writing file %s", s->mpref, s->moduleName, file);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		sprintf(msg, "[%sdumpRegisters] %s: Error writing file %s", m->mpref, m->moduleName, file);
+		f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 
-	sprintf(msg, "[%sdumpRegisters] %s: Dumping settings to file %s", s->mpref, s->moduleName, file);
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	sprintf(msg, "[%sdumpRegisters] %s: Dumping settings to file %s", m->mpref, m->moduleName, file);
+	f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	fprintf(f, "Thresholds:\n");
 	for (ch = 0; ch < MQDC_NOF_CHANNELS; ch++) fprintf(f, "   %2d: %d\n", ch, mqdc32_getThreshold(s, ch));
 
-	fprintf(f, "Addr reg          : %#x\n", mqdc32_getAddrReg(s));
+	fprintf(f, "Addr reg          : %#x\n", mesy_getAddrReg(m));
 	mcstOrCblt = FALSE;
-	if (flag = mqdc32_mcstIsEnabled(s))
-					fprintf(f, "MCST signature [0x6024]   : %#x\n", mqdc32_getMcstSignature(s));
+	if (flag = mesy_mcstIsEnabled(m))
+					fprintf(f, "MCST signature [0x6024]   : %#x\n", mesy_getMcstSignature(m));
 	else				fprintf(f, "MCST                      : disabled\n");
 	mcstOrCblt |= flag;
-	if (flag = mqdc32_cbltIsEnabled(s))
-					fprintf(f, "CBLT signature [0x6022]   : %#x\n", mqdc32_getCbltSignature(s));
+	if (flag = mesy_cbltIsEnabled(m))
+					fprintf(f, "CBLT signature [0x6022]   : %#x\n", mesy_getCbltSignature(m));
 	else				fprintf(f, "CBLT                      : disabled\n");
 	mcstOrCblt |= flag;
 	if (mcstOrCblt) {
-		if (mqdc32_isFirstInCbltChain(s)) fprintf(f, "MCST/CBLT chain           : first module in chain\n");
-		else if (mqdc32_isLastInCbltChain(s)) fprintf(f, "MCST/CBLT chain           : last module in chain\n");
+		if (mesy_isFirstInCbltChain(m)) fprintf(f, "MCST/CBLT chain           : first module in chain\n");
+		else if (mesy_isLastInCbltChain(m)) fprintf(f, "MCST/CBLT chain           : last module in chain\n");
 		else fprintf(f, "MCST/CBLT chain   : module in the middle\n");
 	}
-	fprintf(f, "Module ID         : %d\n", mqdc32_getModuleId(s));
-	fprintf(f, "Data width        : %d\n", mqdc32_getDataWidth(s));
-	fprintf(f, "Multi event       : %d\n", mqdc32_getMultiEvent(s));
-	fprintf(f, "Max xfer data wc  : %d\n", mqdc32_getXferData(s));
-	fprintf(f, "Marking type      : %d\n", mqdc32_getMarkingType(s));
+	fprintf(f, "Module ID         : %d\n", mesy_getModuleId(m));
+	fprintf(f, "Data width        : %d\n", mesy_getDataWidth(m));
+	fprintf(f, "Multi event       : %d\n", mesy_getMultiEvent(m));
+	fprintf(f, "Max xfer data wc  : %d\n", mesy_getXferData(m));
+	fprintf(f, "Marking type      : %d\n", mesy_getMarkingType(m));
 	fprintf(f, "Bank operation    : %d\n", mqdc32_getBankOperation(s));
 	fprintf(f, "Adc resolution    : %d\n", mqdc32_getAdcResolution(s));
 	for (b = 0; b <= 1; b++) {
@@ -750,31 +548,8 @@ bool_t mqdc32_dumpRegisters(s_mqdc32 * s, char * file)
 	fprintf(f, "Nim fcl or reset  : %d\n", mqdc32_getNimFclRts(s));
 	fprintf(f, "Nim busy          : %d\n", mqdc32_getNimBusy(s));
 	fprintf(f, "Pulser status     : %d\n", mqdc32_getPulserStatus(s));
-	fprintf(f, "Timestamp source  : %#x\n", mqdc32_getTsSource(s));
-	fprintf(f, "Timestamp divisor : %d\n", mqdc32_getTsDivisor(s));
-	fclose(f);
-}
-
-bool_t mqdc32_dumpRaw(s_mqdc32 * s, char * file)
-{
-	int i;
-	FILE * f;
-
-	if (!s->dumpRegsOnInit) return(TRUE);
-
-	f = fopen(file, "w");
-	if (f == NULL) {
-		sprintf(msg, "[%sdumpRaw] %s: Error writing file %s", s->mpref, s->moduleName, file);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-		return FALSE;
-	}
-
-	sprintf(msg, "[%sdumpRaw] %s: Dumping raw data to file %s", s->mpref, s->moduleName, file);
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-
-	for (i = 0x6000; i < 0x60B0; i += 2) {
-		fprintf(f, "%#lx %#x\n", i, GET16(s->md->vmeBase, i));
-	}
+	fprintf(f, "Timestamp source  : %#x\n", mesy_getTsSource(m));
+	fprintf(f, "Timestamp divisor : %d\n", mesy_getTsDivisor(m));
 	fclose(f);
 }
 
@@ -782,27 +557,30 @@ void mqdc32_printDb(s_mqdc32 * s)
 {
 	int ch;
 	int b;
+	s_mesy * m;
+	
+	m = &s->m;
 
 	printf("Thresholds:\n");
 	for (ch = 0; ch < MQDC_NOF_CHANNELS; ch++) printf("   %2d: %d\n", ch, s->threshold[ch]);
 
-	printf("Addr reg          : %#x\n", s->addrReg);
-	if (s->mcstSignature != 0)
-					printf("MCST signature    : %#x\n", s->mcstSignature);
+	printf("Addr reg          : %#x\n", m->addrReg);
+	if (m->mcstSignature != 0)
+					printf("MCST signature    : %#x\n", m->mcstSignature);
 	else				printf("MCST              : disabled\n");
-	if (s->cbltSignature != 0)
-					printf("CBLT signature    : %#x\n", s->cbltSignature);
+	if (m->cbltSignature != 0)
+					printf("CBLT signature    : %#x\n", m->cbltSignature);
 	else				printf("CBLT              : disabled\n");
-	if ((s->mcstSignature != 0) || (s->cbltSignature != 0)) {
-		if (s->firstInCbltChain) printf("MCST/CBLT chain   : first module in chain\n");
-		else if (s->lastInCbltChain) printf("MCST/CBLT chain   : last module in chain\n");
+	if ((m->mcstSignature != 0) || (m->cbltSignature != 0)) {
+		if (m->firstInCbltChain) printf("MCST/CBLT chain   : first module in chain\n");
+		else if (m->lastInCbltChain) printf("MCST/CBLT chain   : last module in chain\n");
 		else printf("MCST/CBLT chain   : module in the middle\n");
 	}
-	printf("Module ID         : %d\n", s->moduleId);
-	printf("Data width        : %d\n", s->dataWidth);
-	printf("Multi event       : %d\n", s->multiEvent);
-	printf("Max xfer data wc  : %d\n", s->xferData);
-	printf("Marking type      : %d\n", s->markingType);
+	printf("Module ID         : %d\n", m->moduleId);
+	printf("Data width        : %d\n", m->dataWidth);
+	printf("Multi event       : %d\n", m->multiEvent);
+	printf("Max xfer data wc  : %d\n", m->xferData);
+	printf("Marking type      : %d\n", m->markingType);
 	printf("Bank operation    : %d\n", s->bankOperation);
 	printf("Adc resolution    : %d\n", s->adcResolution);
 	for (b = 0; b <= 1; b++) {
@@ -823,331 +601,7 @@ void mqdc32_printDb(s_mqdc32 * s)
 	printf("Nim fcl or reset  : %d\n", s->nimFclRts);
 	printf("Nim busy          : %d\n", s->nimBusy);
 	printf("Pulser status     : %d\n", s->pulserStatus);
-	printf("Timestamp source  : %#x\n", s->ctraTsSource);
-	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
-}
-
-int mqdc32_readout(s_mqdc32 * s, uint32_t * pointer)
-{
-	static int addrOffset = 0;
-
-	uint32_t * dataStart;
-	uint32_t * dp;
-	uint32_t data;
-	unsigned int i;
-	int bmaError;
-	int bmaCount;
-	int tryIt;
-	int numData, nd;
-	int chn;
-
-	uint32_t ptrloc;
-
-	int mode;
-	int sts;
-
-	dataStart = pointer;
-
-	numData = (int) mqdc32_getFifoLength(s);	
-	
-	if (numData == 0) return(0);
-
-	s->nofReads++;
-	
-	if (s->blockXfer) {
-		ptrloc = getPhysAddr((char *) pointer, numData * sizeof(uint32_t));
-		if (ptrloc == NULL) {
-			s->nofReadErrors++;
-			if ((s->reportReadErrors == 0) || (s->nofReadErrors <= s->reportReadErrors)) {
-				sprintf(msg, "[%sreadout] %s: Can't relocate mapped pointer %#lx to phys addr - BLT turned off", s->mpref, s->moduleName, pointer);
-				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			}
-			s->blockXfer = FALSE;
-		}
-	}
-	
-	if (s->blockXfer) {
-#ifndef CPU_TYPE_RIO2
-		bmaCount = bma_read_count(s->md->bltBase + MQDC32_DATA, ptrloc, numData, s->md->bltModeId);
-		if (bmaCount < 0) {
-			s->nofReadErrors++;
-			sprintf(msg, "[%sreadout] %s: Error \"%s\" (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, bmaErrlist[bmaError], bmaError, numData);
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			return(0);
-		}		
-		pointer += bmaCount;
-#else
-		bmaError = bma_read(s->md->bltBase + MQDC32_DATA, ptrloc, numData, s->md->bltModeId);
-		if (bmaError != 0) {
-			s->nofReadErrors++;
-			if ((s->reportReadErrors == 0) || (s->nofReadErrors <= s->reportReadErrors)) {
-				if (bmaError < 0) {
-					sprintf(msg, "[%sreadout] %s: Error %d while reading event data (numData=%d)", s->mpref, s->moduleName, bmaError, numData);
-				} else {
-					sprintf(msg, "[%sreadout] %s: Error \"%s\" (%d) while reading event data (numData=%d)", s->mpref, s->moduleName, bmaErrlist[bmaError], bmaError, numData);
-				}
-				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			}
-			return(0);
-		}			
-		pointer += numData;
-#endif
-	} else if ((s->multiEvent & MQDC32_MULTI_EVENT_BERR) == 0) {
-		busError = FALSE;
-		nd = 0;
-		signal(SIGBUS, mqdc32_catchBerr);
-		while (1) {
-			nd++;
-			data = GET32(s->md->vmeBase, MQDC32_DATA);
-			if (busError) {
-				signal(SIGBUS, SIG_DFL);
-				busError = FALSE;
-				break;
-			}
-			if (nd == 1) {
-				if ((data & 0xF0000000) != 0x40000000) {
-					s->nofReadErrors++;
-					if ((s->reportReadErrors == 0) || (s->nofReadErrors <= s->reportReadErrors)) {
-						sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
-						f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-					}
-				}
-			}	
-			*pointer++ = data;
-		}
-	} else {
-		nd = 0;
-		while (1) {
-			nd++;
-			data = GET32(s->md->vmeBase, MQDC32_DATA);
-			if (nd == 1) {
-				if ((data & 0xF0000000) != 0x40000000) {
-					s->nofReadErrors++;
-					if ((s->reportReadErrors == 0) || (s->nofReadErrors <= s->reportReadErrors)) {
-						sprintf(msg, "[%sreadout] %s: Wrong header at start of data - %#x", s->mpref, s->moduleName, data);
-						f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-					}
-				}
-			}	
-			if (data == 0x80000000) break;
-			*pointer++ = data;
-		}
-	}
-
-	if (s->repairRawData) pointer = mqdc32_repairRawData(s, pointer, dataStart);
-	
-	mqdc32_resetReadout(s);
-
-	return (pointer - dataStart);
-}
-
-
-int mqdc32_readTimeB(s_mqdc32 * s, uint32_t * pointer)
-{
-	uint16_t * p16 = pointer;
-	*p16++ = 0;
-	*p16++ = GET16(s->md->vmeBase, MQDC32_CTRB_TIME_0);
-	*p16++ = GET16(s->md->vmeBase, MQDC32_CTRB_TIME_1);
-	*p16++ = GET16(s->md->vmeBase, MQDC32_CTRB_TIME_2);
-	return 4 * sizeof(uint16_t) / sizeof(uint32_t);
-}
-
-bool_t mqdc32_dataReady(s_mqdc32 * s)
-{
-	return TSTB16(s->md->vmeBase, MQDC32_DATA_READY, 0) ;
-}
-
-void mqdc32_resetReadout(s_mqdc32 * s)
-{
-	SET16(s->md->vmeBase, MQDC32_READOUT_RESET, 0x1);
-}
-
-bool_t mqdc32_testBusError(s_mqdc32 * s)
-{
-	return TSTB16(s->md->vmeBase, MQDC32_MULTI_EVENT, MQDC32_MULTI_EVENT_BERR) == 1 ? FALSE : TRUE;
-}
-
-void mqdc32_enableBusError(s_mqdc32 * s)
-{
-	CLRB16(s->md->vmeBase, MQDC32_MULTI_EVENT, MQDC32_MULTI_EVENT_BERR);
-}
-
-void mqdc32_disableBusError(s_mqdc32 * s)
-{
-	SETB16(s->md->vmeBase, MQDC32_MULTI_EVENT, MQDC32_MULTI_EVENT_BERR);
-}
-
-void mqdc32_startAcq(s_mqdc32 * s)
-{
-	if (mqdc32_mcstIsEnabled(s)) {
-		if (s->mcstMaster) {
-			SET16(s->mcstAddr, MQDC32_START_ACQUISITION, 0x0);
-			mqdc32_resetFifo_mcst(s);
-			mqdc32_resetReadout_mcst(s);
-			mqdc32_resetTimestamp_mcst(s);
-			SET16(s->mcstAddr, MQDC32_START_ACQUISITION, 0x1);
-		}
-	} else {	
-		SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x0);
-		mqdc32_resetFifo(s);
-		mqdc32_resetReadout(s);
-		mqdc32_resetTimestamp(s);
-		SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x1);
-	}
-}
-
-void mqdc32_stopAcq(s_mqdc32 * s)
-{
-	if (mqdc32_mcstIsEnabled(s)) {
-		if (s->mcstMaster) {
-			SET16(s->mcstAddr, MQDC32_START_ACQUISITION, 0x0);
-			mqdc32_resetFifo_mcst(s);
-			mqdc32_resetReadout_mcst(s);
-			mqdc32_resetTimestamp_mcst(s);
-		}
-	} else {	
-		SET16(s->md->vmeBase, MQDC32_START_ACQUISITION, 0x0);
-		mqdc32_resetFifo(s);
-		mqdc32_resetReadout(s);
-		mqdc32_resetTimestamp(s);
-	}
-}
-
-void mqdc32_resetFifo(s_mqdc32 * s)
-{
-	SET16(s->md->vmeBase, MQDC32_FIFO_RESET, 0x1);
-}
-
-void mqdc32_resetTimestamp(s_mqdc32 * s)
-{
-	SET16(s->md->vmeBase, MQDC32_CTRA_RESET_A_OR_B, 0x3);
-}
-
-void mqdc32_initMCST(s_mqdc32 * s)
-{	
-	if (mqdc32_mcstIsEnabled(s) && mqdc32_isMcstMaster(s)) {
-		if (s->mcstAddr == 0) s->mcstAddr = mapAdditionalVME(s->md, (s->mcstSignature & 0xFF) << 24, 0);
-		sprintf(msg, "[%smsctInit] %s: MCST initialized - signature %#x, addr %#lx\n", s->mpref, s->moduleName, s->mcstSignature, s->mcstAddr);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-	}
-}
-
-void mqdc32_setMcstCblt_db(s_mqdc32 * s) {
-	mqdc32_setMcstSignature(s, s->mcstSignature);
-	mqdc32_setCbltSignature(s, s->cbltSignature);
-	if (s->firstInCbltChain) mqdc32_setFirstInCbltChain(s);
-	else if (s->lastInCbltChain) mqdc32_setLastInCbltChain(s);
-	else mqdc32_setMiddleOfCbltChain(s);
-}
-
-void mqdc32_setMcstSignature(s_mqdc32 * s, unsigned long Signature) {
-	SET16(s->md->vmeBase, MQDC32_MCST_ADDRESS, Signature);
-	if (Signature != 0) mqdc32_setMcstEnable(s); else mqdc32_setMcstDisable(s);
-}
-
-uint16_t mqdc32_getMcstSignature(s_mqdc32 * s) {
-	uint16_t addr8;
-	addr8 = GET16(s->md->vmeBase, MQDC32_MCST_ADDRESS);
-	return addr8;
-}
-
-bool_t mqdc32_isMcstMaster(s_mqdc32 * s) { return s->mcstMaster; }
-
-void mqdc32_setMcstEnable(s_mqdc32 * s) {
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_MCST_ENA);
-}
-
-void mqdc32_setMcstDisable(s_mqdc32 * s) {
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_MCST_DIS);
-}
-
-bool_t mqdc32_mcstIsEnabled(s_mqdc32 * s) {
-	uint16_t ctrl;
-	ctrl = GET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL);
-	return ((ctrl & MQDC32_MCST_DIS) != 0);
-}
-
-void mqdc32_setCbltSignature(s_mqdc32 * s, unsigned long Signature) {
-	SET16(s->md->vmeBase, MQDC32_CBLT_ADDRESS, Signature);
-	if (Signature != 0) mqdc32_setCbltEnable(s); else mqdc32_setCbltDisable(s);
-}
-
-uint16_t mqdc32_getCbltSignature(s_mqdc32 * s) {
-	uint16_t addr8;
-	addr8 = GET16(s->md->vmeBase, MQDC32_CBLT_ADDRESS);
-	return addr8;
-}
-
-void mqdc32_setCbltEnable(s_mqdc32 * s) {
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_ENA);
-}
-
-void mqdc32_setCbltDisable(s_mqdc32 * s) {
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_DIS);
-}
-
-bool_t mqdc32_cbltIsEnabled(s_mqdc32 * s) {
-	uint16_t ctrl;
-	ctrl = GET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL);
-	return ((ctrl & MQDC32_CBLT_DIS) != 0);
-}
-
-void mqdc32_setFirstInCbltChain(s_mqdc32 * s) {
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_ENA);
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_DIS);
-}
-
-bool_t mqdc32_isFirstInCbltChain(s_mqdc32 * s) {
-	uint16_t ctrl;
-	ctrl = GET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL);
-	return ((ctrl & MQDC32_CBLT_FIRST_DIS) != 0);
-}
-
-void mqdc32_setLastInCbltChain(s_mqdc32 * s) {
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_ENA);
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_DIS);
-}
-
-bool_t mqdc32_isLastInCbltChain(s_mqdc32 * s) {
-	uint16_t ctrl;
-	ctrl = GET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL);
-	return ((ctrl & MQDC32_CBLT_LAST_DIS) != 0);
-}
-
-void mqdc32_setMiddleOfCbltChain(s_mqdc32 * s) {
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_FIRST_DIS);
-	SET16(s->md->vmeBase, MQDC32_CBLT_MCST_CONTROL, MQDC32_CBLT_LAST_DIS);
-}
-
-bool_t mqdc32_isMiddleOfCbltChain(s_mqdc32 * s) {
-	bool_t first, last;
-	first = mqdc32_isFirstInCbltChain(s);
-	last = mqdc32_isLastInCbltChain(s);
-	return (!first && !last);
-}
-
-void mqdc32_resetFifo_mcst(s_mqdc32 * s)
-{
-	SET16(s->mcstAddr, MQDC32_FIFO_RESET, 0x1);
-}
-
-void mqdc32_resetReadout_mcst(s_mqdc32 * s)
-{
-	SET16(s->mcstAddr, MQDC32_READOUT_RESET, 0x1);
-}
-
-void mqdc32_resetTimestamp_mcst(s_mqdc32 * s)
-{
-	SET16(s->mcstAddr, MQDC32_CTRA_RESET_A_OR_B, 0x3);
-}
-
-void mqdc32_reportReadErrors(s_mqdc32 * s)
-{
-	sprintf(msg, "[%sreadout] %s: read_requests=%d read_errors=%d", s->mpref, s->moduleName, s->nofReads, s->nofReadErrors);
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-}
-
-uint32_t * mqdc32_repairRawData(s_mqdc32 * s, uint32_t * pointer, uint32_t * dataStart) {
-	return pointer;
+	printf("Timestamp source  : %#x\n", m->ctraTsSource);
+	printf("Timestamp divisor : %d\n", m->ctraTsDivisor);
 }
 

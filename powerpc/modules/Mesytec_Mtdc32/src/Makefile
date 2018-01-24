@@ -46,7 +46,7 @@ mtdc32:	mtdc32.o $(LIBMTDC32)
 	$(CC) -o mtdc32 mtdc32.o \
 		-L ../../../lib/$(GSI_OS_VERSION) \
 		-L /lib/ces \
-		-lMtdc32 -lUti \
+		-lMtdc32 -lMesy -lUti \
 		$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
 		$(MBSLIBS)
 	mv mtdc32 $(BIN_DIR)

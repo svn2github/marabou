@@ -13,6 +13,8 @@
 #include "block.h"
 #include "mapping_database.h"
 
+#include "mesy_database.h"
+
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			mqdc32_database.h
@@ -27,34 +29,10 @@
 #define MQDC_NOF_CHANNELS	32
 
 typedef struct {
-	char moduleName[100];
-	char prefix[100];			/* "m_read_meb" (default) or any other */
-	char mpref[10];
-
-	s_mapDescr * md;			/* mapping descriptor */
-
-	int serial; 				/* MARaBOU's serial number */
-
-	bool_t verbose;				/* TRUE if verbose mode */
-	bool_t dumpRegsOnInit;		/* TRUE if dump of registers required */
-
-	int memorySize;				/* module's memory size */
-
-	bool_t blockXfer;			/* TRUE if block xfer enabled */
-	bool_t repairRawData;		/* TRUE if raw data should be repaired (missing EOEs) */
-
-	int16_t reportReadErrors;	/* number of errors to be reported */
-	int16_t nofReadErrors;		/* actual number of errors */
-	int16_t nofReads;			/* number of read requests */
+	s_mesy m;	/* common data for all mesytec modules */
+				/* attention: s_mesy has to be the very first member of struct s_mqdc32! */
 	
-	unsigned long mcstSignature;	/* MCST signature */
-	volatile char * mcstAddr;		/* ... after mapping */
-	bool_t mcstMaster;				/* TRUE if MCST master */
-	unsigned long cbltSignature;	/* CBLT signature */
-	volatile char * cbltAddr;		/* ... after mapping */
-	bool_t firstInCbltChain;		/* TRUE if head of CBLT chain */
-	bool_t lastInCbltChain;			/* TRUE if end of CBLT chain */
-	
+/* proprietary data for Mesytec MQDC32 */	
 	uint16_t threshold[MQDC_NOF_CHANNELS];
 	uint16_t addrSource;
 	uint16_t addrReg;

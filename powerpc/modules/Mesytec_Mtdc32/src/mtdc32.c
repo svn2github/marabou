@@ -20,6 +20,10 @@
 
 #include "vmelib.h"
 
+#include "mesy.h"
+#include "mesy_database.h"
+#include "mesy_protos.h"
+
 #include "mtdc32.h"
 #include "mtdc32_database.h"
 #include "mtdc32_protos.h"
@@ -31,8 +35,6 @@
 #include "gd_readout.h"
 
 #include "Version.h"
-
-static s_mtdc32 * s_tdc;
 
 void f_ut_send_msg(char * prefix, char * msg, int flag);
 
@@ -48,6 +50,8 @@ int main(int argc, char *argv[]) {
 	unsigned int mappingMod;
 	int reg, val;
 
+	s_mtdc32 * s_tdc;
+	s_mesy * m_tdc;
 	s_mapDescr * md;
 
 	char fct;
@@ -84,15 +88,17 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	s_tdc = mtdc32_alloc("mtdc32", md, 0x1);	/* allocate data struct */
+	s_tdc = (s_mtdc32 *) mesy_alloc("mtdc32", sizeof(s_mtdc32), md, 0x1);	/* allocate data struct */
 	if (s_tdc == NULL) exit(1);
+	
+	m_tdc = &s_tdc->m;
 
-	mtdc32_setPrefix(s_tdc, "mtdc32");
+	mesy_setPrefix(m_tdc, "mtdc32");
 
 	fct = *argv[4];
 
 	switch (fct) {
-		case 'v':	mtdc32_moduleInfo(s_tdc);				/* read module info */
+		case 'v':	mesy_moduleInfo(m_tdc);				/* read module info */
 					break;
 		case 'l':	file[0] = '\0';
 					if (argc >= 6) strcpy(file, argv[5]);
@@ -110,9 +116,9 @@ int main(int argc, char *argv[]) {
 						fprintf(stderr, "mtdc32: File name missing\n");
 						exit(1);
 					}
-					s_tdc->dumpRegsOnInit = TRUE;
+					m_tdc->dumpRegsOnInit = TRUE;
 					mtdc32_dumpRegisters(s_tdc, file); 		/* dump registers to file */
-					mtdc32_dumpRaw(s_tdc, "rawDump.dat");
+					mesy_dumpRaw(m_tdc, "rawDump.dat");
 					break;
 		case 's':	reg = -1;
 					if (argc >= 6) reg = catoi(argv[5]);
@@ -126,7 +132,7 @@ int main(int argc, char *argv[]) {
 						fprintf(stderr, "mtdc32: Register value missing\n");
 						exit(1);
 					}
-					SET16(s_tdc->md->vmeBase, reg, val);
+					SET16(m_tdc->md->vmeBase, reg, val);
 					printf("mtdc32: Setting register %x to %x\n", reg, val);
 					break;
 					
@@ -136,11 +142,11 @@ int main(int argc, char *argv[]) {
 						fprintf(stderr, "mtdc32: Register addr missing\n");
 						exit(1);
 					}
-					val = GET16(s_tdc->md->vmeBase, reg);
+					val = GET16(m_tdc->md->vmeBase, reg);
 					printf("mtdc32: Register %#x: %#x\n", reg, val);
 					break;
 		case 'a':	while (1) {
-						val = GET16(s_tdc->md->vmeBase, 0x6030);
+						val = GET16(m_tdc->md->vmeBase, 0x6030);
 					}
 					break;
 					

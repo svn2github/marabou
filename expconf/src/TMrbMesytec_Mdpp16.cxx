@@ -764,7 +764,7 @@ TEnv * TMrbMesytec_Mdpp16::UseSettings(const Char_t * SettingsFile) {
 			this->SetTrigSource(0, kChanAct | (src & 0x1F), 0);
 		} else {
 			src = mdppEnv->Get(moduleName.Data(), "TrigSrcBank", 0);
-			if (src != 0) this->SetTrigSource(0, 0, src & 0x3);
+			if (src != 0) this->SetTrigSource(0, 0, src & 0x1);
 		}
 	}
 
@@ -773,7 +773,7 @@ TEnv * TMrbMesytec_Mdpp16::UseSettings(const Char_t * SettingsFile) {
 		this->SetTrigOutput(kChanAct | (src & 0x1F), 0);
 	} else {
 		src = mdppEnv->Get(moduleName.Data(), "TrigOutBank", 0);
-		if (src != 0) this->SetTrigOutput(0, src & 0x3);
+		if (src != 0) this->SetTrigOutput(0, src & 0x1);
 	}
 
 	this->SetFirstHit(mdppEnv->Get(moduleName.Data(), "FirstHit", TMrbMesytec_Mdpp16::kFirstHitOnly));

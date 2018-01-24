@@ -46,7 +46,7 @@ mqdc32:	mqdc32.o $(LIBMQDC32)
 	$(CC) -o mqdc32 mqdc32.o \
 		-L ../../../lib/$(GSI_OS_VERSION) \
 		-L /lib/ces \
-		-lMqdc32 -lUti \
+		-lMqdc32 -lMesy -lUti \
 		$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
 		$(MBSLIBS)
 	mv mqdc32 $(BIN_DIR)

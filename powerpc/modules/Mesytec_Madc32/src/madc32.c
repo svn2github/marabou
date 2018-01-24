@@ -20,19 +20,21 @@
 
 #include "vmelib.h"
 
-#include "madc32.h"
-#include "madc32_database.h"
-#include "madc32_protos.h"
-
 #include "root_env.h"
 #include "mapping_database.h"
 #include "mapping_protos.h"
 
+#include "mesy.h"
+#include "mesy_database.h"
+#include "mesy_protos.h"
+
+#include "madc32.h"
+#include "madc32_database.h"
+#include "madc32_protos.h"
+
 #include "gd_readout.h"
 
 #include "Version.h"
-
-static s_madc32 * s_adc;
 
 void f_ut_send_msg(char * prefix, char * msg, int flag);
 
@@ -48,8 +50,10 @@ int main(int argc, char *argv[]) {
 	unsigned int mappingMod;
 	int reg, val;
 
+	s_madc32 * s_adc;
 	s_mapDescr * md;
-
+	s_mesy * m_adc;
+	
 	char fct;
 	char file[256];
 	FILE * out;
@@ -84,15 +88,17 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	s_adc = madc32_alloc("madc32", md, 0x1);	/* allocate data struct */
+	s_adc = (s_madc32 *) mesy_alloc("madc32", sizeof(s_madc32), md, 0x1);	/* allocate data struct */
 	if (s_adc == NULL) exit(1);
 
-	madc32_setPrefix(s_adc, "madc32");
+	m_adc = &s_adc->m;
+	
+	mesy_setPrefix(m_adc, "madc32");
 
 	fct = *argv[4];
 
 	switch (fct) {
-		case 'v':	madc32_moduleInfo(s_adc);				/* read module info */
+		case 'v':	mesy_moduleInfo(m_adc);				/* read module info */
 					break;
 		case 'l':	file[0] = '\0';
 					if (argc >= 6) strcpy(file, argv[5]);
@@ -110,9 +116,9 @@ int main(int argc, char *argv[]) {
 						fprintf(stderr, "madc32: File name missing\n");
 						exit(1);
 					}
-					s_adc->dumpRegsOnInit = TRUE;
+					m_adc->dumpRegsOnInit = TRUE;
 					madc32_dumpRegisters(s_adc, file); 		/* dump registers to file */
-					madc32_dumpRaw(s_adc, "rawDump.dat");
+					mesy_dumpRaw(m_adc, "rawDump.dat");
 					break;
 		case 's':	reg = -1;
 					if (argc >= 6) reg = catoi(argv[5]);
@@ -126,7 +132,7 @@ int main(int argc, char *argv[]) {
 						fprintf(stderr, "madc32: Register value missing\n");
 						exit(1);
 					}
-					SET16(s_adc->md->vmeBase, reg, val);
+					SET16(m_adc->md->vmeBase, reg, val);
 					printf("madc32: Setting register %x to %x\n", reg, val);
 					break;				
 		case 'g':	reg = -1;
@@ -135,11 +141,11 @@ int main(int argc, char *argv[]) {
 						fprintf(stderr, "madc32: Register addr missing\n");
 						exit(1);
 					}
-					val = GET16(s_adc->md->vmeBase, reg);
+					val = GET16(m_adc->md->vmeBase, reg);
 					printf("madc32: Register %#x: %#x\n", reg, val);
 					break;
 		case 'a':	while (1) {
-						val = GET16(s_adc->md->vmeBase, 0x6030);
+						val = GET16(m_adc->md->vmeBase, 0x6030);
 					}
 					break;
 		default:	fprintf(stderr, "madc32: Illegal function - %s\n", argv[4]);

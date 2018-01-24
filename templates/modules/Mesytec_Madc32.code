@@ -12,6 +12,7 @@
 %%BeginOfCode%%
 #include "madc32.h"
 #include "madc32_protos.h"
+#include "madc32_database.h"
 %%EndOfCode%%
 %%MODULE_DEFS%%
 
@@ -24,16 +25,21 @@
 
 									/* init module $moduleNameLC at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-					if (s_$moduleNameLC == NULL) s_$moduleNameLC = madc32_alloc("$moduleNameLC", md_$moduleNameLC, $moduleSerial); /* allocate data struct */
- 					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
-					madc32_moduleInfo(s_$moduleNameLC);						/* read module info */
-					madc32_soft_reset(s_$moduleNameLC);	 						/* reset module */
-					madc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill database from environment data */
-					madc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
-					madc32_initMCST(s_$moduleNameLC); 							/* initialize MCST */
-					madc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
-					madc32_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
-					blt_init_flag = madc32_initBLT(s_$moduleNameLC, blt_init_flag);	/* initialize block xfer */
+					if (s_$moduleNameLC == NULL) {
+						s_$moduleNameLC = (s_madc32 *) mesy_alloc("$moduleNameLC", sizeof(s_madc32), md_$moduleNameLC, $moduleSerial); /* allocate data struct */
+						if (s_$moduleNameLC != NULL) {
+							m_$moduleNameLC = &s_$moduleNameLC->m;
+							moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
+							mesy_moduleInfo(m_$moduleNameLC);							/* read module info */
+							mesy_soft_reset(m_$moduleNameLC);	 						/* reset module */
+							madc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill database from environment data */
+							madc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
+							madc32_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
+							mesy_initMCST(m_$moduleNameLC); 							/* initialize MCST */
+							mesy_setModuleId(m_$moduleNameLC, $serial); 				/* update module id */
+							blt_init_flag = mesy_initBLT(m_$moduleNameLC, blt_init_flag);	/* initialize block xfer */
+						}
+					}
 %%EndOfCode%%
 %%INIT_MODULE%%
 
@@ -53,7 +59,7 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-					evt.out32 += madc32_readout(s_$moduleName, (uint32_t *) evt.out32);	/* read data */
+					evt.out32 += mesy_readout(s_$moduleName, (uint32_t *) evt.out32);	/* read data */
 %%EndOfCode%%
 %%READ_MODULE%%
 
@@ -93,8 +99,8 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-					madc32_stopAcq(s_$moduleName);	/* start module $moduleName */
-					madc32_startAcq(s_$moduleName);
+					mesy_stopAcq(m_$moduleName);	/* start module $moduleName */
+					mesy_startAcq(m_$moduleName);
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -104,8 +110,8 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-					madc32_stopAcq(s_$moduleName);			/* stop module $moduleName */
-					madc32_reportReadErrors(s_$moduleName);	/* error report */
+					mesy_stopAcq(m_$moduleName);			/* stop module $moduleName */
+					mesy_reportReadErrors(m_$moduleName);	/* error report */
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 
@@ -126,6 +132,7 @@
 
 %%BeginOfCode%%
 static s_madc32 * s_$moduleName = NULL;
+static s_mesy * m_$moduleName = NULL;
 %%EndOfCode%%
 %%DEFINE_GLOBALS%%
 
@@ -150,7 +157,7 @@ static s_madc32 * s_$moduleName = NULL;
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L$ppcLibraryPath  -lMadc32
+	-L$ppcLibraryPath  -lMadc32 -lMesy
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

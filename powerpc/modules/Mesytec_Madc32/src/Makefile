@@ -46,7 +46,7 @@ madc32:	madc32.o $(LIBMADC32)
 	$(CC) -o madc32 madc32.o \
 		-L ../../../lib/$(GSI_OS_VERSION) \
 		-L /lib/ces \
-		-lMadc32 -lUti \
+		-lMadc32 -lMesy -lUti \
 		$(LIB)/lib_mbs.a $(LIB)/lib_tools.a \
 		$(MBSLIBS)
 	mv madc32 $(BIN_DIR)

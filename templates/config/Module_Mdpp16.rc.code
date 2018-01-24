@@ -155,7 +155,7 @@ MDPP16.$moduleName.TrigSrcBank:        $trigSrcBank
 #                               
 MDPP16.$moduleName.FirstHit:            $trigFirstHit
 
-# trigger source (0x605E)
+# trigger output (0x605E)
 #
 #           *--*------*--*
 #           |0B|X0CCCC|00|

@@ -12,61 +12,20 @@
 //! \details		Prototypes for Mesytec Madc32
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.14 $
-//! $Date: 2011-04-29 07:19:03 $
+//! $Revision: $
+//! $Date: $
 ////////////////////////////////////////////////////////////////////////////*/
 
-
-s_madc32 * madc32_alloc(char * moduleName, s_mapDescr * md, int serial);
-
-void madc32_moduleInfo(s_madc32 * s);
-void madc32_setPrefix(s_madc32 * s, char * prefix);
 
 bool_t madc32_fillStruct(s_madc32 * s, char * file);
 
 void madc32_loadFromDb(s_madc32 * s, uint32_t chnPattern);
-
-int madc32_initBLT(s_madc32 * s, int flag);
-void madc32_enableBLT(s_madc32 * s);
-bool_t madc32_useBLT(s_madc32 * s);
-
 bool_t madc32_dumpRegisters(s_madc32 * s, char * file);
-bool_t madc32_dumpRaw(s_madc32 * s, char * file);
 void madc32_printDb(s_madc32 * s);
-
-void madc32_soft_reset(s_madc32 * s);
-
-void madc32_initDefaults(s_madc32 * s);
 
 void madc32_setThreshold(s_madc32 * s, uint16_t channel,  uint16_t thresh);
 void madc32_setThreshold_db(s_madc32 * s, uint16_t channel);
 uint16_t madc32_getThreshold(s_madc32 * s, uint16_t channel);
-
-void madc32_setAddrReg(s_madc32 * s, uint16_t vmeAddr);
-void madc32_setAddrReg_db(s_madc32 * s);
-uint16_t madc32_getAddrReg(s_madc32 * s);
-
-void madc32_setModuleId(s_madc32 * s, uint16_t id);
-void madc32_setModuleId_db(s_madc32 * s);
-uint16_t madc32_getModuleId(s_madc32 * s);
-
-uint16_t madc32_getFifoLength(s_madc32 * s);
-
-void madc32_setDataWidth(s_madc32 * s, uint16_t format);
-void madc32_setDataWidth_db(s_madc32 * s);
-uint16_t madc32_getDataWidth(s_madc32 * s);
-
-void madc32_setMultiEvent(s_madc32 * s, uint16_t mode);
-void madc32_setMultiEvent_db(s_madc32 * s);
-uint16_t madc32_getMultiEvent(s_madc32 * s);
-
-void madc32_setXferData(s_madc32 * s, uint16_t words);
-void madc32_setXferData_db(s_madc32 * s);
-uint16_t madc32_getXferData(s_madc32 * s);
-
-void madc32_setMarkingType(s_madc32 * s, uint16_t type);
-void madc32_setMarkingType_db(s_madc32 * s);
-uint16_t madc32_getMarkingType(s_madc32 * s);
 
 void madc32_setBankOperation(s_madc32 * s, uint16_t oper);
 void madc32_setBankOperation_db(s_madc32 * s);
@@ -140,63 +99,4 @@ void madc32_setPulserStatus(s_madc32 * s, uint16_t mode);
 void madc32_setPulserStatus_db(s_madc32 * s);
 uint16_t madc32_getPulserStatus(s_madc32 * s);
 
-void madc32_setTsSource(s_madc32 * s, uint16_t source);
-void madc32_setTsSource_db(s_madc32 * s);
-uint16_t madc32_getTsSource(s_madc32 * s);
-
-void madc32_setTsDivisor(s_madc32 * s, uint16_t div);
-void madc32_setTsDivisor_db(s_madc32 * s);
-uint16_t madc32_getTsDivisor(s_madc32 * s);
-
-int madc32_readout(s_madc32 * s, uint32_t * pointer);
-bool_t madc32_dataReady(s_madc32 * s);
-
-int madc32_readTimeB(s_madc32 * s, uint32_t * pointer);
-
-bool_t madc32_testBusError(s_madc32 * s);
-void madc32_enableBusError(s_madc32 * s);
-void madc32_disableBusError(s_madc32 * s);
-
-void madc32_startAcq(s_madc32 * s);
-void madc32_stopAcq(s_madc32 * s);
-
-void madc32_resetFifo(s_madc32 * s);
-void madc32_resetTimestamp(s_madc32 * s);
-void madc_resetReadout(s_madc32 * s);
-
-void madc32_resetFifo_mcst(s_madc32 * s);
-void madc32_resetTimestamp_mcst(s_madc32 * s);
-void madc_resetReadout_mcst(s_madc32 * s);
-
-void madc32_initMCST(s_madc32 * s);
-
-void madc32_setMcstSignature(s_madc32 * s, unsigned long Signature);
-uint16_t madc32_getMcstSignature(s_madc32 * s);
-
-bool_t madc32_isMcstMaster(s_madc32 * s);
-
-void madc32_setCbltSignature(s_madc32 * s, unsigned long Signature);
-uint16_t madc32_getCbltSignature(s_madc32 * s);
-
-void madc32_setFirstInCbltChain(s_madc32 * s);
-bool_t madc32_isFirstInCbltChain(s_madc32 * s);
-
-void madc32_setLastInCbltChain(s_madc32 * s);
-bool_t madc32_isLastInCbltChain(s_madc32 * s);
-
-void madc32_setMiddleOfCbltChain(s_madc32 * s);
-bool_t madc32_isMiddleOfCbltChain(s_madc32 * s);
-
-void madc32_setMcstEnable(s_madc32 * s);
-void madc32_setMcstDisable(s_madc32 * s);
-bool_t madc32_mcstIsEnabled(s_madc32 * s);
-void madc32_setCbltEnable(s_madc32 * s);
-void madc32_setCbltDisable(s_madc32 * s);
-bool_t madc32_cbltIsEnabled(s_madc32 * s);
-
-void madc32_setMcstCblt_db(s_madc32 * s);
-
-void madc32_reportReadErrors(s_madc32 * s);
-
-uint32_t * madc32_repairRawData(s_madc32 * s, uint32_t * pointer, uint32_t * dataStart);
 #endif
