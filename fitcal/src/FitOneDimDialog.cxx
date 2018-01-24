@@ -392,6 +392,13 @@ Double_t gausf(Double_t * x, Double_t * par)
 	return lBinW * fitval;
 }
 //____________________________________________________________________________________
+FitOneDimDialog::FitOneDimDialog()
+{
+	fInteractive = 0;
+	fSelHist = NULL;
+	fSelPad = NULL;
+	fDialog = NULL;
+}
 //____________________________________________________________________________________
 
 FitOneDimDialog::FitOneDimDialog(TH1 * hist, Int_t type, Int_t interactive)
@@ -659,7 +666,6 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 	fFitFunc = NULL;
 	fReqNmarks= 0;
 	fDialog = NULL;
-	gROOT->GetListOfCleanups()->Add(this);
 
 	TIter next(gROOT->GetListOfCanvases());
 	TCanvas *c;
@@ -926,6 +932,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		new TGMrbValuesAndText (title.Data(), text, &ok, itemwidth,
 								fParentWindow, history, NULL, row_lab, valp,
 								NULL, NULL, helptext, this, this->ClassName());
+		gROOT->GetListOfCleanups()->Add(this);
 	}
 }
 //__________________________________________________________________________
@@ -933,18 +940,20 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 FitOneDimDialog::~FitOneDimDialog()
 {
 // cout << "dtor FitOneDimDialog: " << this << endl;
-	gROOT->GetListOfCleanups()->Remove(this);
+	if (fInteractive > 0)
+		gROOT->GetListOfCleanups()->Remove(this);
 }
 //__________________________________________________________________________
 
 void FitOneDimDialog::RecursiveRemove(TObject * obj)
 {
+	if (fInteractive = 0) return;
 //	cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "
 //		  << obj << " fSelHist " <<  fSelHist <<  " fSelPad " <<  fSelPad << endl;
 	if ((fSelPad && obj == fSelPad) || obj == fSelHist) {
 //		 cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "
 //		  << obj << " fSelHist " <<  fSelHist <<  endl;
-		if (fInteractive > 0) CloseDialog();
+		if(fDialog) CloseDialog();
 	}
 }
 //__________________________________________________________________________

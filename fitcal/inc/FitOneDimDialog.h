@@ -114,6 +114,7 @@ public:
 	};
 
 public:
+   FitOneDimDialog();
    FitOneDimDialog(TH1 * hist, Int_t type = 1, Int_t interactive = 1);
    FitOneDimDialog(TGraph * graph, Int_t type = 1, Int_t interactive = 1);
    void DisplayMenu(Int_t type = 1);

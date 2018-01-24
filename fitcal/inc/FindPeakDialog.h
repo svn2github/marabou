@@ -49,6 +49,7 @@ private:
 
 public:
    FindPeakDialog(TH1 * hist, Int_t interactive =1);
+   FindPeakDialog();
    virtual ~FindPeakDialog();
    void RecursiveRemove(TObject * obj);
    void ExecuteFindPeak();

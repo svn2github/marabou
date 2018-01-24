@@ -78,6 +78,7 @@ private:
 //#endif
 public:
    CalibrationDialog(TH1 * hist, Int_t interactive = 1);
+   CalibrationDialog();
    virtual ~CalibrationDialog();
    void RecursiveRemove(TObject * obj);
    TF1 * CalculateFunction();

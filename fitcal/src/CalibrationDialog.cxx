@@ -82,6 +82,21 @@ Double_t Cm244_Intensity[kCm244_Npeaks]=
      {0.24, 0.76, 0.236, 0.764};
 //____________________________________________________________________________________
 
+CalibrationDialog::CalibrationDialog()
+{
+	fInteractive = 0;
+	fSelHist = NULL;
+	fDialog = NULL;
+	fDialogSetNominal = NULL;
+	fAutoSelectDialog = NULL;
+   fCalHist = NULL;
+   fCalFunc = NULL;
+	fCalValCanvas = NULL;
+	fScanCanvas = NULL;
+	fEffCanvas = NULL;
+}
+//____________________________________________________________________________________
+
 CalibrationDialog::CalibrationDialog(TH1 * hist, Int_t interactive)
 {
 
@@ -196,7 +211,6 @@ The procedure to use previously fitted peaks is as follows:\n\
 			fParentWindow = (TRootCanvas*)fSelCanvas->GetCanvasImp();
 		}
 	}
-   gROOT->GetListOfCleanups()->Add(this);
 	fDialog = NULL;
 	fDialogSetNominal = NULL;
 	fAutoSelectDialog = NULL;
@@ -328,6 +342,7 @@ The procedure to use previously fitted peaks is as follows:\n\
 		new TGMrbValuesAndText ("Calibration function formula", &fFormula, &ok, itemwidth,
 								fParentWindow, hist_file, NULL, row_lab, valp,
 								NULL, NULL, helptext, this, this->ClassName());
+		gROOT->GetListOfCleanups()->Add(this);
   }
 }
 //________________________________________________________________________
@@ -1491,8 +1506,8 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 	TObject *obj;
 	TF1 *f;
 	TList *lof = fSelHist->GetListOfFunctions();
-//	if ( fVerbose )
-//		cout <<" lof->GetSize()" <<lof->GetSize() << endl;
+	if ( fVerbose )
+		cout <<" lof->GetSize()" <<lof->GetSize() << endl;
 	if (fInteractive > 0 && fSelCanvas)
 		fSelCanvas->cd();
 	TList *lop = gPad->GetListOfPrimitives();
@@ -1517,8 +1532,8 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 		}
 	}
 //
-//	if (fVerbose)
-//		cout <<" lof->GetSize() " <<lof->GetSize() << endl;
+	if (fVerbose)
+		cout <<" lof->GetSize() " <<lof->GetSize() << endl;
 	Int_t npeaks = 0;
 	TIter next(lof);
 	TString pname;
