@@ -3150,6 +3150,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 	while (origname.Index(notascii) >= 0) {
 		origname(notascii) = "_";
 	}
+	/* following section must be adjusted for 6.12.04
 	if (gDirectory) {
 		TList *tl=gDirectory->GetList();
 		FitHist *fhist = (FitHist*)tl->FindObject(FHname);
@@ -3159,12 +3160,12 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 //         gDirectory->GetList()->Remove(hold);
 			gROOT->GetListOfCanvases()->Remove(fhist->GetCanvas());
 			TH1 *oldhist=fhist->GetSelHist();
-			delete fhist->GetCanvas();
-			if (oldhist != hist)
-				delete oldhist;
-			gSystem->ProcessEvents();
-			gSystem->Sleep(500);
-			gSystem->ProcessEvents();
+//			delete fhist->GetCanvas();
+//			if (oldhist != hist)
+//				delete oldhist;
+//			gSystem->ProcessEvents();
+//			gSystem->Sleep(500);
+//			gSystem->ProcessEvents();
 //			gSystem->Sleep(100);
 		}
 //     Cleaning FitHist objects for which Canvas was closed
@@ -3183,7 +3184,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 		}
 //      AppendDirectory();
 	}
-//   gROOT->Reset();
+	*/
 	nHists++;
 //	cout << "ShowHist: fNwindows, FHname, save " << WindowSizeDialog::fNwindows<< " " << FHname << " " <<FHnameSave << endl;
 //   if (FHnameSave != FHname) {
