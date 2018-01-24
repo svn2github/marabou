@@ -51,6 +51,7 @@ private:
    static Float_t fSaturation;
 public:
    SetColorModeDialog(TGWindow * win = NULL, Int_t batch = 0);
+   SetColorModeDialog() {};
    ~SetColorModeDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();

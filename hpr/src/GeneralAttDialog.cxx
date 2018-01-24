@@ -162,9 +162,12 @@ With this option activ each time after a histogram is\n\
 displayed a macro (FH_setdefaults.C) is executed.\n\
 ____________________________________________________________\n\
 ";
-   TRootCanvas *rc = (TRootCanvas*)win;
-   fCanvas = rc->Canvas();
-   gROOT->GetListOfCleanups()->Add(this);
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
    fRow_lab = new TList();
 
    Int_t ind = 0;
@@ -299,22 +302,14 @@ void GeneralAttDialog::RestoreSavedSettings()
 }
 //_______________________________________________________________________
 
-void GeneralAttDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "GeneralAttDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
 void GeneralAttDialog::CloseDialog()
 {
 //   cout << "GeneralAttDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
    if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
+   if (fRow_lab ) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
    delete this;
 }
 //_______________________________________________________________________

@@ -40,22 +40,17 @@ private:
    Double_t fYaxisMax;
 	Double_t fShiftX;
 	Double_t fScaleX;
-	Int_t    fRandomX;
 	Double_t fShiftY;
 	Double_t fScaleY;
+	Int_t    fRandomX;
 	Int_t fRandomY;
-	TRootCanvas *fRootCanvas;
-   TGPopupMenu *fMenu;
-	TGPopupMenu *fAttrMenu;
 	
 public:
    ShiftScale(TH1 * hist, HTCanvas * canvas);
+   ShiftScale(){fRow_lab = NULL; fDialog = NULL;};
    ~ShiftScale();
    void CloseDialog();
-   void RecursiveRemove(TObject*);
    void Draw_The_Hist();
-//   void BuildMenu();
-//   void HandleMenu(Int_t id);
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown(Int_t wid);

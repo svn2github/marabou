@@ -72,7 +72,7 @@ private:
 	Int_t   fStackOpenGL;
 public:
 	HprStack(TList * hlist, Int_t weighted = 0);
-	HprStack(){};
+	HprStack();
 	~HprStack();
 	void   BuildCanvas();
 	void   RecursiveRemove(TObject *obj);

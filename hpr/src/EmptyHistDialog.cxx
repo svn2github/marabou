@@ -90,11 +90,8 @@ divided into pads to allow for more than one histogram\n\
             
 EmptyHistDialog::~EmptyHistDialog() 
 {
-   SaveDefaults();
-//	if ( fCanvas ) {
-//		delete fCanvas;
-//	}
    gROOT->GetListOfCleanups()->Remove(this);
+   if ( fCanvas ) SaveDefaults();
 };
 //__________________________________________________________________________
 

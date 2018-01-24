@@ -26,8 +26,12 @@ static const Char_t helptext[] =
 especially which values to display in the statistics box\n\
 \"Suppr Zero\": dont draw channels with 0 content";
 
-   TRootCanvas *rc = (TRootCanvas*)win;
-   fCanvas = rc->Canvas();
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
 // is it 1 or 2dim
 	fHist = NULL;
    TIter next(fCanvas->GetListOfPrimitives());
@@ -44,7 +48,6 @@ especially which values to display in the statistics box\n\
 	if (gHprDebug > 0) {
 		cout << "ctor WhatToShowDialog: " << this << " fHist: " << fHist << endl;
 	}
-	gROOT->GetListOfCleanups()->Add(this);
 	fRow_lab = new TList();
    
    Int_t ind = 0;
@@ -102,22 +105,14 @@ and creation time"));
 }
 //_______________________________________________________________________
 
-void WhatToShowDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) { 
- //     cout << "WhatToShowDialog: CloseDialog "  << endl;
-      CloseDialog(); 
-   }
-}
-//_______________________________________________________________________
-
 void WhatToShowDialog::CloseDialog()
 {
 //   cout << "WhatToShowDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
    if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
+   if (fDialog) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
    delete this;
 }
 //_______________________________________________________________________

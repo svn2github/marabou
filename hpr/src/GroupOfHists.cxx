@@ -50,6 +50,14 @@ enum EGoHCommandIds {
 };
 //________________________________________________________________________
 
+GroupOfHists::GroupOfHists()
+{
+	fCanvas = NULL;
+	fTimer = NULL;
+	fDialog = NULL;
+}
+//________________________________________________________________________
+
 GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*title*/)
 				: fHList(hlist), fHistPresent(hpr)
 {
@@ -108,12 +116,25 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*tit
 	buf.Prepend("GroupOfHists_");
 	this->SetName(buf.Data());
 //   this->SetTitle(tit);
-	gROOT->GetList()->Add(this);
-	gROOT->GetListOfCleanups()->Add(this);
 	BuildCanvas();
 	BuildMenu();
-	if (gHprDebug >0) 
+	gROOT->GetList()->Add(this);
+	gROOT->GetListOfCleanups()->Add(this);
+	if (gHprDebug >0)
 		cout << "GroupOfHists *goh = (GroupOfHists*)" << this << ";" << endl;
+}
+//________________________________________________________________________
+
+GroupOfHists::~GroupOfHists()
+{
+//   cout <<"dtor GroupOfHists, fDialog " << fDialog << endl;
+	gROOT->GetList()->Remove(this);
+	gROOT->GetListOfCleanups()->Remove(this);
+	if (fDialog) {
+		fDialog->CloseWindowExt();
+		if (fTimer) delete fTimer;
+		SaveDefaults();
+	}
 }
 //________________________________________________________________________
 
@@ -159,12 +180,13 @@ void GroupOfHists::BuildCanvas()
 	TString hname;
 	TString fname;
 	fAnyFromSocket = kFALSE;
+	fPadList = new TList();
 	TPad * firstpad = NULL;
 	TH1* hist;
 	for(Int_t i=0; i < nsel; i++) {
 		fCanvas->cd(i+1);
 		TPad * p = (TPad *)gPad;
-		fPadList.Add(p);
+		fPadList->Add(p);
 		TString cmd2("((GroupOfHists*)gROOT->GetList()->FindObject(\"");
 		cmd2 += GetName();
 		cmd2 += "\"))->auto_exec()";
@@ -339,26 +361,13 @@ void GroupOfHists::BuildCanvas()
 
 void GroupOfHists::RecursiveRemove(TObject *obj)
 {
-//   cout <<  "RecursiveRemove,obj " << obj << " "  << obj->GetName() << endl;
-	if (obj == fCanvas) {
+//   cout <<  "GroupOfHists::RecursiveRemove,obj " << obj << " "  << obj->GetName() << endl;
+	if (fCanvas && obj == fCanvas) {
 		fWindowXWidth = fCanvas->GetWindowWidth();
 		fWindowYWidth = fCanvas->GetWindowHeight();
-		gROOT->GetList()->Remove(this);
-		gROOT->GetListOfCleanups()->Remove(this);
  //     cout <<  "RecursiveRemove,fWindowXWidth  " << fWindowXWidth << endl;
 		delete this;
 	}
-}
-//________________________________________________________________________
-
-GroupOfHists::~GroupOfHists()
-{
-//   cout <<"dtor GroupOfHists, fDialog " << fDialog << endl;
-	if (fDialog) fDialog->CloseWindowExt();
-	if (fTimer) delete fTimer;
-	gROOT->GetList()->Remove(this);
-	gROOT->GetListOfCleanups()->Remove(this);
-	SaveDefaults();
 }
 //________________________________________________________________________
 
@@ -922,7 +931,7 @@ void GroupOfHists::SaveDefaults()
 
 void GroupOfHists::CloseDown(Int_t)
 {
-//   cout << "GroupOfHists::CloseDown() fDialog " << fDialog<< endl;
+   cout << "GroupOfHists::CloseDown() fDialog " << fDialog<< endl;
 	fDialog = NULL;
 }
 //_______________________________________________________________________

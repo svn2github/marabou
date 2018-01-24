@@ -121,6 +121,12 @@ https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
    "WaterMelon",       "Cool",         "Copper",
    "GistEarth",        "kViridis"
 	};
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
 	if (gHprDebug > 0)
 		cout << "SetColorModeDialog ctor " << batch << endl;
 	RestoreDefaults();
@@ -136,10 +142,7 @@ https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
 		return;
 	fRgbSlider = NULL;
 	fHlsSlider = NULL;
-	TRootCanvas *rc = (TRootCanvas*)win;
-	fCanvas = rc->Canvas();
 	fWindow = win;
-	gROOT->GetListOfCleanups()->Add(this);
 
 	fRow_lab = new TList();
 	Int_t ind = 0;
@@ -563,16 +566,16 @@ void SetColorModeDialog::CloseDialog()
 //   cout << "SetColorModeDialog::CloseDialog() "
 //        << "fHlsSlider " << fHlsSlider <<" fRgbSlider "
 //        <<  fRgbSlider << endl;
-	gROOT->GetListOfCleanups()->Remove(this);
 	if (fHlsSlider) {
 
 		fHlsSlider->DeleteWindow();
 	}
-	if (fRgbSlider)
-		fRgbSlider->DeleteWindow();
-	if (fDialog) fDialog->CloseWindowExt();
-	fRow_lab->Delete();
-	delete fRow_lab;
+	if (fRgbSlider) fRgbSlider->DeleteWindow();
+	if (fDialog)    fDialog->CloseWindowExt();
+	if (fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 	delete this;
 }
 //___________________________________________________________________

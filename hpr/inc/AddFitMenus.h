@@ -21,6 +21,7 @@ private:
 
 public:
    AddFitMenus(TCanvas *canvas, TH1 *hist);
+   AddFitMenus(){ fCanvas = NULL; };
    ~AddFitMenus();
    void RecursiveRemove(TObject*);
    void HandleMenu(Int_t id);

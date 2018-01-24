@@ -83,9 +83,26 @@ For this functionality the FillStyle of the underlying frame must be 0\n\
 This is controlled by the \"Canvas, Pad, Frame\" dialog invoked \n\
 from the \"GraphicsAtt\" popup menu\n\
 ";
-	TRootCanvas *rc = (TRootCanvas*)win;
-	fCanvas = rc->Canvas();
-//   cout << "ctor Set1DimOptDialog " << fCanvas->GetName() << endl;
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
+//	cout << "Set1DimOptDialog *s1dd=(Set1DimOptDialog*)" << this<< endl;
+//	cout << "((TRootCanvas*)win)->Canvas() " << ((TRootCanvas*)win)->Canvas()<< endl;
+//	cout << "gPad->GetCanvas() " << gPad->GetCanvas() << endl;
+	/*
+	fCanvas = gPad->GetCanvas();
+	
+   	if (fCanvas){
+		fCanvas->cd();
+     		 TRootCanvas *rc = (TRootCanvas*)fCanvas->GetCanvasImp();
+		cout << "rc " << rc << endl;
+                rc->Connect("CloseWindow()", "Set1DimOptDialog", this, "CloseDialog()");
+                rc->Connect("CloseWindow()", "Set1DimOptDialog", this, "CloseDialog()");
+	}
+	*/
 	TIter next(fCanvas->GetListOfPrimitives());
 	TObject *obj;
 	TH1* hist;
@@ -113,7 +130,6 @@ from the \"GraphicsAtt\" popup menu\n\
 //	GetValuesFromHist();
 //	fLiveBG = 1;  //force lin bg
 	fAdvanced1Dim = 1;
-	gROOT->GetListOfCleanups()->Add(this);
 
 	fTitle       = new TString[fNHists];
 	fTitleModBid = new Int_t[fNHists];
@@ -366,30 +382,15 @@ with button 1 pressed"));
 							 NULL, NULL, helptext, this, this->ClassName());
 }
 //_______________________________________________________________________
-/*
-void Set1DimOptDialog::Add2ConnectedClasses(TObject *obj)
-{
-	//	cout << "Add2ConnectedClasses " <<obj->ClassName() << " gPad " << gPad << endl;
-	this->Connect("LinLogChanged(TObject*)", obj->ClassName(), obj,
-					  "LinLogChanged(TObject*)");
-					  fHasConnection = kTRUE;
-}
-*/
-//_______________________________________________________________________
-
-void Set1DimOptDialog::RecursiveRemove(TObject * obj)
-{
-	if (obj == fCanvas) {
- //     cout << "Set1DimOptDialog: CloseDialog "  << endl;
-		CloseDialog();
-	}
-}
-//_______________________________________________________________________
 
 void Set1DimOptDialog::CloseDialog()
 {
-//   cout << "Set1DimOptDialog::CloseDialog() " << endl;
-	gROOT->GetListOfCleanups()->Remove(this);
+	if (gHprDebug > 0)
+		cout << "Set1DimOptDialog::CloseDialog() " << endl;
+//   if (fCanvas) {
+//		fCanvas->Disconnect("Closed()", this, "CloseDialog()");
+//	}
+		
 	if (fDialog) fDialog->CloseWindowExt();
 	if (fRow_lab) {
 		fRow_lab->Delete();

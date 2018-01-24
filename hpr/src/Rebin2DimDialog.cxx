@@ -17,9 +17,13 @@ of the rebin values, channels at upper X and Y are\n\
 discarded.\n\
 ";
 	
-	fCanvas = ((TRootCanvas*)win)->Canvas();
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
 	fHist = hist;
-	gROOT->GetListOfCleanups()->Add(this);
 	fRow_lab = new TList();
 	Int_t ind = 0;
 	fNewName = hist->GetName();
@@ -170,50 +174,21 @@ void Rebin2DimDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/
 		fNewNbinsY = (fBinUpY - fBinLowY + 1) / fRebinY;
 		fDialog->ReloadValues();
 	}
-/*	if (bid == fBidNewNbinsX) {
-		fBinUpX = fBinLowX + fNewNbinsX * fRebinX -1;
-		if (fBinUpX > fHist->GetNbinsX() ) {
-			cout << "fBinUpX exceeds  hist->GetNbinsX() " << endl;
-			fBinUpX = fHist->GetNbinsX();
-			fDialog->ReloadValues();
-		}
-	}
-	if (bid == fBidNewNbinsY) {
-		fBinUpY = fBinLowY + fNewNbinsY * fRebinY -1;
-		if (fBinUpY > fHist->GetNbinsY() ) {
-			cout << "fBinUpY exceeds  hist->GetNbinsY() " << endl;
-			fBinUpY = fHist->GetNbinsY();
-			fDialog->ReloadValues();
-		}
-	}*/
-}
-//_______________________________________________________________________
-
-void Rebin2DimDialog::RecursiveRemove(TObject * obj)
-{
-	if (obj == fCanvas) {
-		//     cout << "Set2DimOptDialog: CloseDialog "  << endl;
-		CloseDialog();
-	}
 }
 //______________________________________________________________________
 
 void Rebin2DimDialog::CloseDialog()
 {
 	//   cout << "Set3DimOptDialog::CloseDialog() " << endl;
-	gROOT->GetListOfCleanups()->Remove(this);
 	if (fDialog) fDialog->CloseWindowExt();
-	fRow_lab->Delete();
-	delete fRow_lab;
+	if (fRow_lab) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 	delete this;
 }
 //______________________________________________________________________
 
 void Rebin2DimDialog::CloseDown(Int_t /*wid*/)
 {
-	gROOT->GetListOfCleanups()->Remove(this);
-	//   cout << "CloseDown(" << wid<< ")" <<endl;
-//	fDialog = NULL;
-//	if (wid == -1)
-//		SaveDefaults();
 }

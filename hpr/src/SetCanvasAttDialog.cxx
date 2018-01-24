@@ -27,10 +27,13 @@ SetCanvasAttDialog::SetCanvasAttDialog(Int_t /*batch*/)
 SetCanvasAttDialog::SetCanvasAttDialog(TGWindow * win)
 {
 	static const Char_t helptext[] =" no help yet";
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
    RestoreDefaults();
-   TRootCanvas *rc = (TRootCanvas*)win;
-   fCanvas = rc->Canvas();
-   gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
 
    Int_t ind = 0;
@@ -124,10 +127,11 @@ void SetCanvasAttDialog::RecursiveRemove(TObject * obj)
 void SetCanvasAttDialog::CloseDialog()
 {
 //   cout << "SetCanvasAttDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
    if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
+   if(fRow_lab) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
    delete this;
 }
 //_______________________________________________________________________

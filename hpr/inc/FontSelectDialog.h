@@ -64,7 +64,6 @@ public:
 
    FontSelectDialog(TGWindow * win = NULL);
    ~FontSelectDialog() {};
-   void RecursiveRemove(TObject * obj);
    void Apply();
    void CloseDialog();
    void SaveDefaultsCwd();

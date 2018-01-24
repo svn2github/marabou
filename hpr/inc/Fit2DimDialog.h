@@ -77,6 +77,7 @@ private:
 public:
    Fit2DimDialog(TObject *obj, Int_t npeaks = 0, Int_t interactive = 1);
    void DisplayMenu();
+   Fit2DimDialog(){fSelPad = NULL; fInteractive = 0;};
    virtual ~Fit2DimDialog();
    void RecursiveRemove(TObject * obj);
    //fit function as class member

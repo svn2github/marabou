@@ -48,7 +48,6 @@ public:
 	
 	GraphAttDialog(TGWindow * win = NULL);
    ~GraphAttDialog() {};
-   void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetGraphAtt(TCanvas *ca = NULL, Int_t bid = 0);
    void SetAsDefault();

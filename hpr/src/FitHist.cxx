@@ -100,6 +100,12 @@ enum dowhat { expand, projectx, projecty, statonly, projectf,
 ClassImp(FitHist)
 
 //_______________________________________________________________________________
+// def constructor
+FitHist::FitHist()
+{
+	fSelHist = NULL;
+}
+//_______________________________________________________________________________
 // constructor
 
 FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
@@ -107,6 +113,10 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 					Int_t win_widx, Int_t win_widy, TButton *cmdb)
 		  :TNamed(name, title), fCmdButton(cmdb)
 {
+	if (gHprDebug > 0)
+		cout << "FitHist ctor: " << this << " name: " << name << " title: " << name
+		<< endl << " hname: " << fHname.Data()<< "HistAddr " << hist
+		<< endl << flush;
 	if (!hist) {
 		cout << "NULL pointer in: " << name << endl;
 		return;
@@ -122,8 +132,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 			gROOT->GetListOfCanvases()->Remove(hold->GetCanvas());
 			delete hold->GetCanvas();
 		}
-//      AppendDirectory();
-		gDirectory->Append(this);
 	}
 //   hp = (HistPresent *) gROOT->FindObject("mypres");
 	if (!gHpr)
@@ -192,7 +200,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fActiveFunctions = new TList();
 	fActiveCuts = new TList();
 	fCmdLine = new TList();
-	gROOT->GetListOfCleanups()->Add(this);
 
 	if (gHpr) {
 		fAllFunctions = gHpr->GetFunctionList();
@@ -377,12 +384,19 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	if ( !gStyle->GetCanvasPreferGL() )
 		TQObject::Connect((TPad*)fCanvas, "Modified()",
 							"FitHist", this, "HandlePadModified()");
+	gROOT->GetListOfCleanups()->Add(this);
+	gROOT->GetList()->Add(this);
 	
 };
 //------------------------------------------------------
 // destructor
 FitHist::~FitHist()
 {
+	gROOT->GetList()->Remove(this);
+	gROOT->GetListOfCleanups()->Remove(this);
+	if (fSelHist == NULL) {
+		return;
+	}
 	fTimer.Stop();
 	DisconnectFromPadModified();
 //	TQObject::Disconnect((TPad*)fCanvas, "Modified()", this, "HandlePadModified()");
@@ -397,8 +411,6 @@ FitHist::~FitHist()
 //		return;
 	}
 	if (!fExpHist && gHpr && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
-	gROOT->GetList()->Remove(this);
-	gROOT->GetListOfCleanups()->Remove(this);
 	if ( fFit1DimD ) fFit1DimD->CloseDialog();
 	if ( fFit2DimD ) fFit2DimD->CloseDialog();
 	if ( WindowSizeDialog::fNwindows > 0 ) 
@@ -485,7 +497,10 @@ void FitHist::DoSaveLimits()
 		fLogy = fSelPad->GetLogy();
 		if ( fSelHist->GetDimension() == 1 ) {
 			fCanvas->GetHandleMenus()->SetLog(fLogy);
-		}
+		}	if (fSelHist == NULL) {
+		return;
+	}
+
 	}
 	if ( fLogx != fSelPad->GetLogx() ){
 		fLogx = fSelPad->GetLogx();
@@ -525,6 +540,9 @@ void FitHist::RecursiveRemove(TObject * obj)
 	if (gHprDebug > 2)
 		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist
 		<< " RecursiveRemove: " << obj << " " <<obj->GetName() << endl;
+	if (fSelHist == NULL) {
+		return;
+	}
 	//fSelHist->Print();
 	if (gHprClosing != 0) {
 		if (gHprDebug > 0)
@@ -543,9 +561,9 @@ void FitHist::RecursiveRemove(TObject * obj)
 //		else
 //			fSelHist = NULL;
 	}
-	fActiveCuts->Remove(obj);
-	fActiveWindows->Remove(obj);
-	fActiveFunctions->Remove(obj);
+	if (fActiveCuts) fActiveCuts->Remove(obj);
+	if (fActiveWindows) fActiveWindows->Remove(obj);
+	if (fActiveFunctions) fActiveFunctions->Remove(obj);
 	if (obj == fFit1DimD) fFit1DimD = NULL;
 	if (obj == fFit2DimD) fFit2DimD = NULL;
 }

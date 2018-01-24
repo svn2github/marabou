@@ -69,7 +69,6 @@ public:
 	Set1DimOptDialog(Int_t batch);
 //	void Add2ConnectedClasses(TObject *obj);
 	void LinLogChanged(TObject* o);
-	void RecursiveRemove(TObject * obj);
 	void CloseDialog();
 	void SetHistAttNow(TCanvas *canvas = NULL, Int_t id = 0);
 	void SetHistAtt(TCanvas *canvas = NULL, Int_t id = 0);

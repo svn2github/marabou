@@ -163,7 +163,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
                        kGraph, kGraphError, kGraphAsymmError,
                        k3dimHist, k3dimHistWeight,};
 
-   HistPresent(const Text_t *name = "mypres" , const Text_t *title = "mypres");
+   HistPresent(const Text_t *name, const Text_t *title);
+   HistPresent();
    ~HistPresent();
 	void HandleTerminate(Int_t status);
    void RecursiveRemove(TObject *);

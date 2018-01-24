@@ -39,9 +39,12 @@ for this user\n\
 ";
 // *INDENT-ON*
 
-   TRootCanvas *rc = (TRootCanvas*)win;
-   fCanvas = rc->Canvas();
-   gROOT->GetListOfCleanups()->Add(this);
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
    fRow_lab = new TList();
    RestoreDefaults();
    Int_t ind = 0;
@@ -98,15 +101,6 @@ for this user\n\
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
-}
-//__________________________________________________________________
-
-void FontSelectDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "FontSelectDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
 }
 //___________________________________________________________________
 
@@ -189,10 +183,11 @@ void FontSelectDialog::Apply()
 void FontSelectDialog::CloseDialog()
 {
 //   cout << "FontSelectDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
    if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
+   if ( fRow_lab ){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
    delete this;
 }
 //_______________________________________________________________________

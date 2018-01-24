@@ -122,6 +122,7 @@ Fit2DimDialog::Fit2DimDialog(TObject * obj, Int_t npeaks, Int_t interactive)
 	fInteractive = interactive;
 	fShowAsHist = 0;
 	DisplayMenu();
+	gROOT->GetListOfCleanups()->Add(this);
 }
 //____________________________________________________________________________________
 //____________________________________________________________________________________
@@ -201,7 +202,6 @@ the position of peak to be fitted.";
 	fFitFunc = NULL;
 	fReqNmarks= 0;
 	fDialog = NULL;
-	gROOT->GetListOfCleanups()->Add(this);
 
 	TIter next(gROOT->GetListOfCanvases());
 	TCanvas *c;
@@ -341,6 +341,7 @@ void Fit2DimDialog::RecursiveRemove(TObject * obj)
 {
 //   cout << "Fit2DimDialog::RecursiveRemove: this " << this << " obj "
 //        << obj << " fSelHist " <<  fSelHist <<  endl;
+	gROOT->GetListOfCleanups()->Remove(this);
 	if (obj == fSelPad) {
  //      cout << "Fit2DimDialog::RecursiveRemove: this " << this << " obj "
  //       << obj << " fSelHist " <<  fSelHist <<  endl;

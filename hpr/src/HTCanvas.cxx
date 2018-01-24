@@ -70,6 +70,7 @@ void HTCanvas::HTCanvasClosed()
 {
 	if ( gHprDebug > 0 )
 		cout << endl << "HTCanvas::HTCanvasClosed() " << this << " " << GetName() << endl;
+	Emit("HTCanvasClosed()");
 	delete this;
 }
 //______________________________________________________________________________________

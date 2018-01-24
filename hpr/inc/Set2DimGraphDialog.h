@@ -58,7 +58,6 @@ public:
    Set2DimGraphDialog(TGWindow * win = NULL);
 	Set2DimGraphDialog(Int_t batch);
    ~Set2DimGraphDialog() {};
-   void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetAttNow(TCanvas *canvas);
    void SetPadAtt(TPad *canvas);

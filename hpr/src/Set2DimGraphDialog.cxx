@@ -110,8 +110,13 @@ only max number of points of the graph.\n\
 	"SURF1", "SURF2",  "SURF3", "SURF4", "SURF5", "LEGO",
 	"LEGO1", "LEGO2",  "P",     "P0",    "PCOL",  "LINE"};
 	
-	TRootCanvas *rc = (TRootCanvas*)win;
-	fCanvas = (HTCanvas*)rc->Canvas();
+	if (win) {
+		TCanvas *cc = ((TRootCanvas*)win)->Canvas();
+		fCanvas = reinterpret_cast<HTCanvas*>(cc);
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
 	fCmdButton = fCanvas->GetCmdButton();
 	fHist = NULL;
 //	cout << "Enter Set2DimGraphDialog" << endl;
@@ -161,7 +166,6 @@ only max number of points of the graph.\n\
 			fOptRadio[i] = 0;
 		}
 	}
-	gROOT->GetListOfCleanups()->Add(this);
 	fRow_lab = new TList();
 
 	Int_t ind = 0;
@@ -225,24 +229,15 @@ only max number of points of the graph.\n\
 							 NULL, NULL, fRow_lab, fValp,
 							 NULL, NULL, helptext, this, this->ClassName());
 }
-//_______________________________________________________________________
-
-void Set2DimGraphDialog::RecursiveRemove(TObject * obj)
-{
-	if (obj == fCanvas) {
- //     cout << "Set2DimGraphDialog: CloseDialog "  << endl;
-		CloseDialog();
-	}
-}
-//_______________________________________________________________________
 
 void Set2DimGraphDialog::CloseDialog()
 {
 //   cout << "Set2DimGraphDialog::CloseDialog() " << endl;
-	gROOT->GetListOfCleanups()->Remove(this);
 	if (fDialog) fDialog->CloseWindowExt();
-	fRow_lab->Delete();
-	delete fRow_lab;
+	if(fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 	delete this;
 }
 //_______________________________________________________________________

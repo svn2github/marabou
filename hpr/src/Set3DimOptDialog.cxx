@@ -90,20 +90,17 @@ since the other options dont have a real histogram anymore\n\
    {"SCAT", "BOX0", "GLCOL", "PolyMHist"};
    const char *fDrawOpt3Title[kNopt3] =
    {"Scatter", "BOX", "OpenGL", "PolyM"};
-//   const char *fDrawOpt3[kNopt3] =
-//   {"SCAT", "BOX0", "GLCOL", "PolyMHist","PolyMView"};
-//  const char *fDrawOpt3Title[kNopt3] =
-//   {"Scatter", "BOX", "OpenGL", "PolyM","View3D"};
-	
-//	gTranspThresh = 1;
-//	gTranspAbove = 0.4;
-//	gTranspBelow = 0.005;
+   
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
 	gDirectory->Append(this);
 	fCmdButton = b;
 //	cout << "fCmdButton " << fCmdButton<< endl;
 	fApplyTranspCut = 0;
-   TRootCanvas *rc = (TRootCanvas*)win;
-   fCanvas = rc->Canvas();
    fHist = NULL;
 	fView3D = NULL;
 	fRangeChanged = kFALSE;
@@ -176,7 +173,6 @@ since the other options dont have a real histogram anymore\n\
       }
    }
 	
-   gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
 
    Int_t ind = 0;
@@ -294,21 +290,14 @@ since the other options dont have a real histogram anymore\n\
 }
 //_______________________________________________________________________
 
-void Set3DimOptDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
 void Set3DimOptDialog::CloseDialog()
 {
 //   cout << "Set3DimOptDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
    if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
+   if (fRow_lab) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
    delete this;
 }
 //_______________________________________________________________________
@@ -577,32 +566,6 @@ void Set3DimOptDialog::Rotate()
 		fCanvas->Update();
 	}
 }
-//______________________________________________________________________
-/*
-void Set3DimOptDialog::SetHistAttPermLocal()
-{
-//   cout << "Set3DimOptDialog:: SetHistAttPerm()" << endl;
-   SaveDefaults();
-   SetHistAttPerm();
-}
-//______________________________________________________________________
-
-void Set3DimOptDialog::SetHistAttPerm()
-{
-   cout << "Set3DimOptDialog:: SetHistAttPerm()" << endl;
-   TEnv env(".hprrc");
-   env.SetValue("Set3DimOptDialog.fDrawOpt3Dim", fDrawOpt3Dim);
-	env.SetValue("Set3DimOptDialog.f3DimBackgroundColor",f3DimBackgroundColor);
-	env.SetValue("Set3DimOptDialog.fHistFillColor3Dim",fHistFillColor3Dim);
-	env.SetValue("Set3DimOptDialog.fHistLineColor3Dim",fHistLineColor3Dim);
-	env.SetValue("Set3DimOptDialog.fMarkerColor3Dim",  fMarkerColor3Dim  );
-	env.SetValue("Set3DimOptDialog.fMarkerStyle3Dim",  fMarkerStyle3Dim  );
-	env.SetValue("Set3DimOptDialog.fMarkerSize3Dim",   fMarkerSize3Dim   );
-	env.SetValue("Set3DimOptDialog.fUseGL",            fUseGL            );
-	env.SetValue("Set3DimOptDialog.fApplyTranspCut",   fApplyTranspCut   );
-	
-	env.SaveLevel(kEnvLocal);
-}*/
 //______________________________________________________________________
 
 void Set3DimOptDialog::SaveDefaults()

@@ -36,12 +36,12 @@ private:
 	
 	public:
 		Rebin2DimDialog(TH2* hist, TGWindow * win = NULL);
+		Rebin2DimDialog() {};
 		~Rebin2DimDialog() {};
 		void PrintHistParams();
 		void ExecuteRebin();
 		void RestoreDefaults();
 		void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
-		void RecursiveRemove(TObject * obj);
 		void CloseDialog();
 		void CloseDown(Int_t wid);
 		ClassDef(Rebin2DimDialog,0)

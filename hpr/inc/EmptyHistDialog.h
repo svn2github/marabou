@@ -44,6 +44,7 @@ private:
 	TGPopupMenu *fAttrMenu;
 	
 public:
+   EmptyHistDialog() {fCanvas = NULL;};
    EmptyHistDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100);
    ~EmptyHistDialog();
    void RecursiveRemove(TObject*);

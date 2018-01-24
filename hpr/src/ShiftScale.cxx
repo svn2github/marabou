@@ -25,7 +25,6 @@ enum Ecmds {M_FitFormula, M_Save2File, M_Graph2File, M_OptionHist,
 				M_OptionPad};
 
 ShiftScale::ShiftScale(TH1 * hist, HTCanvas *canvas)
-              : fCanvasOrig(canvas),  fHistOrig(hist)
 {
   
 static const Char_t helpText[] = 
@@ -39,17 +38,22 @@ As default the new histogram has the parameters of the original\n\
 Note: Under and Overflow bins of the original histogram are not\n\
 taken into account\n\
 ";
-	if ( fHistOrig->GetDimension() > 2 ) {
+   fCanvasOrig = canvas;
+   fHistOrig   = hist;
+	if ( !fHistOrig || fHistOrig->GetDimension() > 2 ) {
 		cout << "Histogram must be 1 or 2dim" << endl;
 		return;
 	}
+//   cout << endl << "fCanvasOrig " << fCanvasOrig<< endl;
+//   cout << "fHistOrig   " <<fHistOrig << endl;
+	fCanvasOrig->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+
    Int_t ind = 0;
    fCommand = "Draw_The_Hist()";
    fCanvas = NULL;
 	TRootCanvas *win = (TRootCanvas*)fCanvasOrig->GetCanvasImp();
 //   fSave2FileDialog = NULL;
 //   fDialog = NULL;
-   gROOT->GetListOfCleanups()->Add(this);
 	fHistName   = fHistOrig->GetName();
 	fHistName += "_ShSc";
 	fHistTitle  = fHistOrig->GetTitle();
@@ -115,6 +119,7 @@ taken into account\n\
 	}
    fValp[ind++] = &fCommand;
    Int_t itemwidth = 400;
+   fOk = 0;
    fDialog =
       new TGMrbValuesAndText("Hists parameters", NULL, &fOk,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
@@ -124,34 +129,26 @@ taken into account\n\
             
 ShiftScale::~ShiftScale() 
 {
-   gROOT->GetListOfCleanups()->Remove(this);
    if (fDialog) fDialog->CloseWindowExt();
    if (fRow_lab) {
 	   fRow_lab->Delete();
       delete fRow_lab;
+      fRow_lab = NULL;
 	}
 };
-//__________________________________________________________________________
-
-void ShiftScale::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvasOrig) {
- //     cout << "Set1DimOptDialog: CloseDialog "  << endl;
-		delete this;
- //     CloseDialog();
-   }
-}
 //_______________________________________________________________________
 
 void ShiftScale::CloseDialog()
 {
-//   cout << "Set1DimOptDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
+	if (gDebug>0)
+		cout << "ShiftScale::CloseDialog() " << fDialog << endl;
    if (fDialog) fDialog->CloseWindowExt();
    if (fRow_lab) {
 	   fRow_lab->Delete();
       delete fRow_lab;
+      fRow_lab = NULL;
 	}
+	delete this;
 }
 //_________________________________________________________________________
             
@@ -194,10 +191,6 @@ void ShiftScale::Draw_The_Hist()
 	if (fHistYtitle.Length() > 0)
 		fHist->GetYaxis()->SetTitle(fHistYtitle.Data());
 	Double_t wx = fHistOrig->GetBinWidth(1);
-	if (fScaleX != 1) {
-		cout << endl<< "Warning: Scale X factor not equal 1" << endl
-				<< "Consider to activate Randomize" << endl;
-	}
 	if (!fRandomX && TMath::Abs((Int_t(fShiftX / wx) * wx) - fShiftX ) > 0.000001) {
 		cout << endl<< "Warning: Shift X is not a multiple of BinWidth" << endl
 				<< "Consider to activate Randomize" << endl;
@@ -219,10 +212,6 @@ void ShiftScale::Draw_The_Hist()
 		}
 	} else {
 		Double_t wy = fHistOrig->GetYaxis()->GetBinWidth(1);
-		if (fScaleY != 1) {
-			cout << endl<< "Warning: Scale Y factor not equal 1" << endl
-					<< "Consider to activate Randomize" << endl;
-		}
 		if (!fRandomY && TMath::Abs((Int_t(fShiftY / wy) * wy) - fShiftY ) > 0.000001) {
 			cout << endl<< "Warning: Shift Y is not a multiple of BinWidth" << endl
 					<< "Consider to activate Randomize" << endl;
@@ -264,10 +253,9 @@ void ShiftScale::SaveDefaults()
    env.SetValue("ShiftScale.fShiftX"		 , fShiftX);
    env.SetValue("ShiftScale.fShiftY"		 , fShiftY);
    env.SetValue("ShiftScale.fScaleX"		 , fScaleX);
-   env.SetValue("ShiftScale.fScaleX"		 , fScaleY);
-   env.SetValue("ShiftScale.fShiftX"		 , fShiftX);
-   env.SetValue("ShiftScale.fRandomX"		 , fShiftX);
-   env.SetValue("ShiftScale.fRandomY"		 , fShiftX);
+   env.SetValue("ShiftScale.fScaleY"		 , fScaleY);
+   env.SetValue("ShiftScale.fRandomX"		 , fRandomX);
+   env.SetValue("ShiftScale.fRandomY"		 , fRandomY);
    env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
@@ -278,7 +266,7 @@ void ShiftScale::RestoreDefaults()
    fShiftX = env.GetValue("ShiftScale.fShiftX"		 , 0.);
    fShiftY = env.GetValue("ShiftScale.fShiftY"		 , 0.);
    fScaleX = env.GetValue("ShiftScale.fScaleX"		 , 1.);
-   fScaleY = env.GetValue("ShiftScale.fScaleX"		 , 1.);
+   fScaleY = env.GetValue("ShiftScale.fScaleY"		 , 1.);
    fRandomX = env.GetValue("ShiftScale.fRandomX"	 , 1);
    fRandomX = env.GetValue("ShiftScale.fRandomY"	 , 1);
 }

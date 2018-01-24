@@ -57,14 +57,17 @@ The current fill area attributes are used to draw the hatched zone.\n\
 \n\
 _________________________________________________________________________\n\
 ";
-	TRootCanvas *rc = (TRootCanvas*)win;
-	fCanvas = rc->Canvas();
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
 	fNGraphs = FindGraphs((TPad*)fCanvas, &fGraphList);
 	if (fNGraphs <= 0) {
 		cout << " No graph found " <<endl;
 		return;
 	} 
-	gROOT->GetListOfCleanups()->Add(this);
 	RestoreDefaults();
 	fCanvas->cd();
 	
@@ -214,22 +217,14 @@ _________________________________________________________________________\n\
 }
 //_______________________________________________________________________
 
-void GraphAttDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "GraphAttDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
 void GraphAttDialog::CloseDialog()
 {
 //   cout << "GraphAttDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
    if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
+   if(fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
    delete this;
 }
 //_______________________________________________________________________

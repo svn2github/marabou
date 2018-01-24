@@ -159,8 +159,12 @@ For further details contact ROOTs documentation.\n\
 											1,0,0,0, 1,0,0,0};
 	fBidTEXT = 5;
 	
-	TRootCanvas *rc = (TRootCanvas*)win;
-	fCanvas = rc->Canvas();
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
 	fHist = NULL;
 //	Int_t nh1 = 0, nh2 = 0;
 	TIter next(fCanvas->GetListOfPrimitives());
@@ -235,7 +239,6 @@ For further details contact ROOTs documentation.\n\
 		cout << "Warning: More than one option set " << fDrawOpt2Dim << endl;
 	
 	fHistNo = 0;
-	gROOT->GetListOfCleanups()->Add(this);
 	fRow_lab = new TList();
 	fDrawOpt2Dim = droptsav;
    static Int_t dummy;
@@ -341,22 +344,14 @@ For further details contact ROOTs documentation.\n\
 }
 //_______________________________________________________________________
 
-void Set2DimOptDialog::RecursiveRemove(TObject * obj)
-{
-	if (obj == fCanvas) {
- //     cout << "Set2DimOptDialog: CloseDialog "  << endl;
-		CloseDialog();
-	}
-}
-//_______________________________________________________________________
-
 void Set2DimOptDialog::CloseDialog()
 {
 //   cout << "Set2DimOptDialog::CloseDialog() " << endl;
-	gROOT->GetListOfCleanups()->Remove(this);
 	if (fDialog) fDialog->CloseWindowExt();
-	fRow_lab->Delete();
-	delete fRow_lab;
+	if (fRow_lab ) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 	delete this;
 }
 //_______________________________________________________________________

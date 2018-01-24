@@ -34,6 +34,14 @@ enum EGoHCommandIds {
 };
 //________________________________________________________________________
 
+HprStack::HprStack()
+{
+	//   cout << " def ctor HprStack::" << this << endl;
+	fCanvas = NULL;
+	fDialog = NULL;
+}
+//________________________________________________________________________
+
 HprStack::HprStack(TList * hlist, Int_t scaled)
 				: fHList(hlist)
 {
@@ -102,10 +110,10 @@ HprStack::HprStack(TList * hlist, Int_t scaled)
 										NULL, NULL, NULL, fRow_labW, fValpW,
 										NULL, NULL, helptext);
 	}								
-	gROOT->GetList()->Add(this);
-	gROOT->GetListOfCleanups()->Add(this);
 	BuildCanvas();
 	BuildMenu();
+	gROOT->GetList()->Add(this);
+	gROOT->GetListOfCleanups()->Add(this);
 //	cout << "THStack *st = (THStack*)" << fStack << ";" << endl;
 //	cout << "TObjArray *oa = (TObjArray*)" << fStack->GetStack() << ";" << endl;
 	
@@ -204,7 +212,7 @@ void HprStack::BuildCanvas()
 void HprStack::RecursiveRemove(TObject *obj)
 {
 
-	if (obj == fCanvas) {
+	if (fCanvas && obj == fCanvas) {
 //      cout <<  "HprStack::RecursiveRemove,this: " << this << " obj: "  << obj << " "  
 //		     << obj->GetName() << endl;
 		fWindowXWidth = fCanvas->GetWindowWidth();
@@ -220,25 +228,27 @@ void HprStack::RecursiveRemove(TObject *obj)
 HprStack::~HprStack()
 {
 //   cout <<"dtor HprStack, fDialog " << fDialog << endl;
-	if (fDialog) fDialog->CloseWindowExt();
 	gROOT->GetList()->Remove(this);
 	gROOT->GetListOfCleanups()->Remove(this);
-	SaveDefaults();
-	delete [] fFill_1Dim;
-	delete [] fFillColor;
-	delete [] fFillTrans;
-	delete [] fFillStyle;
-	delete [] fLineColor;
-	delete [] fLineTrans;
-	delete [] fLineWidth;
-	delete [] fMarkerColor;
-	delete [] fMarkerTrans;
-	delete [] fMarkerStyle;
-	delete [] fMarkerSize;
-	delete [] fMinScale;
-	delete [] fMaxScale;
-	delete [] fScales;
-	delete [] fColorW;
+	if (fDialog) {
+		fDialog->CloseWindowExt();
+		SaveDefaults();
+		delete [] fFill_1Dim;
+		delete [] fFillColor;
+		delete [] fFillTrans;
+		delete [] fFillStyle;
+		delete [] fLineColor;
+		delete [] fLineTrans;
+		delete [] fLineWidth;
+		delete [] fMarkerColor;
+		delete [] fMarkerTrans;
+		delete [] fMarkerStyle;
+		delete [] fMarkerSize;
+		delete [] fMinScale;
+		delete [] fMaxScale;
+		delete [] fScales;
+		delete [] fColorW;
+	}
 }
 //________________________________________________________________________
 

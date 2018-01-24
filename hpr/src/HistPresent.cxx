@@ -80,7 +80,7 @@
 #include <fstream>
 #include <cstdlib>
 
-HistPresent *gHpr;
+HistPresent *gHpr = NULL;
 Int_t gHprDebug;
 Int_t gHprClosing;
 Int_t gHprTerminated;
@@ -216,14 +216,29 @@ const char AttrTemplate[]=
 
 ClassImp(HistPresent)
 
-// constructor
+// default constructor
+
+HistPresent::HistPresent()
+{
+	if (gDebug > 0)
+		cout<< setred<< "HistPresent default ctor " << this<< setblack <<endl;
+	fComSocket       = NULL;
+	cHPr = NULL;
+}
+// normal constructor
 
 HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 				:TNamed(name,title)
 {
-//   cout<< "enter HistPresent ctor "  <<endl;
+	if (gDebug > 0)
+		cout<< "HistPresent normal ctor " << this << " gHpr = " << gHpr  <<endl;
 //   TDirectory *fDirectory;
 //   TList *fFunctions;
+	fComSocket       = NULL;
+	cHPr = NULL;
+//	if(gHpr != NULL) {
+//		cout << setred << " HistPresent exists " << this << setblack<< endl;
+//	} else {
 	gHpr = this;
 	TEnv envhpr(".hprrc");
 	gHprDebug = envhpr.GetValue("HistPresent.Debuglevel", 0);
@@ -267,8 +282,6 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 	fSelectGraph = new TList();
 	fAllContours = new TList();
 
-	gROOT->GetListOfCleanups()->Add(this);
-
 	fGraphCut = new TString();
 	fCutVarX = new TString();
 	fCutVarY = new TString();
@@ -277,7 +290,6 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 	fHelpDir    = new TString();
 	fAutoUpdateDelay = 5;
 	fHostToConnect  = new TString("localhost");
-	fComSocket       = 0;
 	fSocketToConnect = 9090;
 	fConnectedOnce = kFALSE;
 //	fSocketIsOpen = kFALSE;
@@ -285,6 +297,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 	fHfromM_aButton = NULL;
 	fLastWindow = NULL;
 	fHelpBrowser = NULL;
+	fComSocket = NULL;
 	fUseHist = kFALSE;
 	fApplyGraphCut = kFALSE;
 	fApplyLeafCut = kFALSE;
@@ -326,6 +339,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 //      AppendDirectory();
 		gDirectory->Append(this);
 	}
+	gROOT->GetListOfCleanups()->Add(this);
 };
 
 //________________________________________________________________
@@ -333,18 +347,20 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 
 HistPresent::~HistPresent()
 {
-	if (gHprDebug > 0)
+	if (gDebug > 0)
 		cout << endl << setblue << "enter HistPresents dtor"<< setblack <<endl;
 	if (fComSocket) {
 		fComSocket->Send("M_client exit");
 	}
 	gHprClosing = 1;
-	SaveOptions();
 //   CloseAllCanvases();
 	gDirectory->GetList()->Remove(this);
 	gROOT->GetListOfCleanups()->Remove(this);
-	if (cHPr )delete cHPr;
-	cHPr = NULL;
+	if (cHPr ) {
+		delete cHPr;
+		SaveOptions();
+		cHPr = NULL;
+	}
 };
 //________________________________________________________________
 void HistPresent::RecursiveRemove(TObject * obj)

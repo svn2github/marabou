@@ -37,7 +37,7 @@ private:
    void *fValp[100];
    TList *fRow_lab;
    TList *fHList;
-   TList fPadList;
+   TList *fPadList;
    TGMrbValuesAndText *fDialog;
    HistPresent *fHistPresent;
    HTCanvas    *fCanvas;
@@ -102,6 +102,7 @@ private:
   
 public:
    GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title = NULL);
+   GroupOfHists();
    ~GroupOfHists();
    void   BuildCanvas();
    void   RecursiveRemove(TObject *obj);
@@ -115,7 +116,7 @@ public:
    void   RebinAll(TCanvas * canvas);
 //   void   WarnBox(const char *message);
    TH1    *GetTheHist(TVirtualPad * pad);
-   TList * GetPadList(){ return &fPadList;};
+   TList  *GetPadList(){ return fPadList;};
    void   SetOptions();
    void   SaveDefaults();
    void   RestoreDefaults();

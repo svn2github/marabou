@@ -45,7 +45,6 @@ public:
 
    GeneralAttDialog(TGWindow * win = NULL);
    ~GeneralAttDialog() {};
-   void RecursiveRemove(TObject * obj);
    void CloseDialog();
 	void RestoreSavedSettings();
 	static void GetCustomStyles();

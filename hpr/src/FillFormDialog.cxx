@@ -81,7 +81,7 @@ void FillFormDialog::OpenInput()
 {
 	
 	fImage = TImage::Open(fInputName.Data());
-	if (!fImage) {
+	if (!fImage->IsValid()) {
 		cout << "Could not create an image... exit" << endl;
 		return;
 	}
@@ -199,19 +199,11 @@ void FillFormDialog::RestoreDefaults()
 
 FillFormDialog::~FillFormDialog()
 {
-	gROOT->GetListOfCleanups()->Remove(this);
-	fRow_lab->Delete();
-	delete fRow_lab;
-};
-//_______________________________________________________________________
-
-void FillFormDialog::RecursiveRemove(TObject * obj)
-{
-	if (obj == fHCanvas) {
- //     cout << "FillFormDialog: CloseDialog "  << endl;
-		CloseDialog();
+	if (fRow_lab) {
+		fRow_lab->Delete();
+		delete fRow_lab;
 	}
-}
+};
 //_______________________________________________________________________
 
 void FillFormDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject */*obj*/)

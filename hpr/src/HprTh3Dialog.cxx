@@ -149,8 +149,10 @@ void HprTh3Dialog::RestoreDefaults()
 HprTh3Dialog::~HprTh3Dialog()
 {
    gROOT->GetListOfCleanups()->Remove(this);
-   fRow_lab->Delete();
-   delete fRow_lab;
+		if (fRow_lab) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 };
 //_______________________________________________________________________
 

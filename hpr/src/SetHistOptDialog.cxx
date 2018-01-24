@@ -62,6 +62,7 @@ SetHistOptDialog::SetHistOptDialog(Int_t /*batch*/)
 {
 	cout << "ctor SetHistOptDialog, non interactive" <<endl;
 	fDialog = NULL;
+	fRow_lab = NULL;
 	fCanvas = NULL;
 	fHistList = NULL;
 	fWindow = NULL;
@@ -115,8 +116,13 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
 	is needed in addition. The current attributes will be applied\n\
 	to the selected histogram.\n\
 	";	
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
 	fDialog = NULL;
-	fCanvas = NULL;
 	fHistList = NULL;
 	fWindow = NULL;
 	fHist = NULL;
@@ -140,7 +146,6 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
 	GetValuesFromHist();
 	if ( gHprDebug > 0 ) 
 		cout << "SetHistOptDialog * hd = (SetHistOptDialog *)" << this<< ";" << endl;
-   gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
 //   static void *fValp[100];
    Int_t ind = 0;
@@ -383,8 +388,6 @@ Bool_t SetHistOptDialog::SetPointers()
 	fTitleBox = NULL;
 	fLegendBox= NULL;
 	fNSubPads = 0;
-	TRootCanvas *rc = (TRootCanvas*)fWindow;
-	fCanvas = rc->Canvas();
 	fPad = fCanvas;
 	// are there 1 dim hists?
 //	TObject * parent;
@@ -444,7 +447,7 @@ Bool_t SetHistOptDialog::SetPointers()
 	return kTRUE;
 }	
 //_______________________________________________________________________
-
+/*
 void SetHistOptDialog::RecursiveRemove(TObject * obj)
 {
    if (obj && (obj == fStatBox || obj == fHist 
@@ -458,15 +461,17 @@ void SetHistOptDialog::RecursiveRemove(TObject * obj)
 		CloseDialog();
 	}
 }
+*/
 //_______________________________________________________________________
 
 void SetHistOptDialog::CloseDialog()
 {
  //  cout << "SetHistOptDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
    if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
+   if (fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
    delete this;
 }
 //_______________________________________________________________________

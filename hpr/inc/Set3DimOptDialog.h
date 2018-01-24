@@ -80,7 +80,6 @@ public:
    Set3DimOptDialog(TGWindow * win = NULL, TButton *b = NULL);
 	Set3DimOptDialog(Int_t batch);
    ~Set3DimOptDialog() {gDirectory->GetList()->Remove(this);};
-   void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);
    void SetHistAtt(TCanvas *canvas);
