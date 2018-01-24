@@ -39,7 +39,6 @@ public:
 	void    ObjMoved(Int_t /*px*/, Int_t /*py*/, TObject */*obj*/) { };
    void    SaveDefaults();
    void    RestoreDefaults();
-   void    RecursiveRemove(TObject * obj);
    void    CloseDialog();
    void    CloseDown(Int_t wid);
    void    CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);

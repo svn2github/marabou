@@ -54,7 +54,6 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void Show_Head_of_File();
-   void    RecursiveRemove(TObject * obj);
    void    CloseDialog();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/) {};

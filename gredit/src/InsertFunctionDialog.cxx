@@ -32,11 +32,12 @@ to the parameters of the function. Normally a new pad should\n\
 be created to hold the function otherwise a complete new canvas\n\
 may be created.\n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
    TRootCanvas* win = NULL;
-   if (fCanvas)
+   if (fCanvas) {
       win = (TRootCanvas*)fCanvas->GetCanvasImp();
+		win->Connect("CloseWindow()", "InsertFunctionDialog", this, "CloseDialog()");
+	}
    Int_t ind = 0;
    fRow_lab = new TList();
    RestoreDefaults();
@@ -289,19 +290,11 @@ Int_t InsertFunctionDialog::GetFunctionPad(TPad *ipad)
 
 InsertFunctionDialog::~InsertFunctionDialog()
 {
-   gROOT->GetListOfCleanups()->Remove(this);
-   fRow_lab->Delete();
-   delete fRow_lab;
+	if (fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 };
-//_______________________________________________________________________
-
-void InsertFunctionDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "InsertFunctionDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
 //_______________________________________________________________________
 
 void InsertFunctionDialog::CloseDialog()

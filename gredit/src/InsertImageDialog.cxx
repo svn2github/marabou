@@ -46,39 +46,15 @@ sub            - color substraction with saturation\n\
 tint           - tinting image with image\n\
 value          - value bottom image same as top image\n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
    fWindow = NULL;
-   if (fCanvas)
+   if (fCanvas) {
       fWindow = (TRootCanvas*)fCanvas->GetCanvasImp();
+		fWindow->Connect("CloseWindow()", "InsertImageDialog", this, "CloseDialog()");
+	}
    Int_t ind = 0;
    RestoreDefaults();
    fRow_lab = new TList();
-/*
-// make list of image files
-   const char hist_file[] = {"images_hist.txt"};
-   ofstream hfile(hist_file);
-   const char *fname;
-   void* dirp=gSystem->OpenDirectory(".");
-   TRegexp dotGif = "\\.gif$";
-   TRegexp dotJpg = "\\.jpg$";
-   TRegexp dotPng = "\\.png$";
-   Long_t id, size, flags, modtime;
-   while ( (fname=gSystem->GetDirEntry(dirp)) ) {
-      TString sname(fname);
-      if (!sname.BeginsWith("temp_") &&
-          (sname.Index(dotGif)>0 || sname.Index(dotJpg)>0
-         || sname.Index(dotPng)>0)) {
-         size = 0;
-         gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
-         if (size <= 0)
-            cout << "Warning, empty file: " << fname << endl;
-         else
-            hfile << fname << endl;
-         if (fPname.Length() < 1) fPname = fname;
-      }
-   }
-*/
    fRow_lab->Add(new TObjString("PlainIntVal_Offset X"));
    fValp[ind++] = &fOffset_x;
    fRow_lab->Add(new TObjString("PlainIntVal+Offset Y"));
@@ -374,18 +350,10 @@ void InsertImageDialog::RestoreDefaults()
 
 InsertImageDialog::~InsertImageDialog()
 {
-   gROOT->GetListOfCleanups()->Remove(this);
-   fRow_lab->Delete();
-   delete fRow_lab;
-};
-//_______________________________________________________________________
-
-void InsertImageDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "InsertImageDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
+	if(fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 }
 //_______________________________________________________________________
 

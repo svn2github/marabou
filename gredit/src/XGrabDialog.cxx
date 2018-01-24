@@ -22,149 +22,148 @@ XGrabDialog::XGrabDialog()
 static const Char_t helptext[] =
 "\n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
-   fCanvas = gPad->GetCanvas();
-   fWindow = NULL;
-   if (fCanvas)
-      fWindow = (TRootCanvas*)fCanvas->GetCanvasImp();
-   Int_t ind = 0;
-   RestoreDefaults();
-   fRow_lab = new TList();
-   static TString execute_cmd("ExecuteInsert()");
+	fCanvas = gPad->GetCanvas();
+	fWindow = NULL;
+	if (fCanvas)
+		fWindow = (TRootCanvas*)fCanvas->GetCanvasImp();
+	Int_t ind = 0;
+	RestoreDefaults();
+	fRow_lab = new TList();
+	static TString execute_cmd("ExecuteInsert()");
 
-   fRow_lab->Add(new TObjString("CheckButton_Fixed size"));
-   fValp[ind++] = &fFixedSize;
-   fRow_lab->Add(new TObjString("AlignSelect+Alignment"));
-   fValp[ind++] = &fAlign;
-   fRow_lab->Add(new TObjString("PlainIntVal+fDelay [sec]"));
-   fValp[ind++] = &fDelay;
-   fRow_lab->Add(new TObjString("PlainIntVal_X Width"));
-   fValp[ind++] = &fXwidth;
-   fRow_lab->Add(new TObjString("PlainIntVal+Y Width"));
-   fValp[ind++] = &fYwidth;
-   fRow_lab->Add(new TObjString("StringValue_Picture name"));
-   fValp[ind++] = &fPname;
-   fRow_lab->Add(new TObjString("StringValue+Picture type"));
-   fValp[ind++] = &fPext;
-   fRow_lab->Add(new TObjString("CheckButton_Ask for ok after grab"));
-   fValp[ind++] = &fQuery_ok;
+	fRow_lab->Add(new TObjString("CheckButton_Fixed size"));
+	fValp[ind++] = &fFixedSize;
+	fRow_lab->Add(new TObjString("AlignSelect+Alignment"));
+	fValp[ind++] = &fAlign;
+	fRow_lab->Add(new TObjString("PlainIntVal+fDelay [sec]"));
+	fValp[ind++] = &fDelay;
+	fRow_lab->Add(new TObjString("PlainIntVal_X Width"));
+	fValp[ind++] = &fXwidth;
+	fRow_lab->Add(new TObjString("PlainIntVal+Y Width"));
+	fValp[ind++] = &fYwidth;
+	fRow_lab->Add(new TObjString("StringValue_Picture name"));
+	fValp[ind++] = &fPname;
+	fRow_lab->Add(new TObjString("StringValue+Picture type"));
+	fValp[ind++] = &fPext;
+	fRow_lab->Add(new TObjString("CheckButton_Ask for ok after grab"));
+	fValp[ind++] = &fQuery_ok;
 
-   fRow_lab->Add(new TObjString("CommandButt+Execute Insert()"));
-   fValp[ind++] = &execute_cmd;
-   Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
-   static Int_t ok;
-   fDialog =
-      new TGMrbValuesAndText("Graphics Pad", NULL, &ok,itemwidth, fWindow,
-                      NULL, NULL, fRow_lab, fValp,
-                      NULL, NULL, helptext, this, this->ClassName());
+	fRow_lab->Add(new TObjString("CommandButt+Execute Insert()"));
+	fValp[ind++] = &execute_cmd;
+	Int_t itemwidth =  35 * TGMrbValuesAndText::LabelLetterWidth();
+	static Int_t ok;
+	fDialog =
+		new TGMrbValuesAndText("Graphics Pad", NULL, &ok,itemwidth, fWindow,
+							 NULL, NULL, fRow_lab, fValp,
+							 NULL, NULL, helptext, this, this->ClassName());
 	if (fCanvas) {
-       GrCanvas* hc = (GrCanvas*)fCanvas;
-       hc->Add2ConnectedClasses(this);
-   }
+		 GrCanvas* hc = (GrCanvas*)fCanvas;
+		 hc->Add2ConnectedClasses(this);
+	}
 }
 //____________________________________________________________________________
 
 void XGrabDialog::ExecuteInsert()
 {
-   TString pname(fPname.Data());
-   pname += fSerNr;
-   pname += ".";
-   pname += fPext.Data();
-   
-   cout << "Mark pick area: pname " <<  pname << endl;
+	TString pname(fPname.Data());
+	pname += fSerNr;
+	pname += ".";
+	pname += fPext.Data();
+	
+	cout << "Mark pick area: pname " <<  pname << endl;
 
-   TString cmd("xgrabsc -ppm -verbose 1> /dev/null 2> xgrabsc.log");
-   gSystem->Exec(cmd.Data());
+	TString cmd("xgrabsc -ppm -verbose 1> /dev/null 2> xgrabsc.log");
+	gSystem->Exec(cmd.Data());
 
-   Int_t xleg = 0, yleg = 0, xwg = 0, ywg = 0;
-   ifstream str("xgrabsc.log");
-   TString line;
-   TString number;
-   while (1) {
-      line.ReadLine(str);
-      if(str.eof()) break;
-      if (!line.Contains("bounding box")) continue;
-      Int_t ip;
-      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
-      number = line(0,ip);
-      xleg = number.Atoi();
+	Int_t xleg = 0, yleg = 0, xwg = 0, ywg = 0;
+	ifstream str("xgrabsc.log");
+	TString line;
+	TString number;
+	while (1) {
+		line.ReadLine(str);
+		if(str.eof()) break;
+		if (!line.Contains("bounding box")) continue;
+		Int_t ip;
+		ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
+		number = line(0,ip);
+		xleg = number.Atoi();
 
-      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
-      number = line(0,ip);
-      yleg = number.Atoi();
+		ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
+		number = line(0,ip);
+		yleg = number.Atoi();
 
-      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
-      number = line(0,ip);
-      xwg = number.Atoi();
+		ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
+		number = line(0,ip);
+		xwg = number.Atoi();
 
-      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index("]");
-      number = line(0,ip);
-      ywg = number.Atoi();
-      break;
-   }
+		ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index("]");
+		number = line(0,ip);
+		ywg = number.Atoi();
+		break;
+	}
 //   str.close();
-   if (xwg == 0 && fFixedSize == 0) {
-      cout << setred
-      << "Variable width requested, please mark area with Button 1 pressed"
-      << setblack  << endl;
-      return;
-   }
+	if (xwg == 0 && fFixedSize == 0) {
+		cout << setred
+		<< "Variable width requested, please mark area with Button 1 pressed"
+		<< setblack  << endl;
+		return;
+	}
 // fAlignment
-   if (fFixedSize != 0) {
-      if        (fAlign%10 == 1) {
-         yleg = yleg + ywg - fYwidth;
-      } else if (fAlign%10 == 2) {
-         yleg = yleg + (ywg - fYwidth) / 2;
-      }
-      if        (fAlign/10 == 3) {
-         xleg = xleg + xwg - fXwidth;
-      } else if (fAlign/10 == 2) {
-         xleg = xleg + (xwg - fXwidth) / 2;
-      }
-      xwg = fXwidth;
-      ywg = fYwidth;
-   }
-   fSerNr++;
-   cmd = "xgrabsc -ppm -coords ";
-   cmd += xwg; cmd += "x"; cmd += ywg;
-   cmd += "+";  cmd += xleg;
-   cmd += "+"; cmd += yleg;
-   cmd += " | convert - ";
-   cmd += fPname.Data();
-   cmd += " &";
+	if (fFixedSize != 0) {
+		if        (fAlign%10 == 1) {
+			yleg = yleg + ywg - fYwidth;
+		} else if (fAlign%10 == 2) {
+			yleg = yleg + (ywg - fYwidth) / 2;
+		}
+		if        (fAlign/10 == 3) {
+			xleg = xleg + xwg - fXwidth;
+		} else if (fAlign/10 == 2) {
+			xleg = xleg + (xwg - fXwidth) / 2;
+		}
+		xwg = fXwidth;
+		ywg = fYwidth;
+	}
+	fSerNr++;
+	cmd = "xgrabsc -ppm -coords ";
+	cmd += xwg; cmd += "x"; cmd += ywg;
+	cmd += "+";  cmd += xleg;
+	cmd += "+"; cmd += yleg;
+	cmd += " | convert - ";
+	cmd += fPname.Data();
+	cmd += " &";
 
-   cout << "Cmd: " << cmd << endl;
-   if (fDelay > 0) {
-      cout << "Waiting " << fDelay << " seconds before grab" << endl;
-      Int_t wt = 10 * fDelay;
-      while (wt-- >= 0) {
-         gSystem->ProcessEvents();
-         gSystem->Sleep(100);
-      }
-   }
-   gSystem->Exec(cmd.Data());
-   gSystem->ProcessEvents();
+	cout << "Cmd: " << cmd << endl;
+	if (fDelay > 0) {
+		cout << "Waiting " << fDelay << " seconds before grab" << endl;
+		Int_t wt = 10 * fDelay;
+		while (wt-- >= 0) {
+			gSystem->ProcessEvents();
+			gSystem->Sleep(100);
+		}
+	}
+	gSystem->Exec(cmd.Data());
+	gSystem->ProcessEvents();
 
-   if (fQuery_ok != 0) {
-      gSystem->Exec(cmd.Data());
-      cmd = "kview --geometry ";
-      cmd += fXwidth;
-      cmd += "x";
-      cmd += fYwidth;
-      cmd += " ";
-      cmd += fPname.Data();
-      cmd += "&";
-      gSystem->Exec(cmd.Data());
-      cout << cmd << endl;
-      Int_t retval = 0;
-      new TGMsgBox(gClient->GetRoot(), fWindow, "Question", "Is it ok?",
-                kMBIconQuestion, kMBYes | kMBNo, &retval);
-      cmd = "killall kview";
-      gSystem->Exec(cmd.Data());
-      if (retval == kMBNo) return;
-   }
-   cout << "Mark position where to put (lower left corner)" << endl;
-   TMarker * ma = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
+	if (fQuery_ok != 0) {
+		gSystem->Exec(cmd.Data());
+		cmd = "kview --geometry ";
+		cmd += fXwidth;
+		cmd += "x";
+		cmd += fYwidth;
+		cmd += " ";
+		cmd += fPname.Data();
+		cmd += "&";
+		gSystem->Exec(cmd.Data());
+		cout << cmd << endl;
+		Int_t retval = 0;
+		new TGMsgBox(gClient->GetRoot(), fWindow, "Question", "Is it ok?",
+					 kMBIconQuestion, kMBYes | kMBNo, &retval);
+		cmd = "killall kview";
+		gSystem->Exec(cmd.Data());
+		if (retval == kMBNo) return;
+	}
+	cout << "Mark position where to put (lower left corner)" << endl;
+	TMarker * ma = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
 	if (ma == NULL)
 		return;
 	Double_t x1, y1, x2, y2, xr1, yr1, xr2, yr2, dx, dy;
@@ -203,10 +202,10 @@ void XGrabDialog::ExecuteInsert()
 	gROOT->SetSelectedPad(pad);
 	pad->cd();
 	hprimg->Draw();
-   fCanvas->cd();
-   gPad->Modified();
-   gPad->Update();
-   cout << "quit ExecuteInsert " << endl;
+	fCanvas->cd();
+	gPad->Modified();
+	gPad->Update();
+	cout << "quit ExecuteInsert " << endl;
 //   SaveDefaults();
 };
 //____________________________________________________________________________
@@ -214,69 +213,61 @@ void XGrabDialog::ExecuteInsert()
 void XGrabDialog::SaveDefaults()
 {
 //   cout << "XGrabDialog::InsertFunction::SaveDefaults()" << endl;
-   TEnv env(".hprrc");
-   env.SetValue("XGrabDialog.fFixedSize", fFixedSize);
-   env.SetValue("XGrabDialog.fAlign", fAlign);
-   env.SetValue("XGrabDialog.fDelay", fDelay);
-   env.SetValue("XGrabDialog.fXwidth", fXwidth);
-   env.SetValue("XGrabDialog.fYwidth", fYwidth);
-   env.SetValue("XGrabDialog.fSerNr", fSerNr);
-   env.SetValue("XGrabDialog.fQuery_ok", fQuery_ok);
-   env.SetValue("XGrabDialog.fPname", fPname);
-   env.SetValue("XGrabDialog.fPext", fPext);
-   env.SaveLevel(kEnvLocal);
+	TEnv env(".hprrc");
+	env.SetValue("XGrabDialog.fFixedSize", fFixedSize);
+	env.SetValue("XGrabDialog.fAlign", fAlign);
+	env.SetValue("XGrabDialog.fDelay", fDelay);
+	env.SetValue("XGrabDialog.fXwidth", fXwidth);
+	env.SetValue("XGrabDialog.fYwidth", fYwidth);
+	env.SetValue("XGrabDialog.fSerNr", fSerNr);
+	env.SetValue("XGrabDialog.fQuery_ok", fQuery_ok);
+	env.SetValue("XGrabDialog.fPname", fPname);
+	env.SetValue("XGrabDialog.fPext", fPext);
+	env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 
 void XGrabDialog::RestoreDefaults()
 {
-   TEnv env(".hprrc");
-   fFixedSize = env.GetValue("XGrabDialog.fFixedSize", 1);
-   fAlign = env.GetValue("XGrabDialog.fAlign", 22);
-   fDelay = env.GetValue("XGrabDialog.fDelay", 1);
-   fXwidth = env.GetValue("XGrabDialog.fXwidth", 100);
-   fYwidth = env.GetValue("XGrabDialog.fYwidth", 100);
-   fSerNr = env.GetValue("XGrabDialog.fSerNr", 0);
-   fQuery_ok = env.GetValue("XGrabDialog.fQuery_ok", 1);
-   fPname = env.GetValue("XGrabDialog.fPname", "pict_");
-   fPext   = env.GetValue("XGrabDialog.fPext", "gif");
+	TEnv env(".hprrc");
+	fFixedSize = env.GetValue("XGrabDialog.fFixedSize", 1);
+	fAlign = env.GetValue("XGrabDialog.fAlign", 22);
+	fDelay = env.GetValue("XGrabDialog.fDelay", 1);
+	fXwidth = env.GetValue("XGrabDialog.fXwidth", 100);
+	fYwidth = env.GetValue("XGrabDialog.fYwidth", 100);
+	fSerNr = env.GetValue("XGrabDialog.fSerNr", 0);
+	fQuery_ok = env.GetValue("XGrabDialog.fQuery_ok", 1);
+	fPname = env.GetValue("XGrabDialog.fPname", "pict_");
+	fPext   = env.GetValue("XGrabDialog.fPext", "gif");
 }
 //_________________________________________________________________________
 
 XGrabDialog::~XGrabDialog()
 {
-   gROOT->GetListOfCleanups()->Remove(this);
 	if (fCanvas) {
 		GrCanvas* hc = (GrCanvas*)fCanvas;
 		hc->RemoveFromConnectedClasses(this);
 	}
-	fRow_lab->Delete();
-   delete fRow_lab;
+	if(fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 };
-//_______________________________________________________________________
-
-void XGrabDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "XGrabDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
 //_______________________________________________________________________
 
 void XGrabDialog::CloseDialog()
 {
 //   cout << "XGrabDialog::CloseDialog() " << endl;
-   if (fDialog) fDialog->CloseWindowExt();
-   fDialog = NULL;
-   delete this;
+	if (fDialog) fDialog->CloseWindowExt();
+	fDialog = NULL;
+	delete this;
 }
 //_________________________________________________________________________
 
 void XGrabDialog::CloseDown(Int_t wid)
 {
 //   cout << "XGrabDialog::CloseDown()" << endl;
-   if (wid != -2) SaveDefaults();
-   delete this;
+	if (wid != -2) SaveDefaults();
+	delete this;
 }
 

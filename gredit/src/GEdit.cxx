@@ -94,10 +94,12 @@ enum EGeditCommandIds {
 
 ClassImp(GEdit)
 
-//____________________________________________________________________________
-
-
-//GEdit::GEdit(GrCanvas * parent)
+//______________________________________________________________________
+GEdit::GEdit()
+{
+	fParent = NULL;
+}
+//______________________________________________________________________
 GEdit::GEdit(GrCanvas * parent)
 {
 	TString iconpath = gEnv->GetValue("Gui.IconPath","");
@@ -114,9 +116,10 @@ GEdit::GEdit(GrCanvas * parent)
    Constructor();
    fParent->SetGEdit(this);
 }
+//______________________________________________________________________
 void GEdit::Constructor()
 {
-//   cout << "ctor GEdit: fParent " << fParent << " gPad " << gPad << endl;
+   cout << "ctor GEdit: " << this << " fParent " << fParent << " gPad " << gPad << endl;
    SetName("HprGEdit");
 //   fRootCanvas = (TRootCanvas*)fParent->GetCanvas()->GetCanvasImp();
    fRootCanvas = (TRootCanvas*)fParent->GetCanvasImp();
@@ -148,26 +151,27 @@ void GEdit::Constructor()
       fParent->Update();
    }
    SetBit(kMustCleanup);
-   gROOT->GetListOfCleanups()->Add(this);
-   gROOT->GetListOfSpecials()->Add(this);
    fParent->cd();
    fParent->SetShowEditor();
    GrCanvas* hc = (GrCanvas*)fParent;
    hc->Add2ConnectedClasses(this);
+   gROOT->GetListOfCleanups()->Add(this);
+   gROOT->GetListOfSpecials()->Add(this);
 }
 //______________________________________________________________________________
 
 GEdit::~GEdit()
 {
 //   cout << "~GEdit " << this << endl;
+	if (fParent == NULL) {
+		return;
+	}
    SaveDefaults();
    fParent->SetGEdit(NULL);
    gROOT->GetListOfCleanups()->Remove(this);
    gROOT->GetListOfSpecials()->Remove(this);
-	if (fParent) {
-		GrCanvas* hc = (GrCanvas*)fParent;
-		hc->RemoveFromConnectedClasses(this);
-	}
+	GrCanvas* hc = (GrCanvas*)fParent;
+	hc->RemoveFromConnectedClasses(this);
 	if (fEditCommands) delete fEditCommands;
 }
 

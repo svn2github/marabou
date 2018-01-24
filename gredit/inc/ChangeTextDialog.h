@@ -36,7 +36,7 @@ public:
    void ChangeTextExecute();
    void SaveDefaults();
    void RestoreDefaults();
-   void    RecursiveRemove(TObject * obj);
+//   void    RecursiveRemove(TObject * obj);
    void    CloseDialog();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*obj*/) {};

@@ -31,11 +31,12 @@ attached if the text box gets shifted.\n\
 If Npaves > 1 a root-standard TPavesText is drawn\n\
 This has not the features of auto-align and adopt.\n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
    TRootCanvas* win = NULL;
-   if (fCanvas)
+   if (fCanvas) {
       win = (TRootCanvas*)fCanvas->GetCanvasImp();
+		win->Connect("CloseWindow()", "InsertTextBoxDialog", this, "CloseDialog()");
+	}
    Int_t ind = 0;
    RestoreDefaults();
    fRow_lab = new TList();
@@ -229,23 +230,15 @@ void InsertTextBoxDialog::RestoreDefaults()
 
 InsertTextBoxDialog::~InsertTextBoxDialog()
 {
-   gROOT->GetListOfCleanups()->Remove(this);
 	if (fCanvas) {
 		GrCanvas* hc = (GrCanvas*)fCanvas;
 		hc->RemoveFromConnectedClasses(this);
 	}
-	fRow_lab->Delete();
-   delete fRow_lab;
+	if(fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 };
-//_______________________________________________________________________
-
-void InsertTextBoxDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "InsertTextBoxDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
 //_______________________________________________________________________
 
 void InsertTextBoxDialog::CloseDialog()

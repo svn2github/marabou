@@ -25,11 +25,12 @@ alternate black and white sections if SleeperLength==0\n\
 or with real sleepers: SleeperLength = length relative\n\
 to gage: e.g 1.4\n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
    TRootCanvas* win = NULL;
-   if (fCanvas)
+   if (fCanvas){
       win = (TRootCanvas*)fCanvas->GetCanvasImp();
+		win->Connect("CloseWindow()", "TSplineXDialog", this, "CloseDialog()");
+	}
    Int_t ind = 0;
    fRow_lab = new TList();
    RestoreDefaults();
@@ -255,22 +256,14 @@ void TSplineXDialog::RestoreDefaults()
 TSplineXDialog::~TSplineXDialog()
 {
 //   cout << "dtor:~TSplineXDialog()"<<endl;
-   gROOT->GetListOfCleanups()->Remove(this);
 	if (fCanvas) {
 		GrCanvas* hc = (GrCanvas*)fCanvas;
 		hc->RemoveFromConnectedClasses(this);
 	}
-	fRow_lab->Delete();
-   delete fRow_lab;
-}
-//_______________________________________________________________________
-
-void TSplineXDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
-//     cout << "TSplineXDialog::RecursiveRemove:  CloseDialog "  << endl;
-      CloseDialog();
-   }
+	if(fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 }
 //_______________________________________________________________________
 

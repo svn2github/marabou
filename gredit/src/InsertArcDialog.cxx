@@ -31,11 +31,12 @@ giving the center and a point on the circumference\n\
 or two points on the circumference. If the value of\n\
 radius is not 0 only the center must be marked  \n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
    TRootCanvas* win = NULL;
-   if (fCanvas)
+   if (fCanvas) {
       win = (TRootCanvas*)fCanvas->GetCanvasImp();
+		win->Connect("CloseWindow()", "InsertArcDialog", this, "CloseDialog()");
+   }
    Int_t ind = 0;
    RestoreDefaults();
    fRow_lab = new TList();
@@ -352,27 +353,18 @@ Double_t InsertArcDialog::GetRatioXY()
    return pixeltoY / pixeltoX;
 }
 //_________________________________________________________________________
-//_________________________________________________________________________
 
 InsertArcDialog::~InsertArcDialog()
 {
-   gROOT->GetListOfCleanups()->Remove(this);
 	if (fCanvas) {
 		GrCanvas* hc = (GrCanvas*)fCanvas;
 		hc->RemoveFromConnectedClasses(this);
 	}
-	fRow_lab->Delete();
-   delete fRow_lab;
+	if (fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 };
-//_______________________________________________________________________
-
-void InsertArcDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
-//      cout << "InsertArcDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
 //_______________________________________________________________________
 
 void InsertArcDialog::CloseDialog()

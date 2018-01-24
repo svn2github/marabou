@@ -21,11 +21,12 @@ InsertAxisDialog::InsertAxisDialog()
 static const Char_t helptext[] =
 "Insert axis\n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
    fWindow = NULL;
-   if (fCanvas)
+   if (fCanvas) {
       fWindow = (TRootCanvas*)fCanvas->GetCanvasImp();
+      fWindow->Connect("CloseWindow()", "InsertAxisDialog", this, "CloseDialog()");
+	}
    Int_t ind = 0;
    RestoreDefaults();
    fRow_lab = new TList();
@@ -159,23 +160,15 @@ void InsertAxisDialog::RestoreDefaults()
 
 InsertAxisDialog::~InsertAxisDialog()
 {
-   gROOT->GetListOfCleanups()->Remove(this);
 	if (fCanvas) {
 		GrCanvas* hc = (GrCanvas*)fCanvas;
 		hc->RemoveFromConnectedClasses(this);
 	}
-	fRow_lab->Delete();
-   delete fRow_lab;
+	if (fRow_lab){
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 };
-//_______________________________________________________________________
-
-void InsertAxisDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "InsertAxisDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
 //_______________________________________________________________________
 
 void InsertAxisDialog::CloseDialog()

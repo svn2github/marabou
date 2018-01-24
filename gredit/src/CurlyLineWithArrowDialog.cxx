@@ -22,11 +22,12 @@ static const Char_t helptext[] =
 "This widgets inserts a curly / wavy line with optional\n\
 arrows at the ends\n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
    TRootCanvas* win = NULL;
-   if (fCanvas)
+   if (fCanvas) {
       win = (TRootCanvas*)fCanvas->GetCanvasImp();
+      win->Connect("CloseWindow()", "CurlyLineWithArrowDialog", this, "CloseDialog()");
+	}
    Int_t ind = 0;
    RestoreDefaults();
    fRow_lab = new TList();
@@ -133,23 +134,16 @@ void CurlyLineWithArrowDialog::RestoreDefaults()
 
 CurlyLineWithArrowDialog::~CurlyLineWithArrowDialog()
 {
-   gROOT->GetListOfCleanups()->Remove(this);
 	if (fCanvas) {
 		GrCanvas* hc = (GrCanvas*)fCanvas;
 		hc->RemoveFromConnectedClasses(this);
 	}
-	fRow_lab->Delete();
-   delete fRow_lab;
-};
-//_______________________________________________________________________
+	if ( fRow_lab ) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
 
-void CurlyLineWithArrowDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
+};
 //_______________________________________________________________________
 
 void CurlyLineWithArrowDialog::CloseDialog()

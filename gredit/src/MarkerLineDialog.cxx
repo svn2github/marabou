@@ -31,11 +31,12 @@ SimpleLine and Arrow: Click and drag to endpoint\n\
 PolyLine: Click at desired points\n\
 end with click at same position or double click\n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
    TRootCanvas* win = NULL;
-   if (fCanvas)
+   if (fCanvas) {
       win = (TRootCanvas*)fCanvas->GetCanvasImp();
+		win->Connect("CloseWindow()", "MarkerLineDialog", this, "CloseDialog()");
+	}
    Int_t ind = 0;
    RestoreDefaults();
    fRow_lab = new TList();
@@ -218,28 +219,30 @@ void MarkerLineDialog::CRButtonPressed(Int_t /*wid*/, Int_t /*bid*/, TObject */*
 
 MarkerLineDialog::~MarkerLineDialog()
 {
-   gROOT->GetListOfCleanups()->Remove(this);
 	if (fCanvas) {
 		GrCanvas* hc = (GrCanvas*)fCanvas;
 		hc->RemoveFromConnectedClasses(this);
 	}
-	fRow_lab->Delete();
-   delete fRow_lab;
-};
+	if (fRow_lab) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
+}
 //_______________________________________________________________________
-
+/*
 void MarkerLineDialog::RecursiveRemove(TObject * obj)
 {
    if (obj == fCanvas) {
-//      cout << "MarkerLineDialog: CloseDialog "  << endl;
+      cout << "MarkerLineDialog: RecursiveRemove CloseDialog " << fCanvas  << endl;
       CloseDialog();
    }
 }
+*/
 //_______________________________________________________________________
 
 void MarkerLineDialog::CloseDialog()
 {
-//   cout << "MarkerLineDialog::CloseDialog() " << endl;
+   cout << "MarkerLineDialog::CloseDialog() " << endl;
    if (fDialog) fDialog->CloseWindowExt();
    fDialog = NULL;
    delete this;
@@ -248,7 +251,7 @@ void MarkerLineDialog::CloseDialog()
 
 void MarkerLineDialog::CloseDown(Int_t wid)
 {
-//   cout << "MarkerLineDialog::CloseDown() " <<wid << endl;
+   cout << "MarkerLineDialog::CloseDown() " <<wid << endl;
    if (wid != -2 )
       SaveDefaults();
    delete this;

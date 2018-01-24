@@ -67,7 +67,7 @@ private:
    const TGPicture     *fIconPic;            // icon picture
 
 public:
-   GEdit() {};
+   GEdit();
    GEdit(GrCanvas * parent);
 //   GEdit(HTCanvas * parent);
    void Constructor();

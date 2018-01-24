@@ -14,12 +14,12 @@ namespace std {} using namespace std;
 class TSplineXDialog : public TObject {
 
 private:
-   void *fValp[100];
-   TList *fRow_lab;
-   TGMrbValuesAndText *fDialog;
-   TCanvas  *fCanvas;
+	void *fValp[100];
+	TList *fRow_lab;
+	TGMrbValuesAndText *fDialog;
+	TCanvas  *fCanvas;
 	TPad     *fPad;
-   TString   fCommand;
+	TString   fCommand;
 	Int_t    fClosed;  
 	Int_t    fApprox; 
 	Int_t 	fFixends; 
@@ -44,17 +44,16 @@ private:
 	Double_t fArrow_angle;   
 	Double_t fArrow_indent_angle;
 public:
-   TSplineXDialog();
-   virtual ~TSplineXDialog();
-   void Draw_The_TSplineX();
+	TSplineXDialog();
+	virtual ~TSplineXDialog();
+	void Draw_The_TSplineX();
 	void    ObjCreated(Int_t /*px*/, Int_t /*py*/, TObject *obj) {fPad = (TPad*)obj;};
 	void    ObjMoved(Int_t /*px*/, Int_t /*py*/, TObject */*obj*/) { };
-   void SaveDefaults();
-   void RestoreDefaults();
-   void RecursiveRemove(TObject * obj);
-   void CloseDialog();
-   void CloseDown(Int_t wid);
-   void CRButtonPressed(Int_t, Int_t, TObject *){};
+	void SaveDefaults();
+	void RestoreDefaults();
+	void CloseDialog();
+	void CloseDown(Int_t wid);
+	void CRButtonPressed(Int_t, Int_t, TObject *){};
 
 ClassDef(TSplineXDialog,0)
 };
