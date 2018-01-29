@@ -366,6 +366,8 @@ public:
 	void HandleLinLogChanged(TObject *obj);
 	void HandlePadModified();
 	void DoSaveLimits();
+	void CloseFitHist();
+	void SetCanvasIsAlive(Bool_t isal){fCanvasIsAlive = isal;};
 	
 ClassDef(FitHist,0)      // A histogram presenter
 };

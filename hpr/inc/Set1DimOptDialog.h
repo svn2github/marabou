@@ -65,7 +65,7 @@ private:
 public:
 
 	Set1DimOptDialog(TGWindow * win = NULL);
-	~Set1DimOptDialog() {};
+	~Set1DimOptDialog();
 	Set1DimOptDialog(Int_t batch);
 //	void Add2ConnectedClasses(TObject *obj);
 	void LinLogChanged(TObject* o);

@@ -103,6 +103,8 @@ from the \"GraphicsAtt\" popup menu\n\
                 rc->Connect("CloseWindow()", "Set1DimOptDialog", this, "CloseDialog()");
 	}
 	*/
+	fHistList.SetName("1dim_histlist");
+	fPadList.SetName("1dim_padlist");
 	TIter next(fCanvas->GetListOfPrimitives());
 	TObject *obj;
 	TH1* hist;
@@ -684,6 +686,14 @@ void Set1DimOptDialog::RestoreDefaults(Int_t resetall)
 
 void Set1DimOptDialog::GetValuesFromHist()
 {
+}
+//______________________________________________________________________
+
+Set1DimOptDialog::~Set1DimOptDialog()
+{
+	fHistList.Clear("nodelete");
+	fPadList.Clear("nodelete");
+	if (gHprDebug>0)cout << "Set1DimOptDialog dtor " << this <<endl;
 }
 //______________________________________________________________________
 

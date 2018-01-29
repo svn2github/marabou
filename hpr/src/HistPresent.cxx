@@ -220,10 +220,10 @@ ClassImp(HistPresent)
 
 HistPresent::HistPresent()
 {
-	if (gDebug > 0)
-		cout<< setred<< "HistPresent default ctor " << this<< setblack <<endl;
+//	cout<< setred<< "HistPresent default ctor " << this<< setblack <<endl;
 	fComSocket       = NULL;
 	cHPr = NULL;
+	gHprClosing = 0;
 }
 // normal constructor
 
@@ -268,19 +268,19 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 	fByTitle=kFALSE;
 
 //   fCanvasList = new TList();
-	fAllCuts = new TList();
-	fAllWindows = new TList();
-	fAllFunctions = new TList();
-	fHistLists = new TList();
-	fSelectHist = new TList();
-	fSelectCanvas = new TList();
-	fHistListList = new TList();
-	fSelectCut = new TList();
-	fSelectWindow = new TList();
-	fSelectLeaf = new TList();
-	fSelectContour = new TList();
-	fSelectGraph = new TList();
-	fAllContours = new TList();
+	fAllCuts = new TList(); fAllCuts->SetName("fAllCuts");
+	fAllWindows = new TList(); fAllWindows->SetName("fAllWindows");
+	fAllFunctions = new TList(); fAllFunctions->SetName("fAllFunctions");
+	fHistLists = new TList(); fHistLists->SetName("fHistLists");
+	fSelectHist = new TList(); fSelectHist->SetName("fSelectHist");
+	fSelectCanvas = new TList(); fSelectCanvas->SetName("fSelectCanvas");
+	fHistListList = new TList(); fHistListList->SetName("fHistListList");
+	fSelectCut = new TList(); fSelectCut->SetName("fSelectCut");
+	fSelectWindow = new TList(); fSelectWindow->SetName("fSelectWindow");
+	fSelectLeaf = new TList(); fSelectLeaf->SetName("fSelectLeaf");
+	fSelectContour = new TList(); fSelectContour->SetName("fSelectContour");
+	fSelectGraph = new TList(); fSelectGraph->SetName("fSelectGraph");
+	fAllContours = new TList(); fAllContours->SetName("fAllContours");
 
 	fGraphCut = new TString();
 	fCutVarX = new TString();
@@ -340,6 +340,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 		gDirectory->Append(this);
 	}
 	gROOT->GetListOfCleanups()->Add(this);
+	gHprClosing = 0;
 };
 
 //________________________________________________________________
@@ -365,8 +366,9 @@ HistPresent::~HistPresent()
 //________________________________________________________________
 void HistPresent::RecursiveRemove(TObject * obj)
 {
-//   gROOT->GetListOfCleanups()->Remove(obj);
-//	cout << "HistPresent::RecursiveRemove for: " << obj ;
+	if (gHprDebug > 1 && obj) {
+		cout << "HistPresent::RecursiveRemove for: " << obj << " " << obj->GetName() <<endl ;
+	}
 	if (obj == cHPr) {
 		if ( gHprDebug > 0) 
 			cout << "HistPresent::RecursiveRemove for myself " << gHpr << endl << flush;

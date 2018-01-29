@@ -121,17 +121,23 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 		cout << "NULL pointer in: " << name << endl;
 		return;
 	};
-
-	if (gDirectory) {
-		FitHist *hold =
-			 (FitHist *) gDirectory->GetList()->FindObject(GetName());
-		if (gHprDebug > 0 && hold) {
-//         Warning("Build","Replacing existing : %s",GetName());
-			cout << "FitHist ctor: this " <<this << " Delete hold: " << hold << endl;
-			gDirectory->GetList()->Remove(hold);
-			gROOT->GetListOfCanvases()->Remove(hold->GetCanvas());
-			delete hold->GetCanvas();
+	// look if object exists 
+	FitHist *hold = (FitHist *) gROOT->GetList()->FindObject(GetName());
+	if (hold) {
+		if (gHprDebug>0)
+			cout << "FitHist ctor: this " << this << " Delete hold: " << hold << endl;
+		gROOT->GetList()->Remove(hold);
+//		gROOT->GetListOfCleanups()->Remove(hold);
+		TCanvas *cc = (TCanvas*)gROOT->GetListOfCanvases()->FindObject(hold->GetCanvas());
+		if (cc) {
+			cc->GetListOfPrimitives()->Remove(hold->GetSelHist());
+//			gROOT->GetListOfCanvases()->Remove(cc);
+//			hold->Disconnect("HTCanvasClosed", hold, "CloseFitHist()");
+			hold->SetCanvasIsAlive(kFALSE);
+			delete cc;
 		}
+		// FitHist object will be deleted after signal from delete TCanvas
+//		delete hold;
 	}
 //   hp = (HistPresent *) gROOT->FindObject("mypres");
 	if (!gHpr)
@@ -158,7 +164,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fOrigLowY = hist->GetYaxis()->GetXmin();
 	fOrigUpY =  hist->GetYaxis()->GetXmax();
 	fBinX_1 = fBinX_2 = fBinY_1 = fBinY_2 = 0;
-	fBinlx  = fBinux = fBinly = fBinuy = 0;    
+	fBinlx  = fBinux = fBinly = fBinuy = 0;     
 	fExplx  = fExpux = fExply = fExpuy = 0;    
 	fX_1    =   fX_2 =   fY_1 =   fY_2 = 0;    
 	fRangeLowX = fRangeUpX = fRangeLowY = fRangeUpY = 0;
@@ -195,11 +201,11 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fAutoDisplayS2FD = kFALSE;
 	fDeleteCalFlag = kFALSE;
 
-	fActiveWindows = new TList();
-	fPeaks = new TList();
-	fActiveFunctions = new TList();
-	fActiveCuts = new TList();
-	fCmdLine = new TList();
+	fActiveWindows = new TList();fActiveWindows ->SetName("fActiveWindows") ;
+	fPeaks = new TList();  fPeaks->SetName("fPeaks") ;
+	fActiveFunctions = new TList();  fActiveFunctions->SetName("fActiveFunctions") ;
+	fActiveCuts = new TList();  fActiveCuts->SetName("fActiveCuts") ;
+	fCmdLine = new TList();  fCmdLine->SetName("fCmdLine") ;
 
 	if (gHpr) {
 		fAllFunctions = gHpr->GetFunctionList();
@@ -392,6 +398,15 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 // destructor
 FitHist::~FitHist()
 {
+	if (gHprClosing ){
+		if ( gHprDebug > 0 )
+			cout<< " gHprClosing = 1"<<endl;
+		return;
+	}
+	if ( gHprDebug > 0 ) {
+		cout << " ~FitHist(): " << this<< " fSelHist " <<fSelHist
+		<< " fCanvas " <<fCanvas << endl;
+	}
 	gROOT->GetList()->Remove(this);
 	gROOT->GetListOfCleanups()->Remove(this);
 	if (fSelHist == NULL) {
@@ -399,17 +414,6 @@ FitHist::~FitHist()
 	}
 	fTimer.Stop();
 	DisconnectFromPadModified();
-//	TQObject::Disconnect((TPad*)fCanvas, "Modified()", this, "HandlePadModified()");
-	if ( gHprDebug > 0 ) {
-		cout << " ~FitHist()this : " << this<< " fSelHist " <<fSelHist
-		<< " fCanvas " <<fCanvas << endl;
-//		fSelHist->Print();
-	}
-	if (gHprClosing ){
-		if ( gHprDebug > 0 )
-			cout<< " gHprClosing = 1"<<endl;
-//		return;
-	}
 	if (!fExpHist && gHpr && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
 	if ( fFit1DimD ) fFit1DimD->CloseDialog();
 	if ( fFit2DimD ) fFit2DimD->CloseDialog();
@@ -431,19 +435,22 @@ FitHist::~FitHist()
 	if (fTofLabels) { delete fTofLabels; fTofLabels=NULL;}
 	if (fCalFunc) delete fCalFunc;
 //   if (fDateText) delete fDateText;
-	if (!fCanvas || !fCanvas->TestBit(TObject::kNotDeleted) ||
-		 fCanvas->TestBit(0xf0000000)) {
+	if (fCanvas && !gROOT->GetListOfCanvases()->FindObject(fCanvas)) {
 		cout << "~FitHist: " << this << " Canvas : " << fCanvas << " is deleted" << endl;
-
-		fCanvas = 0;
+		fCanvas = NULL;
 	}
+//	if (!fCanvas || !fCanvas->TestBit(TObject::kNotDeleted) ||
+//		 fCanvas->TestBit(0xf0000000)) {
+//		cout << "~FitHist: " << this << " Canvas : " << fCanvas << " is deleted" << endl;
+//		fCanvas = 0;
+//	}
 
 	if (fCanvas) {
 		fCanvas->SetFitHist(NULL);
 		if (fCanvasIsAlive) {
-//         cout << " deleting " << fCanvas->GetName() << endl;
+         cout << " deleting " << fCanvas->GetName() << endl;
 			delete fCanvas;
-			fCanvas = 0;
+			fCanvas = NULL;
 		}
 	}
 	if (fCutPanel && fCutPanel->TestBit(TObject::kNotDeleted))
@@ -457,8 +464,16 @@ FitHist::~FitHist()
 		delete peaks;
 	if (fCmdLine)
 		delete fCmdLine;
+	delete fSelHist;
 };
 
+//_______________________________________________________________________________
+void FitHist::CloseFitHist()
+{
+	if (gHprDebug>0)cout << "CloseFitHist() " << this << endl;
+	fCanvasIsAlive = kFALSE;
+	delete this;
+}
 //_______________________________________________________________________________
 
 void FitHist::DisconnectFromPadModified()
@@ -537,7 +552,7 @@ void FitHist::DoSaveLimits()
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-	if (gHprDebug > 2)
+	if (gHprDebug > 1)
 		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist
 		<< " RecursiveRemove: " << obj << " " <<obj->GetName() << endl;
 	if (fSelHist == NULL) {
@@ -1451,9 +1466,8 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 	fCanvas = new HTCanvas(fCname.Data(), fCtitle.Data(),
 								win_topx, win_topy, win_widx, win_widy, gHpr, this);
 	fCanvasIsAlive = kTRUE;
-
 	fCanvas->SetEditable(kTRUE);
-
+	fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseFitHist()");
 	hist->SetDirectory(gROOT);
 //   if ( (is2dim(hist) && fLiveStat2Dim) || (!is2dim(hist) && fLiveStat1Dim) ){
 	if (gStyle->GetCanvasPreferGL() == kFALSE) {
@@ -1614,7 +1628,7 @@ void FitHist::RebinOne()
 	static Int_t ngroupY = 2;
 	Bool_t ok;
 	TH1 *newhist = NULL;
-	TList *row_lab = new TList();
+	TList *row_lab = new TList(); row_lab->SetName("row_lab");
 	static void *valp[25];
 	Int_t ind = 0;
 	row_lab->Add(new TObjString("StringValue_Name of rebinned hist"));
@@ -2744,7 +2758,7 @@ void FitHist::FastFT()
 	static void *valp[50];
 	Int_t ind = 0;
 	Bool_t ok = kTRUE;
-	TList *row_lab = new TList();
+	TList *row_lab = new TList(); row_lab->SetName("row_lab");
 	row_lab->Add(new TObjString("CheckButton_              Magnitude"));
 	row_lab->Add(new TObjString("CheckButton_              Real Part"));
 	row_lab->Add(new TObjString("CheckButton_         Imaginary Part"));

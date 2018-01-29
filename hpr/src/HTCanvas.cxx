@@ -70,7 +70,6 @@ void HTCanvas::HTCanvasClosed()
 {
 	if ( gHprDebug > 0 )
 		cout << endl << "HTCanvas::HTCanvasClosed() " << this << " " << GetName() << endl;
-	Emit("HTCanvasClosed()");
 	delete this;
 }
 //______________________________________________________________________________________
@@ -85,7 +84,9 @@ void HTCanvas::ConnectToModified()
 HTCanvas::~HTCanvas()
 {
 	if ( gHprDebug > 0 )
-		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
+		cout << "dtor HTCanvas: " << this << " " << GetName()
+		<< "FitHist: " << GetFitHist()
+		<< endl;
 	if ( gHprClosing ) {
 		if ( gHprDebug > 0 )
 			cout << " hpr closing" << endl;
@@ -114,14 +115,15 @@ HTCanvas::~HTCanvas()
 	TIter next1(&temp);
 	while ( (obj = next()) ){
 		lop->Remove(obj);
-	}*/
+	}
    if(fFitHist) {
       fFitHist->UpdateCut();
       fFitHist->SetCanvasIsDeleted();
 		if ( gHprDebug > 0 )
 			cout << "HTCanvas: " << this << " delete fFitHist " << fFitHist << endl<< flush;
       delete fFitHist;
-   }
+   }*/
+	Emit("HTCanvasClosed()");
 };
 //____________________________________________________________________________
 
