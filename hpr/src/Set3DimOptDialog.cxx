@@ -48,7 +48,7 @@ namespace std {} using namespace std;
 //TString Set3DimOptDialog::fDrawOpt3Dim = "COLZ";
 //_______________________________________________________________________
 
-Set3DimOptDialog::Set3DimOptDialog(Int_t /*batch*/)
+Set3DimOptDialog::Set3DimOptDialog()
 {
 	cout << "ctor Set2DimOptDialog, non interactive" <<endl;
 	fDialog = NULL;
@@ -97,7 +97,6 @@ since the other options dont have a real histogram anymore\n\
 	} else {
 		fCanvas = NULL;
 	}
-	gDirectory->Append(this);
 	fCmdButton = b;
 //	cout << "fCmdButton " << fCmdButton<< endl;
 	fApplyTranspCut = 0;
@@ -288,6 +287,11 @@ since the other options dont have a real histogram anymore\n\
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
+   //_______________________________________________________________________
+
+Set3DimOptDialog::~Set3DimOptDialog()
+{
+};
 //_______________________________________________________________________
 
 void Set3DimOptDialog::CloseDialog()
