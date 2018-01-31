@@ -738,7 +738,7 @@ void TMrbMesytec_Madc32::SetupCBLT() {
 	TMrbNamedX * c;
 	if (this->IsFirstInChain()) {
 		if (!this->IsMcstMaster()) {
-			gMrbLog->Err()	<< "[" << this->GetName() << "] module is \"fist in CBLT chain\" but NOT MCST master" << endl;
+			gMrbLog->Err()	<< "[" << this->GetName() << "] module is \"first in CBLT chain\" but NOT MCST master" << endl;
 			gMrbLog->Flush(this->ClassName(), "SetupCBLT");
 			return;
 		}
