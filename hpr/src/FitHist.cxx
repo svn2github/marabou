@@ -3953,6 +3953,7 @@ void FitHist::Draw3Dim()
 	fSelHist->SetMarkerStyle(fMarkerStyle3Dim);
 	fSelHist->SetMarkerSize (fMarkerSize3Dim);
 	UpdateDrawOptions();
+	fCanvas->cd();
 	fCanvas->Update();
 }
 //____________________________________________________________________________

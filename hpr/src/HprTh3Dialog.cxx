@@ -16,17 +16,21 @@ using std::endl;
 
 ClassImp(HprTh3Dialog)
 
-HprTh3Dialog::HprTh3Dialog(TH3 *hist) : fHist(hist)
+HprTh3Dialog::HprTh3Dialog(TH3 *hist, TGWindow * win) : fHist(hist)
 {
 static const Char_t helptext[] =
 "Manipulate 3d (TH3) histograms\n\
 Projections are defined by \"xy\" \"xz\" etc.\n\
 ";
-   gROOT->GetListOfCleanups()->Add(this);
-   fCanvas = gPad->GetCanvas();
-   fWindow = NULL;
-   if (fCanvas)
-      fWindow = (TRootCanvas*)fCanvas->GetCanvasImp();
+//   gROOT->GetListOfCleanups()->Add(this);
+	cout << "HprTh3Dialog " << win << endl;
+	if (win) {
+		fCanvas = ((TRootCanvas*)win)->Canvas();
+		fCanvas->cd();
+		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
+	} else {
+		fCanvas = NULL;
+	}
    Int_t ind = 0;
 // find all 3d hists in pad
    TIter next(gPad->GetListOfPrimitives());
@@ -35,6 +39,7 @@ Projections are defined by \"xy\" \"xz\" etc.\n\
       if (obj->InheritsFrom("TH3"))
          fHistList.Add(obj);
    }
+   fHistList.SetName("TH3_list");
    fNhists = fHistList.GetSize();
    cout << "3d hists found: " << fNhists << endl;
    if (fNhists > kMaxHists) {
@@ -74,7 +79,7 @@ Projections are defined by \"xy\" \"xz\" etc.\n\
    Int_t itemwidth =  55 * TGMrbValuesAndText::LabelLetterWidth();
    static Int_t ok;
    fDialog =
-      new TGMrbValuesAndText("TH3 dialog", NULL, &ok,itemwidth, fWindow,
+      new TGMrbValuesAndText("TH3 dialog", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
@@ -148,8 +153,9 @@ void HprTh3Dialog::RestoreDefaults()
 
 HprTh3Dialog::~HprTh3Dialog()
 {
-   gROOT->GetListOfCleanups()->Remove(this);
-		if (fRow_lab) {
+//   gROOT->GetListOfCleanups()->Remove(this);
+	fHistList.Clear("nodelete");
+	if (fRow_lab) {
 		fRow_lab->Delete();
 		delete fRow_lab;
 	}

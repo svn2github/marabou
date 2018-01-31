@@ -909,7 +909,7 @@ again:
 							fFitHist->Magnify();
 							break;
 						case kFHTh3Dialog:
-							new HprTh3Dialog((TH3*)fFitHist->GetSelHist());
+							new HprTh3Dialog((TH3*)fFitHist->GetSelHist(), fRootCanvas);
 							break;
 						case kFHRebinDimDialog:
 							new Rebin2DimDialog((TH2*)fFitHist->GetSelHist(), fRootCanvas);

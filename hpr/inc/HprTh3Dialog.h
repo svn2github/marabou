@@ -12,10 +12,9 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
-   TRootCanvas  *fWindow;
-   TH3 *fHist;
    Int_t fNhists;
    TList fHistList;
+   TH3 *fHist;
    Int_t fSetIndex[kMaxHists * 3 + 10];
 
    Int_t fMarkerStyle[kMaxHists];
@@ -23,8 +22,8 @@ private:
    Size_t  fMarkerSize[kMaxHists];
    TString fProjectPlane;
 public:
-   HprTh3Dialog() {};
-   HprTh3Dialog(TH3 *hist);
+   HprTh3Dialog(TH3 *hist, TGWindow *win);
+   HprTh3Dialog() {fRow_lab = NULL; fHist=NULL;};
    virtual ~HprTh3Dialog();
    void    ExecuteProject();
    void    SaveDefaults();
