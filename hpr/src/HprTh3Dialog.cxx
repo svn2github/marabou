@@ -153,22 +153,12 @@ void HprTh3Dialog::RestoreDefaults()
 
 HprTh3Dialog::~HprTh3Dialog()
 {
-//   gROOT->GetListOfCleanups()->Remove(this);
 	fHistList.Clear("nodelete");
 	if (fRow_lab) {
 		fRow_lab->Delete();
 		delete fRow_lab;
 	}
 };
-//_______________________________________________________________________
-
-void HprTh3Dialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "HprTh3Dialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
 //_______________________________________________________________________
 
 void HprTh3Dialog::CloseDialog()

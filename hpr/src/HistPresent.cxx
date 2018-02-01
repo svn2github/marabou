@@ -336,9 +336,8 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 //         Warning("Build","Replacing existing : %s",GetName());
 			delete hold;
 		}
-//      AppendDirectory();
-		gDirectory->Append(this);
 	}
+	gROOT->GetList()->Add(this);
 	gROOT->GetListOfCleanups()->Add(this);
 	gHprClosing = 0;
 };
