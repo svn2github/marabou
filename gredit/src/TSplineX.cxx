@@ -1502,12 +1502,14 @@ void TSplineX::PaintText()
       latex.SetTextFont(t->GetTextFont());
       latex.SetTextColor(t->GetTextColor());
       latex.SetBit(THprLatex::kValignNoShift);
-		UInt_t w, h;
+		UInt_t w, h, asc, des;
 		latex.GetTextExtent(w, h, "i");
 		Double_t csep = 0.1 * (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
 	//   csep = ;
 		latex.GetTextExtent(w, h, "X");
 		Double_t chShift=  0.5 * (gPad->AbsPixeltoX((Int_t)h) - gPad->AbsPixeltoX(0));
+		Double_t hofXp = h;
+		Double_t hofX = chShift;
 		Double_t clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
 	   Double_t yx = (gPad->AbsPixeltoY((Int_t)w) - gPad->AbsPixeltoY(0)) / clen;
 
@@ -1574,13 +1576,24 @@ void TSplineX::PaintText()
 		for (Int_t i=0; i < nchar; i++) {
 			TString subs = text[i];
 			latex.GetTextExtent(w, h, subs.Data());
+			latex.GetTextAscentDescent(asc, des, subs.Data());
+			/*
+			std::cout << subs.Data() << " w " << w 
+			<< " h " << h << " asc " << asc << " des " << des 
+			<< " chshift " << chShift 
+			<< " hofX " << hofX
+			<< std::endl;
+			*/
 			clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
 			phi = GetPhiXY(s, x, y);
          a = x;
          b = y;
-			if ( chShift != 0 ) {
-				Endpoint(phi, x, y, chShift, &a, &b);
-			}
+        
+//			if ( chShift != 0 ) {
+				
+				Endpoint(phi, x, y, 
+				chShift + hofX *((hofXp-asc)/hofXp + des/hofXp) , &a, &b);
+//			}
          co = TMath::Cos(phi);
          si = TMath::Sin(phi);
          xylen = TMath::Sqrt(co*co + yx*yx*si*si);

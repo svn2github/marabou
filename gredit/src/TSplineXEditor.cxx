@@ -80,7 +80,8 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
 {
    // Constructor of SplineX editor.
 
-   fSplineX = 0;
+   fSplineX = NULL;
+   fHprText = NULL;
    fInit = kTRUE;
    // TextEntry to change the title
    MakeTitle("TSplineX");
@@ -337,9 +338,10 @@ void TSplineXEditor::SetModel(TObject* obj)
 #else
 void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
 {
-   fSplineX = 0;
-   fModel = 0;
-   fPad = 0;
+   fSplineX = NULL;
+   fModel = NULL;
+   fPad = NULL;
+   fHprText = NULL;
 
    if (obj == 0 || !obj->InheritsFrom(TSplineX::Class())) {
       SetActive(kFALSE);
@@ -390,6 +392,7 @@ void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
 
    fTextList = fSplineX->GetTextList();
    if ( fTextList && fTextList->GetSize() > 0 ) {
+		fTextEntry->SetEnabled(kTRUE);
       fTextAlign->SetEnabled(kTRUE);
       fTextColorSelect->SetEnabled(kTRUE);
 //      fTextSize->SetEnabled(kFALSE);
@@ -429,9 +432,10 @@ void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
       fTextEntry->GetBuffer()->Clear();
       fTextEntry->GetBuffer()->AddText(0, fHprText->GetText());
    } else {
+		fTextEntry->SetEnabled(kFALSE);
       fTextAlign->SetEnabled(kFALSE);
       fTextColorSelect->SetEnabled(kFALSE);
-//      fTextSize->SetEnabled(kFALSE);
+ //     fTextSize->SetEnabled(kFALSE);
       fTextFont->SetEnabled(kFALSE);
    }
    if (fInit) ConnectSignals2Slots();
@@ -628,7 +632,10 @@ void TSplineXEditor::DoSetTextFont()
 
 void TSplineXEditor::DoSetText()
 {
-   if ( !fHprText ) return;
+   if ( !fHprText ) {
+		std::cout << "DoSetText: No text defined yet, use AddTextDialog from context menu" << std::endl;
+		return;
+	}
    fHprText->SetText(fTextEntry->GetBuffer()->GetString());
    fSplineX->Paint();
 }
