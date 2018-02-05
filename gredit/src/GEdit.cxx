@@ -119,7 +119,8 @@ GEdit::GEdit(GrCanvas * parent)
 //______________________________________________________________________
 void GEdit::Constructor()
 {
-   cout << "ctor GEdit: " << this << " fParent " << fParent << " gPad " << gPad << endl;
+	if (gDebug > 0)
+		cout << "ctor GEdit: " << this << " fParent " << fParent << " gPad " << gPad << endl;
    SetName("HprGEdit");
 //   fRootCanvas = (TRootCanvas*)fParent->GetCanvas()->GetCanvasImp();
    fRootCanvas = (TRootCanvas*)fParent->GetCanvasImp();
