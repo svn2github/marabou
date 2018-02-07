@@ -99,8 +99,8 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-					mesy_stopAcq(m_$moduleName);	/* start module $moduleName */
-					mesy_startAcq(m_$moduleName);
+							mesy_stopAcq(m_$moduleName, FALSE);	/* start module $moduleName */
+							mesy_startAcq(m_$moduleName, TRUE);
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -110,7 +110,7 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-					mesy_stopAcq(m_$moduleName);			/* stop module $moduleName */
+					mesy_stopAcq(m_$moduleName, TRUE);			/* stop module $moduleName */
 					mesy_reportReadErrors(m_$moduleName);	/* error report */
 %%EndOfCode%%
 %%STOP_ACQUISITION%%

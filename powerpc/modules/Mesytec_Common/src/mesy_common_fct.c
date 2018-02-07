@@ -29,7 +29,7 @@
 #include "mapping_database.h"
 #include "bmaErrlist.h"
 
-#include "mesy_common.h"
+#include "mesy.h"
 #include "mesy_database.h"
 #include "mesy_protos.h"
 
@@ -412,7 +412,7 @@ void mesy_disableBusError(s_mesy * m)
 	SETB16(m->md->vmeBase, MESY_MULTI_EVENT, MESY_MULTI_EVENT_BERR);
 }
 
-void mesy_startAcq(s_mesy * m)
+void mesy_startAcq(s_mesy * m, bool_t v)
 {
 	if (mesy_mcstIsEnabled(m)) {
 		if (m->mcstMaster) {
@@ -421,6 +421,10 @@ void mesy_startAcq(s_mesy * m)
 			mesy_resetReadout_mcst(m);
 			mesy_resetTimestamp_mcst(m);
 			SET16(m->mcstAddr, MESY_START_ACQUISITION, 0x1);
+			if (v) {
+				sprintf(msg, "[%sstartAcq] %s: MCST start - signature %#x, addr %#lx\n", m->mpref, m->moduleName, m->mcstSignature, m->mcstAddr);
+				f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			}
 		}
 	} else {	
 		SET16(m->md->vmeBase, MESY_START_ACQUISITION, 0x0);
@@ -428,10 +432,11 @@ void mesy_startAcq(s_mesy * m)
 		mesy_resetReadout(m);
 		mesy_resetTimestamp(m);
 		SET16(m->md->vmeBase, MESY_START_ACQUISITION, 0x1);
+		printf("@@@ start %s %lx\n", m->moduleName, m->md->vmeBase);
 	}
 }
 
-void mesy_stopAcq(s_mesy * m)
+void mesy_stopAcq(s_mesy * m, bool_t v)
 {
 	if (mesy_mcstIsEnabled(m)) {
 		if (m->mcstMaster) {
@@ -439,6 +444,10 @@ void mesy_stopAcq(s_mesy * m)
 			mesy_resetFifo_mcst(m);
 			mesy_resetReadout_mcst(m);
 			mesy_resetTimestamp_mcst(m);
+			if (v) {
+				sprintf(msg, "[%sstopAcq] %s: MCST stop - signature %#x, addr %#lx\n", m->mpref, m->moduleName, m->mcstSignature, m->mcstAddr);
+				f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			}
 		}
 	} else {	
 		SET16(m->md->vmeBase, MESY_START_ACQUISITION, 0x0);
@@ -455,9 +464,17 @@ void mesy_resetFifo(s_mesy * m)
 
 void mesy_initMCST(s_mesy * m)
 {	
-	if (mesy_mcstIsEnabled(m) && mesy_isMcstMaster(m)) {
-		if (m->mcstAddr == 0) m->mcstAddr = mapAdditionalVME(m->md, (m->mcstSignature & 0xFF) << 24, 0);
-		sprintf(msg, "[%smsctInit] %s: MCST initialized - signature %#x, addr %#lx\n", m->mpref, m->moduleName, m->mcstSignature, m->mcstAddr);
+	if (mesy_mcstIsEnabled(m)) {
+		if (mesy_isMcstMaster(m)) {
+			if (m->mcstAddr == 0) m->mcstAddr = mapAdditionalVME(m->md, (m->mcstSignature & 0xFF) << 24, 0);
+			sprintf(msg, "[%smsctInit] %s: MCST master - signature %#x, addr %#lx\n", m->mpref, m->moduleName, m->mcstSignature, m->mcstAddr);
+			f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		} else {
+			sprintf(msg, "[%smsctInit] %s: MCST slave - signature %#x\n", m->mpref, m->moduleName, m->mcstSignature);
+			f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		}	
+	} else {
+		sprintf(msg, "[%smsctInit] %s: No MCST - running in individual mode\n", m->mpref, m->moduleName);
 		f_ut_send_msg(m->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 }
