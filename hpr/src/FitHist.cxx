@@ -103,7 +103,10 @@ ClassImp(FitHist)
 // def constructor
 FitHist::FitHist()
 {
+	if (gDebug > 0)
+		cout << "FitHist default ctor: " << this << endl;
 	fSelHist = NULL;
+	fCanvas = NULL;
 }
 //_______________________________________________________________________________
 // constructor
@@ -211,6 +214,9 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 		fAllFunctions = gHpr->GetFunctionList();
 		fAllWindows = gHpr->GetWindowList();
 		fAllCuts = gHpr->GetCutList();
+		CheckList(fActiveCuts);
+		CheckList(fActiveWindows);
+		CheckList(fAllWindows);
 	}
 	fTimer.SetTimerID(0);
 	fTimer.Connect("Timeout()", "FitHist", this, "DoSaveLimits()");
@@ -219,9 +225,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	fDimension = hist->GetDimension();
 //  look for cuts and windows
 
-	CheckList(fActiveCuts);
-	CheckList(fActiveWindows);
-	CheckList(fAllWindows);
 
 
 	TList *lof = hist->GetListOfFunctions();

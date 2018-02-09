@@ -413,6 +413,9 @@ void HistPresent::RecursiveRemove(TObject * obj)
 			cout << "HistPresent::RecursiveRemove: gApplication->Terminate(0)" <<endl;
 		}
 	}
+	if (gHprDebug > 1 && obj) {
+		cout << "Exit HistPresent::RecursiveRemove for: " << obj << " " << obj->GetName() <<endl ;
+	}
 }
 //________________________________________________________________
 void HistPresent::HandleTerminate(Int_t status)
