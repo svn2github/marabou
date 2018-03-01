@@ -237,6 +237,35 @@ void TMrbLofNamedX::AddNamedX(const Char_t * NameString, const Char_t * Separato
 	}
 }
 
+void TMrbLofNamedX::AddNamedX(const Char_t * NameString, Int_t StartIndex, Int_t Increment, const Char_t * Separator, Bool_t PatternMode) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbLofNamedX::AddNamedX
+// Purpose:        Insert indices from a name string
+// Arguments:      Char_t * NameString    -- list of names separated bei a delimiter
+//                 Int_t StartIndex       -- index to start with
+//                 Int_t Increment        -- increment
+//                 Char_t * Separator     -- separator used in name string
+//                 Bool_t PatternMode     -- turn pattern mode on/off
+// Results:        --
+// Exceptions:
+// Description:    Fills an empty list with elements taken from a list of names
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	Int_t idx = StartIndex;
+
+	TString nameString = NameString;
+	TString subStr;
+	Int_t from = 0;
+	while (nameString.Tokenize(subStr, from, Separator)) {
+		nx = new TMrbNamedX(idx, subStr.Data());
+		this->AddNamedX(nx);
+		if (PatternMode) idx <<= Increment; else idx += Increment;
+	}
+}
+
 void TMrbLofNamedX::Sort(Bool_t SortFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

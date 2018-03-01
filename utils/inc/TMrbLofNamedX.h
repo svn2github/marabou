@@ -71,6 +71,7 @@ class TMrbLofNamedX: public TObjArray {
 		void AddNamedX(TMrbLofNamedX * LofNamedX); 	 						// append a list of indices
 		TMrbNamedX * AddNamedX(Int_t Index, const Char_t * Name, const Char_t * Title = "", TObject * Object = NULL);
 		void AddNamedX(const Char_t * NameString, const Char_t * Delim = ":", Bool_t PatternMode = kFALSE);
+		void AddNamedX(const Char_t * NameString, Int_t StartIndex, Int_t Increment = 1, const Char_t * Delim = ":", Bool_t PatternMode = kFALSE);
 
 																					// find an index by its name
 		TMrbNamedX * FindByName(const Char_t * ShortName, UInt_t FindMode = TMrbLofNamedX::kFindExact) const;
