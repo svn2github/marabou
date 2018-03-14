@@ -278,6 +278,10 @@ class TMrbConfig : public TNamed {
 									kRcUserGlobals
 								};
 
+		enum EMrbShsFileTag  	{	kShsModuleScriptHeader	=	1,		// shell script tags
+									kShsModuleScriptBody
+								};
+
 		enum EMrbUserMacroTag  	{	kUmaFile				=	1,		// user macro tags
 									kUmaNameLC,
 									kUmaNameUC,
@@ -626,6 +630,8 @@ class TMrbConfig : public TNamed {
 
  														// generate rc file
 		Bool_t MakeRcFile(const Char_t * CodeFile = "", const Char_t * ResourceName = "", Option_t * Options = "byName");
+		
+		Bool_t CreateModuleScript(const Char_t * ScriptFile = "", const Char_t * ResourceName = "");
 
 		Bool_t CallUserMacro(const Char_t * MacroName = "", Bool_t AclicFlag = kTRUE);				// call user macro
 		Bool_t ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord) const;
@@ -931,6 +937,7 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofAnalyzeTags;			//! ... analyze tags
 		TMrbLofNamedX fLofConfigTags;			//! ... config tags
 		TMrbLofNamedX fLofRcFileTags;			//! ... rc file tags
+		TMrbLofNamedX fLofShsFileTags;			//! ... shell script tags
 		TMrbLofNamedX fLofUserMacroTags;		//! ... user macro tags
 		TMrbLofNamedX fLofUserEventTags;		//! ... user event tags
 		TMrbLofNamedX fLofXhitTags;				//! ... special hit tags

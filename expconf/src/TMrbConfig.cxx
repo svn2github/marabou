@@ -392,6 +392,15 @@ const SMrbNamedXShort kMrbLofRcFileTags[] =
 								{0, 										NULL							}
 							};
 
+//_________________________________________________________________________________________________________ tag words in CreateModuleScript()
+
+const SMrbNamedXShort kMrbLofShsFileTags[] =
+							{
+								{TMrbConfig::kShsModuleScriptHeader,		"MODULE_SCRIPT_HEADER"			},
+								{TMrbConfig::kShsModuleScriptBody,			"MODULE_SCRIPT_BODY"			},
+								{0, 										NULL							}
+							};
+
 //_________________________________________________________________________________________________________ tag words in CreatePrototypeForUserMacro()
 
 const SMrbNamedXShort kMrbLofUserMacroTags[] =
@@ -673,6 +682,9 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		fLofRcFileTags.SetName("RcFile Tags");  				// ... rc file tags
 		fLofRcFileTags.AddNamedX(kMrbLofRcFileTags);
+
+		fLofShsFileTags.SetName("Script File Tags"); 		 	// ... shell script tags
+		fLofShsFileTags.AddNamedX(kMrbLofShsFileTags);
 
 		fLofUserMacroTags.SetName("UserMacro Tags");  			// ... user macro tags
 		fLofUserMacroTags.AddNamedX(kMrbLofUserMacroTags);
@@ -1586,6 +1598,9 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (this->IsVerbose() || (this->GetReadoutOptions() & kRdoOptVerbose) != 0);
+	
+	TString lynxVersion; this->GetLynxVersion(lynxVersion, -1, kTRUE);
+	gSystem->Setenv("LYNXVERS", lynxVersion.Data());
 
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
@@ -4883,6 +4898,194 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 	return(kTRUE);
 }
 
+Bool_t TMrbConfig::CreateModuleScript(const Char_t * ScriptFile, const Char_t * ResourceName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::CreateModuleScript
+// Purpose:        Create a shell script to test hardware modules
+// Arguments:      Char_t * ScriptFile       -- name of script file to be generated
+//                 Char_t * ResourceName     -- main resource
+// Results:
+// Exceptions:
+// Description:    Writes code for hardware testing.
+//
+//                 Template file should contain tags like %%TAG_NAME%%
+//                 They will be expanded to real code by CreateModuleScript.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString line;
+	TString cfile;
+	TString cf, tf, tf1, tf2;
+
+	TString resourceName;
+	TString expName;
+
+	TString iniTag;
+
+	TString moduleNameUC;
+	TString moduleNameLC;
+
+	TMrbNamedX * scrTag;
+	TMrbConfig::EMrbShsFileTag tagIdx;
+
+	TString lofModules;
+
+	TString templatePath;
+	TString scrTemplateFile;
+	TString prefix;
+
+	ofstream scrStrm;
+
+	TMrbTemplate scrTmpl;
+
+	TObjArray filesToCreate;
+
+	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
+
+	Bool_t verboseMode = gMrbConfig->IsVerbose();
+
+	resourceName = (*ResourceName == '\0') ? this->ClassName() : ResourceName;
+
+	prefix = this->GetName();
+	prefix(0,1).ToUpper();
+
+	cfile = prefix;
+	cfile += "TestModules";
+
+	packNames ascr(cfile.Data(), "ModuleScript.sh.code", ".sh", "Script for hardware testing");
+	filesToCreate.Add((TObject *) &ascr);
+
+	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
+	gSystem->ExpandPathName(templatePath);
+
+	packNames * pp;
+	TIterator * ppIter = filesToCreate.MakeIterator();
+	while (pp = (packNames *) ppIter->Next()) {
+		cf = pp->GetF() + pp->GetX();
+		scrStrm.open(cf, ios::out);
+		if (!scrStrm.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
+			gMrbLog->Flush(this->ClassName(), "CreateModuleScript");
+			continue;
+		}
+
+		tf = pp->GetT();
+		tf.Prepend(prefix.Data());
+		tf1 = tf;
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
+		if (fileSpec.IsNull()) {
+			tf = pp->GetT();
+			tf2 = tf;
+			ux.Which(fileSpec, templatePath.Data(), tf.Data());
+		}
+		if (fileSpec.IsNull()) {
+			gMrbLog->Err()	<< "Template file not found -" << endl;
+			gMrbLog->Flush(this->ClassName(), "CreateModuleScript");
+			gMrbLog->Err()	<< "            Searching on path " << templatePath << endl;
+			gMrbLog->Flush();
+			gMrbLog->Err()	<< "            for file " << tf1 << endl;
+			gMrbLog->Flush();
+			gMrbLog->Err()	<< "            or       " << tf2 << endl;
+			gMrbLog->Flush();
+			scrStrm.close();
+			continue;
+		}
+
+		scrTemplateFile = fileSpec;
+
+		if (!scrTmpl.Open(scrTemplateFile, &fLofShsFileTags)) {
+			if (verboseMode) {
+				gMrbLog->Err()  << "Skipping template file " << fileSpec << endl;
+				gMrbLog->Flush(this->ClassName(), "CreateModuleScript");
+			}
+			continue;
+		} else if (verboseMode) {
+			gMrbLog->Out()  << "Using template file " << fileSpec << endl;
+			gMrbLog->Flush(this->ClassName(), "CreateModuleScript");
+		}
+
+		for (;;) {
+			scrTag = scrTmpl.Next(line);
+			if (scrTmpl.IsEof()) break;
+			if (scrTmpl.IsError()) continue;
+			if (scrTmpl.Status() & TMrbTemplate::kNoTag) {
+				if (line.Index("#-") != 0) scrStrm << line << endl;
+			} else if (this->ExecUserMacro(&scrStrm, this, scrTag->GetName())) {
+				continue;
+			} else {
+				switch (tagIdx = (TMrbConfig::EMrbShsFileTag) scrTag->GetIndex()) {
+					case TMrbConfig::kShsModuleScriptHeader:
+						scrTmpl.InitializeCode();
+						scrTmpl.Substitute("$script", cf.Data());
+						scrTmpl.Substitute("$expName", this->GetName());
+						scrTmpl.Substitute("$expTitle", this->GetTitle());
+						scrTmpl.Substitute("$author", fAuthor);
+						scrTmpl.Substitute("$creationDate", fCreationDate);
+						scrTmpl.WriteCode(scrStrm);
+						break;
+						
+					case TMrbConfig::kShsModuleScriptBody:
+						{
+							TString binPath = gEnv->GetValue("TMrbConfig.PPCBinPath", "");
+							if (binPath.IsNull()) {
+								gMrbLog->Err()  << "Path to load pgms from is not defined (TMrbConfig.PPCBinPath)" << endl;
+								gMrbLog->Flush(this->ClassName(), "CreateModuleScript");
+								break;
+							}
+							gSystem->ExpandPathName(binPath);
+							TIterator * iter = fLofModules.MakeIterator();
+							TMrbVMEModule * module;
+							while (module = (TMrbVMEModule *) iter->Next()) {
+								TMrbNamedX * mtype = module->GetModuleID();
+								TString prog;
+								if (mtype->GetIndex() == TMrbConfig::kModuleMesytecMadc32) prog = "madc32";
+								else if (mtype->GetIndex() == TMrbConfig::kModuleMesytecMtdc32) prog = "mtdc32";
+								else if (mtype->GetIndex() == TMrbConfig::kModuleMesytecMqdc32) prog = "mqdc32";
+								else if (mtype->GetIndex() == TMrbConfig::kModuleMesytecMdpp16) prog = "mdpp16";
+								else if (mtype->GetIndex() == TMrbConfig::kModuleCaenV785) prog = "caen785";
+								else if (mtype->GetIndex() == TMrbConfig::kModuleCaenV775) prog = "caen775";
+								else if (mtype->GetIndex() == TMrbConfig::kModuleSis_3302) prog = "sis3302";
+								else continue;
+								scrTmpl.InitializeCode();
+								Int_t fullAddr = (Int_t) module->GetBaseAddr();
+								Int_t shortAddr;
+								if (mtype->GetIndex() == TMrbConfig::kModuleSis_3302) shortAddr = (fullAddr >> 24) & 0xFF;
+								else shortAddr = (fullAddr >> 16) & 0xFFFF;
+								scrTmpl.Substitute("$moduleName", module->GetName());
+								scrTmpl.Substitute("$moduleTitle", module->GetTitle());
+								scrTmpl.Substitute("$binPath", binPath.Data());
+								scrTmpl.Substitute("$prog", prog.Data());
+								scrTmpl.Substitute("$fullAddr", fullAddr, 16);
+								scrTmpl.Substitute("$shortAddr", shortAddr, 16);
+								scrTmpl.Substitute("$modifier", (Int_t) module->GetAddrModifier(),16);
+								scrTmpl.Substitute("$mapping", (Int_t) module->GetVMEMapping(), 16);
+								scrTmpl.WriteCode(scrStrm);
+							}
+						}
+						break;
+
+				}
+			}
+		}
+		scrStrm.close();
+		if (*ScriptFile != '\0') {
+			cfile = ScriptFile;
+			cfile += ".rc";
+			gSystem->Unlink(cfile.Data());
+			gSystem->Link(cf.Data(), cfile.Data());
+			cf= cfile;
+		}
+		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
+		gMrbLog->Flush("", "", setblue);
+		
+		gSystem->Exec(Form("chmod +x %s", cf.Data()));
+	}
+	return(kTRUE);
+}
+
 Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -7815,10 +8018,11 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	gMrbLog->Flush("", "", setblue);
 
 	if (!gSystem->AccessPathName(".mbssetup")) {
-		mbsSetup = new TMbsSetup(".mbssetup");
-	} else {
-		mbsSetup = new TMbsSetup();
+		gSystem->Exec("rm -f .mbssetup");
+		gMrbLog->Out() << "[.mbssetup: Removing existing .mbssetup]" << endl;
+		gMrbLog->Flush("", "", setblue);
 	}
+	mbsSetup = new TMbsSetup();
 	
 	if (!gSystem->AccessPathName(".mbssetup-localdefs")) {
 		mbsSetup->GetEnv()->ReadFile(".mbssetup-localdefs", kEnvChange);
@@ -8605,6 +8809,15 @@ Bool_t TMrbConfig::CheckConfig() {
 			gMrbLog->Flush(this->ClassName(), "CheckConfig");
 			nofErrors++;
 		}
+		Bool_t warn = kFALSE;
+		if ((procType.CompareTo("RIO2") == 0) && (lynxVersion.CompareTo("2.5") != 0)) warn = kTRUE;
+		if ((procType.CompareTo("RIO3") == 0) && (lynxVersion.CompareTo("3.1") != 0)) warn = kTRUE;
+		if ((procType.CompareTo("RIO4") == 0) && (lynxVersion.CompareTo("4.0") != 0)) warn = kTRUE;
+		if (warn) {
+			gMrbLog->Wrn() << "Proc type \"" << procType << "\" and Lynx version \"" << lynxVersion << "\" don't match!" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+		}	
+		
 	} else {
 		TIterator * branchIter = fLofMbsBranches.MakeIterator();
 		TMrbNamedX * branch;
