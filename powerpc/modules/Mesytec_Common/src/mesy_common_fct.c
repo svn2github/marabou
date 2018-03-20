@@ -39,7 +39,7 @@ bool_t busError;
 
 void mesy_catchBerr() { busError = TRUE; }
 
-s_mesy * mesy_alloc(char * moduleName, int size, s_mapDescr * md, int serial)
+s_mesy * mesy_alloc(char * moduleName, char * moduleType, int size, s_mapDescr * md, int serial)
 {
 	s_mesy * m;
 	int firmware, mainRev;
@@ -49,7 +49,8 @@ s_mesy * mesy_alloc(char * moduleName, int size, s_mapDescr * md, int serial)
 		m->md = md;
 		strcpy(m->moduleName, moduleName);
 		strcpy(m->prefix, "m_read_meb");
-		strcpy(m->mpref, "madc32: ");
+		strcpy(m->mpref, moduleType);
+		strcat(m->mpref, ": ");
 		m->serial = serial;
 		m->verbose = FALSE;
 		m->dumpRegsOnInit = FALSE;

@@ -26,7 +26,7 @@
 									/* init module $moduleNameLC at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					if (s_$moduleNameLC == NULL) {
-						s_$moduleNameLC = (s_madc32 *) mesy_alloc("$moduleNameLC", sizeof(s_madc32), md_$moduleNameLC, $moduleSerial); /* allocate data struct */
+						s_$moduleNameLC = (s_madc32 *) mesy_alloc("$moduleNameLC", "madc32", sizeof(s_madc32), md_$moduleNameLC, $moduleSerial); /* allocate data struct */
 						if (s_$moduleNameLC != NULL) {
 							m_$moduleNameLC = &s_$moduleNameLC->m;
 							moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;

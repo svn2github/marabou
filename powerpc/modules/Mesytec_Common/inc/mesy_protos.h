@@ -14,7 +14,7 @@
 //! $Date: $
 ////////////////////////////////////////////////////////////////////////////*/
 
-s_mesy * mesy_alloc(char * moduleName, int size, s_mapDescr * md, int serial);
+s_mesy * mesy_alloc(char * moduleName, char * moduleType, int size, s_mapDescr * md, int serial);
 int mesy_initBLT(s_mesy * m, int flag);
 bool_t mesy_useBLT(s_mesy * m);
 void mesy_soft_reset(s_mesy * m);
