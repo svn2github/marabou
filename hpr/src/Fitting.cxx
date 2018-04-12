@@ -171,7 +171,7 @@ Double_t double_gauss2d( Double_t *x, Double_t *par)\n\
 }\n\
 //__________________________________________________________\n\
 \n\
-fit_user_function(const char *hname)\n\
+void fit_user_function(const char *hname)\n\
 // This is a macro to fit a user defined 2d function\n\
 // it uses a sum of two 2d gauss functions (12 parameters) \n\
 {\n\
@@ -251,7 +251,7 @@ fit_user_function(const char *hname)\n\
 
 const char ExpGauss[]=
 "/*Exponential + Gauss (formula)*/\n\
-fit_user_function(const char *hname)\n\
+void fit_user_function(const char *hname)\n\
 //\n\
 // example with fit function given as formula\n\
 //\n\
@@ -300,7 +300,7 @@ Double_t TwoGaussCM     ( Double_t *x, Double_t *par) \n\
   return BinW * fitval;\n\
 }\n\
 \n\
-fit_user_function(const char *hname)\n\
+void fit_user_function(const char *hname)\n\
 // Fit 2 gaussians with common mean\n\
 {\n\
 //   gROOT->Reset();\n\
@@ -381,7 +381,7 @@ Double_t BreitWigner  ( Double_t *x, Double_t *par) \n\
   return par[2] * gw2 / dem;\n\
 }\n\
  \n\
-fit_user_function(const char *hname)\n\
+void fit_user_function(const char *hname)\n\
 // This is a template macro to fit a user defined function\n\
 // As an example a Breit Wigner is provided\n\
 // The function is defined  as a call\n\
@@ -438,7 +438,7 @@ Double_t Landau_f ( Double_t *x, Double_t *par) \n\
 	return BinW * val;\n\
 }\n\
 \n\
-fit_user_function(const char *hname){\n\
+void fit_user_function(const char *hname){\n\
 \n\
 //   gROOT->Reset();\n\
 //  ------- comment out this piece if only a sample histogram should be produced ---\n\
@@ -507,7 +507,7 @@ fit_user_function(const char *hname){\n\
 
 const char TwoGauss[]=
 "/*Two gaussians, diff mean*/ \n\
-fit_user_function(const char *hname) \n\
+void fit_user_function(const char *hname) \n\
 // \n\
 // example with fit function given as formula \n\
 // \n\
@@ -535,7 +535,7 @@ fit_user_function(const char *hname) \n\
 
 const char Pol2Sine[]=
 "/*Pol2 + Sine, (formula)*/ \n\
-fit_user_function(const char *hname) \n\
+void fit_user_function(const char *hname) \n\
 // \n\
 // example with fit function given as formula \n\
 // \n\
