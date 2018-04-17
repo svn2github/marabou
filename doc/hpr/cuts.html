@@ -26,6 +26,7 @@ Cuts are stored and retrieved by names. A default name is
 provided which can be changed during creation or by invoking 
 a popup menu for the cut by pressing the right mouse on
 the contour line of the cut.
+
 <p>
 Windows in 1-dim histograms can be defined with the
 command <b>MarksToWindow</b>. (See also <a href=display.html#Help_on_Mark> Help on Marks</a>)
@@ -43,7 +44,19 @@ the values are displayed in a table an can be modified.
 See <a href=#Example_Window_1D>Example of a 1-dim Window</a>. 
 <p>
 Cuts and windows can be written to and read from a file
-(either root file or ASCII file ) See <a href=#Help_on_SaveCuts>Help_on_SaveCuts</a>";
+(either root file or ASCII file ) See <a href=#Help_on_SaveCuts>Help_on_SaveCuts</a>
+<p>
+W a r n i n g:
+The number of entries when applying a cut to a 2dim histogram
+might differ from the result when applying the same cut 
+in a replay program or when showing data stored in a root tree.
+This is because the x-y values in a 2dim histogram are taken
+from the bincenter, the original real values are lost during
+filling. In the replay program the real values are used.
+This effect is especially big if the cut traverses regions
+where the contents density rapidly changes.
+</p>
+";
 
 <a NAME=Example_Window_1D></a> 
 <H3>Example of a 1-dim Window</H3>
