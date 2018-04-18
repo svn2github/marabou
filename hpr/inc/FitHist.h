@@ -354,7 +354,7 @@ public:
 	void ColorMarked();
 
 	void ClearTofl() {
-//      cout << "ClearTofl()" << endl;
+      cout << "ClearTofl()" << endl;
 		fTofLabels = 0;
 	}
 	void DrawSelectedFunctions();

@@ -1080,7 +1080,6 @@ again:
 								cout << setblue << "No hist in pad, " << endl
 								<< "In case of 3Dim hist: use Scatter or Box option"
 								<< setblack << endl;
-//								fFitHist->WriteOutHist();
 							}
 							break;
 							
@@ -1444,7 +1443,7 @@ void HandleMenus::BuildMenus()
 		nDim = fFitHist->GetSelHist()->GetDimension();
 		fSelHist = fFitHist->GetSelHist();
 	} else {
-		fSelHist = NULL;
+		fSelHist = Hpr::FindHistInPad(fHCanvas);
 	}
 
 	TGPopupMenu * pm;
@@ -1606,10 +1605,10 @@ void HandleMenus::BuildMenus()
 	} else {
 		fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
 		fFileMenu->AddEntry("As TCanvas_to_ROOT-File", kFHAsTCanvasToFile);
-		if (fFitHist != NULL ) {
 			fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
 			fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
 			fFileMenu->AddEntry("Hist_as_Graph_to_ROOT-File", kFHHistToGraph);
+		if (fFitHist != NULL ) {
 			if ( nDim < 3)
 				fFileMenu->AddEntry("Histogram bin content",  kFHContHist );
 		}

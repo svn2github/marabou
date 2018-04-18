@@ -413,7 +413,7 @@ void HistPresent::RecursiveRemove(TObject * obj)
 			cout << "HistPresent::RecursiveRemove: gApplication->Terminate(0)" <<endl;
 		}
 	}
-	if (gHprDebug > 1 && obj) {
+	if (gHprDebug > 2 && obj) {
 		cout << "Exit HistPresent::RecursiveRemove for: " << obj << " " << obj->GetName() <<endl ;
 	}
 }
@@ -3782,7 +3782,7 @@ void HistPresent::HandleRemoveAllCuts()
 
 void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 {
-//   cout << "HandleDeleteCanvas " << htc << endl;
+//   cout << "enter HandleDeleteCanvas " << htc << endl;
 	if (gHprClosing > 0 ) {
 		if (gHprDebug > 0 ) {
 			 cout << "HandleDeleteCanvas called during CloseDown" << endl;
@@ -3800,14 +3800,14 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 	if (fh) {
 //  reset color of command button which invoked the Canvas
 		TH1* hh = fh->GetSelHist();
-//      cout << "HandleDeleteCanvas: fh->GetSelHist() " << hh << endl;
+      cout << "HandleDeleteCanvas: fh->GetSelHist() " << hh << endl;
 		if (!hh || !hh->TestBit(TObject::kNotDeleted)) return;
 		TString histname(hh->GetName());
 // does it end with a _number
 		TRegexp us_num("_[0-9]*$");
 		Int_t indus = histname.Index(us_num);
 		if (indus > 1) histname.Resize(indus);
-//      cout <<  fh->GetName()<< " hist " << fh->GetSelHist()->GetName() << endl;
+      cout <<  fh->GetName()<< " hist " << fh->GetSelHist()->GetName() << endl;
 		TIter next(fHistLists);
 		TIter *next1;
 		TString hname;
@@ -3841,13 +3841,14 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 			}
 			delete next1;
 		}
+//		cout << "exit HandleDeleteCanvas FitHist" << htc << endl;
 		return;
 	}
 //  is it a list of objects, look in filelist
 //   TString name = htc->GetName();
 	TString title = htc->GetTitle();
 	if (title.EndsWith(".root") && fFileList != NULL) {
-//      cout << "|" << htc->GetTitle()<< "|" << endl;
+      cout << "|" << htc->GetTitle()<< "|" << endl;
 		TIter next(fFileList->GetListOfPrimitives());
 		while ( (obj = next()) ) {
 			if (obj->InheritsFrom("TButton")) {
@@ -3864,6 +3865,7 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 			}
 		}
 	}
+//   cout << "exit HandleDeleteCanvas " << htc << endl;
 }
 //________________________________________________________________________________________
 // Show a graph

@@ -415,7 +415,13 @@ FitHist::~FitHist()
 	if (fSelHist == NULL) {
 		return;
 	}
+   TRootCanvas *rc = (TRootCanvas *)fCanvas->GetCanvasImp();
+	rc->DontCallClose();
 	fTimer.Stop();
+	fCanvas->Disconnect("HTCanvasClosed()", this, "CloseFitHist()");
+	if (fTofLabels)
+		fTofLabels->Disconnect("Destroyed()", this, "ClearTofl()");
+	TQObject::Disconnect((TPad*)fCanvas,this->ClassName(), this, "CloseFitHist()");
 	DisconnectFromPadModified();
 	if (!fExpHist && gHpr && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
 	if ( fFit1DimD ) fFit1DimD->CloseDialog();
@@ -473,7 +479,7 @@ FitHist::~FitHist()
 //_______________________________________________________________________________
 void FitHist::CloseFitHist()
 {
-	if (gHprDebug>0)cout << "CloseFitHist() " << this << endl;
+	if (gHprDebug>0)cout << "CloseFitHist() " << this << endl<< flush;
 	fCanvasIsAlive = kFALSE;
 	delete this;
 }
@@ -490,6 +496,7 @@ void FitHist::DisconnectFromPadModified()
 void FitHist::HandlePadModified()
 {
 //	DoSaveLimits();
+	if (gHprDebug>0)cout << "FitHist::HandlePadModified() " << this << endl;
 	fTimer.Start(20, kTRUE);   // 2 seconds single-shot
 //	TTimer::SingleShot(20, "FitHist", this, "DoSaveLimits()");
 }

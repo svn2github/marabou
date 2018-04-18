@@ -69,7 +69,8 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 void HTCanvas::HTCanvasClosed()
 {
 	if ( gHprDebug > 0 )
-		cout << endl << "HTCanvas::HTCanvasClosed() " << this << " " << GetName() << endl;
+		cout << endl << "HTCanvas::HTCanvasClosed() " 
+		<< this << " " << GetName() << endl << flush;
 	delete this;
 }
 //______________________________________________________________________________________
@@ -97,6 +98,8 @@ HTCanvas::~HTCanvas()
 	if ( strcmp (GetName(), "FileList") == 0) {
 		if (fHistPresent) fHistPresent->fFileList = NULL;
 	}
+   TRootCanvas *rc = (TRootCanvas *)fCanvas->GetCanvasImp();
+	rc->DontCallClose();
 	fTimer.Stop();
    TQObject::Disconnect((TPad*)this, "Modified()", this, "HandlePadModified()");
 	if (fHandleMenus) {
