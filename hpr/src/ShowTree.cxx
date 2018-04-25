@@ -126,6 +126,9 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 //
       } else {
          len = leaf->GetLen();
+         if (gHprDebug > 0) {
+				cout << leaf->GetName() << " " << len << endl;
+			}
 //  apply selection if needed
          if (fUseLeafSelMask && fLeafSelMask.Length() > 0) {
 				if ( ! Hpr::IsSelected(leaf->GetName(), &fLeafSelMask, fLeafUseRegexp ) )
@@ -146,6 +149,9 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
               nam = Form("%s[%d]",leaf->GetName(), ix);
               var_list->Add(new TObjString(Form("%s[%d]",leaf->GetName(), ix)));
               fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
+					if (gHprDebug > 0) {
+						cout << cmd << " " << sel << endl;
+					}
            }
          } else {
             cmd = cmd_base + leaf->GetName() + "\")";
@@ -160,6 +166,9 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
             }
             var_list->Add(new TObjString(leaf->GetName()));
             fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
+				if (gHprDebug > 0) {
+					cout << cmd << " " << sel << endl;
+				}
 
          }
       }
