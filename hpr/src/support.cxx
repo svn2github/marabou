@@ -427,7 +427,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 	Int_t Nentries = fcmdline->GetSize();
 	Int_t maxe = maxentries;
 	if (maxe <= 0)
-		maxe = 100;
+		maxe = 1000;
 	Int_t first = 0;
 	Int_t last = Nentries;
 	if (skipfirst > 0 && skipfirst < Nentries-1)
