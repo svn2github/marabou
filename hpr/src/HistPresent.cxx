@@ -3252,6 +3252,7 @@ void HistPresent::CloseAllCanvases()
 		htc->Disconnect("TPad", "Modified()");
 		TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
 		if (rc == NULL) {
+			if (gHprDebug>1)
 			cout << "CloseAllCanvases: " << htc << " " << htc->GetName()<< " " << rc<< endl;
 			continue;
 		}
@@ -3259,7 +3260,7 @@ void HistPresent::CloseAllCanvases()
 			cout << "rc->ShowEditor(kFALSE);"<< endl;
 			rc->ShowEditor(kFALSE);
 		}
-		if (gHprDebug > 0 )
+		if (gHprDebug > 1)
 			cout << "CloseAllCanvases: " << htc << " " << htc->GetName()<< " " << rc<< endl;
 		rc->SendCloseMessage();
 		nc++;
@@ -3800,6 +3801,7 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 	if (fh) {
 //  reset color of command button which invoked the Canvas
 		TH1* hh = fh->GetSelHist();
+		if (gHprDebug > 1)
       cout << "HandleDeleteCanvas: fh->GetSelHist() " << hh << endl;
 		if (!hh || !hh->TestBit(TObject::kNotDeleted)) return;
 		TString histname(hh->GetName());
@@ -3807,6 +3809,7 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 		TRegexp us_num("_[0-9]*$");
 		Int_t indus = histname.Index(us_num);
 		if (indus > 1) histname.Resize(indus);
+		if (gHprDebug > 1)
       cout <<  fh->GetName()<< " hist " << fh->GetSelHist()->GetName() << endl;
 		TIter next(fHistLists);
 		TIter *next1;
@@ -3848,6 +3851,7 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 //   TString name = htc->GetName();
 	TString title = htc->GetTitle();
 	if (title.EndsWith(".root") && fFileList != NULL) {
+		if (gHprDebug > 1)
       cout << "|" << htc->GetTitle()<< "|" << endl;
 		TIter next(fFileList->GetListOfPrimitives());
 		while ( (obj = next()) ) {
