@@ -1521,6 +1521,10 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		fCanvas->GetHandleMenus()->SetLog(fLogy);
 		Draw1Dim();
 	}
+	if (gHprDebug != 0)
+		cout << hist->ClassName() << " *" <<  hist->GetName()
+		<< " = (" << hist->ClassName() << "*)" 
+		<< hist << ";" << endl;
 	fFrameX1 = fCanvas->GetFrame()->GetX1();
 	fFrameX2 = fCanvas->GetFrame()->GetX2();
 	fFrameY1 = fCanvas->GetFrame()->GetY1();
