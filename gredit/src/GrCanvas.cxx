@@ -60,7 +60,7 @@ GrCanvas::GrCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 		  << hex << TestBits(0xffffffff)<< dec << endl;
    TObject *old = gROOT->GetListOfCanvases()->FindObject(name);
 	if (old )
-		cout << "old " << old->GetName() << " " << old->ClassName() << endl;
+		cout << "GrCanvas ctor old " << old->GetName() << " " << old->ClassName() << endl;
    if (old && old->InheritsFrom("TCanvas") && old->IsOnHeap()) {
       Warning("Constructor","Deleting canvas with same name: %s",name);
       delete old;
@@ -68,6 +68,9 @@ GrCanvas::GrCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    SetBit(kMenuBar		  ,1);
    SetBit(kShowToolBar    ,0);
    SetBit(kShowEditor	  ,0);
+   SetLogx(0);
+   SetLogy(0);
+   SetLogz(0);
 	TCanvas::Constructor(name, title, wtopx, wtopy, ww, wh);
 	fRootCanvas = (TRootCanvas*)fCanvasImp;
 	fEditGridX = 0;

@@ -369,7 +369,7 @@ void HistPresent::RecursiveRemove(TObject * obj)
 		cout << "HistPresent::RecursiveRemove for: " << obj << " " << obj->GetName() <<endl ;
 	}
 	if (obj == cHPr) {
-		if ( gHprDebug > 0) 
+		if ( gHprDebug > 0)
 			cout << "HistPresent::RecursiveRemove for myself " << gHpr << endl << flush;
 		gHprClosing = 1;
 		TList toberemoved;

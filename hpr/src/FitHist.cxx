@@ -3759,7 +3759,8 @@ void FitHist::Draw2Dim()
 		cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim 
 		<< " gStyle->GetHistFillColor() :" <<gStyle->GetFillColor() << endl
 		<< " fHistFillColor2Dim :" <<fHistFillColor2Dim<< endl
-		<< " fHistFillStyle2Dim :" <<fHistFillStyle2Dim<< endl;
+		<< " fHistFillStyle2Dim :" <<fHistFillStyle2Dim<< endl
+		<< " fSelHist->GetMinimum() " << fSelHist->GetMinimum()<< endl;
 	}
 	if (fShowStatBox) {
 		TEnv env(".hprrc");
@@ -3787,8 +3788,10 @@ void FitHist::Draw2Dim()
 	fCanvas->SetLogy(fLogy);
 	SetLogz(fLogz);
 	fCanvas->GetHandleMenus()->SetLog(fLogz);
-	if (gHprDebug > 1)
+	if ( gHprDebug > 1 ) {
+		cout << " fSelHist->GetMinimum() " << fSelHist->GetMinimum()<< endl;
 		cout << "Draw2Dim:fDrawOpt2Dim " << fDrawOpt2Dim << endl;
+	}
 	fSelHist->SetOption(fDrawOpt2Dim);
 	fSelHist->SetDrawOption(fDrawOpt2Dim);
 	if (fTitleCenterX)

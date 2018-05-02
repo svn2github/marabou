@@ -106,9 +106,10 @@ Select columns:\n\
 		row_lab->Add(new TObjString("CheckButton_Select columns,X,Y,Z"));
    row_lab->Add(new TObjString("PlainIntVal_Col_X"));
    row_lab->Add(new TObjString("PlainIntVal+Col_Y"));
-   row_lab->Add(new TObjString("PlainIntVal+Col_Ex"));
-   row_lab->Add(new TObjString("PlainIntVal+Col_Ey"));
-   if ( fDim == 2) {
+   if ( fDim == 1) {
+		row_lab->Add(new TObjString("PlainIntVal+Col_Ex"));
+		row_lab->Add(new TObjString("PlainIntVal+Col_Ey"));
+   } else {
 		row_lab->Add(new TObjString("PlainIntVal+Col_Z"));
 	}
    row_lab->Add(new TObjString("FileRequest_Inputfile"));
@@ -166,9 +167,10 @@ Select columns:\n\
    valp[ind++] = &fGraphColSelect;
    valp[ind++] = &fGraphColSelX;
    valp[ind++] = &fGraphColSelY;
-   valp[ind++] = &fGraphColSelEx;
-   valp[ind++] = &fGraphColSelEy;
-   if ( fDim == 2) {
+   if ( fDim == 1) {
+		valp[ind++] = &fGraphColSelEx;
+		valp[ind++] = &fGraphColSelEy;
+   } else  {
 		valp[ind++] = &fGraphColSelZ;
 	}
    valp[ind++] = &fGraphFileName;
@@ -389,6 +391,9 @@ void Ascii2GraphDialog::Draw_The_Graph()
          	xval.Set(n+100);
          	yval.Set(n+100);
          	zval.Set(n+100);
+         	wval.Set(n+100);
+         	eyl.Set(n+100);
+         	eyh.Set(n+100);
          }
       } else {
          xval.AddAt(x[0], n);
