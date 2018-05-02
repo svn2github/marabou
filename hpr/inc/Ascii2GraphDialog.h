@@ -41,9 +41,11 @@ private:
    Int_t fUseZaxisMax;
    Int_t   fMinMaxZero;
    Int_t   fGraphColSelect;
-   Int_t   fGraphColSel1;
-   Int_t   fGraphColSel2;
-   Int_t   fGraphColSel3;
+   Int_t   fGraphColSelX;
+   Int_t   fGraphColSelY;
+   Int_t   fGraphColSelZ;
+   Int_t   fGraphColSelEx;
+   Int_t   fGraphColSelEy;
    Int_t   fGraphXsize;
    Int_t   fGraphYsize;
    Int_t   fGraphXdiv;
