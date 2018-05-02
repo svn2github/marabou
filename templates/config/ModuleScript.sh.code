@@ -1,0 +1,35 @@
+%%BeginOfCode%%
+#!/bin/bash
+#________________________________________________________________[SHELL SCRIPT]
+#//////////////////////////////////////////////////////////////////////////////
+# Name:           $script
+# Purpose:        Shell script to test harware modules
+# Experiment:     $expName -- $expTitle
+#
+# Description:    This script contains code to test hardware modules
+#                 running on a PPC under LynxOs.
+#
+# Author:         $author
+# Revision:
+# Date:           $creationDate
+#
+#//////////////////////////////////////////////////////////////////////////////
+
+MATCH=`expr match "$HOSTNAME" 'ppc-[0-9].*'`
+if [ $MATCH -eq 0 ]
+then
+	echo "$script: Must run on PPC"
+	exit 1
+fi
+%%EndOfCode%%
+%%MODULE_SCRIPT_HEADER%%
+
+%%BeginOfCode%%
+if [ $# -eq 0 -o "$1" = "$moduleName" ]
+then
+	echo "[Testing module \"$moduleName\" ($moduleTitle) at addr $fullAddr]"
+	$binPath/$prog $shortAddr $modifier $mapping v
+	echo
+fi
+%%EndOfCode%%
+%%MODULE_SCRIPT_BODY%%
