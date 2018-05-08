@@ -128,7 +128,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	FitHist *hold = (FitHist *) gROOT->GetList()->FindObject(GetName());
 	if (hold) {
 		if (gHprDebug>0)
-			cout << "FitHist ctor: this " << this << " Delete hold: " << hold << endl;
+			cout << "FitHist ctor: this " << this << " Old FitHist: " << hold 
+			<<" Old Hist " << hold->GetSelHist() << endl;
 		gROOT->GetList()->Remove(hold);
 //		gROOT->GetListOfCleanups()->Remove(hold);
 		TCanvas *cc = (TCanvas*)gROOT->GetListOfCanvases()->FindObject(hold->GetCanvas());
@@ -473,7 +474,7 @@ FitHist::~FitHist()
 		delete peaks;
 	if (fCmdLine)
 		delete fCmdLine;
-	delete fSelHist;
+//	delete fSelHist;
 };
 
 //_______________________________________________________________________________
@@ -2390,16 +2391,16 @@ void FitHist::Superimpose(Int_t mode)
 	if ( nhs > 0) {
 		TString origname(this->GetName());
 		if ( !origname.EndsWith("_superimp") ) {
-			gROOT->GetList()->Remove(this);
-			origname += "_superimp";
-			this->SetName(origname);
-			gROOT->GetList()->Add(this);
+//			gROOT->GetList()->Remove(this);
+//			origname += "_superimp";
+//			this->SetName(origname);
+//			gROOT->GetList()->Add(this);
 //			cout << "Rename FitHist to: " << origname << endl;
 		}
 		origname = fCanvas->GetName();
 		if ( !origname.EndsWith("_superimp") ) {
 			origname += "_superimp";
-			fCanvas->SetName(origname);
+//			fCanvas->SetName(origname);
 //			cout << "Rename canvas to: " << origname << endl;
 		}
 	}

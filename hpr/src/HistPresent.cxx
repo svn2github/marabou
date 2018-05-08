@@ -3802,7 +3802,7 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 //  reset color of command button which invoked the Canvas
 		TH1* hh = fh->GetSelHist();
 		if (gHprDebug > 1)
-      cout << "HandleDeleteCanvas: fh->GetSelHist() " << hh << endl;
+			cout << "HandleDeleteCanvas: fh->GetSelHist() " << hh << endl;
 		if (!hh || !hh->TestBit(TObject::kNotDeleted)) return;
 		TString histname(hh->GetName());
 // does it end with a _number
@@ -3810,7 +3810,8 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 		Int_t indus = histname.Index(us_num);
 		if (indus > 1) histname.Resize(indus);
 		if (gHprDebug > 1)
-      cout <<  fh->GetName()<< " hist " << fh->GetSelHist()->GetName() << endl;
+			cout << "HandleDeleteCanvas hname" <<  fh->GetName()<< " hist " 
+			<< fh->GetSelHist()->GetName() << endl;
 		TIter next(fHistLists);
 		TIter *next1;
 		TString hname;

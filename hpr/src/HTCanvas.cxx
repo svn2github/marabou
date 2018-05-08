@@ -71,7 +71,12 @@ void HTCanvas::HTCanvasClosed()
 	if ( gHprDebug > 0 )
 		cout << endl << "HTCanvas::HTCanvasClosed() " 
 		<< this << " " << GetName() << endl << flush;
-	delete this;
+	if (this->TestBit(TObject::kNotDeleted)){
+		if ( gHprDebug > 0 )
+		cout << endl << "HTCanvas::HTCanvasClosed() delete " 
+		<< this << " " << GetName() << endl << flush;
+		delete this;
+	}
 }
 //______________________________________________________________________________________
 

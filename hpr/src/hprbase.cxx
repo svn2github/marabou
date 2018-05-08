@@ -990,7 +990,7 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	// change name of original histogram to protect against autodelete
 	TString origname(horig->GetName());
 	if ( !origname.Contains("supimp") ) {
-		horig->Clone();
+//		horig->Clone();
 		origname += "_has_supimp";
 		horig->SetName(origname);
 		if (gHprDebug > 0)
