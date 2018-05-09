@@ -382,7 +382,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 	}
 	TObject * obj = fSelHist->GetListOfFunctions()->FindObject("palette");
 	if (obj) {
-		cout << " Removing obj TPaletteAxis" << endl;
+		if (gHprDebug > 0)
+			cout << " Removing obj TPaletteAxis" << endl;
 		fSelHist->GetListOfFunctions()->Remove(obj);
 	}
 	RestoreDefaultRanges();
@@ -471,7 +472,8 @@ FitHist::~FitHist()
 		delete peaks;
 	if (fCmdLine)
 		delete fCmdLine;
-	cout << setred << "delete fSelHist; " << fSelHist <<setblack << endl;
+	if (gHprDebug > 0)
+		cout << setred << "delete fSelHist; " << fSelHist <<setblack << endl;
 	delete fSelHist;
 };
 
@@ -3175,10 +3177,12 @@ void FitHist::ExpandProject(Int_t what)
 		fBinly = YBinNumber(fOrigHist, fExply + 0.5 * ybw);
 		fBinuy = YBinNumber(fOrigHist, fExpuy - 0.5 * ybw);
 		Int_t NbinY = fBinuy - fBinly + 1;
-      cout << "fExplx, ux, ly, uy "
-       <<fExplx << " "  << fExpux<< " "  << fExply<< " "  << fExpuy<< endl;
-     cout << "NBinX, NbinY fBinlx, ux, ly, uy " << NbinX << " " << NbinY  << " "
-       <<fBinlx << " "  << fBinux<< " "  << fBinly<< " "  << fBinuy<< endl;
+		if (gHprDebug > 0) {
+			cout << "fExplx, ux, ly, uy "
+			 <<fExplx << " "  << fExpux<< " "  << fExply<< " "  << fExpuy<< endl;
+			cout << "NBinX, NbinY fBinlx, ux, ly, uy " << NbinX << " " << NbinY  << " "
+			 <<fBinlx << " "  << fBinux<< " "  << fBinly<< " "  << fBinuy<< endl;
+		 }
 		Int_t nperbinX = 1, nperbinY = 1;
 		TString pname(fOrigHist->GetName());
 		if (what == projectx ||what == projectx_func || what == projectboth) {
@@ -3228,7 +3232,8 @@ void FitHist::ExpandProject(Int_t what)
 			fExpHist->GetXaxis()->SetTitle(fOrigHist->GetXaxis()->GetTitle());
 			fExpHist->GetYaxis()->SetTitle(fOrigHist->GetYaxis()->GetTitle());
 			fSelHist = fExpHist;
-       cout << "nperbinX " << nperbinX << " nperbinY " << nperbinY << endl;
+			if (gHprDebug > 0)
+				cout << "nperbinX " << nperbinX << " nperbinY " << nperbinY << endl;
 		}
 		TAxis *xa = fSelHist->GetXaxis();
 		TAxis *ya = fSelHist->GetYaxis();

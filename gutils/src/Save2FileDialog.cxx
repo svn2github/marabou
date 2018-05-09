@@ -258,9 +258,9 @@ void Save2FileDialog::RestoreDefaults()
 
 void Save2FileDialog::CloseDown(Int_t /*wid*/)
 {
-   cout << "Save2FileDialog::CloseDown()" << endl;
- //  SaveDefaults();
- //  delete this;
+// cout << "Save2FileDialog::CloseDown()" << endl;
+//  SaveDefaults();
+//  delete this;
 }
 //_______________________________________________________________________
 
