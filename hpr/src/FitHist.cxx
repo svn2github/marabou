@@ -137,6 +137,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 			cc->GetListOfPrimitives()->Remove(hold->GetSelHist());
 //			gROOT->GetListOfCanvases()->Remove(cc);
 //			hold->Disconnect("HTCanvasClosed", hold, "CloseFitHist()");
+			if ( hold->GetSelHist() == hist )
+				hold->SetSelHist(NULL);
 			hold->SetCanvasIsAlive(kFALSE);
 			delete cc;
 		}
@@ -449,11 +451,6 @@ FitHist::~FitHist()
 		cout << "~FitHist: " << this << " Canvas : " << fCanvas << " is deleted" << endl;
 		fCanvas = NULL;
 	}
-//	if (!fCanvas || !fCanvas->TestBit(TObject::kNotDeleted) ||
-//		 fCanvas->TestBit(0xf0000000)) {
-//		cout << "~FitHist: " << this << " Canvas : " << fCanvas << " is deleted" << endl;
-//		fCanvas = 0;
-//	}
 
 	if (fCanvas) {
 		fCanvas->SetFitHist(NULL);
@@ -474,7 +471,8 @@ FitHist::~FitHist()
 		delete peaks;
 	if (fCmdLine)
 		delete fCmdLine;
-//	delete fSelHist;
+	cout << setred << "delete fSelHist; " << fSelHist <<setblack << endl;
+	delete fSelHist;
 };
 
 //_______________________________________________________________________________
@@ -2097,7 +2095,6 @@ void FitHist::WriteOutHist()
 		Save2FileDialog sfd(fSelHist, NULL, GetMyCanvas());
 	}
 };
-
 //_______________________________________________________________________________________
 
 #include "time.h"
@@ -2385,25 +2382,9 @@ void FitHist::KolmogorovTest()
 }
 //____________________________________________________________________________________
 
-void FitHist::Superimpose(Int_t mode)
+void FitHist::SuperImpose(Int_t mode)
 {
-	Int_t nhs = Hpr::SuperImpose(fCanvas, fSelHist, mode);
-	if ( nhs > 0) {
-		TString origname(this->GetName());
-		if ( !origname.EndsWith("_superimp") ) {
-//			gROOT->GetList()->Remove(this);
-//			origname += "_superimp";
-//			this->SetName(origname);
-//			gROOT->GetList()->Add(this);
-//			cout << "Rename FitHist to: " << origname << endl;
-		}
-		origname = fCanvas->GetName();
-		if ( !origname.EndsWith("_superimp") ) {
-			origname += "_superimp";
-//			fCanvas->SetName(origname);
-//			cout << "Rename canvas to: " << origname << endl;
-		}
-	}
+	Hpr::SuperImpose(fCanvas, fSelHist, mode);
 }
 //____________________________________________________________________________________
 //  find limits

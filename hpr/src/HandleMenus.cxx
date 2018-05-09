@@ -915,10 +915,10 @@ again:
 							new Rebin2DimDialog((TH2*)fFitHist->GetSelHist(), fRootCanvas);
 							break;
 						case kFHSuperimpose:
-							fFitHist->Superimpose(0);
+							fFitHist->SuperImpose(0);
 							break;
 						case kFHSuperimposeScale:
-							fFitHist->Superimpose(1);
+							fFitHist->SuperImpose(1);
 							break;
 						case kFHSuperimposeGraph:
 							fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas, 0);

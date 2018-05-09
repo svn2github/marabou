@@ -210,6 +210,7 @@ public:
 	HTCanvas* GetCanvas(){return fCanvas;};
 	void  SetMyCanvas(TRootCanvas *myc){mycanvas = myc;};
 	TH1* GetSelHist(){return fSelHist;};
+	void SetSelHist(TH1* hist){fSelHist=hist;};
 	TH1* SetHist(TH1* newhist){
 		TH1* temp = fSelHist;
 		fSelHist = newhist;
@@ -332,7 +333,7 @@ public:
 	void WriteOutCanvas();
 	void WriteOutHist();
 	void WriteOutCut();
-	void Superimpose(Int_t);
+	void SuperImpose(Int_t);
 	void KolmogorovTest();
 	void SetCanvasIsDeleted(){fCanvasIsAlive = kFALSE;};
 	void SetSelectedPad(){fCanvas->cd();};

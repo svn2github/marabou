@@ -1289,12 +1289,14 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 			fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
 //		}
 	}
-	cmd = "gHpr->ShowStatOfAll(\"";
-	cmd = cmd + fname + "\",\"" + dir + "\")";
-	title = "Show Stats of all";
-	hint = "Show statistics of all histograms and save to file";
-	sel.Resize(0);
-	fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
+	if (fCmdLine->GetSize() > 0) {
+		cmd = "gHpr->ShowStatOfAll(\"";
+		cmd = cmd + fname + "\",\"" + dir + "\")";
+		title = "Show Stats of all";
+		hint = "Show statistics of all histograms and save to file";
+		sel.Resize(0);
+		fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
+	}
 	if (strstr(fname,"Socket")) {
 		cmd = "gHpr->SaveFromSocket(\"";
 		cmd = cmd + fname + "\")";
@@ -1330,6 +1332,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 //         cout << "HistPresent: CommandPanel: " <<ccont->GetName() << " " << ccont->GetTitle() << endl;
 
 			if (fHistLists)fHistLists->Add(ccont);
+	} else {
+		cout << setred << "No objects found" << setblack << endl;
 	}
 	fCmdLine->Delete();
 	if (st) delete st;
@@ -3805,17 +3809,21 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 			cout << "HandleDeleteCanvas: fh->GetSelHist() " << hh << endl;
 		if (!hh || !hh->TestBit(TObject::kNotDeleted)) return;
 		TString histname(hh->GetName());
+		// care for renamed histos 
+		TRegexp supi("_has_supimp");
+		histname(supi) = "";
 // does it end with a _number
 		TRegexp us_num("_[0-9]*$");
 		Int_t indus = histname.Index(us_num);
 		if (indus > 1) histname.Resize(indus);
 		if (gHprDebug > 1)
-			cout << "HandleDeleteCanvas hname" <<  fh->GetName()<< " hist " 
-			<< fh->GetSelHist()->GetName() << endl;
+			cout << "HandleDeleteCanvas hname: " <<  hh->GetName()<< " histname: " 
+			<< histname << endl;
 		TIter next(fHistLists);
 		TIter *next1;
 		TString hname;
 		TString space(" ");
+
 		TObjArray * oa;
 		while ( (c = (HTCanvas*)next()) ) {
 			next1 = new TIter(c->GetListOfPrimitives());
@@ -3836,7 +3844,8 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 						hname.Prepend(fname);
 					}
 					if (histname == hname) {
-//                  cout << "Set color for: " << histname << endl;
+						if (gHprDebug>1)
+							cout << "Set color for: " << histname << endl;
 						b->SetFillColor(17);
 						b->Modified(kTRUE);
 						b->Update();
