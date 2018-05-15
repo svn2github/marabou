@@ -4898,14 +4898,13 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 	return(kTRUE);
 }
 
-Bool_t TMrbConfig::CreateModuleScript(const Char_t * ScriptFile, const Char_t * ResourceName) {
+Bool_t TMrbConfig::CreateModuleScripts() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbConfig::CreateModuleScript
+// Name:           TMrbConfig::CreateModuleScripts
 // Purpose:        Create a shell script to test hardware modules
-// Arguments:      Char_t * ScriptFile       -- name of script file to be generated
-//                 Char_t * ResourceName     -- main resource
-// Results:
+// Arguments:      --
+// Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Writes code for hardware testing.
 //
@@ -4918,7 +4917,6 @@ Bool_t TMrbConfig::CreateModuleScript(const Char_t * ScriptFile, const Char_t * 
 	TString cfile;
 	TString cf, tf, tf1, tf2;
 
-	TString resourceName;
 	TString expName;
 
 	TString iniTag;
@@ -4945,22 +4943,32 @@ Bool_t TMrbConfig::CreateModuleScript(const Char_t * ScriptFile, const Char_t * 
 
 	Bool_t verboseMode = gMrbConfig->IsVerbose();
 
-	resourceName = (*ResourceName == '\0') ? this->ClassName() : ResourceName;
-
 	prefix = this->GetName();
 	prefix(0,1).ToUpper();
 
-	cfile = prefix;
-	cfile += "TestModules";
-
-	packNames ascr(cfile.Data(), "ModuleScript.sh.code", ".sh", "Script for hardware testing");
-	filesToCreate.Add((TObject *) &ascr);
+	packNames * pp;
+	if (this->IsSingleBranch()) {
+		cfile = prefix;
+		cfile += "TestModules";
+		pp = new packNames(cfile.Data(), "ModuleScript.sh.code", ".sh", "Script for hardware testing");
+		filesToCreate.Add(pp);
+	} else {
+		TIterator * branchIter = fLofMbsBranches.MakeIterator();
+		TMrbNamedX * branch;
+		while ((branch = (TMrbNamedX *) branchIter->Next())) {
+			Int_t bNo = branch->GetIndex();
+			cfile = prefix;
+			cfile += Form("TestModulesBranch%d", bNo);
+			pp = new packNames(cfile.Data(), "ModuleScript.sh.code", ".sh", Form("Script for hardware testing (Branch %d)", bNo));
+			filesToCreate.Add(pp);
+		}
+	}
 
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
-	packNames * pp;
 	TIterator * ppIter = filesToCreate.MakeIterator();
+	TIterator * bIter = fLofMbsBranches.MakeIterator();
 	while (pp = (packNames *) ppIter->Next()) {
 		cf = pp->GetF() + pp->GetX();
 		scrStrm.open(cf, ios::out);
@@ -4969,6 +4977,9 @@ Bool_t TMrbConfig::CreateModuleScript(const Char_t * ScriptFile, const Char_t * 
 			gMrbLog->Flush(this->ClassName(), "CreateModuleScript");
 			continue;
 		}
+		
+		Int_t bNo;
+		if (this->IsSingleBranch()) bNo = -1; else bNo = ((TMrbNamedX *) bIter->Next())->GetIndex();
 
 		tf = pp->GetT();
 		tf.Prepend(prefix.Data());
@@ -5039,6 +5050,9 @@ Bool_t TMrbConfig::CreateModuleScript(const Char_t * ScriptFile, const Char_t * 
 							TIterator * iter = fLofModules.MakeIterator();
 							TMrbVMEModule * module;
 							while (module = (TMrbVMEModule *) iter->Next()) {
+								if (bNo != -1) {
+									if (module->GetMbsBranchNo() != bNo) continue;
+								}
 								TMrbNamedX * mtype = module->GetModuleID();
 								TString prog;
 								if (mtype->GetIndex() == TMrbConfig::kModuleMesytecMadc32) prog = "madc32";
@@ -5071,13 +5085,6 @@ Bool_t TMrbConfig::CreateModuleScript(const Char_t * ScriptFile, const Char_t * 
 			}
 		}
 		scrStrm.close();
-		if (*ScriptFile != '\0') {
-			cfile = ScriptFile;
-			cfile += ".rc";
-			gSystem->Unlink(cfile.Data());
-			gSystem->Link(cf.Data(), cfile.Data());
-			cf= cfile;
-		}
 		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
 		gMrbLog->Flush("", "", setblue);
 		
