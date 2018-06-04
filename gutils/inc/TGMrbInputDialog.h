@@ -51,6 +51,7 @@ public:
                     const char * FileName = 0, TList * complist=0);
    virtual ~TGMrbInputDialog();
    void CloseWindow();
+   void ReallyDelete(){delete this;};
    virtual Bool_t  ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void SaveList();
 
