@@ -3655,6 +3655,13 @@ void FitHist::Draw1Dim()
 		}
 //      DrawWindows();
 	}
+	 
+	// if xaxis looks like unix time (after year 2000)set time display
+	Int_t year2000 = 339869696;
+	if ((Int_t)fSelHist->GetXaxis()->GetXmin() > year2000 &&
+		 (Int_t)fSelHist->GetXaxis()->GetXmax() > year2000) {
+		fSelHist->GetXaxis()->SetTimeDisplay(1);
+	}
 	if (GeneralAttDialog::fUseAttributeMacro) {
 		ExecDefMacro();
 //      fSelPad->Modified(kTRUE);

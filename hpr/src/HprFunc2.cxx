@@ -10,6 +10,7 @@
 #include "Fit2DimDialog.h"
 
 #include "HprFunc2.h"
+extern Int_t gHprDebug;
 
 ClassImp (HprFunc2)
 
@@ -25,8 +26,8 @@ HprFunc2::HprFunc2(TF2 *f2)
 {
 //	static const Char_t helptext[] =
 //	"Handle 2 dim functions";
-	
-	//   cout << " ctor HprFunc2::" << this << endl;
+	if (gHprDebug > 0)
+   cout << " ctor HprFunc2::" << this << endl;
 	fCanvas = NULL;
 //   TH1* hist = 0;
 	if (fFunc2== 0) {

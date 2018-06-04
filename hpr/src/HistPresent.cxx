@@ -4068,6 +4068,13 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 //		cout << "graph1d->Draw " << drawopt<< " " << graph1d->GetName()<< " "
 //		<< graph1d->GetHistogram()->GetName()<< endl;
 		graph1d->Draw(drawopt);
+		// if xaxis looks like unix time (after year 2000)set time display
+		Int_t year2000 = 339869696;
+		if ((Int_t)graph1d->GetXaxis()->GetXmin() > year2000 &&
+			 (Int_t)graph1d->GetXaxis()->GetXmax() > year2000) {
+			graph1d->GetXaxis()->SetTimeDisplay(1);
+		}
+		
 		if (gROOT->GetForceStyle()) {
 			graph1d->SetLineStyle  (env.GetValue("GraphAttDialog.fLineStyle",  1));
 			graph1d->SetLineWidth  (env.GetValue("GraphAttDialog.fLineWidth",  1));
