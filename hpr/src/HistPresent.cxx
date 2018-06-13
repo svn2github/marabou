@@ -2345,7 +2345,7 @@ TObject* HistPresent::GetSelGraphAt(Int_t pos)
 	if (pp <= 0) {cout << "No graph name in: " << obj->String()<< endl; return NULL;};
 	hname.Resize(pp);
 	dname.Remove(0,pp+1);
-	cout << fname << "|" << hname << "|" << dname << "|" << endl;
+	//cout << fname << "|" << hname << "|" << dname << "|" << endl;
 
 	hname = hname.Strip(TString::kBoth);
 	pp = hname.Index(";");
@@ -3930,7 +3930,8 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 		cname(notascii) = "_";
 	}
 	TString gname = cname;
-	gname.Prepend("Graph_");
+	gname.Append("_0");
+//	gname.Prepend("Graph_");
 	cname.Prepend("C_");
 	cname += "_";
 	cname += fSeqNumberGraph++;
@@ -4146,6 +4147,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		cout << "Please select exactly  one graph" << endl;
 		return;
 	}
+	Int_t ngr_exist = 0;
 	TObject * obj  = GetSelGraphAt(0);
 	if (!obj ||!obj->InheritsFrom("TGraph") )
 		return;
@@ -4174,8 +4176,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	if ( mode == 1 ) {
 		do_scale = auto_scale = new_axis = 1;
 	}
-	
-	TGraph * gr_exist = FindGraph(current);
+	TGraph * gr_exist = FindGraph(current, &ngr_exist);
 	if ( !gr_exist )
 		return;
 	TString lLineMode;
@@ -4208,13 +4209,20 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	Double_t  axis_offset = env.GetValue("SuperImposeGraph.axis_offset", 0.);
 	
 	Double_t label_offset = 0.01;
-	Color_t def_col = 2;
-	if (def_col == gr_exist->GetMarkerColor())
-		def_col = 3;;
+	Color_t def_col = gr_exist->GetMarkerColor();
+//	Color_t def_col = 2;
+// if (def_col == gr_exist->GetMarkerColor())
+//		def_col = 3;
+	Color_t lLColor    = def_col + 1;
+	Color_t lMColor    = lLColor;
+	Color_t lFColor    = lLColor;
+	Color_t axis_color = lLColor;
+	/*
 	static Color_t lLColor    = env.GetValue("SuperImposeGraph.lLColor", def_col);
 	static Color_t lMColor    = env.GetValue("SuperImposeGraph.lMColor", def_col);
 	static Color_t lFColor    = env.GetValue("SuperImposeGraph.lFColor", def_col);
 	static Color_t axis_color = env.GetValue("SuperImposeGraph.axis_color", def_col);
+	*/
 	static Int_t   lFill      = env.GetValue("SuperImposeGraph.fFill", 0);
 	
 	Double_t new_scale = 1;
@@ -4313,7 +4321,9 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	while (gname.Index(notascii) >= 0) {
 		gname(notascii) = "_";
 	}
-	gname.Prepend("Graph_");
+//	gname.Prepend("Graph_");
+	gname += "_";
+	gname += ngr_exist;
 	gr->SetName(gname);
 	gr->SetLineColor(axis_color);
 	gr->SetMarkerColor(axis_color);
@@ -4422,17 +4432,19 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	gPad->Modified();
 	gPad->Update();
 	if (lIncrColors > 0) {
-		lLColor++;
-		lMColor++;
-		axis_color++;
-		lFColor++;
+//		lLColor++;
+//		lMColor++;
+//		axis_color++;
+//		lFColor++;
 		axis_offset += 0.05;
 	}
+	/*
 	env.SetValue("SuperImposeGraph.lLColor", lLColor);
 	env.SetValue("SuperImposeGraph.lMColor", lMColor);
 	env.SetValue("SuperImposeGraph.lFColor", lFColor);
-	env.SetValue("SuperImposeGraph.lFill",   lFill);
 	env.SetValue("SuperImposeGraph.axis_color", axis_color);
+	*/
+	env.SetValue("SuperImposeGraph.lFill",   lFill);
 	env.SetValue("SuperImposeGraph.axis_offset", axis_offset);
 	env.SetValue("SuperImposeGraph.DrawLegend", lLegend);
 	env.SetValue("SuperImposeGraph.AutoIncrColors", lIncrColors);

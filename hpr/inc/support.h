@@ -104,7 +104,7 @@ Int_t    DeleteOnFile(const char * fname, TList * list, TGWindow * win =0);
 void     PrintGraph(TGraphErrors * gr); 
 Bool_t   IsInsideFrame(TCanvas *c, Int_t px, Int_t py);
 Int_t    FindGraphs(TVirtualPad *ca, TList *logr=NULL, TList *pads=NULL);
-TGraph * FindGraph(TVirtualPad *ca);
+TGraph * FindGraph(TVirtualPad *ca, Int_t *ngr = NULL);
 Int_t    FindObjs(TVirtualPad * ca, TList * logr, TList * pads, const char * oname = "TH1");
 Int_t    FindPaveStats(TVirtualPad *ca, TList *lops=NULL, TList *pads=NULL);
 void     DrawColors();

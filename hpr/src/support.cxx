@@ -1211,14 +1211,16 @@ Bool_t IsInsideFrame(TCanvas * c, Int_t px, Int_t py)
 	return kFALSE;
 }
 //_______________________________________________________________________________________
-TGraph * FindGraph(TVirtualPad * ca)
+TGraph * FindGraph(TVirtualPad * ca, Int_t *ngr)
 {
 	if (!ca) return NULL;
 	TGraph * gr = NULL;
+	Int_t ng = 0;
 	TIter next(ca->GetListOfPrimitives());
 	while (TObject * obj = next()) {
 		if (obj->InheritsFrom("TGraph")) {
 			 gr = (TGraph*)obj;
+			 ng++;
 		}
 	}
 // look for subpads
@@ -1236,6 +1238,7 @@ TGraph * FindGraph(TVirtualPad * ca)
 			 }
 		}
 	}*/
+	if (ngr) *ngr=ng;
 	return gr;
 };
 //_______________________________________________________________________________________
