@@ -219,7 +219,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
 		fRow_lab->Add(new TObjString("Float_Value+Y;0;1"));
 		fRow_lab->Add(new TObjString("Float_Value+Wi ;0;1"));
 		fRow_lab->Add(new TObjString("Float_Value+He ;0;1"));
-		if (fHist->GetDimension() == 2 ) {
+		if (fHist && fHist->GetDimension() == 2 ) {
 			fValp[ind++] = &fStatX2D;
 			fValp[ind++] = &fStatY2D;
 			fValp[ind++] = &fStatW2D;
@@ -291,7 +291,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
    fValp[ind++] = &fTdivY;
    fValp[ind++] = &fOptimizedivY;
 //   fValp[ind++] = &fTickSideY;
-   if (fHist->GetDimension() > 1) {
+   if (fHist && fHist->GetDimension() > 1) {
 		fRow_lab->Add(new TObjString("CommentOnly_Z"));
 		fRow_lab->Add(new TObjString("PlainIntVal+"));
 		fRow_lab->Add(new TObjString("PlainIntVal+"));
@@ -318,7 +318,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
    fRow_lab->Add(new TObjString("PlainIntVal+MaxDigs"));
    fRow_lab->Add(new TObjString("Float_Value_Offset X"));
    fRow_lab->Add(new TObjString("Float_Value+Offset Y"));
-   if (fHist->GetDimension() > 1)
+   if (fHist && fHist->GetDimension() > 1)
       fRow_lab->Add(new TObjString("Float_Value+Offset Z"));
    fValp[ind++] =  &fDummy;
    fValp[ind++] = &fLabelColor;
@@ -327,7 +327,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
    fValp[ind++] = &fLabelMaxDigits;
    fValp[ind++] = &fLabelOffsetX;
    fValp[ind++] = &fLabelOffsetY;
-   if (fHist->GetDimension() > 1)
+   if (fHist && fHist->GetDimension() > 1)
       fValp[ind++] = &fLabelOffsetZ;
    fRow_lab->Add(new TObjString("CommentOnly_Axis Title Attributes"));
    fRow_lab->Add(new TObjString("ColorSelect_Color"));
@@ -370,7 +370,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
       new TGMrbValuesAndText(fObjTitle, NULL, &fOk,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
-	if (fHist->GetDimension() == 1) {
+	if (fHist && fHist->GetDimension() == 1) {
 		fDialog->DisableButton(offz);
 		fDialog->DisableButton(centz);
 	}
@@ -422,7 +422,7 @@ Bool_t SetHistOptDialog::SetPointers()
 		fPad->cd();
 		fAxisX = fHist->GetXaxis();
 		fAxisY = fHist->GetYaxis();
-		if (fHist->GetDimension() > 1)
+		if (fHist && fHist->GetDimension() > 1)
 			fAxisZ = fHist->GetZaxis();
 		fObjTitle = fHist->GetTitle();
 		if ( fParent != NULL && gHprDebug > 0)
@@ -666,7 +666,7 @@ void SetHistOptDialog::SetStatBoxAttr(TStyle *sty)
 		cout << "SetHistOptDialog::SetStatBoxAttr" << fStatBox << endl;
 	if (fStatBox) {
 		Float_t statX, statY, statW, statH;
-		if (fHist->GetDimension() == 2) {
+		if (fHist && fHist->GetDimension() == 2) {
 			statX = fStatX2D;
 			statY = fStatY2D;
 			statW = fStatW2D;
@@ -888,7 +888,7 @@ void SetHistOptDialog::SaveDefaults()
    env.SetValue("SetHistOptDialog.fAxisColor",     fAxisColor);
    env.SetValue("SetHistOptDialog.fLabelColor",    fLabelColor);
    env.SetValue("SetHistOptDialog.fLabelFont",     fLabelFont);
-	if (fHist->GetDimension() == 3 ) {
+	if (fHist && fHist->GetDimension() == 3 ) {
 		env.SetValue("SetHistOptDialog.fLabelOffsetX3Dim",  fLabelOffsetX);
 		env.SetValue("SetHistOptDialog.fLabelOffsetY3Dim",  fLabelOffsetY);
 		env.SetValue("SetHistOptDialog.fLabelOffsetZ3Dim",  fLabelOffsetZ);
@@ -948,7 +948,7 @@ void SetHistOptDialog::SaveDefaults()
 		if ( gHprDebug > 0 )
 			cout << "SetHistOptDialog::SaveDefaults(): sh, nlines " << " " << sh << " " << nlines << endl;
 		sh = 4. * sh / nlines;
-		if (fHist->GetDimension() == 2) {
+		if (fHist &&  fHist->GetDimension() == 2) {
 			env.SetValue("SetHistOptDialog.StatX2D",      fStatX2D        );
 			env.SetValue("SetHistOptDialog.StatY2D",      fStatY2D        );
 			env.SetValue("SetHistOptDialog.StatW2D",      fStatW2D        );
@@ -1016,7 +1016,7 @@ void SetHistOptDialog::RestoreDefaults(Int_t resetall)
 		gSystem->TempFileName(envname);
 	}
    TEnv env(envname);
-	if (fHist->GetDimension() == 3 ) {
+	if (fHist && fHist->GetDimension() == 3 ) {
 		fLabelOffsetX = env.GetValue("SetHistOptDialog.fLabelOffsetX3Dim",  0.01);
 		fLabelOffsetY = env.GetValue("SetHistOptDialog.fLabelOffsetY3Dim",  0.01);
 		fLabelOffsetZ = env.GetValue("SetHistOptDialog.fLabelOffsetZ3Dim",  0.01);
