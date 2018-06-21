@@ -952,7 +952,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 #if ROOTVERSION >= 60000
 			if (!ff.IsValid())
 #else
-			if (!ff.GetNdim() <= 0)
+			if (! (ff.GetNdim() <= 0))
 #endif
 			{
 				cout << setred << "Formula: " << form << " is not valid " << endl;

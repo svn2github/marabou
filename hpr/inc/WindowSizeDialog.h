@@ -31,7 +31,9 @@ public:
 	static Double_t fProjectBothRatio;
 
 	WindowSizeDialog(TGWindow * win = NULL);
-	WindowSizeDialog() {};
+//#if ROOTVERSION < 60000
+//	WindowSizeDialog() {};
+//#endif
 	~WindowSizeDialog() {};
 	void CloseDialog();
 	void SaveDefaults();

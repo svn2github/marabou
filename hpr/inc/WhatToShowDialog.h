@@ -30,7 +30,7 @@ private:
 public:
 
 	WhatToShowDialog(TGWindow * win = NULL);
-	WhatToShowDialog() {};
+//	WhatToShowDialog();
 	~WhatToShowDialog() {};
 	void CloseDialog();
 	void SetWhatToShowNow(TCanvas *canvas);

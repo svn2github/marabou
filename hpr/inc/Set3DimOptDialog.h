@@ -78,7 +78,9 @@ private:
 public:
 
    Set3DimOptDialog(TGWindow * win = NULL, TButton *b = NULL);
-	Set3DimOptDialog();
+//#if ROOTVERSION > 60000
+//	Set3DimOptDialog();
+//#endif
    ~Set3DimOptDialog();
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);

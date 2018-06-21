@@ -47,12 +47,16 @@ namespace std {} using namespace std;
 
 //TString Set3DimOptDialog::fDrawOpt3Dim = "COLZ";
 //_______________________________________________________________________
+/*
+#if ROOTVERSION > 60000
 
 Set3DimOptDialog::Set3DimOptDialog()
 {
 	cout << "ctor Set2DimOptDialog, non interactive" <<endl;
 	fDialog = NULL;
 }
+#endif
+*/
 //_______________________________________________________________________
 
 Set3DimOptDialog::Set3DimOptDialog(TGWindow * win, TButton *b)

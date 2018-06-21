@@ -18,6 +18,8 @@ namespace std {} using namespace std;
 
 //TString WhatToShowDialog::fDrawOpt2Dim = "COLZ";
 //_______________________________________________________________________
+//WhatToShowDialog::WhatToShowDialog(){};
+//_______________________________________________________________________
 
 WhatToShowDialog::WhatToShowDialog(TGWindow * win)
 {
