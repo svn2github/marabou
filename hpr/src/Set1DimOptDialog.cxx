@@ -724,7 +724,8 @@ Set1DimOptDialog::~Set1DimOptDialog()
 
 void Set1DimOptDialog::CloseDown(Int_t wid)
 {
-	cout << "CloseDown(" << wid<< ")" <<endl;
+	if (gHprDebug > 0)
+		cout << "CloseDown(" << wid<< ")" <<endl;
 	fDialog = NULL;
 	if (wid == -1)
 		SaveDefaults();
@@ -734,9 +735,11 @@ void Set1DimOptDialog::CloseDown(Int_t wid)
 void Set1DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 {
 	TCanvas *canvas = (TCanvas *)obj;
-	cout << "CRButtonPressed " <<bid;
-   if (obj) cout  << ", " << canvas->GetName() << ")";
-   cout << endl;
+	if (gHprDebug > 0) {
+		cout << "CRButtonPressed " <<bid;
+		if (obj) cout  << ", " << canvas->GetName() << ")";
+		cout << endl;
+	}
 	SetHistAttNow(canvas, bid);
 }
 
