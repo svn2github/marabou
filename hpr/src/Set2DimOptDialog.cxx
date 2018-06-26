@@ -164,8 +164,11 @@ For further details contact ROOTs documentation.\n\
 		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
 	} else {
 		fCanvas = NULL;
+		return;
 	}
 	fHist = NULL;
+	fPad = (TPad*)fCanvas;
+	fNPads = 0;
 //	Int_t nh1 = 0, nh2 = 0;
 	TIter next(fCanvas->GetListOfPrimitives());
 	TObject *obj;
@@ -178,6 +181,8 @@ For further details contact ROOTs documentation.\n\
 			}
 		} else if (obj->InheritsFrom("TPad")) {
 			fHist = (TH2*)Hpr::FindHistInPad((TVirtualPad*)obj);
+			fPad = (TPad*)obj;
+			fNPads++;
 		}
 //		cout << obj->ClassName() << " " << fHist << endl;
 		if (fHist) {
@@ -540,9 +545,15 @@ void Set2DimOptDialog::SetHistAttPerm()
 	env.SetValue("Set2DimOptDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
-	env.SetValue("Set2DimOptDialog.fTwoDimLogX",       fTwoDimLogX       );
-	env.SetValue("Set2DimOptDialog.fTwoDimLogY",       fTwoDimLogY       );
-	env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	if (fNPads == 0) {
+		env.SetValue("Set2DimOptDialog.fTwoDimLogX",       fTwoDimLogX       );
+		env.SetValue("Set2DimOptDialog.fTwoDimLogY",       fTwoDimLogY       );
+		env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	} else {
+		env.SetValue("GroupOfHists.fTwoDimLogX",  fTwoDimLogX      );
+		env.SetValue("GroupOfHists.fTwoDimLogY",  fTwoDimLogY      );
+		env.SetValue("GroupOfHists.fTwoDimLogZ",  fTwoDimLogZ      );
+	}
 	env.SetValue("Set2DimOptDialog.fNbinSliceX",       fNbinSliceX       );
 	env.SetValue("Set2DimOptDialog.fNbinSliceY",       fNbinSliceY       );
 	env.SetValue("Set2DimOptDialog.fUseGL",            fUseGL            );
@@ -566,9 +577,15 @@ void Set2DimOptDialog::SaveDefaults()
 	env.SetValue("Set2DimOptDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
-	env.SetValue("Set2DimOptDialog.fTwoDimLogX",       fTwoDimLogX       );
-	env.SetValue("Set2DimOptDialog.fTwoDimLogY",       fTwoDimLogY       );
-	env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	if (fNPads == 0) {
+		env.SetValue("Set2DimOptDialog.fTwoDimLogX",       fTwoDimLogX       );
+		env.SetValue("Set2DimOptDialog.fTwoDimLogY",       fTwoDimLogY       );
+		env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	} else {
+		env.SetValue("GroupOfHists.fTwoDimLogX",  fTwoDimLogX      );
+		env.SetValue("GroupOfHists.fTwoDimLogY",  fTwoDimLogY      );
+		env.SetValue("GroupOfHists.fTwoDimLogZ",  fTwoDimLogZ      );
+	}
 	env.SetValue("Set2DimOptDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set2DimOptDialog.fContourLevels",    fContourLevels    );
 	env.SetValue("Set2DimOptDialog.fNbinSliceX",       fNbinSliceX       );
@@ -586,15 +603,15 @@ void Set2DimOptDialog::SetAllToDefault()
 void Set2DimOptDialog::GetValuesFromHist()
 {
 	if ( !fHist ) return;
-	fCanvas->cd();
+	fPad->cd();
 	fDrawOpt2Dim = fHist->GetDrawOption();
 	if ( fDrawOpt2Dim.Contains("SAME") )
 		fSameOpt = "SAME";
 	if ( gHprDebug > 0 )
 		cout << "fDrawOpt2Dim::GetValuesFromHist() " << fDrawOpt2Dim << endl;
-	fTwoDimLogX        = fCanvas->GetLogx();
-	fTwoDimLogY        = fCanvas->GetLogy();
-	fTwoDimLogZ        = fCanvas->GetLogz();
+	fTwoDimLogX        = fPad->GetLogx();
+	fTwoDimLogY        = fPad->GetLogy();
+	fTwoDimLogZ        = fPad->GetLogz();
 	fHistFillColor2Dim = fHist->GetFillColor();
 	fHistFillStyle2Dim = fHist->GetFillStyle();
 	fHistLineColor2Dim = fHist->GetLineColor();
@@ -653,9 +670,15 @@ void Set2DimOptDialog::RestoreDefaults(Int_t resetall)
 	fMarkerColor2Dim   = env.GetValue("Set2DimOptDialog.fMarkerColor2Dim",   1);
 	fMarkerStyle2Dim   = env.GetValue("Set2DimOptDialog.fMarkerStyle2Dim",   1);
 	fMarkerSize2Dim    = env.GetValue("Set2DimOptDialog.fMarkerSize2Dim",    1);
-	fTwoDimLogX        = env.GetValue("Set2DimOptDialog.fTwoDimLogX",        0);
-	fTwoDimLogY        = env.GetValue("Set2DimOptDialog.fTwoDimLogY",        0);
-	fTwoDimLogZ        = env.GetValue("Set2DimOptDialog.fTwoDimLogZ",        0);
+	if (fNPads == 0) {
+		fTwoDimLogX        = env.GetValue("Set2DimOptDialog.fTwoDimLogX",        0);
+		fTwoDimLogY        = env.GetValue("Set2DimOptDialog.fTwoDimLogY",        0);
+		fTwoDimLogZ        = env.GetValue("Set2DimOptDialog.fTwoDimLogZ",        0);
+	} else {
+		fTwoDimLogX        = env.GetValue("GroupOfHists.fTwoDimLogX",        0);
+		fTwoDimLogY        = env.GetValue("GroupOfHists.fTwoDimLogY",        0);
+		fTwoDimLogZ        = env.GetValue("GroupOfHists.fTwoDimLogZ",        0);
+	}
 	fUseGL             = env.GetValue("Set2DimOptDialog.fUseGL",             0);
 	fContourLevels     = env.GetValue("Set2DimOptDialog.fContourLevels",    20);
 	fNbinSliceX        = env.GetValue("Set2DimOptDialog.fNbinSliceX",        1);

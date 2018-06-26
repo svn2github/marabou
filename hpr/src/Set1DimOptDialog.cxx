@@ -109,6 +109,7 @@ from the \"GraphicsAtt\" popup menu\n\
 	TObject *obj;
 	TH1* hist;
 	fNHists = 0;
+	fNPads = 0;
 	TPad* actpad = (TPad*)fCanvas;
 	while ( (obj = next()) ) {
 		hist = NULL;
@@ -117,6 +118,7 @@ from the \"GraphicsAtt\" popup menu\n\
 		} else if ( obj->InheritsFrom("TPad") ) {
 			hist = Hpr::FindHistInPad((TVirtualPad*)obj);
 			actpad= (TPad*)obj;
+			fNPads++;
 		}
 		if ( hist  && hist->GetDimension() == 1 ) {
 			fNHists++;
@@ -128,6 +130,8 @@ from the \"GraphicsAtt\" popup menu\n\
 		cout << "No 1dim histogram in Canvas" << endl;
 		return;
 	}
+	cout << "Set1DimOptDialog, fNHists " << fNHists 
+			<< " fNPads " << fNPads << endl;
 	RestoreDefaults();
 //	GetValuesFromHist();
 //	fLiveBG = 1;  //force lin bg
@@ -160,6 +164,8 @@ from the \"GraphicsAtt\" popup menu\n\
 	for ( Int_t i =0; i < fNHists; i++ ) {
 		hist =(TH1*)fHistList.At(i);
 		((TPad*)fPadList.At(i))->cd();
+		fOneDimLogX        = gPad->GetLogx();
+		fOneDimLogY        = gPad->GetLogy();
 		fTitle[i]     = hist->GetTitle();
 		if ( i == 0 ) {
 			fTitleX = hist->GetXaxis()->GetTitle();
@@ -303,14 +309,14 @@ Marks and Fill are mutually exclusive"));
 		fRow_lab->Add(new TObjString("Fill_Select+FStyle"));
 		fValp[ind++] = &fFillStyle[i];
 	}
-	fOneDimLogX        = fCanvas->GetLogx();
-	fOneDimLogY        = fCanvas->GetLogy();
-
-	fRow_lab->Add(new TObjString("StringValue_Title X "));
-	fValp[ind++] = &fTitleX;
-	fRow_lab->Add(new TObjString("StringValue+Title Y "));
-	fValp[ind++] = &fTitleY;
-
+	
+	// this makes sense only for 1 histogram in canvas
+	if (fNPads == 0) {
+		fRow_lab->Add(new TObjString("StringValue_Title X "));
+		fValp[ind++] = &fTitleX;
+		fRow_lab->Add(new TObjString("StringValue+Title Y "));
+		fValp[ind++] = &fTitleY;
+	}
 	fRow_lab->Add(new TObjString("Float_Value_EndErrSz\
 &Size in pixel of small lines\n\
 drawn at end of error bars"));
@@ -355,22 +361,25 @@ default is minimum Y = 0"));
 		fRow_lab->Add(new TObjString("CheckButton+ PieChart"));
 		fValp[ind++] = &fPieChart;
 	}
-	fRow_lab->Add(new TObjString("CheckButton_Live Stats\
-&Show a widget with statistics\n\
-when dragging mouse in histogram\n\
-with button 1 pressed"));
-	fValp[ind++] = &fLiveStat1Dim;
-	fRow_lab->Add(new TObjString("CheckButton+Live Gauss\
-&Do a Gauss fit when dragging\n\
-mouse in histogram\n\
-with button 1 pressed"));
-	fValp[ind++] = &fLiveGauss;
-	fRow_lab->Add(new TObjString("CheckButton+Const bg \
-&Use constant background"));
-	fValp[ind++] = &fLiveConstBG;
-	fRow_lab->Add(new TObjString("CheckButton+Linear bg\
-&Use linear background"));
-	fValp[ind++] = &fLiveBG;
+	// this works only for 1 histogram in canvas
+	if (fNPads == 0) {
+		fRow_lab->Add(new TObjString("CheckButton_Live Stats\
+	&Show a widget with statistics\n\
+	when dragging mouse in histogram\n\
+	with button 1 pressed"));
+		fValp[ind++] = &fLiveStat1Dim;
+		fRow_lab->Add(new TObjString("CheckButton+Live Gauss\
+	&Do a Gauss fit when dragging\n\
+	mouse in histogram\n\
+	with button 1 pressed"));
+		fValp[ind++] = &fLiveGauss;
+		fRow_lab->Add(new TObjString("CheckButton+Const bg \
+	&Use constant background"));
+		fValp[ind++] = &fLiveConstBG;
+		fRow_lab->Add(new TObjString("CheckButton+Linear bg\
+	&Use linear background"));
+		fValp[ind++] = &fLiveBG;
+	}
 	fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
 	fValp[ind++] = &stycmd;
 	fRow_lab->Add(new TObjString("CommandButt+Reset all to default"));
@@ -411,6 +420,7 @@ void Set1DimOptDialog::SetHistAttNow(TCanvas *canvas, Int_t bid)
 void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 {
 	Bool_t changed =kFALSE;
+	/*
 	fCanvas->cd();
 	if ( fCanvas->GetLogx() != fOneDimLogX ){
 		fCanvas->SetLogx(fOneDimLogX);
@@ -420,6 +430,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 		fCanvas->SetLogy(fOneDimLogY);
 		changed = kTRUE;
 	}
+	*/
 	gStyle->SetEndErrorSize (fEndErrorSize);
 	gStyle->SetErrorX       (fErrorX);
 	TEnv env(".hprrc");
@@ -441,6 +452,15 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 		hist =(TH1*)fHistList.At(i);
 		pad = (TPad*)fPadList.At(i);
 		pad->cd();
+		if ( pad->GetLogx() != fOneDimLogX ){
+			pad->SetLogx(fOneDimLogX);
+			changed = kTRUE;
+		}
+		if ( pad->GetLogy() != fOneDimLogY ){
+			pad->SetLogy(fOneDimLogY);
+			changed = kTRUE;
+		}
+
 		if (i == 0 ) {
 			hist->SetTitle(fTitle[0]);
 			hist->GetXaxis()->SetTitle(fTitleX);
@@ -632,8 +652,13 @@ void Set1DimOptDialog::SaveDefaults()
 	env.SetValue("Set1DimOptDialog.fShowContour"   , fShowContour[0]  );
 	env.SetValue("Set1DimOptDialog.fLabelsTopX"    , fLabelsTopX   );
 	env.SetValue("Set1DimOptDialog.fLabelsRightY"  , fLabelsRightY );
-	env.SetValue("Set1DimOptDialog.fOneDimLogX"    , fOneDimLogX   );
-	env.SetValue("Set1DimOptDialog.fOneDimLogY"    , fOneDimLogY   );
+	if (fNPads == 0) {
+		env.SetValue("Set1DimOptDialog.fOneDimLogX"    , fOneDimLogX   );
+		env.SetValue("Set1DimOptDialog.fOneDimLogY"    , fOneDimLogY   );
+	} else {  
+		env.SetValue("GroupOfHists.fDisplayLogX"       , fOneDimLogX   );
+		env.SetValue("GroupOfHists.fDisplayLogY"    , fOneDimLogY   );
+	}
 	env.SetValue("Set1DimOptDialog.fEndErrorSize" , fEndErrorSize  );
 	env.SetValue("Set1DimOptDialog.fErrorX",        fErrorX        );
 	env.SetValue("Set1DimOptDialog.fAdjustMinY",    fAdjustMinY    );
@@ -709,9 +734,9 @@ void Set1DimOptDialog::CloseDown(Int_t wid)
 void Set1DimOptDialog::CRButtonPressed(Int_t /*wid*/, Int_t bid, TObject *obj)
 {
 	TCanvas *canvas = (TCanvas *)obj;
-//  cout << "CRButtonPressed(" << wid<< ", " <<bid;
-//   if (obj) cout  << ", " << canvas->GetName() << ")";
-//   cout << endl;
+	cout << "CRButtonPressed " <<bid;
+   if (obj) cout  << ", " << canvas->GetName() << ")";
+   cout << endl;
 	SetHistAttNow(canvas, bid);
 }
 

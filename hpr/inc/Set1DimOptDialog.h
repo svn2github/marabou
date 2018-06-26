@@ -17,6 +17,7 @@ private:
 	TList fHistList;
 	TList fPadList;
 	Int_t fNHists;
+	Int_t fNPads;
 
 	TCanvas *fCanvas;
 	Int_t   fOk;

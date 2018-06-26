@@ -55,8 +55,12 @@ private:
 
    Double_t    fMagFac;
    Int_t       fMagFacButton;
-   Int_t		fDisplayLogX;			// Log scale for all hists X
-   Int_t		fDisplayLogY;			// Log scale for all hists Y
+   Int_t			fDisplayLogX;			// Log scale for all hists X
+   Int_t			fDisplayLogY;			// Log scale for all hists Y
+   Int_t			fDisplayLogZ;			// Log scale for all hists z
+   Int_t			fTwoDimLogX;			// Log scale for all hists X
+   Int_t			fTwoDimLogY;			// Log scale for all hists Y
+   Int_t			fTwoDimLogZ;			// Log scale for all hists z
    Double_t		fDisplayLowX;		// Display range for all hists Low X
    Double_t		fDisplayLowY;		// Display range for all hists Low Y
    Double_t		fDisplayUpX;		// Display range for all hists upper X

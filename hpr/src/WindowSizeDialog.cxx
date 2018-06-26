@@ -25,6 +25,7 @@ Int_t WindowSizeDialog::fWinwidy_1dim;
 Int_t WindowSizeDialog::fWinshiftx;
 Int_t WindowSizeDialog::fWinshifty;
 Int_t WindowSizeDialog::fWinwidx_hlist;
+Int_t WindowSizeDialog::fEntryHeight;
 Double_t WindowSizeDialog::fProjectBothRatio;
 //___________________________________________________________________
 
@@ -46,6 +47,9 @@ This gives additional control for lists:\n\
 > 0: Take value as absolute width (pixels)\n\
 = 0: Take default width (see above)\n\
 < 0: Adjust width to fit names without scrollbars\n\
+\n\
+Text size in lists:\n\
+Height of text fields in file and hist lists\n\
 \n\
 Window_X_Width_1dim etc.:\n\
 Widths for 1 and 2-dim Histograms\n\
@@ -83,6 +87,7 @@ _____________________________________________________\n\
 //   static TString stycmd("SetWindowSizePermLocal()");
    fRow_lab->Add(new TObjString("PlainIntVal_Main Window Width"));
    fRow_lab->Add(new TObjString("PlainIntVal+Lists Width"));
+   fRow_lab->Add(new TObjString("PlainIntVal_Text size in lists"));
 //   fRow_lab->Add(new TObjString("CheckButton+Fit text"));
 //   fRow_lab->Add(new TObjString("CheckButton+Fixed width"));
    fRow_lab->Add(new TObjString("PlainIntVal_X_Width_1dim"));
@@ -97,6 +102,7 @@ _____________________________________________________\n\
 
    fValp[ind++] = &fMainWidth;
    fValp[ind++] = &fWinwidx_hlist;
+   fValp[ind++] = &fEntryHeight;
 //   fValp[ind++] = &fFittext;
 //   fValp[ind++] = &fUsecustom;
    fValp[ind++] = &fWinwidx_1dim;
@@ -141,6 +147,7 @@ void WindowSizeDialog::SaveDefaults()
    env.SetValue("WindowSizeDialog.fWinshiftx", fWinshiftx);
    env.SetValue("WindowSizeDialog.fWinshifty", fWinshifty);
    env.SetValue("WindowSizeDialog.fWinwidx_hlist", fWinwidx_hlist);
+   env.SetValue("WindowSizeDialog.fEntryHeight", fEntryHeight);
 //   env.SetValue("WindowSizeDialog.fFittext", fFittext);
    env.SetValue("WindowSizeDialog.fProjectBothRatio", fProjectBothRatio);
    env.SaveLevel(kEnvLocal);
@@ -162,6 +169,7 @@ void WindowSizeDialog::RestoreDefaults()
    fWinshiftx = env.GetValue("WindowSizeDialog.fWinshiftx", 30);
    fWinshifty = env.GetValue("WindowSizeDialog.fWinshifty", 30);
    fWinwidx_hlist = env.GetValue("WindowSizeDialog.fWinwidx_hlist", 0);
+   fEntryHeight  = env.GetValue("WindowSizeDialog.fEntryHeight", 24);
 //   fFittext = env.GetValue("WindowSizeDialog.fFittext", 1);
    fProjectBothRatio = env.GetValue("WindowSizeDialog.fProjectBothRatio", 0.5);
 }

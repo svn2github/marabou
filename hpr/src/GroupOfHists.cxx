@@ -169,13 +169,6 @@ void GroupOfHists::BuildCanvas()
 	}
 	fCanvas->Divide(fNx, fNy, mx, my);
 //   fCanvas->SetEditable(kTRUE);
-	TEnv hprenv(".hprrc");
-	fDisplayLowX = hprenv.GetValue("GroupOfHists.fDisplayLowX", 0);
-	fDisplayLowY = hprenv.GetValue("GroupOfHists.fDisplayLowY", 0);
-	fDisplayUpX  = hprenv.GetValue("GroupOfHists.fDisplayUpX", 0);
-	fDisplayUpY  = hprenv.GetValue("GroupOfHists.fDisplayUpY", 0);
-	fDisplayLogY  = hprenv.GetValue("GroupOfHists.fDisplayLogY", 0);
-	fDisplayLogX  = hprenv.GetValue("GroupOfHists.fDisplayLogX", 0);
 	TEnv * lastset = 0;
 	TString hname;
 	TString fname;
@@ -286,7 +279,22 @@ void GroupOfHists::BuildCanvas()
 		if (fDisplayLogY != 0) {
 			p->SetLogy();
 		}
+		if (fDisplayLogX != 0) {
+			p->SetLogx();
+		}
+		if (fDisplayLogZ != 0) {
+			p->SetLogz();
+		}
 		if (hist->GetDimension() == 2) {
+			if (fTwoDimLogY != 0) {
+				p->SetLogy();
+			}
+			if (fTwoDimLogX != 0) {
+				p->SetLogx();
+			}
+			if (fTwoDimLogZ != 0) {
+				p->SetLogz();
+			}
 			fNh2Dim++;
 			hist->SetStats(fShowStatBox2Dim);
 			if (fShowStatBox2Dim)
@@ -295,7 +303,7 @@ void GroupOfHists::BuildCanvas()
 			hist->SetLineWidth(fHistLineWidth2Dim);
 			hist->SetLineColor(fHistLineColor2Dim);
 			if (lastset) {
-				if (lastset->GetValue("LogZ", 0) )p->SetLogz();
+//				if (lastset->GetValue("LogZ", 0) )p->SetLogz();
 				if (lastset->Lookup("fRangeLowY") )
 					hist->GetXaxis()->Set(hist->GetNbinsY(),
 					lastset->GetValue("fRangeLowY", 0),
@@ -308,8 +316,17 @@ void GroupOfHists::BuildCanvas()
 				}
 			}
 		} else {
+			if (fDisplayLogY != 0) {
+				p->SetLogy();
+			}
+			if (fDisplayLogX != 0) {
+				p->SetLogx();
+			}
+			if (fDisplayLogZ != 0) {
+				p->SetLogz();
+			}
 			fNh1Dim++;
-			if (lastset && lastset->GetValue("LogY", 0) )p->SetLogy();
+//			if (lastset && lastset->GetValue("LogY", 0) )p->SetLogy();
 			hist->SetStats(fShowStatBox1Dim);
 			if (fShowStatBox1Dim)
 				gStyle->SetOptStat(fOptStat1Dim);
@@ -842,7 +859,7 @@ or as tiles\n\
 	fValp[ind++] = &fShowStatBox1Dim;
 	fRow_lab->Add(new TObjString("CheckButton+StatBox 2 dim"));
 	fValp[ind++] = &fShowStatBox2Dim;
-	fRow_lab->Add(new TObjString("DoubleValue_Label Magnification"));
+	fRow_lab->Add(new TObjString("DoubleValue_Label Magnification;0.01;5."));
 	fMagFacButton = ind;
 	fValp[ind++] = &fMagFac;
 	fRow_lab->Add(new TObjString("PlainIntVal+AutoUpdateDelay"));
@@ -868,12 +885,24 @@ or as tiles\n\
 void GroupOfHists::RestoreDefaults()
 {
 	TEnv env(".hprrc");
+	fDisplayLowX = env.GetValue("GroupOfHists.fDisplayLowX", 0);
+	fDisplayLowY = env.GetValue("GroupOfHists.fDisplayLowY", 0);
+	fDisplayUpX  = env.GetValue("GroupOfHists.fDisplayUpX", 0);
+	fDisplayUpY  = env.GetValue("GroupOfHists.fDisplayUpY", 0);
+	
+	fDisplayLogY  = env.GetValue("GroupOfHists.fDisplayLogY", 0);
+	fDisplayLogX  = env.GetValue("GroupOfHists.fDisplayLogX", 0);
+	fDisplayLogZ  = env.GetValue("GroupOfHists.fDisplayLogZ", 0);
+	
+	fTwoDimLogY  = env.GetValue("GroupOfHists.fTwoDimLogY", 0);
+	fTwoDimLogX  = env.GetValue("GroupOfHists.fTwoDimLogX", 0);
+	fTwoDimLogZ  = env.GetValue("GroupOfHists.fTwoDimLogZ", 0);
 	fWindowXWidth = env.GetValue("GroupOfHists.fWindowXWidth", 800);
 	fWindowYWidth = env.GetValue("GroupOfHists.fWindowYWidth", 800);
 	if (fWindowXWidth < 20 || fWindowXWidth > 1600) fWindowXWidth = 800;
 	if (fWindowYWidth < 20 || fWindowYWidth > 1200) fWindowYWidth = 800;
 	fAutoUpdateDelay = env.GetValue("GroupOfHists.fAutoUpdateDelay", 5);
-	fMagFac          = env.GetValue("GroupOfHists.fMagFac", 2);
+	fMagFac          = env.GetValue("GroupOfHists.fMagFac", 0.8);
 	fCommonRotate = env.GetValue("GroupOfHists.fCommonRotate", 1);
 	fNoSpace = env.GetValue("GroupOfHists.fNoSpace", 0);
 	fShowAllAsFirst = env.GetValue("GroupOfHists.fShowAllAsFirst", 0);
@@ -918,13 +947,16 @@ void GroupOfHists::SaveDefaults()
 	env.SetValue("GroupOfHists.fShowAllAsFirst", fShowAllAsFirst);
 	env.SetValue("GroupOfHists.fArrangeOnTop", fArrangeOnTop);
 	env.SetValue("GroupOfHists.fArrangeSideBySide", fArrangeSideBySide);
-	env.SetValue("GroupOfHists.fArrangeAsTiles", fArrangeAsTiles);
+	env.SetValue("GroupOfHists.fArrangeAsTiles",  fArrangeAsTiles);
 	env.SetValue("GroupOfHists.fShowStatBox2Dim", fShowStatBox2Dim);
 	env.SetValue("GroupOfHists.fShowStatBox1Dim", fShowStatBox1Dim);
-	env.SetValue("GroupOfHists.fPadBottomMargin",    fPadBottomMargin	);
-	env.SetValue("GroupOfHists.fPadTopMargin",       fPadTopMargin	   );
-	env.SetValue("GroupOfHists.fPadLeftMargin",      fPadLeftMargin  	);
-	env.SetValue("GroupOfHists.fPadRightMargin",     fPadRightMargin	);
+	env.SetValue("GroupOfHists.fPadBottomMargin", fPadBottomMargin	);
+	env.SetValue("GroupOfHists.fPadTopMargin",    fPadTopMargin	   );
+	env.SetValue("GroupOfHists.fPadLeftMargin",   fPadLeftMargin  	);
+	env.SetValue("GroupOfHists.fPadRightMargin",  fPadRightMargin	);
+//	env.SetValue("GroupOfHists.fDisplayLogX"    , fDisplayLogX   );
+//	env.SetValue("GroupOfHists.fDisplayLogY"    , fDisplayLogY   );
+//	env.SetValue("GroupOfHists.fDisplayLogZ"    , fDisplayLogZ   );
 	env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
@@ -937,7 +969,8 @@ void GroupOfHists::CloseDown(Int_t)
 //_______________________________________________________________________
 void GroupOfHists::CRButtonPressed(Int_t /*widgetId*/, Int_t buttonId, TObject */*obj*/)
 {
-//   cout << "GroupOfHists::CRButtonPressed " << widgetId << " " << buttonId << endl;
+	if (gHprDebug > 0)
+   cout << "GroupOfHists::CRButtonPressed " << buttonId << endl;
 	if (fCanvas->GetWindowWidth() != (UInt_t)fWindowXWidth ||
 		 fCanvas->GetWindowHeight()!= (UInt_t)fWindowYWidth) {
 		 fCanvas->SetWindowSize(fWindowXWidth,fWindowYWidth);
@@ -946,10 +979,15 @@ void GroupOfHists::CRButtonPressed(Int_t /*widgetId*/, Int_t buttonId, TObject *
 		BuildCanvas();
 	}
 	if (buttonId >= 2 && buttonId <=5) {
-		fCanvas->SetLeftMargin(fPadLeftMargin);
-		fCanvas->SetRightMargin(fPadRightMargin);
-		fCanvas->SetBottomMargin(fPadBottomMargin);
-		fCanvas->SetTopMargin(fPadTopMargin);
+		TPad *pad;
+		TIter next(fPadList);
+		while ( (pad = (TPad*)next() ) ) {
+			pad->SetLeftMargin(fPadLeftMargin);
+			pad->SetRightMargin(fPadRightMargin);
+			pad->SetBottomMargin(fPadBottomMargin);
+			pad->SetTopMargin(fPadTopMargin);
+			pad->Modified();
+		}
 	}
 	SaveDefaults();
 	fCanvas->Modified();

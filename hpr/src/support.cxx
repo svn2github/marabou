@@ -412,6 +412,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 								Int_t xwid, Int_t maxentries, Int_t skipfirst)
 {
 	Int_t xwid_default = 250;
+	Int_t entry_height = WindowSizeDialog::fEntryHeight;
 	xwid_default = WindowSizeDialog::fMainWidth;
 	Int_t ywid_default = (Int_t)((Float_t)xwid_default * 2.4);
 	Float_t magfac = (Float_t)xwid_default / 250.;
@@ -454,7 +455,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 	if (xwid > 0) xw = xwid;
 
 	if (Nentries < 25)
-		yw = (Int_t)(magfac * 24.) * (Nentries + 2);
+		yw = (Int_t)(magfac * entry_height) * (Nentries + 2);
 //		yw = 40 * (Nentries + 1);
 //	cout << fname << " xpos " << xpos << " ypos " << ypos << " xw " << xw << " yw " << yw << endl;
 
@@ -463,10 +464,10 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 	HTCanvas *cHCont = new HTCanvas(pname.Data(), pname.Data(),
 											  -xpos, ypos, xw, yw, hpr, 0);
 //											  xpos, ypos, -xw, yw, hpr, 0);
-	Int_t item_height = TMath::Min(Int_t(magfac * 24.), 10000/Nentries);
+	Int_t item_height = TMath::Min(Int_t(magfac * entry_height), 10000/Nentries);
 //	cout << " Nentries " << Nentries << endl;
 
-	if ( item_height < 24 ) item_height = 24;
+	if ( item_height < entry_height ) item_height = entry_height;
 	cHCont->SetCanvasSize(xw, item_height * Nentries);
 
 	Float_t expandx = xw / (250. * magfac);
@@ -533,16 +534,16 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 	} else {
 		newxw = xwid_default;
 	}
-/*
-	cout << "xwid_default " << xwid_default
-		  << " newxw " << newxw
-		  << " usedxw " << usedxw
-		  << endl;
-	cout << "ywid_default " << ywid_default
-		  << " newyw " << newyw
-		  << " usedyw " << usedyw
-		  << endl;
-*/
+	if (gHprDebug > 0) {
+		cout << "xwid_default " << xwid_default << "xwid " << xwid
+			  << " newxw " << newxw
+			  << " usedxw " << usedxw
+			  << endl;
+		cout << "ywid_default " << ywid_default
+			  << " newyw " << newyw
+			  << " usedyw " << usedyw
+			  << endl;
+	}
 	if (xwid <= 0 && usedxw < xwid_default) newxw = usedxw + 6;
 //  acount for scrollbar
 	if (usedxw > newxw )  newyw += 15;

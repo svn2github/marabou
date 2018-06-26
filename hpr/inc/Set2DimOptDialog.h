@@ -17,10 +17,12 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
+   TPad         *fPad;
 	TH2          *fHist;
  	TF2          *fFunc2;
 	TString fDrawOpt;
    TString fSameOpt;
+   Int_t fNPads;
    Int_t fOptRadio[kNdrawopt];
    const char *fDrawOpt2DimArray[kNdrawopt];
    TString fDrawOpt2Dim;
