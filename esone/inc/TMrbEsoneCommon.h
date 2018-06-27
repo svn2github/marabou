@@ -81,11 +81,13 @@ enum 					{	kEsoneWaitForServer		=	15		 	};
 #define A(x)	x
 #define F(x)	x
 
+#ifndef __Camlib_h__
 #define IS_F_READ(s)    ((Bool_t) (((UInt_t)(s) & 0x18) == 0))
 #define IS_F_WRITE(s)   ((Bool_t) (((UInt_t)(s) & 0x18) == 0x10))
 #define IS_F_CNTL(s)    ((Bool_t) ((!IS_F_READ((s))) && (!IS_F_WRITE((s)))))
 #define IS_F_RSTATUS(s) ((Bool_t) ((IS_F_CNTL((s))) && ((s == 8) || (s == 27))))
 #define IS_F_VALID(s)   ((Bool_t) (((UInt_t)(s) & 0xe0) == 0))
+#endif
 
 #define IS_ERROR(s)		((Bool_t) (((UInt_t)(s) & (UInt_t) kEsoneError) == 0))
 #define IS_X(s)			((Bool_t) (((UInt_t)(s) & (UInt_t) kEsoneX) != 0))

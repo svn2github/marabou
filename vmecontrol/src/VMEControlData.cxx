@@ -319,7 +319,7 @@ Int_t VMEControlData::MsgBox(TGWindow * Caller, const Char_t * Method, const Cha
 	return (retVal);
 }
 
-void VMEControlData::GetLofChannels(TMrbLofNamedX & LofChannels, Int_t NofChannels, Char_t * Format, Bool_t PatternMode) {
+void VMEControlData::GetLofChannels(TMrbLofNamedX & LofChannels, Int_t NofChannels, const Char_t * Format, Bool_t PatternMode) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMEControlData::GetLofChannels()

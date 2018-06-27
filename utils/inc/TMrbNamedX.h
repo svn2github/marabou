@@ -39,8 +39,8 @@ namespace std {} using namespace std;
 
 struct sMrbNamedX {
 	Int_t Index;
-	Char_t * ShortName;
-	Char_t * LongName;
+	const Char_t * ShortName;
+	const Char_t * LongName;
 };
 
 typedef struct sMrbNamedX SMrbNamedX;

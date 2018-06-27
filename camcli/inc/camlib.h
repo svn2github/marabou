@@ -1,3 +1,5 @@
+#ifndef __Camlib_h__
+#define __Camlib_h__
 /*
  * |------------------------------------------------------|
  * | Copyright (c) 1991 , 1991 Ibex Computing SA          |
@@ -81,10 +83,13 @@
 #define fcode_is_write(f)       (((unsigned int)(f) & 0x18) == 0x10)
 #define fcode_is_rstatus(f)     ((f == 8) || (f == 27))
 /*** end patch ***/
+
+#ifndef __TMrbEsoneCommon_h__
 #define IS_F_READ(s)    (((unsigned int)(s) & 0x18) == 0)
 #define IS_F_WRITE(s)   (((unsigned int)(s) & 0x18) == 0x10)
 #define IS_F_CNTL(s)    ((!IS_F_READ((s))) & (!IS_F_WRITE((s))))
 #define IS_F_VALID(s)    (((unsigned int)(s) & 0xe0) == 0)
+#endif
 
 /*
   definition of a camac address
@@ -146,3 +151,4 @@ enum
     MODE_QSTOPW = Q_STOP_ON_WORD,
     MODE_QREPEAT
 };
+#endif

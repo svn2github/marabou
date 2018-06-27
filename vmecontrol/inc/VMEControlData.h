@@ -126,7 +126,7 @@ class VMEControlData : public TObject {
 		inline TMrbResource * Rootrc() { return(fRootrc); };
 		inline TMrbResource * Vctrlrc() { return(fVctrlrc); };
 
-		void GetLofChannels(TMrbLofNamedX & LofChannels, Int_t NofChannels, Char_t * Format = "chn %d", Bool_t PatternMode = kFALSE);
+		void GetLofChannels(TMrbLofNamedX & LofChannels, Int_t NofChannels, const Char_t * Format = "chn %d", Bool_t PatternMode = kFALSE);
 
 		Bool_t SetupModuleList(TMrbLofNamedX & LofModules, const Char_t * ClassName = NULL);
 		
