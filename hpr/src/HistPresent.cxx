@@ -4438,6 +4438,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 //		lFColor++;
 		axis_offset += 0.05;
 	}
+	gHpr->ClearSelect();
 	/*
 	env.SetValue("SuperImposeGraph.lLColor", lLColor);
 	env.SetValue("SuperImposeGraph.lMColor", lMColor);
