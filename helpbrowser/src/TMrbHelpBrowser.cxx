@@ -86,11 +86,12 @@ ClassImp(TMrbHelpBrowser)
 //End_Html
 //Use View Page source to see how it is done.
 
-
-TMrbHelpBrowser::TMrbHelpBrowser()
-{
-	cout << "TMrbHelpBrowser default ctor " << this << endl<<flush;
-}
+//#if ROOTVERSION > 60000
+//TMrbHelpBrowser::TMrbHelpBrowser()
+//{
+//	cout << "TMrbHelpBrowser default ctor " << this << endl<<flush;
+//}
+//#endif
 //___________________________________________________________
 
 TMrbHelpBrowser::TMrbHelpBrowser(const char * InputFile)
