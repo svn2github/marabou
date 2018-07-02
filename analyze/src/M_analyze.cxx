@@ -548,7 +548,7 @@ int main(int argc, char **argv) {
 						<< endl;
 		void *r;
 	   pthread_join(msg_thread, &r);
-    	if ( verboseMode ) cout	<< "M_analyze: msg_thread terminated" << endl;
+    	cout	<< "M_analyze: msg_thread terminated" << endl;
    }
 	if(!gSystem->AccessPathName(our_pid_file.Data(), kFileExists)){
 		TString RmCmd = "rm  ";
@@ -560,6 +560,12 @@ int main(int argc, char **argv) {
 
 	cout << "Events Processed: " << u_analyze->GetEventsProcessed()<< endl;
 
+// close possible network connection
+	if (gServerSocket != NULL) {
+		cout << "Closing socket: " << gComSocket << endl;
+		gServerSocket->Close();
+		delete gServerSocket;
+	}
    TEnv env(".rootrc");
 //   env.Print()
    if (env.GetValue("M_analyze.PlaySound", 0) > 0) {
@@ -589,8 +595,8 @@ int main(int argc, char **argv) {
 //       usleep(300000);
 // 	   cout << "" << endl;
 //   }
-	cout << "Exit from M_analyze" << endl;
-	exit(0);
+	cout << "Exit from M_analyze, no exit(0)" << endl;
+//	exit(0);
 }
 
 void * update_handler(void * dummy) {
@@ -713,12 +719,16 @@ void * msg_handler(void * dummy) {
    const Int_t kMaxSock = 6;
    cout << setyellow<< "Enter msg_handler, gComSocket = " << gComSocket
 	<< " RunStatus: "
-	<<u_analyze->GetRunStatus()<<setblue<< endl;
+	<<u_analyze->GetRunStatus()<<setblack<< endl;
 	if (!(gServerSocket->IsValid())) {
       cout << "Invalid: " << gComSocket << endl;
       return dummy;
    }
-
+	TString  smess;
+   TString arg;
+   TString cmd;
+	TString buf;
+   char *str = new char[300];
    TMonitor *mon = new TMonitor();
 	mon->Add(gServerSocket);
    mon->Print();
@@ -726,9 +736,9 @@ void * msg_handler(void * dummy) {
    TSocket * s[kMaxSock] = {0};
    TMessage *mess =0;
    Int_t maxwait = 1000;
+	TSocket *sock;
 
    while (1) {
-      TSocket *sock;
       sock = mon->Select(maxwait);
       if (sock == (TSocket*)-1) {
 		   if (u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING) break; else continue;
@@ -745,6 +755,8 @@ void * msg_handler(void * dummy) {
                break;
             }
          }
+//         cout << " GetListOfSockets() at start" << endl;
+//        gROOT->GetListOfSockets()->ls();
          if (!ok) {
             cout << "only accept " << kMaxSock - 1 << " client connections" << endl;
             s[kMaxSock - 1] = ((TServerSocket *)sock)->Accept();
@@ -767,18 +779,18 @@ void * msg_handler(void * dummy) {
       }
 //      if ( verboseMode ) cout << "M_analyze::msg_handler(): Message type " << mess->What() << endl;
       if(mess->What() == kMESS_STRING){
-         char str[300];
+//         char str[300];
          mess->ReadString(str, 250);
 //	if ( verboseMode ) cout << "M_analyze::msg_handler(): Read from client: " << str << endl;
 //        no_of_parameters= M.parse(str, parms);
-         TString  smess = str; smess = smess.Strip(TString::kBoth);
+         smess = str; 
+         smess = smess.Strip(TString::kBoth);
          if(smess(0,9) != "M_client "){
             cerr << setred
 				<< "M_analyze::msg_handler(): Illegal client - " << smess(0,9)
 				<< setblack << endl;
 //            break;
          } else smess.Remove(0,9);
-         TString arg; TString cmd;
          Int_t nc = smess.Index(" ");
          if(nc <= 0) cmd = smess;
          else {
@@ -797,6 +809,8 @@ void * msg_handler(void * dummy) {
                cerr	<< "M_analyze::msg_handler(): Sending STOP to TMrbTransport" << endl;
 			      gMrbTransport->SetStopFlag(kTRUE);
 			   }
+				cout << "msg_handler: terminate received" << endl;
+			   break;
          } else if(cmd == "pause") {
 			u_analyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
          } else if(cmd == "resume") {
@@ -862,7 +876,7 @@ void * msg_handler(void * dummy) {
            count = u_analyze->ClearHistograms(arg.Data());
 		     if (count > 0) u_analyze->SetUpdateFlag();
            mess0.Reset();          // re-use TMessage object
-           TString buf = Form("Number of histos cleared: %d", count);
+           buf = Form("Number of histos cleared: %d", count);
            mess0.WriteString(buf.Data());
            sock->Send(mess0);
 
@@ -898,8 +912,19 @@ void * msg_handler(void * dummy) {
       }
       if (mess) { delete mess; mess = 0;};
    }
-
+	if (mon) {
+		if (sock) {
+			mon->Remove(sock);
+			gROOT->GetListOfSockets()->Remove(sock);
+			delete sock;
+		}
+		delete mon;
+	}
    if (mess) delete mess;
-   cout << "exit msg_handler" << endl;
-  return dummy;
+   delete [] str;
+//   cout << " GetListOfSockets() at exit" << endl;
+//  gROOT->GetListOfSockets()->ls();
+   cout << "exit msg_handler " << endl<<flush;
+	pthread_exit(0);
+	//return dummy;
 }
