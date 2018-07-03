@@ -867,7 +867,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 
 	gDirSave = gDirectory;						// save dir
 
-//	gDirSave->ls();
+	gDirSave->ls();
 
 	parFile = new TFile(pfName);
 	if (!parFile->IsOpen()) {
@@ -882,8 +882,11 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 		vobj = gMrbLofUserVars->Get(i);
 		fobj = parFile->Get(vobj->GetName());	// look for this object in param file
 		if (fobj != NULL) {
+			cout << "@@@ found: " << fobj->GetName() << endl;
 			if ((vobj->GetUniqueID() & kVarOrWindow) == (fobj->GetUniqueID() & kVarOrWindow)) {
+				cout << "@@@ uniqueId: " << fobj->GetName() << endl;
 				if (fobj->InheritsFrom("TMrbVariable")) {
+					cout << "@@@ var" << endl;
 					switch (((TMrbVariable *) fobj)->GetType()) {
 						case kVarI:
 							if (((TMrbVariable *) fobj)->IsArray()) {
@@ -903,6 +906,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 							break;
 					}
 				} else if (fobj->InheritsFrom("TMrbWindow")) {
+					cout << "@@@ wdw" << endl;
 					switch (((TMrbWindow *) fobj)->GetType()) {
 						case kWindowI:
                             ((TMrbWindowI *) vobj)->Print();
@@ -919,8 +923,10 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 							break;
 					}
 				} else if (fobj->InheritsFrom("TCutG")) {
+					cout << "@@@ cut" << endl;
 					gMrbLofUserVars->Replace(vobj, fobj);
-				} else if (fobj->InheritsFrom("TFormula")) {
+				} else if (fobj->InheritsFrom("TF1")) {
+					cout << "@@@ formula" << endl;
 					gMrbLofUserVars->Replace((TFormula *) vobj, (TFormula *) fobj);
 					gROOT->Append(fobj);
 					fobj->SetUniqueID(kIsFunction);
@@ -962,6 +968,7 @@ Bool_t TMrbAnalyze::ReloadMultipleFiles(TString & ParamFileString) {
 	Int_t from = 0;
 	while (ParamFileString.Tokenize(pf, from, ":")) {
 		if (pf.Index(".root", 0) > 0) {
+			cout << "@@@ multiple: " << pf << endl;
 			TMrbIOSpec * ioSpec = new TMrbIOSpec();
 			ioSpec->SetParamFile(pf.Data(), TMrbIOSpec::kParamReload);
 			this->ReloadVarsAndWdws(ioSpec);
