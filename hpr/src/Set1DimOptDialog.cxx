@@ -172,11 +172,11 @@ from the \"GraphicsAtt\" popup menu\n\
 			fTitleY = hist->GetYaxis()->GetTitle();
 		}
 		opt           = hist->GetOption();
-		if (opt.Length() == 0 && hist->GetSumw2N()>0) {
-			if (gHprDebug > 0)
-				cout << "Force ErrorMode[" <<i<<"] = E " << endl;
-			opt   = "E";
-		}
+//		if (opt.Length() == 0 && hist->GetSumw2N()>0) {
+//			if (gHprDebug > 0)
+//				cout << "Force ErrorMode[" <<i<<"] = E " << endl;
+//			opt   = "E";
+//		}
 		opt.ToUpper();
 		TRegexp SAME("SAME");
 //		fSame[i] = 0;
@@ -533,7 +533,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 			drawopt += "Y+";
 //		if ( fSame[i] )
 //			drawopt+= "SAME";
-		if (fShowContour[i] != 0) drawopt += "HIST";
+		if (fShowContour[i] != 0 || fFill[i] != 0) drawopt += "HIST";
 //		if (drawopt.Length() == 0 || fShowContour[i] != 0) drawopt += "HIST";
 		if ( gHprDebug > 0 )
 			cout << "Set1DimOptDialog::SetAtt " << drawopt << endl;
