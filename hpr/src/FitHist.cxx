@@ -563,9 +563,11 @@ void FitHist::DoSaveLimits()
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-	if (gHprDebug > 1)
-		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist
-		<< " RecursiveRemove: " << obj << " " <<obj->GetName() << endl;
+	if (gHprDebug > 1){
+		cout << "FitHist:: " << this << " fSelHist " <<  fSelHist << " RecursiveRemove: " ;
+		if (obj) cout << obj << " name  " <<obj->GetName() << " class " << obj->ClassName();
+		cout << endl;
+	}
 	if (fSelHist == NULL) {
 		return;
 	}
@@ -1522,10 +1524,13 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		fCanvas->GetHandleMenus()->SetLog(fLogy);
 		Draw1Dim();
 	}
-	if (gHprDebug != 0)
+	if (gHprDebug != 0) {
 		cout << hist->ClassName() << " *" <<  hist->GetName()
 		<< " = (" << hist->ClassName() << "*)" 
 		<< hist << ";" << endl;
+		cout << "yaxis " << hist->GetYaxis() << endl;
+		cout << "stats " << hist->GetListOfFunctions()->FindObject("stats") << endl;
+	}
 	fFrameX1 = fCanvas->GetFrame()->GetX1();
 	fFrameX2 = fCanvas->GetFrame()->GetX2();
 	fFrameY1 = fCanvas->GetFrame()->GetY1();
@@ -3579,6 +3584,7 @@ void FitHist::Draw1Dim()
 		gStyle->SetOptTitle(fShowTitle);
 //		if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
 		if ( fFill1Dim ) {
+			 if (!drawopt.Contains("HIST"))  drawopt += "HIST";
 			 fSelHist->SetFillStyle(fFillStyle);
 			 fSelHist->SetFillColor(fFillColor);
 		} else
@@ -3617,8 +3623,8 @@ void FitHist::Draw1Dim()
 	}
 	if ( gHprDebug > 0 ) {
 		cout << "Draw1Dim() " << drawopt << " fSelHist->Draw() " 
-		<<fSelHist->GetDrawOption() 
-		<< " logy " ;
+		<<fSelHist->GetDrawOption() << " FillColor " 
+		<<fSelHist->GetFillColor() << " logy " ;
 		if (fCanvas->GetLogy())
 			cout << " true";
 		else

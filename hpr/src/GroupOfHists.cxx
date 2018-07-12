@@ -6,6 +6,7 @@
 #include <TGMsgBox.h>
 #include "TGMrbInputDialog.h"
 #include "support.h"
+#include "hprbase.h"
 #include "SetColor.h"
 #include "GroupOfHists.h"
 #include "Set1DimOptDialog.h"
@@ -61,7 +62,35 @@ GroupOfHists::GroupOfHists()
 GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*title*/)
 				: fHList(hlist), fHistPresent(hpr)
 {
-//   cout << " ctor GroupOfHists::" << this << endl;
+	if (gHprDebug > 0) {
+   cout << " ctor GroupOfHists::" << this << endl;
+//   gHpr->CloseAllCanvases();
+	}
+	// Close canvases which may contain a selected histogram
+	TIter next1(hlist);
+	while ( TObjString * objs = (TObjString*)next1()) {
+		// extract histname
+		TString s = objs->String();
+		if (gHprDebug > 0) cout << "Selected: " << s << endl;
+		Int_t ik = s.Index(",");
+		if (ik<0) continue;
+		s = s(ik+1,s.Length());
+		ik = s.Index(",");
+		Int_t is = s.Index(";");
+		if (is >= 0 && is < ik) ik=is;
+		s = s(0,ik);
+//		s.Prepend("_");
+//		s.Append("_");
+		if (gHprDebug > 0) cout << " Look for " << s << endl;
+		TCanvas *cc = (TCanvas*)Hpr::FindObjectByWildcard(s.Data(), (TList*)gROOT->GetListOfCanvases());
+		if (cc) {
+			if (gHprDebug > 0)
+				cout << "Deleting: " << cc->GetName() << endl;
+			TRootCanvas *rc = (TRootCanvas*)cc->GetCanvasImp();
+			rc->SendCloseMessage();
+		}
+	}
+
 	fCanvas = NULL;
 	fTimer = NULL;
 	fDialog = NULL;
@@ -92,6 +121,9 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*tit
 	TIter next(fHList);
 	while ( TObjString * objs = (TObjString*)next()) {
 		fHistList.Add(new TObjString(*objs));
+		if (gHprDebug > 0) {
+			cout << objs->String() << endl;
+		}
 	}
 	if (nsel == 2 ) {fNx = 1, fNy = 2;};
 	if (nsel >= 3 ) {fNx = 2, fNy = 2;};
@@ -224,7 +256,7 @@ void GroupOfHists::BuildCanvas()
 		
 //      hname = hist->GetName();
 		if (gHprDebug > 0)
-		cout << "Enter GroupOfHists::BuildCanvas: " << fname<< " "  << hname << endl;
+		cout << "In GroupOfHists::BuildCanvas: " << fname<< " " << hist << " " << hname << endl;
 
 //      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
 //      if(last_us >0)hname.Remove(last_us);
@@ -373,6 +405,8 @@ void GroupOfHists::BuildCanvas()
 		firstpad->cd();
 	}
 	fCanvas->SetEditable(kTRUE);
+	if (gHprDebug>0)
+	cout << "Exit GroupOfHists::BuildCanvas: " << endl;
 }
 //________________________________________________________________________
 

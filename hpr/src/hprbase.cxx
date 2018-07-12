@@ -1912,5 +1912,33 @@ TCanvas * HT2TC(GrCanvas *htc)
 //	tc->Draw();
 	return tc;
 }
+//______________________________________________________________________
+
+TObject *FindObjectByWildcard(const char *s, TList *list)
+{
+	TIter next(list);
+	TString name;
+	TObject *obj;
+	while ( (obj = next()) ) {
+		name = obj->GetName();
+		if (name.Contains(s))
+			return obj;
+	}
+	return NULL;
+}
+//______________________________________________________________________
+
+Int_t PrintList(TList *list)
+{
+	TIter next(list);
+	TObject *obj;
+	Int_t nn = 0;
+	cout << "Content of list: " << list->GetName() << endl;
+	while ( (obj = next()) ) {
+		cout << obj->GetName()<< " " << obj->GetTitle() << endl;
+		nn++;
+	}
+	return nn;
+}
 
 }   // end namespace Hpr

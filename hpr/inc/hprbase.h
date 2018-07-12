@@ -49,5 +49,8 @@ namespace Hpr
 	Double_t DtoL(Double_t px, Double_t py, Double_t x1, Double_t y1, Double_t x2, Double_t y2 );
 	TH1F* projectany(TH2* hin , TH1F* hp, Double_t co, Double_t sl);
 	TCanvas * HT2TC(GrCanvas *htc);
+	TObject *FindObjectByWildcard(const char *s, TList *list);
+	Int_t PrintList(TList *list);
+
 }
 #endif

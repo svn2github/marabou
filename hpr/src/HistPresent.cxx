@@ -365,6 +365,7 @@ HistPresent::~HistPresent()
 //________________________________________________________________
 void HistPresent::RecursiveRemove(TObject * obj)
 {
+	if ( gHprClosing ) return;
 	if (gHprDebug > 1 && obj) {
 		cout << "HistPresent::RecursiveRemove for: " << obj << " " << obj->GetName() <<endl ;
 	}
@@ -932,6 +933,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 		maxkey = TMath:: Max(GetObjects(lofW2, gDirectory, "TMrbWindow2D"),maxkey);
 		rfile->Close();
 	} else if (strstr(fname,"Socket")) {
+		ClearSelect();
 		if (!fComSocket) {
 			if (!fConnectedOnce) {
 				*fHostToConnect = GetString("Host to connect", fHostToConnect->Data()
