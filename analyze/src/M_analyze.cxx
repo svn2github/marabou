@@ -724,7 +724,7 @@ void * msg_handler(void * dummy) {
       cout << "Invalid: " << gComSocket << endl;
       return dummy;
    }
-	TString  smess;
+	TString smess;
    TString arg;
    TString cmd;
 	TString buf;
@@ -733,10 +733,10 @@ void * msg_handler(void * dummy) {
 	mon->Add(gServerSocket);
    mon->Print();
 
-   TSocket * s[kMaxSock] = {0};
-   TMessage *mess =0;
+   TSocket * s[kMaxSock] = {NULL};
+   TMessage *mess = NULL;
    Int_t maxwait = 1000;
-	TSocket *sock;
+	TSocket *sock = NULL;
 
    while (1) {
       sock = mon->Select(maxwait);
@@ -773,7 +773,10 @@ void * msg_handler(void * dummy) {
          cout << "M_analyze::msg_handler(): mess == 0" << endl;
          mon->Remove(sock);
          for (Int_t i = 0; i < kMaxSock - 1; i++) {
-            if (sock == s[i]) s[i] = NULL;
+            if (sock == s[i]) {
+					delete s[i];
+					s[i] = NULL;
+				}
          }
          continue;
       }
@@ -889,7 +892,10 @@ void * msg_handler(void * dummy) {
          	cout << "M_analyze::msg_handler(): M_client exit" << endl;
          	mon->Remove(sock);
          	for (Int_t i = 0; i < kMaxSock - 1; i++) {
-            	if (sock == s[i]) s[i] = NULL;
+            	if (sock == s[i]) {
+						delete s[i];
+						s[i] = NULL;
+					}
          	}
          	continue;
          } else {
@@ -913,10 +919,14 @@ void * msg_handler(void * dummy) {
       if (mess) { delete mess; mess = 0;};
    }
 	if (mon) {
-		if (sock) {
-			mon->Remove(sock);
-			gROOT->GetListOfSockets()->Remove(sock);
-			delete sock;
+      for (Int_t i = 0; i < kMaxSock - 1; i++) {
+         if (s[i]) {
+				cout << "msg_handler, remove " << s[i] << endl;
+				mon->Remove(s[i]);
+				gROOT->GetListOfSockets()->Remove(s[i]);
+				delete s[i];
+				s[i] = NULL;
+			}
 		}
 		delete mon;
 	}
