@@ -159,12 +159,13 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t */*tit
 
 GroupOfHists::~GroupOfHists()
 {
-//   cout <<"dtor GroupOfHists, fDialog " << fDialog << endl;
+	if (gHprDebug > 0)
+		cout <<"dtor GroupOfHists, fDialog " << fDialog << endl;
 	gROOT->GetList()->Remove(this);
 	gROOT->GetListOfCleanups()->Remove(this);
+	if (fTimer) delete fTimer;
 	if (fDialog) {
 		fDialog->CloseWindowExt();
-		if (fTimer) delete fTimer;
 		SaveDefaults();
 	}
 }
@@ -412,11 +413,13 @@ void GroupOfHists::BuildCanvas()
 
 void GroupOfHists::RecursiveRemove(TObject *obj)
 {
-//   cout <<  "GroupOfHists::RecursiveRemove,obj " << obj << " "  << obj->GetName() << endl;
+	if (gHprDebug > 0) 
+		cout <<  "GroupOfHists::RecursiveRemove,obj " << obj << " "  << obj->GetName() << endl;
 	if (fCanvas && obj == fCanvas) {
 		fWindowXWidth = fCanvas->GetWindowWidth();
 		fWindowYWidth = fCanvas->GetWindowHeight();
- //     cout <<  "RecursiveRemove,fWindowXWidth  " << fWindowXWidth << endl;
+		if (gHprDebug > 0) 
+			cout <<  "GroupOfHists::RecursiveRemove,fWindowXWidth  " << fWindowXWidth << endl;
 		delete this;
 	}
 }
