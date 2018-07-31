@@ -595,7 +595,7 @@ int main(int argc, char **argv) {
 //       usleep(300000);
 // 	   cout << "" << endl;
 //   }
-	cout << "Exit from M_analyze, no exit(0)" << endl;
+	cout << "Exit from M_analyze" << endl;
 //	exit(0);
 }
 
