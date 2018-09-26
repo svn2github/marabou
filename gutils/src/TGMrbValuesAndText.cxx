@@ -1566,6 +1566,11 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
 	this->Move(ax, ay);
 	this->SetWMPosition(ax, ay);
+	fPosX = ax;
+	fPosY = ay;
+	fWidX = win_width;
+	fWidY = height;
+	
 	// popup dialog and wait till user replies
 	this->MapWindow();
 	this->ChangeBackground(brown);

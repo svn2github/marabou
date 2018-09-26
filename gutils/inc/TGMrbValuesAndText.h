@@ -142,6 +142,11 @@ private:
 	TString				fStartDir;
 	Bool_t            fMustRestoreDir;
    Int_t             fCloseFlag;
+   Int_t					fPosX;		// position of widget on screen
+   Int_t					fPosY;		// position of widget on screen
+   Int_t					fWidX;		// width widget on screen
+   Int_t					fWidY;		// height of widget on screen
+  
 public:
    TGMrbValuesAndText(const char *prompt, TString * text,
                              Int_t * ok, Int_t win_width, const TGWindow *win=0,
@@ -172,6 +177,10 @@ public:
 	void SetComboSelect(Int_t id, Int_t sel);
 	TList * GetButtonList()       { return fEntries; };
 	static Int_t LabelLetterWidth();
+   Int_t GetPosX() {return fPosX;};
+   Int_t GetPosY() {return fPosY;};
+   Int_t GetWidX() {return fWidX;};
+   Int_t GetWidY() {return fWidY;};
 ClassDef(TGMrbValuesAndText,0)		// [GraphUtils] A dialog box
 };
 //_________________________________________________________________________________________
