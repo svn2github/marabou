@@ -25,7 +25,6 @@ HELPBS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 HELPBO        := $(HELPBS:.cxx=.o)
 
 HELPBDEP      := $(HELPBO:.o=.d) $(HELPBDO:.o=.d)
-
 HELPBLIB      := $(LPATH)/libTMrbHelpBrowser.$(SOEXT)
 ifeq ($(ROOTV6), 1)
 	ALLPCMS += $(HELPBPCM)

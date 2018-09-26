@@ -39,7 +39,7 @@ ClassImp(TMrbHelpBrowser)
 // It does n o t support display of the Web documentation of ROOT.
 //
 //It accepts input in HTML format but does not recognize all possible tags. 
-// urrently only the following tags are recognized (others are just ignored):
+// currently only the following tags are recognized (others are just ignored):
 //  
 //<Hn> 					  Heading i.e. highlight line
 //<B>, <I> 				  bold, italic
@@ -211,14 +211,23 @@ Int_t TMrbHelpBrowser::AddHtmlFile(const char * HtmlFile, Bool_t keep_references
    } else {
       dir = "";
    }
-   TString helptext;
    TString anchor(gSystem->BaseName(HtmlFile));
-   TString tag;
    TString rawtext;   
    rawtext.ReadFile(infile);
-   PreScan(rawtext, keep_references);   // remove unknown tags and EOL in tags
+   Int_t res = AddHtmlAsString(rawtext, anchor, dir, keep_references );
+   infile.close();
+   return res;
+}
+//________________________________________________________________________________
+
+Int_t TMrbHelpBrowser::AddHtmlAsString(TString & rawtext, TString & anchor, TString & dir, 
+													Bool_t keep_references){
+
+   TString helptext;
    TString line;
-   Bool_t start = kTRUE;
+   TString tag;
+	Bool_t start = kTRUE;
+   PreScan(rawtext, keep_references);   // remove unknown tags and EOL in tags
    while(NextLine(rawtext, line, start) >=0){
       start = kFALSE;
       Int_t tstart = 0;
@@ -298,7 +307,6 @@ Int_t TMrbHelpBrowser::AddHtmlFile(const char * HtmlFile, Bool_t keep_references
    	else
       	fHelpList->Add(new TNamedString(anchor, helptext));
    }
-   infile.close();
    return 1; 
 }
 //________________________________________________________________________________
@@ -410,14 +418,31 @@ void TMrbHelpBrowser::AddCanvas(const char * RootFile){
 }
 //______________________________________________________________________________
 
+void TMrbHelpBrowser::CanvasClosed()
+{
+	if (gDebug > 0) {
+		cout << "TMrbHelpBrowser::CanvasClosed()" << endl;
+	}
+//	if ( fCanvasList->FindObject(obj) ) {
+//		cout << "TMrbHelpBrowser::Remove " << obj << endl;
+//		fCanvasList->Remove(obj);
+//	}
+}
+//______________________________________________________________________________
+
 void TMrbHelpBrowser::RecursiveRemove(TObject * obj)
 {
-//	cout << "TMrbHelpBrowser::RecursiveRemove " << obj << endl;
+	if (gDebug > 0) {
+		cout << "TMrbHelpBrowser::RecursiveRemove " << obj << endl;
+		if (obj) cout << " " << obj->GetName();
+		cout  << endl;
+	}
 	if ( fCanvasList->FindObject(obj) ) {
+		cout << "TMrbHelpBrowser::Remove " << obj << endl;
 		fCanvasList->Remove(obj);
 	}
 }
-	//________________________________________________________________________________
+//________________________________________________________________________________
 
 void TMrbHelpBrowser::Clear(){
 //
@@ -426,7 +451,8 @@ void TMrbHelpBrowser::Clear(){
 	TCanvas * htc;
 	while ( (htc =(TCanvas *)next()) ) {
 		TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
-		rc->SendCloseMessage();
+		if (rc != NULL)
+			rc->SendCloseMessage();
 	}
 	fCanvasList->Clear("nodelete");
 }
@@ -664,8 +690,8 @@ Int_t TMrbHelpBrowser::LineCount(TString & str,
 //________________________________________________________________________________
 
 void TMrbHelpBrowser::MoveOrigin(){
-   fX0 += 50;
-   fY0 += 50;
+   fX0 += 30;
+   fY0 += 30;
    if(fX0 + fWwX > fScreen_w)fX0=600;
    if(fY0 > 600)  fY0=50;
 }
@@ -840,7 +866,7 @@ void TMrbHelpBrowser::DrawText(const Int_t ind,  Int_t xoff, Int_t yoff)
 
 //________________________________________________________________________________
 
-void TMrbHelpBrowser::DrawText(const char * hname, Int_t /*xoff*/, Int_t /*yoff*/)
+void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 {
 
 //   This method produces the canvas with the help text:
@@ -849,11 +875,11 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t /*xoff*/, Int_t /*yoff*
 //   Insert anchors  
 //   Display embedded images in separate windows
 	if (gDebug > 0)
-		cout << "Enter DrawText(" << hname << ")" << endl;
+		cout << "Enter DrawText(" << hname << ")" << xoff << " " << yoff << endl;
 	TString url(hname);
-	if ( url.BeginsWith("http://") ) {
-		url.Prepend("firefox ");
-		url.Append("&");
+	if ( url.BeginsWith("http") ) {
+		url.Prepend("firefox -new-window ");
+//		url.Append("&");
 		gSystem->Exec(url);
 		return;
 	}
@@ -920,10 +946,21 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t /*xoff*/, Int_t /*yoff*
    TString canvas_title(hname);
    if (canvas_title.EndsWith(".html"))
      canvas_title.Resize(canvas_title.Length() - 5);
-      
+   Int_t xpos, ypos;
+   if (xoff >=0 )
+		xpos = xoff;
+	else 
+		xpos = fX0;
+   if (yoff >=0 )
+		ypos = yoff;
+	else 
+		ypos = fY0;
+	if (gDebug > 0) {
+		cout << "xpos, ypos " << xpos<< " " << ypos << endl;
+	}
    if(nl <= 36 && longest_line <= line_length){
 //     default size, no scroll bar in x  and y required
-      ca = new TCanvas(hname, canvas_title, -fX0, fY0, wwx_max, wwy + 60);
+      ca = new TCanvas(hname, canvas_title, -xpos, ypos, wwx_max, wwy + 60);
    } else { 
       if(wwy < fWwY)fWwY = wwy;
       Int_t wwx =wwx_max;
@@ -932,12 +969,14 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t /*xoff*/, Int_t /*yoff*
 //         wwx = (Int_t) (fWwX * (Float_t)longest_line / line_length);
          wwx = longest_line * char_width;
 //      }
-      ca = new TCanvas(hname, canvas_title, -fX0, fY0, wwx_max, fWwY + 60);
+      ca = new TCanvas(hname, canvas_title, -xpos, ypos, wwx_max, fWwY + 60);
 
       if(longest_line <= line_length) wwx = ca->GetWw() - 16;
 //      cout << "wwx  " << wwx << " wwx_max  " << wwx_max <<  endl;
       ca->SetCanvasSize(wwx, wwy);
    }
+   TRootCanvas *rc = (TRootCanvas *)ca->GetCanvasImp();
+   rc->Connect("CloseWindow()", this->ClassName(), this, "CanvasClosed()");
    fCanvasList->Add(ca);
    MoveOrigin();
    ca->AddExec("ex1","TMrbHelpBrowser::HandleMouseClicks()");
