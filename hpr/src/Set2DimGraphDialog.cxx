@@ -102,6 +102,12 @@ The parameter fUseNPoints is used to control this.\n\
 If <= no reordering is done, all points are used.\n\
 > 0 reorder and use only fUseNPoints but of course\n\
 only max number of points of the graph.\n\
+Option: \"Randomize points\"\n\
+The current implementation of the Delauny TRI algorithm\n\
+has a problem when points are exactly aligned\n\
+In the plot you see weird extra points outside the plot\n\
+Shifting the z-value randomly by a tiny amount avoids this\n\
+It is not visible in the final plot \n\
 ";
 
 	const char *fDrawOpt2[kNGraph2Dopt] =
@@ -209,12 +215,14 @@ only max number of points of the graph.\n\
 	fRow_lab->Add(new TObjString("Float_Value+MSize  "));
 	fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
 	fRow_lab->Add(new TObjString("CheckButton_Log X"));
-	fRow_lab->Add(new TObjString("CheckButton-Log Y"));
-	fRow_lab->Add(new TObjString("CheckButton-Log Z"));
+	fRow_lab->Add(new TObjString("CheckButton+Log Y"));
+	fRow_lab->Add(new TObjString("CheckButton+Log Z"));
 	fValp[ind++] = &fTwoDimLogX;
 	fValp[ind++] = &fTwoDimLogY;
 	fValp[ind++] = &fTwoDimLogZ;
-	fRow_lab->Add(new TObjString("PlainIntVal-UseNPoints"));
+	fRow_lab->Add(new TObjString("CheckButton_Randomize Points"));
+	fValp[ind++] = &fRandomizePoints;
+	fRow_lab->Add(new TObjString("PlainIntVal+Use N Points"));
 	fValp[ind++] = &fUseNPoints;
 
 	fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
@@ -325,6 +333,7 @@ void Set2DimGraphDialog::SetAttPerm()
 	env.SetValue("Set2DimGraphDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set2DimGraphDialog.fContourLevels",    fContourLevels    );
 	env.SetValue("Set2DimGraphDialog.fUseNPoints",       fUseNPoints    );
+	env.SetValue("Set2DimGraphDialog.fRandomizePoints",  fRandomizePoints   );
 
 	env.SaveLevel(kEnvLocal);
 }
@@ -347,6 +356,7 @@ void Set2DimGraphDialog::SaveDefaults()
 	env.SetValue("Set2DimGraphDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set2DimGraphDialog.fContourLevels",    fContourLevels    );
 	env.SetValue("Set2DimGraphDialog.fUseNPoints",       fUseNPoints    );
+	env.SetValue("Set2DimGraphDialog.fRandomizePoints",  fRandomizePoints   );
 	env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
@@ -402,6 +412,7 @@ void Set2DimGraphDialog::RestoreDefaults(Int_t resetall)
 	fUseGL             = env.GetValue("Set2DimGraphDialog.fUseGL",             0);
 	fContourLevels     = env.GetValue("Set2DimGraphDialog.fContourLevels",    20);
 	fUseNPoints        = env.GetValue("Set2DimGraphDialog.fUseNPoints",      500);
+	fRandomizePoints   = env.GetValue("Set2DimGraphDialog.fRandomizePoints",   0);
 }
 //______________________________________________________________________
 
