@@ -52,7 +52,7 @@ EXTRA_CXXFLAGS += -g -Wno-switch -Wno-write-strings -Wno-parentheses -Wno-format
 
 # only selected modules need to checked out from CVS if
 # not the complete marabou suite is required.
-MODULES       = build utils gutils helpbrowser fitcal gredit hpr
+MODULES       = build utils  helpbrowser gutils fitcal gredit hpr
 
 ifeq ($(findstring $(MAKECMDGOALS),hpr),hpr)
 # for HistPresent only the following modules are needed
