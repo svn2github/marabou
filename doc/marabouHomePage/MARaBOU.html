@@ -1,0 +1,684 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<title>MARaBOU Data Acquisition</title>
+<link rel="made" href="mailto:marabou@physik.uni-muenchen.de">
+<link rel="stylesheet" type="text/css" href="MARaBOU.css">
+<link rel="shortcut icon" href="pics/MarabouFavicon.gif">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT based Offline/Online Utility.">
+</head>
+<body BGCOLOR="#ebfcb0" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+<CENTER><H4 ALIGN="CENTER">
+<IMG SRC="pics/MarabouTitle.gif" WIDTH="550" HEIGHT="118"></H4></CENTER>
+ <CENTER><H3 ALIGN="CENTER">
+<A HREF="http://www.physik.uni-muenchen.de/~Rudolf.Lutter">R.Lutter</A>,
+<A HREF="http://www.physik.uni-muenchen.de/~Otto.Schaile">O.Schaile</A>,
+K.Sch&ouml;ffel,
+<A HREF="http://www.physik.uni-muenchen.de/~Klaus.Steinberger">K.Steinberger</A>,
+and C.Broude</H3></CENTER>
+<CENTER><IMG SRC="pics/MarabouPhoto.gif"></CENTER>
+<P></P>
+<UL>
+    <LI>
+    <A HREF="pics/MarabouTasks.gif"><FONT SIZE="4">MARaBOU tasks</FONT></A><BR>
+
+    <LI>
+		<FONT SIZE="4">MBS Hardware configuration</FONT>
+		<UL>
+		<LI>
+		<A HREF="pics/HardwareConfigSingleBranch.jpg"><FONT SIZE="4">VME, single branch</FONT></A><BR>
+		<LI>
+		<A HREF="pics/HardwareConfigDualBranch.jpg"><FONT SIZE="4">VME, dual branch</FONT></A><BR>
+		<LI>
+		<A HREF="pics/HardwareConfigCAMAC.jpg"><FONT SIZE="4">CAMAC, Miniball Exp</FONT></A><BR>
+		</UL>
+     <LI>
+    <FONT SIZE="4">ROOT/C++ classes</FONT> <BR>
+
+    <UL>
+        <LI>
+        <A HREF="ClassIndex.html">Class Index</A>
+        <LI>
+        Experimental configuration in a MBS environment
+        <UL>
+            <LI>
+            <A HREF="TMrbConfig.html">TMrbConfig</A>: base class to
+            describe the experimental layout
+			(<A HREF="howTo/Config/HowToConfigure.html">HowTo</A>)
+            <LI>
+            Basic ROOT/MBS classes
+            <UL>
+                <LI>
+                <A HREF="TMrbEvent.html">TMrbEvent</A>: event structure
+                <LI>
+                <A HREF="TMrbSubevent.html">TMrbSubevent</A>: subevent
+                structure
+            </UL>
+            <LI>
+            Classes describing MBS data formats
+            <UL>
+                <LI>
+                <A HREF="TMrbEvent_10_1.html">TMrbEvent_10_1</A>: MBS
+                event type [10,1]
+                <LI>
+                <A HREF="TMrbSubevent_10_1.html">TMrbSubevent_10_1</A>:
+                MBS subevent type [10,1], data labelled with channel number, 1 module
+                per subevent only
+                <LI>
+                <A HREF="TMrbSubevent_10_11.html">TMrbSubevent_10_11</A>:
+                same as [10,1], no channel numbers, zero padded
+                <LI>
+                <A HREF="TMrbSubevent_10_12.html">TMrbSubevent_10_12</A>:
+                same as [10,1], including module headers, any number of modules per
+                subevent
+               <LI>
+                <A HREF="TMrbSubevent_10_13.html">TMrbSubevent_10_13</A>:
+                same as [10,1]; data will be stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with a time stamp
+               <LI>
+                <A HREF="TMrbSubevent_10_14.html">TMrbSubevent_10_14</A>:
+                same as [10,11]; data will be stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with a time stamp
+                <LI>
+                <A HREF="TMrbSubevent_10_15.html">TMrbSubevent_10_15</A>:
+                stores raw data in an intermediate buffer. User has to provide his own method
+				TUsrSevtXXX::DecodeBuffer()
+				(via <A HREF="TMrbConfig.html#TMrbConfig:IncludeUserCode">TMrbConfig::IncludeUserCode()</A>) to transfer data to parameters.
+                <LI>
+                <A HREF="TMrbSubevent_DGF_1.html">TMrbSubevent_DGF_1</A>:
+               subevent [10,21], handles data from a <A HREF="TMrbXia_DGF_4C.html">XIA DGF4C</A> module
+                <LI>
+                <A HREF="TMrbSubevent_DGF_2.html">TMrbSubevent_DGF_2</A>:
+                subevent [10,22], same as <A HREF="TMrbSubevent_DGF_1.html">TMrbSubevent_DGF_1</A>,
+				but stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with its time stamp
+                <LI>
+                <A HREF="TMrbSubevent_DGF_3.html">TMrbSubevent_DGF_3</A>:
+                subevent [10,23], same as <A HREF="TMrbSubevent_DGF_2.html">TMrbSubevent_DGF_2</A>,
+				data members are of type <a href="TUsrHit.html">TUsrHit</a> instead of plain integer
+                <LI>
+                <A HREF="TMrbSubevent_Silena_1.html">TMrbSubevent_Silena_1</A>:
+                subevent [10,31] holds
+				<A HREF="TMrbSilena_4418V.html">Silena 4418V</A>/<A HREF="TMrbSilena_4418T.html">T</A>
+				data in zero-suppressed mode
+                <LI>
+                <A HREF="TMrbSubevent_Silena_2.html">TMrbSubevent_Silena_2</A>:
+                subevent [10,32], same as <A HREF="TMrbSubevent_Silena_1.html">TMrbSubevent_Silena_1</A>,
+				but stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with a time stamp
+                <LI>
+                <A HREF="TMrbSubevent_Caen_1.html">TMrbSubevent_Caen_1</A>: subevent [10,41] stores
+				<A HREF="TMrbCaen_V775.html">CAEN V775</A>/<A HREF="TMrbCaen_V785.html">V785</A> data
+                <LI>
+                <A HREF="TMrbSubevent_Caen_2.html">TMrbSubevent_Caen_2</A>:
+                subevent [10,42], same as <A HREF="TMrbSubevent_Caen_1.html">TMrbSubevent_Caen_1</A>,
+				but stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with a time stamp
+                <LI>
+                <A HREF="TMrbSubevent_Caen_3.html">TMrbSubevent_Caen_3</A>:
+                subevent [10,43], same as <A HREF="TMrbSubevent_Caen_2.html">TMrbSubevent_Caen_2</A>,
+				data members are of type <a href="TUsrHit.html">TUsrHit</a> instead of plain integer
+                <LI>
+                <A HREF="TMrbSubevent_Caen_Q1.html">TMrbSubevent_Caen_Q1</A>:
+                subevent [10,44], similar to <A HREF="TMrbSubevent_Caen_1.html">TMrbSubevent_Caen_1</A>,
+				but stores <A HREF="TMrbCaen_V965.html">CAEN V965</A> QDC data
+                <LI>
+                <A HREF="TMrbSubevent_Caen_V556_1.html">TMrbSubevent_Caen_V556_1</A>:
+                subevent [10,33] stores
+				<A HREF="TMrbCaen_V556.html">CAEN V556</A> data
+                <LI>
+                <A HREF="TMrbSubevent_Caen_V556_2.html">TMrbSubevent_Caen_V556_2</A>:
+                subevent [10,34], same as <A HREF="TMrbSubevent_Caen_V556_1.html">TMrbSubevent_Caen_V556_1</A>,
+				but stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with a time stamp
+                <LI>
+                <A HREF="TMrbSubevent_Caen_V556_3.html">TMrbSubevent_Caen_V556_3</A>:
+                subevent [10,43], same as <A HREF="TMrbSubevent_Caen_V556_2.html">TMrbSubevent_Caen_V556_2</A>,
+				data members are of type <a href="TUsrHit.html">TUsrHit</a> instead of plain integer
+                <LI>
+                <A HREF="TMrbSubevent_Caen_V1190_1.html">TMrbSubevent_Caen_V1190_1</A>:
+                subevent [10,45] stores
+				<A HREF="TMrbCaen_V1190.html">CAEN V1190</A> TDC data
+                <LI>
+                <A HREF="TMrbSubevent_Caen_V1190_2.html">TMrbSubevent_Caen_V1190_2</A>:
+                subevent [10,46], same as <A HREF="TMrbSubevent_Caen_V1190_1.html">TMrbSubevent_Caen_V1190_1</A>,
+				but stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with a time stamp
+                <LI>
+                <A HREF="TMrbSubevent_Caen_V1190_3.html">TMrbSubevent_Caen_V1190_3</A>:
+                subevent [10,47], same as <A HREF="TMrbSubevent_Caen_V1190_2.html">TMrbSubevent_Caen_V1190_2</A>,
+				data members are of type <a href="TUsrHit.html">TUsrHit</a> instead of plain integer
+                <LI>
+                <A HREF="TMrbSubevent_Sis_1.html">TMrbSubevent_Sis_1</A>:
+                subevent [10,51], stores SIS 3XXX data
+                <LI>
+                <A HREF="TMrbSubevent_Sis_2.html">TMrbSubevent_Sis_2</A>:
+                subevent [10,52], same as <A HREF="TMrbSubevent_Sis_1.html">TMrbSubevent_Sis_1</A>,
+				but stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with a time stamp
+                <LI>
+                <A HREF="TMrbSubevent_Sis_3.html">TMrbSubevent_Sis_3</A>:
+                subevent [10,53], same as <A HREF="TMrbSubevent_Sis_2.html">TMrbSubevent_Sis_2</A>,
+				data members are of type <a href="TUsrHit.html">TUsrHit</a> instead of plain integer
+                <LI>
+                <A HREF="TMrbSubevent_Sis_33.html">TMrbSubevent_Sis_33</A>:
+                subevent [10,54], stores <A HREF="TMrbSis_3300.html">SIS 3300 flash adc</A> data
+                <LI>
+                <A HREF="TMrbSubevent_Mesytec_1.html">TMrbSubevent_Mesytec_1</A>:
+                subevent [10,81], stores Mesytec MADC32/MQDC32 data
+                <LI>
+                <A HREF="TMrbSubevent_Mesytec_2.html">TMrbSubevent_Mesytec_2</A>:
+                subevent [10,82], same as <A HREF="TMrbSubevent_Mesytec_1.html">TMrbSubevent_Mesytec_1</A>,
+				but stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with a time stamp
+                <LI>
+                <A HREF="TMrbSubevent_Mesytec_3.html">TMrbSubevent_Mesytec_3</A>:
+                subevent [10,83], same as <A HREF="TMrbSubevent_Mesytec_2.html">TMrbSubevent_Mesytec_2</A>,
+				data members are of type <a href="TUsrHit.html">TUsrHit</a> instead of plain integer
+                <LI>
+                <A HREF="TMrbSubevent_Gassiplex_1.html">TMrbSubevent_Gassiplex_1</A>:
+                subevent [10,101], stores GASSIPLEX data
+                <LI>
+                <A HREF="TMrbSubevent_Gassiplex_2.html">TMrbSubevent_Gassiplex_2</A>:
+                subevent [10,102], same as <A HREF="TMrbSubevent_Gassiplex_1.html">TMrbSubevent_Gassiplex_1</A>,
+				but stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a>
+                <LI>
+                <A HREF="TMrbSubevent_Gassiplex_3.html">TMrbSubevent_Gassiplex_3</A>:
+                subevent [10,103], same as <A HREF="TMrbSubevent_Gassiplex_2.html">TMrbSubevent_Gassiplex_2</A>,
+				data members are of type <a href="TUsrHit.html">TUsrHit</a> instead of plain integer
+                <LI>
+                <A HREF="TMrbSubeventRaw.html">TMrbSubeventRaw</A>: a
+                used-defined subevent containing raw data
+                <LI>
+                <A HREF="TMrbSubevent_Data_S.html">TMrbSubevent_Data_S</A>:
+                subevent [10,91] contains short integer data (16 bit)
+                <LI>
+                <A HREF="TMrbSubevent_Data_I.html">TMrbSubevent_Data_I</A>:
+                subevent [10,92] contains integer data (32 bit)
+                <LI>
+                <A HREF="TMrbSubevent_Data_F.html">TMrbSubevent_Data_F</A>:
+                subevent [10,93] contains floating-point data
+                <LI>
+                <A HREF="TMrbSubevent_Obj.html">TMrbSubevent_Obj</A>:
+                subevent [10,94] contains one or more objects derived from
+				<A HREF="http://root.cern.ch/root/html/TObject.html">TObject</A>
+            </UL>
+            <LI>
+            Classes describing basic module types:
+            <UL>
+                <LI>
+                <A HREF="TMrbModule.html">TMrbModule</A>, <A
+                 HREF="TMrbModuleChannel.html">TMrbModuleChannel</A>, <A
+                 HREF="TMrbModuleRegister.html">TMrbModuleRegister</A>
+                <LI>
+                <A HREF="TMrbCamacModule.html">TMrbCamacModule</A>, <A
+                 HREF="TMrbCamacChannel.html">TMrbCamacChannel</A>, <A
+                 HREF="TMrbCamacRegister.html">TMrbCamacRegister</A>
+                <LI>
+                <A HREF="TMrbVMEModule.html">TMrbVMEModule</A>, <A
+                 HREF="TMrbVMEChannel.html">TMrbVMEChannel</A>, <A
+                 HREF="TMrbVMERegister.html">TMrbVMERegister</A>
+                <LI>
+                <A HREF="TMrbScaler.html">TMrbScaler</A>, <A
+                 HREF="TMrbCamacScaler.html">TMrbCamacScaler</A>, <A
+                 HREF="TMrbVMEScaler.html">TMrbVMEScaler</A>
+            </UL>
+            <LI>
+            Classes describing individual modules
+            <UL>
+                <LI>
+                <A HREF="TMrbModuleRaw.html">TMrbModuleRaw</A>:
+                a user-defined module
+                <LI>
+                CAMAC:
+                <UL>
+                    <LI>
+                    <A HREF="TMrbSilena_4418V.html">TMrbSilena_4418V</A>:
+                    ADC type Silena 4418/V, 8 chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbSilena_4418T.html">TMrbSilena_4418T</A>:
+                    TDC type Silena 4418/T, 8 chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbUct_8904.html">TMrbUct_8904</A>:
+                    universal counter/timer type UCT 8904
+                    <LI>
+                    <A HREF="TMrbSen_16P_2047.html">TMrbSen_16P_2047</A>:
+                    SEN pattern unit
+                    <LI>
+                    <A HREF="TMrbSilena_7420.html">TMrbSilena_7420</A>:
+                    Silena 7420 (NIM type) + input register
+                    <LI>
+                    <A HREF="TMrbLeCroy_2228A.html">TMrbLeCroy_2228A</A>:
+                    TDC type LeCroy 22
+                    <LI>
+                    <A HREF="TMrbLeCroy_2280.html">TMrbLeCroy_2280</A>:
+                    LeCroy's system processor 2280 (QDCs, 48 chn @ 12 bit each)
+                    <LI>
+                    <A HREF="TMrbLeCroy_4432.html">TMrbLeCroy_4432</A>, <A HREF="TMrbLeCroy_4434.html">TMrbLeCroy_4434</A>:
+                    scaler, 32 chn @ 24 bit
+                    <LI>
+                    <A HREF="TMrbLeCroy_4448.html">TMrbLeCroy_4448</A>:
+                    pattern unit 48 bit (3 chn @ 16 bit)
+                    <LI>
+                    <A HREF="TMrbAdcd_9701.html">TMrbAdcd_9701</A>: dual
+                    flash ADC 2 x 2K chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbSen_2010.html">TMrbSen_2010</A>: dual
+                    input register, 2 chn @ 16 bit
+                    <LI>
+                    <A HREF="TMrbNE_9041.html">TMrbNE_9041</A>: dual input
+                    register
+                    <LI>
+                    <A HREF="TMrbKinetics_3655.html">TMrbKinetics_3655</A>:
+                    timing generator
+                    <LI>
+                    <A HREF="TMrbGanelec_Q1612F.html">TMrbGanelec_Q1612F</A>:
+                    Gan'elec QDC 2 x 8 chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbISN_4481.html">TMrbISN_4481</A>: TDC
+                    type ISN 4481, 8 chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbOrtec_413A.html">TMrbOrtec_413A</A>: ADC
+                    type Ortec AD413A, 4 chn @ 13 bit
+                    <LI>
+                    <A HREF="TMrbXia_DGF_4C.html">TMrbXia_DGF_4C</A>:
+                    XIA DGF-4C, Digital Gamma Finder
+                    <LI>
+                    <A HREF="TMrbCologne_CPTM.html">TMrbCologne_CPTM</A>:
+                    clock and programmable trigger module
+                </UL>
+                <LI>
+                VME:
+                <UL>
+                    <LI>
+                    <A HREF="TMrbCaen_V260.html">TMrbCaen_V260</A>:
+                    scaler, 16 channels, 100MHz
+                    <LI>
+                    <A HREF="TMrbCaen_V556.html">TMrbCaen_V556</A>:
+                    Peak-sensing ADC, 8 chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbCaen_V775.html">TMrbCaen_V775</A>:
+                    TDC, 16 or 32 chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbCaen_V785.html">TMrbCaen_V785</A>:
+                    Peak-sensing ADC, 32 chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbCaen_V879.html">TMrbCaen_V879</A>:
+                    Peak-sensing ADC, 32 chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbCaen_V820.html">TMrbCaen_V820</A>:
+                    Latching scaler, 32 chn @ 32 bit
+                    <LI>
+                    <A HREF="TMrbCaen_V965.html">TMrbCaen_V965</A>:
+                    QDC, 32 chn @ 12 bit
+                    <LI>
+                    <A HREF="TMrbCaen_V1190.html">TMrbCaen_V1190</A>:
+                    TDC, 128 chn @ 19 bit, 100 ps
+                    <LI>
+                    <A HREF="TMrbMesytec_Madc32.html">TMrbMesytec_Madc32</A>:
+                    Fast 32 channel peak-sensing ADC
+                    <LI>
+                    <A HREF="TMrbMesytec_Mqdc32.html">TMrbMesytec_Mqdc32</A>:
+                    32/16 channel charge integrating QDC
+                    <LI>
+                    <A HREF="TMrbMesytec_Mtdc32.html">TMrbMesytec_Mtdc32</A>:
+                    32+2 channel time digitizing TDC
+                   <LI>
+                    <A HREF="TMrbGassiplex.html">TMrbGassiplex</A>:
+                    GASSIPLEX module, N x 64 chn, 11 bit, multiplexed
+                    <LI>
+                    <A HREF="TMrbSis_3300.html">TMrbSis_3300</A>:
+                    Digitizing ADC, 8 chn @ 12 bit, 100 MHz
+                    <LI>
+                    <A HREF="TMrbSis_3302.html">TMrbSis_3302</A>:
+                    Digitizing ADC, 8 chn @ 12 bit, 100 MHz
+                    <LI>
+                    <A HREF="TMrbSis_3600.html">TMrbSis_3600</A>:
+                    Buffered pattern unit, 32 bit
+                    <LI>
+                    <A HREF="TMrbSis_3801.html">TMrbSis_3801</A>:
+                    Buffered scaler, 32 chn @ 32 bit
+                    <LI>
+                    <A HREF="TMrbSis_3820.html">TMrbSis_3820</A>:
+                    Buffered scaler, 32 chn @ 32 bit
+                    <LI>
+                    <A HREF="TMrbLeCroy_1176.html">TMrbLeCroy_1176</A>:
+                    Multi-hit, multi-event TDC, 16 chn @ 16 bit
+                    <LI>
+                    <A HREF="TMrbAcromag_IP341.html">TMrbAcromag_IP341</A>:
+                    Sampling ADC type Acromag-9660/IP341, 4 x 16 chn @ 14 bit
+                    <LI>
+                    <A HREF="TMrbMpiHD_IOReg.html">TMrbMpiHD_IOReg</A>:
+                    Input/output register (8 bit in / 8 bit out) (MPI Heidelberg "MPIORL")
+                    <LI>
+                    <A HREF="TMrbVulomTB.html">TMrbVulomTB</A>:
+                    TriggerBox - a VME version of the famous TB8000! (GSI)
+                </UL>
+                Special:
+                <UL>
+                    <LI>
+                    <A HREF="TMrbMesytec_Mux16.html">TMrbMesytec_Mux16</A>:
+                    Mesytec multiplexer MUX-16, N * 16 channels
+                </UL>
+            </UL>
+            <LI>
+            Code generators
+            <UL>
+                <LI>
+                <A HREF="TMrbConfig.html#TMrbConfig:MakeReadoutCode">TMrbConfig::MakeReadoutCode()</A>:
+                generate C code to be linked to MBS
+                <LI>
+                <A HREF="TMrbConfig.html#TMrbConfig:MakeAnalyzeCode">TMrbConfig::MakeAnalyzeCode()</A>:
+                generate C++ classes to be used for data analysis within ROOT
+                <LI>
+                <A HREF="TMrbConfig.html#TMrbConfig:MakeRcFile">TMrbConfig::MakeRcFile()</A>:
+                generate a ROOT-style environment from config data
+            </UL>
+            <LI>
+            Converting config data to ROOT format and vice versa
+            <UL>
+                <LI>
+                <A HREF="TMrbConfig.html#TMrbConfig:WriteToFile">TMrbConfig::WriteToFile</A>:
+                save config data to ROOT file
+                <LI>
+                <A HREF="TMrbConfig.html#TMrbConfig:ReadFromFile">TMrbConfig::ReadFromFile</A>:
+                read config data from ROOT file
+                <LI>
+                <A HREF="TMrbConfig.html#TMrbConfig:MakeConfigCode">TMrbConfig::MakeConfigCode</A>:
+                generate config code from objects in memory
+            </UL>
+            <LI>
+            <A
+             HREF="examples/Config.C">Example
+            of a configuration file</A>
+            <UL>
+                <LI>
+                <A
+                 HREF="examples/ExaReadout.c">Resulting
+                readout code for MBS</A>
+                <LI>
+                Resulting C++ files for ROOT
+                <UL>
+                    <LI>
+                    <A
+                     HREF="examples/ExaAnalyze.cxx">User's
+                    analyzing code</A>
+                    <LI>
+                    <A
+                     HREF="examples/ExaAnalyze.h">C++
+                    class definitions</A>
+                    <LI>
+                    <A
+                     HREF="examples/ExaAnalyzeGlobals.h">Global
+                    pointer definitions</A>
+                </UL>
+            </UL>
+        </UL>
+        <LI>
+        Data transfer from MBS to ROOT
+        <UL>
+            <LI>
+            <A HREF="TMrbTransport.html">TMrbTransport</A>: read data
+            from file or server
+            <LI>
+            <A HREF="mbsio/index.html">mbsio</A>: library routines to
+            decode MBS data
+        </UL>
+        <LI>
+        Data acquisition and analysis
+        <UL>
+            <LI>
+            <A HREF="TMrbAnalyze.html">TMrbAnalyze</A>: base class for
+            user's data analysis
+            <LI>
+            <A HREF="TMrbIOSpec.html">TMrbIOSpec</A>: class to control input/output
+			during data acquisition/evaluation
+            <LI>
+            <A HREF="TUsrEvent.html">TUsrEvent</A>: base class for
+            user-defined event structures
+            <LI>
+            <A HREF="TUsrEvtStart.html">TUsrEvtStart</A>, <A
+             HREF="TUsrEvtStop.html">TUsrEvtStop</A>: start and stop
+            events
+            <LI>
+            <A HREF="TUsrEventBuilder.html">TUsrEventBuilder</A>: a user/specific event builder
+            <LI>
+            <A HREF="TUsrDeadTime.html">TUsrDeadTime</A>: dead time
+            info
+            <LI>
+            <A HREF="TMrbModuleListEntry.html">TMrbModuleListEntry</A>,
+            <A HREF="TMrbParamListEntry.html">TMrbParamListEntry</A>,
+            <A HREF="TMrbHistoListEntry.html">TMrbHistoListEntry</A>:
+            book keeping for modules, parameters, and histograms
+             <LI>
+            <A HREF="TUsrHitBuffer.html">TUsrHitBuffer</A>,
+			<A HREF="TUsrHit.html">TUsrHit</A>,
+            store event data together with time stamp, module id, and channel number,<br>
+              <LI>
+           <A HREF="TUsrHBX.html">TUsrHBX</A>, a wrapper class to access hitbuffer elements,<br>
+             <LI>
+            <A HREF="TUsrMux.html">TUsrMux</A>, decoder / sorter for Mesytec MUX-16 multiplexers
+        </UL>
+        <LI>
+        MBS Setup
+        <UL>
+            <LI>
+            <A HREF="TMbsSetup.html">TMbsSetup</A>: maintain setup data
+            base for MBS
+        </UL>
+        <LI>
+        Clients to connect to <b><i>m_esone_srv</i></b> under MBS
+        <UL>
+            <LI>
+            <A HREF="TMrbEsone.html">TMrbEsone</A>, <A
+             HREF="TMrbEsoneCnaf.html">TMrbEsoneCnaf</A>: ESONE client
+            to connect to CAMAC @ MBS
+            <LI>
+            <A HREF="TMrbDGF.html">TMrbDGF</A>, <A
+             HREF="TMrbDGFData.html">TMrbDGFData</A>: operate a XIA
+            DGF-4C Digital Gamma Finder
+            <LI>
+            <A HREF="TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</A>,
+			<A HREF="TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</A>:
+            DGF buffer structures
+            <LI>
+            <A HREF="TMrbLofDGFClusters.html">TMrbLofDGFClusters</A>,
+			<A HREF="TMrbDGFCluster.html">TMrbDGFCluster</A>,
+			<A HREF="TMrbDGFClusterMember.html">TMrbDGFClusterMember</A>:
+			data base for DGF clusters<BR>
+            <LI>
+            <A HREF="TMrbCPTM.html">TMrbCPTM</A> clock and programmable trigger module to be used with DGF-4C modules<br>
+			(Ch. G&ouml;rgen, G. Pascovici, Univ. Cologne)
+        </UL>
+        <LI>
+        Clients to connect to <b><i>mrbLynxOsSrv</i></b> under LynxOs
+        <UL>
+            <LI>
+            <A HREF="TMrbC2Lynx.html">TMrbC2Lynx</A>: client to connect to LynxOs server
+            <LI>
+            <A HREF="TC2LVMEModule.html">TC2LVMEModule</A>: VME module to be accessed via LynxOs
+            <LI>
+            <A HREF="TC2LSis3302.html">TC2LSis3302</A>: SIS 3302 flash ADC via LynxOs
+            <LI>
+            <A HREF="TC2LCaen785.html">TC2LCaen785</A>: CAEN V785 peak sensing ADC via LynxOs
+        </UL>
+         <LI>
+        Utilities
+        <UL>
+            <LI>
+            <A HREF="TMrbNamedX.html">TMrbNamedX</A> and <A
+             HREF="TMrbLofNamedX.html">TMrbLofNamedX:</A> define (a
+            list of) named indices
+           <LI>
+            <A HREF="TMrbTemplate.html">TMrbTemplate</A>: process
+            templates
+            <LI>
+            <A HREF="TMrbLofData.html">TMrbLofData</A>: a list of (structured) data items
+            <LI>
+            <A HREF="TMrbVariable.html">TMrbVariable</A>, <A
+             HREF="TMrbVarI.html">TMrbVarI</A>, <A HREF="TMrbVarF.html">TMrbVarF</A>, <A
+             HREF="TMrbVarS.html">TMrbVarS</A>,<BR>
+             <A HREF="TMrbVarArrayI.html">TMrbVarArrayI</A>, <A
+             HREF="TMrbVarArrayF.html">TMrbVarArrayF</A>,<BR>
+             <A HREF="TMrbWindowI.html">TMrbWindowI</A>, <A
+             HREF="TMrbWindowF.html">TMrbWindowF</A> <BR>
+             <A HREF="TMrbWindow2D.html">TMrbWindow2D</A><BR>
+             <A HREF="TMrbLofUserVars.html">TMrbLofUserVars</A><BR>
+             provide user-defined variables and 1-dim windows
+            <LI>
+            <A HREF="TMrbLofMacros.html">TMrbLofMacros</A>: manage a
+            list of root macros
+            <LI>
+            <A HREF="TMrbNamedArrayC.html">TMrbNamedArrayC</A>,
+            <A HREF="TMrbNamedArrayI.html">TMrbNamedArrayI</A>,
+            <A HREF="TMrbNamedArrayF.html">TMrbNamedArrayF</A>,
+            <A HREF="TMrbNamedArrayD.html">TMrbNamedArrayD</A>:
+			a <A HREF="http://root.cern.ch/root/html/TArray.html">TArray"X"</A> combined with a
+			<A HREF="http://root.cern.ch/root/html/TNamed.html">TNamed</A>
+             <LI>
+            <A HREF="TMrbNamedDouble.html">TMrbNamedDouble</A>: a named Double_t item
+             <LI>
+            <A HREF="TMrbSystem.html">TMrbSystem</A>: extensions to <A
+             HREF="http://root.cern.ch/root/html/TSystem.html">TSystem</A>
+
+            <LI>
+            <A HREF="TMrbEnv.html">TMrbEnv</A>: extensions to <A
+             HREF="http://root.cern.ch/root/html/TEnv.html">TEnv</A>
+            <LI>
+            <A HREF="TMrbResource.html">TMrbResource</A>: a replacement for <A
+             HREF="TMrbEnv.html">TMrbEnv</A>
+            <LI>
+            <A HREF="TMrbStatistics.html">TMrbStatistics</A>: maintain
+            histogram statistics
+            <LI>
+            <A HREF="TableOfLabels.html">TableOfLabels</A>,
+            TableOfStrings, TableOfFloats
+            <LI>
+            <A HREF="TMrbString.html">TMrbString</A>: type conversion for TString objects
+            <LI>
+            <A HREF="TMrbWildcard.html">TMrbWildcard</A>: wildcard function ("*" and "?")
+            <LI>
+            <A HREF="TMrbLogger.html">TMrbLogger</A>, <A HREF="TMrbLogMessage.html">TMrbLogMessage</A>: MARaBOU's message logger
+            <LI>
+            <A HREF="TMrbTail.html">TMrbTail</A>: browse file contents like tail(1)
+            <LI>
+            <A HREF="TMrbHelpBrowser.html">TMrbHelpBrowser</A>: a simple
+            HTML browser to implement Online Help facilities<BR>
+            <LI>
+            <A HREF="TMrbTidyDoc.html">TMrbTidyDoc</A>,
+			<A HREF="TMrbTidyOption.html">TMrbTidyOption</A>,
+            <A HREF="TMrbTidyNode.html">TMrbTidyNode</A>,
+			<A HREF="TMrbTidyAttr.html">TMrbTidyAttr</A>: interface to Dave Raggett's TidyLib<BR>
+        </UL>
+        <LI>
+        Miscellaneous
+        <UL>
+            <LI>
+            <A HREF="TMrbSerialComm.html">TMrbSerialComm</A>: establish communication to a RS232 serial port
+            <LI>
+            <A HREF="TPolControl.html">TPolControl</A>: control the polarized ion source via RS232
+			(<A HREF="howTo/TPolControl/HowToUse.html">HowTo</A>)
+            <LI>
+            <A HREF="TSnkDDA0816.html">TSnkDDA0816</A>: operate a DDA0816 DAC interface in the SNAKE environment
+            <LI>
+            <A HREF="QEnv/index.html">QEnv</A>: a QT class to handle ROOT's environment files
+			(see also <A HREF="http://root.cern.ch/root/html/TEnv.html">TEnv</A>)
+        </UL>
+        <LI>
+        Graphical User Interface
+        <UL>
+           <LI>
+            <A HREF="TGMrbMessageViewer.html">TGMrbMessageViewer</A>: display messages from MARaBOU's message logger
+           <LI>
+            <A HREF="TGMrbTextButtonGroup.html">TGMrbTextButtonGroup</A>,
+            ...<A HREF="TGMrbTextButtonList.html">List</A>: a group or
+            list of text buttons
+            <LI>
+            <A HREF="TGMrbRadioButtonGroup.html">TGMrbRadioButtonGroup</A>,
+            ...<A HREF="TGMrbRadioButtonList.html">List</A>: a group or
+            list of radio buttons
+            <LI>
+            <A HREF="TGMrbCheckButtonGroup.html">TGMrbCheckButtonGroup</A>,
+            ...<A HREF="TGMrbCheckButtonList.html">List</A>: a group or
+            list of check buttons
+            <LI>
+            <A HREF="TGMrbLabelEntry.html">TGMrbLabelEntry</A>: a
+            labelled text entry
+            <LI>
+            <A HREF="TGMrbFileEntry.html">TGMrbFileEntry</A>: a
+            labelled file entry (file dialog box)
+            <LI>
+            <A HREF="TGMrbLabelCombo.html">TGMrbLabelCombo</A>: a
+            labelled combo box
+            <LI>
+            <A HREF="TGMrbFileObjectCombo.html">TGMrbFileObjectCombo</A>,
+            <A HREF="TGMrbFileObjectListBox.html">TGMrbFileObjectListBox</A>,: a
+            labelled file entry and a combo/list box showing ROOT objects from selected file
+            <LI>
+            <A HREF="TGMrbProgressBar.html">TGMrbProgressBar</A>: a
+            transient frame showing a <A HREF="TGProgressBar.html">TGProgressBar</A>
+            <LI>
+            <A HREF="TGMrbTableFrame.html">TGMrbTableFrame</A>: a
+            matrix of text entries
+            <LI>
+            <A HREF="TGMrbMacroBrowserMain.html">TGMrbMacroBrowserMain,</A>
+             ..., <A HREF="TGMrbMacroBrowserComposite">Composite</A>,
+            ...<A HREF="TGMrbMacroBrowserGroup.html">Group</A>, ...<A
+             HREF="TGMrbMacroBrowserPopup.html">Popup</A>, ...<A
+             HREF="TGMrbMacroBrowserTransient.html">Transient</A>:<BR>
+             execute root macros interactively in a GUI
+            <LI>
+            <A HREF="TGMrbMacroEdit.html">TGMrbMacroEdit</A>:
+            a widget to edit/modify macro defs
+            <LI>
+            <A HREF="TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</A>: handle key strokes via ProcessMessage()
+            <LI>
+            <A HREF="TGMrbGeometry.html">TGMrbGeometry</A>: define window geometry
+            <LI>
+            <A HREF="TGMrbLayout.html">TGMrbLayout</A>: layout hints
+            and graphic context
+        </UL>
+        <LI>
+        Applications:
+        <UL>
+            <LI>
+            <A HREF="c_analyze/C_analyze.html">C_Analyze</A>: a GUI to control
+            data acquisition
+            <LI>
+            <A HREF="hpr/index.html">HistPresent, Online Help</A>:
+            HistPresent, Online Help pages
+            <LI>
+            <A HREF="hpr/HistPresent.gif">HistPresent, an example</A>:
+            a histogram presenter (example session)
+            <LI>
+            <A HREF="dgfcontrol/DGFControl.html">DGFControl</A>: a GUI to control
+            a XIA DGF-4C Digital Gamma Finder
+             <LI>
+            <A HREF="gutils/MacroBrowser.html">MacroBrowser</A>: a GUI to
+            execute ROOT macros<BR>
+         </UL>
+        Documentation:
+        <UL>
+            <LI>
+            <A HREF="doc/MedStructure.pdf">MED data structure</A>: a list mode format derived from MBS' lmd format
+            <LI>
+            <A HREF="doc/DaqInstructions.pdf">DAQ instructions for Miniball</A>: how to use MARaBOU in a Miniball experiment
+            <LI>
+            <A HREF="doc/EventBuilding.pdf">EventBuilder for Miniball</A>: how to perform event building in a Miniball experiment
+            <LI>
+            <A HREF="doc/EncalInstructions.pdf">Energy calibration</A>: how to perform an energy calibration
+            <LI>
+            <A HREF="marabou/IOSpec.html">Format of a file list entry</A>: File lists may be used in <b>C_analyze / M_analyze</b> to process several files in (quasi) batch mode
+        </UL>
+     </UL>
+    <LI>
+    <A HREF="UpdateMarabouFromSVN.html"><FONT SIZE="4">Download/Update MARaBOU / HistPresent from SVN Repository
+    </FONT></A>
+    <LI>
+    <A HREF="hpr.pdf"><FONT SIZE="4">Presentation of HistPresent at the ROOT2005 Workshop, CERN September 26-28, 2005
+    </FONT></A>
+
+</UL>
+<P>
+(<A HREF="mailto:MARaBOU@Physik.Uni-Muenchen.DE"><I>MARaBOU</I></A><I>,
+Last Update 16-Aug-2016, <A HREF="mailto:Rudolf.Lutter@Physik.Uni-Muenchen.DE">R. Lutter</A>) </I></P>
+</BODY>
+</HTML>

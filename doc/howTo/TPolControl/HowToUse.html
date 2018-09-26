@@ -1,0 +1,346 @@
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, c++, html, marabou, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+<title>How to use class TPolControl</title>
+</head>
+<body>
+<style type="text/css">
+pre.blue {
+   border-width: thin;
+   background-color: lightblue;
+   color: darkblue;
+   margin-left: +5%;
+   width: 80%
+}
+pre.yellow {
+   border-width: thin;
+   background-color: yellow;
+   color: darkblue;
+   width: 50%
+}
+pre.beige {
+   border-width: thin;
+   background-color: #ffffd1;
+   color: black;
+   width: 65%
+}
+div.ind {
+   margin-left: +5%;
+   margin-right: -10%
+}
+</style>
+
+<hr> <br>
+<div align="center"><h2>How to use class <b>TPolControl</b></h2></div>
+<br> <hr>
+
+<h3><u>Introduction</u></h3>
+
+<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html" name="TPolControl">TPolControl</a>
+is designed to control the Polarized Ion Source via a RS232 serial communication line.<br>
+The control device consists of a set of DACs to vary parameters in the ion source as well as
+a set of ADCs to read back resulting values.<br><br>
+<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html" name="TPolControl">TPolControl</a> is implemented within the <a href="http://root.cern.ch">ROOT</a>/<a href="http://www.bl.physik.uni-muenchen.de/marabou/html">MARaBOU</a> environment.<br>
+It may easily be called interactively from the ROOT interpreter.
+<p>
+This is a short description only - for more details on class definitions and class methods follow the links in the text.
+</p>
+
+<h3><u>Initialization</u></h3>
+<pre class="blue">
+
+   {
+	gROOT-&gt;Macro("LoadPolarLibs.C");
+	TPolControl * pc = new TPolControl("/dev/ttyS1");
+
+	pc-&gt;SerIO()-&gt;Setup(9600, 7, 0, 1);
+	pc-&gt;SerIO()-&gt;Open();
+	pc-&gt;SetSubdevs(0, 1, 2, 3, 4);
+	pc-&gt;ReadNameTable("polNames.dat");
+
+	pc-&gt;Print();
+	pc-&gt;PrintNameTable();
+   }
+
+</pre><br>
+
+<div class="ind">
+<ol>
+<li>
+<pre class="yellow">
+   <a href="http://root.cern.ch/root/html/TROOT.html">gROOT</a>-&gt<a href="http://root.cern.ch/root/html/TROOT.html#TROOT:Macro">Macro</a>("LoadPolarLibs.C");
+</pre> <br>
+<div class="ind">
+Load MARaBOU libraries needed<br>
+(Make sure <b>Unix.*.Root.MacroPath</b> in your <b>.rootrc</b> file contains a path <b>$MARABOU/macros)</b><br><br>
+</div></li>
+<li>
+<pre class="yellow">
+   TPolControl * pc = new <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html">TPolControl</a>("/dev/ttyS1");
+</pre> <br>
+<div class="ind">
+Instantiate class TPolControl<br>
+Returns a pointer (handle) <b>pc</b> to an object of type <b><a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html" name="TPolControl">TPolControl</a></b> which uses serial port #1 (<b>/dev/ttyS1</b>)
+for communication<br><br>
+</div></li>
+<li>
+<pre class="yellow">
+   pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbSerialComm.html">SerIO</a>()-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbSerialComm.html#TMrbSerialComm:Setup">Setup</a>(9600, 7, 0, 1);
+   pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbSerialComm.html">SerIO</a>()-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbSerialComm.html#TMrbSerialComm:Open">Open</a>();
+</pre> <br>
+<div class="ind">
+Configure and open the serial port<br>
+Opens serial port with <b>9600 baud</b>, <b>7 data bits</b>, <b>no parity</b>, <b>1 stop bit</b>
+<br><br>
+</div></li>
+<li>
+<pre class="yellow">
+   pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:SetSubdevs">SetSubdevs</a>(0, 1, 2, 3, 4);
+</pre> <br>
+<div class="ind">
+Activate subdevices<br>
+A subdevice is a hardware box containing 32 ADCs and 20 DACs which may be addressed independently.
+</div></li><br><br>
+<li>
+<pre class="yellow">
+   pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:ReadNameTable">ReadNameTable</a>("polNames.dat");
+</pre> <br>
+<div class="ind">
+Read name table<br>
+Allows to address DACs and ADCs via names rather than via channel numbers.<br>
+There a 3 different ways of addressing ADCs and DACs:<br><br>
+<div class="ind">
+<table border=1 width="50%" cellspacing=1>
+<tr>
+<td><b>relative</b></td>
+<td>
+pairs of numbers <b>(subdev, channel)</b>,<br>subdev as given by pc-&gt;SetSubdevs(),<br>
+channel=0..31 for ADCs, =0..19 for DACs
+</td></tr>
+<tr>
+<td><b>absolute</b></td>
+<td>addr is calculated by <b>subdev*32 + channel</b></td></tr>
+<tr>
+<td><b>by name</b></td>
+<td>
+addr will be taken from name table,<br>
+table entries are ":"-separated strings of the form
+<b>name:subdevice:channel:type[:comment]</b><br><br>
+Example of a name table file:
+<div class="ind">
+<pre class="beige">
+
+    # This is a sample name table
+    ADC0:4:0:A
+    ADC1:4:1:A
+    ADC2:4:2:A
+    ADC3:4:3:A
+    ADC4:4:4:A
+    ADC5:4:5:A
+    DAC0:4:0:D
+
+</pre>
+</div></td></tr></table></div></div></li>
+<br><br>
+<li>
+<pre class="yellow">
+   pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:Print">Print</a>();
+   pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:PrintNameTable">PrintNameTable</a>();
+</pre> <br>
+<div class="ind">
+Print settings<br>
+The above init script will give the following output:<br><br>
+<div class="ind">
+<pre class="beige">
+
+ Polarized Ion Source Control:
+ -----------------------------------------------------------------
+ Subdevices             : 0 1 2 3 4
+ ADC Channels           : 0:[0..31] 1:[32..63] 2:[64..95] 3:[96..127] 4:[128..159]
+ DAC Channels           : 0:[0..19] 1:[32..51] 2:[64..83] 3:[96..115] 4:[128..147]
+ Wait states            : 500 ms (AV), 500 ms (AR), 500 ms (SD)
+
+ RS232 Settings:
+ -----------------------------------------------------------------
+ Name                   : tty1
+ Port                   : /dev/ttyS1
+ State                  : open
+ Baud rate              : 9600
+ Number of data bits    : 7
+ Number of stop bits    : 1
+ Parity                 : none
+ Terminator #1          : \000
+            #2          : \000
+ Handshake              : none
+ Ignore CR              : yes
+ Delay                  : 0 s
+ Prefix                 :
+ Postfix                : \r
+ Bytes received         : 0
+ Bytes transmitted      : 0
+
+</pre>
+</div><br>
+The contents of the name table look like<br><br>
+<div class="ind">
+<pre class="beige">
+
+ Name table (7 entries read from file polNames.dat):
+ -----------------------------------------------------------------------------------
+ Name      Type      AbsChn    Subdev    RelChn
+ ...................................................................................
+ ADC0      A            128         4         0
+ ADC1      A            129         4         1
+ ADC2      A            130         4         2
+ ADC3      A            131         4         3
+ ADC4      A            132         4         4
+ ADC5      A            133         4         5
+ DAC0      D            128         4         0
+
+</pre></div></div></li></ol></div>
+<h3><u>Input/Output</u></h3>
+<pre class="blue">
+
+   {
+	pc-&gt;SetDac(4, 0, 1.5);
+	pc-&gt;SetDac(128, 1.5);
+	pc-&gt;SetDac("DAC0", 1.5);
+
+	Int_t adcVal;
+	adcVal = pc-&gt;ReadAdc(4, 3);
+	adcVal = pc-&gt;ReadAdc(131);
+	adcVal = pc-&gt;ReadAdc("ADC3");
+
+	adcVal = pc-&gt;SetDac(4, 0, 1.5, 1);
+	adcVal = pc-&gt;SetDac(128, 1.5, 129);
+	adcVal = pc-&gt;SetDac("DAC0", 1.5, "ADC1");
+   }
+
+</pre> <br>
+<div class="ind">
+<ol>
+<li>
+<pre class="yellow">
+   pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:SetDac">SetDac</a>(4, 0, 1.5);
+   pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:SetDac">SetDac</a>(128, 1.5);
+   pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:SetDac">SetDac</a>("DAC0", 1.5);
+</pre> <br>
+Set DAC value<br>
+Sets DAC <b>#0</b> in subdevice <b>#4</b> to <b>1.5 V</b>. Addressing is <b>relative</b>, <b>absolute</b>, or <b>by name</b>, respectively.<br><br>
+</li>
+<li>
+<pre class="yellow">
+   adcVal = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:ReadAdc">ReadAdc</a>(4, 3);
+   adcVal = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:ReadAdc">ReadAdc</a>(131);
+   adcVal = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:ReadAdc">ReadAdc</a>("ADC3");
+</pre> <br>
+Read ADC value<br>
+Returns value of ADC <b>#3</b> in subdevice <b>#4</b>. Three different addr modes.<br><br>
+</li>
+<li>
+<pre class="yellow">
+   adcVal = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:SetDac">SetDac</a>(4, 0, 1.5, 1);
+   adcVal = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:SetDac">SetDac</a>(128, 1.5, 129);
+   adcVal = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:SetDac">SetDac</a>("DAC0", 1.5, "ADC1");
+</pre> <br>
+Set DAC value and read back result<br>
+Sets DAC <b>#0</b> in subdevice <b>#4</b> to <b>1.5 V</b>. Then reads result from ADC <b>#1</b>.<br><br>
+</li></ol></div>
+<h3><u>Plotting ADC vs. DAC</u></h3>
+<pre class="blue">
+
+   {
+	<a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a> * histo;
+	histo = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:Plot">Plot</a>("SampleHist", 4, 0, 1, 0.0, 5.0, 0.1, "DAC0", "ADC1");
+	histo = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:Plot">Plot</a>("SampleHist", 128, 129, 0.0, 5.0, 0.1, "DAC0", "ADC1");
+	histo = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:Plot">Plot</a>("SampleHist", "DAC0", "ADC1", 0.0, 5.0, 0.1);
+	histo-&gt<a href="http://root.cern.ch/root/html/TH1.html#TH1:Draw">Draw</a>();
+   }
+
+</pre> <br>
+<div class="ind">
+Plot ADC value as a function of DAC value<br>
+Creates a 1-dim histogram named <b>SampleHist</b>,<br>
+then varies X values for DAC <b>#0</b> from <b>0.0 V</b> to <b>5.0 V</b> in steps of <b>0.1 V</b><br>
+and reads back Y results from ADC <b>#1</b>.<br>
+<b>DAC0</b> and <b>ADC1</b> are titles for X and Y axis, respectively.<br>
+<b>histo</b> is a pointer to the resulting histogram, it may be drawn by method <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>::<a href="http://root.cern.ch/root/html/TH1.html#TH1:Draw">Draw</a>().
+</div>
+<h3><u>Monitoring ADC channels</u></h3>
+<pre class="blue">
+
+   {
+	<a href="http://root.cern.ch/root/html/TNtuple.html">TNtuple</a> * ntuple;
+	ntuple = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:Monitor">Monitor</a>("test.root", "Monitor test", "ADC0:ADC1:ADC2:ADC3", 100, 1);
+	ntuple = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:Monitor">Monitor</a>("test.root", "Monitor test", "128:129:130:131", 100, 1);
+	ntuple = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:Monitor">Monitor</a>("test.root", "Monitor test", "4-0:4-1:4-2:4-3", 100, 1);
+
+	pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:PrintMonitorLayout">PrintMonitorLayout</a>();
+   }
+
+</pre> <br>
+<div class="ind">
+Monitor ADC channels<br>
+ADCs given in list (addressing by name, absolute, or relative) will be scanned <b>100 times</b>, scan interval is <b>1 s</b>.<br>
+ADC data are stored together with a timestamp as <a href="http://root.cern.ch/root/html/TNtuple.html">ROOT ntuples</a> in file <b>test.root</b>.<br><br>
+The monitor layout then looks like<br><br>
+<div class="ind">
+<pre class="beige">
+
+ Monitor layout (file test.root):
+ -----------------------------------------------------------------------------------
+ Name      Type      AbsChn    Subdev    RelChn
+ ...................................................................................
+ ADC0      A            128         4         0
+ ADC1      A            129         4         1
+ ADC2      A            130         4         2
+ ADC3      A            131         4         3
+
+</pre></div></div>
+<h3><u>Replaying monitor data from file</u></h3>
+<pre class="blue">
+
+   {
+	<a href="http://root.cern.ch/root/html/TNtuple.html">TNtuple</a> * ntuple;
+	ntuple = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:Monitor">Monitor</a>("test.root");
+
+	<a href="http://root.cern.ch/root/html/TArrayF.html">TArrayF</a> adcData;
+        UInt_t timeStamp;
+
+	for (Int_t i = 0; i &lt pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:GetNofEntries">GetNofEntries</a>(); i++) {
+	   Int_t n = pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:GetEntry">GetEntry</a>(i, timeStamp, adcData);
+	   for (Int_t j = 0; j &lt n; j++) {
+	      cout &lt&lt "ADC #" &lt&lt j &lt&lt " has value " &lt&lt adcData[j] &lt&lt endl;
+           }
+        }
+
+	pc-&gt<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:PrintRecords">PrintRecords</a>(0, 9);
+    }
+
+</pre> <br>
+<div class="ind">
+Play back monitor data from ROOT file<br>
+User has to loop over the number of entries in file.<br>
+Method <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html">TPolControl</a>::<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:GetEntry">GetEntry</a>() then fills local array <b>adcData</b> with ntuple data from entry <b>i</b>.<br>
+Variable <b>timeStamp</b> gives the unix time of the current entry.<br>
+Method <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html">TPolControl</a>::<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TPolControl.html#TPolControl:PrintRecords">PrintRecords</a>()
+may be used to output a couple of records to <b>cout</b>.
+</div>
+<h3><u>Download sample script</u></h3>
+Click <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/howTo/TPolControl/SampleScript.C">here</a> to download
+a sample script containing the above (blue coloured) lines.
+<br><br>
+<hr>
+Author: <a href="mailto:Rudi.Lutter@Physik.Uni-Muenchen.DE">R. Lutter</a><br>
+Modified: Dez  4 13:33:48 CET 2002
+<hr>
+</body>
+</html>
