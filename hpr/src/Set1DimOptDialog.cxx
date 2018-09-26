@@ -15,6 +15,7 @@
 #include "TLegendEntry.h"
 #include "Set1DimOptDialog.h"
 #include "hprbase.h"
+#include "TMrbHelpBrowser.h"
 #include <iostream>
 
 extern Int_t gHprDebug;
@@ -32,20 +33,25 @@ Set1DimOptDialog::Set1DimOptDialog(Int_t /*batch*/)
 
 Set1DimOptDialog::Set1DimOptDialog(TGWindow * win)
 {
-static const Char_t helptext[] =
-"Note: Changeing options only influences the current histogram\n\
-To make them active for subsequently displayed histograms\n\
-press: \"Set as global default\"\n\
-\n\
-\"Reset all to default\" sets \"factory\" defaults\n\
-To make these permanent also needs \"Set as global def\"\n\
-\n\
-A histogram can either been drawn as a line (\"Contour\")\n\
-or with markers. To fill a histogram \"Contour\" must\n\
+const Char_t *helptext=
+"<!DOCTYPE HTML>\n\
+<HTML>\n\
+<TITLE>HelpSet1DimOpt</TITLE>\n\
+This widget allows to modify the appearance of the currently\n\
+displayed histogram.\n\
+To make them default for subsequent histograms press: \n\
+<b>Set as global default</b>\n\
+ \n\
+<b>Reset all to default</b> sets values back to factory defaults\n\
+To make these permanent also needs <b>Set as global default</b>\n\
+ \n\
+A histogram can either been drawn as a line (<b>Contour</b>)\n\
+or with markers. To fill a histogram <b>Contour</b> must\n\
 be selected\n\
-Other options are \"SmoothLine\", \"SimpleLine\" or \"Text\"\n\
-In case of \"Text\" the size is control by \"MSiz\" (MarkerSize)\n\
-\n\
+ \n\
+Other options are <b>SmoothLine</b>, <b>SimpleLine</b> or <b>Text</b>\n\
+In case of <b>Text</b> the size is control by <b>MSiz</b> (MarkerSize)\n\
+ \n\
 Error Drawing Modes:\n\
 E  Draw error bars.\n\
 E0 Draw error bars. Markers are drawn for bins with 0 contents.\n\
@@ -58,51 +64,41 @@ E4 Draw a smoothed filled area through the end points\n\
 	of the error bars.\n\
 E5 Like E3 but ignore the bins with 0 contents.\n\
 E6 Like E4 but ignore the bins with 0 contents.\n\
-\n\
-Options E3-E6: Choose: \"Contour Off\" and \"FillHist On\" to get area\n\
+Options E3-E6: Choose: <b>Contour Off</b> and <b>FillHist On</b> to get area\n\
                filled between the error lines.\n\
+ \n\
 X ErrorSz controls drawing of error bars in X.\n\
 A value of 0.5 draws a line X +- 0.5*BinWidth\n\
-\"EndErrorSz\" controls the length of the perpendicular lines\n\
-at the edges (option \"E1\").\n\
-\"Min Y=Min Cont\": Set minimimum of Y scale to minumum of content\n\
-\n\
+<b>EndErrorSz</b> controls the length of the perpendicular lines\n\
+at the edges (option <b>E1</b>).\n\
+ \n\
+For more detailed information please consult <a href = http://root.cern/doc/master/classTHistPainter.html> ROOTs documention</a>\n\
+<b>Min Y=Min Cont</b>: Set minimimum of Y scale to minumum of content.\n\
+ \n\
 X and Y scales can be set as default to logarithmic or linear.\n\
 This can still be reset for individual histograms.\n\
 In detail: If a canvas is closed and its lin-log state differs\n\
 from the global default its state is stored and restored when\n\
 the histogram is shown again.\n\
-\n\
-If \"Live stats\" is active a box is displayed when dragging the\n\
+ \n\
+If <b>Live stats</b> is active a box is displayed when dragging the\n\
 pressed mouse in the histogram area showing various statistics\n\
 values (Current bin, bin content, mean, integral.\n\
-Selecting \"Live Gauss\" fits a gaussian to the dragged region.\n\
-A constant: \"Const bg\" or linear background (a+ bx): \"Linear bg\"\n\
+Selecting <b>Live Gauss</b> fits a gaussian to the dragged region.\n\
+A constant: <b>Const bg</b> or linear background (a+ bx): <b>Linear bg</b>\n\
 may be selected.\n\
-For this functionality the FillStyle of the underlying frame must be 0\n\
-This is controlled by the \"Canvas, Pad, Frame\" dialog invoked \n\
-from the \"GraphicsAtt\" popup menu\n\
+For this functionality the FillStyle of the underlying frame\n\
+must be 0. This is controlled by the <b>Canvas, Pad, Frame</b>\n\
+dialog invoked from the <b>GraphicsAtt</b> popup menu\n\
+</HTML>\n\
 ";
+
 	if (win) {
 		fCanvas = ((TRootCanvas*)win)->Canvas();
 		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
 	} else {
 		fCanvas = NULL;
 	}
-//	cout << "Set1DimOptDialog *s1dd=(Set1DimOptDialog*)" << this<< endl;
-//	cout << "((TRootCanvas*)win)->Canvas() " << ((TRootCanvas*)win)->Canvas()<< endl;
-//	cout << "gPad->GetCanvas() " << gPad->GetCanvas() << endl;
-	/*
-	fCanvas = gPad->GetCanvas();
-	
-   	if (fCanvas){
-		fCanvas->cd();
-     		 TRootCanvas *rc = (TRootCanvas*)fCanvas->GetCanvasImp();
-		cout << "rc " << rc << endl;
-                rc->Connect("CloseWindow()", "Set1DimOptDialog", this, "CloseDialog()");
-                rc->Connect("CloseWindow()", "Set1DimOptDialog", this, "CloseDialog()");
-	}
-	*/
 	fHistList.SetName("1dim_histlist");
 	fPadList.SetName("1dim_padlist");
 	TIter next(fCanvas->GetListOfPrimitives());
@@ -155,6 +151,7 @@ from the \"GraphicsAtt\" popup menu\n\
 //   static Int_t dummy;
 	static TString stycmd("SetHistAttPermLocal()");
 	static TString sadcmd("SetAllToDefault()");
+//   static TString helpcmd("HelpBr()");
 
 	fRow_lab = new TList();
 	Int_t ind = 0;
@@ -171,7 +168,7 @@ from the \"GraphicsAtt\" popup menu\n\
 			fTitleX = hist->GetXaxis()->GetTitle();
 			fTitleY = hist->GetYaxis()->GetTitle();
 		}
-		opt           = hist->GetOption();
+		opt           = hist->GetDrawOption();
 //		if (opt.Length() == 0 && hist->GetSumw2N()>0) {
 //			if (gHprDebug > 0)
 //				cout << "Force ErrorMode[" <<i<<"] = E " << endl;
@@ -384,6 +381,8 @@ default is minimum Y = 0"));
 	fValp[ind++] = &stycmd;
 	fRow_lab->Add(new TObjString("CommandButt+Reset all to default"));
 	fValp[ind++] = &sadcmd;
+//	fRow_lab->Add(new TObjString("CommandButt+Help"));
+//	fValp[ind++] = &helpcmd;
 
 	fOk = 0;
    Int_t itemwidth =  58 * TGMrbValuesAndText::LabelLetterWidth();
