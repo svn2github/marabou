@@ -8,6 +8,7 @@
 #include "TH1.h"
 #include "TStyle.h"
 #include "WhatToShowDialog.h"
+#include "TMrbHelpBrowser.h"
 #include "hprbase.h"
 #include "support.h"
 #include <iostream>
@@ -23,10 +24,15 @@ namespace std {} using namespace std;
 
 WhatToShowDialog::WhatToShowDialog(TGWindow * win)
 {
-static const Char_t helptext[] =
-"This determines what to show for a histogram,\n\
+fHelptextBr=
+"<!DOCTYPE HTML>\n\
+<HTML>\n\
+<TITLE>HelpWhatToShow</TITLE>\n\
+This determines what to show for a histogram,\n\
 especially which values to display in the statistics box\n\
-\"Suppr Zero\": dont draw channels with 0 content";
+2dim case: <b>Suppr Zero</b>: dont draw channels with 0 content\n\
+</HTML>\n\
+";
 
 	if (win) {
 		fCanvas = ((TRootCanvas*)win)->Canvas();
@@ -55,7 +61,7 @@ especially which values to display in the statistics box\n\
    Int_t ind = 0;
    static Int_t dummy;
    static TString stycmd("SaveDefaults()");
-//   static TString stycmd("SetWhatToShowPermLocal()");
+//   static TString helpcmd("HelpBr()");
 
    RestoreDefaults();
    fRow_lab->Add(new TObjString("CheckButton_  Title"));
@@ -94,6 +100,8 @@ and creation time"));
    fValp[ind++] = &fShowFitBox;
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
+//   fRow_lab->Add(new TObjString("CommandButt+Help"));
+//   fValp[ind++] = &helpcmd;
      
  //  fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
 //   fValp[ind++] = &stycmd;
@@ -103,7 +111,7 @@ and creation time"));
    fDialog = 
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
-                      NULL, NULL, helptext, this, this->ClassName());
+                      NULL, NULL, fHelptextBr.Data(), this, this->ClassName());
 }
 //_______________________________________________________________________
 
