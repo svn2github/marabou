@@ -35,97 +35,106 @@ Set2DimOptDialog::Set2DimOptDialog(Int_t /*batch*/)
 
 Set2DimOptDialog::Set2DimOptDialog(TGWindow * win)
 {
-static const Char_t helptext[] =
-"Note: Changeing options only influence the current histogram\n\
-		 To make them active for subsequently displayed histograms\n\
-		 press: \"Set as global default\"\n\
-\n\
-\"Reset all to default\" sets \"factory \" defaults\n\
-To make these permanent also needs \"Set as global def\"\n\
-\n\
+const Char_t *helptext =
+"<!DOCTYPE HTML>\n\
+<HTML>\n\
+<TITLE>HelpSet2DimOpt</TITLE>\n\
+This widget allows to modify the appearance of the currently\n\
+displayed histogram.\n\
+To make them default for subsequent histograms press: \n\
+<b>Set as global default</b>\n\
+ \n\
+<b>Reset all to default</b> sets values back to factory defaults\n\
+To make these permanent also needs <b>Set as global default</b>\n\
+ \n\
 Most of the value in this widget are self explaining\n\
 If \"Live statbox\" a box is displayed when dragging the\n\
 pressed mouse in the histogram area showing various statistics\n\
 values.\n\
-\n\
+ \n\
 X, Y and Z scales can be set by default to logarithmic or linear.\n\
 This can still be reset for individual histograms.\n\
 In detail: If a canvas is closed and its lin-log state differs\n\
 from the global default its state is stored and restored when\n\
 the histogram is shown again.\n\
-\n\
-SCAT  : Draw a scatter-plot (default)\n\
-BOX   : a box is drawn for each cell with surface proportional to the\n\
-			 content's absolute value. A negative content is marked with a X.\n\
-BOX1  : a button is drawn for each cell with surface proportional to\n\
-			 content's absolute value. A sunken button is drawn for negative values\n\
-			 a raised one for positive.\n\
-COL   : a box is drawn for each cell with a color scale varying with contents\n\
-COLZ  : 	Same as \"COL\". In addition the color palette is also drawn.\n\
-CANDLEX:	Draw a candle plot along X axis.\n\
-CANDLEY:	Draw a candle plot along Y axis.\n\
-VIOLINX:	Draw a violin plot along X axis.\n\
-VIOLINY:	Draw a violin plot along Y axis.\n\
-CONT  : Draw a contour plot (same as CONT0)\n\
-CONT0 : Draw a contour plot using surface colors to distinguish contours\n\
-CONT1 : Draw a contour plot using line styles to distinguish contours\n\
-CONT2 : Draw a contour plot using the same line style for all contours\n\
-CONT3 : Draw a contour plot using fill area colors\n\
-CONT4 : Draw a contour plot using surface colors (SURF option at theta = 0)\n\
-CONT5 : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
-LEGO  : Draw a lego plot with hidden line removal\n\
-LEGO1 : Draw a lego plot with hidden surface removal\n\
-LEGO2 : Draw a lego plot using colors to show the cell contents\n\
-SURF  : Draw a surface plot with hidden line removal\n\
-SURF1 : Draw a surface plot with hidden surface removal\n\
-SURF2 : Draw a surface plot using colors to show the cell contents\n\
-SURF3 : same as SURF with in addition a contour view drawn on the top\n\
-SURF4 : Draw a surface using Gouraud shading\n\
-SURF5 : Same as SURF3 but only the colored contour is drawn. Used with\n\
+ \n\
+<b>SCAT</b>  : Draw a scatter-plot (default)\n\
+<b>BOX</b>   : a box is drawn for each cell with surface proportional to the\n\
+        content's absolute value. A negative content is marked with a X.\n\
+<b>BOX1</b>  : a button is drawn for each cell with surface proportional to\n\
+        content's absolute value. A sunken button is drawn for negative values\n\
+        a raised one for positive.\n\
+<b>COL</b>   : a box is drawn for each cell with a color scale varying with contents\n\
+<b>COLZ</b>  : 	Same as \"COL\". In addition the color palette is also drawn.\n\
+<b>CANDLEX</b>:	Draw a candle plot along X axis.\n\
+<b>CANDLEY</b>:	Draw a candle plot along Y axis.\n\
+<b>VIOLINX</b>:	Draw a violin plot along X axis.\n\
+<b>VIOLINY</b>:	Draw a violin plot along Y axis.\n\
+<b>CONT</b>  : Draw a contour plot (same as CONT0)\n\
+<b>CONT0</b> : Draw a contour plot using surface colors to distinguish contours\n\
+<b>CONT1</b> : Draw a contour plot using line styles to distinguish contours\n\
+<b>CONT2</b> : Draw a contour plot using the same line style for all contours\n\
+<b>CONT3</b> : Draw a contour plot using fill area colors\n\
+<b>CONT4</b> : Draw a contour plot using surface colors (SURF option at theta = 0)\n\
+<b>CONT5</b> : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
+<b>LEGO</b>  : Draw a lego plot with hidden line removal\n\
+<b>LEGO1</b> : Draw a lego plot with hidden surface removal\n\
+<b>LEGO2</b> : Draw a lego plot using colors to show the cell contents\n\
+<b>SURF</b>  : Draw a surface plot with hidden line removal\n\
+<b>SURF1</b> : Draw a surface plot with hidden surface removal\n\
+<b>SURF2</b> : Draw a surface plot using colors to show the cell contents\n\
+<b>SURF3</b> : same as SURF with in addition a contour view drawn on the top\n\
+<b>SURF4</b> : Draw a surface using Gouraud shading\n\
+<b>SURF5</b> : Same as SURF3 but only the colored contour is drawn. Used with\n\
 			 option CYL, SPH or PSR it allows to draw colored contours on a\n\
 			 sphere, a cylinder or a in pseudo rapidy space. In cartesian\n\
 			 or polar coordinates, option SURF3 is used.\n\
-ARR   : arrow mode. Shows gradient between adjacent cells\n\
-TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
+<b>ARR</b>   : arrow mode. Shows gradient between adjacent cells\n\
+<b>TEXT</b>  : Draw bin contents as text\n\
+       (format set via gStyle->SetPaintTextFormat)\n\
 		  TextSize is taken from MarkerSize (ts = 0.03 * ms)\n\
-\n\
+ \n\
 Options are mutually exclusive. Exeption: Options BOX and COL accept TEXT\n\
-\n\
-CYL	: Use Cylindrical coordinates. The X coordinate is mapped on the angle\n\
+ \n\
+<b>CYL</b>	: Use Cylindrical coordinates. The X coordinate is mapped on the angle\n\
 		  and the Y coordinate on the cylinder length.\n\
-POL	: Use Polar coordinates. The X coordinate is mapped on the angle and\n\
+<b>POL</b>	: Use Polar coordinates. The X coordinate is mapped on the angle and\n\
 		  the Y coordinate on the radius.\n\
-SPH	: Use Spherical coordinates. The X coordinate is mapped on the latitude\n\
+<b>SPH</b>	: Use Spherical coordinates. The X coordinate is mapped on the latitude\n\
 		  and the Y coordinate on the longitude.\n\
-PSR	: Use PseudoRapidity/Phi coordinates. The X coordinate is mapped on Phi.\n\
-\n\
-Option GL:\n\
+<b>PSR</b>	: Use PseudoRapidity/Phi coordinates. The X coordinate is mapped on Phi.\n\
+ \n\
+<b>Option GL</b>:\n\
 Use OpenGL to display histogram together with the LEGO or SURF options\n\
-\n\
+ \n\
 Interaction with the OpenGL plots \n\
 Selectable parts\n\
 Different parts of the plot can be selected:\n\
-\n\
-	 * xoz, yoz, xoy back planes: When such a plane is selected, it is highlighted\n\
-	 * in green if the dynamic slicing by this plane is supported, and it is highlighted\n\
-	 * in red, if the dynamic slicing is not supported.\n\
-	 * The plot itself: On surfaces, the selected surface is outlined in red.\n\
-	 * (TF3 and ISO are not outlined).\n\
-	 * On lego plots, the selected bin is highlighted.\n\
-	 * The bin number and content are displayed in pad's status bar.\n\
-	 * In box plots, the box or sphere is highlighted and the bin info is displayed\n\
-	 * in pad's status bar.\n\
-\n\
+ \n\
+xoz, yoz, xoy back planes:\n\
+When such a plane is selected, it is highlighted\n\
+in green if the dynamic slicing by this plane is supported\n\
+and it is highlighted\n\
+in red, if the dynamic slicing is not supported.\n\
+ \n\
+The plot itself\n\
+On surfaces, the selected surface is outlined in red.\n\
+TF3 and ISO are not outlined).\n\
+On lego plots, the selected bin is highlighted.\n\
+The bin number and content are displayed in pad's status bar.\n\
+In box plots, the box or sphere is highlighted and the bin info is displayed\n\
+in pad's status bar.\n\
+ \n\
 Rotation and zooming\n\
-\n\
+ \n\
 	 * Rotation: When the plot is selected, it can be rotated by pressing and holding\n\
 	 * the left mouse button and move the cursor.\n\
 	 * Zoom/Unzoom: Mouse wheel or 'j', 'J', 'k', 'K' keys. \n\
-\n\
+ \n\
 Panning\n\
 The selected plot can be moved in a pad's area by pressing and holding the left mouse button\n\
 and the shift key.\n\
-\n\
+ \n\
 Box cut\n\
 Surface, iso, box, TF3 and parametric painters support box cut by pressing the 'c' or 'C' key\n\
 when the mouse cursor is in a plot's area. That will display a transparent box, \n\
@@ -133,18 +142,19 @@ cutting away part of the surface (or boxes) in order to show internal part of pl
 This box can be moved inside the plot's area (the full size of the box is equal to the\n\
 plot's surrounding box) by selecting one of the box cut axes and pressing the left mouse\n\
 button to move it.\n\
-\n\
+ \n\
 Plot specific interactions (dynamic slicing etc.)\n\
 Currently, all gl-plots support some form of slicing. When back plane is selected \n\
 (and if it's highlighted in green) you can press and hold left mouse button and shift key \n\
 and move this back plane inside plot's area, creating the slice. During this \"slicing\" \n\
 plot becomes semi-transparent. To remove all slices (and projected curves for surfaces)\n\
 double click with left mouse button in a plot's area.\n\
-\n\
+ \n\
 Surface with option \"GLSURF\"\n\
 The surface profile is displayed on the slicing plane. The profile projection is drawn\n\
 on the back plane by pressing 'p' or 'P' key.\n\
-For further details contact ROOTs documentation.\n\
+For more detailed information please consult <a href = http://root.cern/doc/master/classTHistPainter.html> ROOTs documention</a>\n\
+</HTML>\n\
 ";
 
 	const char *fDrawOpt2[kNdrawopt] =
