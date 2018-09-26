@@ -259,7 +259,7 @@ void HprStack::BuildMenu()
 	TGMenuBar * menubar = fRootCanvas->GetMenuBar();
 	TGLayoutHints * layoh_left = new TGLayoutHints(kLHintsTop | kLHintsLeft);
 	fMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-	menubar->AddPopup("Display options", fMenu, layoh_left, menubar->GetPopup("Help"));
+	menubar->AddPopup("Display-Options", fMenu, layoh_left, menubar->GetPopup("Help"));
 	fMenu->AddEntry("Stacks / Hists Attributes", M_SetOptions);
 	fMenu->AddEntry("Axis / Title / StatBox Attributes", M_OptionHist);
 	fMenu->AddEntry("Canvas, Pad, Frame", M_OptionPad);
@@ -358,10 +358,14 @@ but not PostScript.\n\
 	fValp[ind++] = &GeneralAttDialog::fStackedNostack;
 	fRow_lab->Add(new TObjString("RadioButton+One pad for each"));
 	fValp[ind++] = &GeneralAttDialog::fStackedPads;
-	fRow_lab->Add(new TObjString("PlainIntVal_Window X Width"));
+	fRow_lab->Add(new TObjString("PlainIntVal_WinWid"));
 	fValp[ind++] = &fWindowXWidth;
-	fRow_lab->Add(new TObjString("PlainIntVal+Window Y Width"));
+	fRow_lab->Add(new TObjString("PlainIntVal+WinHei"));
 	fValp[ind++] = &fWindowYWidth;
+	fRow_lab->Add(new TObjString("DoubleValue+Ymin"));
+	fValp[ind++] = &fStackMin;
+	fRow_lab->Add(new TObjString("DoubleValue+Ymin"));
+	fValp[ind++] = &fStackMax;
 	fRow_lab->Add(new TObjString("ComboSelect_Error Mode;none;E;E1;E2;E3;E4;E5;E6"));
 	fValp[ind++] = &fErrorMode;
 	fRow_lab->Add(new TObjString("Float_Value+EndErrSize "));
@@ -439,6 +443,8 @@ void HprStack::RestoreDefaults()
 	TEnv env(".hprrc");
 	fWindowXWidth = env.GetValue("HprStack.fWindowXWidth", 800);
 	fWindowYWidth = env.GetValue("HprStack.fWindowYWidth", 600);
+	fStackMin = env.GetValue("HprStack.fStackMin", -1111);
+	fStackMax = env.GetValue("HprStack.fStackMax", -1111);
 	if (fWindowXWidth < 20 || fWindowXWidth > 1600) fWindowXWidth = 800;
 	if (fWindowYWidth < 20 || fWindowYWidth > 1200) fWindowYWidth = 600;
 	fLegendX1 = env.GetValue("HprStack.fLegendX1", 0.7);
@@ -514,6 +520,8 @@ void HprStack::SaveDefaults()
 	TEnv env(".hprrc");
 	env.SetValue("HprStack.fWindowXWidth", fWindowXWidth);
 	env.SetValue("HprStack.fWindowYWidth", fWindowYWidth);
+	env.SetValue("HprStack.fStackMin", fStackMin);
+	env.SetValue("HprStack.fStackMax", fStackMax);
 /*	TLegend *leg = (TLegend*)fCanvas->GetListOfPrimitives()->FindObject("Legend_SuperImposeHist");
 	if ( leg ) {
 		fLegendX1 = leg->GetX1NDC();
@@ -623,6 +631,10 @@ void HprStack::SetAttributes()
 			ohist->SetFillColor(fFillColor[i]);
 			hist->SetFillStyle(1001);
 		} else {
+			if (TMath::Abs(fStackMin+1111) >0.001)
+				fStack->SetMinimum(fStackMin);
+			if (TMath::Abs(fStackMax+1111) >0.001)
+				fStack->SetMaximum(fStackMax);
 			if ( fFill_1Dim[i] ) {
 				hist->SetFillStyle(fFillStyle[i]);
 #if ROOTVERSION >= 53418
