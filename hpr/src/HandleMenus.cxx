@@ -26,8 +26,6 @@
 #include "HistPresent.h"
 #include "support.h"
 #include "SetColor.h"
-//#include "TMrbHelpBrowser.h"
-//#include "TGMrbTableFrame.h"
 #include "TGMrbInputDialog.h"
 #include "EmptyHistDialog.h"
 #include "SetHistOptDialog.h"
@@ -405,8 +403,11 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
 
 					if(parm1 >= 100000){
 						Int_t ind = parm1 - 100000;
-						if( hbrowser && ind >= 0 && ind < hbrowser->GetNofItems())
-							hbrowser->DrawText(ind);
+						if( hbrowser ) {
+							hbrowser->SetOrigin(WindowSizeDialog::fMainWidth, 20);
+							if ( ind >= 0 && ind < hbrowser->GetNofItems() )
+								hbrowser->DrawText(ind);
+						}
 						break;
 					}
 					switch (parm1) {
@@ -1732,108 +1733,104 @@ void HandleMenus::BuildMenus()
 	}
 	if (fh_menus) {
 		fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
-		if (fh_menus) {
-			fFitHist->SetMyCanvas(fRootCanvas);
-//			is2dim = fFitHist->Its2dim();
-			if (nDim < 3) {
-				fDisplayMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
-				fDisplayMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
-				fDisplayMenu->AddSeparator();
-				fDisplayMenu->AddEntry("ClearMarks",   kFHClearMarks);
-				fDisplayMenu->AddEntry("PrintMarks",   kFHPrintMarks);
-				fDisplayMenu->AddEntry("Set2Marks",    kFHSet2Marks);
-				fDisplayMenu->AddEntry("DistBetween2Marks",    kFHDistMarks);
-				fDisplayMenu->AddEntry("Highlight marked area", kFHColorMarked);
-		//      fDisplayMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
-				fDisplayMenu->AddSeparator();
-			}
-			if ( nDim == 2 ) {
-				fDisplayMenu->AddEntry("ProjectX",     kFHProjectX   );
-				fDisplayMenu->AddEntry("ProjectY",     kFHProjectY   );
-				fDisplayMenu->AddEntry("ProjectBoth",  kFHProjectB   );
-				fDisplayMenu->AddEntry("Project on any Axis",  kFHProjectOnAnyAxis);
-				fDisplayMenu->AddEntry("Project_X_WithinFunction", kFHProjectX_func);
-				fDisplayMenu->AddEntry("Project_Y_AlongFunction", kFHProjectF);
-				fDisplayMenu->AddEntry("Live slice X", kFHLiveSliceX);
-				fDisplayMenu->UnCheckEntry(kFHLiveSliceX);
-				fDisplayMenu->AddEntry("Live slice Y", kFHLiveSliceY);
-				fDisplayMenu->UnCheckEntry(kFHLiveSliceY);
-				fDisplayMenu->AddEntry("ProfileX",     kFHProfileX   );
-				fDisplayMenu->AddEntry("ProfileY",     kFHProfileY   );
-				fDisplayMenu->AddSeparator();
-				fDisplayMenu->AddEntry("Transpose",   kFHTranspose  );
-				fDisplayMenu->AddEntry("Rotate by 90 deg Clockwise",   kFHTransposeInv);
-				fDisplayMenu->AddEntry("Rotate Clockwise", kFHRotateClock);
-				fDisplayMenu->AddEntry("Rotate Counter Clockwise", kFHRotateCClock);
-				fDisplayMenu->AddSeparator();
-			} 
-			// for all types
-			fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
-			if ( nDim == 1 ){
-				fDisplayMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
-			}
-			fDisplayMenu->AddEntry("Show in same Range", kFHGetRange);
-			if ( nDim == 1 ) {
-				fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
-			} else if ( nDim == 2 ) {
-				fDisplayMenu->AddEntry("Rebin/Clip",   kFHRebinDimDialog  );
-			}
-			if ( nDim == 3 ) {
-			 	fDisplayMenu->AddEntry("TH3 Dialog", kFHTh3Dialog);
-			}
-
-			if ( nDim < 3 ) {
-				fDisplayMenu->AddSeparator();
-				fDisplayMenu->AddEntry("Show Statistics only",  kFHOutputStat );
-				fDisplayMenu->AddSeparator();
-// Axes 				
-				TGPopupMenu  * casc_axis= new TGPopupMenu(fRootCanvas->GetParent());
-				casc_axis->AddEntry("Set Display Range X", kFHXaxisRange);
-				if ( nDim > 1)
-					casc_axis->AddEntry("Set Display Range Y", kFHYaxisRange);
-				if ( nDim > 2)
-					casc_axis->AddEntry("Set Display Range Z", kFHZaxisRange);
-				casc_axis->AddEntry("Set Min/Max 1 dim",     kFHSetRangeAxis);
-				if ( nDim == 1)	
-					casc_axis->AddEntry("Magnify",     kFHMagnify    );
-				casc_axis->AddEntry("Redefine Axis",     kFHRedefineAxis);
-				casc_axis->AddEntry("Restore orig Axis",     kFHRestoreAxis);
-				casc_axis->AddEntry("Add new X axis",     kFHAddAxisX);
-				casc_axis->AddEntry("Add new Y axis",     kFHAddAxisY);
-				casc_axis->AddEntry("Repaint extra axis", kFHReDoAxis);
-				fDisplayMenu->AddPopup("Manipulate Axes (new, ranges etc.)", casc_axis);
-// user contours				
-				if ( nDim == 2 ) {
-					TGPopupMenu  * casc_cont= new TGPopupMenu(fRootCanvas->GetParent());
-					casc_cont->AddEntry("Modify Contours",   kFHUserCont);
-					casc_cont->AddEntry("Use Selected Contours",   kFHUserContUse);
-					casc_cont->AddEntry("Clear User Contours",   kFHUserContClear);
-					casc_cont->AddEntry("Save User Contours",   kFHUserContSave);
-					fDisplayMenu->AddPopup("Handle Contours", casc_cont);
-				}
-				
-				if (fFitHist->GetSelHist()->GetDimension() == 1) {
-					fDisplayMenu->AddEntry("Log Y scale",  kFHLogY);
-					if (fHCanvas->GetLogy()) fDisplayMenu->CheckEntry(kFHLogY);
-					else                   fDisplayMenu->UnCheckEntry(kFHLogY);
-				} else if (fFitHist->GetSelHist()->GetDimension() == 2) {
-					fDisplayMenu->AddEntry("Log Z scale",  kFHLogY);
-					if (fHCanvas->GetLogz()) fDisplayMenu->CheckEntry(kFHLogY);
-					else                   fDisplayMenu->UnCheckEntry(kFHLogY);
-				}
-
-
-				if(hbrowser)hbrowser->DisplayMenu(fDisplayMenu, "display.html");
-				if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
-					fDisplayMenu->AddEntry("Real stack", kFHStack);
-					if (fHistPresent->fRealStack) fDisplayMenu->CheckEntry(kFHStack);
-					else                          fDisplayMenu->UnCheckEntry(kFHStack);
-
-					fDisplayMenu->AddEntry("Set Minimum of Yscale", kFHStackMin);
-					fDisplayMenu->AddEntry("Set Maximum of Yscale", kFHStackMax);
-				}
+		fFitHist->SetMyCanvas(fRootCanvas);
+		if (nDim < 3) {
+			fDisplayMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
+			fDisplayMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
 			fDisplayMenu->AddSeparator();
+			fDisplayMenu->AddEntry("ClearMarks",   kFHClearMarks);
+			fDisplayMenu->AddEntry("PrintMarks",   kFHPrintMarks);
+			fDisplayMenu->AddEntry("Set2Marks",    kFHSet2Marks);
+			fDisplayMenu->AddEntry("DistBetween2Marks",    kFHDistMarks);
+			fDisplayMenu->AddEntry("Highlight marked area", kFHColorMarked);
+			fDisplayMenu->AddSeparator();
+		}
+		if ( nDim == 2 ) {
+			fDisplayMenu->AddEntry("ProjectX",     kFHProjectX   );
+			fDisplayMenu->AddEntry("ProjectY",     kFHProjectY   );
+			fDisplayMenu->AddEntry("ProjectBoth",  kFHProjectB   );
+			fDisplayMenu->AddEntry("Project on any Axis",  kFHProjectOnAnyAxis);
+			fDisplayMenu->AddEntry("Project_X_WithinFunction", kFHProjectX_func);
+			fDisplayMenu->AddEntry("Project_Y_AlongFunction", kFHProjectF);
+			fDisplayMenu->AddEntry("Live slice X", kFHLiveSliceX);
+			fDisplayMenu->UnCheckEntry(kFHLiveSliceX);
+			fDisplayMenu->AddEntry("Live slice Y", kFHLiveSliceY);
+			fDisplayMenu->UnCheckEntry(kFHLiveSliceY);
+			fDisplayMenu->AddEntry("ProfileX",     kFHProfileX   );
+			fDisplayMenu->AddEntry("ProfileY",     kFHProfileY   );
+			fDisplayMenu->AddSeparator();
+			fDisplayMenu->AddEntry("Transpose",   kFHTranspose  );
+			fDisplayMenu->AddEntry("Rotate by 90 deg Clockwise",   kFHTransposeInv);
+			fDisplayMenu->AddEntry("Rotate Clockwise", kFHRotateClock);
+			fDisplayMenu->AddEntry("Rotate Counter Clockwise", kFHRotateCClock);
+			fDisplayMenu->AddSeparator();
+		} 
+		// for all types
+		fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
+		if ( nDim == 1 ){
+			fDisplayMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
+		}
+		fDisplayMenu->AddEntry("Show in same Range", kFHGetRange);
+		if ( nDim == 1 ) {
+			fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
+		} else if ( nDim == 2 ) {
+			fDisplayMenu->AddEntry("Rebin/Clip",   kFHRebinDimDialog  );
+		}
+		if ( nDim == 3 ) {
+		 	fDisplayMenu->AddEntry("TH3 Dialog", kFHTh3Dialog);
+		}
+
+		if ( nDim < 3 ) {
+			fDisplayMenu->AddSeparator();
+			fDisplayMenu->AddEntry("Show Statistics only",  kFHOutputStat );
+			fDisplayMenu->AddSeparator();
+			// Axes
+			TGPopupMenu  * casc_axis= new TGPopupMenu(fRootCanvas->GetParent());
+			casc_axis->AddEntry("Set Display Range X", kFHXaxisRange);
+			if ( nDim > 1)
+				casc_axis->AddEntry("Set Display Range Y", kFHYaxisRange);
+			if ( nDim > 2)
+				casc_axis->AddEntry("Set Display Range Z", kFHZaxisRange);
+			casc_axis->AddEntry("Set Min/Max 1 dim",     kFHSetRangeAxis);
+			if ( nDim == 1)	
+				casc_axis->AddEntry("Magnify",     kFHMagnify    );
+			casc_axis->AddEntry("Redefine Axis",     kFHRedefineAxis);
+			casc_axis->AddEntry("Restore orig Axis",     kFHRestoreAxis);
+			casc_axis->AddEntry("Add new X axis",     kFHAddAxisX);
+			casc_axis->AddEntry("Add new Y axis",     kFHAddAxisY);
+			casc_axis->AddEntry("Repaint extra axis", kFHReDoAxis);
+			fDisplayMenu->AddPopup("Manipulate Axes (new, ranges etc.)", casc_axis);
+			// user contours				
+			if ( nDim == 2 ) {
+				TGPopupMenu  * casc_cont= new TGPopupMenu(fRootCanvas->GetParent());
+				casc_cont->AddEntry("Modify Contours",   kFHUserCont);
+				casc_cont->AddEntry("Use Selected Contours",   kFHUserContUse);
+				casc_cont->AddEntry("Clear User Contours",   kFHUserContClear);
+				casc_cont->AddEntry("Save User Contours",   kFHUserContSave);
+				fDisplayMenu->AddPopup("Handle Contours", casc_cont);
 			}
+			
+			if (fFitHist->GetSelHist()->GetDimension() == 1) {
+				fDisplayMenu->AddEntry("Log Y scale",  kFHLogY);
+				if (fHCanvas->GetLogy()) fDisplayMenu->CheckEntry(kFHLogY);
+				else                   fDisplayMenu->UnCheckEntry(kFHLogY);
+			} else if (fFitHist->GetSelHist()->GetDimension() == 2) {
+				fDisplayMenu->AddEntry("Log Z scale",  kFHLogY);
+				if (fHCanvas->GetLogz()) fDisplayMenu->CheckEntry(kFHLogY);
+				else                   fDisplayMenu->UnCheckEntry(kFHLogY);
+			}
+
+
+			if(hbrowser)hbrowser->DisplayMenu(fDisplayMenu, "display.html");
+			if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
+				fDisplayMenu->AddEntry("Real stack", kFHStack);
+				if (fHistPresent->fRealStack) fDisplayMenu->CheckEntry(kFHStack);
+				else                          fDisplayMenu->UnCheckEntry(kFHStack);
+
+				fDisplayMenu->AddEntry("Set Minimum of Yscale", kFHStackMin);
+				fDisplayMenu->AddEntry("Set Maximum of Yscale", kFHStackMax);
+			}
+			fDisplayMenu->AddSeparator();
 		}
 	}
 	if ( ! its_start_window && nDim < 3) {
