@@ -3259,7 +3259,9 @@ void HistPresent::CloseAllCanvases()
 		TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
 		if (rc == NULL) {
 			if (gHprDebug>1)
-			cout << "CloseAllCanvases: " << htc << " " << htc->GetName()<< " " << rc<< endl;
+				cout << "CloseAllCanvases delete: " << htc << endl;
+			if (fHelpBrowser) fHelpBrowser->GetCanvasList()->Remove(htc);
+			delete htc;
 			continue;
 		}
 		if (htc->TestBit(HTCanvas::kIsAEditorPage)) {
@@ -3267,7 +3269,7 @@ void HistPresent::CloseAllCanvases()
 			rc->ShowEditor(kFALSE);
 		}
 		if (gHprDebug > 1)
-			cout << "CloseAllCanvases: " << htc << " " << htc->GetName()<< " " << rc<< endl;
+			cout << "SendCloseMessage: " << htc << " " << htc->GetName()<< " " << rc<< endl;
 		rc->SendCloseMessage();
 		nc++;
 	}
@@ -3956,6 +3958,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 		TGraph2D * grnew = graph2d;
 		TString opt2d = env.GetValue("Set2DimGraphDialog.fDrawOpt2Dim", "TRI2");
 		Int_t nuse = env.GetValue("Set2DimGraphDialog.fUseNPoints", 1000);
+		Int_t randomize = env.GetValue("Set2DimGraphDialog.fRandomizePoints", 0);
 		Int_t np = graph2d->GetN();
 		if (nuse > np)
 			nuse = np;
@@ -4019,6 +4022,12 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 		gBenchmark->Start("graph2d");
 //		graph2d->SetMaxIter(3000);
 //		htc->cd();
+		if (randomize > 0) {
+			Double_t *zv = grnew->GetZ();
+			for (Int_t ii=0; ii<grnew->GetN(); ii++){
+				zv[ii] += 0.0001*(gRandom->Rndm()-0.5);
+			}
+		}
   		grnew->Draw(opt2d);
 		TButton * b = NULL;
 		if (bp) {
