@@ -18,6 +18,7 @@ private:
 	TGMrbValuesAndText *fDialog;
 	TCanvas      *fCanvas;
 	TH1          *fHist;
+	TString fHelptextBr;
 	Int_t fOpts[kNopts];
 	Int_t fOptStat;
 	Int_t fShowDateBox;
