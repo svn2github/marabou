@@ -70,6 +70,8 @@ private:
 	TString fErrorMode;
 	Int_t   fSameScale;
 	Int_t   fStackOpenGL;
+	Double_t fStackMin;
+	Double_t fStackMax;
 public:
 	HprStack(TList * hlist, Int_t weighted = 0);
 	HprStack();
