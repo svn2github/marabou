@@ -3393,9 +3393,11 @@ void FitHist::ExpandProject(Int_t what)
 			np++;
 			lpx->SetPoint(np, xmin, y0);
  //        cout << "np " << np << endl;
-			lpx->Draw("F");
-			lpx->SetFillStyle(1001);
-			lpx->SetFillColor(38);
+			TString sopt;
+			if (fFill1Dim) sopt= "F";
+			lpx->Draw(sopt);
+			lpx->SetFillStyle(fFillStyle);
+			lpx->SetFillColor(fFillColor);
 			lpx->Draw();
 			TGaxis *naxis =
 				 new TGaxis(xmin + dx * nbins, y0, xmin + dx * nbins, y1,
@@ -3438,9 +3440,9 @@ void FitHist::ExpandProject(Int_t what)
 			np++;
 			lpy->SetPoint(np, x0, ymin);
  //        cout << "np " << np << endl;
-			lpy->Draw("F");
-			lpy->SetFillStyle(1001);
-			lpy->SetFillColor(45);
+			lpy->Draw(sopt);
+			lpy->SetFillStyle(fFillStyle);
+			lpy->SetFillColor(fFillColor);
 			lpy->Draw();
 			naxis = new TGaxis(x0, ymin + nbins * dy, x1, ymin + nbins * dy,
 									 0, maxcont, 404, "-");
