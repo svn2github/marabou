@@ -80,42 +80,45 @@ SetHistOptDialog::SetHistOptDialog(Int_t /*batch*/)
 
 SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * /*hlist*/)
 {
-	static const Char_t helptext[] =
-	"This widget allows adjustment of various graphics attributes\n\
-	of a histogram of graph.\n\
-	The size of the histogram title is either set to TextSiz(e) if it\n\
-	not zero or to 0.7 * Height(box) if zero.\n\
-	The position or size of the StatBox may also be adjust by the mouse.\n\
-	Values are remembered within or between sessions. This behaviour is\n\
-	controlled from \"Various HistPresent Options\" menu.\n\
-	Caveat:\n\
-	The position of a StatBox is defined by its upper right corner\n\
-	Root itself will adjust width and height of the statbox as follows:\n\
-	\n\
-	Double_t  statw  = gStyle->GetStatW();\n\
-	if (fit) statw   = 1.8*gStyle->GetStatW();\n\
-		nlines: number of entries like cont, mean, sigma, etc\n\
-		nlinesf: for fitting parameters\n\
-		Double_t  stath  = (nlines+nlinesf)*gStyle->GetStatFontSize();\n\
-		if (stath <= 0 || 3 == (gStyle->GetStatFont()%10)) {\n\
-			stath = 0.25*(nlines+nlinesf)*gStyle->GetStatH();\n\
-		}\n\
-	\n\
-	The textsize of the StatBox should normally be 0, then it is\n\
-	adjusted automatically to the size of the box, if you want \n\
-	do it by yourself it might be tricky.\n\
-	Note: Changeing options only influences the current histogram\n\
-	To make them active for subsequently displayed histograms\n\
-	press: \"Set as global def\"\n\
-	\"Reset all to def\" sets \"factory \" defaults\n\
-	To make these permanent also needs \"Set as global def\"\n\
-	\n\
-	If more than 1 histogram is in the canvas one may selected\n\
-	by pressing the middle mouse before this widget is invoked\n\
-	If this widget is already displayed the command \"Reselect\"\n\
-	is needed in addition. The current attributes will be applied\n\
-	to the selected histogram.\n\
-	";	
+const Char_t *helptext =
+"<!DOCTYPE HTML>\n\
+<HTML>\n\
+<TITLE>HelpHistOpt</TITLE>\n\
+This widget allows adjustment of various graphics attributes\n\
+of a histogram or graph.\n\
+The size of the histogram title is either set to TextSiz(e)\n\
+if it not zero or to 0.7 * Height(box) if zero.\n\
+The position or size of the StatBox may also be adjusted by the mouse.\n\
+Values may be remembered within or between sessions. This behaviour is\n\
+controlled from <b>Various HistPresent Options</b> menu.\n\
+<b>Caveat:</b>\n\
+The position of a StatBox is defined by its upper right corner\n\
+Root itself will adjust width and height of the statbox as follows:\n\
+\n\
+Double_t  statw  = gStyle->GetStatW();\n\
+if (fit) statw   = 1.8*gStyle->GetStatW();\n\
+	nlines: number of entries like cont, mean, sigma, etc\n\
+	nlinesf: for fitting parameters\n\
+	Double_t  stath  = (nlines+nlinesf)*gStyle->GetStatFontSize();\n\
+	if (stath <= 0 || 3 == (gStyle->GetStatFont()%10)) {\n\
+		stath = 0.25*(nlines+nlinesf)*gStyle->GetStatH();\n\
+	}\n\
+\n\
+The textsize of the StatBox should normally be 0, in this case it is\n\
+adjusted automatically to the size of the box\n\
+If you want do it by yourself it might be tricky.\n\
+<b>Note:</b> Changeing options only influences the current histogram\n\
+To make them active for subsequently displayed histograms\n\
+press: <b>Set as global def</b>\n\
+<b>Reset all to def</b> sets <b>factory defaults</b>\n\
+To make these permanent also needs <b>Set as global def</b>\n\
+ \n\
+If more than 1 histogram is in the canvas one may selected\n\
+by pressing the middle mouse before this widget is invoked\n\
+If this widget is already displayed the command <b>Reselect</b>\n\
+is needed in addition. The current attributes will be applied\n\
+to the selected histogram.\n\
+</HTML>";
 	if (win) {
 		fCanvas = ((TRootCanvas*)win)->Canvas();
 		fCanvas->Connect("HTCanvasClosed()", this->ClassName(), this, "CloseDialog()");
