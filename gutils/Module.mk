@@ -24,10 +24,10 @@ GUTILSS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 GUTILSO        := $(GUTILSS:.cxx=.o)
 
 GUTILSDEP      := $(GUTILSO:.o=.d) $(GUTILSDO:.o=.d)
-
+HELPBLIB      := $(LPATH)/libTMrbHelpBrowser.$(SOEXT)
 GUTILSLIB      := $(LPATH)/libTGMrbUtils.$(SOEXT)
 GUTILSRMAP     := $(LPATH)/libTGMrbUtils.rootmap
-GUTILSLIBDEP   :=  $(LPATH)/libTMrbUtils.so $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libGui.so $(ROOTSYS)/lib/libGed.so
+GUTILSLIBDEP   := $(HELPBLIB) $(LPATH)/libTMrbUtils.so $(ROOTSYS)/lib/libGraf.so $(ROOTSYS)/lib/libGui.so $(ROOTSYS)/lib/libGed.so
 
 
 # used in the main Makefile
@@ -48,7 +48,7 @@ include/%.h:    $(GUTILSDIRI)/%.h
 
 $(GUTILSLIB):     $(GUTILSDO) $(GUTILSO) $(GUTILSLIBDEP)
 			@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-		   "$(SOFLAGS)" libTGMrbUtils.$(SOEXT) $@ "$(GUTILSDO) $(GUTILSO)" \
+		   "$(SOFLAGS)" libTGMrbUtils.$(SOEXT) $@ "$(GUTILSDO) $(GUTILSO) $(HELPBLIB)" \
 		   "$(GUTILSLIBEXTRA)"
 		@(if [ -f $(GUTILSPCM) ] ; then \
 			echo "cp  $(GUTILSPCM)----------------------" ; \

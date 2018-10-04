@@ -43,6 +43,7 @@ namespace std {} using namespace std;
 #include "TGLabel.h"
 
 #include "TGMrbValuesAndText.h"
+#include "TMrbHelpBrowser.h"
 //#include "TGedAlignSelect.h"
 //#include "SetColor.h"
 
@@ -1595,55 +1596,71 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 	switch (GET_MSG(msg)) {
 		case kC_COMMAND:
 			switch (GET_SUBMSG(msg)) {
-				 case kCM_BUTTON:
-					 {
-					 if (idCmd == kIdOk) {
-						 // here copy the string from text buffer to return variable
-						 if (fText) *fText = fTE->GetBuffer()->GetString();
-						 if (fHistory && fHistory.Length() > 0) this->SaveList();
-						 StoreValues();
-						 idButton = -1;
-						 *fReturn = 0;
-						 CloseDown(idButton);
-//                 break;
-
-					 } else if (idCmd == kIdClearHist) {
-						 if (fHistory && fHistory.Length() > 0) {
-							 TString cmd(fHistory);
-							 cmd.Prepend("rm ");
-							 gSystem->Exec(cmd);
-#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
-							 fListBox->RemoveAll();
+				case kCM_BUTTON:
+					{
+					if (idCmd == kIdOk) {
+						// here copy the string from text buffer to return variable
+						if (fText) *fText = fTE->GetBuffer()->GetString();
+						if (fHistory && fHistory.Length() > 0) this->SaveList();
+						StoreValues();
+						idButton = -1;
+						*fReturn = 0;
+						CloseDown(idButton);
+					} else if (idCmd == kIdClearHist) {
+						if (fHistory && fHistory.Length() > 0) {
+							TString cmd(fHistory);
+							cmd.Prepend("rm ");
+							gSystem->Exec(cmd);
+#if ROOT_VERSION_CODE>= ROOT_VERSION(5,10,0)
+							fListBox->RemoveAll();
 #else
-							 fListBox->RemoveEntries(0, 1000);
+							fListBox->RemoveEntries(0, 1000);
 #endif
-							 gClient->NeedRedraw(fListBox);
-							 idButton = -1;
-
-						 }
-					 } else if (idCmd == kIdCancel) {
-						  idButton = -2;
-						  CloseDown(idButton);
-						  return kTRUE;
-//                    break;
-					 } else if (idCmd == kIdHelp) {
-						  TString temp(fHelpText);
-						  Int_t nl = temp.CountChar('\n');
-						  nl *= 15;
-						  TRootHelpDialog * hd = new TRootHelpDialog(this, fPrompt, 500, nl+25);
-						  hd->SetText(fHelpText);
-						  hd->Popup();
-						  idButton = -1;
-					 } else {
- //                  Int_t id = parm1 / 100;
-						 if (idCmd == kIdFileDialog || idCmd == kIdFileDialogCont) {
+							gClient->NeedRedraw(fListBox);
+							idButton = -1;
+						}
+					} else if (idCmd == kIdCancel) {
+						idButton = -2;
+						CloseDown(idButton);
+						return kTRUE;
+					} else if (idCmd == kIdHelp) {
+						TString temp(fHelpText);
+//						cout << temp << endl;
+						if (temp.BeginsWith("<!DOCTYPE HTML") ){
+							TMrbHelpBrowser * helpbr = (TMrbHelpBrowser*)gROOT->FindObject("TMrbHelpBrowser");
+							if (helpbr) {
+								TString anchor;
+								Int_t ind_title_start=temp.Index("<TITLE>");
+								Int_t ind_title_end=temp.Index("</TITLE>");
+								if (ind_title_start > 0 && ind_title_end > 0) {
+									anchor = temp(ind_title_start+7, ind_title_end-(ind_title_start+7));
+								} else {
+									anchor = "Help_",
+									anchor += temp.Length();
+								}
+								TString dir;
+								if ( !helpbr->GetHelpList()->FindObject(anchor)) {
+									helpbr->AddHtmlAsString(temp, anchor, dir);
+								}
+								helpbr->DrawText(anchor, GetPosX()+GetWidX(), GetPosY()+GetWidY());
+								return kTRUE;
+							}
+						}
+						Int_t nl = temp.CountChar('\n');
+						nl *= 15;
+						TRootHelpDialog * hd = new TRootHelpDialog(this, fPrompt, 500, nl+25);
+						hd->SetText(fHelpText);
+						hd->Popup();
+						idButton = -1;
+					} else {
+						if (idCmd == kIdFileDialog || idCmd == kIdFileDialogCont) {
 //                      Int_t entryNr = idButton;
-							 TString fn;
-							 TGFileInfo* fi = new TGFileInfo();
-							 TGTextEntry *te = fFileDialogContTextEntry[idButton];
-							 fn = te->GetText();
-//							 cout << "fFileDialogContTextEntry " << fn<< endl;
-							 if ( fn.BeginsWith("/") ) {
+							TString fn;
+							TGFileInfo* fi = new TGFileInfo();
+							TGTextEntry *te = fFileDialogContTextEntry[idButton];
+							fn = te->GetText();
+//							cout << "fFileDialogContTextEntry " << fn<< endl;
+							if ( fn.BeginsWith("/") ) {
 								 TString bn = gSystem->BaseName(fn);
 								 Size_t bnl = bn.Length();
 								 if ( bnl > 0 ) {
@@ -1655,66 +1672,66 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 								 inidir[fn.Length()] = 0;
 								 fi->fIniDir = inidir;
 //								 fi->fIniDir = (char*)fn.Data();
-							 }
- //                     const char * filter[] = {"data files", "*", 0, 0};
-							 fi->fFileTypes = filetypes;
-							 fi->fFileTypeIdx = fFileType[idButton];
+							}
+ //                    const char * filter[] = {"data files", "*", 0, 0};
+							fi->fFileTypes = filetypes;
+							fi->fFileTypeIdx = fFileType[idButton];
 // 							 cout << "fFileType " << fFileType[idButton]<< endl;
-							 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
-  							 if (fi->fFilename) {
-								 fn = fi->fFilename;
-//                         TString cwd(gSystem->pwd());
-//                         if (fn.BeginsWith(cwd.Data()))fn.Remove(0,cwd.Length()+1);
-								 te->SetText(fn.Data());
-								 fMustRestoreDir = kTRUE;
-								 gClient->NeedRedraw(te);
-								 gClient->NeedRedraw(this);
-							 }
-							 delete fi;
-							 if (idCmd == kIdFileDialogCont) {
-								 UpdateRequestBox(fn.Data(), kTRUE, idButton);
-							 }
+							new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
+  							if (fi->fFilename) {
+								fn = fi->fFilename;
+//                        TString cwd(gSystem->pwd());
+//                        if (fn.BeginsWith(cwd.Data()))fn.Remove(0,cwd.Length()+1);
+								te->SetText(fn.Data());
+								fMustRestoreDir = kTRUE;
+								gClient->NeedRedraw(te);
+								gClient->NeedRedraw(this);
+							}
+							delete fi;
+							if (idCmd == kIdFileDialogCont) {
+								UpdateRequestBox(fn.Data(), kTRUE, idButton);
+							}
 
-						 }
+						}
 					 }
 					 break;
 					 }
-				 case kCM_RADIOBUTTON:
-					 {
+				case kCM_RADIOBUTTON:
+					{
 //                   cout << "toggle TGRadioButtons " << parm1 << endl;
-						 TIter nextent(fEntries);
-						 TObject * obj;
-						 Int_t i = 0;
-						 while ( (obj = nextent()) ) {
-							 if (obj->InheritsFrom("TGRadioButton"))  {
+						TIter nextent(fEntries);
+						TObject * obj;
+						Int_t i = 0;
+						while ( (obj = nextent()) ) {
+							if (obj->InheritsFrom("TGRadioButton"))  {
 								if (i == idButton)
 									((TGRadioButton*)obj)->SetState(kButtonDown);
 								 else
 									((TGRadioButton*)obj)->SetState(kButtonUp);
-							 }
-							 i++;
-						 }
-						 break;
-					 }
-				 case kCM_COMBOBOX:
-					 {
+							}
+							i++;
+						}
 						break;
-					 }
+					}
+				case kCM_COMBOBOX:
+					{
+						break;
+					}
 
-				 case kCM_LISTBOX:
-					 {
-					 switch (idCmd) {
-						 case kIdTextSelect:
-							 TGTextLBEntry * tge = (TGTextLBEntry *)fListBox->GetEntry(parm2);
-							 TString txt = tge->GetText()->GetString();
-							 fTE->SetText(txt.Data());
-							 gClient->NeedRedraw(fTE);
-							 if (fText) *fText = txt.Data();
-							 break;
+				case kCM_LISTBOX:
+					{
+					switch (idCmd) {
+						case kIdTextSelect:
+							TGTextLBEntry * tge = (TGTextLBEntry *)fListBox->GetEntry(parm2);
+							TString txt = tge->GetText()->GetString();
+							fTE->SetText(txt.Data());
+							gClient->NeedRedraw(fTE);
+							if (fText) *fText = txt.Data();
+							break;
 						 }
-					 }
-				 default:
-					  break;
+					}
+				default:
+					break;
 			 }
 			 break;
 
