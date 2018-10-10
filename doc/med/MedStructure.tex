@@ -1,19 +1,16 @@
-\documentclass[10pt]{article}
+\documentclass[10pt,a4paper]{article}
 
 \usepackage{hyperref} 
 \usepackage{graphicx} 
 \usepackage{fancybox} 
+\usepackage{footmisc} 
 \usepackage{rotating} 
 \usepackage{color} 
-\usepackage{DIN_A4} 
 \usepackage{here}
 
 \ifx\MARaBOU\undefined
 \def\MARaBOU{MAR\lower.5ex\hbox{a}BO\kern-.5em\lower.5ex\hbox{O}\kern-.1em U}%
 \fi
-
-\newcommand{\samefootnote}{$^\alph{footnote}$}
-\newcommand{\samempfootnote}{$^\alph{mpfootnote}$}
 
 \definecolor{lightblue}{rgb}{.68,.88,.90}
 
@@ -31,6 +28,9 @@
 	{\begin{Sbox}\begin{minipage}[t]}
 	{\end{minipage}\end{Sbox}\colorbox{lightblue}{\TheSbox}}
 	
+
+\newcommand{\samefootnote}{$^\alph{footnote}$}
+\newcommand{\samempfootnote}{$^\alph{mpfootnote}$}
 
 \setlength{\parindent}{0pt}
 
@@ -73,30 +73,37 @@ table\,\ref{MarabouSubevents} gives a list of subevent types used by \MARaBOU{} 
 \begin{center}
 \begin{tabular}{|l|l|l|l|l|}
 \hline
-\verb+[type,subtype]+ & class name & format & mps\,\footnote{modules per subevent} & comment \\
+\verb+[type,subtype]+ & class name & format & mps\,\footnote{modules per subevent\label{a}} & comment \\
 \hline\hline
-\verb+[10,1]+ & \verb+TMrbSubevent_10_1+ & zero-compressed, data preceeded by channel number & 1 only & universal MBS subevent \\
+\verb+[10,1]+ & \verb+TMrbSubevent_10_1+ & zero-compressed, preceeded by channel number & 1 only & universal MBS subevent \\
 \hline
 \verb+[10,11]+ & \verb+TMrbSubevent_10_11+ & data w/o channel numbers, zero-padded & 1 only / any
 \footnote{As there is no module id in this format the sequence of modules has to be
-known to the reader. To avoid ambiguities it is recommended to store 1 module per subevent only.} & universal \MARaBOU{} subevent \\
+known to the reader. To avoid ambiguities it is recommended to store 1 module per subevent only.\label{b}} & universal \MARaBOU{} subevent \\
 \verb+[10,12]+ & \verb+TMrbSubevent_10_12+ & same as \verb+[10,1]+, including module headers & any & \\
 \hline
 \verb+[10,21]+ & \verb+TMrbSubevent_DGF_1+ & original XIA format & any & for XIA DGF-4C modules \\
 \verb+[10,22]+ & \verb+TMrbSubevent_DGF_2+\,\footnote{Note: formats \texttt{2} and \texttt{3} have \textbf{same}
-data structure on input but follow different output strategies} &  \dots & any &  \dots \\
-\verb+[10,23]+ & \verb+TMrbSubevent_DGF_3+\,\samempfootnote &  \dots & any &  \dots \\
+data structure on input but follow different output strategies\label{c}} &  \dots & any &  \dots \\
+\verb+[10,23]+ & \verb+TMrbSubevent_DGF_3+\,\footref{c} &  \dots & any &  \dots \\
 \hline
 \verb+[10,31]+ & \verb+TMrbSubevent_Silena_1+ &  zero-compressed Silena format & any &  for Silena 4418V/T modules \\
-\verb+[10,32]+ & \verb+TMrbSubevent_Silena_2+\,\samempfootnote &  \dots & any &  \dots \\
+\verb+[10,32]+ & \verb+TMrbSubevent_Silena_2+\,\footref{c} &  \dots & any &  \dots \\
 \hline
 \verb+[10,41]+ & \verb+TMrbSubevent_Caen_1+ & original CAEN format & any & for CAEN V785/V775 modules \\
-\verb+[10,42]+ & \verb+TMrbSubevent_Caen_2+\,\samempfootnote &  \dots & any &  \dots \\
-\verb+[10,43]+ & \verb+TMrbSubevent_Caen_3+\,\samempfootnote &  \dots & any &  \dots \\
+\verb+[10,42]+ & \verb+TMrbSubevent_Caen_2+\,\footref{c} &  \dots & any &  \dots \\
+\verb+[10,43]+ & \verb+TMrbSubevent_Caen_3+\,\footref{c} &  \dots & any &  \dots \\
 \hline
 \verb+[10,51]+ & \verb+TMrbSubevent_Sis_1+ & original SIS format & any & for SIS 3XXX modules \\
-\verb+[10,52]+ & \verb+TMrbSubevent_Sis_2+\,\samempfootnote &  \dots & any &  \dots \\
-\verb+[10,53]+ & \verb+TMrbSubevent_Sis_3+\,\samempfootnote &  \dots & any &  \dots \\
+\verb+[10,52]+ & \verb+TMrbSubevent_Sis_2+\,\footref{c} &  \dots & any &  \dots \\
+\verb+[10,53]+ & \verb+TMrbSubevent_Sis_3+\,\footref{c} &  \dots & any &  \dots \\
+\hline
+\verb+[10,54]+ & \verb+TMrbSubevent_Sis_33+ & special format & any & for SIS3302 tracing adc \\
+\hline
+\verb+[10,81]+ & \verb+TMrbSubevent_Mesytec_1+ & original MESYTEC format & any 
+\footnote{Although any number of modules is possible it is recommended to store only 1 module per subevent.\label{d}}& for MADC/MTDC/MQDC/MDPP16 modules \\
+\verb+[10,82]+ & \verb+TMrbSubevent_Mesytec_2+\,\footref{c} &  \dots & any\,\footref{d} &  \dots \\
+\verb+[10,83]+ & \verb+TMrbSubevent_Mesytec_3+\,\footref{c} &  \dots & any\,\footref{d} &  \dots \\
 \hline
 \verb+[10,91]+ & \verb+TMrbSubevent_Data_S+ & short (16 bit) data & -- & universal data container \\
 \verb+[10,92]+ & \verb+TMrbSubevent_Data_I+ & int (32 bit) data & -- & \dots \\
@@ -308,7 +315,7 @@ Format [10,44] provides a container for data produced by a CAEN V965 QDC.
 It is very similar to formats [10,4X] described in \ref{CAEN7X5}. As the qdc module integrates twice for each input there may be two
 data words per channel. The range bit then denotes whether it is the low (fine gain) or high (coarse gain) integration.
 \begin{figure}[H]
-\centerline{\includegraphics[width=\linewidth]{MedSevt_CAEN_V965}}
+\centerline{\includegraphics[width=\linewidth]{MedSevt_CAEN_V965.eps}}
 \caption{Subevent format [10,44]: CAEN V965 QDC data}
 \label{MedSevt_CAEN_V965}
 \end{figure}
@@ -360,12 +367,34 @@ This format is identical to format [10,12].
 Note: In current MINIBALL experiments data from
 SIS 3801 scalers will be written using format [10,11] rather than this one.
 \newpage
+\subsection{SIS3302 data: subevent format [10,54]}
+Format [10,54] is used to store data from module SIS3302.
+\newpage
+\subsection{MESYTEC data: subevent formats [10,81], [10,82], and [10,83]}
+Formats [10,8X] are designed to store data produced by Mesytec modules of type MADC32, MTDC32, MQDC32, and MDPP16.
+\begin{figure}[H]
+\centerline{\includegraphics[width=\linewidth]{MedSevt_Mesytec_1}}
+\caption{Subevent format [10,8X]: Mesytec data structure}
+\label{MedSevt_Mesytec_1}
+\end{figure}
+\newpage
+\begin{figure}[H]
+\centerline{\includegraphics[width=\linewidth]{MedSevt_Mesytec_2}}
+\caption{Subevent format [10,8X]: Mesytec: header \& trailer words}
+\label{MedSevt_Mesytec_2}
+\end{figure}
+\begin{figure}[H]
+\centerline{\includegraphics[width=\linewidth]{MedSevt_Mesytec_3}}
+\caption{Subevent format [10,8X]: Mesytec: data words}
+\label{MedSevt_Mesytec_3}
+\end{figure}
+\newpage
 \subsection{Plain data containers: subevent formats [10,91], 10,92], and [10,93]}
 Formats [10,9X] provide containers to store data that are not directly related to a hardware module
 (e.g. internal DGF scalers).
 There are containers for short [10,91], long [10,92], and float items [10,93], respectively.
 \begin{figure}[H]
-\centerline{\includegraphics[width=\linewidth]{MedSevt_Data_X}}
+\centerline{\includegraphics[width=.5\linewidth]{MedSevt_Data_X}}
 \caption{Subevent format [10,9X]: Plain data containers}
 \label{MedSevt_Data_X}
 \end{figure}
