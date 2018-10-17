@@ -377,6 +377,22 @@ Formats [10,8X] are designed to store data produced by Mesytec modules of type M
 \caption{Subevent format [10,8X]: Mesytec data structure}
 \label{MedSevt_Mesytec_1}
 \end{figure}
+\begin{minipage}{\linewidth}
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{ll}
+\hline
+\verb+header+ & header word (0b01 / 0x4\dots): module id, adc/tdc resolution, wc\\
+\verb+data word+ & data (0b00 / 0x04\dots): channel, adc amplitude, tdc time diff \\
+\verb+end of event+ & trailer (0b11): event counter / timestamp low bits 0-29\footnote{depending on register 0x6038} \\
+\verb+extended timestamp+ & timestamp high bits 30-45 (0b00 / 0x048\dots)\samempfootnote\\
+\verb+align64+ & zero data word to align to 64 bit boundaries\footnote{depending on word count}\\
+\hline
+\end{tabular}
+\end{center}
+\label{MedSevt_SIS_Legend}
+\end{table}
+\end{minipage}
 \newpage
 \begin{figure}[H]
 \centerline{\includegraphics[width=\linewidth]{MedSevt_Mesytec_2}}
