@@ -50,20 +50,20 @@ EXTRA_CXXFLAGS += -g -Wno-switch -Wno-write-strings -Wno-parentheses -Wno-format
 
 ##### Modules to build #####
 
-# only selected modules need to checked out from CVS if
+# only selected modules need to compiled if
 # not the complete marabou suite is required.
-MODULES       = build utils  helpbrowser gutils fitcal gredit hpr
+MODULES       = build utils  helpbrowser polar gutils fitcal gredit hpr
 
 ifeq ($(findstring $(MAKECMDGOALS),hpr),hpr)
 # for HistPresent only the following modules are needed
-#	MODULES       = build utils gutils helpbrowser fitcal gredit hpr
+#	MODULES       = build utils gutils helpbrowser polar fitcal gredit hpr
 
 else ifeq ($(findstring $(MAKECMDGOALS),analyze),analyze)
 # if offline data analysis in the marabou framework is needed
 	MODULES      += c_analyze analyze transport mbssetup mbsio expconf
 else 
 # otherwise all modules are needed
-	MODULES      += c_analyze analyze mbssetup mbsio transport expconf macrobrowser c2lynx camcli vmecontrol esone polar xiadgf dgfcomm dgfcontrol
+	MODULES      += c_analyze analyze mbssetup mbsio transport expconf macrobrowser c2lynx camcli vmecontrol esone xiadgf dgfcomm dgfcontrol
 endif
 
 $(info Using MODULES: )
