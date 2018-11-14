@@ -367,8 +367,9 @@ void FindPeakDialog::ExecuteFindPeak()
 //   } else {
 		pm = (TPolyMarker *) fSelHist->GetListOfFunctions()->FindObject("TPolyMarker");
 		if (pm) {
-			 poly.SetPolyMarker(0);
-			 pm->Copy(poly);
+			cout << "copy pm -> poly" << endl;
+			poly.SetPolyMarker(0);
+			pm->Copy(poly);
 		}
 //   }
 	TList *lof = fSelHist->GetListOfFunctions();
@@ -408,6 +409,7 @@ void FindPeakDialog::ExecuteFindPeak()
 			printf("Pos: %8.1f Cont@Pos:  %8.1f\n", xp, yp);
 		FhPeak *pe = new FhPeak(xp);
 		pe->SetWidth(fSigma);
+		pm = new TPolyMarker();
 		pe->SetContent(yp);
 		p->Add(pe);
 	}
@@ -415,15 +417,20 @@ void FindPeakDialog::ExecuteFindPeak()
 		pm = (TPolyMarker *) fSelHist->GetListOfFunctions()->FindObject("TPolyMarker");
 		if (!pm) {
 			pm = new TPolyMarker();
-			pm->SetMarkerColor(2);
-			pm->SetMarkerSize(2);
-			pm->SetMarkerStyle(23);
+			cout << "pm = new TPolyMarker() " << endl;
 			fSelHist->GetListOfFunctions()->Add(pm);
 		}
+		pm->SetMarkerColor(2);
+		pm->SetMarkerSize(2);
+		pm->SetMarkerStyle(23);
+		// copy possibly existing marks
 		Double_t * xp = poly.GetX();
 		Double_t * yp = poly.GetY();
 		Int_t np = pm->Size();
-		for (Int_t i = 0; i < poly.GetN(); i++) pm->SetPoint(np + i, *xp++, *yp++);
+		for (Int_t i = 0; i < poly.GetN(); i++) {
+			cout << "pm" << i << " " << *xp << " " << *yp << endl;
+			pm->SetPoint(np + i, *xp++, *yp++);
+		}
 		pm->Draw();
 //   }
 	gPad->Modified();

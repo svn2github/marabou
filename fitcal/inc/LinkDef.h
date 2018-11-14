@@ -11,6 +11,7 @@
 #pragma link C++ class FhMarkerList;
 #pragma link C++ class FitOneDimDialog;
 #pragma link C++ class FindPeakDialog;
+#pragma link C++ class FindPeakDialog2D;
 #pragma link C++ class CalibrationDialog;
 #pragma link C++ class TF1Range;
 
