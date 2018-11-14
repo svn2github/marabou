@@ -1711,6 +1711,76 @@ void FitHist::RebinOne()
 }
 //_______________________________________________________________________________________
 
+void FitHist::Enlarge()
+{
+	static const Char_t helptext[] =
+"Add extra bins to histogram\n\
+";
+	if (fSelHist == NULL) return;
+
+	TString title(fSelHist->GetTitle());
+	title += "_ext";
+	TString name(fSelHist->GetName());
+	name += "_ext";
+
+	static Int_t ext = 4;
+//	static Int_t exty = 4;
+	TList *row_lab = new TList(); row_lab->SetName("row_lab");
+	static void *valp[25];
+	Int_t ind = 0;
+	row_lab->Add(new TObjString("StringValue_Name of enlarged hist"));
+	row_lab->Add(new TObjString("StringValue_Title of enlarged hist"));
+	row_lab->Add(new TObjString("PlainIntVal_Extra bins"));
+//	if (is2dim(fSelHist))
+//		row_lab->Add(new TObjString("PlainIntVal_Extra bins Y"));
+
+	valp[ind++] = &name;
+	valp[ind++] = &title;
+	valp[ind++] = &ext;
+//	if (is2dim(fSelHist))
+//		valp[ind++] = &ngroupY;
+
+//	ok = GetStringExt("Rebin parameters", NULL, itemwidth, mycanvas,
+//							 NULL, NULL, row_lab, valp);
+	Int_t itemwidth =  50 * TGMrbValuesAndText::LabelLetterWidth();
+	Int_t ok = 0;
+//	fDialog =
+		new TGMrbValuesAndText ("Enlarge hist", NULL, &ok, itemwidth,
+								mycanvas, NULL, NULL, row_lab, valp,
+								NULL, NULL, helptext);
+//	cout << "ok " << ok << endl;
+	if (ok < 0) return;
+	title += ext;
+	name  += ext;
+   TAxis *xa = fSelHist->GetXaxis();
+	Double_t bwx = xa->GetBinWidth(1);
+	if (is2dim(fSelHist)) {
+//		cout << "nyi" << endl;
+		TAxis *ya = fSelHist->GetYaxis();
+		Double_t bwy = ya->GetBinWidth(1);
+		TH2F *hext = new TH2F(name, title, 
+				fSelHist->GetNbinsX()+2*ext, xa->GetXmin()-ext*bwx, xa->GetXmax()+ext*bwx,
+				fSelHist->GetNbinsY()+2*ext, ya->GetXmin()-ext*bwy, ya->GetXmax()+ext*bwy);
+		for (Int_t ix=1; ix<=fSelHist->GetNbinsX(); ix++){
+			for (Int_t iy=1; iy<=fSelHist->GetNbinsY(); iy++){
+				hext->SetBinContent(ix+ext, iy+ext, fSelHist->GetBinContent(ix, iy));
+			}
+		}
+		if (gHpr) gHpr->ShowHist(hext);
+		else    hext->Draw();
+	
+	} else {
+		TH1F *hext = new TH1F(name, title, 
+				fSelHist->GetNbinsX()+2*ext, xa->GetXmin()-ext*bwx, xa->GetXmax()+ext*bwx);
+		for (Int_t ix=1; ix<=fSelHist->GetNbinsX(); ix++){
+				hext->SetBinContent(ix+ext,  fSelHist->GetBinContent(ix));
+		}
+		if (gHpr) gHpr->ShowHist(hext);
+		else    hext->Draw();
+	}
+}
+//_______________________________________________________________________________________
+
 void FitHist::RedefineAxis()
 {
 	if (fExpHist) {
@@ -4301,7 +4371,10 @@ void FitHist::Fit1DimDialog(Int_t type)
 
 void FitHist::FindPeaks()
 {
-	new FindPeakDialog(fSelHist);
+	if (fSelHist->GetDimension() == 1) 
+		new FindPeakDialog(fSelHist);
+	else if (fSelHist->GetDimension() == 2) 
+		new FindPeakDialog2D((TH2*)fSelHist);
 };
 
 //__________________________________________________________________

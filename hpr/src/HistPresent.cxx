@@ -3254,7 +3254,8 @@ void HistPresent::CloseAllCanvases()
 //			cout << "CloseAllCanvases: " << htc << " " << htc->GetName()<< endl;
 		TString cn(htc->GetName());
 		if ( cn == "cHPr" || cn == "FileList" || cn.EndsWith("histlist")
-			|| cn == "ContentList"  || cn == "Windows"|| cn == "Cuts") continue;
+			|| cn == "ContentList"  || cn == "Windows"|| cn == "Cuts" 
+			|| cn.BeginsWith("Tree:")) continue;
 		htc->Disconnect("TPad", "Modified()");
 		TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
 		if (rc == NULL) {

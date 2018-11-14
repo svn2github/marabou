@@ -147,6 +147,7 @@ enum ERootCanvasCommands {
 	kFHYaxisRange,
 	kFHZaxisRange,
 	kFHMagnify,
+	kFHEnlarge,
 	kFHSuperimpose,
 	kFHTh3Dialog,
 	kFHRebinDimDialog,
@@ -908,6 +909,9 @@ again:
 							break;
 						case kFHMagnify:
 							fFitHist->Magnify();
+							break;
+						case kFHEnlarge:
+							fFitHist->Enlarge();
 							break;
 						case kFHTh3Dialog:
 							new HprTh3Dialog((TH3*)fFitHist->GetSelHist(), fRootCanvas);
@@ -1786,6 +1790,7 @@ void HandleMenus::BuildMenus()
 			fDisplayMenu->AddSeparator();
 			// Axes
 			TGPopupMenu  * casc_axis= new TGPopupMenu(fRootCanvas->GetParent());
+			casc_axis->AddEntry("Enlarge, add extra bins", kFHEnlarge);
 			casc_axis->AddEntry("Set Display Range X", kFHXaxisRange);
 			if ( nDim > 1)
 				casc_axis->AddEntry("Set Display Range Y", kFHYaxisRange);
@@ -1940,8 +1945,8 @@ void HandleMenus::BuildMenus()
 			fFitMenu->AddEntry("Shift / Scale histogram",     kFHShiftScale);
 			if( nDim == 1 ){
 				fFitMenu->AddEntry("Calibration Dialog",            kFHCalibrate);
-				fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
 			}
+			fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
 			fFitMenu->AddSeparator();
 			fFitMenu->AddEntry("Kolmogorov Test",         kFHKolmogorov);
 			fFitMenu->AddEntry("Fast Fourier Transform",         kFHfft);

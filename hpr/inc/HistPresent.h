@@ -105,6 +105,7 @@ protected:
    Int_t fNtupleSeqNr;
 	Int_t fNtuplePrependFN;
 	Int_t fNtuplePrependTN;
+	Int_t fAppendSelections;
 	Int_t f2dimAsGraph;
 	Int_t fWriteLeafMinMaxtoFile;
 	Int_t fWriteLeafNamesToFile;

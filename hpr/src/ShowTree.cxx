@@ -78,7 +78,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 	}	
 
    fSelectLeaf->Delete();
-   *fLeafCut="";
+//   *fLeafCut="";
 //   TButton *button;
    Int_t len, l, not_shown = 0;
 //	Bool_t showit;
@@ -455,17 +455,17 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 
    TString cmd;
    TString hname;
+   TString htitle;
 	if ( fNtuplePrependFN ) {
 		hname += fname;
 		Int_t inddot = hname.Index(".");
 		if (inddot > 0) hname.Resize(inddot); // chop of .root .map etc.
-		hname += "_";	
+		hname += "_";
 	}
 	if ( fNtuplePrependTN ) {
 		hname += tname;
 		hname += "_";	
 	}
-	hname += "hist_";	
    Int_t nent = 1;
    Double_t nbin[4] = {0, 0, 0, 0};
    Double_t vmin[4] = {0, 0, 0, 0};
@@ -588,6 +588,8 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    if (nent > 1) hname += "_"; hname += leaf1;
    if (nent > 2) hname += "_"; hname += leaf2;
    if (nent > 3) hname += "_"; hname += leaf3;
+   htitle = hname;
+	hname.Prepend( "hist_");	
 
    TString option = "goff";
 
@@ -822,17 +824,21 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 //         }
       }
    }
+   if (fApplyLeafCut && fAppendSelections){
+		htitle+="_";
+		htitle+=*fLeafCut;
+	}
    TCanvas *cc = NULL;
    if (nent==1) {
-      new TH1F(hname.Data(),hname.Data(),
+      new TH1F(hname.Data(),htitle,
              (Int_t)nbin[0],vmin[0], vmax[0]);
    } else if ( nent < 4 && f2dimAsGraph == 0 ) {
 		if ( nent==2 )
-			new TH2F(hname.Data(),hname.Data(),
+			new TH2F(hname.Data(),htitle,
 					(Int_t)nbin[0],vmin[0], vmax[0],
 					(Int_t)nbin[1],vmin[1], vmax[1]);
 		if ( nent==3 )
-			new TH3F(hname.Data(),hname.Data(),
+			new TH3F(hname.Data(),htitle,
 						(Int_t)nbin[0],vmin[0], vmax[0],
 						(Int_t)nbin[1],vmin[1], vmax[1],
 						(Int_t)nbin[2],vmin[2], vmax[2]);
@@ -1066,6 +1072,8 @@ See help for \"Histo/Leaf/Canvas mask\" on main window\n\
 	valp[ind++] = &fNtuplePrependTN;
 	row_lab->Add(new TObjString("CheckButton_        Prepend file name to vars"));
 	valp[ind++] = &fNtuplePrependFN;
+	row_lab->Add(new TObjString("CheckButton_Append selections (cuts) to title"));
+	valp[ind++] = &fAppendSelections;
 	row_lab->Add(new TObjString("CheckButton_               Show 2dim as graph"));
    valp[ind++] = &f2dimAsGraph;
    row_lab->Add(new TObjString("Mark_Select_MarkStyle"));

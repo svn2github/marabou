@@ -21,6 +21,7 @@
 #include "FhPeak.h"
 #include "TableOfLabels.h"
 #include "FindPeakDialog.h"
+#include "FindPeakDialog2D.h"
 #include "CalibrationDialog.h"
 #include "Save2FileDialog.h"
 #include "HprLegend.h"
@@ -226,6 +227,7 @@ public:
 	void ProfileX();                  //
 	void ProfileY();                  //
 	void RebinOne();                  //
+	void Enlarge();
 	void ExecDefMacro();                  //
 	void ExecFitMacro();                  //
 	void EditFitMacro();                  //

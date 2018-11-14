@@ -47,11 +47,19 @@ void HistPresent::RestoreOptions()
    TEnv env(".hprrc");
    fGraphFile =
        env.GetValue("HistPresent.GraphFile", "gdata.asc");
-
+   
+   const char hist_file[] = {"ntupleCuts.txt"};
+	fstream ntc(hist_file);
+	if (ntc.is_open()) ntc >> *fLeafCut;
+   const char cmd_file[] = {"ntupleCmds.txt"};
+	fstream cmds(cmd_file);
+	if (cmds.is_open()) cmds >> *fExpression;
+	
    fRememberTreeHists  = env.GetValue("HistPresent.RememberTreeHists", 0);
    fNtupleVersioning   = env.GetValue("HistPresent.NtupleVersioning", 1);
 	fNtuplePrependTN    = env.GetValue("HistPresent.fNtuplePrependTN", 0);
 	fNtuplePrependFN    = env.GetValue("HistPresent.fNtuplePrependFN", 0);
+	fAppendSelections   = env.GetValue("HistPresent.fAppendSelections", 1);
 	fAlwaysRequestLimits= env.GetValue("HistPresent.AlwaysRequestLimits", 1);
    fAlwaysFindLimits   = env.GetValue("HistPresent.AlwaysFindLimits", 1);
 	fWriteLeafMinMaxtoFile = env.GetValue("HistPresent.fWriteLeafMinMaxtoFile", 0);
@@ -171,6 +179,7 @@ void HistPresent::SaveOptions()
 	env.SetValue("HistPresent.NtupleVersioning", fNtupleVersioning);
 	env.SetValue("HistPresent.fNtuplePrependTN", fNtuplePrependTN);
 	env.SetValue("HistPresent.fNtuplePrependFN", fNtuplePrependFN);
+	env.SetValue("HistPresent.fAppendSelections", fAppendSelections);
 	env.SetValue("HistPresent.GraphFile", fGraphFile.Data());
    env.SetValue("HistPresent.HostToConnect", fHostToConnect->Data());
    env.SetValue("HistPresent.SocketToConnect", fSocketToConnect);
