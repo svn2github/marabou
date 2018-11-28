@@ -159,7 +159,7 @@ For more detailed information please consult <a href = http://root.cern/doc/mast
 
 	const char *fDrawOpt2[kNdrawopt] =
 	{"SCAT", "BOX",   "BOX1",  "COL",   "ARR",   "TEXT",
-	"CONT0", "CONT1", "CONT2", "CONT3", "CONT4", "",
+	"Error", "CONT0", "CONT1", "CONT2", "CONT3", "CONT4",
 	"SURF0", "SURF1", "SURF2",  "SURF3", "SURF4", "SURF5",
 	"LEGO",  "LEGO1", "LEGO2",  "LEGO3", "LEGO4", "",
 	"VIOLINX","VIOLINY", "CANDLEX","CANDLEY",
