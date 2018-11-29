@@ -142,11 +142,15 @@ class TMrbString : public TString {
 		inline TMrbString & operator+=(const Double_t d) { return(AppendDouble(d)); };
 
 		inline TMrbString & operator=(const Char_t * s) {
-			if (s == NULL) s = ""; return((TMrbString &) this->Replace(0, Length(), s, strlen(s)));
+			if (s == NULL)
+				s = "";
+			return((TMrbString &) this->Replace(0, Length(), s, strlen(s)));
 		};
 		inline TMrbString & operator=(const TMrbString & s) { return((TMrbString &) this->Replace(0, Length(), s.Data(), s.Length())); };
 		inline TMrbString & operator+=(const Char_t * s) {
-			if (s == NULL) s = ""; return((TMrbString &) this->Append(s, strlen(s)));
+			if (s == NULL)
+				s = "";
+			return((TMrbString &) this->Append(s, strlen(s)));
 		};
 		inline TMrbString & operator+=(const TString & s) { return((TMrbString &) this->Append(s.Data(), s.Length())); };
 
