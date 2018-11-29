@@ -150,7 +150,7 @@ class TMrbString : public TString {
 		inline TMrbString & operator+=(const Char_t * s) {
 			if (s == NULL)
 				s = "";
-			makerreturn((TMrbString &) this->Append(s, strlen(s)));
+			return((TMrbString &) this->Append(s, strlen(s)));
 		};
 		inline TMrbString & operator+=(const TString & s) { return((TMrbString &) this->Append(s.Data(), s.Length())); };
 
