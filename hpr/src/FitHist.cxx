@@ -2141,9 +2141,8 @@ void FitHist::WriteOutCanvas()
 						TString drawopt;
 						if (fShowContour)
 							drawopt = "hist";
-							if ( fErrorMode != "none")
+						if ( fErrorMode != "none")
 								drawopt += "e1";
-//                  hi->SetOption(drawopt.Data());
 						if (fFill1Dim) {
 							if (fFillStyle == 0) fFillStyle = 1001;
 							hi->SetFillStyle(fFillStyle);
