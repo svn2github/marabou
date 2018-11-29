@@ -2818,8 +2818,7 @@ void HistPresent::LoadWindow(const char* fname, const char* hname, const char* b
 			TObject * tmp;
 			if (wdw->InheritsFrom("TCutG")) {
 			  CheckList(fAllCuts, "TMrbWindow");
-			  if ( (tmp = fAllCuts->FindObject(wdw->GetName()) ) )
-				if (tmp) {
+			  if ( (tmp = fAllCuts->FindObject(wdw->GetName()) ) ) {
 					cout << wdw->GetName()<< " existing "  << endl;
 					TString newname(hname);
 					TRegexp sem(";");

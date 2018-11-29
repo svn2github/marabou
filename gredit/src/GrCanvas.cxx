@@ -178,11 +178,11 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 				prevSelObj = fSelected;
 			if (fSelectedPad && fSelectedPad->TestBit(kNotDeleted))
 				prevSelPad = (TPad*) fSelectedPad;
-				fPadSave = (TPad*)gPad;
-				TIter next(gROOT->GetListOfCanvases());
-				TCanvas *tc;
-				while ((tc = (TCanvas *)next()))
-					tc->Update();
+			fPadSave = (TPad*)gPad;
+			TIter next(gROOT->GetListOfCanvases());
+			TCanvas *tc;
+			while ((tc = (TCanvas *)next()))
+				tc->Update();
       }
    }
    cd();        // make sure this canvas is the current canvas
