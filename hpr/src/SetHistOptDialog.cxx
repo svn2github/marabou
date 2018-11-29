@@ -616,7 +616,10 @@ void SetHistOptDialog::SetTitleBoxAttr(TStyle *sty)
 		if (talh > 3)
 			talh = 3;
 		Int_t talv = gStyle->GetTitleAlign()%10;
-		if (talv < 1) talv = 1; if (talv > 3) talv = 3;
+		if (talv < 1)
+			talv = 1;
+		if (talv > 3)
+			talv = 3;
 		Double_t xpos, ypos;
 		if (talh == 1) xpos = fTitleX;
 		if (talh == 2) xpos = fTitleX-fTitleW/2.;
