@@ -500,7 +500,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 		if (fShowMarkers[i] != 0) {
 			if ( fMarkerSize[i] < 0.01 )
 				fMarkerSize[i] = 1;
-				drawopt += "P";
+			drawopt += "P";
 			hist->SetMarkerSize(fMarkerSize[i]);
 		}
 		if ( fAdvanced1Dim ) {
