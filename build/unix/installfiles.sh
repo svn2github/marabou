@@ -38,14 +38,23 @@ close $vf
 # copy files to destination dir, append version number
 # link main file name to new version
 # remove old files - will actually be removed as soon as last consumer stops
-
+set notCopied 0
 foreach f $lofFiles {
-	set fileName [file tail $f]
-	exec cp $f $destDir/$fileName.$version 
-	set oldDir [pwd]
-	cd $destDir
-	exec ln -fs $fileName.$version $fileName
-	exec rm -f $fileName.$oldVersion
-	puts "\[$f -> $destDir/$fileName.$version\]"
-	cd $oldDir
+	if {[file exists $f]} {
+		set fileName [file tail $f]
+		exec cp $f $destDir/$fileName.$version 
+		set oldDir [pwd]
+		cd $destDir
+		exec ln -fs $fileName.$version $fileName
+		exec rm -f $fileName.$oldVersion
+		puts "\033\[34m\[$f -> $destDir/$fileName.$version\]\033\[39m"
+		cd $oldDir
+	} else {
+		puts "\033\[36mNo $f found\033\[39m"
+		incr notCopied 
+	}
+}
+if { $notCopied > 0 } {
+	puts "\033\[31mWarning:Not all files of full Marabou found,
+	did you \"make hpr\" or \"make analyze\" only?\033\[39m"
 }
