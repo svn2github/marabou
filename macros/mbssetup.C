@@ -3,7 +3,7 @@
 	const char setblack[]    =   "\033[39m";
 	gROOT->Macro("LoadUtilityLibs.C");
 	gROOT->Macro("LoadConfigLibs.C");
-	setup = new TMbsSetup(".mbssetup");
+	TMbsSetup * setup = new TMbsSetup(".mbssetup");
 	TString evtBuilder = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "");
 	if (evtBuilder.IsNull()) {
 		evtBuilder = gEnv->GetValue("TMbsSetup.PPCName", "");

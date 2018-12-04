@@ -275,7 +275,7 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			{
 				TString codeString;
 				fCodeTemplates.InitializeCode();
-				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
+				fCodeTemplates.Substitute("$marabouPPCDir", gSystem->Getenv("MARABOU_PPCDIR"));
 				Int_t bNo = this->GetMbsBranchNo();
 				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
 				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
@@ -291,7 +291,7 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			{
 				TString codeString;
 				fCodeTemplates.InitializeCode();
-				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
+				fCodeTemplates.Substitute("$marabouPPCDir", gSystem->Getenv("MARABOU_PPCDIR"));
 				Int_t bNo = this->GetMbsBranchNo();
 				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
 				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);

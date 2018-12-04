@@ -1767,12 +1767,15 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iclPath += o->String();
 								first = kFALSE;
 							}
-							TString ip = "-I";
-							ip += gEnv->GetValue("TMrbConfig.PPCIncludePath", "$MARABOU/powerpc/include");
-							gSystem->ExpandPathName(ip);
-							if (!iclPath.Contains(ip)) {
-								if (!first) iclPath += " \\\n\t\t\t\t";
-								iclPath += ip;
+							TString mp = this->GetPPCDir("include");
+							TString ip = gEnv->GetValue("TMrbConfig.PPCIncludePath", mp.Data());
+							if (!ip.IsNull()) {
+								gSystem->ExpandPathName(ip);
+								ip.Prepend("-I");
+								if (!iclPath.Contains(ip)) {
+									if (!first) iclPath += " \\\n\t\t\t\t";
+									iclPath += ip;
+								}
 							}
 							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl << endl;
 						}
@@ -1802,17 +1805,21 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TString lp;
 							if (this->IsMultiBranch()) {
 								TString lv; this->GetLynxVersion(lv, pp->GetB());
+								TString mp = this->GetPPCDir(Form("lib/%s", lv.Data()));
 								lp = gEnv->GetValue(Form("TMrbConfig.PPCLibraryPath.%d", pp->GetB()), "");
-								if (lp.IsNull()) lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+								if (lp.IsNull()) lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", mp.Data());
 							} else {
 								TString lv; this->GetLynxVersion(lv, -1);
-								lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+								TString mp = this->GetPPCDir(Form("lib/%s", lv.Data()));
+								lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", mp.Data());
 							}
-							gSystem->ExpandPathName(lp);
-							if (!libString.Contains(lp)) {
-								if (!first) libString += " \\\n\t\t\t\t";
-								libString += "-L";
-								libString += lp;
+							if (!lp.IsNull()) {
+								gSystem->ExpandPathName(lp);
+								if (!libString.Contains(lp)) {
+									if (!first) libString += " \\\n\t\t\t\t";
+									libString += "-L";
+									libString += lp;
+								}
 							}
 							libString += " -lUti";
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;

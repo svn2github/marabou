@@ -925,6 +925,8 @@ class TMrbConfig : public TNamed {
 		const Char_t * GetMbsVersion(TString & MbsVersion, Int_t BranchNo = -1, Bool_t Vformat = kTRUE, Bool_t Verbose = kFALSE);
 		const Char_t * GetLynxVersion(TString & LynxVersion, Int_t BranchNo = -1, Bool_t Verbose = kFALSE);
 		const Char_t * GetProcType(TString & ProcType, Int_t BranchNo = -1, Bool_t Verbose = kFALSE);
+		
+		inline Char_t * GetPPCDir(Char_t * Subdir) { Char_t * mp = (Char_t *) gSystem->Getenv("MARABOU_PPCDIR"); if (mp == NULL) mp = "/project/mll-code/ppc-pro"; return Form("%s/%s", mp, Subdir); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

@@ -41,7 +41,7 @@
 \maketitle
 \vfill
 \begin{abstract}
-This document describes the structure of experimental data taken in MINIBALL experiments
+\noindent This document describes the structure of experimental data taken in MINIBALL experiments
 using the \MARaBOU{} data acquisition system.
 \textbf{MED} is an abbreviation for
 "\textbf{M}BS \textbf{E}vent \textbf{D}ata" as this format
@@ -172,7 +172,7 @@ an odd number of module channels there is a filler (0xFFFF) at end of data.
 Subevent format [10,12] is an extension to format [10,1]: zero-compressed data preceeded by channel
 numbers are written together with a module header. Thus several modules may easily be stored in one subevent.
 \begin{figure}[H]
-\centerline{\includegraphics[width=.5\linewidth]{MedSevt_10_12}}
+\centerline{\includegraphics[width=.7\linewidth]{MedSevt_10_12}}
 \caption{Subevent format [10,12]: data zero-compressed, any number of modules}
 \label{MedSevt_10_12}
 \end{figure}
@@ -345,7 +345,7 @@ data words per channel. The range bit then denotes whether it is the low (fine g
 Formats [10,5X] are designed to store data produced by SIS 3600 or SIS 3801 modules.
 This format is identical to format [10,12].
 \begin{figure}[H]
-\centerline{\includegraphics[width=.5\linewidth]{MedSevt_SIS}}
+\centerline{\includegraphics[width=.7\linewidth]{MedSevt_SIS}}
 \caption{Subevent format [10,5X]: SIS 3XXX data}
 \label{MedSevt_SIS}
 \end{figure}
@@ -415,7 +415,7 @@ Formats [10,9X] provide containers to store data that are not directly related t
 (e.g. internal DGF scalers).
 There are containers for short [10,91], long [10,92], and float items [10,93], respectively.
 \begin{figure}[H]
-\centerline{\includegraphics[width=.5\linewidth]{MedSevt_Data_X}}
+\centerline{\includegraphics[width=.7\linewidth]{MedSevt_Data_X}}
 \caption{Subevent format [10,9X]: Plain data containers}
 \label{MedSevt_Data_X}
 \end{figure}

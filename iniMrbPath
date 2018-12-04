@@ -21,13 +21,16 @@
 SYSMODE=y
 
 # Set environment vars needed by MARaBOU:
-# ROOTSYS        where the ROOT system resides, should be set by user
-# MARABOU        where your MARaBOU installation resides, normally CWD
+# ROOTSYS        		where the ROOT system resides, should be set by user
+# MARABOU        		where your MARaBOU installation resides, normally CWD
+# MARABOU_PPCDIR		where libs and includes for the PPC reside
+# MARABOU_INSTALL_PATH	where the actual version of MARaBOU should be installed (SYSMODE=y only)
 
 # If you change the following settings please dont commit them back in
 
-# ROOTSYS=where_root_installation_resides, 
+ROOTSYS=where_root_installation_resides
 MARABOU=`pwd`
+MARABOU_PPCDIR=where_ppc_libs_includes_reside
 MARABOU_INSTALL_PATH=cant_be_installed
 
 #____________________________[end editable section]___________________________
@@ -50,7 +53,7 @@ fi
 if [ ! -x $ROOTSYS/bin/root ]
 then
 	echo -e -n $RED >&2
-	echo "iniMrbPath: Directory where ROOTSYS=$ROOTSYS is pointing to doesn't contain a valid ROOT installation" >&2
+	echo "iniMrbPath: Directory where \"ROOTSYS=$ROOTSYS\" is pointing to doesn't contain a valid ROOT installation" >&2
 	echo -e -n $BLK >&2
 	return
 fi
@@ -76,6 +79,23 @@ then
 	else
 		echo "            set MARABOU to where your MARaBOU installation resides" >&2
 	fi
+	echo -e -n $BLK >&2
+	return
+fi
+
+if [ -z "$MARABOU_PPCDIR" ]
+then
+	echo -e -n $RED >&2
+	echo "iniMrbPath: MARABOU_PPCDIR not set -" >&2
+	echo "            set MARABOU_PPCDIR to where PPC's includes and libs are located" >&2
+	echo -e -n $BLK >&2
+	return
+fi
+
+if [ ! -f $MARABOU_PPCDIR/include/gd_readout.h ]
+then
+	echo -e -n $RED >&2
+	echo "iniMrbPath: Directory where \"MARABOU_PPCDIR=$MARABOU_PPCDIR\" is pointing to doesn't contain PPC's includes & libs" >&2
 	echo -e -n $BLK >&2
 	return
 fi

@@ -139,7 +139,7 @@ static struct s_gassiplex * s_$moduleNameLC;
 %%DEFINE_LOCAL_VARS_READOUT%%
 
 %%BeginOfCode%%
-	-I@{.PPCIncludePath:/nfs/marabou/include}
+	-I@{.PPCIncludePath:$marabouPPCDir/include}
 %%EndOfCode%%
 %%DEFINE_INCLUDE_PATHS%%
 

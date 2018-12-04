@@ -152,7 +152,7 @@ static s_mesy * m_$moduleName = NULL;
 %%DEFINE_LOCAL_VARS_READOUT%%
 
 %%BeginOfCode%%
-	-I@{.PPCIncludePath:/nfs/marabou/include}
+	-I@{.PPCIncludePath:$marabouPPCDir/include}
 %%EndOfCode%%
 %%DEFINE_INCLUDE_PATHS%%
 

@@ -246,7 +246,7 @@ Bool_t TMrbGassiplex::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			{
 				TString codeString;
 				fCodeTemplates.InitializeCode();
-				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
+				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU_PPCDIR"));
 				Int_t bNo = this->GetMbsBranchNo();
 				TString mbsVersion = "v62"; gMrbConfig->GetMbsVersion(mbsVersion, bNo);
 				TString lynxVersion = "2.5"; gMrbConfig->GetLynxVersion(lynxVersion, bNo);
@@ -262,15 +262,16 @@ Bool_t TMrbGassiplex::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			{
 				TString codeString;
 				fCodeTemplates.InitializeCode();
-				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
+				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU_PPCDIR"));
 				Int_t bNo = this->GetMbsBranchNo();
 				TString lv = "2.5"; gMrbConfig->GetLynxVersion(lv, bNo);
 				TString lp;
+				TString mp = gMrbConfig->GetPPCDir(Form("lib/%s", lv.Data()));
 				if (bNo != -1) {
 					lp = gEnv->GetValue(Form("TMrbConfig.PPCLibraryPath.%d", bNo), "");
-					if (lp.IsNull()) lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+					if (lp.IsNull()) lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", mp.Data());
 				} else {
-					lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", Form("$MARABOU/powerpc/lib/%s", lv.Data()));
+					lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", mp.Data());
 				}
 				fCodeTemplates.Substitute("$ppcLibraryPath", lp.Data());
 				fCodeTemplates.CopyCode(codeString);
