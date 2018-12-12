@@ -34,63 +34,66 @@ Set2DimGraphDialog::Set2DimGraphDialog(Int_t /*batch*/)
 Set2DimGraphDialog::Set2DimGraphDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
-"Note: Changeing options only influence the current histogram\n\
+"<!DOCTYPE HTML>\n\
+<HTML>\n\
+<TITLE>HelpSet2DimOpt</TITLE>\n\
+Note: Changeing options only influence the current histogram\n\
 		 To make them active for subsequently displayed histograms\n\
 		 press: \"Set as global default\"\n\
-\n\
+ \n\
 Most of the value in this widget are self explaining\n\
 If \"Live statbox\" a box is displayed when dragging the\n\
 pressed mouse in the histogram area showing various statistics\n\
 values.\n\
-\n\
+ \n\
 X, Y and Z scales can be set by default to logarithmic or linear.\n\
 This can still be reset for individual histograms.\n\
 In detail: If a canvas is closed and its lin-log state differs\n\
 from the global default its state is stored and restored when\n\
 the histogram is shown again.\n\
-\n\
+ \n\
 Specific drawing options can be used to paint a TGraph2D:\n\
 \n\
-TRI   : The Delaunay triangles are drawn using filled area.\n\
+<b>TRI </b>  : The Delaunay triangles are drawn using filled area.\n\
 		  An hidden surface drawing technique is used. The surface is\n\
 		  painted with the current fill area color. The edges of each\n\
 		  triangles are painted with the current line color.\n\
-TRIW  : The Delaunay triangles are drawn as wire frame\n\
-TRI1  : The Delaunay triangles are painted with color levels. The edges\n\
+<b>TRIW</b>  : The Delaunay triangles are drawn as wire frame\n\
+<b>TRI1</b>  : The Delaunay triangles are painted with color levels. The edges\n\
 		  of each triangles are painted with the current line color.\n\
-TRI2  : the Delaunay triangles are painted with color levels.\n\
-P     : Draw a marker at each vertex\n\
-P0    : Draw a circle at each vertex. Each circle background is white.\n\
-PCOL  : Draw a marker at each vertex. The color of each marker is\n\
+<b>TRI2</b>  : the Delaunay triangles are painted with color levels.\n\
+<b>P   </b>  : Draw a marker at each vertex\n\
+<b>P0  </b>  : Draw a circle at each vertex. Each circle background is white.\n\
+<b>PCOL</b>  : Draw a marker at each vertex. The color of each marker is\n\
 		  defined according to its Z position.\n\
-CONT  : Draw contours\n\
-LINE  : Draw a 3D polyline\n\
+<b>CONT</b>  : Draw contours\n\
+<b>LINE</b>  : Draw a 3D polyline\n\
 \n\
-CONT0 : Draw a contour plot using surface colors to distinguish contours\n\
-CONT1 : Draw a contour plot using line styles to distinguish contours\n\
-CONT2 : Draw a contour plot using the same line style for all contours\n\
-CONT3 : Draw a contour plot using fill area colors\n\
-CONT4 : Draw a contour plot using surface colors (SURF option at theta = 0)\n\
-CONT5 : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
-LEGO  : Draw a lego plot with hidden line removal\n\
-LEGO1 : Draw a lego plot with hidden surface removal\n\
-LEGO2 : Draw a lego plot using colors to show the cell contents\n\
-SURF  : Draw a surface plot with hidden line removal\n\
-SURF1 : Draw a surface plot with hidden surface removal\n\
-SURF2 : Draw a surface plot using colors to show the cell contents\n\
-SURF3 : same as SURF with in addition a contour view drawn on the top\n\
-SURF4 : Draw a surface using Gouraud shading\n\
-SURF5 : Same as SURF3 but only the colored contour is drawn. Used with\n\
+<b>CONT0</b> : Draw a contour plot using surface colors to distinguish contours\n\
+<b>CONT1</b> : Draw a contour plot using line styles to distinguish contours\n\
+<b>CONT2</b> : Draw a contour plot using the same line style for all contours\n\
+<b>CONT3</b> : Draw a contour plot using fill area colors\n\
+<b>CONT4</b> : Draw a contour plot using surface colors (SURF option at theta = 0)\n\
+<b>CONT5</b> : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
+<b>LEGO </b> : Draw a lego plot with hidden line removal\n\
+<b>LEGO1</b> : Draw a lego plot with hidden surface removal\n\
+<b>LEGO2</b> : Draw a lego plot using colors to show the cell contents\n\
+<b>SURF </b> : Draw a surface plot with hidden line removal\n\
+<b>SURF1</b> : Draw a surface plot with hidden surface removal\n\
+<b>SURF2</b> : Draw a surface plot using colors to show the cell contents\n\
+<b>SURF3</b> : same as SURF with in addition a contour view drawn on the top\n\
+<b>SURF4</b> : Draw a surface using Gouraud shading\n\
+<b>SURF5</b> : Same as SURF3 but only the colored contour is drawn. Used with\n\
 			 option CYL, SPH or PSR it allows to draw colored contours on a\n\
 			 sphere, a cylinder or a in pseudo rapidy space. In cartesian\n\
 			 or polar coordinates, option SURF3 is used.\n\
-\n\
+ \n\
 Surface with option \"GLSURF\"\n\
 The surface profile is displayed on the slicing plane. The profile\n\
 projection is drawn\n\
 on the back plane by pressing 'p' or 'P' key.\n\
 For further details contact ROOTs documentation.\n\
-\n\
+ \n\
 When surface options are selected rendering of the TGraph2D\n\
 uses the DeLaunay triangulation algorithm. With many points\n\
 (> 1000) this may take minutes especially if the points are\n\
@@ -100,7 +103,7 @@ a factor upto 10 in speed. In addition for display\n\
 purposes in draft mode e.g. 500 points may be sufficient\n\
 The parameter fUseNPoints is used to control this.\n\
 If <= no reordering is done, all points are used.\n\
-> 0 reorder and use only fUseNPoints but of course\n\
+If it is > 0 reorder and use only fUseNPoints but of course\n\
 only max number of points of the graph.\n\
 Option: \"Randomize points\"\n\
 The current implementation of the Delauny TRI algorithm\n\
@@ -108,9 +111,9 @@ has a problem when points are exactly aligned\n\
 In the plot you see weird extra points outside the plot\n\
 Shifting the z-value randomly by a tiny amount avoids this\n\
 It is not visible in the final plot \n\
-";
+</HTML>";
 
-	const char *fDrawOpt2[kNGraph2Dopt] =
+	const Char_t *fDrawOpt2[kNGraph2Dopt] =
 	{"TRI ", "TRIW",   "TRI1",  "TRI2",
 	"CONT0", "CONT1" , "CONT2", "CONT3", "CONT4", "SURF0",
 	"SURF1", "SURF2",  "SURF3", "SURF4", "SURF5", "LEGO",
@@ -132,11 +135,11 @@ It is not visible in the final plot \n\
 	while ( (obj = next()) ) {
 		if (obj->InheritsFrom("TGraph2D")) {
 			fGraph2D = (TGraph2D*)obj;
-//			fHist = fGraph2D->GetHistogram();
+			fHist = fGraph2D->GetHistogram();
 		}
 	}
 	if ( fHist == NULL ) {
-//		cout << "No Histogram in Canvas" << endl;
+		cout << "No Histogram in Canvas" << endl;
 //		return;
 	} else {
 		if ( gHprDebug > 0 )
@@ -146,6 +149,7 @@ It is not visible in the final plot \n\
 			<< "; Set2DimGraphDialog * d2 = (Set2DimGraphDialog*)" << this << endl;
 	}
 	RestoreDefaults();
+	fViewingAngle ="Def(30,45)";
 	if (gHprDebug > 0)
 		cout << "Set2DimGraphDialog: fDrawOpt2Dim " << fDrawOpt2Dim << endl;
 //   Int_t selected = -1;
@@ -215,11 +219,14 @@ It is not visible in the final plot \n\
 	fRow_lab->Add(new TObjString("Float_Value+MSize  "));
 	fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
 	fRow_lab->Add(new TObjString("CheckButton_Log X"));
-	fRow_lab->Add(new TObjString("CheckButton+Log Y"));
-	fRow_lab->Add(new TObjString("CheckButton+Log Z"));
+	fRow_lab->Add(new TObjString("CheckButton-Log Y"));
+	fRow_lab->Add(new TObjString("CheckButton-Log Z"));
 	fValp[ind++] = &fTwoDimLogX;
 	fValp[ind++] = &fTwoDimLogY;
 	fValp[ind++] = &fTwoDimLogZ;
+	fRow_lab->Add(new TObjString("ComboSelect-View;Def(30,45);Top(XY);Front(XZ);Side(YZ)"));
+	fBidViewingAngle = ind;
+	fValp[ind++] = &fViewingAngle;
 	fRow_lab->Add(new TObjString("CheckButton_Randomize Points"));
 	fValp[ind++] = &fRandomizePoints;
 	fRow_lab->Add(new TObjString("PlainIntVal+Use N Points"));
@@ -237,6 +244,15 @@ It is not visible in the final plot \n\
 							 NULL, NULL, fRow_lab, fValp,
 							 NULL, NULL, helptext, this, this->ClassName());
 }
+//_______________________________________________________________________
+
+Set2DimGraphDialog::~Set2DimGraphDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
+//_______________________________________________________________________
 
 void Set2DimGraphDialog::CloseDialog()
 {
@@ -309,6 +325,29 @@ void Set2DimGraphDialog::SetPadAtt(TPad *pad)
 		pad->GetFrame()->SetFillStyle(1001);
 		pad->GetFrame()->SetFillColor(f2DimBackgroundColor);
 	}
+		// 0: default 60,120; 1: ;Top(XY) 0,-180;Front 0,0;Side 90,0 
+		if (fViewingAngle.BeginsWith("Def")) {
+			pad->SetPhi(30);
+			pad->SetTheta(45);
+			fHist->GetXaxis()->SetLabelOffset(.01);
+			fHist->GetYaxis()->SetLabelOffset(.01);
+		} else if (fViewingAngle.BeginsWith("Top")) {
+			pad->SetPhi(0);
+			pad->SetTheta(90);
+			fHist->GetXaxis()->SetLabelOffset(-.04);
+			fHist->GetYaxis()->SetLabelOffset(.01);
+		} else if (fViewingAngle.BeginsWith("Front")) {
+			pad->SetPhi(0);
+			pad->SetTheta(0);
+			fHist->GetXaxis()->SetLabelOffset(-.04);
+			fHist->GetYaxis()->SetLabelOffset(.01);
+		} else if (fViewingAngle.BeginsWith("Side")) {
+			pad->SetPhi(90);
+			pad->SetTheta(0);
+			fHist->GetXaxis()->SetLabelOffset(.01);
+			fHist->GetYaxis()->SetLabelOffset(-.03);
+			
+		}
 	
 }
 //______________________________________________________________________
@@ -333,6 +372,7 @@ void Set2DimGraphDialog::SetAttPerm()
 	env.SetValue("Set2DimGraphDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set2DimGraphDialog.fContourLevels",    fContourLevels    );
 	env.SetValue("Set2DimGraphDialog.fUseNPoints",       fUseNPoints    );
+//	env.SetValue("Set2DimGraphDialog.fViewingAngle",       fViewingAngle    );
 	env.SetValue("Set2DimGraphDialog.fRandomizePoints",  fRandomizePoints   );
 
 	env.SaveLevel(kEnvLocal);
@@ -356,6 +396,7 @@ void Set2DimGraphDialog::SaveDefaults()
 	env.SetValue("Set2DimGraphDialog.fUseGL",            fUseGL            );
 	env.SetValue("Set2DimGraphDialog.fContourLevels",    fContourLevels    );
 	env.SetValue("Set2DimGraphDialog.fUseNPoints",       fUseNPoints    );
+//	env.SetValue("Set2DimGraphDialog.fViewingAngle",     fViewingAngle    );
 	env.SetValue("Set2DimGraphDialog.fRandomizePoints",  fRandomizePoints   );
 	env.SaveLevel(kEnvLocal);
 }
@@ -429,7 +470,12 @@ void Set2DimGraphDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
 	TCanvas *canvas = (TCanvas *)obj;
 	if ( gHprDebug > 0 ) {
-		cout << "CRButtonPressed:" << wid<< ", " <<bid << " canvas "  << canvas << endl;
+		cout << "CRButtonPressed:" << wid<< ", " 
+		<<bid << " canvas "  << canvas 
+		<< " fViewingAngle " << fViewingAngle
+		<< endl;
+	}
+	if ( bid == fBidViewingAngle ) {
 	}
 	if ( bid == fBidGL ) {
 		TString opt = fGraph2D->GetDrawOption();

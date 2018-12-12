@@ -135,8 +135,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 		TCanvas *cc = (TCanvas*)gROOT->GetListOfCanvases()->FindObject(hold->GetCanvas());
 		if (cc) {
 			cc->GetListOfPrimitives()->Remove(hold->GetSelHist());
-//			gROOT->GetListOfCanvases()->Remove(cc);
-//			hold->Disconnect("HTCanvasClosed", hold, "CloseFitHist()");
 			if ( hold->GetSelHist() == hist )
 				hold->SetSelHist(NULL);
 			hold->SetCanvasIsAlive(kFALSE);

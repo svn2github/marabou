@@ -50,6 +50,8 @@ private:
 	Int_t   fTwoDimLogX;
 	Int_t   fTwoDimLogY;
 	Int_t   fTwoDimLogZ;
+	TString fViewingAngle;	// 0: default 60,120; 1: ;Top(XY) 0,-180;Front 90,-90;Side 90,-180 
+	Int_t   fBidViewingAngle;
 	Int_t   fUseGL;
 	Int_t   fContourLevels;
 	Int_t   fRandomizePoints;
@@ -58,7 +60,7 @@ public:
 
    Set2DimGraphDialog(TGWindow * win = NULL);
 	Set2DimGraphDialog(Int_t batch);
-   ~Set2DimGraphDialog() {};
+   ~Set2DimGraphDialog();
    void CloseDialog();
    void SetAttNow(TCanvas *canvas);
    void SetPadAtt(TPad *canvas);

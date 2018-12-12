@@ -69,7 +69,7 @@ public:
 
    Set2DimOptDialog(TGWindow * win = NULL);
 	Set2DimOptDialog(Int_t batch);
-   ~Set2DimOptDialog() {};
+   ~Set2DimOptDialog();
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);
    void SetHistAtt(TPad *canvas, TObject *obj);

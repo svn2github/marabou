@@ -63,7 +63,7 @@ private:
 public:
 
    FontSelectDialog(TGWindow * win = NULL);
-   ~FontSelectDialog() {};
+   ~FontSelectDialog();
    void Apply();
    void CloseDialog();
    void SaveDefaultsCwd();

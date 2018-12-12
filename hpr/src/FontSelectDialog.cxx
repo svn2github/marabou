@@ -104,6 +104,12 @@ for this user\n\
 }
 //___________________________________________________________________
 
+FontSelectDialog::~FontSelectDialog() {
+if (fCanvas)
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+};
+//___________________________________________________________________
+
 void FontSelectDialog::Apply()
 {
 	TString fn;

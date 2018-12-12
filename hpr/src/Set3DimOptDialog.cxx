@@ -291,11 +291,14 @@ since the other options dont have a real histogram anymore\n\
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
-   //_______________________________________________________________________
+//_______________________________________________________________________
 
 Set3DimOptDialog::~Set3DimOptDialog()
 {
-};
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
 //_______________________________________________________________________
 
 void Set3DimOptDialog::CloseDialog()

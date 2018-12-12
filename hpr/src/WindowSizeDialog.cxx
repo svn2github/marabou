@@ -122,6 +122,14 @@ _____________________________________________________\n\
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
+//_______________________________________________________________________
+
+WindowSizeDialog::~WindowSizeDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
 //___________________________________________________________________
 
 void WindowSizeDialog::CloseDialog()

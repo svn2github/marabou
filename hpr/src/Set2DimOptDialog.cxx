@@ -359,6 +359,14 @@ For more detailed information please consult <a href = http://root.cern/doc/mast
 }
 //_______________________________________________________________________
 
+Set2DimOptDialog::~Set2DimOptDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
+//_______________________________________________________________________
+
 void Set2DimOptDialog::CloseDialog()
 {
 //   cout << "Set2DimOptDialog::CloseDialog() " << endl;

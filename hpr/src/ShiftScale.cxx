@@ -129,6 +129,8 @@ taken into account\n\
             
 ShiftScale::~ShiftScale() 
 {
+	if (fCanvasOrig)
+		fCanvasOrig->Disconnect("HTCanvasClosed()", this, "CloseDialog()");
    if (fDialog) fDialog->CloseWindowExt();
    if (fRow_lab) {
 	   fRow_lab->Delete();

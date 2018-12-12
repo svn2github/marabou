@@ -218,6 +218,16 @@ https://root.cern.ch/root/html604/TColor.html#TColor:SetPalette\n\
 }
 //______________________________________________________
 
+SetColorModeDialog::~SetColorModeDialog()
+{
+	if (gHprDebug > 0) {
+		cout << "SetColorModeDialog dtor" << endl;
+	}
+	if (fCanvas)
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+}
+//______________________________________________________
+
 void SetColorModeDialog::SetColorMode()
 {	
 	if (gHprDebug > 0) {
@@ -551,14 +561,15 @@ void SetColorModeDialog::SaveDefaults()
 }
 
 //___________________________________________________________________
-
+/*
 void SetColorModeDialog::RecursiveRemove(TObject * obj)
 {
 	if (obj == fCanvas) {
-//      cout << "SetColorModeDialog: RecursiveRemove "  << endl;
+      cout << "SetColorModeDialog: RecursiveRemove "  << endl;
 		CloseDialog();
 	}
 }
+*/
 //___________________________________________________________________
 
 void SetColorModeDialog::CloseDialog()

@@ -554,8 +554,9 @@ again:
 //									fHistPresent->SaveOptions();
 									if (fHistPresent->cHPr) {
 										cout << endl << setblue << "Deleting main window cHpr " 
-										<< fHistPresent->cHPr << setblack;
+										<< fHistPresent->cHPr << setblack << endl;
 										delete fHistPresent->cHPr;
+										fHistPresent->cHPr = NULL;
 									}
 								}
 								gApplication->Terminate(0);
@@ -736,7 +737,7 @@ again:
 							TButton *b = 0;
 							if ( fFitHist )
 								b=fFitHist->GetCmdButton();
-								new Set3DimOptDialog(fRootCanvas, b);
+							new Set3DimOptDialog(fRootCanvas, b);
 							}
 							break;
 						case kOption2DimCol:

@@ -73,8 +73,11 @@ void HTCanvas::HTCanvasClosed()
 		<< this << " " << GetName() << endl << flush;
 	if (this->TestBit(TObject::kNotDeleted)){
 		if ( gHprDebug > 0 )
-		cout << endl << "HTCanvas::HTCanvasClosed() delete " 
-		<< this << " " << GetName() << endl << flush;
+			cout << endl << "HTCanvas::HTCanvasClosed()  delete " 
+			<< this << " " << GetName() << endl << flush;
+		TRootCanvas *rc = (TRootCanvas *)fCanvas->GetCanvasImp();
+		rc->Disconnect("CloseWindow()", this, "HTCanvasClosed()");
+		rc->DontCallClose();
 		delete this;
 	}
 }
@@ -89,10 +92,11 @@ void HTCanvas::ConnectToModified()
 
 HTCanvas::~HTCanvas()
 {
+   TRootCanvas *rc = (TRootCanvas *)fCanvas->GetCanvasImp();
 	if ( gHprDebug > 0 )
 		cout << "dtor HTCanvas: " << this << " " << GetName()
-		<< "FitHist: " << GetFitHist()
-		<< endl;
+		<< " FitHist: " << GetFitHist()
+		<< " CanvasImp " <<rc << endl;
 	if ( gHprClosing ) {
 		if ( gHprDebug > 0 )
 			cout << " hpr closing" << endl;
@@ -103,7 +107,7 @@ HTCanvas::~HTCanvas()
 	if ( strcmp (GetName(), "FileList") == 0) {
 		if (fHistPresent) fHistPresent->fFileList = NULL;
 	}
-   TRootCanvas *rc = (TRootCanvas *)fCanvas->GetCanvasImp();
+   rc->Disconnect("CloseWindow()", this, "HTCanvasClosed()");
 	rc->DontCallClose();
 	fTimer.Stop();
    TQObject::Disconnect((TPad*)this, "Modified()", this, "HandlePadModified()");
@@ -112,6 +116,10 @@ HTCanvas::~HTCanvas()
       fHandleMenus = 0;
    }
    if (fHistPresent) fHistPresent->HandleDeleteCanvas(this);
+	if ( gHprDebug > 1 ) {
+		cout << "dtor HTCanvas: after sleep " << endl;
+		gSystem->Sleep(5000);
+	}
 /*	TList * lop = GetListOfPrimitives();
 	TIter next(lop);
 	TObject *obj;

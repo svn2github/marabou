@@ -37,7 +37,7 @@ private:
 	public:
 		Rebin2DimDialog(TH2* hist, TGWindow * win = NULL);
 		Rebin2DimDialog() {};
-		~Rebin2DimDialog() {};
+		~Rebin2DimDialog();
 		void PrintHistParams();
 		void ExecuteRebin();
 		void RestoreDefaults();

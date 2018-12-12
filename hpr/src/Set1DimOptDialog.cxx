@@ -393,6 +393,17 @@ default is minimum Y = 0"));
 }
 //_______________________________________________________________________
 
+Set1DimOptDialog::~Set1DimOptDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+	fHistList.Clear("nodelete");
+	fPadList.Clear("nodelete");
+	if (gHprDebug>0)cout << "Set1DimOptDialog dtor " << this <<endl;
+}
+//_______________________________________________________________________
+
 void Set1DimOptDialog::CloseDialog()
 {
 	if (gHprDebug > 0)
@@ -710,14 +721,6 @@ void Set1DimOptDialog::RestoreDefaults(Int_t resetall)
 
 void Set1DimOptDialog::GetValuesFromHist()
 {
-}
-//______________________________________________________________________
-
-Set1DimOptDialog::~Set1DimOptDialog()
-{
-	fHistList.Clear("nodelete");
-	fPadList.Clear("nodelete");
-	if (gHprDebug>0)cout << "Set1DimOptDialog dtor " << this <<endl;
 }
 //______________________________________________________________________
 

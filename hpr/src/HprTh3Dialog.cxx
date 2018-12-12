@@ -83,6 +83,19 @@ Projections are defined by \"xy\" \"xz\" etc.\n\
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
+//_______________________________________________________________________
+
+HprTh3Dialog::~HprTh3Dialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+	fHistList.Clear("nodelete");
+	if (fRow_lab) {
+		fRow_lab->Delete();
+		delete fRow_lab;
+	}
+}
 //____________________________________________________________________________
 
 void HprTh3Dialog::ExecuteProject()
@@ -149,16 +162,6 @@ void HprTh3Dialog::RestoreDefaults()
    }
    fProjectPlane = env.GetValue("HprTh3Dialog.fProjectPlane", "xy");
 }
-//_________________________________________________________________________
-
-HprTh3Dialog::~HprTh3Dialog()
-{
-	fHistList.Clear("nodelete");
-	if (fRow_lab) {
-		fRow_lab->Delete();
-		delete fRow_lab;
-	}
-};
 //_______________________________________________________________________
 
 void HprTh3Dialog::CloseDialog()

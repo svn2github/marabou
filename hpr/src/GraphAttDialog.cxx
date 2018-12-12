@@ -217,6 +217,14 @@ _________________________________________________________________________\n\
 }
 //_______________________________________________________________________
 
+GraphAttDialog::~GraphAttDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
+//_______________________________________________________________________
+
 void GraphAttDialog::CloseDialog()
 {
 //   cout << "GraphAttDialog::CloseDialog() " << endl;

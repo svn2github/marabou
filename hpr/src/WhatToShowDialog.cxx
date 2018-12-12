@@ -115,6 +115,14 @@ and creation time"));
 }
 //_______________________________________________________________________
 
+WhatToShowDialog::~WhatToShowDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
+//_______________________________________________________________________
+
 void WhatToShowDialog::CloseDialog()
 {
 //   cout << "WhatToShowDialog::CloseDialog() " << endl;

@@ -268,6 +268,14 @@ ____________________________________________________________\n\
                       NULL, NULL, helptext, this, this->ClassName());
 }
 //_______________________________________________________________________
+
+GeneralAttDialog::~GeneralAttDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
+//_______________________________________________________________________
 void GeneralAttDialog::GetCustomStyles()
 {
 	if (!gSystem->AccessPathName("hpr_custom_styles.root", kFileExists)) {

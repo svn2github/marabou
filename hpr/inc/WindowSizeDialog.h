@@ -35,7 +35,7 @@ public:
 //#if ROOTVERSION < 60000
 //	WindowSizeDialog() {};
 //#endif
-	~WindowSizeDialog() {};
+	~WindowSizeDialog();
 	void CloseDialog();
 	void SaveDefaults();
 	static void RestoreDefaults();

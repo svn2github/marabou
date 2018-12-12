@@ -3271,6 +3271,7 @@ void HistPresent::CloseAllCanvases()
 		if (gHprDebug > 1)
 			cout << "SendCloseMessage: " << htc << " " << htc->GetName()<< " " << rc<< endl;
 		rc->SendCloseMessage();
+//		delete htc;
 		nc++;
 	}
 	WindowSizeDialog::fNwindows = 0;

@@ -121,7 +121,7 @@ public:
 		
    SetHistOptDialog(TGWindow * win = NULL, TCollection * hlist = NULL);
 	SetHistOptDialog(Int_t batch);
-   ~SetHistOptDialog() {};
+   ~SetHistOptDialog();
    void CloseDialog();
 	Bool_t SetPointers();
    void SetHistAttNow(Int_t bid = 0);

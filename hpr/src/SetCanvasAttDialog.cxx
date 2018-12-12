@@ -116,6 +116,14 @@ SetCanvasAttDialog::SetCanvasAttDialog(TGWindow * win)
 }
 //_______________________________________________________________________
 
+SetCanvasAttDialog::~SetCanvasAttDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
+//_______________________________________________________________________
+
 void SetCanvasAttDialog::RecursiveRemove(TObject * obj)
 {
 	if (obj == fCanvas) {

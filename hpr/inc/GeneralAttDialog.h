@@ -44,7 +44,7 @@ public:
 	static TString fGlobalStyle;
 
    GeneralAttDialog(TGWindow * win = NULL);
-   ~GeneralAttDialog() {};
+   ~GeneralAttDialog();
    void CloseDialog();
 	void RestoreSavedSettings();
 	static void GetCustomStyles();

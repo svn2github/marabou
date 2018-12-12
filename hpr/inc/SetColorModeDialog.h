@@ -54,8 +54,8 @@ public:
 //#if ROOTVERSION > 60000
 //   SetColorModeDialog() {};
 //#endif
-   ~SetColorModeDialog() {};
-   void RecursiveRemove(TObject * obj);
+   ~SetColorModeDialog();
+//   void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SliderClosed(TObject * obj);
    static void SetColorMode();

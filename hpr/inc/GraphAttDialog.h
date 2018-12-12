@@ -47,7 +47,7 @@ public:
 	TString fTitleY;
 	
 	GraphAttDialog(TGWindow * win = NULL);
-   ~GraphAttDialog() {};
+   ~GraphAttDialog();
    void CloseDialog();
    void SetGraphAtt(TCanvas *ca = NULL, Int_t bid = 0);
    void SetAsDefault();

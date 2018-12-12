@@ -48,7 +48,7 @@ public:
 
    SetCanvasAttDialog(TGWindow * win = NULL);
 	SetCanvasAttDialog(Int_t batch);
-   ~SetCanvasAttDialog() {};
+   ~SetCanvasAttDialog();
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetCanvasAtt(TCanvas *canvas);

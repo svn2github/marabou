@@ -83,7 +83,14 @@ discarded.\n\
 	fDialog->DisableButton(fBidNewNbinsX);
 	fDialog->DisableButton(fBidNewNbinsY);
 }
+//_______________________________________________________________________
 
+Rebin2DimDialog::~Rebin2DimDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
 //______________________________________________________________________
 	
 void Rebin2DimDialog::PrintHistParams()

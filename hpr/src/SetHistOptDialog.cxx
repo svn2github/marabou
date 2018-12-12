@@ -379,6 +379,14 @@ to the selected histogram.\n\
 	}
 
 }
+//_______________________________________________________________________
+
+SetHistOptDialog::~SetHistOptDialog()
+{
+	if (fCanvas){
+		fCanvas->Disconnect("HTCanvasClosed()", this,  "CloseDialog()");
+	}
+}
 //______________________________________________________________________
 
 Bool_t SetHistOptDialog::SetPointers()
