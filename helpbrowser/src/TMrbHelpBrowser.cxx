@@ -432,11 +432,11 @@ void TMrbHelpBrowser::CanvasClosed()
 
 void TMrbHelpBrowser::RecursiveRemove(TObject * obj)
 {
-	if (gDebug > 0) {
-		cout << "TMrbHelpBrowser::RecursiveRemove " << obj << endl;
-		if (obj) cout << " " << obj->GetName();
-		cout  << endl;
-	}
+//	if (gDebug > 2) {
+//		cout << "TMrbHelpBrowser::RecursiveRemove " << obj << endl;
+//		if (obj) cout << " " << obj->GetName();
+//		cout  << endl;
+//	}
 	if ( fCanvasList->FindObject(obj) ) {
 		cout << "TMrbHelpBrowser::Remove " << obj << endl;
 		fCanvasList->Remove(obj);
