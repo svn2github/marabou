@@ -19,6 +19,7 @@
 #include "TGMrbValuesAndText.h"
 #include "TGMrbTableFrame.h"
 #include "TGMrbInputDialog.h"
+#include "GeneralAttDialog.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -1142,10 +1143,25 @@ Int_t SuperImpose(TCanvas * canvas, TH1 * selhist, Int_t mode)
 	
 	if ( lLegend != 0 ) {
 //		TEnv env(".hprrc");
-		Double_t x1 = env.GetValue("SuperImposeHist.fLegendX1", 0.11);
-		Double_t x2 = env.GetValue("SuperImposeHist.fLegendX2", 0.3);
-		Double_t y1 = env.GetValue("SuperImposeHist.fLegendY1", 0.8);
-		Double_t y2 = env.GetValue("SuperImposeHist.fLegendY2", 0.95);
+		Double_t x1 = 0.11;
+		Double_t x2 = 0.3;
+		Double_t y1 = 0.8;
+		Double_t y2 = 0.95;
+		if (GeneralAttDialog::fRememberLegendBox > 0) {
+			x1 = env.GetValue("SuperImposeHist.fLegendX1",x1 );
+			x2 = env.GetValue("SuperImposeHist.fLegendX2",x2 );
+			y1 = env.GetValue("SuperImposeHist.fLegendY1",y1 );
+			y2 = env.GetValue("SuperImposeHist.fLegendY2",y2 );
+			if (x1 < 0 || x1 > 1 || x2 < 0 || x2 > 1
+			 || y1 < 0 || y1 > 1 || y2 < 0 || y2 > 1 ) {
+				cout << setred << "Unreasonable saved legend coordinates" <<
+				endl << "set to defaults" << setblack << endl;
+				x1 = 0.11;
+				x2 = 0.3;
+				y1 = 0.8;
+				y2 = 0.95;
+			}
+		}
 		// make new legend and remove possible extra TGaxis
 		TIter no(gPad->GetListOfPrimitives());
 		TObject *ob;
