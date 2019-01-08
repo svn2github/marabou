@@ -142,12 +142,13 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 		}
 		return;
 	}
-	if (gDebug == 4) {
+	if (gDebug == 6) {
 		if (event == kButton1Down) 
 			cout << px << " " << py << endl;
 		return;
 	}
-	if (gDebug > 3 && event != kMouseMotion && event != kButton1Motion)
+//	if (gDebug > 3 && event != kMouseMotion && event != kButton1Motion)
+	if (gDebug > 3)
 		cout << "GrCanvas::HandleInput Event: " << event << endl;
    if (gROOT->GetEditorMode() != 0) {
       in_edit = kTRUE;
