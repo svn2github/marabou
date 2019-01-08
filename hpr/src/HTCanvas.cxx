@@ -252,6 +252,8 @@ void HTCanvas::DoSaveLegendStats()
 			if ( leg == NULL ) {
 				leg = (TPave*)lop->FindObject("Legend_HprStack");
 				if ( leg == NULL ) {
+					if (gHprDebug > 0)
+						cout <<"DoSaveLegendStats(): No legend found"<< endl;
 					return;
 				} else {
 					envn = "HprStack.fLegend";
