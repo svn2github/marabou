@@ -176,6 +176,7 @@ For more detailed information please consult <a href = http://root.cern/doc/mast
 		fCanvas = NULL;
 		return;
 	}
+	fViewingAngle =  "Def";
 	fHist = NULL;
 	fPad = (TPad*)fCanvas;
 	fNPads = 0;
@@ -314,23 +315,26 @@ For more detailed information please consult <a href = http://root.cern/doc/mast
 	fRow_lab->Add(new TObjString("Float_Value+MSize  "));
 	fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
 	
-	fRow_lab->Add(new TObjString("CheckButton_Use GL (3D)"));
-	fRow_lab->Add(new TObjString("CheckButton+    No Fbox"));
-	fRow_lab->Add(new TObjString("CheckButton+    No Bbox"));
+	fRow_lab->Add(new TObjString("CheckButton_UseGL(3D)"));
+	fRow_lab->Add(new TObjString("CheckButton+ No Fbox"));
+	fRow_lab->Add(new TObjString("CheckButton+ No Bbox"));
 	fBidUseGL = ind;
 	fValp[ind++] = &fUseGL;
 	fValp[ind++] = &fHideFrontBox;
 	fValp[ind++] = &fHideBackBox;
-	fRow_lab->Add(new TObjString("CheckButton_    Z Scale"));
-	fValp[ind++] = &fShowZScale;
-	fRow_lab->Add(new TObjString("CheckButton+  Live stat"));
+	fRow_lab->Add(new TObjString("CheckButton+LiveStat"));
 	fBidLiveStat = ind;
 	fValp[ind++] = &fLiveStat2Dim;
-	fRow_lab->Add(new TObjString("PlainIntVal+Cont Levs"));
+	fRow_lab->Add(new TObjString("CheckButton_Z Scale"));
+	fValp[ind++] = &fShowZScale;
+	fRow_lab->Add(new TObjString("PlainIntVal+ContLevs"));
 	fValp[ind++] = &fContourLevels;
-	fRow_lab->Add(new TObjString("CheckButton_      Log X"));
-	fRow_lab->Add(new TObjString("CheckButton+      Log Y"));
-	fRow_lab->Add(new TObjString("CheckButton+      Log Z"));
+	fRow_lab->Add(new TObjString("ComboSelect-View;Def(30,45);Top(XY);Front(XZ);Side(YZ)"));
+	fValp[ind++] = &fViewingAngle;
+
+	fRow_lab->Add(new TObjString("CheckButton_  Log X"));
+	fRow_lab->Add(new TObjString("CheckButton+  Log Y"));
+	fRow_lab->Add(new TObjString("CheckButton+  Log Z"));
 	fValp[ind++] = &fTwoDimLogX;
 	fValp[ind++] = &fTwoDimLogY;
 	fValp[ind++] = &fTwoDimLogZ;
@@ -526,7 +530,32 @@ void Set2DimOptDialog::SetHistAtt(TPad *pad, TObject *obj)
 		pad->GetFrame()->SetFillStyle(1001);
 		pad->GetFrame()->SetFillColor(f2DimBackgroundColor);
 	}
-	
+		// 0: default 60,120; 1: ;Top(XY) 0,-180;Front 0,0;Side 90,0 
+	if ( gHprDebug > 0 ) 
+			cout << "SetHistAtt: " << fViewingAngle << endl;
+	if (fViewingAngle.BeginsWith("Def")) {
+		pad->SetPhi(30);
+		pad->SetTheta(45);
+		hist->GetXaxis()->SetLabelOffset(.01);
+		hist->GetYaxis()->SetLabelOffset(.01);
+	} else if (fViewingAngle.BeginsWith("Top")) {
+		pad->SetPhi(0);
+		pad->SetTheta(90);
+		hist->GetXaxis()->SetLabelOffset(-.04);
+		hist->GetYaxis()->SetLabelOffset(.01);
+	} else if (fViewingAngle.BeginsWith("Front")) {
+		pad->SetPhi(0);
+		pad->SetTheta(0);
+		hist->GetXaxis()->SetLabelOffset(-.04);
+		hist->GetYaxis()->SetLabelOffset(.01);
+	} else if (fViewingAngle.BeginsWith("Side")) {
+		pad->SetPhi(90);
+		pad->SetTheta(0);
+		hist->GetXaxis()->SetLabelOffset(.01);
+		hist->GetYaxis()->SetLabelOffset(-.03);
+		
+	}
+
 }
 //______________________________________________________________________
 
