@@ -3149,8 +3149,9 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname, TButton *b)
 	}
 	if (gHprDebug > 0){
 		cout << "enter HistPresent::ShowHist: "<< FHname << endl << flush;
-		cout << "hist->GetName() " <<   hist->GetName()<<  " hname " << hname 
-		<< " origname " << origname << endl;
+		cout << "hist->GetName() " <<   hist->GetName();
+		if (hname ) cout <<  " input hname " << hname;
+		cout << " origname " << origname << endl;
 	}
 	TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
 	while (FHname.Index(notascii) >= 0) {
