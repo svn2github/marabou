@@ -30,6 +30,7 @@ private:
    Int_t fHideBackBox;
    Int_t fShowZScale;
    Int_t fLiveStat2Dim;
+   TString fViewingAngle;
    Double_t fLogScaleMin;
    Double_t fLogScaleMax;
    Color_t fHistFillColor2Dim;

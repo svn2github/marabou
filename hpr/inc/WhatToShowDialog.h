@@ -8,7 +8,7 @@
 
 class TH1;
 
-const Int_t kNopts = 7;
+const Int_t kNopts = 9;
 
 class WhatToShowDialog : public TObject {
 
